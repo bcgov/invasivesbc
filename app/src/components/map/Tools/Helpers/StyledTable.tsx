@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
+  CircularProgress,
   ClickAwayListener,
   Collapse,
   IconButton,
@@ -25,6 +26,17 @@ import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
+const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
+  if (initialTime > 0) {
+    setTimeout(() => {
+      setInitialTime(initialTime - 1);
+    }, 1000);
+  }
+  if (initialTime === 0 && startTimer) {
+    setStartTimer(false);
+  }
+};
+
 const CreateTableHead = ({ labels }) => {
   return (
     <TableHead>
@@ -38,8 +50,16 @@ const CreateTableHead = ({ labels }) => {
 };
 
 const CreateEmptyRows = ({ emptyRows }) => {
+  const [startTimer, setStartTimer] = useState(true);
+  const [initialTime, setInitialTime] = useState(10);
+
+  useEffect(() => {
+    timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
+  }, [initialTime, startTimer]);
+
   return (
     <StyledTableRow style={{ height: 34 * emptyRows }}>
+      {initialTime > 0 && <CircularProgress />}
       <StyledTableCell colSpan={6} />
     </StyledTableRow>
   );
