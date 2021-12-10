@@ -3,6 +3,7 @@ import React from 'react';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
+import MultiSelectOrEdit from './Tools/ToolTypes/Data/MultiSelectOrEdit';
 import NewRecord from './Tools/ToolTypes/Data/NewRecord';
 import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
 import DrawButtonList from './Tools/ToolTypes/GeoEdit/EditTools';
@@ -35,7 +36,9 @@ export const ToolbarContainer = (props) => {
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
           <NewRecord />
-          <EditRecord /> <DrawButtonList />
+          <EditRecord />
+          <MultiSelectOrEdit />
+          <DrawButtonList />
           <JumpToActivity id={props.id} />
         </div>
       </div>

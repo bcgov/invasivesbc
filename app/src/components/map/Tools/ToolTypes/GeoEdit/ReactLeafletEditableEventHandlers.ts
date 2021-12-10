@@ -5,7 +5,8 @@ export enum Shape {
   CIRCLE = 'CIRCLE',
   RECTANGLE = 'RECTANGLE',
   POLYGON = 'POLYGON',
-  POLYLINE = 'POLYLINE'
+  POLYLINE = 'POLYLINE',
+  CIRCLE_MARKER = 'CIRCLE_MARKER'
 }
 
 export const startBasicShape = (mapRecordsContext: IMapRecordsContext, shape: Shape) => {
@@ -36,6 +37,9 @@ export const startBasicShape = (mapRecordsContext: IMapRecordsContext, shape: Sh
         break;
       case Shape.POLYLINE:
         mapRecordsContext.editRef.current.startPolyline();
+        break;
+      case Shape.CIRCLE_MARKER:
+        mapRecordsContext.editRef.current.startMarker();
         break;
       default:
         break;

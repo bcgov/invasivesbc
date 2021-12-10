@@ -1,4 +1,4 @@
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'contexts/themeContext';
@@ -9,6 +9,12 @@ import { useHistory } from 'react-router-dom';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { Shape, startBasicShape, stopShape } from './ReactLeafletEditableEventHandlers';
 import PentagonIcon from '@mui/icons-material/Pentagon';
+import CircleIcon from '@mui/icons-material/Circle';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import GestureIcon from '@mui/icons-material/Gesture';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import EggAltIcon from '@mui/icons-material/EggAlt';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
 export const DrawButtonList = (props) => {
   const divRef = useRef(null);
 
@@ -32,11 +38,12 @@ export const DrawButtonList = (props) => {
     const Icn = props.icon;
     return (
       <IconButton
+        disabled={props.disabled ? true : false}
         className={toolClass.toolBtnLight}
         onClick={() => {
           props.onClick();
         }}>
-        {props.label}
+        <Typography className={toolClass.Font}> {props.label}</Typography>
         {props.icon ? <Icn /> : <></>}
       </IconButton>
     );
@@ -79,7 +86,8 @@ export const DrawButtonList = (props) => {
                 setInEdit(false);
               }
             }}
-            label={'rectangle'}
+            label={'Box'}
+            icon={CheckBoxOutlineBlankIcon}
           />
         );
       }
@@ -91,7 +99,7 @@ export const DrawButtonList = (props) => {
           <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startBasicShape(mapRecordsContext, Shape.CIRCLE);
+                startBasicShape(mapRecordsContext, Shape.CIRCLE_MARKER);
                 setInEdit(true);
               } else {
                 stopShape(mapRecordsContext);
@@ -99,6 +107,7 @@ export const DrawButtonList = (props) => {
               }
             }}
             label={'Circle'}
+            icon={CircleIcon}
           />
         );
       }
@@ -117,7 +126,90 @@ export const DrawButtonList = (props) => {
                 setInEdit(false);
               }
             }}
-            label={'PolyLine'}
+            label={'Line'}
+            icon={GestureIcon}
+          />
+        );
+      }
+    },
+    {
+      label: 'polyline_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            onClick={() => {
+              if (!inEdit) {
+                startBasicShape(mapRecordsContext, Shape.POLYLINE);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'Buffer Shape'}
+            icon={EggAltIcon}
+          />
+        );
+      }
+    },
+    {
+      label: 'polyline_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            onClick={() => {
+              if (!inEdit) {
+                startBasicShape(mapRecordsContext, Shape.CIRCLE_MARKER);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'Circle Mark'}
+            icon={FiberManualRecordIcon}
+          />
+        );
+      }
+    },
+    {
+      label: 'polyline_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            disabled={true}
+            onClick={() => {
+              if (!inEdit) {
+                startBasicShape(mapRecordsContext, Shape.CIRCLE_MARKER);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'Manual UTM'}
+            icon={FiberManualRecordIcon}
+          />
+        );
+      }
+    },
+    {
+      label: 'polyline_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            disabled={true}
+            onClick={() => {
+              if (!inEdit) {
+                startBasicShape(mapRecordsContext, Shape.CIRCLE_MARKER);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'Current Location'}
+            icon={AddLocationIcon}
           />
         );
       }
