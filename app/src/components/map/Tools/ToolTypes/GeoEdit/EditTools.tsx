@@ -99,7 +99,7 @@ export const DrawButtonList = (props) => {
           <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startBasicShape(mapRecordsContext, Shape.CIRCLE_MARKER);
+                startBasicShape(mapRecordsContext, Shape.CIRCLE);
                 setInEdit(true);
               } else {
                 stopShape(mapRecordsContext);
@@ -137,6 +137,7 @@ export const DrawButtonList = (props) => {
       button: (props) => {
         return (
           <DrawButton
+            disabled={true}
             onClick={() => {
               if (!inEdit) {
                 startBasicShape(mapRecordsContext, Shape.POLYLINE);

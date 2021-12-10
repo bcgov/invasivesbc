@@ -68,108 +68,175 @@ export const MapRecordsContextProvider: React.FC = (props) => {
 
   React.useEffect(() => {
     let handler: any = {};
+    const EDITABLE_EVENT_DEBUG = false;
     if (!leafletEditableHandlers) {
       // some placeholder handlers for when people are chasing their tail
       handler.onShapeDelete = (e, m) => {
-        console.log('onShapeDelete');
-      };
-      handler.onShapeDeleted = (e, m) => {
-        console.log('onShapeDeleted');
-      };
-      handler.onEditing = (e, m) => {
-        console.log('onEditing');
-      };
-      handler.onEnable = (e, m) => {
-        console.log('onEnable');
-      };
-      handler.onDisable = (e, m) => {
-        console.log('onDisable');
-      };
-      handler.onStartDrawing = (e, m) => {
-        console.log('onStartDrawing');
-      };
-      handler.onDrawingClick = (e, m) => {
-        console.log('onDrawingClick');
-      };
-      handler.onEndDrawing = (e, m) => {
-        console.log('onEndDrawing');
-      };
-      handler.onDrawingCommit = (e, m) => {
-        console.log('onDrawingCommit');
-      };
-      handler.onDrawingMouseDown = (e, m) => {
-        console.log('onDrawingMouseDown');
-      };
-      handler.onDrawingMouseUp = (e, m) => {
-        console.log('onDrawingMouseUp');
-      };
-      handler.onDrawingMove = (e, m) => {
-        console.log('onDrawingMove');
-      };
-      handler.onCancelDrawing = (e, m) => {
-        console.log('onCancelDrawing');
-      };
-      handler.onDragStart = (e, m) => {
-        console.log('onDragStart');
-      };
-      handler.onDrag = (e, m) => {
-        console.log('onDrag');
-      };
-      handler.onDragEnd = (e, m) => {
-        console.log('onDragEnd');
-      };
-      handler.onVertexMarkerDrag = (e, m) => {
-        console.log('onVertexMarkerDrag');
-      };
-      handler.onVertexMarkerDragStart = (e, m) => {
-        console.log('onVertexMarkerDragStart');
-      };
-      handler.onVertexMarkerDragEnd = (e, m) => {
-        console.log('onVertexMarkerDragEnd');
-      };
-      handler.onVertextCtrlClick = (e, m) => {
-        console.log('onVertextCtrlClick');
-      };
-      handler.onNewVertex = (e, m) => {
-        console.log('onNewVertex');
-      };
-      handler.onVertexMarkerClick = (e, m) => {
-        console.log('onVertexMarkerClick');
-      };
-      handler.onVertexRawMarkerClick = (e, m) => {
-        console.log('onVertexRawMarkerClick');
-      };
-      handler.onVertexDeleted = (e, m) => {
-        console.log('onVertexDeleted');
-      };
-      handler.onVertexMarkerCtrlClick = (e, m) => {
-        console.log('onVertexMarkerCtrlClick');
-      };
-      handler.onVertexMarkerShiftClick = (e, m) => {
-        console.log('onVertexMarkerShiftClick');
-      };
-      handler.onVertexMarkerMetaKeyClick = (e, m) => {
-        console.log('onVertexMarkerMetaKeyClick');
-      };
-      handler.onVertexMarkerAltClick = (e, m) => {
-        console.log('onVertexMarkerAltClick');
-      };
-      handler.onVertexMarkerContextMenu = (e, m) => {
-        console.log('onVertexMarkerContextMenu');
-      };
-      handler.onVertexMarkerMouseDown = (e, m) => {
-        console.log('onVertexMarkerMouseDown');
-      };
-      handler.onVertexMarkerMouseOver = (e, m) => {
-        console.log('onVertexMarkerMouseOver');
-      };
-      handler.onVertexMarkerMouseOut = (e, m) => {
-        console.log('onVertexMarkerMouseOut');
-      };
-      handler.onMiddleMarkerMouseDown = (e, m) => {
-        console.log('onMiddleMarkerMouseDown');
+        if (EDITABLE_EVENT_DEBUG) {
+          console.log('onShapeDelete');
+        }
       };
     }
+    handler.onShapeDeleted = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onShapeDeleted');
+      }
+    };
+    handler.onEditing = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onEditing');
+      }
+    };
+    handler.onEnable = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onEnable');
+      }
+    };
+    handler.onDisable = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDisable');
+      }
+    };
+    handler.onStartDrawing = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onStartDrawing');
+      }
+    };
+    handler.onDrawingClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrawingClick');
+      }
+    };
+    handler.onEndDrawing = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onEndDrawing');
+      }
+    };
+    handler.onDrawingCommit = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrawingCommit');
+      }
+    };
+    handler.onDrawingMouseDown = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrawingMouseDown');
+      }
+    };
+    handler.onDrawingMouseUp = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrawingMouseUp');
+      }
+    };
+    handler.onDrawingMove = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrawingMove');
+      }
+    };
+    handler.onCancelDrawing = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onCancelDrawing');
+      }
+    };
+    handler.onDragStart = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDragStart');
+      }
+    };
+    handler.onDrag = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDrag');
+      }
+    };
+    handler.onDragEnd = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onDragEnd');
+      }
+    };
+    handler.onVertexMarkerDrag = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerDrag');
+      }
+    };
+    handler.onVertexMarkerDragStart = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerDragStart');
+      }
+    };
+    handler.onVertexMarkerDragEnd = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerDragEnd');
+      }
+    };
+    handler.onVertextCtrlClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertextCtrlClick');
+      }
+    };
+    handler.onNewVertex = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onNewVertex');
+      }
+    };
+    handler.onVertexMarkerClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerClick');
+      }
+    };
+    handler.onVertexRawMarkerClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexRawMarkerClick');
+      }
+    };
+    handler.onVertexDeleted = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexDeleted');
+      }
+    };
+    handler.onVertexMarkerCtrlClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerCtrlClick');
+      }
+    };
+    handler.onVertexMarkerShiftClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerShiftClick');
+      }
+    };
+    handler.onVertexMarkerMetaKeyClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerMetaKeyClick');
+      }
+    };
+    handler.onVertexMarkerAltClick = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerAltClick');
+      }
+    };
+    handler.onVertexMarkerContextMenu = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerContextMenu');
+      }
+    };
+    handler.onVertexMarkerMouseDown = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerMouseDown');
+      }
+    };
+    handler.onVertexMarkerMouseOver = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerMouseOver');
+      }
+    };
+    handler.onVertexMarkerMouseOut = (e, m) => {
+      if (EDITABLE_EVENT_DEBUG) {
+        console.log('onVertexMarkerMouseOut');
+      }
+      handler.onMiddleMarkerMouseDown = (e, m) => {
+        if (EDITABLE_EVENT_DEBUG) {
+          console.log('onMiddleMarkerMouseDown');
+        }
+      };
+    };
     setLeafletEditableHandlers(handler);
     const q = new PQueue({ concurrency: 1 });
     setEditQueue(q);
