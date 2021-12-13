@@ -15,6 +15,7 @@ import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
 import PublicRoute from 'utils/PublicRoute';
+import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 
 interface IHomeRouterProps {
   classes: any;
@@ -113,6 +114,15 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         title={getTitle('Activity')}
         roles={ALL_ROLES}
         component={ActivityPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/iapp/:id?"
+        title={getTitle('IAPP Site')}
+        roles={ALL_ROLES}
+        component={ReferenceIAPPSitePage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}

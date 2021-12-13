@@ -913,6 +913,9 @@ const RecordTableRow = (props) => {
     databaseContext,
     fetchRows
   } = props;
+
+  const history = useHistory();
+
   const classes = useStyles();
 
   const [actionError, setActionError] = useState(props.actionError || '');
@@ -968,18 +971,28 @@ const RecordTableRow = (props) => {
         aria-checked={isSelected}
         tabIndex={-1}
         selected={isSelected}
-        onClick={toggleExpanded}>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
-              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+        onClick={() => {
+          if (!row.point_of_interest_id) {
+            toggleExpanded();
+          } else {
+            history.push(`/home/iapp/${row.point_of_interest_id as string}`);
+          }
+        }}>
+        {!row.point_of_interest_id && (
+          <>
+            {(enableSelection || pageHasDropdown) && (
+              <TableCell padding="checkbox" className={classes.cell}>
+                {enableSelection && (
+                  <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                )}
+                {pageHasDropdown && (
+                  <IconButton aria-label="expand row" size="small">
+                    {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+                  </IconButton>
+                )}
+              </TableCell>
             )}
-            {pageHasDropdown && (
-              <IconButton aria-label="expand row" size="small">
-                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-              </IconButton>
-            )}
-          </TableCell>
+          </>
         )}
         {headers.map((header) => (
           <RecordTableCell
