@@ -425,6 +425,7 @@ export const RenderTableDataBC = ({ rows }) => {
 export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const history = useHistory();
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
 
@@ -450,15 +451,17 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                 <StyledTableCell style={{ width: 51 }} component="th" scope="row">
                   <a
                     onClick={() => {
-                      if (row.geometry)
-                        map.flyTo(
-                          [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
-                          17
-                        );
-                      setPoiMarker({
-                        geometry: row.geometry[0],
-                        species: row.species
-                      });
+                      // Removed for now:
+                      // if (row.geometry)
+                      //   map.flyTo(
+                      //     [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
+                      //     17
+                      //   );
+                      // setPoiMarker({
+                      //   geometry: row.geometry[0],
+                      //   species: row.species
+                      // });
+                      history.push(`/home/iapp/${row.point_of_interest_id as string}`);
                     }}>
                     {row.site_id}
                   </a>
