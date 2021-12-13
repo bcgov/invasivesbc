@@ -18,6 +18,7 @@ export interface IAuthState {
   setUserInfo: React.Dispatch<React.SetStateAction<Object>>;
   setUserInfoLoaded: React.Dispatch<React.SetStateAction<Boolean>>;
   setUserRoles: React.Dispatch<React.SetStateAction<any>>;
+  loginUser: () => Promise<void>;
 }
 
 export const AuthStateContext = React.createContext<IAuthState>({
@@ -32,7 +33,8 @@ export const AuthStateContext = React.createContext<IAuthState>({
   userRoles: [],
   setUserInfo: () => {},
   setUserInfoLoaded: () => {},
-  setUserRoles: () => {}
+  setUserRoles: () => {},
+  loginUser: () => Promise.resolve()
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
@@ -41,6 +43,16 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
   const [userInfo, setUserInfo] = React.useState(info);
   const [userRoles, setUserRoles] = React.useState([]);
+
+  const loginUser = async () => {
+    await keycloak?.obj?.login();
+    const user = await keycloak?.obj?.loadUserInfo();
+    const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
+    await setUserRoles(roles);
+    console.log('User on login: ', user);
+    await setUserInfo(user);
+    setUserInfoLoaded(true);
+  };
 
   React.useEffect(() => {
     if (keycloak?.obj?.authenticated) {
@@ -73,7 +85,8 @@ export const AuthStateContextProvider: React.FC = (props) => {
             userRoles,
             setUserInfo,
             setUserInfoLoaded,
-            setUserRoles
+            setUserRoles,
+            loginUser
           }}>
           {props.children}
         </AuthStateContext.Provider>
