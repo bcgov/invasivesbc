@@ -1,6 +1,6 @@
 import { Grid, IconButton, Typography } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import { MapRecordsContext, MODES } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'contexts/themeContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
@@ -15,6 +15,7 @@ import GestureIcon from '@mui/icons-material/Gesture';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import EggAltIcon from '@mui/icons-material/EggAlt';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
+import SaveIcon from '@mui/icons-material/Save';
 export const DrawButtonList = (props) => {
   const divRef = useRef(null);
 
@@ -218,14 +219,41 @@ export const DrawButtonList = (props) => {
   ];
   return (
     <Grid ref={divRef} xs={12} container className={toolClass.toolBtnMultiStageMenu}>
-      {items.map((i) => {
-        const Btn = i.button;
-        return (
-          <Grid className={toolClass.toolBtnMultiStageMenuItem} item>
-            <Btn />
-          </Grid>
-        );
-      })}
+      {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
+        items.map((i) => {
+          const Btn = i.button;
+          return (
+            <Grid className={toolClass.toolBtnMultiStageMenuItem} item>
+              <Btn />
+            </Grid>
+          );
+        })
+      ) : (
+        <></>
+      )}
+      {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
+        <Grid className={toolClass.toolBtnMultiStageMenuItem} item>
+          <IconButton
+            disabled={props.disabled ? true : false}
+            className={toolClass.toolBtnLight}
+            onClick={() => {
+              mapRecordsContext.currentGeoEdit.onSave(
+                (() => {
+                  return mapRecordsContext.currentGeoEdit.geometry;
+                })()
+              );
+              stopShape(mapRecordsContext);
+              setInEdit(false);
+              console.log('save geo here');
+              console.log(mapRecordsContext.currentGeoEdit.geometry);
+            }}>
+            <Typography className={toolClass.Font}>DONE</Typography>
+            <SaveIcon />
+          </IconButton>
+        </Grid>
+      ) : (
+        <> </>
+      )}
     </Grid>
   );
 };

@@ -48,6 +48,7 @@ import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../uti
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
+import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -183,7 +184,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { activity_data } = activity.formData || {};
     let needsInsert = false;
     let userNameInject = '';
-    if (activity_data && activity_data.activity_persons && activity_data.activity_persons.length > 0) {
+    console.log(activity);
+    if (
+      !activity_data.activity_persons ||
+      (activity_data.activity_persons && activity_data.activity_persons.length > 0)
+    ) {
       if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
         needsInsert = true;
         console.log(authStateContext.userInfo);
@@ -680,7 +685,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      {/*
+      <MapRecordsContextProvider>
+        {/*
       <Paper style={{ width: '100%' }} elevation={5}>
         <Typography align="center" style={{ paddingTop: 50, paddingBottom: 30 }} variant="h3">
           How to test this page:
@@ -702,84 +708,85 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </Box>
       </Paper>
       */}
-      {!doc && (
-        <>
-          <Box mb={3}>
-            <Typography variant="h4">Current Activity </Typography>
-          </Box>
-          <Typography>
-            There is no current activity. When you start creating an activity, it will become your current activity and
-            show up in this tab.
-          </Typography>
-        </>
-      )}
-      {doc && (
-        <>
-          <Box marginTop="2rem" mb={3}>
-            <Typography align="center" variant="h4">
-              {doc.activitySubtype &&
-                doc.activitySubtype
-                  .replace(/([A-Z])/g, ' $1')
-                  .replace(/_/g, '')
-                  .replace(/^./, function (str) {
-                    return str.toUpperCase();
-                  })}
+        {!doc && (
+          <>
+            <Box mb={3}>
+              <Typography variant="h4">Current Activity </Typography>
+            </Box>
+            <Typography>
+              There is no current activity. When you start creating an activity, it will become your current activity
+              and show up in this tab.
             </Typography>
-          </Box>
-          <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
-            <Typography align="center">
-              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
-            </Typography>
-          </Box>
-          <ActivityComponent
-            customValidation={getCustomValidator([
-              getAreaValidator(doc.activitySubtype),
-              getDateAndTimeValidator(doc.activitySubtype),
-              getWindValidator(doc.activitySubtype),
-              getSlopeAspectBothFlatValidator(),
-              getTemperatureValidator(doc.activitySubtype),
-              // getPosAndNegObservationValidator(),
-              transferErrorsFromChemDetails(),
-              getDuplicateInvasivePlantsValidator(doc.activitySubtype),
-              getHerbicideApplicationRateValidator(),
-              getTransectOffsetDistanceValidator(),
-              getVegTransectPointsPercentCoverValidator(),
-              getDurationCountAndPlantCountValidation(),
-              // getPersonNameNoNumbersValidator(applicationUsers),
-              getJurisdictionPercentValidator(),
-              getInvasivePlantsValidator(linkedActivity),
-              getPlotIdentificatiomTreesValidator(doc.activitySubtype)
-            ])}
-            customErrorTransformer={getCustomErrorTransformer()}
-            classes={classes}
-            activity={doc}
-            suggestedJurisdictions={suggestedJurisdictions}
-            linkedActivity={linkedActivity}
-            onFormChange={onFormChange}
-            onFormSubmitSuccess={onFormSubmitSuccess}
-            onFormSubmitError={onFormSubmitError}
-            photoState={{ photos, setPhotos }}
-            mapId={doc._id}
-            geometryState={{ geometry, setGeometry }}
-            //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-            extentState={{ extent, setExtent }}
-            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-            pasteFormData={() => pasteFormData()}
-            copyFormData={() => copyFormData()}
-            //cloneActivityButton={generateCloneActivityButton}
-            setParentFormRef={props.setParentFormRef}
-            showDrawControls={true}
-            setWellIdandProximity={setWellIdandProximity}
-          />
-        </>
-      )}
-      <WarningDialog
-        dialogOpen={warningDialog.dialogOpen}
-        dialogTitle={warningDialog.dialogTitle}
-        dialogActions={warningDialog.dialogActions}
-        dialogContentText={warningDialog.dialogContentText}
-      />
+          </>
+        )}
+        {doc && (
+          <>
+            <Box marginTop="2rem" mb={3}>
+              <Typography align="center" variant="h4">
+                {doc.activitySubtype &&
+                  doc.activitySubtype
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/_/g, '')
+                    .replace(/^./, function (str) {
+                      return str.toUpperCase();
+                    })}
+              </Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
+              <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
+              <Typography align="center">
+                Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+              </Typography>
+            </Box>
+            <ActivityComponent
+              customValidation={getCustomValidator([
+                getAreaValidator(doc.activitySubtype),
+                getDateAndTimeValidator(doc.activitySubtype),
+                getWindValidator(doc.activitySubtype),
+                getSlopeAspectBothFlatValidator(),
+                getTemperatureValidator(doc.activitySubtype),
+                // getPosAndNegObservationValidator(),
+                transferErrorsFromChemDetails(),
+                getDuplicateInvasivePlantsValidator(doc.activitySubtype),
+                getHerbicideApplicationRateValidator(),
+                getTransectOffsetDistanceValidator(),
+                getVegTransectPointsPercentCoverValidator(),
+                getDurationCountAndPlantCountValidation(),
+                getPersonNameNoNumbersValidator(applicationUsers),
+                getJurisdictionPercentValidator(),
+                getInvasivePlantsValidator(linkedActivity),
+                getPlotIdentificatiomTreesValidator(doc.activitySubtype)
+              ])}
+              customErrorTransformer={getCustomErrorTransformer()}
+              classes={classes}
+              activity={doc}
+              suggestedJurisdictions={suggestedJurisdictions}
+              linkedActivity={linkedActivity}
+              onFormChange={onFormChange}
+              onFormSubmitSuccess={onFormSubmitSuccess}
+              onFormSubmitError={onFormSubmitError}
+              photoState={{ photos, setPhotos }}
+              mapId={doc._id}
+              geometryState={{ geometry, setGeometry }}
+              //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+              extentState={{ extent, setExtent }}
+              contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+              pasteFormData={() => pasteFormData()}
+              copyFormData={() => copyFormData()}
+              //cloneActivityButton={generateCloneActivityButton}
+              setParentFormRef={props.setParentFormRef}
+              showDrawControls={true}
+              setWellIdandProximity={setWellIdandProximity}
+            />
+          </>
+        )}
+        <WarningDialog
+          dialogOpen={warningDialog.dialogOpen}
+          dialogTitle={warningDialog.dialogTitle}
+          dialogActions={warningDialog.dialogActions}
+          dialogContentText={warningDialog.dialogContentText}
+        />
+      </MapRecordsContextProvider>
     </Container>
   );
 };

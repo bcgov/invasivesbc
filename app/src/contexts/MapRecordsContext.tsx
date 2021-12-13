@@ -22,6 +22,21 @@ export interface IMapRecordsContext {
   setLeafletEditableHandlers?: React.Dispatch<React.SetStateAction<any>>;
   leafletEditableHandlers?: any;
 }
+export enum MAP_RECORD_TYPE {
+  ACTIVITY = 'activity',
+  REF_ACTIVITY = 'ref activity',
+  POI = 'POI',
+  KMZ_OR_KML_DATA = 'kmz/kml'
+}
+
+export interface MapRecord {
+  id: string;
+  short_id?: string;
+  type: MAP_RECORD_TYPE;
+  editable: boolean;
+  onSave: () => {};
+  geometry: Object;
+}
 
 export const MapRecordsContext = React.createContext<IMapRecordsContext>({
   // all the geometries to display
@@ -51,8 +66,9 @@ export const MapRecordsContext = React.createContext<IMapRecordsContext>({
   leafletEditableHandlers: null
 });
 
-export enum modes {
-  default = 'default',
+export enum MODES {
+  DEFAULT = 'default',
+  SINGLE_ACTIVITY_EDIT = 'single activity edit',
   dropNewRecord = 'drop new record'
 }
 

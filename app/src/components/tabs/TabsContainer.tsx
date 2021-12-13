@@ -303,20 +303,20 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         tabsUserHasAccessTo.push({
           label: 'Home',
           path: '/home/landing',
-          icon: <Home />
+          icon: <Home fontSize={'small'} />
         });
 
         tabsUserHasAccessTo.push({
           label: 'Map',
           path: '/home/map',
-          icon: <Map />
+          icon: <Map fontSize={'small'} />
         });
 
         if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
-            icon: <Search />
+            icon: <Search fontSize={'small'} />
           });
         }
 
@@ -324,7 +324,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
-            icon: <Explore />
+            icon: <Explore fontSize={'small'} />
           });
         }
 
@@ -333,7 +333,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             label: 'Cached Records',
             path: '/home/references',
             childPaths: ['/home/references/activity'],
-            icon: <Bookmarks />
+            icon: <Bookmarks fontSize={'small'} />
           });
         }
 
@@ -341,7 +341,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
-            icon: <HomeWork />
+            icon: <HomeWork fontSize={'small'} />
           });
         }
 
@@ -349,7 +349,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
-            icon: <Assignment />
+            icon: <Assignment fontSize={'small'} />
           });
         }
         return tabsUserHasAccessTo;
@@ -412,7 +412,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 src={invbclogo}
                 width="50"
                 style={{ marginRight: '5px' }}
-                height="50"
+                height="30"
                 alt="B.C. Government Logo"
                 onClick={() => history.push('/')}
               />

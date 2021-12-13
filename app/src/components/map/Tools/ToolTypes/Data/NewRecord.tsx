@@ -13,16 +13,16 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { Autocomplete } from '@mui/material';
-import { ActivitySubtype, ActivitySubtypeShortLabels, ActivityType } from 'constants/activities';
+import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'contexts/themeContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { generateDBActivityPayload } from 'utils/addActivity';
+import { generateDBActivityPayload, sanitizeRecord } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const NewRecord = (props) => {
@@ -45,9 +45,45 @@ export const NewRecord = (props) => {
   const [isDroppingMarker, setIsDroppingMarker] = useState(false);
   const mapRecordsContext = useContext(MapRecordsContext);
 
-  const dropMarker = () => {
+  const createActivityOnClick = async () => {
+    // start shape editing
     mapRecordsContext.editRef.current.startMarker();
-    insert_record();
+
+    // create a record in db, get the id
+    const activity_id = await insert_record();
+
+    //stop displaying new record menu
+    setMode('NOT_PRESSED');
+
+    // display draw buttons
+    mapRecordsContext.setMode(MODES.SINGLE_ACTIVITY_EDIT);
+
+    // set up map records context to deal with activity edits
+    const onSave = async (geometry: any) => {
+      const dbActivity: any = await dataAccess.getActivityById(activity_id, databaseContext);
+      console.dir('dbActivity', dbActivity);
+      console.log('geo on save', geometry);
+      const result = await dataAccess.updateActivity(
+        {
+          ...sanitizeRecord({
+            ...dbActivity,
+            sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
+          }),
+          geometry: geometry
+        },
+        databaseContext
+      );
+      //try without the santiize/record table stuff:
+      /*
+      await dataAccess.updateActivity(dbActivity, databaseContext);
+      */
+    };
+    mapRecordsContext.setCurrentGeoEdit({
+      geometry: null,
+      type: MAP_RECORD_TYPE.ACTIVITY,
+      id: activity_id,
+      onSave: onSave
+    });
   };
 
   const RecordCategorySelector = (props) => {
@@ -158,12 +194,12 @@ export const NewRecord = (props) => {
       console.log('unable to http ');
       console.log(e);
     }
+    return dbActivity.activity_id;
     /* setTimeout(() => {
       
       history.push({ pathname: `/home/activity` });
     }, 1000);
     */
-    mapRecordsContext.setMode('Editing');
   };
 
   const [mode, setMode] = useState('NOT_PRESSED');
@@ -202,8 +238,7 @@ export const NewRecord = (props) => {
             className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Create"
             onClick={() => {
-              setMode('NOT_PRESSED');
-              dropMarker();
+              createActivityOnClick();
             }}>
             <Typography className={toolClass.Font}>Create Record</Typography>
           </IconButton>
@@ -219,7 +254,7 @@ export const NewRecord = (props) => {
             </IconButton>
           </Grid>
           <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
-            <MainButton />
+            <MainButton onClick={() => {}} />
           </Grid>
         </Grid>
       </>

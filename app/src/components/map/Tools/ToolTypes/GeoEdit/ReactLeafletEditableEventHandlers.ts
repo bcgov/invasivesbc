@@ -14,11 +14,14 @@ export const startBasicShape = (mapRecordsContext: IMapRecordsContext, shape: Sh
     console.log('starting ' + shape);
     const getGeoOnDisable = (e, m) => {
       if (shape !== Shape.CIRCLE) {
-        mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+        mapRecordsContext.setCurrentGeoEdit({ ...mapRecordsContext.currentGeoEdit, geometry: e.layer.toGeoJSON() });
       } else {
         const r = e.layer.getRadius();
         const geo = e.layer.toGeoJSON();
-        mapRecordsContext.setCurrentGeoEdit({ ...geo, properties: { ...geo.properties, radius: r } });
+        mapRecordsContext.setCurrentGeoEdit({
+          ...mapRecordsContext.currentGeoEdit,
+          geometry: { ...geo, properties: { ...geo.properties, radius: r } }
+        });
       }
     };
     mapRecordsContext.setLeafletEditableHandlers({
