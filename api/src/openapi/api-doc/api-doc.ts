@@ -1,10 +1,14 @@
 import {
+  Activity_Observation_PlantAquatic,
+  Activity_Observation_PlantTerrestrial
+} from './Activities/Plant/Observations';
+import {
   Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_MechanicalPlantAquatic,
   Activity_Treatment_MechanicalPlantTerrestrial
 } from './Activities/Plant/Treatments';
-import { Error } from './Components/General_Sub_Forms';
+import { ChemicalTreatment_Species_Codes, Error } from './Components/General_Sub_Forms';
 
 export const api_doc = {
   openapi: '3.0.0',
@@ -137,10 +141,16 @@ export const api_doc = {
       }
     },
     schemas: {
-      Activity_Treatment_ChemicalPlantTerrestrial: { ...Activity_Treatment_ChemicalPlantTerrestrial }
-      // Activity_Treatment_ChemicalPlantAquatic: { ...Activity_Treatment_ChemicalPlantAquatic },
-      // Activity_Treatment_MechanicalPlantTerrestrial: { ...Activity_Treatment_MechanicalPlantTerrestrial },
-      // Activity_Treatment_MechanicalPlantAquatic: { ...Activity_Treatment_MechanicalPlantAquatic }
+      //treatments
+      Activity_Treatment_ChemicalPlantTerrestrial: { ...Activity_Treatment_ChemicalPlantTerrestrial },
+      Activity_Treatment_ChemicalPlantAquatic: { ...Activity_Treatment_ChemicalPlantAquatic },
+      Activity_Treatment_MechanicalPlantTerrestrial: { ...Activity_Treatment_MechanicalPlantTerrestrial },
+      Activity_Treatment_MechanicalPlantAquatic: { ...Activity_Treatment_MechanicalPlantAquatic },
+      //observations
+      Activity_Observation_PlantTerrestrial: { ...Activity_Observation_PlantTerrestrial },
+      Activity_Observation_PlantAquatic: { ...Activity_Observation_PlantAquatic },
+      //other
+      ChemicalTreatment_Species_Codes: { ...ChemicalTreatment_Species_Codes }
     }
   }
 };

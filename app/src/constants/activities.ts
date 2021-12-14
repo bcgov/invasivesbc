@@ -23,7 +23,7 @@ export enum ActivitySubtype {
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlantTerrestrial',
   Treatment_ChemicalPlant_BulkEdit = 'Activity_Treatment_ChemicalPlant_BulkEdit',
   Treatment_ChemicalPlantAquatic = 'Activity_Treatment_ChemicalPlantAquatic',
-  Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
+  Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlantTerrestrial',
   Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
   Treatment_MechanicalPlantAquatic = 'Activity_Treatment_MechanicalPlantAquatic',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
@@ -58,7 +58,7 @@ export enum ActivitySubtypeShortLabels {
   // Treatments:
   Activity_Treatment_ChemicalPlantTerrestrial = 'Terrestrial Plant Treatment - Chemical',
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Plant Treatment - Chemical',
-  Activity_Treatment_MechanicalPlant = 'Terrestrial Plant Treatment - Mechanical',
+  Activity_Treatment_MechanicalPlantTerrestrial = 'Terrestrial Plant Treatment - Mechanical',
   Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
   Activity_Treatment_ChemicalAnimalTerrestrial = 'Terrestrial Animal Chemical Treatment',

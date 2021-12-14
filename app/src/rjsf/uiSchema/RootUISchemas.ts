@@ -17,7 +17,8 @@ const Activity_Observation_PlantTerrestrial = {
     ...BaseUISchemaComponents.Observation
   },
   'activity_subtype_data': {
-    ...BaseUISchemaComponents.Observation_PlantTerrestrial
+    ...BaseUISchemaComponents.Observation_PlantTerrestrial,
+    'ui:order':['ObservationPlantTerrestrialData','TerrestrialPlants']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -125,8 +126,10 @@ const Activity_Treatment_ChemicalPlantTerrestrial = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
-  'activity_subtype_data': {
-    ...UISchemaComponents.Treatment_ChemicalPlant
+'activity_subtype_data': {
+    Well_Information: {...BaseUISchemaComponents.Well_Information},
+    Treatment_ChemicalPlant: {...UISchemaComponents.Treatment_ChemicalPlant},
+    'ui:order':['Well_Information','Treatment_ChemicalPlant']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -137,12 +140,15 @@ const Activity_Treatment_ChemicalPlantAquatic = {
     ...UISchemaComponents.Activity
   },
   'activity_subtype_data': {
-    ...UISchemaComponents.Treatment_ChemicalPlantAquatic
+    Well_Information: {...BaseUISchemaComponents.Well_Information},
+    Treatment_ChemicalPlant: {...UISchemaComponents.Treatment_ChemicalPlant},
+    ShorelineTypes: {...BaseUISchemaComponents.ShorelineTypes},
+    'ui:order':['Well_Information','Treatment_ChemicalPlant','ShorelineTypes']
   },
   'ui:order':['activity_data','activity_subtype_data']
 };
 
-const Activity_Treatment_MechanicalPlant = {
+const Activity_Treatment_MechanicalPlantTerrestrial = {
   'activity_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
@@ -152,7 +158,8 @@ const Activity_Treatment_MechanicalPlant = {
     ...BaseUISchemaComponents.Treatment
   },
   'activity_subtype_data': {
-    ...BaseUISchemaComponents.Treatment_MechanicalPlant
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant,
+    'ui:order':['Treatment_MechanicalPlant_Information']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -163,14 +170,14 @@ const Activity_Treatment_MechanicalPlantAquatic = {
     ...UISchemaComponents.Activity
   },
   'activity_type_data': {
-    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment,
-    'ui:order':['treatment_organization','treatment_location','treatment_persons','additional_auth_information']
-    
   },
   'activity_subtype_data': {
-    ...BaseUISchemaComponents.Treatment_MechanicalPlantAquatic,
-    'ui:order':['shoreline_types','mechanical_treatment_information']
+    ...BaseUISchemaComponents.Authorization_Infotmation,
+    ...BaseUISchemaComponents.ShorelineTypes,
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant,
+    
+    'ui:order':['Authorization_Infotmation','ShorelineTypes','Treatment_MechanicalPlant_Information']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -306,7 +313,7 @@ const RootUISchemas = {
   Activity_Transect_BiocontrolEfficacy,
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_ChemicalPlantAquatic,
-  Activity_Treatment_MechanicalPlant,
+  Activity_Treatment_MechanicalPlantTerrestrial,
   Activity_Treatment_MechanicalPlantAquatic,
   Activity_Treatment_BiologicalPlant,
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,

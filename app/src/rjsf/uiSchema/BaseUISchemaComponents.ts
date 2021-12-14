@@ -93,6 +93,15 @@ const ProjectCode = {
   'ui:order':['description']
 };
 
+export const ShorelineTypes = {  
+  items:{
+    ...TwoColumnStyle,
+    shoreline_type: {},
+    percent_covered: {},
+    "ui:order":['shoreline_type','percent_covered']
+  },
+  "ui:order":['items']
+};
 const TerrestrialPlants = {
   ...ThreeColumnStyle,
   'invasive_plant_code': {
@@ -261,13 +270,6 @@ const WaterbodyData = {
   ]
 };
 
-const ProjectData = {
-  'surveyors': {},
-  'survey_type': {
-    'ui:widget': 'single-select-autocomplete'
-  }
-};
-
 const TerrainCharacteristics = {
   'setting': {},
   'aspect': {},
@@ -364,6 +366,11 @@ const ConductivityProfile = {
   'thermocline': {},
   'ui:order':['depth','dissolved_oxygen','temperature','conductivity','thermocline']
 };
+
+const Authorization_Infotmation = {
+  'authorization_infotmation':{},
+  'ui:order':['authorization_infotmation']
+}
 
 const SubstrateSample = {
   'date_installed': {},
@@ -1188,11 +1195,12 @@ const Observation_PlantTerrestrial_Data = {
 };
 
 const Observation_PlantTerrestrial = {
-  'observation_plant_terrestrial_data': {
+
+  'ObservationPlantTerrestrialData': {
     ...FourColumnStyle,
     ...Observation_PlantTerrestrial_Data
   },
-  'invasive_plants': {
+  'TerrestrialPlants': {
     items: {
       ...FourColumnStyle,
       ...TerrestrialPlants
@@ -1803,7 +1811,7 @@ const Treatment = {
     'ui:widget': 'textarea'
   },
   'treatment_persons': {
-    items: {
+    items: {  
       ...Persons
     }
   },
@@ -1818,7 +1826,7 @@ const Treatment_Information_BiologicalPlant = {
 }
 
 const Treatment_MechanicalPlant = {
-  'mechanical_plant_information':{
+  'Treatment_MechanicalPlant_Information':{
     items: {
       ...ThreeColumnStyle,
       'invasive_plant_code': {
@@ -1833,16 +1841,8 @@ const Treatment_MechanicalPlant = {
     },
     'ui:order':['invasive_plant_code','mechanical_method_code','mechanical_disposal_code']
   },
-  'ui:order':["mechanical_plant_information"]
+  'ui:order':["Treatment_MechanicalPlant_Information"]
 };
-
-const Treatment_MechanicalPlantAquatic = {
-  'shoreline_types':{},
-  'mechanical_treatment_information': {
-    ...Treatment_MechanicalPlant
-  },
-  'ui:order':['shoreline_types']
-}
 
 const Treatment_MechanicalPlant_BulkEdit = {
   'invasive_plant_code': {
@@ -1962,7 +1962,12 @@ const Monitoring_Biocontrol = {
   'ui:order':['linked_id','observer_first_name','observer_last_name','weather_conditions','microsite_conditions']
 };
 
-
+const Well_Information = {
+  ...TwoColumnStyle,
+  'well_id':{},
+  'well_proximity':{},
+  'ui:order':['well_id','well_proximity']
+}
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant = {
   'invasive_plant_code':{},
@@ -2212,6 +2217,7 @@ const Target_Plant_Phenology = {
   }
 };
 
+
 const Spread_Results = {
   spread_details_recorded: {},
   agent_density: {},
@@ -2234,13 +2240,13 @@ const BaseUISchemaComponents = {
   Transect_FireMonitoring,
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
-  
+  ShorelineTypes,
+  Well_Information,
   Monitoring_ChemicalAnimalTerrestrial,
   Monitoring_MechanicalAnimalTerrestrial,
   Treatment,
   Treatment_MechanicalPlant,
   Treatment_Information_BiologicalPlant,
-  Treatment_MechanicalPlantAquatic,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
@@ -2254,6 +2260,7 @@ const BaseUISchemaComponents = {
   Collection_BioControll,
   ProjectCode,
   Herbicide,
+  Authorization_Infotmation,
   FourColumnStyle,
   ThreeColumnStyle,
   OneColumnStyle,

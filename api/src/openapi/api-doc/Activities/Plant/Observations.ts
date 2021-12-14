@@ -1,6 +1,6 @@
-import { Activity } from 'openapi/api-doc/Activity_Data_Components';
-import { Observation } from 'openapi/api-doc/Activity_Type_Data_Components';
-import { Subtype_Data_Observation_PlantTerrestrial } from 'openapi/api-doc/Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+import { Activity } from '../../Activity_Data_Components';
+import { Observation } from '../../Activity_Type_Data_Components';
+import { Subtype_Data_Observation_PlantTerrestrial } from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
 
 export const Activity_Observation_PlantTerrestrial = {
   type: 'object',

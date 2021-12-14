@@ -13,9 +13,6 @@ export const Activity_Treatment_ChemicalPlantTerrestrial = {
     activity_data: {
       ...Activity
     },
-    activity_type_data: {
-      ...Treatment
-    },
     activity_subtype_data: {
       ...Subtype_Data_Treatment_ChemicalPlantTerrestrial
     }
@@ -26,9 +23,6 @@ export const Activity_Treatment_ChemicalPlantAquatic = {
   properties: {
     activity_data: {
       ...Activity
-    },
-    activity_type_data: {
-      ...Treatment
     },
     activity_subtype_data: {
       ...Subtype_Data_Treatment_ChemicalPlantAquatic

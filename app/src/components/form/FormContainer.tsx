@@ -147,9 +147,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const isActivityChemTreatment = () => {
     if (
-      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
       props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
-      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
       props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
     ) {
       return true;
@@ -401,13 +401,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               <React.Fragment />
             </Form>
 
-            {/* {isActivityChemTreatment() && (
+            {isActivityChemTreatment() && (
               <ChemicalTreatmentSpeciesForm
                 onChange={props.onFormChange}
                 formData={props.activity?.formData || null}
                 schema={schemas.schema}
               />
-            )} */}
+            )}
           </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>

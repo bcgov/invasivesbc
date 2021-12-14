@@ -19,10 +19,14 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   const DescriptionField = props.DescriptionField;
   const TitleField = props.TitleField;
 
+  console.log(props);
+
   return (
     <>
-      {(props.uiSchema['ui:title'] || props.title) && (
+      {props.uiSchema['ui:title'] || (props.title && props.title !== 'invisible') ? (
         <TitleField id={`${props.idSchema.$id}-title`} title={props.title} required={props.required} />
+      ) : (
+        props.title === 'invisible' && <></>
       )}
       {props.description && (
         <DescriptionField id={`${props.idSchema.$id}-description`} description={props.description} />

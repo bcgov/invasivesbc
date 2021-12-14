@@ -24,6 +24,93 @@ export const Error = {
     }
   }
 };
+export const WaterbodyData = {
+  required: ['waterbody_type'],
+  properties: {
+    waterbody_type: {
+      type: 'string',
+      title: 'Waterbody Type',
+      enum: [
+        'Intertidal',
+        'Wetland',
+        'Bog',
+        'Lake',
+        'Confined Pond',
+        'Discharging Pond',
+        'Ditch',
+        'Slough',
+        'River',
+        'Stream'
+      ],
+      'x-tooltip-text': 'Select best description of waterbody type'
+    },
+    waterbody_name_gazetted: {
+      type: 'string',
+      title: 'Waterbody Name (Gazetted)',
+      'x-tooltip-text': 'Legal gazetted name of waterbody'
+    },
+    waterbody_name_local: {
+      type: 'string',
+      title: 'Waterbody Name (Local)',
+      'x-tooltip-text': 'Locally referred to name of waterbody'
+    },
+    waterbody_access: {
+      type: 'string',
+      title: 'Waterbody Access',
+      'x-tooltip-text': 'Waterbody access options, public access options preferred.'
+    },
+    waterbody_use: {
+      type: 'string',
+      title: 'Waterbody Use',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'waterbody_use_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Choose all observed uses of waterbody that apply. If other is chosen, add details in the comments.'
+    }
+  }
+};
+export const Well_Information = {
+  type: 'object',
+  title: 'Wells Information',
+  properties: {
+    well_id: {
+      type: 'string',
+      title: 'Well ID',
+      'x-tooltip-text': 'ID of the closest well'
+    },
+    well_proximity: {
+      type: 'number',
+      title: 'Well Proximity(m)',
+      minimum: 1,
+      'x-tooltip-text': 'Proximity of the closest well'
+    }
+  }
+};
+export const WaterQuality = {
+  properties: {
+    water_sample_depth: {
+      type: 'number',
+      title: 'Maximum depth (m)',
+      'x-tooltip-text': 'Enter the water depth in metres'
+    },
+    secchi_depth: {
+      type: 'number',
+      title: 'Secchi Depth (m)',
+      'x-tooltip-text':
+        'Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible.'
+    },
+    water_colour: {
+      type: 'string',
+      title: 'Water Colour',
+      'x-tooltip-text': 'Specify the water colour'
+    }
+  }
+};
 export const Media = {
   title: 'Media',
   description: 'List of Media',
@@ -381,31 +468,46 @@ export const Jurisdiction = {
     }
   }
 };
-export const ShorelineTypes = {
+export const Authorization_Infotmation = {
   type: 'object',
   properties: {
-    shoreline_type: {
+    additional_auth_information: {
       type: 'string',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'shoreline_type_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      title: 'Shoreline Type',
+      title: 'Authorization information',
       'x-tooltip-text':
-        'Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)'
-    },
-    percent_covered: {
-      type: 'number',
-      title: 'Percent Covered',
-      maximum: 100,
-      'x-tooltip-text': 'Percent covered by this shoreline type'
+        'Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc).'
     }
   }
 };
-export const TerrestrialPlants = {
+export const ShorelineTypes = {
+  type: 'array',
+  title: 'Shoreline Types',
+  default: [{}],
+  items: {
+    properties: {
+      shoreline_type: {
+        type: 'string',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'shoreline_type_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        title: 'Shoreline Type',
+        'x-tooltip-text':
+          'Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)'
+      },
+      percent_covered: {
+        type: 'number',
+        title: 'Percent Covered',
+        maximum: 100,
+        'x-tooltip-text': 'Percent covered by this shoreline type'
+      }
+    }
+  }
+};
+export const TerrestrialPlant = {
   type: 'object',
   required: ['invasive_plant_code', 'occurrence', 'voucher_specimen_collected', 'edna_sample'],
   properties: {
@@ -637,6 +739,16 @@ export const TerrestrialPlants = {
     }
   }
 };
+export const TerrestrialPlants = {
+  type: 'array',
+  default: [{}],
+  title: 'Terrestrial Invasive Plants',
+  minItems: 1,
+  items: {
+    ...TerrestrialPlant
+  },
+  'x-tooltip-text': 'Specify one or more terrestrial invasive plants for this observation'
+};
 export const AquaticAnimals = {
   type: 'object',
   properties: {
@@ -742,7 +854,7 @@ export const AquaticAnimals = {
     }
   }
 };
-export const AquaticPlants = {
+export const AquaticPlant = {
   type: 'object',
   required: ['observation_type', 'invasive_plant_code'],
   properties: {
@@ -929,6 +1041,15 @@ export const AquaticPlants = {
         }
       ]
     }
+  }
+};
+export const AquaticPlants = {
+  type: 'array',
+  default: [{}],
+  minItems: 1,
+  title: 'Aquatic Invasive Plant Information',
+  items: {
+    ...AquaticPlant
   }
 };
 export const Herbicide = {

@@ -306,150 +306,125 @@ export const Treatment_ChemicalPlantAquatic = {
   }
 };
 export const Treatment_ChemicalPlant = {
-  title: ' ',
   type: 'object',
-  required: ['treatment_chemicalplant_information'],
+  title: 'Chemical Treatment Information',
+  required: [
+    'applicator1_name',
+    'applicator1_license',
+    'pesticide_employer_code',
+    'chemical_method_code',
+    'temperature',
+    'humidity',
+    'wind_speed',
+    'wind_direction_code',
+    'signage_on_site',
+    'application_start_time'
+  ],
   properties: {
-    treatment_chemicalplant_information: {
-      type: 'object',
-      title: 'Chemical Treatment Information',
-      required: [
-        'applicator1_name',
-        'applicator1_license',
-        'pesticide_employer_code',
-        'chemical_method_code',
-        'temperature',
-        'humidity',
-        'wind_speed',
-        'wind_direction_code',
-        'signage_on_site',
-        'application_start_time'
-      ],
-      properties: {
-        applicator1_name: {
-          type: 'string',
-          title: 'Primary Applicator',
-          'x-tooltip-text': 'Name of primary applicator'
-        },
-        applicator1_license: {
-          type: 'string',
-          title: 'Primary Pesticide Applicator Certificate Number',
-          'x-tooltip-text': 'Valid pesticide applicator certificate number'
-        },
-        applicator2_name: {
-          type: 'string',
-          title: 'Secondary Applicator',
-          'x-tooltip-text': 'Name of secondary applicator'
-        },
-        applicator2_license: {
-          type: 'string',
-          title: 'Secondary Pesticide Applicator Certificate Number',
-          'x-tooltip-text': 'Valid secondary pesticide applicator certificate number'
-        },
-        pesticide_employer_code: {
-          type: 'string',
-          title: 'Service License Number and Company Name',
-          'x-enum-code': {
-            'x-enum-code-category-name': 'invasives',
-            'x-enum-code-header-name': 'service_license_code',
-            'x-enum-code-name': 'code_name',
-            'x-enum-code-text': 'code_description',
-            'x-enum-code-sort-order': 'code_sort_order'
-          },
-          'x-tooltip-text': 'Select from current/valid employer/organization names'
-        },
-        pesticide_use_permit_PUP: {
-          type: 'string',
-          title: 'Pesticide Use Permit',
-          default: 'none',
-          'x-tooltip-text': 'Enter applicable number if treatment is being completed under pesticide use permit'
-        },
-        pest_management_plan: {
-          type: 'string',
-          title: 'Pest Management Plan',
-          'x-enum-code': {
-            'x-enum-code-category-name': 'invasives',
-            'x-enum-code-header-name': 'pest_management_plan',
-            'x-enum-code-name': 'code_name',
-            'x-enum-code-text': 'code_description',
-            'x-enum-code-sort-order': 'code_sort_order'
-          },
-          'x-tooltip-text': 'Enter applicable number if treatment is being completed under a pest management plan'
-        },
-        chemical_method_code: {
-          type: 'string',
-          title: 'Chemical Treatment Method',
-          'x-enum-code': {
-            'x-enum-code-category-name': 'invasives',
-            'x-enum-code-header-name': 'chemical_method_code',
-            'x-enum-code-name': 'code_name',
-            'x-enum-code-text': 'code_description',
-            'x-enum-code-sort-order': 'code_sort_order'
-          },
-          'x-tooltip-text': 'Choose treatment application method'
-        },
-        temperature: {
-          type: 'number',
-          title: 'Temperature (C)',
-          'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)'
-        },
-        wind_speed: {
-          type: 'number',
-          title: 'Wind Speed (km/h)',
-          minimum: 0,
-          default: 0,
-          'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
-        },
-        wind_direction_code: {
-          type: 'string',
-          title: 'Wind Direction',
-          enum: ['No Wind', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
-          'x-tooltip-text': 'Cardinal wind direction at time of treatment'
-        },
-        humidity: {
-          type: 'number',
-          title: 'Humidity',
-          enum: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-          'x-tooltip-text': 'Relative humidity expressed as a percentage'
-        },
-        signage_on_site: {
-          type: 'string',
-          title: 'Treatment Notice Signs',
-          enum: ['Yes', 'No', 'Unknown'],
-          default: 'Yes',
-          'x-tooltip-text':
-            'Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not'
-        },
-        application_start_time: {
-          type: 'string',
-          format: 'date-time',
-          title: 'Application Start Time'
-        }
-      }
+    applicator1_name: {
+      type: 'string',
+      title: 'Primary Applicator',
+      'x-tooltip-text': 'Name of primary applicator'
+    },
+    applicator1_license: {
+      type: 'string',
+      title: 'Primary Pesticide Applicator Certificate Number',
+      'x-tooltip-text': 'Valid pesticide applicator certificate number'
+    },
+    applicator2_name: {
+      type: 'string',
+      title: 'Secondary Applicator',
+      'x-tooltip-text': 'Name of secondary applicator'
+    },
+    applicator2_license: {
+      type: 'string',
+      title: 'Secondary Pesticide Applicator Certificate Number',
+      'x-tooltip-text': 'Valid secondary pesticide applicator certificate number'
+    },
+    pesticide_employer_code: {
+      type: 'string',
+      title: 'Service License Number and Company Name',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'service_license_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Select from current/valid employer/organization names'
+    },
+    pesticide_use_permit_PUP: {
+      type: 'string',
+      title: 'Pesticide Use Permit',
+      default: 'none',
+      'x-tooltip-text': 'Enter applicable number if treatment is being completed under pesticide use permit'
+    },
+    pest_management_plan: {
+      type: 'string',
+      title: 'Pest Management Plan',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'pest_management_plan',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Enter applicable number if treatment is being completed under a pest management plan'
+    },
+    chemical_method_code: {
+      type: 'string',
+      title: 'Chemical Treatment Method',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'chemical_method_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Choose treatment application method'
+    },
+    temperature: {
+      type: 'number',
+      title: 'Temperature (C)',
+      'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)'
+    },
+    wind_speed: {
+      type: 'number',
+      title: 'Wind Speed (km/h)',
+      minimum: 0,
+      default: 0,
+      'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
+    },
+    wind_direction_code: {
+      type: 'string',
+      title: 'Wind Direction',
+      enum: ['No Wind', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+      'x-tooltip-text': 'Cardinal wind direction at time of treatment'
+    },
+    humidity: {
+      type: 'number',
+      title: 'Humidity',
+      enum: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+      'x-tooltip-text': 'Relative humidity expressed as a percentage'
+    },
+    signage_on_site: {
+      type: 'string',
+      title: 'Treatment Notice Signs',
+      enum: ['Yes', 'No', 'Unknown'],
+      default: 'Yes',
+      'x-tooltip-text':
+        'Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not'
+    },
+    application_start_time: {
+      type: 'string',
+      format: 'date-time',
+      title: 'Application Start Time'
     }
-  }
-};
-export const Treatment_MechanicalPlant = {
-  type: 'object',
-  title: 'Treatment Mechanical Plant',
-  properties: {
-    mechanical_plant_information: {
-      $ref: '#/components/schemas/Treatment_MechanicalPlant_Information'
-    }
-  }
-};
-export const Treatment_MechanicalPlant_Information = {
-  type: 'array',
-  title: 'Mechanical Treatment Information',
-  default: [{}],
-  minItems: 1,
-  items: {
-    $ref: '#/components/schemas/Treatment_MechanicalPlant_Information_Item'
   }
 };
 export const Treatment_MechanicalPlant_Information_Item = {
-  title: ' ',
   type: 'object',
+  title: 'Mechanical Treatment Information',
   required: [
     'invasive_plant_code',
     'treated_area',
@@ -516,6 +491,15 @@ export const Treatment_MechanicalPlant_Information_Item = {
       },
       required: ['disposed_material_input_number', 'disposed_material_input_format']
     }
+  }
+};
+export const Treatment_MechanicalPlant_Information = {
+  type: 'array',
+  title: 'Mechanical Treatments',
+  default: [{}],
+  minItems: 1,
+  items: {
+    ...Treatment_MechanicalPlant_Information_Item
   }
 };
 export const Treatment_BiologicalPlant = {

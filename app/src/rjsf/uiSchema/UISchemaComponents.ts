@@ -13,8 +13,9 @@
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Treatment_ChemicalPlant = {
-  'treatment_chemicalplant_information': {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    'ui:column-xs': 6,
+    'ui:column-md': 6,
+    'ui:column-lg': 6,
     'applicator1_name': {},
     'applicator1_license': {},
     'applicator2_name': {},
@@ -70,23 +71,6 @@ const Treatment_ChemicalPlant = {
       'signage_on_site',
       'application_start_time'
     ]
-  },
-
-  'treatment_information': {
-    'invasive_plants_information': {
-      items: {
-        'herbicide': {
-          items: {
-            'herbicide_type': { 'ui:widget': 'single-select-autocomplete' },
-            'herbicide_information': {
-              ...BaseUISchemaComponents.TwoColumnStyle
-            }
-          }
-        }
-      }
-    }
-  },
-  'ui:order':['treatment_chemicalplant_information','treatment_information']
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {
@@ -120,58 +104,6 @@ const Treatment_ChemicalPlant_BulkEdit = {
     'herbicide',
     'invasive_plant_code'
   ]
-};
-
-const Treatment_ChemicalPlantAquatic = {
-  'treatment_chemicalplant_information': {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    'applicator1_name': {},
-    'applicator1_license': {},
-    'applicator2_name': {},
-    'applicator2_license': {},
-    'pesticide_employer_code': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'pesticide_user_license_number': {},
-    'chemical_method_code': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'temperature': {
-      validateOnBlur: true
-    },
-    'humidity': {},
-    'pest_management_plan': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'invasive_plant_code': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'wind_speed': {
-      validateOnBlur: true
-    },
-    'wind_direction_code': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'pesticide_use_permit_PUP': {},
-    'signage_on_site': {}
-  },
-  'shoreline_types':{},
-  'treatment_information': {
-    'invasive_plants_information': {
-      items: {
-        'herbicide': {
-          items: {
-            herbicide_type: { 'ui:widget': 'single-select-autocomplete' },
-            
-            herbicide_information: {
-              ...BaseUISchemaComponents.TwoColumnStyle
-            }
-          }
-        }
-      }
-    }
-  },
-  'ui:order':['treatment_chemicalplant_information','shoreline_types','treatment_information']
 };
 
 const Activity = {
@@ -289,7 +221,6 @@ const Monitoring = {
 
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
-  Treatment_ChemicalPlantAquatic,
   Activity,
   MonitoringActivity,
   Monitoring,

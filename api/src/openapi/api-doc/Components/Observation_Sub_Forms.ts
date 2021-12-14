@@ -141,6 +141,7 @@ export const Observation_PlantAquatic = {
 };
 export const ObservationPlantTerrestrialData = {
   type: 'object',
+  title: 'Observation Plant Terrestrial Data',
   required: ['specific_use_code', 'slope_code', 'aspect_code', 'research_detection_ind', 'well_ind'],
   properties: {
     soil_texture_code: {
