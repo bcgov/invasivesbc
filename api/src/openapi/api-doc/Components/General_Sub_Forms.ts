@@ -25,6 +25,7 @@ export const Error = {
   }
 };
 export const WaterbodyData = {
+  title: 'Waterbody Data',
   required: ['waterbody_type'],
   properties: {
     waterbody_type: {
@@ -74,6 +75,87 @@ export const WaterbodyData = {
     }
   }
 };
+export const WaterbodyData_AdditionalFields = {
+  properties: {
+    water_level_management: {
+      type: 'string',
+      title: 'Water Level Management',
+      enum: ['None', 'Weir', 'Pump Station', 'Dam', 'Other'],
+      'x-tooltip-text':
+        'Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field'
+    },
+    substrate_type: {
+      type: 'string',
+      title: 'Substrate Type',
+      enum: ['Silt/Organic', 'Clay', 'Sand', 'Gravel', 'Cobble', 'Rip-rap'],
+      'x-tooltip-text': 'Select the most prevalent substrate composition'
+    },
+    tidal_influence: {
+      type: 'string',
+      title: 'Tidal Influence',
+      enum: ['Yes', 'No', 'Unknown'],
+      'x-tooltip-text': 'Indicate if the water level at the observation point is influenced by tides'
+    },
+    adjacent_land_use: {
+      type: 'string',
+      title: 'Adjacent Land Use',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'adjacent_land_use_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Select all adjacent land uses that apply and add details in the comment box.'
+    },
+    inflow_permanent: {
+      type: 'string',
+      title: 'Inflow (Permanent)',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'inflow_permanent_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Select one or more inflow types (aka upstream source) and indicate details or name of source water in the comments if known.'
+    },
+    inflow_other: {
+      type: 'string',
+      title: 'Inflow (Temp. or seasonal)',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'inflow_temporary_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Select one or more temporary inflow types and indicate details or name of source water in the comments if known.'
+    },
+    outflow: {
+      type: 'string',
+      title: 'Outflow',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'outflow_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Select one or more outflow types (downstream) and indicate details or name of outflow water in the comments if known.'
+    },
+    comment: {
+      type: 'string',
+      title: 'Comment',
+      maxLength: 300,
+      'x-tooltip-text': 'Add a comment'
+    }
+  },
+  required: ['substrate_type', 'tidal_influence', 'inflow_permanent', 'inflow_other', 'outflow']
+};
 export const Well_Information = {
   type: 'object',
   title: 'Wells Information',
@@ -92,6 +174,7 @@ export const Well_Information = {
   }
 };
 export const WaterQuality = {
+  title: 'Water Quality',
   properties: {
     water_sample_depth: {
       type: 'number',
@@ -1052,6 +1135,7 @@ export const AquaticPlants = {
     ...AquaticPlant
   }
 };
+
 export const Herbicide = {
   type: 'object',
   required: [

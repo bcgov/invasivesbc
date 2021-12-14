@@ -1,6 +1,9 @@
 import { Activity } from '../../Activity_Data_Components';
 import { Observation } from '../../Activity_Type_Data_Components';
-import { Subtype_Data_Observation_PlantTerrestrial } from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+import {
+  Subtype_Data_Observation_PlantAquatic,
+  Subtype_Data_Observation_PlantTerrestrial
+} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
 
 export const Activity_Observation_PlantTerrestrial = {
   type: 'object',
@@ -26,7 +29,7 @@ export const Activity_Observation_PlantAquatic = {
       ...Observation
     },
     activity_subtype_data: {
-      ...Subtype_Data_Observation_PlantTerrestrial
+      ...Subtype_Data_Observation_PlantAquatic
     }
   }
 };

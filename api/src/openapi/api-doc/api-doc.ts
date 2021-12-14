@@ -1,4 +1,8 @@
 import {
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant
+} from './Activities/Plant/Monitorings';
+import {
   Activity_Observation_PlantAquatic,
   Activity_Observation_PlantTerrestrial
 } from './Activities/Plant/Observations';
@@ -149,6 +153,13 @@ export const api_doc = {
       //observations
       Activity_Observation_PlantTerrestrial: { ...Activity_Observation_PlantTerrestrial },
       Activity_Observation_PlantAquatic: { ...Activity_Observation_PlantAquatic },
+      //monitorings
+      Activity_Monitoring_ChemicalTerrestrialAquaticPlant: {
+        ...Activity_Monitoring_ChemicalTerrestrialAquaticPlant
+      },
+      Activity_Monitoring_MechanicalTerrestrialAquaticPlant: {
+        ...Activity_Monitoring_MechanicalTerrestrialAquaticPlant
+      },
       //other
       ChemicalTreatment_Species_Codes: { ...ChemicalTreatment_Species_Codes }
     }
