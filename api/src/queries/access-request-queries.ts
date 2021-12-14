@@ -22,14 +22,6 @@ export const getAccessRequestForUserSQL = (email: string): SQLStatement => {
   return SQL`SELECT * FROM access_request WHERE primary_email = ${email};`;
 };
 
-export const getEmployers = (): SQLStatement => {
-  return SQL`SELECT * FROM code WHERE code_header_id = 76;`
-};
-
-export const getAgencies = (): SQLStatement => {
-  return SQL`SELECT * FROM code WHERE code_header_id = 41;`
-};
-
 /**
  * SQL query to create an access request.
  *
@@ -46,20 +38,22 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         work_phone_number,
         funding_agencies,
         pac_number,
-        pac_service_numbers,
+        pac_service_number_1,
+        pac_service_number_2,
         status
     )
     VALUES (
-        ${accessRequest.},
-        ${bceid},
-        ${firstName},
-        ${lastName},
-        ${email},
-        ${workPhone},
-        ${fundingAgencies},
-        ${pac},
-        ${pacsn},
-        ${status}
+        ${accessRequest.idir ? accessRequest.idir : null},
+        ${accessRequest.bceid ? accessRequest.bceid : null},
+        ${accessRequest.firstName},
+        ${accessRequest.lastName},
+        ${accessRequest.email},
+        ${accessRequest.phone},
+        ${accessRequest.fundingAgencies},
+        ${accessRequest.pacNumber},
+        ${accessRequest.psn1},
+        ${accessRequest.psn2},
+        ${accessRequest.status}
     );
   `;
 };

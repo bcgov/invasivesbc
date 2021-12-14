@@ -302,6 +302,7 @@ function createAccessRequest(): RequestHandler {
     }
 
     try {
+      console.log('CREATE ACCESS REQUEST: ', req.body);
       const sqlStatement: SQLStatement = createAccessRequestSQL(req.body);
       if (!sqlStatement) {
         throw {

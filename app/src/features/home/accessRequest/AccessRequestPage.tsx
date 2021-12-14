@@ -31,6 +31,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 import { SelectChangeEvent } from '@mui/material';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +56,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       ? authState.keycloak?.obj?.tokenParsed?.preferred_username
       : ''
   );
+  const [bceid, setBceid] = useState(null);
   const [firstName, setFirstName] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.given_name ? authState.keycloak?.obj?.tokenParsed?.given_name : ''
   );
@@ -474,22 +476,22 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
 
   const submitAccessRequest = async () => {
     const accessRequest = {
-      idir,
-      firstName,
-      lastName,
-      email,
-      phone,
-      pacNumber,
-      psn1,
-      psn2,
-      fundingAgencies
+      idir: idir,
+      bceid: bceid,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      pacNumber: pacNumber,
+      psn1: psn1,
+      psn2: psn2,
+      fundingAgencies: fundingAgencies.toString(),
+      status: 'Not Approved'
     };
     console.log('Access request: ', accessRequest);
 
-    // const response = await api.post('/accessRequest', accessRequest);
-    // if (response.status === 200) {
-    //   history.push('/');
-    // }
+    const response = await api.submitAccessRequest(accessRequest);
+    console.log('Response: ', response);
   };
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -600,6 +602,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           {' '}
                           <TextField
                             required
+                            value={bceid}
+                            onChange={(e) => setBceid(e.target.value)}
                             style={{ width: 320 }}
                             variant="outlined"
                             id="outlined-required"
