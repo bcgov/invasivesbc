@@ -613,7 +613,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     if (geometry) {
+      console.log('turf line', geometry);
       if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
+        console.log('geo here');
         saveGeometry(geometry);
         getJurSuggestions();
       } else {
@@ -631,7 +633,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             }
           ]
         });
-        setGeometry(null);
+        //setGeometry(null);
       }
     }
   }, [geometry, isLoading, saveGeometry]);

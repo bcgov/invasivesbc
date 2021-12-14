@@ -37,19 +37,26 @@ const Footer: React.FC<IFooterProps> = () => {
 
   return (
     <AppBar position="static">
-      <Toolbar style={{ minHeight: '20', fontSize: '.7rem', justifyContent: 'flex-end' }}>
+      <Toolbar
+        style={{
+          position: 'relative',
+          minHeight: '10px',
+          maxHeight: '20px',
+          fontSize: '.5rem',
+          justifyContent: 'flex-start'
+        }}>
         <img
           alt="bcLogo"
           src={sunriseLogo}
-          width="90"
+          width="40px"
           style={{ objectFit: 'cover', cursor: 'pointer' }}
-          height="30"
+          height="17px"
           onClick={() => history.push('/')}
         />
-        <Tabs value={false} variant="scrollable" scrollButtons="on">
+        <Tabs style={{ minHeight: '25px', maxHeight: '25px' }} value={false} variant="scrollable" scrollButtons="on">
           {tabs.map((tab) => (
             <Tab
-              style={{ fontSize: '0.7rem' }}
+              style={{ minHeight: '10px', fontSize: '0.6rem' }}
               label={tab.label}
               key={tab.label}
               onClick={() => window.open(tab.url)}

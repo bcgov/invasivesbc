@@ -59,17 +59,17 @@ export const NewRecord = (props) => {
     mapRecordsContext.setMode(MODES.SINGLE_ACTIVITY_EDIT);
 
     // set up map records context to deal with activity edits
-    const onSave = async (geometry: any) => {
+    const onSave = async (geo: any) => {
       const dbActivity: any = await dataAccess.getActivityById(activity_id, databaseContext);
       console.dir('dbActivity', dbActivity);
-      console.log('geo on save', geometry);
+      console.log('geo on save', geo);
       const result = await dataAccess.updateActivity(
         {
           ...sanitizeRecord({
             ...dbActivity,
             sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
           }),
-          geometry: geometry
+          geometry: [geo]
         },
         databaseContext
       );

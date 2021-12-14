@@ -237,15 +237,8 @@ export const DrawButtonList = (props) => {
             disabled={props.disabled ? true : false}
             className={toolClass.toolBtnLight}
             onClick={() => {
-              mapRecordsContext.currentGeoEdit.onSave(
-                (() => {
-                  return mapRecordsContext.currentGeoEdit.geometry;
-                })()
-              );
               stopShape(mapRecordsContext);
               setInEdit(false);
-              console.log('save geo here');
-              console.log(mapRecordsContext.currentGeoEdit.geometry);
             }}>
             <Typography className={toolClass.Font}>DONE</Typography>
             <SaveIcon />

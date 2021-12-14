@@ -59,8 +59,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
-    // fontSize: '0.8em'
+    }),
+    fontSize: '0.9em'
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -300,12 +300,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home fontSize={'small'} />
-        });
-
+        if (isAuthenticated()) {
+          tabsUserHasAccessTo.push({
+            label: 'Search',
+            path: '/home/search',
+            icon: <Search fontSize={'small'} />
+          });
+        }
         tabsUserHasAccessTo.push({
           label: 'Map',
           path: '/home/map',
@@ -314,11 +315,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
         if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
-            label: 'Search',
-            path: '/home/search',
-            icon: <Search fontSize={'small'} />
+            label: 'Current Activity',
+            path: '/home/activity',
+            icon: <Assignment fontSize={'small'} />
           });
         }
+        tabsUserHasAccessTo.push({
+          label: 'Home',
+          path: '/home/landing',
+          icon: <Home fontSize={'small'} />
+        });
 
         if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
@@ -345,13 +351,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-          tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment fontSize={'small'} />
-          });
-        }
         return tabsUserHasAccessTo;
       });
     };
@@ -424,6 +423,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
                   {tabConfig.map((tab) => (
                     <Tab
+                      style={{ fontSize: '.7rem', fontWeight: 'bold' }}
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
                       icon={tab.icon}

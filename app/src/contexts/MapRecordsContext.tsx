@@ -258,6 +258,14 @@ export const MapRecordsContextProvider: React.FC = (props) => {
     setEditQueue(q);
   }, []);
 
+  //save geo
+  React.useEffect(() => {
+    if (currentGeoEdit && currentGeoEdit.geometry !== null) {
+      console.log('hook in context to save: ', currentGeoEdit.geometry);
+      currentGeoEdit.onSave({ ...currentGeoEdit.geometry });
+    }
+  }, [currentGeoEdit]);
+
   const debug = true;
   React.useEffect(() => {
     if (debug) {
