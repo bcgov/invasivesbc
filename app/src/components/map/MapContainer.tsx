@@ -270,7 +270,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             style={{ height: 'calc(100% - 20px)', width: '100%' }}
             zoomControl={false}
             whenCreated={setMap}
-            tap={false}>
+            preferCanvas={true}
+            tap={true}>
             {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
             <FlyToAndFadeContextProvider>
               <MapRequestContextProvider>

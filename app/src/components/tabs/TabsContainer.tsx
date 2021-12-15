@@ -405,18 +405,31 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </Hidden>
 
           <Grid className={classes.alignment} flex-direction="row" container>
-            <Grid container justifyContent="center" alignItems="center" xs={6} md={1} item>
-              <img
-                className={classes.pointer}
-                src={invbclogo}
-                width="50"
-                style={{ marginRight: '5px' }}
-                height="30"
-                alt="B.C. Government Logo"
-                onClick={() => history.push('/')}
-              />
-              <b>InvasivesBC</b>
-              <div className={'beta'}>BETA</div>
+            {/*<Grid style={{ width: '200px' }} item>*/}
+            <Grid
+              style={{ alignItems: 'center', display: 'flex', width: '200px' }}
+              item
+              container
+              align-items="center"
+              flex-direction="row">
+              <Grid item>
+                <img
+                  className={classes.pointer}
+                  src={invbclogo}
+                  width="60"
+                  style={{ marginRight: '5px' }}
+                  height="60"
+                  alt="B.C. Government Logo"
+                  onClick={() => history.push('/')}
+                />
+              </Grid>
+              <Grid item>
+                <b>InvasivesBC</b>
+              </Grid>
+              <Grid item>
+                <div className={'beta'}>BETA</div>
+              </Grid>
+              {/*</Grid>*/}
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
