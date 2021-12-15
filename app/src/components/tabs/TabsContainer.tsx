@@ -305,7 +305,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }, [history.location.pathname, getActiveTab]);
 
   useEffect(() => {
-    console.log('ENV: ', process.env.REACT_APP_REAL_NODE_ENV);
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
