@@ -18,6 +18,7 @@ export async function up(knex: Knex): Promise<void> {
         employer varchar(100),
         pac_service_number_1 varchar(1000),
         pac_service_number_2 varchar(1000),
+        comments varchar(1000),
         status varchar(100) default 'Awaiting Approval' not null
     );
   `);
