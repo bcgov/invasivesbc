@@ -41,6 +41,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         pac_number,
         pac_service_number_1,
         pac_service_number_2,
+        comments,
         status
     )
     VALUES (
@@ -55,6 +56,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
         ${accessRequest.psn1 ? accessRequest.psn1 : null},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
+        ${accessRequest.comments ? accessRequest.comments : ''},
         ${accessRequest.status}
     );
   `;
