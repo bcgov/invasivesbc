@@ -45,14 +45,14 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
     VALUES (
         ${accessRequest.idir ? accessRequest.idir : null},
         ${accessRequest.bceid ? accessRequest.bceid : null},
-        ${accessRequest.firstName},
-        ${accessRequest.lastName},
-        ${accessRequest.email},
-        ${accessRequest.phone},
-        ${accessRequest.fundingAgencies},
-        ${accessRequest.pacNumber},
-        ${accessRequest.psn1},
-        ${accessRequest.psn2},
+        ${accessRequest.firstName ? accessRequest.firstName : null},
+        ${accessRequest.lastName ? accessRequest.lastName : null},
+        ${accessRequest.email ? accessRequest.email : null},
+        ${accessRequest.phone ? accessRequest.phone : null},
+        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies : null},
+        ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
+        ${accessRequest.psn1 ? accessRequest.psn1 : null},
+        ${accessRequest.psn2 ? accessRequest.psn2 : null},
         ${accessRequest.status}
     );
   `;
