@@ -3176,7 +3176,7 @@
           "applicator1_name": {
             "type": "array",
             "default": [{}],
-            "title": "Primary Observer Name",
+            "title": "Primary Applicator Name",
             "items": {
               "$ref": "#/components/schemas/Persons"
             },
@@ -3185,7 +3185,7 @@
           "applicator2_name": {
             "type": "array",
             "default": [{}],
-            "title": "Secondary Observer Name",
+            "title": "Secondary Applicator Name",
             "items": {
               "$ref": "#/components/schemas/Persons"
             },
@@ -3402,8 +3402,12 @@
             ],
             "properties": {
               "applicator1_name": {
-                "type": "string",
-                "title": "Primary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Primary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of primary applicator"
               },
               "applicator1_license": {
@@ -3412,9 +3416,13 @@
                 "x-tooltip-text": "Valid pesticide applicator certificate number"
               },
               "applicator2_name": {
-                "type": "string",
-                "title": "Secondary Applicator",
-                "x-tooltip-text": "Name of secondary applicator"
+                "type": "array",
+                "default": [{}],
+                "title": "Secondary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
+                "x-tooltip-text": "Name of Secondary applicator"
               },
               "applicator2_license": {
                 "type": "string",
@@ -3529,8 +3537,12 @@
             ],
             "properties": {
               "applicator1_name": {
-                "type": "string",
-                "title": "Primary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Primary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of primary applicator"
               },
               "applicator1_license": {
@@ -3539,8 +3551,12 @@
                 "x-tooltip-text": "Valid pesticide applicator certificate number"
               },
               "applicator2_name": {
-                "type": "string",
-                "title": "Secondary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Secondary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of secondary applicator"
               },
               "applicator2_license": {
