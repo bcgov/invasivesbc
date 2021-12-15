@@ -257,20 +257,23 @@ const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
 
 // -------------------------- Biocontrol ----------------------------------
 
-// const Activity_Collection_Biocontrol = {
-//   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   'activity_type_data': {
-//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
-//     ...BaseUISchemaComponents.Collection
-//   },
-//   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.Collection_BioControll
-//   },
-//   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
-// };
+const Activity_Biocontrol_Collection = {
+  'activity_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.Collection
+  },
+  'activity_subtype_data': {
+    Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
+    Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
+    Collection_Biocontrol: BaseUISchemaComponents.activity_subtype_data_information_objects.Collection_Biocontrol,
+    'ui:order':['Weather_Conditions','Microsite_Conditions','Collection_Biocontrol']
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
 
 // const Activity_Treatment_BiologicalPlant = {
 //   'activity_data': {
@@ -384,7 +387,7 @@ const RootUISchemas = {
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
-  // Activity_Collection_Biocontrol,
+  Activity_Biocontrol_Collection,
   // Activity_FREP_FormA,
   // Activity_FREP_FormB,
   // Activity_FREP_FormC

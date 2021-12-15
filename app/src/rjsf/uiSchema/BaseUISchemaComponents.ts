@@ -288,6 +288,39 @@ const Monitoring_BiocontrolDispersal_Information = {
   ],
 };
 
+const Collection_Biocontrol = {
+  items: {
+    ...ThreeColumnStyle,
+    invasive_plant_code: {},
+    biological_agent_code: {},
+    historical_iapp_site_id: {},
+    collection_type: {},
+    plant_count: {},
+    collection_method: {},
+    num_of_sweeps: {},
+    start_time: { },
+    stop_time: {},
+    total_time: {},
+    actual_quantity_and_life_stage_of_agent_collected: {},
+    estimated_quantity_and_life_stage_of_agent_collected: {},
+    comment: {},
+    'ui:order':[
+      'invasive_plant_code',
+      'biological_agent_code',
+      'historical_iapp_site_id',
+      'collection_type',
+      'plant_count',
+      'collection_method',
+      'num_of_sweeps',
+      'start_time',
+      'stop_time',
+      'total_time',
+      'actual_quantity_and_life_stage_of_agent_collected',
+      'estimated_quantity_and_life_stage_of_agent_collected',
+      'comment']
+  }
+};
+
 /** 
  * ------------------------  General Objects  -----------------------------
 */
@@ -504,7 +537,8 @@ const BaseUISchemaComponents = {
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
-    Monitoring_BiocontrolDispersal_Information
+    Monitoring_BiocontrolDispersal_Information,
+    Collection_Biocontrol
   },
   general_objects: {
     Well_Information,

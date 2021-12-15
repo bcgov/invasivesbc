@@ -1126,7 +1126,6 @@ export const AquaticPlants = {
     ...AquaticPlant
   }
 };
-
 export const Herbicide = {
   type: 'object',
   required: [

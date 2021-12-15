@@ -1,3 +1,5 @@
+import { Agent_Quantity_And_Life_Stage } from './General_Sub_Forms';
+
 //--------------------- Chemical ---------------------
 export const Treatment_ChemicalAnimalTerrestrial = {
   title: 'Terrestrial Animal Chemical Treatment',
@@ -446,6 +448,157 @@ export const Treatment_BiologicalPlant = {
       default: 'Unknown',
       enum: ['Unknown', 'Yes', 'No'],
       'x-tooltip-text': 'If the invasive plant infestation is primarily linear in nature, choose Yes.'
+    }
+  }
+};
+export const Collection_Biocontrol = {
+  title: 'Biocontrol Collections',
+  type: 'array',
+  default: [{}],
+  minimum: 1,
+  items: {
+    title: 'Collection Details',
+    type: 'object',
+    required: [
+      'invasive_plant_code',
+      'biological_agent_code',
+      'collection_method',
+      'collection_type',
+      'start_time',
+      'stop_time',
+      'total_time'
+    ],
+    dependencies: {
+      collection_type: {
+        oneOf: [
+          {
+            properties: {
+              collection_type: {
+                enum: ['Count']
+              },
+              plant_count: {
+                type: 'number',
+                title: 'Plant Count',
+                minimum: 1
+              }
+            },
+            required: ['plant_count']
+          },
+          {
+            properties: {
+              collection_type: {
+                enum: ['Timed']
+              }
+            }
+          }
+        ]
+      },
+      collection_method: {
+        oneOf: [
+          {
+            properties: {
+              collection_method: {
+                enum: ['Cs', 'Cl']
+              },
+              num_of_sweeps: {
+                type: 'number',
+                title: 'Number of sweeps',
+                minimum: 1
+              }
+            },
+            required: ['num_of_sweeps']
+          }
+        ]
+      }
+    },
+    properties: {
+      invasive_plant_code: {
+        type: 'string',
+        title: 'Invasive Plant',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Target invasive plant species at this location'
+      },
+      biological_agent_code: {
+        type: 'string',
+        title: 'Biological Control Agent',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'biological_agent_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'The biological control agent that was collected.'
+      },
+      historical_iapp_site_id: {
+        type: 'number',
+        minimum: 0,
+        title: 'Historical IAPP site ID',
+        'x-tooltip-text':
+          'Record number from historical Invasive  Alien Plant Program (IAPP) data, if known, to enable tracing to historical biocontrol records. '
+      },
+      collection_type: {
+        type: 'string',
+        title: 'Collection Type',
+        enum: ['Timed', 'Count']
+      },
+      collection_method: {
+        type: 'string',
+        title: 'Collection Method',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'biocontrol_collection_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        }
+      },
+      start_time: {
+        type: 'string',
+        format: 'date-time',
+        title: 'Start time collecting'
+      },
+      stop_time: {
+        type: 'string',
+        format: 'date-time',
+        title: 'Stop time collecting'
+      },
+      total_time: {
+        type: 'number',
+        title: 'Total time collecting (mins)',
+        minimum: 0
+      },
+      actual_quantity_and_life_stage_of_agent_collected: {
+        type: 'array',
+        default: [{}],
+        title: 'Actual Quantity and Life Stage of Agent Collected',
+        items: {
+          ...Agent_Quantity_And_Life_Stage
+        },
+        'x-tooltip-text':
+          'The quantity of the biocontrol agent collected in the life stage it was collected. If it was a life stage within a gall the number of galls would the quantity collected. This may not be the ACTUAL (TRUE) quantities of the collection noting that some agents collected in seedheads or galls may have more than one agent or no agents / part collected. '
+      },
+      estimated_quantity_and_life_stage_of_agent_collected: {
+        type: 'array',
+        default: [{}],
+        title: 'Estimated Quantity and Life Stage of Agent Collected',
+        items: {
+          ...Agent_Quantity_And_Life_Stage
+        },
+        'x-tooltip-text':
+          'When plant parts are collected with agents within those plant parts, an estimate of the quantity of the biocontrol agent collected in the life stage it was collected if required.'
+      },
+      comment: {
+        type: 'string',
+        title: 'Comment',
+        'x-tooltip-text': 'Any comments of particular interest regarding this collection that does not fit elsewhere.'
+      }
     }
   }
 };

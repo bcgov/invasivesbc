@@ -42,7 +42,7 @@ export enum ActivitySubtype {
   Transect_Vegetation = 'Activity_Transect_Vegetation',
   Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
 
-  Collection_Biocontrol = 'Activity_Collection_Biocontrol',
+  Collection_Biocontrol = 'Activity_Biocontrol_Collection',
   Activity_FREP_FormA = 'Activity_FREP_FormA',
   Activity_FREP_FormB = 'Activity_FREP_FormB',
   Activity_FREP_FormC = 'Activity_FREP_FormC'
@@ -78,7 +78,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
 
   // Collections:
-  Activity_Collection_Biocontrol = 'Biocontrol Collection',
+  Activity_Biocontrol_Collection = 'Biocontrol Collection',
 
   // FREP
   Activity_FREP_FormA = 'Form A',
@@ -101,8 +101,8 @@ export enum ActivityMonitoringLinks {
   Activity_Monitoring_ChemicalAnmialTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
   Activity_Monitoring_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
 
-  Activity_Monitoring_BiologicalDispersal = 'Activity_Collection_Biocontrol',
-  Activity_Collection_Biocontrol = 'Activity_Collection_Biocontrol'
+  Activity_Monitoring_BiologicalDispersal = 'Activity_Biocontrol_Collection',
+  Activity_Biocontrol_Collection = 'Activity_Biocontrol_Collection'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
@@ -151,7 +151,7 @@ export enum ActivityLetter {
   Activity_Transect_BiocontrolEfficacy = 'PXB',
 
   // Collections:
-  Activity_Collection_Biocontrol = 'PBC',
+  Activity_Biocontrol_Collection = 'PBC',
 
   Activity_FREP_FormA = 'PFA',
   Activity_FREP_FormB = 'PFB',

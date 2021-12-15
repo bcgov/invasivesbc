@@ -1,5 +1,5 @@
-import { Activity } from 'openapi/api-doc/Activity_Data_Components';
-import { Collection, Treatment } from 'openapi/api-doc/Activity_Type_Data_Components';
+import { Activity } from '../../Activity_Data_Components';
+import { Collection, Treatment } from '../../Activity_Type_Data_Components';
 import {
   Subtype_Data_Biocontrol_Collection,
   Subtype_Data_Biocontrol_Release

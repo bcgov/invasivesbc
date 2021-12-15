@@ -20,6 +20,7 @@ import {
 } from '../Components/Monitoring_Sub_Forms';
 import { Observation_PlantTerrestrial_Information } from '../Components/Observation_Sub_Forms';
 import {
+  Collection_Biocontrol,
   Treatment_ChemicalPlant_Information,
   Treatment_MechanicalPlant_Information
 } from '../Components/Treatment_Sub_Forms';
@@ -125,24 +126,33 @@ export const Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
 
 export const Subtype_Data_Biocontrol_Release = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {}
 };
 export const Subtype_Data_Biocontrol_Collection = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {
+    Microsite_Conditions: Microsite_Conditions,
+    Weather_Conditions: Weather_Conditions,
+    Collection_Biocontrol: Collection_Biocontrol
+  }
 };
 
 // ------------------------Transects-----------------------
 
 export const Subtype_Data_Transect_FireMonitoring = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {}
 };
 export const Subtype_Data_Transect_Vegetation = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {}
 };
 export const Subtype_Data_Transect_BiocontrolEfficacy = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {}
 };
