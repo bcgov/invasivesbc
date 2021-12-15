@@ -320,7 +320,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map />
         });
 
-        if (isAuthenticated()) {
+        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
@@ -328,7 +328,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile()) {
+        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -336,7 +336,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile()) {
+        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
@@ -345,7 +345,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated()) {
+        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
@@ -353,7 +353,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated()) {
+        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
