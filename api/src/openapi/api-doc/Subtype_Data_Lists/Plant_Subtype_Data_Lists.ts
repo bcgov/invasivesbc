@@ -1,11 +1,15 @@
 import {
   AquaticPlants,
   Authorization_Infotmation,
+  BiocontrolEfficacyTransectLines,
+  FireMonitoringTransectLines,
   Microsite_Conditions,
   ShorelineTypes,
   Spread_Results,
   Target_Plant_Phenology,
   TerrestrialPlants,
+  TransectInvasivePlants,
+  VegetationTransectLines,
   WaterbodyData,
   WaterbodyData_AdditionalFields,
   WaterQuality,
@@ -20,7 +24,7 @@ import {
 } from '../Components/Monitoring_Sub_Forms';
 import { Observation_PlantTerrestrial_Information } from '../Components/Observation_Sub_Forms';
 import {
-  Biocontrol_Collection,
+  Biocontrol_Collection_Information,
   Biocontrol_Release_Information,
   Treatment_ChemicalPlant_Information,
   Treatment_MechanicalPlant_Information
@@ -140,7 +144,7 @@ export const Subtype_Data_Biocontrol_Collection = {
   properties: {
     Microsite_Conditions: Microsite_Conditions,
     Weather_Conditions: Weather_Conditions,
-    Biocontrol_Collection: Biocontrol_Collection
+    Biocontrol_Collection_Information: Biocontrol_Collection_Information
   }
 };
 
@@ -149,15 +153,22 @@ export const Subtype_Data_Biocontrol_Collection = {
 export const Subtype_Data_Transect_FireMonitoring = {
   type: 'object',
   title: 'invisible',
-  properties: {}
+  properties: {
+    FireMonitoringTransectLines: FireMonitoringTransectLines
+  }
 };
 export const Subtype_Data_Transect_Vegetation = {
   type: 'object',
   title: 'invisible',
-  properties: {}
+  properties: {
+    VegetationTransectLines: VegetationTransectLines
+  }
 };
 export const Subtype_Data_Transect_BiocontrolEfficacy = {
   type: 'object',
   title: 'invisible',
-  properties: {}
+  properties: {
+    TransectInvasivePlants: TransectInvasivePlants,
+    BiocontrolEfficacyTransectLines: BiocontrolEfficacyTransectLines
+  }
 };

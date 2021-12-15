@@ -411,7 +411,7 @@ export const Biocontrol_Release_Information = {
     }
   }
 };
-export const Biocontrol_Collection = {
+export const Biocontrol_Collection_Information = {
   title: 'Biocontrol Collections',
   type: 'array',
   default: [{}],

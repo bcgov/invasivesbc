@@ -10,6 +10,11 @@ import {
   Activity_Observation_PlantTerrestrial
 } from './Activities/Plant/Observations';
 import {
+  Activity_Transect_BiocontrolEfficacy,
+  Activity_Transect_FireMonitoring,
+  Activity_Transect_Vegetation
+} from './Activities/Plant/Transects';
+import {
   Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_MechanicalPlantAquatic,
@@ -164,6 +169,10 @@ export const api_doc = {
       //biocontrol
       Activity_Biocontrol_Collection: Activity_Biocontrol_Collection,
       Activity_Biocontrol_Release: Activity_Biocontrol_Release,
+      //transects
+      Activity_Transect_FireMonitoring: Activity_Transect_FireMonitoring,
+      Activity_Transect_Vegetation: Activity_Transect_Vegetation,
+      Activity_Transect_BiocontrolEfficacy: Activity_Transect_BiocontrolEfficacy,
       //other
       ChemicalTreatment_Species_Codes: ChemicalTreatment_Species_Codes
     }

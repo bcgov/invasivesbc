@@ -1,11 +1,7 @@
 /**
- * This file should only contain UI Schema items that have NO nested elements.
+ * 
+ * This file should contain UI Schema items.
  *
- * Example of schema item without nested element:
- *
- * const Obj = {
- *   some_field: {}
- * }
  */
 
 /** 
@@ -98,7 +94,90 @@ const Collection = {
   'ui:order':['collection_persons']
 };
 
-
+const TransectData = {
+  utm_zone: {},
+  transect_start_date_time: {},
+  transect_end_date_time: {},
+  project_number: {},
+  surveyor1_name: {},
+  surveyor2_name: {},
+  field_recorder_name: {},
+  research_trial_code: {},
+  realm_code: {},
+  site_aspect: {},
+  site_aspect_variability: {},
+  site_slope: {},
+  site_slope_variability: {},
+  site_elevation: {},
+  precipitation_code: {},
+  burn_severity_code: {},
+  ecological_moisture_regime_code: {},
+  mesoslope_position_code: {},
+  site_surface_shape_code: {},
+  soil_properties_code: {},
+  surface_substrate_code: {},
+  site_activity_disturbance: {},
+  disturbance_site_defunct: {},
+  disturbance_condition_code: {},
+  disturbance_type_code: {},
+  invasive_plant_change_code: {},
+  target_plant_change_code: {},
+  treatment_seeded: {},
+  density_count_type_code: {},
+  trace_plants: {},
+  growth_pattern: {},
+  frame_size_code: {},
+  biocontrol_noted_code: {},
+  photoplot_start: {},
+  photoplot_end: {},
+  photoplot_aerials: {},
+  photoplot_full_25m: {},
+  plot_location: {},
+  veg_transect_sampler: {},
+  veg_transect_recorder: {},
+  'ui:order':[  
+    'utm_zone',
+    'transect_start_date_time',
+    'transect_end_date_time',
+    'project_number',
+    'surveyor1_name',
+    'surveyor2_name',
+    'field_recorder_name',
+    'research_trial_code',
+    'realm_code',
+    'site_aspect',
+    'site_aspect_variability',
+    'site_slope',
+    'site_slope_variability',
+    'site_elevation',
+    'precipitation_code',
+    'burn_severity_code',
+    'ecological_moisture_regime_code',
+    'mesoslope_position_code',
+    'site_surface_shape_code',
+    'soil_properties_code',
+    'surface_substrate_code',
+    'site_activity_disturbance',
+    'disturbance_site_defunct',
+    'disturbance_condition_code',
+    'disturbance_type_code',
+    'invasive_plant_change_code',
+    'target_plant_change_code',
+    'treatment_seeded',
+    'density_count_type_code',
+    'trace_plants',
+    'growth_pattern',
+    'frame_size_code',
+    'biocontrol_noted_code',
+    'photoplot_start',
+    'photoplot_end',
+    'photoplot_aerials',
+    'photoplot_full_25m',
+    'plot_location',
+    'veg_transect_sampler',
+    'veg_transect_recorder'
+  ]
+};
 /** 
  * ------------------------  Subtype Information Objects  -----------------------------
 */
@@ -288,7 +367,7 @@ const Monitoring_BiocontrolDispersal_Information = {
   ],
 };
 
-const Biocontrol_Collection = {
+const Biocontrol_Collection_Information = {
   items: {
     ...ThreeColumnStyle,
     invasive_plant_code: {},
@@ -536,10 +615,303 @@ const Spread_Results = {
   max_spread_aspect: {},
   'ui:order':['spread_details_recorded','agent_density','plant_attack','max_spread_distance','max_spread_aspect']
 };
+
+const TransectLine = {
+  ...ThreeColumnStyle,
+  transect_line_id: {},
+  transect_comment: {},
+  start_x_utm: {},
+  start_y_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  transect_length: {},
+  transect_bearing: {},
+  'ui:order':[  
+    'transect_line_id',
+    'transect_comment',
+    'start_x_utm',
+    'start_y_utm',
+    'end_x_utm',
+    'end_y_utm',
+    'transect_length',
+    'transect_bearing'
+  ]
+};
+
+const InvasivePlants = {
+    invasive_plant_code: {},
+    'ui:order':['invasive_plant_code'] 
+};
+
+const FireMonitoringTransectPoints = {
+  ...ThreeColumnStyle,
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {},
+  utm_y: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {},
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  },
+  'ui:order':[    
+    'sample_point_id',
+    'offset_distance',
+    'utm_x',
+    'utm_y',
+    'veg_transect_native_forbs',
+    'veg_transect_grasses',
+    'veg_transect_bare_ground',
+    'veg_transect_shrubs',
+    'veg_transect_bryophytes',
+    'veg_transect_litter',
+    'invasive_plants'
+  ]
+};
+
+const FireMonitoringTransectLine = {
+  transect_line: {
+    ...TransectLine
+  },
+  fire_monitoring_transect_points: {
+    items: {
+      ...FireMonitoringTransectPoints
+    }
+  },
+  'ui:order':['transect_line','fire_monitoring_transect_points']
+};
+
+const FireMonitoringTransectLines = {
+  items: {
+    ...FireMonitoringTransectLine,
+  }
+};
+
+const VegetationTransectPoints = {
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {},
+  utm_y: {},
+  'ui:order':['sample_point_id','offset_distance','utm_x','utm_y']
+};
+
+const VegetationTransectSpeciesDaubenmire = {
+  invasive_plants: {
+    items: {
+      invasive_plant_code: {},
+      daubenmire_classification: {},
+      'ui:order':['invasive_plant_code','daubenmire_classification']
+    }
+  },
+  lumped_species: {
+    items: {
+      lumped_species_type: {},
+      daubenmire_classification: {},
+      'ui:order':['lumped_species_type','daubenmire_classification']
+    }
+  },
+  custom_species: {
+    items: {
+      custom_species_type: {},
+      daubenmire_classification: {},
+      'ui:order':['custom_species_type','daubenmire_classification']
+    }
+  },
+  'ui:order':['invasive_plants','lumped_species','custom_species']
+};
+
+const VegetationTransectPointsDaubenmire = {
+  vegetation_transect_points: {
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...VegetationTransectSpeciesDaubenmire
+  },
+  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+};
+
+const VegetationTransectSpeciesPercentCover = {
+  invasive_plants: {
+    items: {
+      invasive_plant_code: {},
+      percent_covered: {},
+      'ui:order':['invasive_plant_code','percent_covered']
+    }
+  },
+  lumped_species: {
+    items: {
+      lumped_species_type: {},
+      percent_covered: {},
+      'ui:order':['lumped_species_type','percent_covered']
+    }
+  },
+  custom_species: {
+    items: {
+      custom_species_type: {},
+      percent_covered: {},
+      'ui:order':['custom_species_type','percent_covered']
+    }
+  },
+  'ui:order':['invasive_plants','lumped_species','custom_species']
+};
+
+const VegetationTransectSpeciesNumberPlants = {
+  invasive_plants: {
+    items: {
+      invasive_plant_code: {},
+      number_plants: {},
+      'ui:order':['invasive_plant_code','number_plants']
+    }
+  },
+  lumped_species: {
+    items: {
+      lumped_species_type: {},
+      number_plants: {},
+      'ui:order':['lumped_species_type','number_plants']
+    }
+  },
+  custom_species: {
+    items: {
+      custom_species_type: {},
+      number_plants: {},
+      'ui:order':['custom_species_type','number_plants']
+    }
+  },
+  'ui:order':['invasive_plants','lumped_species','custom_species']
+};
+
+const VegetationTransectPointsNumberPlants = {
+  vegetation_transect_points: {
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...VegetationTransectSpeciesNumberPlants
+  },
+  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+};
+
+const VegetationTransectPointsPercentCover = {
+  vegetation_transect_points: {
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...VegetationTransectSpeciesPercentCover
+  },
+  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+};
+
+const VegetationTransectLine = {
+  transect_line: {
+    ...TransectLine
+  },
+  count_type: {},
+  vegetation_transect_points_percent_cover: {
+    items: {
+      ...VegetationTransectPointsPercentCover
+    }
+  },
+  vegetation_transect_points_number_plants: {
+    items: {
+      ...VegetationTransectPointsNumberPlants
+    }
+  },
+  vegetation_transect_points_daubenmire: {
+    items: {
+      ...VegetationTransectPointsDaubenmire
+    }
+  },
+  'ui:order':[
+    'transect_line',
+    'count_type',
+    'vegetation_transect_points_percent_cover',
+    'vegetation_transect_points_number_plants',
+    'vegetation_transect_points_daubenmire'
+  ]
+};
+
+const VegetationTransectLines = {
+  items: {
+    ...VegetationTransectLine
+  }
+};
+
+const TransectInvasivePlants = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
+  soil_texture_code: {},
+  linear_infestation: {},
+  biological_agent_code: {},
+  'ui:order':[  
+    'invasive_plant_code',
+    'invasive_plant_density_code',
+    'invasive_plant_distribution_code',
+    'soil_texture_code',
+    'linear_infestation',
+    'biological_agent_code'
+  ]
+};
+
+const BiocontrolEfficacyTransectPoint = {
+  ...ThreeColumnStyle,
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {},
+  utm_y: {},
+  veg_transect_target: {},
+  veg_transect_other_ips: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {},
+  veg_total_percentage: {},
+  'ui:order': [  
+    'sample_point_id',
+    'offset_distance',
+    'utm_x',
+    'utm_y',
+    'veg_transect_target',
+    'veg_transect_other_ips',
+    'veg_transect_native_forbs',
+    'veg_transect_grasses',
+    'veg_transect_bare_ground',
+    'veg_transect_shrubs',
+    'veg_transect_bryophytes',
+    'veg_transect_litter',
+    'veg_total_percentage'
+  ]
+};
+
+const BiocontrolEfficacyTransectLine = {
+  transect_line: {
+    ...TransectLine
+  },
+  biocontrol_efficacy_transect_points: {
+    items: {
+      ...BiocontrolEfficacyTransectPoint
+    }
+  },
+  'ui:order': ['transect_line','biocontrol_efficacy_transect_points']
+};
+
+const BiocontrolEfficacyTransectLines = {
+  items: {
+    ...BiocontrolEfficacyTransectLine
+  }
+};
+
 /*
   Export
 */
-
 const BaseUISchemaComponents = {
   column_styles: {
     FourColumnStyle,
@@ -554,7 +926,8 @@ const BaseUISchemaComponents = {
     Observation,
     Monitoring,
     Treatment,
-    Collection
+    Collection,
+    TransectData
   },
   activity_subtype_data_information_objects: {
     Treatment_ChemicalPlant_Information,
@@ -564,7 +937,7 @@ const BaseUISchemaComponents = {
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
     Monitoring_BiocontrolDispersal_Information,
-    Biocontrol_Collection,
+    Biocontrol_Collection_Information,
     Biocontrol_Release_Information
   },
   general_objects: {
@@ -581,7 +954,11 @@ const BaseUISchemaComponents = {
     Weather_Conditions,
     Microsite_Conditions,
     Target_Plant_Phenology,
-    Spread_Results
+    Spread_Results,
+    FireMonitoringTransectLines,
+    VegetationTransectLines,
+    TransectInvasivePlants,
+    BiocontrolEfficacyTransectLines
   },
 };
 

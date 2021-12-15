@@ -1225,6 +1225,7 @@ export const Herbicide = {
 };
 export const TransectInvasivePlants = {
   type: 'object',
+  title: 'Transect Invasive Plants',
   required: [
     'invasive_plant_code',
     'invasive_plant_density_code',
@@ -1336,7 +1337,7 @@ export const Persons = {
 };
 export const TransectData = {
   type: 'object',
-  title: ' ',
+  title: 'Fire Monitoring Information - Transect Data',
   required: [
     'utm_zone',
     'transect_start_date_time',
@@ -1849,7 +1850,7 @@ export const FireMonitoringTransectPoints = {
       title: 'Invasive Plants',
       minItems: 1,
       items: {
-        $ref: '#/components/schemas/InvasivePlants'
+        ...InvasivePlants
       },
       'x-tooltip-text': 'List all the invasive plant species at this location'
     }
@@ -1923,12 +1924,12 @@ export const Point_Of_Interest = {
       title: 'Project Code',
       default: [{}],
       items: {
-        $ref: '#/components/schemas/ProjectCode'
+        ...ProjectCode
       }
     }
   }
 };
-export const FireMonitoringTransectLines = {
+export const FireMonitoringTransectLine = {
   type: 'object',
   required: ['transect_line', 'fire_monitoring_transect_points'],
   properties: {
@@ -1943,6 +1944,447 @@ export const FireMonitoringTransectLines = {
         ...FireMonitoringTransectPoints
       }
     }
+  }
+};
+export const FireMonitoringTransectLines = {
+  type: 'array',
+  default: [{}],
+  title: 'Fire Monitoring Transect Lines',
+  items: {
+    ...FireMonitoringTransectLine
+  }
+};
+export const PercentCovered = {
+  type: 'number',
+  title: 'Percent Covered',
+  maximum: 100
+};
+export const NumberPlants = {
+  type: 'number',
+  title: 'Number of Plants'
+};
+export const LumpedSpeciesType = {
+  type: 'string',
+  title: 'Lumped Species Type',
+  enum: ['Native Forbs', 'Grasses', 'Bare Ground', 'Shrubs/Trees', 'Bryophytes', 'Litter/Feces']
+};
+export const InvasivePlantType = {
+  type: 'string',
+  title: 'Invasive Plant',
+  'x-enum-code': {
+    'x-enum-code-category-name': 'invasives',
+    'x-enum-code-header-name': 'invasive_plant_code',
+    'x-enum-code-name': 'code_name',
+    'x-enum-code-text': 'code_description',
+    'x-enum-code-sort-order': 'code_sort_order'
+  }
+};
+export const CustomSpeciesType = {
+  type: 'string',
+  title: 'Custom Species Type'
+};
+export const DaubenmireClassification = {
+  type: 'string',
+  title: 'Percent Cover Class',
+  'x-enum-code': {
+    'x-enum-code-category-name': 'invasives',
+    'x-enum-code-header-name': 'daubenmire_cover_code',
+    'x-enum-code-name': 'code_name',
+    'x-enum-code-text': 'code_description',
+    'x-enum-code-sort-order': 'code_sort_order'
+  }
+};
+export const NetTrapSpecifications = {
+  type: 'object',
+  title: 'Net/Trap Specifications',
+  properties: {
+    haul_number: {
+      type: 'number',
+      title: 'Haul Number'
+    },
+    date_time_in: {
+      type: 'string',
+      format: 'date-time',
+      title: 'Date and Time In'
+    },
+    date_time_out: {
+      type: 'string',
+      format: 'date-time',
+      title: 'Date and Time Out'
+    },
+    net_trap_type: {
+      type: 'string',
+      title: 'Net/Trap Type',
+      enum: ['Floating', 'Sinking']
+    },
+    length: {
+      type: 'number',
+      title: 'Length (m)'
+    },
+    depth: {
+      type: 'number',
+      title: 'Depth (m)'
+    },
+    mesh_size: {
+      type: 'number',
+      title: 'Mesh Size (mm)'
+    },
+    mesh_description: {
+      type: 'string',
+      title: 'Mesh Description',
+      enum: ['Standard (6 pannel gill net)', 'Individual mesh pannel']
+    },
+    zone: {
+      type: 'string',
+      title: 'Zone',
+      enum: ['Bottom', 'Mid-water', 'Surface', 'Variable']
+    },
+    habitat: {
+      type: 'string',
+      title: 'Habitat',
+      enum: ['Pelagic', 'Littoral', 'Both']
+    },
+    substrate_type: {
+      type: 'string',
+      title: 'Substrate Type',
+      enum: ['Silt/Organic', 'Clay', 'Sand', 'Compact Gravel', 'Cobble', 'Rip-rap']
+    }
+  }
+};
+export const VegetationTransectPoints = {
+  type: 'object',
+  title: 'Vegetation Transect Plots',
+  'x-tooltip-text': 'Please define two or more plots along this transect',
+  required: ['sample_point_id', 'offset_distance', 'utm_x', 'utm_y'],
+  properties: {
+    sample_point_id: {
+      type: 'string',
+      title: 'Sample Point ID',
+      'x-tooltip-text': 'Provide a unique transect point identifier (ie ABC123)'
+    },
+    offset_distance: {
+      type: 'number',
+      title: 'Plot Distance',
+      'x-tooltip-text': 'Provide the offset distance from the start point'
+    },
+    utm_x: {
+      type: 'number',
+      title: 'Offset Point UTM Easting',
+      'x-tooltip-text': 'UTM Easting point at the offset distance'
+    },
+    utm_y: {
+      type: 'number',
+      title: 'Offset Point UTM Northing',
+      'x-tooltip-text': 'UTM Northing point at the offset distance'
+    }
+  }
+};
+export const VegetationTransectSpeciesNumberPlants = {
+  type: 'object',
+  title: 'Vegetation Within Plot',
+  'x-tooltip-text': 'Specify your vegetation transect species',
+  properties: {
+    invasive_plants: {
+      type: 'array',
+      default: [{}],
+      title: 'Invasive Plants',
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: ['invasive_plant_code', 'number_plants'],
+        properties: {
+          invasive_plant_code: {
+            ...InvasivePlantType,
+            'x-tooltip-text': 'Invasive plant species at this location'
+          },
+          number_plants: {
+            ...NumberPlants,
+            'x-tooltip-text': 'Number of plants of this species'
+          }
+        }
+      }
+    },
+    lumped_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Lumped Species',
+      items: {
+        type: 'object',
+        required: ['lumped_species_type', 'number_plants'],
+        properties: {
+          lumped_species_type: {
+            ...LumpedSpeciesType,
+            'x-tooltip-text': 'Lumped species at this location'
+          },
+          number_plants: {
+            ...NumberPlants,
+            'x-tooltip-text': 'Number of plants of this species'
+          }
+        }
+      }
+    },
+    custom_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Custom Species',
+      items: {
+        type: 'object',
+        required: ['custom_species_type', 'number_plants'],
+        properties: {
+          custom_species_type: {
+            ...CustomSpeciesType,
+            'x-tooltip-text': 'Custom species at this location'
+          },
+          number_plants: {
+            ...NumberPlants,
+            'x-tooltip-text': 'Number of plants of this species'
+          }
+        }
+      }
+    }
+  }
+};
+export const VegetationTransectSpeciesDaubenmire = {
+  type: 'object',
+  title: 'Vegetation Within Plot',
+  'x-tooltip-text': 'Specify your vegetation transect species',
+  properties: {
+    invasive_plants: {
+      type: 'array',
+      default: [{}],
+      title: 'Invasive Plants',
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: ['invasive_plant_code', 'daubenmire_classification'],
+        properties: {
+          invasive_plant_code: {
+            ...InvasivePlantType,
+            'x-tooltip-text': 'Invasive plant species at this location'
+          },
+          daubenmire_classification: {
+            ...DaubenmireClassification,
+            'x-tooltip-text': 'Please specify the Percent Cover Class for this species'
+          }
+        }
+      }
+    },
+    lumped_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Lumped Species',
+      items: {
+        type: 'object',
+        required: ['lumped_species_type', 'daubenmire_classification'],
+        properties: {
+          lumped_species_type: {
+            ...LumpedSpeciesType,
+            'x-tooltip-text': 'Lumped species at this location'
+          },
+          daubenmire_classification: {
+            ...DaubenmireClassification,
+            'x-tooltip-text': 'Please specify the Percent Cover Class for this species'
+          }
+        }
+      }
+    },
+    custom_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Custom Species',
+      items: {
+        type: 'object',
+        required: ['custom_species_type', 'daubenmire_classification'],
+        properties: {
+          custom_species_type: {
+            ...CustomSpeciesType,
+            'x-tooltip-text': 'Custom species at this location'
+          },
+          daubenmire_classification: {
+            ...DaubenmireClassification,
+            'x-tooltip-text': 'Please specify the Percent Cover Class for this species'
+          }
+        }
+      }
+    }
+  }
+};
+export const VegetationTransectSpeciesPercentCover = {
+  type: 'object',
+  title: 'Vegetation Within Plot',
+  'x-tooltip-text': 'Specify your vegetation transect species',
+  properties: {
+    invasive_plants: {
+      type: 'array',
+      default: [{}],
+      title: 'Invasive Plants',
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: ['invasive_plant_code', 'percent_covered'],
+        properties: {
+          invasive_plant_code: {
+            ...InvasivePlantType,
+            'x-tooltip-text': 'Invasive plant species at this location'
+          },
+          percent_covered: {
+            ...PercentCovered,
+            'x-tooltip-text': 'Percent of area covered by this species'
+          }
+        }
+      }
+    },
+    lumped_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Lumped Species',
+      items: {
+        type: 'object',
+        required: ['lumped_species_type', 'percent_covered'],
+        properties: {
+          lumped_species_type: {
+            ...LumpedSpeciesType,
+            'x-tooltip-text': 'Lumped species at this location'
+          },
+          percent_covered: {
+            ...PercentCovered,
+            'x-tooltip-text': 'Percent of area covered by this species'
+          }
+        }
+      }
+    },
+    custom_species: {
+      type: 'array',
+      default: [{}],
+      title: 'Custom Species',
+      items: {
+        type: 'object',
+        required: ['custom_species_type', 'percent_covered'],
+        properties: {
+          custom_species_type: {
+            ...CustomSpeciesType,
+            'x-tooltip-text': 'Custom species at this location'
+          },
+          percent_covered: {
+            ...PercentCovered,
+            'x-tooltip-text': 'Percent of area covered by this species'
+          }
+        }
+      }
+    }
+  }
+};
+export const VegetationTransectPointsNumberPlants = {
+  type: 'object',
+  required: ['vegetation_transect_points', 'vegetation_transect_species'],
+  properties: {
+    vegetation_transect_points: {
+      ...VegetationTransectPoints
+    },
+    vegetation_transect_species: {
+      ...VegetationTransectSpeciesNumberPlants
+    }
+  }
+};
+export const VegetationTransectPointsDaubenmire = {
+  type: 'object',
+  required: ['vegetation_transect_points', 'vegetation_transect_species'],
+  properties: {
+    vegetation_transect_points: {
+      ...VegetationTransectPoints
+    },
+    vegetation_transect_species: {
+      ...VegetationTransectSpeciesDaubenmire
+    }
+  }
+};
+export const VegetationTransectPointsPercentCover = {
+  type: 'object',
+  required: ['vegetation_transect_points', 'vegetation_transect_species'],
+  properties: {
+    vegetation_transect_points: {
+      ...VegetationTransectPoints
+    },
+    vegetation_transect_species: {
+      ...VegetationTransectSpeciesPercentCover
+    }
+  }
+};
+export const VegetationTransectLine = {
+  type: 'object',
+  required: ['transect_line', 'count_type'],
+  properties: {
+    transect_line: {
+      ...TransectLine
+    },
+    count_type: {
+      type: 'string',
+      title: 'Cover Method',
+      enum: ['Percent Cover', 'Plant', 'Percent Cover Class'],
+      'x-tooltip-text': 'Please specify the method of capturing cover'
+    }
+  },
+  dependencies: {
+    count_type: {
+      oneOf: [
+        {
+          required: ['vegetation_transect_points_percent_cover'],
+          properties: {
+            count_type: {
+              enum: ['Percent Cover']
+            },
+            vegetation_transect_points_percent_cover: {
+              type: 'array',
+              default: [{}],
+              title: 'Transect Points Information',
+              items: {
+                ...VegetationTransectPointsPercentCover
+              }
+            }
+          }
+        },
+        {
+          required: ['vegetation_transect_points_number_plants'],
+          properties: {
+            count_type: {
+              enum: ['Plant Count']
+            },
+            vegetation_transect_points_number_plants: {
+              type: 'array',
+              default: [{}],
+              title: 'Transect Points Information',
+              items: {
+                ...VegetationTransectPointsNumberPlants
+              }
+            }
+          }
+        },
+        {
+          required: ['vegetation_transect_points_daubenmire'],
+          properties: {
+            count_type: {
+              enum: ['Percent Cover Class']
+            },
+            vegetation_transect_points_daubenmire: {
+              type: 'array',
+              default: [{}],
+              title: 'Transect Points Information',
+              items: {
+                ...VegetationTransectPointsDaubenmire
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+export const VegetationTransectLines = {
+  type: 'array',
+  default: [{}],
+  title: 'Vegetation Transect Lines',
+  items: {
+    ...VegetationTransectLine
   }
 };
 export const PointOfInterest_IAPP_Site = {
@@ -2086,5 +2528,116 @@ export const ChemicalTreatment_Species_Codes = {
         'x-enum-code-sort-order': 'code_sort_order'
       }
     }
+  }
+};
+export const BiocontrolEfficacyTransectPoint = {
+  type: 'object',
+  required: [
+    'sample_point_id',
+    'offset_distance',
+    'utm_x',
+    'utm_y',
+    'veg_transect_target',
+    'veg_transect_other_ips',
+    'veg_transect_native_forbs',
+    'veg_transect_grasses',
+    'veg_transect_bare_ground',
+    'veg_transect_shrubs',
+    'veg_transect_bryophytes',
+    'veg_transect_litter',
+    'veg_total_percentage'
+  ],
+  properties: {
+    sample_point_id: {
+      type: 'string',
+      title: 'Sample Point ID',
+      'x-tooltip-text': 'Provide a unique transect point identifier (ie ABC123)'
+    },
+    offset_distance: {
+      type: 'number',
+      title: 'Plot Distance',
+      'x-tooltip-text': 'Provide the offset distance from the start point'
+    },
+    utm_x: {
+      type: 'number',
+      title: 'Offset Point UTM Easting',
+      'x-tooltip-text': 'UTM Easting point at the offset distance'
+    },
+    utm_y: {
+      type: 'number',
+      title: 'Offset Point UTM Northing',
+      'x-tooltip-text': 'UTM Northing point at the offset distance'
+    },
+    veg_transect_target: {
+      type: 'number',
+      title: 'Vegetation Target',
+      'x-tooltip-text': 'Number of transect targets observed'
+    },
+    veg_transect_other_ips: {
+      type: 'number',
+      title: 'Vegetation Other IPs',
+      'x-tooltip-text': 'Number of other IPs observed'
+    },
+    veg_transect_native_forbs: {
+      type: 'number',
+      title: 'Vegetation Native Forbs',
+      'x-tooltip-text': 'Percentage of native forbs observed'
+    },
+    veg_transect_grasses: {
+      type: 'number',
+      title: 'Vegetation Grasses',
+      'x-tooltip-text': 'Percentage of grasses observed'
+    },
+    veg_transect_bare_ground: {
+      type: 'number',
+      title: 'Vegetation Bare Ground Patches',
+      'x-tooltip-text': 'Percentage of bare ground patches observed'
+    },
+    veg_transect_shrubs: {
+      type: 'number',
+      title: 'Vegetation Shrubs/Trees',
+      'x-tooltip-text': 'Percentage of shrubs/trees observed'
+    },
+    veg_transect_bryophytes: {
+      type: 'number',
+      title: 'Vegetation Bryophytes',
+      'x-tooltip-text': 'Percentage of bryophytes observed'
+    },
+    veg_transect_litter: {
+      type: 'number',
+      title: 'Vegetation Litter',
+      'x-tooltip-text': 'Percentage of litter observed'
+    },
+    veg_total_percentage: {
+      type: 'number',
+      title: 'Vegetaton Total Percentage',
+      maximum: 100,
+      'x-tooltip-text': 'Total percentage (sum of all 6 levels)'
+    }
+  }
+};
+export const BiocontrolEfficacyTransectLine = {
+  type: 'object',
+  required: ['transect_line', 'biocontrol_efficacy_transect_points'],
+  properties: {
+    transect_line: {
+      ...TransectLine
+    },
+    biocontrol_efficacy_transect_points: {
+      type: 'array',
+      default: [{}],
+      title: 'Transect Points Information',
+      items: {
+        ...BiocontrolEfficacyTransectPoint
+      }
+    }
+  }
+};
+export const BiocontrolEfficacyTransectLines = {
+  type: 'array',
+  title: 'Biocontrol Efficacy Transect Lines',
+  default: [{}],
+  items: {
+    ...BiocontrolEfficacyTransectLine
   }
 };

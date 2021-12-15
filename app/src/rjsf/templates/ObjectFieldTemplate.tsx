@@ -19,8 +19,6 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   const DescriptionField = props.DescriptionField;
   const TitleField = props.TitleField;
 
-  console.log(props);
-
   return (
     <>
       {props.uiSchema['ui:title'] || (props.title && props.title !== 'invisible') ? (

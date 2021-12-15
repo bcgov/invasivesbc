@@ -51,38 +51,51 @@ const Activity_Observation_PlantAquatic = {
 
 // -------------------------- Transects ----------------------------------
 
-// const Activity_Transect_FireMonitoring = {
-//   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.Transect_FireMonitoring
-//   },
-//   'ui:order':['activity_data','activity_subtype_data']
-// };
+const Activity_Transect_FireMonitoring = {
+  'activity_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.TransectData
+  },
+  'activity_subtype_data': {
+    FireMonitoringTransectLines:BaseUISchemaComponents.general_objects.FireMonitoringTransectLines
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
 
-// const Activity_Transect_Vegetation = {
-//   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.Transect_Vegetation
-//   },
-//   'ui:order':['activity_data','activity_subtype_data']
-// };
+const Activity_Transect_Vegetation = {
+  'activity_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.TransectData
+  },
+  'activity_subtype_data': {
+    VegetationTransectLines: BaseUISchemaComponents.general_objects.VegetationTransectLines
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
 
-// const Activity_Transect_BiocontrolEfficacy = {
-//   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.Transect_BiocontrolEfficacy
-//   },
-//   'ui:order':['activity_data','activity_subtype_data']
-// };
+const Activity_Transect_BiocontrolEfficacy = {
+  'activity_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.TransectData
+  },
+  'activity_subtype_data': {
+    TransectInvasivePlants: BaseUISchemaComponents.general_objects.TransectInvasivePlants,
+    BiocontrolEfficacyTransectLines:BaseUISchemaComponents.general_objects.BiocontrolEfficacyTransectLines
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
 
 
 // -------------------------- Treatments ----------------------------------
@@ -269,7 +282,7 @@ const Activity_Biocontrol_Collection = {
   'activity_subtype_data': {
     Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
-    Biocontrol_Collection: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Collection,
+    Biocontrol_Collection_Information: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Collection_Information,
     'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Collection']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
@@ -373,24 +386,28 @@ const Activity_Biocontrol_Release = {
 // };
 
 const RootUISchemas = {
+  //Plant-Observations
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantAquatic,
-  // Activity_AnimalActivity_AnimalTerrestrial,
-  // Activity_AnimalActivity_AnimalAquatic,
-  // Activity_Transect_FireMonitoring,
-  // Activity_Transect_Vegetation,
-  // Activity_Transect_BiocontrolEfficacy,
+  //Plant-Treatments
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_MechanicalPlantTerrestrial,
   Activity_Treatment_MechanicalPlantAquatic,
-  // Activity_Treatment_BiologicalPlant,
+  //Plant-Monitorings
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
+  //Plant-Biocontrol
   Activity_Biocontrol_Collection,
   Activity_Biocontrol_Release,
+  //Plant-Transect
+  Activity_Transect_FireMonitoring,
+  Activity_Transect_Vegetation,
+  Activity_Transect_BiocontrolEfficacy,
+  // Activity_AnimalActivity_AnimalTerrestrial,
+  // Activity_AnimalActivity_AnimalAquatic,
   // Activity_FREP_FormA,
   // Activity_FREP_FormB,
   // Activity_FREP_FormC
