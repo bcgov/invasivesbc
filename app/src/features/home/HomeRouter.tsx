@@ -15,6 +15,7 @@ import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
 import PublicRoute from 'utils/PublicRoute';
+import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 
 interface IHomeRouterProps {
   classes: any;
@@ -42,6 +43,15 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         path="/home/landing"
         title={getTitle('Welcome')}
         component={LandingPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        roles={ALL_ROLES}
+        layout={HomeLayout}
+        path="/home/access-request"
+        title={getTitle('Access Request')}
+        component={AccessRequestPage}
         componentProps={props}
       />
       <PrivateRoute

@@ -53,7 +53,12 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const api = useInvasivesApi();
+  const authContext = useContext(AuthStateContext);
   const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(AuthStateContext);
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   const loadUserFromCache = async () => {
     try {
@@ -70,6 +75,47 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       });
     } catch (error) {
       console.log('Error: ', error);
+    }
+  };
+
+  const loginUser = async () => {
+    await authContext.keycloak?.obj?.login();
+    const user = await authContext.keycloak?.obj?.loadUserInfo();
+    const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
+    await authContext.setUserRoles(roles);
+    console.log('User on login: ', user);
+    await setUserInfo(user);
+    if (isMobile()) {
+      // Cache user info and roles
+      const userInfoAndRoles = {
+        userInfo: user,
+        userRoles: roles
+      };
+      try {
+        console.log('Attempting to cache user info: ', userInfoAndRoles);
+        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
+          console.log('User info and roles cached successfully.');
+        });
+      } catch (err) {
+        console.log('Error caching user roles: ', err);
+      }
+    }
+    setUserInfoLoaded(true);
+  };
+
+  const isAuthenticated = () => {
+    return authContext.userInfoLoaded;
+  };
+
+  const requestAccess = async () => {
+    if (!isAuthenticated()) {
+      // log in user
+      await loginUser().then(() => {
+        console.log('User logged in');
+        history.push('/home/access-request');
+      });
+    } else {
+      history.push('/home/access-request');
     }
   };
 
@@ -116,6 +162,14 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
+
+      {
+        <Box mt={2}>
+          <Button variant="outlined" color="primary" onClick={requestAccess}>
+            Request Access
+          </Button>
+        </Box>
+      }
 
       {userInfoLoaded && (
         <Box mt={2}>
