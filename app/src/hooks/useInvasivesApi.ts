@@ -54,13 +54,18 @@ console.log('API_URL', API_URL);
  * @return {*}
  */
 const useRequestOptions = () => {
-  const { keycloak } = useContext(AuthStateContext); //useKeycloak();
-  // const instance = useMemo(() => {
+  const { keycloak } = useContext(AuthStateContext);
+
   return {
     baseUrl: API_URL,
-    headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
+    headers: async () => {
+      await keycloak?.obj?.updateToken(10);
+      return {
+        'Access-Control-Allow-Origin': '*',
+        Authorization: `Bearer ${keycloak?.obj?.token}`
+      };
+    }
   };
-  // }, [keycloak]);
 
   // return instance;
 };
@@ -81,7 +86,7 @@ export const useInvasivesApi = () => {
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities/`,
       data: activitiesSearchCriteria
     });
@@ -94,7 +99,7 @@ export const useInvasivesApi = () => {
      */
     /*const geojsonData = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: {...await options.headers(), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities-lean/`,
       data: activitiesSearchCriteria
     });
@@ -119,7 +124,7 @@ export const useInvasivesApi = () => {
   const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities-lean/`,
       data: activitiesSearchCriteria
     });
@@ -136,7 +141,7 @@ export const useInvasivesApi = () => {
   const getJurisdictions = async (jurisdictionsSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/jurisdictions/`,
       data: jurisdictionsSearchCriteria
     });
@@ -171,7 +176,7 @@ export const useInvasivesApi = () => {
     const { data } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
-      headers: { ...options.headers, 'Content-Type': 'application/json' }
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' }
     });
     return data;
   };
@@ -186,7 +191,7 @@ export const useInvasivesApi = () => {
     const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/deleted/activities?` + qs.stringify({ id: activityIds }),
-      headers: { ...options.headers, 'Content-Type': 'application/json' }
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' }
     });
 
     return data;
@@ -201,7 +206,7 @@ export const useInvasivesApi = () => {
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest/`,
       data: pointsOfInterestSearchCriteria
     });
@@ -213,7 +218,7 @@ export const useInvasivesApi = () => {
      * output data.
     const geojsonData = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: {...await options.headers(), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
@@ -270,7 +275,7 @@ export const useInvasivesApi = () => {
   ): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
@@ -288,7 +293,7 @@ export const useInvasivesApi = () => {
     let activities, points_of_interest;
     try {
       const { data } = await Http.request({
-        headers: { ...options.headers },
+        headers: { ...(await options.headers()) },
         method: 'GET',
         url: options.baseUrl + `/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`
       });
@@ -326,7 +331,7 @@ export const useInvasivesApi = () => {
   const createMetabaseQuery = async (metabaseQueriesCreateCriteria: ICreateMetabaseQuery): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/metabase-query`,
       data: metabaseQueriesCreateCriteria
     });
@@ -340,7 +345,7 @@ export const useInvasivesApi = () => {
    */
   const getMetabaseQueryOptions = async (): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/api/metabase-query`
     });
@@ -353,7 +358,7 @@ export const useInvasivesApi = () => {
     largeGrid_item_ids?: number[]
   ): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       method: 'POST',
       data: {
         geometry: geometry,
@@ -374,7 +379,7 @@ export const useInvasivesApi = () => {
    */
   const getActivityById = async (activityId: string): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/api/activity/${activityId}`
     });
@@ -389,7 +394,7 @@ export const useInvasivesApi = () => {
    */
   const getMedia = async (mediaKeys: string[]): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
     });
@@ -404,7 +409,7 @@ export const useInvasivesApi = () => {
    */
   const getApplicationUsers = async (): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/application-user`
     });
@@ -421,7 +426,7 @@ export const useInvasivesApi = () => {
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
@@ -444,7 +449,7 @@ export const useInvasivesApi = () => {
 
     const { data } = await Http.request({
       method: 'PUT',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
@@ -458,7 +463,7 @@ export const useInvasivesApi = () => {
    */
   const getApiSpec = async (): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/api/api-docs/`
     });
@@ -516,76 +521,6 @@ export const useInvasivesApi = () => {
     }
   };
 
-  const cacheAuthToken = async (token) => {
-    if (token) {
-      try {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.AUTH_TOKEN,
-                  json: token,
-                  ID: '1'
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-        return true;
-      } catch (e) {
-        console.error('Unable to cache user info and roles', e);
-      }
-    }
-    return false;
-  };
-
-  const clearAuthTokenFromCache = async () => {
-    try {
-      await databaseContext.asyncQueue({
-        asyncTask: async () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
-                ID: '1',
-                docType: DocType.AUTH_TOKEN
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-      return true;
-    } catch (e) {
-      console.error('error removing auth token from cache', e);
-    }
-    return false;
-  };
-
-  const getAuthTokenFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
-      asyncTask: async () => {
-        let res = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.AUTH_TOKEN,
-            ID: '1'
-          },
-          databaseContext
-        );
-        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        return res;
-      }
-    });
-    if (data) {
-      return JSON.parse(JSON.stringify(data));
-    }
-    return null;
-  };
-
   const cacheSpec = async (data) => {
     if (data.components) {
       console.log('caching spec');
@@ -622,7 +557,7 @@ export const useInvasivesApi = () => {
    */
   const getSpeciesDetails = async (species: string[]): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       method: 'GET',
       url: options.baseUrl + `/api/species?` + qs.stringify({ key: species })
     });
@@ -639,7 +574,7 @@ export const useInvasivesApi = () => {
   const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      headers: { ...(await options.headers()), 'Content-Type': 'application/json' },
       data: uploadRequest,
       url: `${options.baseUrl}/api/batch/new_upload`
     });
@@ -650,7 +585,7 @@ export const useInvasivesApi = () => {
     console.dir(options.headers);
     const { data } = await Http.request({
       method: 'GET',
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       url: `${options.baseUrl}/api/batch/upload`
     });
     return data;
@@ -659,7 +594,7 @@ export const useInvasivesApi = () => {
   const downloadTemplate = async (): Promise<any> => {
     const { data } = await Http.request({
       method: 'GET',
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       url: options.baseUrl + '/api/batch/new_template'
     });
     return data;
@@ -668,7 +603,7 @@ export const useInvasivesApi = () => {
   const listCodeTables = async (): Promise<any> => {
     const { data } = await Http.request({
       method: 'GET',
-      headers: { ...options.headers },
+      headers: { ...(await options.headers()) },
       url: options.baseUrl + '/api/code_tables'
     });
     return data;
@@ -677,16 +612,13 @@ export const useInvasivesApi = () => {
   const fetchCodeTable = async (codeHeaderId, csv = false): Promise<any> => {
     const { data } = await Http.request({
       method: 'GET',
-      headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
+      headers: { ...(await options.headers()), Accept: csv ? 'text/csv' : 'application/json' },
       url: `${options.baseUrl}/api/code_tables/${codeHeaderId}`
     });
     return data;
   };
 
   return {
-    cacheAuthToken,
-    clearAuthTokenFromCache,
-    getAuthTokenFromCache,
     getMedia,
     getSpeciesDetails,
     getActivities,

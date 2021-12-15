@@ -40,6 +40,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
+import { useNetworkInformation } from '../../hooks/useNetworkInformation';
 
 const drawerWidth = 240;
 
@@ -131,102 +132,31 @@ export interface ITabsContainerProps {
   isMobileNoNetwork: boolean;
 }
 
-//const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-//const invbclogo = require('InvasivesBC_Icon.svg');
-
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-  const { keycloak } = useContext(AuthStateContext);
+  const authState = useContext(AuthStateContext);
+  const { isMobile } = useNetworkInformation();
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const api = useInvasivesApi();
-  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded, userRoles, setUserRoles } =
-    useContext(AuthStateContext);
+
+  const userInfo = {
+    name: 'a'
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('keycloak: ', keycloak);
     setAnchorEl(event.currentTarget);
   };
 
   const showLogoutAlert = () => {
     setShowAlert(true);
-  };
-
-  const loadUserFromCache = async () => {
-    try {
-      // Try to fetch user info from cache and set it to userInfo
-      api.getUserInfoFromCache().then((res: any) => {
-        if (res) {
-          setUserInfo(res.userInfo);
-          setUserInfoLoaded(true);
-        } else {
-        }
-      });
-    } catch (error) {
-      console.log('Error: ', error);
-    }
-  };
-
-  useEffect(() => {
-    if (isMobile() && !userInfoLoaded) {
-      loadUserFromCache();
-    }
-  }, [userInfoLoaded]);
-  // loadUserFromCache();
-  /*
-    Function to logout current user by wiping their keycloak access token
-  */
-  const logoutUser = async () => {
-    // Reset user info object
-    if (isMobile()) {
-      try {
-        await api.clearUserInfoFromCache().then((res: any) => {
-          setUserInfoLoaded(false);
-          setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-        });
-      } catch (err) {
-        console.log('Error clearing cache: ', err);
-      }
-    } else {
-      try {
-        await keycloak?.obj?.logout();
-        setUserInfoLoaded(false);
-        setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-      } catch (err) {
-        console.log('Error logging out: ', err);
-      }
-    }
-    handleClose();
-  };
-
-  const loginUser = async () => {
-    await keycloak?.obj?.login({
-      scope: 'offline_access'
-    });
-    const user = await keycloak?.obj?.loadUserInfo();
-    const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
-    await setUserRoles(roles);
-    await setUserInfo(user);
-    if (isMobile()) {
-      // Cache user info and roles
-      const userInfoAndRoles = {
-        userInfo: user,
-        userRoles: roles
-      };
-      try {
-        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {});
-      } catch (err) {
-        console.log('Error caching user roles: ', err);
-      }
-    }
-    handleClose();
-    setUserInfoLoaded(true);
   };
 
   useEffect(() => {
@@ -281,18 +211,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setActiveTab(newValue);
   };
 
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
-
-  const isAuthenticated = () => {
-    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
-  };
-
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);
   const { connected, setConnected } = networkContext;
+
+  const [avatarName, setAvatarName] = useState('');
+
+  useEffect(() => {
+    setAvatarName(authState.keycloak?.obj?.tokenParsed?.name?.match(/\b(\w)/g).join('') ?? '');
+  }, [authState.keycloak?.obj?.tokenParsed]);
 
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
@@ -302,7 +230,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
-        if (isAuthenticated()) {
+        if (authState.isAuthenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
@@ -315,7 +243,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map fontSize={'small'} />
         });
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (authState.isAuthenticated) {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -328,7 +256,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Home fontSize={'small'} />
         });
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (authState.isAuthenticated && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -336,7 +264,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (authState.isAuthenticated && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
@@ -345,7 +273,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (authState.isAuthenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
@@ -357,7 +285,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-  }, [keycloak, userInfo, userInfoLoaded]);
+  }, [authState, authState.isAuthenticated]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
@@ -382,7 +310,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           {
             text: 'Okay',
             handler: () => {
-              logoutUser();
+              authState.doLogout();
             }
           }
         ]}
@@ -449,7 +377,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </Grid>
               <Grid xs={1} container justifyContent="center" alignItems="center" item>
                 <IconButton onClick={handleClick} size="small">
-                  {userInfoLoaded ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+                  {authState.isAuthenticated ? <Avatar>{avatarName}</Avatar> : <Avatar />}
                 </IconButton>
               </Grid>
               <Menu
@@ -471,15 +399,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   />
                   Theme
                 </MenuItem>
-                {keycloak.obj?.authenticated ? (
-                  <MenuItem onClick={logoutUser}>
+                {authState.isAuthenticated ? (
+                  <MenuItem onClick={authState.doLogout}>
                     <ListItemIcon>
                       <LogoutIcon />
                     </ListItemIcon>
                     Logout
                   </MenuItem>
                 ) : (
-                  <MenuItem onClick={loginUser}>
+                  <MenuItem onClick={authState.doLogin}>
                     <ListItemIcon>
                       <LoginIcon />
                     </ListItemIcon>
@@ -508,17 +436,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
-                {userInfoLoaded ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+                {authState.isAuthenticated ? <Avatar>{avatarName}</Avatar> : <Avatar />}
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {keycloak?.obj?.token && <p>Keycloak token is present</p>}
           {networkContext.connected ? (
             <div>
-              {userInfoLoaded ? (
+              {authState.isAuthenticated ? (
                 <MenuItem onClick={showLogoutAlert}>
                   <ListItemIcon>
                     <LogoutIcon />
@@ -526,7 +453,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   Logout
                 </MenuItem>
               ) : (
-                <MenuItem onClick={loginUser}>
+                <MenuItem onClick={authState.doLogin}>
                   <ListItemIcon>
                     <LoginIcon />
                   </ListItemIcon>

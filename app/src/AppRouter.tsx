@@ -11,14 +11,11 @@ import AppRoute from './utils/AppRoute';
 
 interface IAppRouterProps {
   deviceInfo: any;
-  keycloak: any;
-  keycloakConfig: any;
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const [layout, setLayout] = useState<React.FC<any>>(null);
   const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
-  const networkContext = useContext(NetworkContext);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
