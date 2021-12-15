@@ -163,13 +163,15 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
 
-      {
+      {localStorage.getItem('accessRequested') !== 'true' ? (
         <Box mt={2}>
           <Button variant="outlined" color="primary" onClick={requestAccess}>
             Request Access
           </Button>
         </Box>
-      }
+      ) : (
+        <>Thank you, Access Request Submitted</>
+      )}
 
       {userInfoLoaded && (
         <Box mt={2}>
