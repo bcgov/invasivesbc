@@ -3,10 +3,6 @@
 name: Static Deploy - PROD
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - prod
   push:
     branches:
       - prod
@@ -16,7 +12,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
+   # if: ${{ github.event.pull_request.merged == true }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
     steps:
@@ -34,7 +30,6 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -66,7 +61,6 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -98,7 +92,6 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -130,7 +123,6 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -163,7 +155,6 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -197,7 +188,6 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -232,7 +222,6 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -267,7 +256,6 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-20.04
-    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
