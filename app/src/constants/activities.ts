@@ -26,7 +26,7 @@ export enum ActivitySubtype {
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlantTerrestrial',
   Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
   Treatment_MechanicalPlantAquatic = 'Activity_Treatment_MechanicalPlantAquatic',
-  Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
+  Treatment_BiologicalPlant = 'Activity_Biocontrol_Release',
   Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
   Treatment_ChemicalAnimalTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
   Treatment_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
@@ -60,7 +60,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Plant Treatment - Chemical',
   Activity_Treatment_MechanicalPlantTerrestrial = 'Terrestrial Plant Treatment - Mechanical',
   Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
-  Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
+  Activity_Biocontrol_Release = 'Biocontrol Release',
   Activity_Treatment_ChemicalAnimalTerrestrial = 'Terrestrial Animal Chemical Treatment',
   Activity_Treatment_MechanicalAnimalTerrestrial = 'Terrestrial Animal Mechanical Treatment',
 
@@ -90,7 +90,7 @@ export enum ActivityMonitoringLinks {
   // Treatments:
   Activity_Treatment_ChemicalPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Activity_Treatment_MechanicalPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-  Activity_Treatment_BiologicalPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
+  Activity_Biocontrol_Release = 'Activity_Monitoring_BiologicalTerrestrialPlant',
   Activity_Treatment_ChemicalAnimalTerrestrial = 'Activity_Monitoring_ChemicalAnimalTerrestrial',
   Activity_Treatment_MechanicalAnimalTerrestrial = 'Activity_Monitoring_MechanicalAnimalTerrestrial',
 
@@ -130,7 +130,7 @@ export enum ActivityLetter {
   Activity_Treatment_MechanicalPlant = 'PTM',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'PTM',
   Activity_Treatment_MechanicalPlantAquatic = 'PAM',
-  Activity_Treatment_BiologicalPlant = 'PBR',
+  Activity_Biocontrol_Release = 'PBR',
   Activity_Treatment_BiologicalPlant_BulkEdit = 'PBR',
   Activity_Treatment_ChemicalAnimalTerrestrial = 'ATC',
   Activity_Treatment_MechanicalAnimalTerrestrial = 'ATM',

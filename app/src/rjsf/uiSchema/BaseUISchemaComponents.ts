@@ -288,7 +288,7 @@ const Monitoring_BiocontrolDispersal_Information = {
   ],
 };
 
-const Collection_Biocontrol = {
+const Biocontrol_Collection = {
   items: {
     ...ThreeColumnStyle,
     invasive_plant_code: {},
@@ -319,6 +319,32 @@ const Collection_Biocontrol = {
       'estimated_quantity_and_life_stage_of_agent_collected',
       'comment']
   }
+};
+
+export const Biocontrol_Release_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: {},
+  mortality: {},
+  agent_source: {},
+  collection_date: {},
+  plant_collected_from: {},
+  biological_agent_code: {},
+  biological_agent_stages: {},
+  total_release_quantity: {},
+  linear_segment: {},
+  'ui:order':[
+    'invasive_plant_code',
+    'biological_agent_stages',
+    'linear_segment',
+    'release_quantity',
+    'mortality',
+    'agent_source',
+    'collection_date',
+    'plant_collected_from',
+    'total_release_quantity',
+    'biological_agent_code',
+    'biological_agent_stage_code'
+  ],
 };
 
 /** 
@@ -538,7 +564,8 @@ const BaseUISchemaComponents = {
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
     Monitoring_BiocontrolDispersal_Information,
-    Collection_Biocontrol
+    Biocontrol_Collection,
+    Biocontrol_Release_Information
   },
   general_objects: {
     Well_Information,

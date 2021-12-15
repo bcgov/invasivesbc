@@ -1,4 +1,4 @@
-import { Activity_Biocontrol_Collection } from './Activities/Plant/Biocontrol';
+import { Activity_Biocontrol_Collection, Activity_Biocontrol_Release } from './Activities/Plant/Biocontrol';
 import {
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
@@ -163,6 +163,7 @@ export const api_doc = {
       Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
       //biocontrol
       Activity_Biocontrol_Collection: Activity_Biocontrol_Collection,
+      Activity_Biocontrol_Release: Activity_Biocontrol_Release,
       //other
       ChemicalTreatment_Species_Codes: ChemicalTreatment_Species_Codes
     }

@@ -269,27 +269,29 @@ const Activity_Biocontrol_Collection = {
   'activity_subtype_data': {
     Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
-    Collection_Biocontrol: BaseUISchemaComponents.activity_subtype_data_information_objects.Collection_Biocontrol,
-    'ui:order':['Weather_Conditions','Microsite_Conditions','Collection_Biocontrol']
+    Biocontrol_Collection: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Collection,
+    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Collection']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
 
-// const Activity_Treatment_BiologicalPlant = {
-//   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   'activity_type_data': {
-//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
-//     ...BaseUISchemaComponents.Treatment_Information_BiologicalPlant
-//   },
-//   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.Treatment_BiologicalPlant
-//   },
-//   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
-// };
+const Activity_Biocontrol_Release = {
+  'activity_data': {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.Treatment
+  },
+  'activity_subtype_data': {
+    Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
+    Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
+    Biocontrol_Release_Information: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Release_Information,
+    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Release_Information']
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
 
 
 // -------------------------- FREP Forms ----------------------------------
@@ -388,6 +390,7 @@ const RootUISchemas = {
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Activity_Biocontrol_Collection,
+  Activity_Biocontrol_Release,
   // Activity_FREP_FormA,
   // Activity_FREP_FormB,
   // Activity_FREP_FormC

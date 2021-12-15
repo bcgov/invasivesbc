@@ -1,4 +1,4 @@
-import { Agent_Quantity_And_Life_Stage } from './General_Sub_Forms';
+import { Agent_Quantity_And_Life_Stage, Biological_Agent_Stage } from './General_Sub_Forms';
 
 //--------------------- Chemical ---------------------
 export const Treatment_ChemicalAnimalTerrestrial = {
@@ -185,24 +185,6 @@ export const Treatment_ChemicalPlant_Information = {
 };
 
 //--------------------- Mechanical ---------------------
-export const Treatment_MechanicalPlantAquatic = {
-  type: 'object',
-  title: ' ',
-  properties: {
-    shoreline_types: {
-      type: 'array',
-      title: 'Shoreline Types',
-      default: [{}],
-      items: {
-        $ref: '#/components/schemas/ShorelineTypes'
-      },
-      'x-tooltip-text': 'Specify shoreline types with their respective percentages'
-    },
-    mechanical_treatment_information: {
-      $ref: '#/components/schemas/Treatment_MechanicalPlant'
-    }
-  }
-};
 export const Treatment_MechanicalPlant_Information = {
   type: 'array',
   title: 'Mechanical Treatments',
@@ -347,29 +329,7 @@ export const Treatment_MechanicalAnimalTerrestrial = {
 };
 
 //--------------------- Biocontrol ---------------------
-export const Treatment_Information_BiologicalPlant = {
-  title: 'Treatment Information',
-  type: 'object',
-  required: ['treatment_persons'],
-  properties: {
-    treatment_persons: {
-      type: 'array',
-      default: [{}],
-      title: 'Treatment Person(s)',
-      items: {
-        $ref: '#/components/schemas/Persons'
-      },
-      'x-tooltip-text': 'Name of person(s) doing treatment'
-    },
-    microsite_conditions: {
-      $ref: '#/components/schemas/Microsite_Conditions'
-    },
-    weather_conditions: {
-      $ref: '#/components/schemas/Weather_Conditions'
-    }
-  }
-};
-export const Treatment_BiologicalPlant = {
+export const Biocontrol_Release_Information = {
   title: 'Biological Treatment Information',
   type: 'object',
   required: [
@@ -435,7 +395,7 @@ export const Treatment_BiologicalPlant = {
       minItems: 1,
       title: 'Biological Agent Stages',
       items: {
-        $ref: '#/components/schemas/Biological_Agent_Stage'
+        ...Biological_Agent_Stage
       }
     },
     total_release_quantity: {
@@ -451,7 +411,7 @@ export const Treatment_BiologicalPlant = {
     }
   }
 };
-export const Collection_Biocontrol = {
+export const Biocontrol_Collection = {
   title: 'Biocontrol Collections',
   type: 'array',
   default: [{}],

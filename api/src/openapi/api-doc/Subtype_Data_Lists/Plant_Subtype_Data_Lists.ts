@@ -20,7 +20,8 @@ import {
 } from '../Components/Monitoring_Sub_Forms';
 import { Observation_PlantTerrestrial_Information } from '../Components/Observation_Sub_Forms';
 import {
-  Collection_Biocontrol,
+  Biocontrol_Collection,
+  Biocontrol_Release_Information,
   Treatment_ChemicalPlant_Information,
   Treatment_MechanicalPlant_Information
 } from '../Components/Treatment_Sub_Forms';
@@ -127,7 +128,11 @@ export const Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
 export const Subtype_Data_Biocontrol_Release = {
   type: 'object',
   title: 'invisible',
-  properties: {}
+  properties: {
+    Microsite_Conditions: Microsite_Conditions,
+    Weather_Conditions: Weather_Conditions,
+    Biocontrol_Release_Information: Biocontrol_Release_Information
+  }
 };
 export const Subtype_Data_Biocontrol_Collection = {
   type: 'object',
@@ -135,7 +140,7 @@ export const Subtype_Data_Biocontrol_Collection = {
   properties: {
     Microsite_Conditions: Microsite_Conditions,
     Weather_Conditions: Weather_Conditions,
-    Collection_Biocontrol: Collection_Biocontrol
+    Biocontrol_Collection: Biocontrol_Collection
   }
 };
 
