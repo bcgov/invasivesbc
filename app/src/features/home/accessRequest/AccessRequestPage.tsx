@@ -66,6 +66,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [fundingAgenciesList, setFundingAgenciesList] = React.useState<any[]>([]);
   const [employersList, setEmployersList] = React.useState<any[]>([]);
   const [submitted, setSubmitted] = React.useState(false);
+  const [comments, setComments] = React.useState('');
 
   const apiEmployers = api.getEmployers();
   const apiFundingAgencies = api.getFundingAgencies();
@@ -494,6 +495,26 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 </MenuItem>
                               ))}
                             </TextField>
+                          </Tooltip>
+                        </Grid>
+                      </Grid>
+                      <Grid container direction="row" spacing={5}>
+                        <Grid item>
+                          <Tooltip
+                            placement="left"
+                            title="If your employer or agency were not on our lists, please enter it here.">
+                            <TextField
+                              style={{ width: 640 }}
+                              classes={{ root: classes.root }}
+                              multiline
+                              rows={4}
+                              value={comments}
+                              onChange={(e) => setComments(e.target.value)}
+                              name="Comments"
+                              id="comments"
+                              variant="outlined"
+                              label="Comments"
+                            />
                           </Tooltip>
                         </Grid>
                       </Grid>
