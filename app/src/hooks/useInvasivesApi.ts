@@ -516,9 +516,8 @@ export const useInvasivesApi = () => {
     }
   };
 
-  const cacheUserInfo = async (data) => {
-    if (data) {
-      console.log('Attempting to cachce user info...');
+  const cacheAuthToken = async (token) => {
+    if (token) {
       try {
         await databaseContext.asyncQueue({
           asyncTask: () => {
@@ -526,8 +525,8 @@ export const useInvasivesApi = () => {
               [
                 {
                   type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.USER_INFO,
-                  json: data,
+                  docType: DocType.AUTH_TOKEN,
+                  json: token,
                   ID: '1'
                 }
               ],
@@ -537,15 +536,13 @@ export const useInvasivesApi = () => {
         });
         return true;
       } catch (e) {
-        alert('Unable to cache user info and roles');
-        console.log('ERROR: ', e);
+        console.error('Unable to cache user info and roles', e);
       }
     }
     return false;
   };
 
-  const clearUserInfoFromCache = async () => {
-    console.log('Clearing user info from cache...');
+  const clearAuthTokenFromCache = async () => {
     try {
       await databaseContext.asyncQueue({
         asyncTask: async () => {
@@ -554,7 +551,7 @@ export const useInvasivesApi = () => {
               {
                 type: UpsertType.DOC_TYPE_AND_ID_DELETE,
                 ID: '1',
-                docType: DocType.USER_INFO
+                docType: DocType.AUTH_TOKEN
               }
             ],
             databaseContext
@@ -563,18 +560,18 @@ export const useInvasivesApi = () => {
       });
       return true;
     } catch (e) {
-      alert('unable to remove user info from cache');
+      console.error('error removing auth token from cache', e);
     }
     return false;
   };
 
-  const getUserInfoFromCache = async () => {
+  const getAuthTokenFromCache = async () => {
     let data = await databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
             type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.USER_INFO,
+            docType: DocType.AUTH_TOKEN,
             ID: '1'
           },
           databaseContext
@@ -585,9 +582,8 @@ export const useInvasivesApi = () => {
     });
     if (data) {
       return JSON.parse(JSON.stringify(data));
-    } else {
-      console.log('No information found when attempting to fetch cached user');
     }
+    return null;
   };
 
   const cacheSpec = async (data) => {
@@ -688,6 +684,9 @@ export const useInvasivesApi = () => {
   };
 
   return {
+    cacheAuthToken,
+    clearAuthTokenFromCache,
+    getAuthTokenFromCache,
     getMedia,
     getSpeciesDetails,
     getActivities,
@@ -712,9 +711,6 @@ export const useInvasivesApi = () => {
     fetchCodeTable,
     getJurisdictions,
     getRISOs,
-    cacheUserInfo,
-    getUserInfoFromCache,
-    clearUserInfoFromCache,
     getApplicationUsers,
     submitAccessRequest,
     getEmployers,
