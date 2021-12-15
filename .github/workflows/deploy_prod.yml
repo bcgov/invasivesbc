@@ -3,7 +3,8 @@
 name: Static Deploy - PROD
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - prod
 
