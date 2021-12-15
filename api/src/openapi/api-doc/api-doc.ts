@@ -1,4 +1,6 @@
 import {
+  Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
+  Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant
 } from './Activities/Plant/Monitorings';
@@ -146,22 +148,20 @@ export const api_doc = {
     },
     schemas: {
       //treatments
-      Activity_Treatment_ChemicalPlantTerrestrial: { ...Activity_Treatment_ChemicalPlantTerrestrial },
-      Activity_Treatment_ChemicalPlantAquatic: { ...Activity_Treatment_ChemicalPlantAquatic },
-      Activity_Treatment_MechanicalPlantTerrestrial: { ...Activity_Treatment_MechanicalPlantTerrestrial },
-      Activity_Treatment_MechanicalPlantAquatic: { ...Activity_Treatment_MechanicalPlantAquatic },
+      Activity_Treatment_ChemicalPlantTerrestrial: Activity_Treatment_ChemicalPlantTerrestrial,
+      Activity_Treatment_ChemicalPlantAquatic: Activity_Treatment_ChemicalPlantAquatic,
+      Activity_Treatment_MechanicalPlantTerrestrial: Activity_Treatment_MechanicalPlantTerrestrial,
+      Activity_Treatment_MechanicalPlantAquatic: Activity_Treatment_MechanicalPlantAquatic,
       //observations
-      Activity_Observation_PlantTerrestrial: { ...Activity_Observation_PlantTerrestrial },
-      Activity_Observation_PlantAquatic: { ...Activity_Observation_PlantAquatic },
+      Activity_Observation_PlantTerrestrial: Activity_Observation_PlantTerrestrial,
+      Activity_Observation_PlantAquatic: Activity_Observation_PlantAquatic,
       //monitorings
-      Activity_Monitoring_ChemicalTerrestrialAquaticPlant: {
-        ...Activity_Monitoring_ChemicalTerrestrialAquaticPlant
-      },
-      Activity_Monitoring_MechanicalTerrestrialAquaticPlant: {
-        ...Activity_Monitoring_MechanicalTerrestrialAquaticPlant
-      },
+      Activity_Monitoring_ChemicalTerrestrialAquaticPlant: Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
+      Activity_Monitoring_MechanicalTerrestrialAquaticPlant: Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
+      Activity_Monitoring_BiocontrolRelease_TerrestrialPlant: Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
+      Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
       //other
-      ChemicalTreatment_Species_Codes: { ...ChemicalTreatment_Species_Codes }
+      ChemicalTreatment_Species_Codes: ChemicalTreatment_Species_Codes
     }
   }
 };

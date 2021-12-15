@@ -1,3 +1,5 @@
+import { Biological_Agent_Stage } from './General_Sub_Forms';
+
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   title: 'Chemical Terrestrial Aquatic Monitoring Information',
   type: 'object',
@@ -150,7 +152,7 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       minItems: 1,
       title: 'Biological Agent Stages',
       items: {
-        $ref: '#/components/schemas/Biological_Agent_Stage'
+        ...Biological_Agent_Stage
       }
     },
     total_bio_agent_quantity: {
@@ -193,45 +195,7 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     }
   }
 };
-export const Monitoring_BiocontrolRelease_TerrestrialPlant = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/components/schemas/Monitoring_BiocontrolRelease_TerrestrialPlant_Information' },
-    {
-      $ref: '#/components/schemas/Spread_Results'
-    },
-    {
-      $ref: '#/components/schemas/Target_Plant_Phenology'
-    }
-  ]
-};
-export const Monitoring_Biocontrol = {
-  title: 'Monitoring Information',
-  type: 'object',
-  required: ['linked_id', 'observer_first_name', 'observer_last_name', 'weather_conditions', 'microsite_conditions'],
-  properties: {
-    linked_id: {
-      type: 'string',
-      title: 'Linked Treatment ID',
-      'x-tooltip-text': 'Identifier of linked treatment record'
-    },
-    observer_first_name: {
-      type: 'string',
-      title: 'First Name'
-    },
-    observer_last_name: {
-      type: 'string',
-      title: 'Last Name'
-    },
-    weather_conditions: {
-      $ref: '#/components/schemas/Weather_Conditions'
-    },
-    microsite_conditions: {
-      $ref: '#/components/schemas/Microsite_Conditions'
-    }
-  }
-};
-export const Monitoring_BiologicalDispersal = {
+export const Monitoring_BiocontrolDispersal_Information = {
   title: 'Biological Dispersal Information',
   type: 'object',
   required: [
@@ -351,7 +315,7 @@ export const Monitoring_BiologicalDispersal = {
       minItems: 1,
       title: 'Biological Agent Stages',
       items: {
-        $ref: '#/components/schemas/Biological_Agent_Stage'
+        ...Biological_Agent_Stage
       }
     },
     total_bio_agent_quantity: {

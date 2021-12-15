@@ -1,14 +1,20 @@
 import {
   AquaticPlants,
   Authorization_Infotmation,
+  Microsite_Conditions,
   ShorelineTypes,
+  Spread_Results,
+  Target_Plant_Phenology,
   TerrestrialPlants,
   WaterbodyData,
   WaterbodyData_AdditionalFields,
   WaterQuality,
+  Weather_Conditions,
   Well_Information
 } from '../Components/General_Sub_Forms';
 import {
+  Monitoring_BiocontrolDispersal_Information,
+  Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
   Monitoring_ChemicalTerrestrialAquaticPlant_Information,
   Monitoring_MechanicalTerrestrialAquaticPlant_Information
 } from '../Components/Monitoring_Sub_Forms';
@@ -94,11 +100,25 @@ export const Subtype_Data_Monitoring_MechanicalTerrestrialAquaticPlant = {
 };
 export const Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {
+    Weather_Conditions: Weather_Conditions,
+    Microsite_Conditions: Microsite_Conditions,
+    Monitoring_BiocontrolRelease_TerrestrialPlant_Information: Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+    Spread_Results: Spread_Results,
+    Target_Plant_Phenology: Target_Plant_Phenology
+  }
 };
 export const Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
   type: 'object',
-  allOf: []
+  title: 'invisible',
+  properties: {
+    Weather_Conditions: Weather_Conditions,
+    Microsite_Conditions: Microsite_Conditions,
+    Monitoring_BiocontrolDispersal_Information: Monitoring_BiocontrolDispersal_Information,
+    Spread_Results: Spread_Results,
+    Target_Plant_Phenology: Target_Plant_Phenology
+  }
 };
 
 // ------------------------Biocontrol----------------------

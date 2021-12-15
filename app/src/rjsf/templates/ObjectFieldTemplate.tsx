@@ -64,7 +64,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
                   title={
                     element.content.props.schema['x-tooltip-text']
                       ? element.content.props.schema['x-tooltip-text']
-                      : 'no help text provided'
+                      : 'There was no help text provided for this field'
                   }
                   placement="left">
                   <HelpOutlineIcon style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }} />

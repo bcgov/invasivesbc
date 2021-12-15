@@ -178,6 +178,116 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   'ui:order':['invasive_plant_code','monitoring_details']
 };
 
+const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: {},
+  biological_agent_presence_code: {},
+  biological_agent_code: {},
+  monitoring_type: {},
+  plant_count:{},
+  monitoring_method: {},
+  biological_agent_stages: {},
+  total_bio_agent_quantity: {},
+  bio_agent_location_code: {},
+  agent_count: {},
+  count_duration: {},
+  suitable_collection_site: {},
+  legacy_presence_ind: {},
+  'ui:order':[
+    'invasive_plant_code',
+    'biological_agent_presence_code',
+    'biological_agent_code',
+    'monitoring_type',
+    'plant_count',
+    'monitoring_method',
+    'biological_agent_stages',
+    'total_bio_agent_quantity',
+    'bio_agent_location_code',
+    'agent_count',
+    'count_duration',
+    'suitable_collection_site',
+    'legacy_presence_ind'
+  ]
+};
+
+const Monitoring_BiocontrolDispersal_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: {},
+  applicator1_name: {},
+  applicator2_name: {},
+  linear_segment: {},
+  biological_agent_presence_code: {},
+  biological_agent_code: {},
+  monitoring_type: {},
+  monitoring_method: {},
+  plant_count: {},
+  biological_agent_stages: {},
+  total_bio_agent_quantity: {},
+  biological_agent_count: {},
+  collection_history: { },
+  collection_history_comments: {},
+  suitable_collection_site: {},
+  phen_transect_sampler: {},
+  phen_transect_recorder: {},
+  phen_transect_seedlings: {},
+  phen_transect_rosettes: {},
+  phen_transect_bolting: {},
+  phen_transect_flowering: {},
+  phen_transect_seeds: {},
+  phen_transect_senescent: {},
+  phen_total_plants: {},
+  phen_number_stems: {},
+  phen_tallest_1: {},
+  phen_tallest_2: {},
+  phen_tallest_3: {},
+  phen_tallest_4: {},
+  phen_level_se: {},
+  phen_level_ro: {},
+  phen_level_bo: {},
+  phen_level_fl: {},
+  phen_level_sf: {},
+  phen_level_sc: {},
+  phen_total_percentage: {},
+  'ui:order': [
+    'biological_agent_presence_code',
+    'biological_agent_code',
+    'biological_agent_count',
+    'monitoring_type',
+    'monitoring_method',
+    'linear_segment',
+    'biological_agent_stages',
+    'plant_count', 
+    'applicator1_name',
+    'applicator2_name',
+    'invasive_plant_code',
+    'phen_transect_sampler',
+    'phen_transect_recorder',
+    'phen_transect_seedlings',
+    'phen_transect_rosettes',
+    'phen_transect_bolting',
+    'phen_transect_flowering',
+    'phen_transect_seeds',
+    'phen_transect_senescent',
+    'phen_total_plants',
+    'phen_number_stems',
+    'phen_tallest_1',
+    'phen_tallest_2',
+    'phen_tallest_3',
+    'phen_tallest_4',
+    'phen_level_se',
+    'phen_level_ro',
+    'phen_level_bo',
+    'phen_level_fl',
+    'phen_level_sf',
+    'total_bio_agent_quantity',
+    'phen_level_sc',
+    'phen_total_percentage',
+    'collection_history',
+    'collection_history_comments',
+    'suitable_collection_site'
+  ],
+};
+
 /** 
  * ------------------------  General Objects  -----------------------------
 */
@@ -326,6 +436,47 @@ const WaterbodyData_AdditionalFields = {
   ]
 };
 
+const Weather_Conditions = {
+  ...ThreeColumnStyle,
+  temperature: {},
+  cloud_cover_code: {},
+  precipitation_code: {},
+  wind_speed: {},
+  wind_aspect: {},
+  weather_comments: {},
+  'ui:order':['temperature','cloud_cover_code','precipitation_code','wind_speed','wind_aspect','weather_comments']
+};
+
+const Microsite_Conditions = {
+  ...TwoColumnStyle,
+  mesoslope_position_code: {},
+  site_surface_shape_code: {},
+  'ui:order':['mesoslope_position_code','site_surface_shape_code']
+};
+
+const Target_Plant_Phenology = {
+  ...ThreeColumnStyle,
+  phenology_details_recorded: {},
+  winter_dormant: {},
+  seedlings: {},
+  rosettes: {},
+  bolts: {},
+  flowering: {},
+  seeds_forming: {},
+  senescent: {},
+  target_plant_height: {},
+  'ui:order':['phenology_details_recorded','target_plant_heights','winter_dormant','seedlings','rosettes','bolts','flowering','seeds_forming','senescent','target_plant_height']
+};
+
+const Spread_Results = {
+  ...ThreeColumnStyle,
+  spread_details_recorded: {},
+  agent_density: {},
+  plant_attack: {},
+  max_spread_distance: {},
+  max_spread_aspect: {},
+  'ui:order':['spread_details_recorded','agent_density','plant_attack','max_spread_distance','max_spread_aspect']
+};
 /*
   Export
 */
@@ -351,7 +502,9 @@ const BaseUISchemaComponents = {
     Treatment_MechanicalPlant_Information,
     Observation_PlantTerrestrial_Information,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
-    Monitoring_MechanicalTerrestrialAquaticPlant_Information
+    Monitoring_MechanicalTerrestrialAquaticPlant_Information,
+    Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+    Monitoring_BiocontrolDispersal_Information
   },
   general_objects: {
     Well_Information,
@@ -363,7 +516,11 @@ const BaseUISchemaComponents = {
     AquaticPlants,
     Authorization_Infotmation,
     TerrestrialPlants,
-    TerrestrialPlant
+    TerrestrialPlant,
+    Weather_Conditions,
+    Microsite_Conditions,
+    Target_Plant_Phenology,
+    Spread_Results
   },
 };
 
