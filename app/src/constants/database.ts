@@ -18,8 +18,9 @@ export enum DocType {
   LEAN_ACTIVITIES = 'lean_activities',
   LEAN_POI = 'lean_poi',
   LAYER_STYLES = 'layer_styles',
-  USER_INFO = 'user_info',
-  APPLICATION_USER = 'application_user'
+  AUTH_TOKEN = 'auth_token',
+  APPLICATION_USER = 'application_user',
+  USER_INFO = 'DEPRECATED'
 }
 
 // max and default db page row limit

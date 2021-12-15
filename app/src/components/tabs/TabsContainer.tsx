@@ -210,7 +210,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const loginUser = async () => {
-    await keycloak?.obj?.login();
+    await keycloak?.obj?.login({
+      scope: 'offline_access'
+    });
     const user = await keycloak?.obj?.loadUserInfo();
     const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await setUserRoles(roles);
