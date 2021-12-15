@@ -1,42 +1,60 @@
-import { CircularProgress } from '@material-ui/core';
-import * as React from 'react';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
-import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
+import useKeycloakWrapper from '../hooks/useKeycloakWrapper';
+import React, { createContext, useEffect, useState } from 'react';
+import { useNetworkInformation } from '../hooks/useNetworkInformation';
+import { useTokenStore } from '../hooks/useTokenStore';
 
 export interface IAuthState {
   keycloak?: any;
+  isAuthenticated: boolean;
+  doLogin: () => Promise<void>;
+  doLogout: () => Promise<void>;
 }
 
-export const AuthStateContext = React.createContext<IAuthState>({
-  keycloak: {}
+export const AuthStateContext = createContext<IAuthState>({
+  keycloak: {},
+  isAuthenticated: false,
+  doLogin: async () => {},
+  doLogout: async () => {}
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
-  const invasivesApi = useInvasivesApi();
-  // const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
-  // const [userInfo, setUserInfo] = React.useState(info);
-  // const [userRoles, setUserRoles] = React.useState([]);
+  const { saveTokens } = useTokenStore();
+  const { isMobile } = useNetworkInformation();
+  const [isAuthenticated, setAuthenticated] = useState(false);
 
-  React.useEffect(() => {
-    if (keycloak?.obj?.authenticated) {
-      // keycloak?.obj?.loadUserInfo().then((info) => {
-      //   if (info) {
-      //     setUserRoles(info?.roles);
-      //     setUserInfo(info);
-      //     setUserInfoLoaded(true);
-      //   }
-      // });
+  /*
+    Logout current user by wiping their keycloak access token and notifying keycloak if we are online
+  */
+  const doLogout = async () => {
+    // Reset user info object
+    if (!isMobile()) {
+      try {
+        await keycloak?.obj?.logout();
+      } catch (err) {
+        console.error('Error logging out: ', err);
+      }
     }
-    //}, [keycloak?.obj?.authenticated]);
-  }, [keycloak?.obj?.authenticated]);
+  };
 
-  React.useEffect(() => {
-    const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec();
-    };
-    getApiSpec();
-  }, []);
+  const doLogin = async () => {
+    await keycloak?.obj?.login({
+      scope: 'offline_access'
+    });
+
+    saveTokens({
+      token: keycloak.obj.token,
+      idToken: keycloak.obj.idToken,
+      refreshToken: keycloak.obj.refreshToken
+    });
+  };
+
+  useEffect(() => {
+    if (keycloak?.obj) {
+      setAuthenticated(keycloak.obj.authenticated);
+    }
+  }, [keycloak?.obj?.authenticated]);
 
   return (
     <>
@@ -44,6 +62,9 @@ export const AuthStateContextProvider: React.FC = (props) => {
         <AuthStateContext.Provider
           value={{
             keycloak,
+            isAuthenticated,
+            doLogin,
+            doLogout
           }}>
           {props.children}
         </AuthStateContext.Provider>

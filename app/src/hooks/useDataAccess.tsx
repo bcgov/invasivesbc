@@ -26,7 +26,7 @@ export const useDataAccess = () => {
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
   const authContext = useContext(AuthStateContext);
-  const keycloak = authContext.keycloak; //useKeycloak();
+  const keycloak = authContext.keycloak;
 
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
