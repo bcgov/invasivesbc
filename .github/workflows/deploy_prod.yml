@@ -7,6 +7,9 @@ on:
     types: [closed]
     branches:
       - prod
+  push:
+    branches:
+      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
