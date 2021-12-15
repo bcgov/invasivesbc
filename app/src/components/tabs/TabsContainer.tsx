@@ -214,7 +214,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const user = await keycloak?.obj?.loadUserInfo();
     const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await setUserRoles(roles);
-    console.log('User on login: ', user);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles

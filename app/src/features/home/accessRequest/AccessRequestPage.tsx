@@ -163,6 +163,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       employer: employer?.toString(),
       fundingAgencies: fundingAgencies?.toString(),
       requestedRoles: requestedRoles?.toString(),
+      comments: comments,
       status: 'NOT_APPROVED'
     };
     const response = await api.submitAccessRequest(accessRequest);
@@ -185,6 +186,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       employer: null,
       fundingAgencies: null,
       requestedRoles: null,
+      comments: null,
       status: 'REMOVED'
     };
     const response = await api.submitAccessRequest(accessRequest);
