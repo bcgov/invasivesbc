@@ -159,14 +159,15 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       pacNumber: pacNumber,
       psn1: psn1,
       psn2: psn2,
-      employer: employer.toString(),
-      fundingAgencies: fundingAgencies.toString(),
-      requestedRoles: requestedRoles.toString(),
+      employer: employer?.toString(),
+      fundingAgencies: fundingAgencies?.toString(),
+      requestedRoles: requestedRoles?.toString(),
       status: 'NOT_APPROVED'
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
     console.log('Response: ', response);
+    localStorage.setItem('accessRequested', 'true');
   };
 
   const declineAccess = async () => {
