@@ -748,7 +748,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getTransectOffsetDistanceValidator(),
               getVegTransectPointsPercentCoverValidator(),
               getDurationCountAndPlantCountValidation(),
-              getPersonNameNoNumbersValidator(applicationUsers),
+              // getPersonNameNoNumbersValidator(applicationUsers),
               getJurisdictionPercentValidator(),
               getInvasivePlantsValidator(linkedActivity),
               getPlotIdentificatiomTreesValidator(doc.activitySubtype)

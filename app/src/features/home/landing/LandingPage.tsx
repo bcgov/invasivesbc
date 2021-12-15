@@ -16,6 +16,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -52,6 +53,7 @@ interface ILandingPage {
 const LandingPage: React.FC<ILandingPage> = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const networkContext = useContext(NetworkContext);
   const api = useInvasivesApi();
   const authContext = useContext(AuthStateContext);
   const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(AuthStateContext);
@@ -83,7 +85,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     const user = await authContext.keycloak?.obj?.loadUserInfo();
     const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await authContext.setUserRoles(roles);
-    console.log('User on login: ', user);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
@@ -163,16 +164,19 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
 
-      {localStorage.getItem('accessRequested') !== 'true' ? (
-        <Box mt={2}>
-          <Button variant="outlined" color="primary" onClick={requestAccess}>
-            Request Access
-          </Button>
-        </Box>
-      ) : (
-        <>Thank you, Access Request Submitted</>
+      {networkContext.connected && (
+        <>
+          {localStorage.getItem('accessRequested') !== 'true' ? (
+            <Box mt={2}>
+              <Button variant="outlined" color="primary" onClick={requestAccess}>
+                Request Access
+              </Button>
+            </Box>
+          ) : (
+            <>Thank you, Access Request Submitted</>
+          )}
+        </>
       )}
-
       {userInfoLoaded && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
