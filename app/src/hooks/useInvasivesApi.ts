@@ -223,6 +223,24 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const getFundingAgencies = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + `/api/agency_codes`
+    });
+    return data;
+  };
+
+  const getEmployers = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + `/api/employer_codes`
+    });
+    return data;
+  };
+
   /**
    * Fetch points of interest by search criteria.
    *
@@ -675,6 +693,8 @@ export const useInvasivesApi = () => {
     getUserInfoFromCache,
     clearUserInfoFromCache,
     getApplicationUsers,
-    submitAccessRequest
+    submitAccessRequest,
+    getEmployers,
+    getFundingAgencies
   };
 };
