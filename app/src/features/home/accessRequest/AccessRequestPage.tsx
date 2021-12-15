@@ -3,7 +3,6 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-// import { getEmployers, getFundingAgencies } from './utils/code-utils';
 import {
   Button,
   Card,
@@ -159,6 +158,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       pacNumber: pacNumber,
       psn1: psn1,
       psn2: psn2,
+      employer: employer.toString(),
       fundingAgencies: fundingAgencies.toString(),
       requestedRoles: requestedRoles.toString(),
       status: 'Not Approved'
