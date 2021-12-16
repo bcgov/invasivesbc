@@ -67,7 +67,7 @@
     "ionicons": "^5.5.4",
     "js-yaml": "~3.14.1",
     "jszip": "^3.7.1",
-    "keycloak-js": "^15.0.2",
+    "keycloak-js": "^15.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "leaflet-editable": "^1.2.0",

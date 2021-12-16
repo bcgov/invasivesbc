@@ -20,7 +20,7 @@ export const AuthStateContext = createContext<IAuthState>({
 
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
-  const { saveTokens } = useTokenStore();
+  const { saveTokens, getTokens } = useTokenStore();
   const { isMobile } = useNetworkInformation();
   const [isAuthenticated, setAuthenticated] = useState(false);
 
@@ -38,15 +38,42 @@ export const AuthStateContextProvider: React.FC = (props) => {
     }
   };
 
+  useEffect(() => {
+    let refreshTokenTimer = null;
+
+    refreshTokenTimer = setInterval(() => {
+      if (keycloak.obj && keycloak.obj.refreshToken) {
+        const currentToken = keycloak.obj.refreshToken;
+        const currentTokenParsed = keycloak.obj.refreshTokenParsed;
+
+        getTokens()
+          .then((oldTokens) => {
+            saveTokens({
+              token: keycloak.obj.token,
+              idToken: keycloak.obj.idToken,
+              refreshToken: currentToken,
+              refreshTokenType: currentTokenParsed.typ
+            }).then(() => {});
+          })
+          .catch(() => {
+            saveTokens({
+              token: keycloak.obj.token,
+              idToken: keycloak.obj.idToken,
+              refreshToken: currentToken,
+              refreshTokenType: currentTokenParsed.typ
+            }).then(() => {
+              console.log(`saved new token (type ${currentTokenParsed.typ})`);
+            });
+          });
+      }
+    }, 30000);
+
+    return () => clearInterval(refreshTokenTimer);
+  }, []);
+
   const doLogin = async () => {
     await keycloak?.obj?.login({
       scope: 'offline_access'
-    });
-
-    saveTokens({
-      token: keycloak.obj.token,
-      idToken: keycloak.obj.idToken,
-      refreshToken: keycloak.obj.refreshToken
     });
   };
 

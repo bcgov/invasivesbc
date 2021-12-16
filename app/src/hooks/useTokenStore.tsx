@@ -7,6 +7,7 @@ interface ITokenStore {
 interface SavedTokens {
   token?: string;
   refreshToken?: string;
+  refreshTokenType?: string;
   idToken?: string;
 }
 
@@ -20,19 +21,25 @@ export const useTokenStore: () => ITokenStore = () => {
   };
 
   const saveTokens = async (tokens: SavedTokens) => {
-    const currentTokens = window.localStorage.getItem('keycloak_tokens');
-    if (currentTokens !== null) {
-      const parsed: SavedTokens = JSON.parse(currentTokens);
-      // coalesce values
+    const currentTokenString = window.localStorage.getItem('keycloak_tokens');
+    if (currentTokenString !== null) {
+      const currentTokens: SavedTokens = JSON.parse(currentTokenString);
 
-      window.localStorage.setItem(
-        'keycloak_tokens',
-        JSON.stringify({
-          idToken: tokens.idToken ?? parsed.idToken,
-          refreshToken: tokens.refreshToken ?? parsed.refreshToken,
-          token: tokens.token ?? parsed.token
-        })
-      );
+      const updatedTokens: SavedTokens = {
+        idToken: tokens.idToken ?? currentTokens.idToken,
+        token: tokens.token ?? currentTokens.token
+      };
+
+      // don't overwrite an offline token with a regular refresh token (but inverse is ok)
+      if (updatedTokens.refreshTokenType === 'Offline' || currentTokens.refreshTokenType === 'Refresh') {
+        updatedTokens.refreshToken = tokens.refreshToken;
+        updatedTokens.refreshTokenType = tokens.refreshTokenType;
+      } else {
+        // copy the old values
+        updatedTokens.refreshToken = currentTokens.refreshToken;
+        updatedTokens.refreshTokenType = currentTokens.refreshTokenType;
+      }
+      window.localStorage.setItem('keycloak_tokens', JSON.stringify(updatedTokens));
     } else {
       window.localStorage.setItem('keycloak_tokens', JSON.stringify(tokens));
     }
