@@ -14,6 +14,7 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,6 +35,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
+  const networkContext = useContext(NetworkContext);
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -556,7 +558,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(layers);
+      const layerNames = getLayerNamesFromJSON(layers(networkContext.connected));
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
