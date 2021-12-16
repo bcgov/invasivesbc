@@ -559,23 +559,31 @@ export const TripDataControls: React.FC<any> = (props) => {
       );
 
       const layerNames = getLayerNamesFromJSON(layers(networkContext.connected));
+      console.log('*****LAYER NAMES*********');
+      console.log(JSON.stringify(layerNames));
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
         const layerName = layerNames[layerNamesIndex];
         //get layer styles
         getStylesDataFromBC(layerName).then(async (returnStyles) => {
-          await upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT OR REPLACE INTO LAYER_STYLES (layerName,json) values ('${layerName}','${JSON.stringify(
-                  returnStyles
-                )}');`
-              }
-            ],
-            databaseContext
-          );
+          try {
+            await upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `INSERT OR REPLACE INTO LAYER_STYLES (layerName,json) values ('${layerName}','${JSON.stringify(
+                    returnStyles
+                  )}');`
+                }
+              ],
+              databaseContext
+            );
+          } catch (e) {
+            //todo let user know this layer did not cache
+            console.log('Unable to insert layer data from ' + layerName);
+            console.log(JSON.stringify(e));
+          }
         });
 
         //for each large grid item, do...
