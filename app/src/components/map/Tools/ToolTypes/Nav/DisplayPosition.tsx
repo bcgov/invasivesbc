@@ -144,7 +144,7 @@ export default function DisplayPosition({ map }) {
           }
         }}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <GpsFixedIcon />}
-        <Typography className={toolClass.Font}>Show Me</Typography>{' '}
+        <Typography className={toolClass.Font}>Where am I?</Typography>{' '}
       </IconButton>
     </>
   );
