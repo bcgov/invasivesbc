@@ -63,12 +63,6 @@ const App: React.FC<IAppProps> = ({ deviceInfo }) => {
   const keycloakEventHandler: KeycloakEventHandler = (event, error) => {
     switch (event) {
       case 'onAuthSuccess':
-        console.dir(keycloak);
-        saveTokens({
-          token: keycloak.token,
-          refreshToken: keycloak.refreshToken,
-          idToken: keycloak.idToken
-        });
         break;
       case 'onAuthError':
         clearTokens();
@@ -79,13 +73,6 @@ const App: React.FC<IAppProps> = ({ deviceInfo }) => {
       case 'onAuthRefreshError':
         clearTokens();
         break;
-      case 'onAuthRefreshSuccess':
-        saveTokens({
-          token: keycloak.token,
-          refreshToken: keycloak.refreshToken,
-          idToken: keycloak.idToken
-        });
-        break;
       case 'onInitError':
         clearTokens();
         break;
@@ -93,6 +80,7 @@ const App: React.FC<IAppProps> = ({ deviceInfo }) => {
         break;
     }
   };
+
 
   useEffect(() => {
     if (!keycloakConfigured) {

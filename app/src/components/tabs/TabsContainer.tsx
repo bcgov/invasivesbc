@@ -140,7 +140,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const openMenu = Boolean(anchorEl);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
