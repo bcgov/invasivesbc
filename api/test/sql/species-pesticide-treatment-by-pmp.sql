@@ -23,7 +23,7 @@ select
 
 /**
   Select all chemical treatment IDs
-  with their descriptions
+  within our custom shape (VI)
 */
 with chemical_codes as (
   select
