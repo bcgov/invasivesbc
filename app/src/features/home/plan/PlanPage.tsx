@@ -4,6 +4,7 @@ import { IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
 import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
 import { DeleteForever } from '@material-ui/icons';
 import { DocType } from 'constants/database';
+import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
 import * as _ from 'lodash';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -275,87 +276,89 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   }, [geometry, interactiveGeometry, tripsLoaded, cacheMapTilesFlag]);
 
   return (
-    <IonContent>
-      {/*<IonContent style={{ padding: 0, margin: 0, height: 200 }}>*/}
-      <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
-        <IonRefresherContent></IonRefresherContent>
-      </IonRefresher>
-      {/*</IonContent>*/}
-      <Container className={props.classes.container}>
-        {mapMemo}
-        <Button onClick={addTrip} color="primary" variant="contained">
-          Add Trip
-        </Button>
-        {!tripsLoaded && (
-          <>
-            <CircularProgress />
-          </>
-        )}
-        {tripsLoaded && (
-          <RecordTable
-            className={classes.tripList}
-            tableName={'My Trips'}
-            onToggleExpandRow={(row) => {
-              setCurrentTripId(row.trip_ID);
-            }}
-            keyField="trip_ID" // defaults to just use 'id'
-            // startingOrder="survey_date"
-            // defaults to first table column
-            headers={[
-              // each id is the key it will look for in each data row object
-              {
-                id: 'trip_ID',
-                title: 'Trip ID'
-              },
-              {
-                id: 'trip_name',
-                title: 'Trip Name'
-              },
-              {
-                id: 'num_activities',
-                title: '# of Activities Cached'
-              },
-              {
-                id: 'num_poi',
-                title: '# of POI Cached'
-              },
-              {
-                id: 'buttons'
-                // no title, for a blank header col
+    <MapRecordsContextProvider>
+      <IonContent>
+        {/*<IonContent style={{ padding: 0, margin: 0, height: 200 }}>*/}
+        <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
+        {/*</IonContent>*/}
+        <Container className={props.classes.container}>
+          {mapMemo}
+          <Button onClick={addTrip} color="primary" variant="contained">
+            Add Trip
+          </Button>
+          {!tripsLoaded && (
+            <>
+              <CircularProgress />
+            </>
+          )}
+          {tripsLoaded && (
+            <RecordTable
+              className={classes.tripList}
+              tableName={'My Trips'}
+              onToggleExpandRow={(row) => {
+                setCurrentTripId(row.trip_ID);
+              }}
+              keyField="trip_ID" // defaults to just use 'id'
+              // startingOrder="survey_date"
+              // defaults to first table column
+              headers={[
+                // each id is the key it will look for in each data row object
+                {
+                  id: 'trip_ID',
+                  title: 'Trip ID'
+                },
+                {
+                  id: 'trip_name',
+                  title: 'Trip Name'
+                },
+                {
+                  id: 'num_activities',
+                  title: '# of Activities Cached'
+                },
+                {
+                  id: 'num_poi',
+                  title: '# of POI Cached'
+                },
+                {
+                  id: 'buttons'
+                  // no title, for a blank header col
+                }
+              ]}
+              rows={
+                // array of data objects to render
+                !trips?.length
+                  ? []
+                  : trips.map((row) => ({
+                      ...row,
+                      // custom map data before it goes to table:
+                      buttons: (row) => (
+                        // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
+                        <IconButton>
+                          <DeleteForever
+                            onClick={() => {
+                              trashTrip(row.trip_ID, row.trip_name);
+                            }}
+                          />
+                        </IconButton>
+                      )
+                    }))
               }
-            ]}
-            rows={
-              // array of data objects to render
-              !trips?.length
-                ? []
-                : trips.map((row) => ({
-                    ...row,
-                    // custom map data before it goes to table:
-                    buttons: (row) => (
-                      // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
-                      <IconButton>
-                        <DeleteForever
-                          onClick={() => {
-                            trashTrip(row.trip_ID, row.trip_name);
-                          }}
-                        />
-                      </IconButton>
-                    )
-                  }))
-            }
-            dropdown={(row) => {
-              return (
-                <SingleTrip
-                  trip_ID={row.trip_ID}
-                  classes={classes}
-                  setTripDeleted={seTripDeleted}
-                  setCacheMapTilesFlag={setCacheMapTilesFlag}
-                />
-              );
-            }}></RecordTable>
-        )}
-      </Container>
-    </IonContent>
+              dropdown={(row) => {
+                return (
+                  <SingleTrip
+                    trip_ID={row.trip_ID}
+                    classes={classes}
+                    setTripDeleted={seTripDeleted}
+                    setCacheMapTilesFlag={setCacheMapTilesFlag}
+                  />
+                );
+              }}></RecordTable>
+          )}
+        </Container>
+      </IonContent>
+    </MapRecordsContextProvider>
   );
 };
 
