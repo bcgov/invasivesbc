@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
-import { RISOLayer } from './RISOLayer';
+//import { RISOLayer } from './RISOLayer';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
@@ -45,6 +45,8 @@ export const IndependentLayer = (props) => {
         );
       case 'RISO':
         return (
+          <>
+            {/* until Brian has chance to add this component (
           <RISOLayer
             color_code={props.color_code}
             online={networkContext}
@@ -53,7 +55,10 @@ export const IndependentLayer = (props) => {
           />
         );
       default:
-        return <></>;
+        return
+        <></>; */}
+          </>
+        );
     }
   } else {
     throw new Error('something went wrong');
