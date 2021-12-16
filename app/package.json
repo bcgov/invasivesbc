@@ -36,7 +36,7 @@
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.4",
-    "@mui/icons-material": "^5.2.1",
+    "@mui/icons-material": "^5.2.4",
     "@mui/material": "^5.1.1",
     "@react-keycloak/web": "^2.1.4",
     "@react-leaflet/core": "^1.1.1",

@@ -334,7 +334,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         </>
       )}
 
-      {/* <Accordion defaultExpanded={true}>
+      <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
@@ -360,18 +360,18 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
                 End Track Recording
               </Button>
             </Grid>
-                <Grid xs={12} className={props.classes.mapContainer} item>
+            <Grid xs={12} className={props.classes.mapContainer} item>
               <MapContainer {...props} activityId={props.activity.activityId} />
-          </Grid>
+            </Grid>
             <Grid xs={12} item>
               <Accordion>
                 <AccordionSummary>KML Upload</AccordionSummary>
-                <AccordionDetails>{/*<KMLUpload setGeo={props.geometryState.setGeometry} />}</AccordionDetails>
+                <AccordionDetails>{/*<KMLUpload setGeo={props.geometryState.setGeometry />*/}</AccordionDetails>
               </Accordion>
             </Grid>
           </Grid>
         </AccordionDetails>
-          </Accordion> */}
+      </Accordion>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-form-content" id="panel-form-header">
           <Typography className={props.classes.heading}>Activity Form</Typography>
