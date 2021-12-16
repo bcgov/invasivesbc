@@ -29,6 +29,7 @@ import ReactLeafletEditable from 'react-leaflet-editable';
 
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
 import { MapRecordsContext, MapRecordsContextProvider, modes } from 'contexts/MapRecordsContext';
+import { Capacitor } from '@capacitor/core';
 
 //Added comment
 
@@ -177,6 +178,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     saveBasemapControl._map = mapOffline;
 
+    // pass this to save button on layer picker?
     const storeLayers = async () => {
       setOfflineing(true);
       await saveBasemapControl._saveTiles();
@@ -185,17 +187,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     return (
-      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
+      <>
         {/* TODO:
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-        {offlineing ? (
-          <Spinner></Spinner>
+        {Capacitor.getPlatform() !== 'web' ? (
+          <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
+            {offlineing ? (
+              <Spinner></Spinner>
+            ) : (
+              <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
+            )}
+          </div>
         ) : (
-          <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
+          <></>
         )}
-      </div>
+      </>
     );
   };
 
@@ -297,8 +305,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   mapMaxNativeZoom={mapMaxNativeZoom}
                   setMapMaxNativeZoom={setMapMaxNativeZoom}
                 />
-                <ZoomBar map={map} />
-                {/* Here are the editing tools */}
 
                 <MapResizer />
 
