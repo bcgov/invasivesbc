@@ -252,28 +252,25 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
    * @param {number} activeTabNumber The current active tab index, to be used as backup if no matching paths are found.
    * @return {*}  {number}
    */
-  const getActiveTab = useCallback(
-    (activeTabNumber: number): number => {
-      for (let index = 0; index < tabConfig.length; index++) {
-        const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
+  const getActiveTab = (activeTabNumber?: number): number => {
+    for (let index = 0; index < tabConfig.length; index++) {
+      const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
 
-        // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
-        if (
-          pathsToMatchAgainst.some((pathToMatch) => {
-            return history.location.pathname.includes(pathToMatch);
-          })
-        ) {
-          return index;
-        }
+      // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
+      if (
+        pathsToMatchAgainst.some((pathToMatch) => {
+          return window.location.pathname.includes(pathToMatch);
+        })
+      ) {
+        return index;
       }
+    }
 
-      // Otherwise return the current active tab index as a fallback
-      return activeTabNumber;
-    },
-    [history.location.pathname]
-  );
+    // Otherwise return the current active tab index as a fallback
+    return activeTabNumber;
+  };
 
-  const [activeTab, setActiveTab] = React.useState(getActiveTab(0));
+  const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
