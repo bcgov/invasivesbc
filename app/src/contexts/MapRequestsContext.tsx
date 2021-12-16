@@ -64,6 +64,10 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers(networkContext.connected));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
 
+  React.useEffect(() => {
+    setLayersSelected(layers(networkContext.connected));
+  }, [networkContext]);
+
   return (
     <MapRequestContext.Provider
       value={{

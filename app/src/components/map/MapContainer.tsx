@@ -19,7 +19,6 @@ import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
-import { layers } from './LayerPicker/JSON/layers';
 import './MapContainer.css';
 import { ToolbarContainer } from './ToolbarContainer';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
@@ -299,7 +298,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   position="topright"
                   id={props.activityId}
                   map={map}
-                  layers={layers}
                   inputGeo={props.geometryState.geometry}
                   setWellIdandProximity={props.setWellIdandProximity}
                   mapMaxNativeZoom={mapMaxNativeZoom}
