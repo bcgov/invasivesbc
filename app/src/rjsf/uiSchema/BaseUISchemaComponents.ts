@@ -237,7 +237,7 @@ const Observation_PlantTerrestrial_Information = {
   soil_texture_code: {},
   specific_use_code: {},
   slope_code: {},
-  aspect_code: {},
+  aspect_code: { 'ui:widget': 'single-select-autocomplete' },
   research_detection_ind: {},
   well_ind: {},
   'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind']
@@ -260,8 +260,8 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   ...ThreeColumnStyle,
   invasive_plant_code: {},
-  biological_agent_presence_code: {},
-  biological_agent_code: {},
+  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_type: {},
   plant_count:{},
   monitoring_method: {},
@@ -295,8 +295,8 @@ const Monitoring_BiocontrolDispersal_Information = {
   applicator1_name: {},
   applicator2_name: {},
   linear_segment: {},
-  biological_agent_presence_code: {},
-  biological_agent_code: {},
+  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_type: {},
   monitoring_method: {},
   plant_count: {},
@@ -371,7 +371,7 @@ const Biocontrol_Collection_Information = {
   items: {
     ...ThreeColumnStyle,
     invasive_plant_code: {},
-    biological_agent_code: {},
+    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
     historical_iapp_site_id: {},
     collection_type: {},
     plant_count: {},
@@ -407,7 +407,7 @@ export const Biocontrol_Release_Information = {
   agent_source: {},
   collection_date: {},
   plant_collected_from: {},
-  biological_agent_code: {},
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
   biological_agent_stages: {},
   total_release_quantity: {},
   linear_segment: {},
@@ -496,13 +496,13 @@ const TerrestrialPlant = {
   plant_life_stage_code: {},
   voucher_specimen_collected: {},
   voucher_specimen_collection_information: {
-      voucher_sample_id: {},
-      date_voucher_collected: {},
-      date_voucher_verified: {},
-      name_of_herbarium: {},
-      accession_number: {},
-      voucher_verification_completed_by: {},
-      exact_utm_coords: {}
+    voucher_sample_id: {},
+    date_voucher_collected: {},
+    date_voucher_verified: {},
+    name_of_herbarium: {},
+    accession_number: {},
+    voucher_verification_completed_by: {},
+    exact_utm_coords: {}
   },
   enda_sample_information: {
       edna_sample_id: {},
@@ -848,7 +848,7 @@ const TransectInvasivePlants = {
   invasive_plant_distribution_code: {},
   soil_texture_code: {},
   linear_infestation: {},
-  biological_agent_code: {},
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
   'ui:order':[  
     'invasive_plant_code',
     'invasive_plant_density_code',
