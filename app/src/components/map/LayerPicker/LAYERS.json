@@ -144,7 +144,19 @@
         "loaded": 70,
         "enabled": false
       },
-
+      {
+        "id": "riso_boundaries",
+        "name": "RISO",
+        "source": "null",
+        "layer_mode": "wms_online",
+        "layer_code": "RISO",
+        "color_code": "#000",
+        "order": 7,
+        "opacity": 0.4,
+        "zIndex": 30,
+        "loaded": 70,
+        "enabled": false
+      },
       {
         "id": "land_ownership",
         "name": "Land Ownership",
@@ -152,7 +164,7 @@
         "layer_mode": "wms_online",
         "bcgw_code": "WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW",
         "color_code": "#000",
-        "order": 7,
+        "order": 8,
         "opacity": 0.4,
         "zIndex": 20,
         "loaded": 70,
@@ -165,7 +177,7 @@
         "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS",
         "color_code": "#000",
-        "order": 8,
+        "order": 9,
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,

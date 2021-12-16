@@ -78,7 +78,13 @@
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
-
+      {
+        "id": "riso_boundaries",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
       {
         "id": "land_ownership",
         "dialog_layerselector_open": false,

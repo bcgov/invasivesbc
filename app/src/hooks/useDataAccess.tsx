@@ -10,7 +10,8 @@ import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
   IJurisdictionSearchCriteria,
-  IPointOfInterestSearchCriteria
+  IPointOfInterestSearchCriteria,
+  IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
 
@@ -131,6 +132,35 @@ export const useDataAccess = () => {
         };
       } else {
         return api.getJurisdictions(jurisdictionSearchCriteria);
+      }
+    }
+  };
+
+  /**
+   * Fetch RISOs by search criteria.
+   *
+   * @param {risoSearchCriteria} risoSearchCriteria
+   * @returns {*} {Promise<any>}
+   */
+  const getRISOs = async (
+    risoSearchCriteria: IRisoSearchCriteria,
+    context: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    }
+  ): Promise<any> => {
+    if (platform === 'web') {
+      return api.getRISOs(risoSearchCriteria);
+    } else {
+      if (!networkContext.connected) {
+        const featuresArray = await fetchLayerDataFromLocal('RISOS', risoSearchCriteria.search_feature, context);
+
+        return {
+          rows: featuresArray,
+          count: featuresArray.length
+        };
+      } else {
+        return api.getRISOs(risoSearchCriteria);
       }
     }
   };
@@ -616,6 +646,7 @@ export const useDataAccess = () => {
     getAppState,
     setAppState,
     getJurisdictions,
+    getRISOs,
     syncCachedRecords,
     getApplicationUsers,
     cacheApplicationUsers
