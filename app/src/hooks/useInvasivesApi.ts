@@ -12,7 +12,8 @@ import {
   ICreateOrUpdateActivity,
   IJurisdictionSearchCriteria,
   IMetabaseQuerySearchCriteria,
-  IPointOfInterestSearchCriteria
+  IPointOfInterestSearchCriteria,
+  IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
@@ -138,6 +139,23 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/jurisdictions/`,
       data: jurisdictionsSearchCriteria
+    });
+
+    return data;
+  };
+
+  /**
+   * Fetch RISO by search criteria.
+   *
+   * @param {risoSearchCriteria} risoSearchCriteria
+   * @returns {*} (Promise<any>)
+   */
+  const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/riso/`,
+      data: risoSearchCriteria
     });
 
     return data;
@@ -689,6 +707,7 @@ export const useInvasivesApi = () => {
     listCodeTables,
     fetchCodeTable,
     getJurisdictions,
+    getRISOs,
     cacheUserInfo,
     getUserInfoFromCache,
     clearUserInfoFromCache,

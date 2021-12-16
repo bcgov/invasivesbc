@@ -135,6 +135,19 @@ export interface IJurisdictionSearchCriteria {
 }
 
 /**
+ * RISO search filter criteria.
+ */
+export interface IRisoSearchCriteria {
+  /**
+   * GeoJSON feature (of type polygon)  to search in.
+   *
+   * @type {Feature}
+   * @memberof IRisoSearchCriteria
+   */
+  search_feature?: Feature;
+}
+
+/**
  * Create or Update activity endpoint post body.
  *
  * @export
