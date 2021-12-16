@@ -4,7 +4,7 @@ import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import layers from '../../components/map/LayerPicker/LAYERS.json';
+import { layers } from 'components/map/LayerPicker/JSON/layers';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';

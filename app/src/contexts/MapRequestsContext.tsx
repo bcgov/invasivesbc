@@ -1,6 +1,8 @@
 import * as React from 'react';
-import layers from '../components/map/LayerPicker/LAYERS.json';
-import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
+import { layers } from 'components/map/LayerPicker/JSON/layers';
+import { actions } from 'components/map/LayerPicker/JSON/actions';
+import { NetworkContext } from './NetworkContext';
+
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;
@@ -57,9 +59,10 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
+  const networkContext = React.useContext(NetworkContext);
   const [mapRequest, setMapRequest] = React.useState(null);
-  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
-  const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
+  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers(networkContext.connected));
+  const [layersActions, setLayersActions] = React.useState<any[]>(actions());
 
   return (
     <MapRequestContext.Provider

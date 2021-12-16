@@ -114,7 +114,6 @@ export const LayersSelector = ({ parent, child }) => {
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
-                <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />
               </RadioGroup>
             </FormControl>
           )}
@@ -138,8 +137,8 @@ export const LayersSelector = ({ parent, child }) => {
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                 updateChild(layersSelected, setLayersSelected, parent.id, child.id, { layer_mode: event.target.value });
               }}>
-              <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />
+              <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
             </RadioGroup>
           </FormControl>
         )}
