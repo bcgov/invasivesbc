@@ -38,7 +38,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://api-test-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   case 'production':
-    API_URL = 'https://invasivesbci.apps.silver.devops.gov.bc.ca';
+    API_URL = 'https://api-invasivesbci.apps.silver.gov.bc.ca';
     break;
   default:
     API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
