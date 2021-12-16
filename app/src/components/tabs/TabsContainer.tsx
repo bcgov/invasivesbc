@@ -60,7 +60,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    fontSize: '0.9em'
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -225,49 +226,54 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
-
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home />
-        });
-
-        tabsUserHasAccessTo.push({
-          label: 'Map',
-          path: '/home/map',
-          icon: <Map />
-        });
-
         if (authState.isAuthenticated) {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
-            icon: <Search />
+            icon: <Search fontSize={'small'} />
           });
         }
+        tabsUserHasAccessTo.push({
+          label: 'Map',
+          path: '/home/map',
+          icon: <Map fontSize={'small'} />
+        });
 
-        if (authState.isAuthenticated && isMobile()) {
+        if (authState.isAuthenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          tabsUserHasAccessTo.push({
+            label: 'Current Activity',
+            path: '/home/activity',
+            icon: <Assignment fontSize={'small'} />
+          });
+        }
+        tabsUserHasAccessTo.push({
+          label: 'Home',
+          path: '/home/landing',
+          icon: <Home fontSize={'small'} />
+        });
+
+        if (authState.isAuthenticated && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
-            icon: <Explore />
+            icon: <Explore fontSize={'small'} />
           });
         }
 
-        if (authState.isAuthenticated && isMobile()) {
+        if (authState.isAuthenticated && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
             childPaths: ['/home/references/activity'],
-            icon: <Bookmarks />
+            icon: <Bookmarks fontSize={'small'} />
           });
         }
 
-        if (authState.isAuthenticated) {
+        if (authState.isAuthenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
-            icon: <HomeWork />
+            icon: <HomeWork fontSize={'small'} />
           });
         }
 
@@ -332,24 +338,38 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </Hidden>
 
           <Grid className={classes.alignment} flex-direction="row" container>
-            <Grid container justifyContent="center" alignItems="center" xs={6} md={1} item>
-              <img
-                className={classes.pointer}
-                src={invbclogo}
-                width="50"
-                style={{ marginRight: '5px' }}
-                height="50"
-                alt="B.C. Government Logo"
-                onClick={() => history.push('/')}
-              />
-              <b>InvasivesBC</b>
-              <div className={'beta'}>BETA</div>
+            {/*<Grid style={{ width: '200px' }} item>*/}
+            <Grid
+              style={{ alignItems: 'center', display: 'flex', width: '200px' }}
+              item
+              container
+              align-items="center"
+              flex-direction="row">
+              <Grid item>
+                <img
+                  className={classes.pointer}
+                  src={invbclogo}
+                  width="60"
+                  style={{ marginRight: '5px' }}
+                  height="60"
+                  alt="B.C. Government Logo"
+                  onClick={() => history.push('/')}
+                />
+              </Grid>
+              <Grid item>
+                <b>InvasivesBC</b>
+              </Grid>
+              <Grid item>
+                <div className={'beta'}>BETA</div>
+              </Grid>
+              {/*</Grid>*/}
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
                 <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
                   {tabConfig.map((tab) => (
                     <Tab
+                      style={{ fontSize: '.7rem', fontWeight: 'bold' }}
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
                       icon={tab.icon}

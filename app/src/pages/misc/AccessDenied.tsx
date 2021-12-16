@@ -29,7 +29,7 @@ const AccessDenied = () => {
     `I wish to be granted access to the InvasivesBC application, find
     below my IDIR or BCeID username.`
   );
-  const emailHref = `mailto:michael.shasko@gov.bc.ca?subject=${emailSubject}&body=${emailBody}`;
+  const emailHref = `mailto:invasivesbc@gov.bc.ca?subject=${emailSubject}&body=${emailBody}`;
   return (
     <Container>
       <Box my={6}>
@@ -49,7 +49,7 @@ const AccessDenied = () => {
           <Typography variant="body1" component="span">
             <Box>Send an email requesting access to:</Box>
             <Box mb={2} className={classes.emailLink}>
-              michael.shasko@gov.bc.ca
+              invasivesbc@gov.bc.ca
             </Box>
             <Box mb={2}>or</Box>
             <Box>

@@ -1,11 +1,11 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {ALL_ROLES} from '../constants/misc';
-import {getDBConnection} from "../database/db";
-import {SQLStatement} from "sql-template-strings";
-import {listCodeTablesSQL} from "../queries/code-queries";
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { ALL_ROLES } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import { SQLStatement } from 'sql-template-strings';
+import { listCodeTablesSQL } from '../queries/code-queries';
 
 export const GET: Operation = [listCodeTables()];
 
@@ -25,7 +25,6 @@ GET.apiDoc = {
 
 function listCodeTables(): RequestHandler {
   return async (req, res) => {
-
     const connection = await getDBConnection();
     if (!connection) {
       throw {

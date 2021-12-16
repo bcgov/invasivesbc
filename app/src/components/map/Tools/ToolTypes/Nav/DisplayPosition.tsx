@@ -10,6 +10,7 @@ import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
 import marker from '../../../Icons/POImarker.png';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -142,8 +143,8 @@ export default function DisplayPosition({ map }) {
             map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
           }
         }}>
-        {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
-        <Typography className={toolClass.Font}>Current Position</Typography>{' '}
+        {initialTime > 0 ? <CircularProgress size={24} /> : <GpsFixedIcon />}
+        <Typography className={toolClass.Font}>Show Me</Typography>{' '}
       </IconButton>
     </>
   );

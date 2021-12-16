@@ -3,11 +3,13 @@ import React, { useContext } from 'react';
 import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
+//import { RISOLayer } from './RISOLayer';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
   POI = 'LEAN_POI',
-  Jurisdictions = 'JURISDICTIONS'
+  Jurisdictions = 'JURISDICTIONS',
+  RISO = 'RISO'
 }
 
 export const IndependentLayer = (props) => {
@@ -41,8 +43,22 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
+      case 'RISO':
+        return (
+          <>
+            {/* until Brian has chance to add this component (
+          <RISOLayer
+            color_code={props.color_code}
+            online={networkContext}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
+        );
       default:
-        return <></>;
+        return
+        <></>; */}
+          </>
+        );
     }
   } else {
     throw new Error('something went wrong');

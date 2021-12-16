@@ -12,15 +12,18 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
 
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
-      <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
+      <Box height="80px">
+        <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
+      </Box>
       <Collapse timeout={50} in={isOpen}></Collapse>
-      <Box mb="43px" height="inherit" width="inherit" overflow="auto">
+      <Box height="100%" width="inherit" overflow="auto">
         {props.children}
       </Box>
       <Box
+        height="20px"
         style={{ zIndex: 99999999999 }}
-        position="absolute"
-        bottom="0"
+        position="fixed"
+        bottom="0px"
         left="0"
         right="0"
         bgcolor="primary.main"

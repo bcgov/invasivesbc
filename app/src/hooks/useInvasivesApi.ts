@@ -12,7 +12,8 @@ import {
   ICreateOrUpdateActivity,
   IJurisdictionSearchCriteria,
   IMetabaseQuerySearchCriteria,
-  IPointOfInterestSearchCriteria
+  IPointOfInterestSearchCriteria,
+  IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
@@ -149,6 +150,23 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch RISO by search criteria.
+   *
+   * @param {risoSearchCriteria} risoSearchCriteria
+   * @returns {*} (Promise<any>)
+   */
+  const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/riso/`,
+      data: risoSearchCriteria
+    });
+
+    return data;
+  };
+
+  /**
    * Delete activities by ids.
    *
    * @param {string[]} activityIds
@@ -214,6 +232,35 @@ export const useInvasivesApi = () => {
     console.log('Observations as geojson', geojson);
     /******************End of GeoJSON*******************/
 
+    return data;
+  };
+
+  const submitAccessRequest = async (accessRequest: any): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request`,
+      data: accessRequest
+    });
+
+    return data;
+  };
+
+  const getFundingAgencies = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + `/api/agency_codes`
+    });
+    return data;
+  };
+
+  const getEmployers = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + `/api/employer_codes`
+    });
     return data;
   };
 
@@ -383,6 +430,10 @@ export const useInvasivesApi = () => {
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
+    if (data.errors) {
+      console.log('Error creating activity');
+      console.dir(data.errors);
+    }
     return data;
   };
 
@@ -591,6 +642,10 @@ export const useInvasivesApi = () => {
     listCodeTables,
     fetchCodeTable,
     getJurisdictions,
-    getApplicationUsers
+    getRISOs,
+    getApplicationUsers,
+    submitAccessRequest,
+    getEmployers,
+    getFundingAgencies
   };
 };

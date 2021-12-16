@@ -2,6 +2,7 @@ import { Box, Button, CircularProgress, Container, Grid, makeStyles, Theme } fro
 import clsx from 'clsx';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
+import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useState } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
@@ -113,30 +114,32 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   return (
     <Box height="inherit" width="inherit">
-      <Grid className={classes.mainGrid} container>
-        <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
-          <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-            {isReadyToLoadMap ? (
-              <MapContainer
-                classes={classes}
-                showDrawControls={false}
-                mapId={'mainMap'}
-                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                geometryState={{ geometry, setGeometry }}
-                interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                extentState={{ extent, setExtent }}
-                contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-              />
-            ) : (
-              <CircularProgress />
-            )}
-          </Container>
+      <MapRecordsContextProvider>
+        <Grid className={classes.mainGrid} container>
+          <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
+            <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
+              {isReadyToLoadMap ? (
+                <MapContainer
+                  classes={classes}
+                  showDrawControls={false}
+                  mapId={'mainMap'}
+                  pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
+                  geometryState={{ geometry, setGeometry }}
+                  interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+                  extentState={{ extent, setExtent }}
+                  contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+                />
+              ) : (
+                <CircularProgress />
+              )}
+            </Container>
+          </Grid>
         </Grid>
-      </Grid>
-      <MapContextMenu
-        contextMenuState={{ state: contextMenuState, setContextMenuState }}
-        handleClose={handleContextMenuClose}
-      />
+        <MapContextMenu
+          contextMenuState={{ state: contextMenuState, setContextMenuState }}
+          handleClose={handleContextMenuClose}
+        />
+      </MapRecordsContextProvider>
     </Box>
   );
 };

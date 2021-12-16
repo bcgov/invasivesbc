@@ -9,6 +9,24 @@ export const getCodeCategoriesSQL = (): SQLStatement =>
   SQL`SELECT code_category_id, code_category_name FROM code_category WHERE valid_to IS NULL;`;
 
 /**
+ * SQL query to fetch employer codes.
+ *
+ * @returns {SQLStatement} sql query object
+ *
+ */
+export const getEmployerCodesSQL = (): SQLStatement =>
+  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=76;`;
+
+/**
+ * SQL query to fetch funding agency codes.
+ *
+ * @returns {SQLStatement} sql query object
+ *
+ */
+export const getFundingAgencyCodesSQL = (): SQLStatement =>
+  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=41;`;
+
+/**
  * SQL query to fetch code headers.
  *
  * @returns {SQLStatement} sql query object
@@ -23,7 +41,6 @@ export const getCodeHeadersSQL = (): SQLStatement =>
  */
 export const getCodesSQL = (): SQLStatement =>
   SQL`SELECT code_id, code_header_id, code_name, code_description, code_sort_order FROM code WHERE valid_to IS NULL;`;
-
 
 /**
  * SQL query to fetch the list of code tables in invasives (for batch code tables view)
@@ -59,5 +76,3 @@ export const fetchCodeTablesSQL = (codeHeaderId: string): SQLStatement => {
     order by ct.code_sort_order asc;
   `;
 };
-
-

@@ -590,11 +590,13 @@
           },
           "utm_easting": {
             "type": "number",
+            "minimum": 0,
             "title": "UTM Easting",
             "x-tooltip-text": "UTM Easting of the anchor point for the specified geometry"
           },
           "utm_northing": {
             "type": "number",
+            "minimum": 0,
             "title": "UTM Northing",
             "x-tooltip-text": "UTM Northing of the anchor point for the specified geometry"
           },
@@ -724,11 +726,13 @@
           },
           "utm_easting": {
             "type": "number",
+            "minimum": 0,
             "title": "UTM Easting",
             "x-tooltip-text": "UTM Easting of the anchor point for the specified geometry"
           },
           "utm_northing": {
             "type": "number",
+            "minimum": 0,
             "title": "UTM Northing",
             "x-tooltip-text": "UTM Northing of the anchor point for the specified geometry"
           },
@@ -930,6 +934,7 @@
           },
           "number": {
             "type": "number",
+            "minimum": 0,
             "title": "Number",
             "x-tooltip-text": "The number of animals observed"
           },
@@ -995,6 +1000,7 @@
           },
           "number": {
             "type": "number",
+            "minimum": 0,
             "title": "Number",
             "x-tooltip-text": "The number of animals observed"
           },
@@ -1060,6 +1066,7 @@
           },
           "number": {
             "type": "number",
+            "minimum": 0,
             "title": "Number",
             "x-tooltip-text": "The number of animals observed"
           },
@@ -1242,6 +1249,7 @@
               },
               "number": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Number",
                 "x-tooltip-text": "The number of animals observed"
               },
@@ -1312,6 +1320,7 @@
               },
               "detection_distance": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Detection Distance",
                 "x-tooltip-text": "The distance from the animal to the trap/station"
               },
@@ -1378,6 +1387,7 @@
             "properties": {
               "length": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Length",
                 "x-tooltip-text": "The length of the animal"
               },
@@ -1388,6 +1398,7 @@
               },
               "weight": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Weight",
                 "x-tooltip-text": "The weight of the animal"
               }
@@ -1408,6 +1419,7 @@
               },
               "primary_vegetation_layer_percent_cover": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Primary Vegetation Layer Percent Cover",
                 "x-tooltip-text": "The percent cover of the primary vegetation layer of the animal"
               },
@@ -1418,6 +1430,7 @@
               },
               "secondary_vegetation_layer_percent_cover": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Secondary Vegetation Layer Percent Cover",
                 "x-tooltip-text": "The percent cover of the secondary vegetation layer of the animal"
               },
@@ -1597,6 +1610,7 @@
         "properties": {
           "log_num": {
             "type": "number",
+            "minimum": 0,
             "title": "Log #"
           },
           "species": {
@@ -1623,10 +1637,12 @@
           },
           "diameter": {
             "type": "number",
+            "minimum": 0,
             "title": "Diameter (cm)"
           },
           "length": {
             "type": "number",
+            "minimum": 0,
             "title": "Length (m)"
           }
         },
@@ -1637,6 +1653,7 @@
         "properties": {
           "tree_num": {
             "type": "number",
+            "minimum": 0,
             "title": "Tree #"
           },
           "species": {
@@ -1663,10 +1680,12 @@
           },
           "dbh": {
             "type": "number",
+            "minimum": 0,
             "title": "DBH (cm)"
           },
           "ht": {
             "type": "number",
+            "minimum": 0,
             "title": "Ht (m)"
           }
         },
@@ -1694,6 +1713,7 @@
               },
               "plot_number": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Plot #"
               },
               "utm_zone": {
@@ -1709,10 +1729,12 @@
               },
               "easting": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Easting"
               },
               "northing": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Northing"
               }
             },
@@ -1756,10 +1778,12 @@
                       },
                       "fixed_area": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Fixed Area Radius (m)"
                       },
                       "full_count_area": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Full Count Area (ha)"
                       },
                       "tree_comments": {
@@ -1905,10 +1929,12 @@
               },
               "num_plots_stratum": {
                 "type": "number",
+                "minimum": 0,
                 "title": "# of Plots per Stratum"
               },
               "mapped_stratum_size": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Other"
               },
               "bec_zone": {
@@ -1993,6 +2019,7 @@
                       },
                       "estimated_size": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Estimated Size if Not Consistent with Map"
                       }
                     },
@@ -2015,6 +2042,7 @@
             "properties": {
               "estimated_age_of_oldest_trees": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Estimated Age of Oldest Trees in Reserve (other than vets)"
               },
               "patch_location": {
@@ -2291,10 +2319,12 @@
                       },
                       "bear_den": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Bear Den"
                       },
                       "hibernaculum": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Hibernaculum"
                       },
                       "vet_trees": {
@@ -2310,22 +2340,27 @@
                       },
                       "mineral_lick": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Mineral Lick"
                       },
                       "large_stick_nest": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Large Stick Nest"
                       },
                       "cavity_nest": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Cavity Nest"
                       },
                       "large_hollow_tree": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Large Hollow Tree"
                       },
                       "large_witches_broom": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Large Witches Broom"
                       },
                       "karst_feature": {
@@ -2489,10 +2524,12 @@
               },
               "nar": {
                 "type": "number",
+                "minimum": 0,
                 "title": "NAR (ha)"
               },
               "gross_area": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Gross area (ha)"
               },
               "override_code": {
@@ -2657,10 +2694,12 @@
                     "properties": {
                       "water_sample": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Water Sample"
                       },
                       "water_sample_requisition_number": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Water Sample Requisition Number"
                       },
                       "surface_water_temperature": {
@@ -2669,6 +2708,7 @@
                       },
                       "field_ph": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Field pH (Surface/Bottom)"
                       },
                       "turbidity": {
@@ -2678,6 +2718,7 @@
                       },
                       "ice_depth": {
                         "type": "number",
+                        "minimum": 0,
                         "title": "Ice Depth (m)"
                       }
                     }
@@ -3176,7 +3217,7 @@
           "applicator1_name": {
             "type": "array",
             "default": [{}],
-            "title": "Primary Observer Name",
+            "title": "Primary Applicator Name",
             "items": {
               "$ref": "#/components/schemas/Persons"
             },
@@ -3185,7 +3226,7 @@
           "applicator2_name": {
             "type": "array",
             "default": [{}],
-            "title": "Secondary Observer Name",
+            "title": "Secondary Applicator Name",
             "items": {
               "$ref": "#/components/schemas/Persons"
             },
@@ -3217,6 +3258,7 @@
           },
           "count_duration": {
             "type": "number",
+            "minimum": 0,
             "title": "Duration of Count (min)",
             "minimum": 1,
             "x-tooltip-text": "Time spent on counting the agents (minutes)"
@@ -3235,16 +3277,19 @@
           },
           "plant_count": {
             "type": "number",
+            "minimum": 0,
             "title": "Plant Count",
             "x-tooltip-text": "Numeric value (exact or approximate)"
           },
           "biological_agent_count": {
             "type": "number",
+            "minimum": 0,
             "title": "Biological Agent Count",
             "x-tooltip-text": "Numeric value (exact or approximate)"
           },
           "collection_history": {
             "type": "number",
+            "minimum": 0,
             "title": "Collection History",
             "x-tooltip-text": "Enter the IAPP or InvasivesBC record number to indicate the location where the biocontrol agents were collected from"
           },
@@ -3271,96 +3316,115 @@
           },
           "phen_transect_seedlings": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Seedlings",
             "x-tooltip-text": "Number of seedlings observed"
           },
           "phen_transect_rosettes": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Rosettes",
             "x-tooltip-text": "Number of rosettes observed"
           },
           "phen_transect_bolting": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Bolting",
             "x-tooltip-text": "Number of bolting observed"
           },
           "phen_transect_flowering": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Flowering",
             "x-tooltip-text": "Number of flowering observed"
           },
           "phen_transect_seeds": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Seeds",
             "x-tooltip-text": "Number of seeds observed"
           },
           "phen_transect_senescent": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Senescent",
             "x-tooltip-text": "Number of senescent observed"
           },
           "phen_total_plants": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Plants",
             "x-tooltip-text": "Number of plants observed"
           },
           "phen_number_stems": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Stems",
             "x-tooltip-text": "Number of stems observed"
           },
           "phen_tallest_1": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Tallest Stem 1",
             "x-tooltip-text": "Enter stem height in centimetres"
           },
           "phen_tallest_2": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Tallest Stem 2",
             "x-tooltip-text": "Enter stem height in centimetres"
           },
           "phen_tallest_3": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Tallest Stem 3",
             "x-tooltip-text": "Enter stem height in centimetres"
           },
           "phen_tallest_4": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Tallest Stem 4",
             "x-tooltip-text": "Enter stem height in centimetres"
           },
           "phen_level_se": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level SE",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_level_ro": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level RO",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_level_bo": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level BO",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_level_fl": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level FL",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_level_sf": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level SF",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_level_sc": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Level SC",
             "x-tooltip-text": "Enter percentage"
           },
           "phen_total_percentage": {
             "type": "number",
+            "minimum": 0,
             "title": "Phenology Total Percentage",
             "maximum": 100,
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
@@ -3402,8 +3466,12 @@
             ],
             "properties": {
               "applicator1_name": {
-                "type": "string",
-                "title": "Primary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Primary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of primary applicator"
               },
               "applicator1_license": {
@@ -3412,9 +3480,13 @@
                 "x-tooltip-text": "Valid pesticide applicator certificate number"
               },
               "applicator2_name": {
-                "type": "string",
-                "title": "Secondary Applicator",
-                "x-tooltip-text": "Name of secondary applicator"
+                "type": "array",
+                "default": [{}],
+                "title": "Secondary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
+                "x-tooltip-text": "Name of Secondary applicator"
               },
               "applicator2_license": {
                 "type": "string",
@@ -3480,6 +3552,7 @@
               },
               "wind_speed": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Wind Speed (km/h)",
                 "minimum": 0,
                 "default": 0,
@@ -3529,8 +3602,12 @@
             ],
             "properties": {
               "applicator1_name": {
-                "type": "string",
-                "title": "Primary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Primary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of primary applicator"
               },
               "applicator1_license": {
@@ -3539,8 +3616,12 @@
                 "x-tooltip-text": "Valid pesticide applicator certificate number"
               },
               "applicator2_name": {
-                "type": "string",
-                "title": "Secondary Applicator",
+                "type": "array",
+                "default": [{}],
+                "title": "Secondary Applicator Name",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
                 "x-tooltip-text": "Name of secondary applicator"
               },
               "applicator2_license": {
@@ -3597,6 +3678,7 @@
               },
               "wind_speed": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Wind Speed (km/h)",
                 "minimum": 0,
                 "default": 0,
@@ -3610,6 +3692,7 @@
               },
               "humidity": {
                 "type": "number",
+                "minimum": 0,
                 "title": "Humidity",
                 "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
                 "x-tooltip-text": "Relative humidity expressed as a percentage"
@@ -3742,6 +3825,7 @@
           },
           "treated_area": {
             "type": "number",
+            "minimum": 0,
             "title": "Treated Area (m2)",
             "x-tooltip-text": "Treated Area (m2)"
           },
@@ -3891,6 +3975,7 @@
           },
           "mortality": {
             "type": "number",
+            "minimum": 0,
             "title": "Mortality",
             "x-tooltip-text": "Number of agents dead at time of release"
           },
@@ -4082,14 +4167,17 @@
           },
           "plant_count": {
             "type": "number",
+            "minimum": 0,
             "title": "Plant Count"
           },
           "agent_count": {
             "type": "number",
+            "minimum": 0,
             "title": "Agent Count"
           },
           "count_duration": {
             "type": "number",
+            "minimum": 0,
             "title": "Count Duration"
           },
           "suitable_collection_site": {
@@ -4470,6 +4558,7 @@
           },
           "percent_covered": {
             "type": "number",
+            "minimum": 0,
             "title": "Percent Covered",
             "maximum": 100,
             "x-tooltip-text": "Percent covered by this shoreline type"
@@ -4693,11 +4782,13 @@
                                   },
                                   "utm_easting": {
                                     "title": "UTM Easting",
-                                    "type": "number"
+                                    "type": "number",
+                                    "minimum": 0
                                   },
                                   "utm_northing": {
                                     "title": "UTM Northing",
-                                    "type": "number"
+                                    "type": "number",
+                                    "minimum": 0
                                   }
                                 }
                               }
@@ -4865,6 +4956,7 @@
           },
           "age_analysis": {
             "type": "number",
+            "minimum": 0,
             "title": "Age Analysis"
           },
           "genetic_analysis": {
@@ -5086,6 +5178,7 @@
           },
           "area_treated": {
             "type": "number",
+            "minimum": 0,
             "title": "Area Treated (Ha)"
           },
           "application_rate": {
@@ -5671,26 +5764,31 @@
           },
           "start_x_utm": {
             "type": "number",
+            "minimum": 0,
             "title": "Start UTM Easting",
             "x-tooltip-text": "Provide a UTM start Easting coordinate"
           },
           "start_y_utm": {
             "type": "number",
+            "minimum": 0,
             "title": "Start UTM Northing",
             "x-tooltip-text": "Provide a UTM start Northing coordinate"
           },
           "end_x_utm": {
             "type": "number",
+            "minimum": 0,
             "title": "End UTM Easting",
             "x-tooltip-text": "Provide a UTM end Easting coordinate"
           },
           "end_y_utm": {
             "type": "number",
+            "minimum": 0,
             "title": "End UTM Northing",
             "x-tooltip-text": "Provide a UTM end Northing coordinate"
           },
           "transect_length": {
             "type": "number",
+            "minimum": 0,
             "title": "Transect Length (m)",
             "x-tooltip-text": "Transect length in meters based on distance between start and end points"
           },
@@ -5828,46 +5926,55 @@
           },
           "offset_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Easting",
             "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Northing",
             "x-tooltip-text": "UTM Northing point at the offset distance"
           },
           "veg_transect_native_forbs": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Native Forbs",
             "x-tooltip-text": "Number of native forbs observed"
           },
           "veg_transect_grasses": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Grasses",
             "x-tooltip-text": "Number of grasses observed"
           },
           "veg_transect_bare_ground": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Bare Ground Patches",
             "x-tooltip-text": "Number of bare ground patches observed"
           },
           "veg_transect_shrubs": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Shrubs/Trees",
             "x-tooltip-text": "Number of shrubs/trees observed"
           },
           "veg_transect_bryophytes": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Bryophytes",
             "x-tooltip-text": "Number of bryophytes observed"
           },
           "veg_transect_litter": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Litter",
             "x-tooltip-text": "Number of litter observed"
           },
@@ -6127,16 +6234,19 @@
           },
           "offset_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Easting",
             "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Northing",
             "x-tooltip-text": "UTM Northing point at the offset distance"
           }
@@ -6167,61 +6277,73 @@
           },
           "offset_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Easting",
             "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
+            "minimum": 0,
             "title": "Offset Point UTM Northing",
             "x-tooltip-text": "UTM Northing point at the offset distance"
           },
           "veg_transect_target": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Target",
             "x-tooltip-text": "Number of transect targets observed"
           },
           "veg_transect_other_ips": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Other IPs",
             "x-tooltip-text": "Number of other IPs observed"
           },
           "veg_transect_native_forbs": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Native Forbs",
             "x-tooltip-text": "Percentage of native forbs observed"
           },
           "veg_transect_grasses": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Grasses",
             "x-tooltip-text": "Percentage of grasses observed"
           },
           "veg_transect_bare_ground": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Bare Ground Patches",
             "x-tooltip-text": "Percentage of bare ground patches observed"
           },
           "veg_transect_shrubs": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Shrubs/Trees",
             "x-tooltip-text": "Percentage of shrubs/trees observed"
           },
           "veg_transect_bryophytes": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Bryophytes",
             "x-tooltip-text": "Percentage of bryophytes observed"
           },
           "veg_transect_litter": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetation Litter",
             "x-tooltip-text": "Percentage of litter observed"
           },
           "veg_total_percentage": {
             "type": "number",
+            "minimum": 0,
             "title": "Vegetaton Total Percentage",
             "maximum": 100,
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
@@ -6230,11 +6352,13 @@
       },
       "PercentCovered": {
         "type": "number",
+        "minimum": 0,
         "title": "Percent Covered",
         "maximum": 100
       },
       "NumberPlants": {
         "type": "number",
+        "minimum": 0,
         "title": "Number of Plants"
       },
       "LumpedSpeciesType": {
@@ -6274,6 +6398,7 @@
         "properties": {
           "haul_number": {
             "type": "number",
+            "minimum": 0,
             "title": "Haul Number"
           },
           "date_time_in": {
@@ -6293,14 +6418,17 @@
           },
           "length": {
             "type": "number",
+            "minimum": 0,
             "title": "Length (m)"
           },
           "depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Depth (m)"
           },
           "mesh_size": {
             "type": "number",
+            "minimum": 0,
             "title": "Mesh Size (mm)"
           },
           "mesh_description": {
@@ -6349,6 +6477,7 @@
           },
           "depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Depth (m)"
           },
           "latitude": {
@@ -6365,10 +6494,12 @@
           },
           "water_column_ph": {
             "type": "number",
+            "minimum": 0,
             "title": "Water Column pH"
           },
           "secchi_depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Secchi Depth (m)"
           },
           "preservative_type": {
@@ -6411,6 +6542,7 @@
         "properties": {
           "tows": {
             "type": "number",
+            "minimum": 0,
             "title": "Tows"
           },
           "date_time": {
@@ -6424,22 +6556,27 @@
           },
           "tow_depth_length": {
             "type": "number",
+            "minimum": 0,
             "title": "Depth/Length of Tow (m)"
           },
           "volume_sampled": {
             "type": "number",
+            "minimum": 0,
             "title": "Total Volume Sampled (L)"
           },
           "containers": {
             "type": "number",
+            "minimum": 0,
             "title": "Containers"
           },
           "preserved_sample_ph": {
             "type": "number",
+            "minimum": 0,
             "title": "Sample pH (Preserved)"
           },
           "arrival_sample_ph": {
             "type": "number",
+            "minimum": 0,
             "title": "Sample ph (Arrival)"
           },
           "preservative_type": {
@@ -6448,6 +6585,7 @@
           },
           "preservation_concentration": {
             "type": "number",
+            "minimum": 0,
             "title": "Preservation Concentration"
           },
           "other_species": {
@@ -6549,6 +6687,7 @@
           },
           "sampling_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Sampling Locations Distance"
           },
           "sampling_location_lat": {
@@ -6572,10 +6711,12 @@
           },
           "density": {
             "type": "number",
+            "minimum": 0,
             "title": "Density"
           },
           "diameter_largest_individual": {
             "type": "number",
+            "minimum": 0,
             "title": "Largest Individual Diameter"
           },
           "other_species_found": {
@@ -6594,6 +6735,7 @@
         "properties": {
           "passes": {
             "type": "number",
+            "minimum": 0,
             "title": "Number of Passes",
             "x-tooltip-text": "The number of electrofishing passes"
           },
@@ -6611,16 +6753,19 @@
           },
           "one_pass_time": {
             "type": "number",
+            "minimum": 0,
             "title": "Time of One Pass (seconds)",
             "x-tooltip-text": "Total time for one pass in seconds"
           },
           "length": {
             "type": "number",
+            "minimum": 0,
             "title": "Length (m)",
             "x-tooltip-text": "The linear length of the electrofishing pass"
           },
           "width": {
             "type": "number",
+            "minimum": 0,
             "title": "Width (m)",
             "x-tooltip-text": "The linear length of the zone of stream in which the electrofishing was conducted"
           },
@@ -6632,16 +6777,19 @@
           },
           "voltage": {
             "type": "number",
+            "minimum": 0,
             "title": "Voltage",
             "x-tooltip-text": "The electric potential used during the pass"
           },
           "frequency": {
             "type": "number",
+            "minimum": 0,
             "title": "Frequency (Hz)",
             "x-tooltip-text": "The number of pulses per second"
           },
           "pulse": {
             "type": "number",
+            "minimum": 0,
             "title": "Pulse (ms)",
             "x-tooltip-text": "Pulse width is the amount of time the current is truned on during one pulse"
           },
@@ -6687,6 +6835,7 @@
           },
           "number_inlets": {
             "type": "number",
+            "minimum": 0,
             "title": "Number of Inlets"
           },
           "inlet_type": {
@@ -6695,6 +6844,7 @@
           },
           "number_outlets": {
             "type": "number",
+            "minimum": 0,
             "title": "Number of Outlets"
           },
           "outlet_type": {
@@ -6725,6 +6875,7 @@
           },
           "access_off_road_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Off Road Distance"
           },
           "access_trail": {
@@ -6733,6 +6884,7 @@
           },
           "access_trail_distance": {
             "type": "number",
+            "minimum": 0,
             "title": "Trail Distance"
           },
           "access_closest_community": {
@@ -6753,11 +6905,13 @@
         "properties": {
           "water_sample_depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Maximum depth (m)",
             "x-tooltip-text": "Enter the water depth in metres"
           },
           "secchi_depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Secchi Depth (m)",
             "x-tooltip-text": "Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible."
           },
@@ -6774,6 +6928,7 @@
         "properties": {
           "emergent_vegetation": {
             "type": "number",
+            "minimum": 0,
             "title": "Emergent Vegetation (Sparse or %)"
           },
           "emergent_vegetation_dominant_species": {
@@ -6782,6 +6937,7 @@
           },
           "submergent_vegetation": {
             "type": "number",
+            "minimum": 0,
             "title": "Submergent Vegetation (Sparse or %)"
           },
           "submergent_vegetation_dominant_species": {
@@ -6802,18 +6958,22 @@
           },
           "littoral_area": {
             "type": "number",
+            "minimum": 0,
             "title": "Littoral Area"
           },
           "max_depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Max Depth"
           },
           "benchmark": {
             "type": "number",
+            "minimum": 0,
             "title": "Benchmark"
           },
           "max_water_level": {
             "type": "number",
+            "minimum": 0,
             "title": "Max Water Level"
           },
           "benchmark_type": {
@@ -6828,10 +6988,12 @@
         "properties": {
           "depth": {
             "type": "number",
+            "minimum": 0,
             "title": "Depth (m)"
           },
           "dissolved_oxygen": {
             "type": "number",
+            "minimum": 0,
             "title": "Dissolved Oxygen (mg/L)"
           },
           "temperature": {
@@ -6840,10 +7002,12 @@
           },
           "conductivity": {
             "type": "number",
+            "minimum": 0,
             "title": "Conductivity (uS/cm)"
           },
           "thermocline": {
             "type": "number",
+            "minimum": 0,
             "title": "Thermocline"
           }
         }
@@ -7133,6 +7297,7 @@
           },
           "reported_area": {
             "type": "number",
+            "minimum": 0,
             "title": "Area (m\u00B2)",
             "minimum": 1
           },
@@ -7592,6 +7757,7 @@
           },
           "mortality": {
             "type": "number",
+            "minimum": 0,
             "title": "Mortality",
             "x-tooltip-text": "Number of agents dead at time of release"
           },
