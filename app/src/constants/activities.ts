@@ -50,21 +50,17 @@ export enum ActivitySubtype {
 
 export enum ActivitySubtypeShortLabels {
   // Observations:
-  Activity_Observation_PlantTerrestrial = 'Plant Terrestrial',
-  Activity_Observation_PlantTerrestrial_BulkEdit = 'Plant Terrestrial',
-  Activity_Observation_PlantAquatic = 'Plant Aquatic',
-  Activity_AnimalActivity_AnimalTerrestrial = 'Animal Terrestrial',
-  Activity_AnimalActivity_AnimalAquatic = 'Animal Aquatic',
+  Activity_Observation_PlantTerrestrial = 'Terrestrial Plant Observation',
+  Activity_Observation_PlantAquatic = 'Aquatic Plant Observation',
+  Activity_AnimalActivity_AnimalTerrestrial = 'Terrestrial Animal Observation',
+  Activity_AnimalActivity_AnimalAquatic = 'Aquatic Animal Observation',
 
   // Treatments:
-  Activity_Treatment_ChemicalPlant = 'Terrestrial Invasive Plant Chemical Treatment',
-  Activity_Treatment_ChemicalPlant_BulkEdit = 'Terrestrial Invasive Plant Chemical Treatment',
-  Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Invasive Plant Chemical Treatment',
-  Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
-  Activity_Treatment_MechanicalPlant_BulkEdit = 'Terrestrial Invasive Plant Mechanical Treatment',
+  Activity_Treatment_ChemicalPlant = 'Terrestrial Plant Treatment - Chemical',
+  Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Plant Treatment - Chemical',
+  Activity_Treatment_MechanicalPlant = 'Terrestrial Plant Treatment - Mechanical',
   Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
-  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
   Activity_Treatment_ChemicalAnimalTerrestrial = 'Terrestrial Animal Chemical Treatment',
   Activity_Treatment_MechanicalAnimalTerrestrial = 'Terrestrial Animal Mechanical Treatment',
 
@@ -73,8 +69,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Monitoring_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
-  Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical',
-  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical',
+  Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical animal',
+  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical mon',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',

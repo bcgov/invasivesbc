@@ -1,9 +1,12 @@
+import { Capacitor } from '@capacitor/core';
 import React from 'react';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
+import MultiSelectOrEdit from './Tools/ToolTypes/Data/MultiSelectOrEdit';
 import NewRecord from './Tools/ToolTypes/Data/NewRecord';
 import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
+import DrawButtonList from './Tools/ToolTypes/GeoEdit/EditTools';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
@@ -31,9 +34,11 @@ export const ToolbarContainer = (props) => {
           <DisplayPosition map={props.map} />
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          <JumpToTrip />
-          {/* <NewRecord />
-          <EditRecord /> */}
+          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          {/*<NewRecord />
+          <EditRecord />
+          <MultiSelectOrEdit />
+          <DrawButtonList />*/}
           <JumpToActivity id={props.id} />
         </div>
       </div>

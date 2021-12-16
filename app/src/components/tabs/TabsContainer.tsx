@@ -59,7 +59,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    fontSize: '0.9em'
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -160,14 +161,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const loadUserFromCache = async () => {
     try {
       // Try to fetch user info from cache and set it to userInfo
-      console.log('Attempting to get user info from cache in context...');
       api.getUserInfoFromCache().then((res: any) => {
         if (res) {
-          console.log('User info found in cache from context');
           setUserInfo(res.userInfo);
           setUserInfoLoaded(true);
         } else {
-          console.log('No cached user info');
         }
       });
     } catch (error) {
@@ -188,11 +186,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     // Reset user info object
     if (isMobile()) {
       try {
-        console.log('Attempting to clear cache from tabs...');
         await api.clearUserInfoFromCache().then((res: any) => {
           setUserInfoLoaded(false);
           setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-          console.log('Cache clear successful.');
         });
       } catch (err) {
         console.log('Error clearing cache: ', err);
@@ -222,10 +218,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         userRoles: roles
       };
       try {
-        console.log('Attempting to cache user info: ', userInfoAndRoles);
-        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
-          console.log('User info and roles cached successfully.');
-        });
+        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {});
       } catch (err) {
         console.log('Error caching user roles: ', err);
       }
@@ -307,31 +300,37 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home />
-        });
-
+        if (isAuthenticated()) {
+          tabsUserHasAccessTo.push({
+            label: 'Search',
+            path: '/home/search',
+            icon: <Search fontSize={'small'} />
+          });
+        }
         tabsUserHasAccessTo.push({
           label: 'Map',
           path: '/home/map',
-          icon: <Map />
+          icon: <Map fontSize={'small'} />
         });
 
         if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
-            label: 'Search',
-            path: '/home/search',
-            icon: <Search />
+            label: 'Current Activity',
+            path: '/home/activity',
+            icon: <Assignment fontSize={'small'} />
           });
         }
+        tabsUserHasAccessTo.push({
+          label: 'Home',
+          path: '/home/landing',
+          icon: <Home fontSize={'small'} />
+        });
 
         if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
-            icon: <Explore />
+            icon: <Explore fontSize={'small'} />
           });
         }
 
@@ -340,7 +339,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             label: 'Cached Records',
             path: '/home/references',
             childPaths: ['/home/references/activity'],
-            icon: <Bookmarks />
+            icon: <Bookmarks fontSize={'small'} />
           });
         }
 
@@ -348,17 +347,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
-            icon: <HomeWork />
+            icon: <HomeWork fontSize={'small'} />
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-          tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment />
-          });
-        }
         return tabsUserHasAccessTo;
       });
     };
@@ -413,24 +405,38 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </Hidden>
 
           <Grid className={classes.alignment} flex-direction="row" container>
-            <Grid container justifyContent="center" alignItems="center" xs={6} md={1} item>
-              <img
-                className={classes.pointer}
-                src={invbclogo}
-                width="50"
-                style={{ marginRight: '5px' }}
-                height="50"
-                alt="B.C. Government Logo"
-                onClick={() => history.push('/')}
-              />
-              <b>InvasivesBC</b>
-              <div className={'beta'}>BETA</div>
+            {/*<Grid style={{ width: '200px' }} item>*/}
+            <Grid
+              style={{ alignItems: 'center', display: 'flex', width: '200px' }}
+              item
+              container
+              align-items="center"
+              flex-direction="row">
+              <Grid item>
+                <img
+                  className={classes.pointer}
+                  src={invbclogo}
+                  width="60"
+                  style={{ marginRight: '5px' }}
+                  height="60"
+                  alt="B.C. Government Logo"
+                  onClick={() => history.push('/')}
+                />
+              </Grid>
+              <Grid item>
+                <b>InvasivesBC</b>
+              </Grid>
+              <Grid item>
+                <div className={'beta'}>BETA</div>
+              </Grid>
+              {/*</Grid>*/}
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
                 <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
                   {tabConfig.map((tab) => (
                     <Tab
+                      style={{ fontSize: '.7rem', fontWeight: 'bold' }}
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
                       icon={tab.icon}
