@@ -189,7 +189,7 @@ export const FREP_FormA = {
       type: 'array',
       title: 'Stand Table',
       items: {
-        $ref: '#/components/schemas/FREP_Stand_Table'
+        ...FREP_Stand_Table
       }
     },
     plot_information: {
@@ -233,7 +233,7 @@ export const FREP_FormA = {
                   type: 'array',
                   title: 'Logs',
                   items: {
-                    $ref: '#/components/schemas/FREP_Log'
+                    ...FREP_Log
                   }
                 },
                 log_comments: {
@@ -841,7 +841,7 @@ export const FREP_FormB = {
       type: 'array',
       title: 'Form A',
       items: {
-        $ref: '#/components/schemas/FREP_FormA'
+        ...FREP_FormA
       }
     }
   }
@@ -982,7 +982,7 @@ export const FREP_FormC = {
       type: 'array',
       title: 'Form B',
       items: {
-        $ref: '#/components/schemas/FREP_FormB'
+        ...FREP_FormB
       }
     }
   }

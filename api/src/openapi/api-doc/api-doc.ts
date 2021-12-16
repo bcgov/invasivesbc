@@ -1,3 +1,4 @@
+import { Activity_FREP_FormC } from './Activities/FREP/FREP';
 import { Activity_Biocontrol_Collection, Activity_Biocontrol_Release } from './Activities/Plant/Biocontrol';
 import {
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
@@ -173,6 +174,8 @@ export const api_doc = {
       Activity_Transect_FireMonitoring: Activity_Transect_FireMonitoring,
       Activity_Transect_Vegetation: Activity_Transect_Vegetation,
       Activity_Transect_BiocontrolEfficacy: Activity_Transect_BiocontrolEfficacy,
+      //FREP
+      Activity_FREP_FormC: Activity_FREP_FormC,
       //other
       ChemicalTreatment_Species_Codes: ChemicalTreatment_Species_Codes
     }

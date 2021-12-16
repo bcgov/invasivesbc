@@ -909,6 +909,169 @@ const BiocontrolEfficacyTransectLines = {
   }
 };
 
+const FREP_Log = {
+  ...ThreeColumnStyle,
+  log_num: {},
+  species: {},
+  decay_class: {},
+  diameter: {},
+  length: {}
+};
+
+const FREP_Stand_Table = {
+  ...ThreeColumnStyle,
+  tree_num: {},
+  species: {},
+  wt_class: {},
+  dbh: {},
+  ht: {}
+};
+
+const FREP_FormA = {
+    plot_identification: {
+      ...ThreeColumnStyle,
+        date: {},
+        opening_id: {},
+        assessed_by: {},
+        plot_number: {},
+        utm_zone: {},
+        easting: {},
+        northing: {}
+    },
+    plot_identification_trees: {
+      ...ThreeColumnStyle,
+      trees_exist: {},
+      baf: {},
+      fixed_area: {},
+      full_count_area: {},
+      tree_comments: {}
+    },
+    stand_table: {
+      items: {
+        ...FREP_Stand_Table
+      }
+    },
+    plot_information: {
+      ...ThreeColumnStyle,
+      cwd_in_transect: {},
+      first_leg: {},
+      second_leg: {},
+      log: {
+        items: {
+          ...FREP_Log
+        }
+      },
+      log_comments: {}
+  }
+};
+
+const FREP_FormB = {
+  stratum_summary: {
+    ...ThreeColumnStyle,
+    date: {},
+    opening_id: {},
+    assessed_by: {},
+    stratum_id: {},
+    stratum_number: {},
+    stratum_type: {},
+    num_plots_stratum: {},
+    mapped_stratum_size: {},
+    bec_zone: {},
+    subzone: {},
+    variant: {},
+    site_series: {},
+    stratum_location_consistent: {},
+    estimated_size: {}
+  },
+  dispersed_summary: {
+    ...ThreeColumnStyle,
+    estimated_age_of_oldest_trees: {},
+    patch_location: {},
+    percent_trees_windthrown: {},
+    windthrow_distribution: {},
+    windthrow_treatment: {}
+  },
+  reserve_constraints: {
+    ...ThreeColumnStyle,
+    reserve_constraints_none: {},
+    wetsite: {},
+    rmz: {},
+    rrz: {},
+    rock_outcrop: {},
+    noncommercial_brush: {},
+    low_mercantile_timber: {},
+    sensitive_terrain: {},
+    uwr_wha_whf: {},
+    ogma: {},
+    visuals: {},
+    cultural_heritage_feature: {},
+    recreation_feature: {},
+    reserve_constraints_other: {},
+    reserve_constraints_comments: {}
+  },
+  ecological_anchors: {
+    ...ThreeColumnStyle,
+    ecological_anchors_none: {},
+    bear_den: {},
+    hibernaculum: {},
+    vet_trees: {},
+    mineral_lick: {},
+    large_stick_nest: {},
+    cavity_nest: {},
+    large_hollow_tree: {},
+    large_witches_broom: {},
+    karst_feature: {},
+    large_tree_for_site: {},
+    cwd_heavy_concentration: {},
+    active_wildlife_trails: {},
+    active_wlt_cwd_feeding: {},
+    uncommon_tree_species: {},
+    ecological_anchors_other: {},
+    ecological_anchors_comments: {}
+  },
+  form_a: {
+    items: {
+      ...FREP_FormA
+    }
+  }
+};
+
+const FREP_FormC = {
+  opening_identification: {
+    ...ThreeColumnStyle,
+      opening_number: {},
+      opening_id: {},
+      license_number: {},
+      cp_number: {},
+      block: {},
+      licensee: {},
+      district_code: {},
+      location_description: {},
+      nar: {},
+      gross_area: {},
+      override_code: {}
+  },
+  innovative_practices: {
+    ...ThreeColumnStyle,
+    innovative_practices: {}
+  },
+  invasive_plants: {
+    ...ThreeColumnStyle,
+    invasive_code: {}
+  },
+  evaluator_opinion: {
+    ...ThreeColumnStyle,
+      evaluator_opinion_code: {},
+      rationale: {}
+    },
+  form_b: {
+    items: {
+      ...FREP_FormB
+    }
+  }
+};
+
+
 /*
   Export
 */
@@ -958,7 +1121,8 @@ const BaseUISchemaComponents = {
     FireMonitoringTransectLines,
     VegetationTransectLines,
     TransectInvasivePlants,
-    BiocontrolEfficacyTransectLines
+    BiocontrolEfficacyTransectLines,
+    FREP_FormC
   },
 };
 

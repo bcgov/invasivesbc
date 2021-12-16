@@ -309,48 +309,16 @@ const Activity_Biocontrol_Release = {
 
 // -------------------------- FREP Forms ----------------------------------
 
-// const Activity_FREP_FormA = {
-//   activity_data: {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   activity_type_data: {
-//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
-//     ...BaseUISchemaComponents.FREP
-//   },
-//   activity_subtype_data: {
-//     ...BaseUISchemaComponents.column_styles.FourColumnStyle,
-//     ...BaseUISchemaComponents.FREP_FormA
-//   }
-// };
-
-// const Activity_FREP_FormB = {
-//   activity_data: {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   activity_type_data: {
-//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
-//     ...BaseUISchemaComponents.FREP
-//   },
-//   activity_subtype_data: {
-//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
-//     ...BaseUISchemaComponents.FREP_FormB
-//   }
-// };
-
-// const Activity_FREP_FormC = {
-//   activity_data: {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-//     ...BaseUISchemaComponents.activity_data_objects.Activity
-//   },
-//   activity_type_data: {
-//     ...BaseUISchemaComponents.FREP
-//   },
-//   activity_subtype_data: {
-//     ...BaseUISchemaComponents.FREP_FormC
-//   }
-// };
+const Activity_FREP_FormC = {
+  activity_data: {
+    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_data_objects.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.general_objects.FREP_FormC
+  },
+  'ui:order':['activity_data','activity_subtype_data']
+};
 
 // -------------------------- Animal ----------------------------------
 
@@ -406,11 +374,11 @@ const RootUISchemas = {
   Activity_Transect_FireMonitoring,
   Activity_Transect_Vegetation,
   Activity_Transect_BiocontrolEfficacy,
+  //FREP
+  Activity_FREP_FormC
+  //Animals
   // Activity_AnimalActivity_AnimalTerrestrial,
   // Activity_AnimalActivity_AnimalAquatic,
-  // Activity_FREP_FormA,
-  // Activity_FREP_FormB,
-  // Activity_FREP_FormC
 };
 
 export default RootUISchemas;
