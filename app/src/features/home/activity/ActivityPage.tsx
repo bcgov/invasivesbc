@@ -482,18 +482,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (!wellIdandProximity) {
       return;
     } else {
-      const newFormData = doc;
+      const newFormData = { ...doc };
       //set well_id and well_proximity fields
-      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id ? wellIdandProximity.id : undefined;
-      newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity
-        ? Number(wellIdandProximity.proximity.toFixed(0))
+      newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] = wellIdandProximity.id
+        ? wellIdandProximity.id
         : undefined;
+      newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] =
+        wellIdandProximity.proximity ? Number(wellIdandProximity.proximity.toFixed(0)) : undefined;
 
       const newValuesAreSame: boolean =
-        newFormData['formData']['activity_data']['well_id'] ===
-          activityResult['formData']['activity_data']['well_id'] &&
-        newFormData['formData']['activity_data']['well_proximity'] ===
-          activityResult['formData']['activity_data']['well_proximity'];
+        newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] ===
+          activityResult['formData']['activity_subtype_data']['Well_Information']['well_id'] &&
+        newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] ===
+          activityResult['formData']['activity_subtype_data']['Well_Information']['well_proximity'];
 
       //if it is a Chemical treatment and there are wells too close, display warning dialog
       if (
@@ -567,7 +568,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //If not in Observation nor in Chemical Treatment, just make changes to fields
       else {
-        await updateDoc({ formData: newFormData['formData'] });
+        await updateDoc({ formData: { ...newFormData['formData'] } });
       }
     }
   };

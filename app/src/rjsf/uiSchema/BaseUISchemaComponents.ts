@@ -35,7 +35,7 @@ const OneColumnStyle = {
 
 const Activity = {
   activity_date_time: { 'ui:widget': 'datetime' },
-  reported_area: {},
+  reported_area: { 'ui:readonly': true },
   latitude: { 'ui:readonly': true },
   longitude: { 'ui:readonly': true },
   utm_zone: { 'ui:readonly': true },
