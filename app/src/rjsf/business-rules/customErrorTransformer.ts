@@ -12,6 +12,10 @@ export const getCustomErrorTransformer = () => {
         return false;
       }
 
+      if (error.message === 'should match "then" schema') {
+        return false;
+      }
+
       if (error.message === 'should match exactly one schema in oneOf') {
         return false;
       }

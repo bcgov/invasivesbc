@@ -291,20 +291,15 @@ export const Weather_Conditions = {
   type: 'object',
   title: 'Weather Conditions',
   required: ['temperature', 'cloud_cover_code', 'precipitation_code', 'wind_speed'],
-  dependencies: {
-    wind_speed: {
-      oneOf: [
-        {
-          properties: {
-            wind_speed: {
-              not: { const: 0 }
-            }
-          },
-          required: ['wind_aspect']
-        }
-      ]
+
+  if: {
+    properties: {
+      wind_speed: {
+        not: { const: 0 }
+      }
     }
   },
+  then: { required: ['wind_aspect'] },
   properties: {
     temperature: {
       type: 'number',

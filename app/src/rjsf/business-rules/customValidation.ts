@@ -270,6 +270,34 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
 }
 
 /*
+  Function to validate temperature in weather conditions object
+*/
+export function getWeatherCondTemperatureValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.Weather_Conditions) {
+      return errors;
+    }
+    // validate temperature
+
+    errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors = [];
+    const { temperature } = formData.activity_subtype_data['Weather_Conditions'];
+
+    //if themperature is out of normal range, display an error
+    if (temperature < 15 || temperature > 22) {
+      errors.activity_subtype_data['Weather_Conditions']['temperature'].addError(
+        'Temperature should ideally be between 15 and 22 degrees'
+      );
+    }
+    //if user clicked proceed in the warning dialog, remove the erro
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
+      errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors.pop();
+      return errors;
+    }
+    return errors;
+  };
+}
+
+/*
   Function to validate wind fields on chemical treatment forms
 
   If no wind there should be no wind direction
