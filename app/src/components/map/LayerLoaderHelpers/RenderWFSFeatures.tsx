@@ -197,6 +197,12 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
         layer.bindPopup(popupContent);
       };
 
+  console.log('==========');
+  console.log('bcgw_code', props.dataBCLayerName);
+  console.log('otherfeatures', otherFeatures);
+  console.log('layerStyles', layerStyles);
+  console.log('==========');
+
   return (
     <>
       {otherFeatures && layerStyles && (

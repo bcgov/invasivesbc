@@ -50,7 +50,7 @@ export const DataBCLayer = (props) => {
           inputGeo={props.inputGeo}
           online={false}
           opacity={props.opacity}
-          dataBCLayerName={props.layerName}
+          dataBCLayerName={props.bcgw_code}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );
