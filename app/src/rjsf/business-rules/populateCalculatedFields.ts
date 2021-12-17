@@ -6,14 +6,6 @@
 */
 
 /*
-  Function that calculates the herbicide dilution rate and specific treatment area
-*/
-export function populateHerbicideCalculatedFields(newSubtypeData: any): any {
-  const subTypeData = { ...newSubtypeData };
-  return subTypeData;
-}
-
-/*
   Function that calculates the transect line and point data
 
   Specifically the transect line length and bearing and
@@ -197,12 +189,12 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
 }
 
 export const autoFillTotalCollectionTime = (formData: any) => {
-  if (!formData.activity_subtype_data.collections) {
+  if (!formData.activity_subtype_data.Biocontrol_Collection_Information) {
     return formData;
   }
   const newCollections = [];
 
-  formData.activity_subtype_data.collections.forEach((collection) => {
+  formData.activity_subtype_data.Biocontrol_Collection_Information.forEach((collection) => {
     const newCollection = collection;
     if (collection.start_time && collection.stop_time) {
       const diff = Math.abs((new Date(collection.stop_time) as any) - (new Date(collection.start_time) as any));
@@ -225,20 +217,21 @@ export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   const fieldId = lastField[0];
   if (
     fieldId.includes('slope_code') &&
-    formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code === 'FL'
+    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code === 'FL'
   ) {
-    formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = 'FL';
+    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code = 'FL';
   }
   if (
     fieldId.includes('aspect_code') &&
-    formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code === 'FL'
+    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code === 'FL'
   ) {
-    formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = 'FL';
+    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code = 'FL';
   }
 
   return formData;
 };
 
+//not sure about this one. should be working, don't know how to test
 export const autoFillTreeNumbers = (activitySubtypeData: any) => {
   if (activitySubtypeData.form_b) {
     activitySubtypeData.form_b.forEach((FormB: any) => {
@@ -262,17 +255,19 @@ export const autoFillTreeNumbers = (activitySubtypeData: any) => {
   return activitySubtypeData;
 };
 
+//Biocontrol Release
 export const autoFillTotalReleaseQuantity = (formData: any) => {
   if (
-    !formData.activity_subtype_data.biological_agent_stages ||
-    formData.activity_subtype_data.biological_agent_stages.length < 1
+    !formData.activity_subtype_data.Biocontrol_Release_Information ||
+    !formData.activity_subtype_data.Biocontrol_Release_Information.biological_agent_stages ||
+    formData.activity_subtype_data.Biocontrol_Release_Information.biological_agent_stages.length < 1
   ) {
     return formData;
   }
 
   let total = null;
 
-  const bioAgentStagesArr = formData.activity_subtype_data.biological_agent_stages;
+  const bioAgentStagesArr = formData.activity_subtype_data.Biocontrol_Release_Information.biological_agent_stages;
 
   bioAgentStagesArr.forEach((el) => {
     if (!el.release_quantity || !el.biological_agent_stage_code) {
@@ -286,23 +281,38 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
     ...formData,
     activity_subtype_data: {
       ...formData.activity_subtype_data,
-      total_release_quantity: total
+      Biocontrol_Release_Information: {
+        ...formData.activity_subtype_data.Biocontrol_Release_Information,
+        total_release_quantity: total
+      }
     }
   };
 
   return newFormData;
 };
 
+//Monitoring Biocontrol Dispersal
 export const autoFillTotalBioAgentQuantity = (formData: any) => {
   if (
-    !formData.activity_subtype_data.biological_agent_stages ||
-    formData.activity_subtype_data.biological_agent_stages.length < 1
+    (!formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information ||
+      !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages ||
+      formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages.length < 1) &&
+    (!formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ||
+      !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+        .biological_agent_stages ||
+      formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_stages
+        .length < 1)
   ) {
     return formData;
   }
   let total = null;
 
-  const bioAgentStagesArr = formData.activity_subtype_data.biological_agent_stages;
+  const releaseMonitoring = formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information === undefined;
+
+  const bioAgentStagesArr =
+    releaseMonitoring === true
+      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_stages
+      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages;
 
   bioAgentStagesArr.forEach((el) => {
     if (!el.release_quantity || !el.biological_agent_stage_code) {
@@ -312,13 +322,28 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     }
   });
 
-  const newFormData = {
-    ...formData,
-    activity_subtype_data: {
-      ...formData.activity_subtype_data,
-      total_bio_agent_quantity: total
-    }
-  };
+  const newFormData =
+    releaseMonitoring === true
+      ? {
+          ...formData,
+          activity_subtype_data: {
+            ...formData.activity_subtype_data,
+            Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
+              ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+              total_bio_agent_quantity: total
+            }
+          }
+        }
+      : {
+          ...formData,
+          activity_subtype_data: {
+            ...formData.activity_subtype_data,
+            Monitoring_BiocontrolDispersal_Information: {
+              ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
+              total_bio_agent_quantity: total
+            }
+          }
+        };
 
   return newFormData;
 };

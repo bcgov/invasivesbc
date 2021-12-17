@@ -1331,6 +1331,7 @@ export const Persons = {
     person_name: {
       type: 'string',
       title: 'Person Name',
+      pattern: '[A-Za-z -]+',
       'x-tooltip-text': 'Name of person'
     }
   }

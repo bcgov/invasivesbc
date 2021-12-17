@@ -20,6 +20,11 @@ export const getCustomErrorTransformer = () => {
         return false;
       }
 
+      if (error.message === 'should match pattern "[A-Za-z -]+"') {
+        error.message = 'Only letters are allowed';
+        return error;
+      }
+
       return true;
     });
   };

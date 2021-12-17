@@ -19,13 +19,10 @@ import {
   getAreaValidator,
   getCustomValidator,
   getDateAndTimeValidator,
-  getDuplicateInvasivePlantsValidator,
-  getDurationCountAndPlantCountValidation,
-  getHerbicideApplicationRateValidator,
-  // getPosAndNegObservationValidator,
+  getPosAndNegObservationValidator,
   getInvasivePlantsValidator,
   getVegTransectPointsPercentCoverValidator,
-  getPersonNameNoNumbersValidator,
+  getShorelineTypesPercentValidator,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getTemperatureValidator,
@@ -40,7 +37,6 @@ import {
   autoFillTotalCollectionTime,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
-  populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from '../../../rjsf/business-rules/populateCalculatedFields';
 import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
@@ -315,7 +311,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
 
-    updatedFormData.activity_subtype_data = populateHerbicideCalculatedFields(updatedFormData.activity_subtype_data);
+    console.log(event);
+
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 
@@ -750,14 +747,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 getWindValidator(doc.activitySubtype),
                 getSlopeAspectBothFlatValidator(),
                 getTemperatureValidator(doc.activitySubtype),
-                // getPosAndNegObservationValidator(),
+                getPosAndNegObservationValidator(),
+                getShorelineTypesPercentValidator(),
                 transferErrorsFromChemDetails(),
-                getDuplicateInvasivePlantsValidator(doc.activitySubtype),
-                getHerbicideApplicationRateValidator(),
                 getTransectOffsetDistanceValidator(),
                 getVegTransectPointsPercentCoverValidator(),
-                getDurationCountAndPlantCountValidation(),
-                getPersonNameNoNumbersValidator(applicationUsers),
                 getJurisdictionPercentValidator(),
                 getInvasivePlantsValidator(linkedActivity),
                 getPlotIdentificatiomTreesValidator(doc.activitySubtype)

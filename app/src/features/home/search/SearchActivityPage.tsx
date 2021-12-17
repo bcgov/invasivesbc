@@ -5,27 +5,22 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   getAreaValidator,
   getCustomValidator,
   getDateAndTimeValidator,
-  getDuplicateInvasivePlantsValidator,
-  getHerbicideApplicationRateValidator,
   getJurisdictionPercentValidator,
   getPlotIdentificatiomTreesValidator,
   getTemperatureValidator,
   getTransectOffsetDistanceValidator,
   getWindValidator
 } from 'rjsf/business-rules/customValidation';
-import {
-  populateHerbicideCalculatedFields,
-  populateTransectLineAndPointData
-} from 'rjsf/business-rules/populateCalculatedFields';
+import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { debounced } from 'utils/FunctionUtils';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
-import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
+import { getActivityByIdFromApi } from 'utils/getActivity';
 import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
@@ -133,7 +128,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideCalculatedFields(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = { ...event.formData.activity_subtype_data };
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
@@ -196,8 +191,6 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
           getDateAndTimeValidator(activity.activitySubtype),
           getWindValidator(activity.activitySubtype),
           getTemperatureValidator(activity.activitySubtype),
-          getDuplicateInvasivePlantsValidator(activity.activitySubtype),
-          getHerbicideApplicationRateValidator(),
           getTransectOffsetDistanceValidator(),
           getJurisdictionPercentValidator(),
           getPlotIdentificatiomTreesValidator(activity.activitySubtype)

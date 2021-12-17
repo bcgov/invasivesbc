@@ -50,11 +50,13 @@ export const Monitoring = {
     },
     observer_first_name: {
       type: 'string',
-      title: 'First Name'
+      title: 'First Name',
+      pattern: '[A-Za-z -]+'
     },
     observer_last_name: {
       type: 'string',
-      title: 'Last Name'
+      title: 'Last Name',
+      pattern: '[A-Za-z -]+'
     }
   }
 };
