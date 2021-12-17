@@ -6,6 +6,7 @@ import { RenderWFSFeatures } from './RenderWFSFeatures';
 export enum LayerMode {
   WMSOnline = 'wms_online',
   WFSOnline = 'wfs_online',
+  WFSOffline = 'wfs_offline',
   VectorTilesOnline = 'vector_tiles_online',
   VectorTilesOffline = 'vector_tiles_offline',
   RegularFeaturesOffline = 'regular_features_offline'
@@ -42,7 +43,7 @@ export const DataBCLayer = (props) => {
     case LayerMode.VectorTilesOnline:
     case LayerMode.VectorTilesOffline:
       return <RenderVectorTilesOffline opacity={props.opacity} dataBCLayerName={props.layerName} />;
-    case LayerMode.RegularFeaturesOffline:
+    case LayerMode.WFSOffline:
       //this is the regular geojson stuff
       return (
         <RenderWFSFeatures
