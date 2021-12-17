@@ -25,7 +25,7 @@ select
   Select all chemical treatment IDs
   within our custom shape (VI)
 */
-with chemical_codes as (
+with liquid_herbicide_codes as (
   select
     code_name,
     code_description
@@ -38,8 +38,23 @@ with chemical_codes as (
       from
         code_header
       where
-        code_header_name = 'herbicide_type_code'
-        -- code_header_name = 'chemical_method_code'
+        code_header_name = 'liquid_herbicide_code'
+    )
+),
+granular_herbicide_codes as (
+  select
+    code_name,
+    code_description
+  from
+    code
+  where
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'granular_herbicide_code'
     )
 ),
 custom_shape as (
