@@ -41,7 +41,7 @@ export const NewRecord = (props) => {
   }
   const [recordCategory, setRecordCategory] = useState(recordCategoryTypes.plant);
   const [recordType, setRecordType] = useState(ActivitySubtypeShortLabels.Activity_Observation_PlantTerrestrial);
-  const { userInfo } = useContext(AuthStateContext);
+  const { keycloak } = useContext(AuthStateContext);
   const [isDroppingMarker, setIsDroppingMarker] = useState(false);
   const mapRecordsContext = useContext(MapRecordsContext);
 
@@ -186,7 +186,7 @@ export const NewRecord = (props) => {
   */
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-    dbActivity.created_by = (userInfo as any)?.preferred_username;
+    dbActivity.created_by = keycloak?.obj?.tokenParsed?.preferred_username;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
@@ -196,7 +196,7 @@ export const NewRecord = (props) => {
     }
     return dbActivity.activity_id;
     /* setTimeout(() => {
-      
+
       history.push({ pathname: `/home/activity` });
     }, 1000);
     */

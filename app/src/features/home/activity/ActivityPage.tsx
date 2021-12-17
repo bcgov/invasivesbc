@@ -78,7 +78,7 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  const authStateContext = useContext(AuthStateContext);
+  const {keycloak} = useContext(AuthStateContext);
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
   const [isLoading, setIsLoading] = useState(true);
@@ -191,8 +191,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     ) {
       if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
         needsInsert = true;
-        console.log(authStateContext.userInfo);
-        userNameInject = authStateContext.userInfo.name;
+        userNameInject = keycloak?.obj?.tokenParsed?.name;
       }
     }
     return {
@@ -699,9 +698,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             style={{ whiteSpace: 'pre-line', paddingLeft: 100, paddingTop: 10, paddingBottom: 30 }}
             variant="body1">
             {`Make a geometry on the map near your current location. Add your form content and hit "Check Form For Errors". If there are none, hit "I'm done here." to return to My Records.
-            
+
             Some tips:
-            
+
             * The 'pin' button on the bottom right of the map jumps to your location.
             * This new map is in beta.  Ignore the layer pickers for the time being.
             * You can minimize the map, form, and photos boxes by clicking their titles (or anywhere on top of them).

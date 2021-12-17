@@ -1,7 +1,6 @@
 import { Geolocation } from '@capacitor/geolocation';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
@@ -38,8 +37,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const { keycloak } = useKeycloak();
-  const { userInfo } = useContext(AuthStateContext);
+  const { keycloak } = useContext(AuthStateContext);
 
   const getLocation = async () => {
     const position = await Geolocation.getCurrentPosition();
@@ -213,7 +211,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         sanitizeRecord({
           ...dbActivity,
           review_status: ReviewStatus.APPROVED,
-          reviewed_by: userInfo.preferred_username, // latest reviewer
+          reviewed_by: keycloak?.obj?.tokenParsed?.preferred_username, // latest reviewer
           reviewed_at: moment(new Date()).format()
         }),
         databaseContext
@@ -233,7 +231,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         sanitizeRecord({
           ...dbActivity,
           review_status: ReviewStatus.DISAPPROVED,
-          reviewed_by: userInfo.preferred_username, // latest reviewer
+          reviewed_by: keycloak?.obj?.tokenParsed?.preferred_username, // latest reviewer
           reviewed_at: moment(new Date()).format()
         }),
         databaseContext

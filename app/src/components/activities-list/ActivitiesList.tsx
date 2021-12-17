@@ -196,20 +196,6 @@ const ActivitiesList: React.FC = () => {
   if (accessLevel.hasAnimalAccess) {
     hasAnimalAccess = true;
   }
-  useEffect(() => {
-    const userId = async () => {
-      const userInfo: any = keycloak
-        ? keycloak?.userInfo
-        : await databaseContext.asyncQueue({
-            asyncTask: () => {
-              return query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext);
-            }
-          });
-
-      return userInfo?.preferred_username;
-    };
-    if (!userId) throw "Keycloak error: can not get current user's username";
-  }, []);
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
@@ -220,7 +206,7 @@ const ActivitiesList: React.FC = () => {
   const syncCachedActivities = async () => {
     try {
       await dataAccess.syncCachedRecords();
-    } catch (e: any) {
+    } catch (e) {
       console.log('Error syncing cached records: ', e);
     }
   };

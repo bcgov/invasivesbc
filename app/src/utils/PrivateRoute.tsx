@@ -19,9 +19,8 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const { keycloak } = useContext(AuthStateContext);
   const networkContext = useContext(NetworkContext);
-  const authStateContext = useContext(AuthStateContext);
+  const { isAuthenticated } = useContext(AuthStateContext);
 
   let { component: Component, layout: Layout, ...rest } = props;
 
@@ -31,16 +30,12 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     return Capacitor.getPlatform() !== 'web';
   };
 
-  const isAuthenticated = () => {
-    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && authStateContext.userInfoLoaded);
-  };
-
   return (
     <Route
       {...rest}
       render={(renderProps) => {
         if (process.env.REACT_APP_REAL_NODE_ENV !== 'production' && networkContext.connected) {
-          if (!isAuthenticated()) {
+          if (!isAuthenticated) {
             return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
           }
         }
