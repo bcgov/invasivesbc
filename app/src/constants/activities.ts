@@ -140,8 +140,8 @@ export enum ActivityLetter {
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'PMC',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'PMM',
-  Activity_Monitoring_BiologicalTerrestrialPlant = 'PBM',
-  Activity_Monitoring_BiologicalDispersal = 'PBD',
+  Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'PBM',
+  Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = 'PBD',
   Activity_Monitoring_ChemicalAnimalTerrestrial = 'AMC',
   Activity_Monitoring_MechanicalAnimalTerrestrial = 'AMM',
 
