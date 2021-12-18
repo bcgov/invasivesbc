@@ -245,28 +245,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
     'applicator1_name',
     'applicator2_name',
     'invasive_plant_code',
-    'phen_transect_sampler',
-    'phen_transect_recorder',
-    'phen_transect_seedlings',
-    'phen_transect_rosettes',
-    'phen_transect_bolting',
-    'phen_transect_flowering',
-    'phen_transect_seeds',
-    'phen_transect_senescent',
-    'phen_total_plants',
-    'phen_number_stems',
-    'phen_tallest_1',
-    'phen_tallest_2',
-    'phen_tallest_3',
-    'phen_tallest_4',
-    'phen_level_se',
-    'phen_level_ro',
-    'phen_level_bo',
-    'phen_level_fl',
-    'phen_level_sf',
     'total_bio_agent_quantity',
-    'phen_level_sc',
-    'phen_total_percentage',
     'collection_history',
     'collection_history_comments'
   ],
@@ -324,6 +303,22 @@ export const Monitoring_BiocontrolDispersal_Information = {
       },
       'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
     },
+    bio_agent_location_code: {
+      type: 'string',
+      title: 'Location agent(s) found',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'bio_agent_location_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
+    },
+    biocontrol_present: {
+      type: 'boolean',
+      default: false,
+      title: 'Biocontrol Present'
+    },
     monitoring_type: {
       type: 'string',
       title: 'Monitoring Type',
@@ -346,19 +341,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
       minimum: 0,
       'x-tooltip-text': 'Numeric value (exact or approximate)'
     },
-    biological_agent_stages: {
-      type: 'array',
-      default: [{}],
-      minItems: 1,
-      title: 'Biological Agent Stages',
-      items: {
-        ...Biological_Agent_Stage
-      }
-    },
-    total_bio_agent_quantity: {
-      type: 'number',
-      title: 'Total Bioagent Quantity'
-    },
+
     biological_agent_count: {
       type: 'number',
       title: 'Biological Agent Count',
@@ -383,112 +366,6 @@ export const Monitoring_BiocontrolDispersal_Information = {
       enum: ['Unknown', 'Yes', 'No'],
       'x-tooltip-text':
         'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
-    },
-    phen_transect_sampler: {
-      type: 'string',
-      title: 'Phenology Sampler',
-      'x-tooltip-text': 'Initials of the sampler'
-    },
-    phen_transect_recorder: {
-      type: 'string',
-      title: 'Phenology Recorder',
-      'x-tooltip-text': 'Initials of the recorder'
-    },
-    phen_transect_seedlings: {
-      type: 'number',
-      title: 'Phenology Seedlings',
-      'x-tooltip-text': 'Number of seedlings observed'
-    },
-    phen_transect_rosettes: {
-      type: 'number',
-      title: 'Phenology Rosettes',
-      'x-tooltip-text': 'Number of rosettes observed'
-    },
-    phen_transect_bolting: {
-      type: 'number',
-      title: 'Phenology Bolting',
-      'x-tooltip-text': 'Number of bolting observed'
-    },
-    phen_transect_flowering: {
-      type: 'number',
-      title: 'Phenology Flowering',
-      'x-tooltip-text': 'Number of flowering observed'
-    },
-    phen_transect_seeds: {
-      type: 'number',
-      title: 'Phenology Seeds',
-      'x-tooltip-text': 'Number of seeds observed'
-    },
-    phen_transect_senescent: {
-      type: 'number',
-      title: 'Phenology Senescent',
-      'x-tooltip-text': 'Number of senescent observed'
-    },
-    phen_total_plants: {
-      type: 'number',
-      title: 'Phenology Plants',
-      'x-tooltip-text': 'Number of plants observed'
-    },
-    phen_number_stems: {
-      type: 'number',
-      title: 'Phenology Stems',
-      'x-tooltip-text': 'Number of stems observed'
-    },
-    phen_tallest_1: {
-      type: 'number',
-      title: 'Phenology Tallest Stem 1',
-      'x-tooltip-text': 'Enter stem height in centimetres'
-    },
-    phen_tallest_2: {
-      type: 'number',
-      title: 'Phenology Tallest Stem 2',
-      'x-tooltip-text': 'Enter stem height in centimetres'
-    },
-    phen_tallest_3: {
-      type: 'number',
-      title: 'Phenology Tallest Stem 3',
-      'x-tooltip-text': 'Enter stem height in centimetres'
-    },
-    phen_tallest_4: {
-      type: 'number',
-      title: 'Phenology Tallest Stem 4',
-      'x-tooltip-text': 'Enter stem height in centimetres'
-    },
-    phen_level_se: {
-      type: 'number',
-      title: 'Phenology Level SE',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_level_ro: {
-      type: 'number',
-      title: 'Phenology Level RO',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_level_bo: {
-      type: 'number',
-      title: 'Phenology Level BO',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_level_fl: {
-      type: 'number',
-      title: 'Phenology Level FL',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_level_sf: {
-      type: 'number',
-      title: 'Phenology Level SF',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_level_sc: {
-      type: 'number',
-      title: 'Phenology Level SC',
-      'x-tooltip-text': 'Enter percentage'
-    },
-    phen_total_percentage: {
-      type: 'number',
-      title: 'Phenology Total Percentage',
-      maximum: 100,
-      'x-tooltip-text': 'Total percentage (sum of all 6 levels)'
     }
   },
   dependencies: {
@@ -497,24 +374,68 @@ export const Monitoring_BiocontrolDispersal_Information = {
         {
           properties: {
             monitoring_type: {
-              const: 'Timed'
+              enum: ['Timed']
             },
             plant_count: {
+              title: 'Count Duration (minutes)',
               type: 'number',
-              minimum: 0,
-              title: 'Duration of Count (min)'
+              minimum: 0
             }
           }
         },
         {
           properties: {
             monitoring_type: {
-              const: 'Count'
+              enum: ['Count']
             },
             plant_count: {
+              title: 'Plant Count',
+              type: 'number'
+            }
+          }
+        }
+      ]
+    },
+    biocontrol_present: {
+      oneOf: [
+        {
+          properties: {
+            biocontrol_present: {
+              enum: [true]
+            },
+            actual_biological_agents: {
+              type: 'array',
+              default: [{}],
+              title: 'Actual Biological Agents',
+              items: {
+                ...Biological_Agent_Stage
+              }
+            },
+            estimated_biological_agents: {
+              type: 'array',
+              default: [{}],
+              title: 'Estimated Biological Agents',
+              items: {
+                ...Biological_Agent_Stage
+              }
+            },
+            total_bio_agent_quantity_estimated: {
               type: 'number',
-              minimum: 0,
-              title: 'Plant Count'
+              default: 0,
+              title: 'Total Bioagent Quantity (Estimated)'
+            },
+            total_bio_agent_quantity_actual: {
+              type: 'number',
+              default: 0,
+              title: 'Total Bioagent Quantity (Actual)'
+            }
+          },
+          required: ['total_bio_agent_quantity_actual', 'total_bio_agent_quantity_estimated']
+        },
+        {
+          properties: {
+            biocontrol_present: {
+              enum: [false]
             }
           }
         }

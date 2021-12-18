@@ -445,7 +445,9 @@ export const Spread_Results = {
   properties: {
     spread_details_recorded: {
       title: 'Spread Details Recorded',
-      type: 'boolean'
+      type: 'boolean',
+      'x-tooltip-text':
+        'Optional monitoring technique that records the distance biocontrol agents have spread beyond the release UTM. Beyond 100m is Dispersal monitoring.'
     }
   },
   dependencies: {

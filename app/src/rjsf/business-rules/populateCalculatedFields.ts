@@ -206,8 +206,15 @@ export const autoFillTotalCollectionTime = (formData: any) => {
     newCollections.push(newCollection);
   });
 
-  formData.activity_subtype_data.collections = [...newCollections];
-  return formData;
+  const newFormData = {
+    ...formData,
+    activity_subtype_data: {
+      ...formData.activity_subtype_data,
+      collections: [...newCollections]
+    }
+  };
+
+  return newFormData;
 };
 
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
@@ -215,20 +222,41 @@ export const autoFillSlopeAspect = (formData: any, lastField: string) => {
     return formData;
   }
   const fieldId = lastField[0];
+
+  let newFormData = formData;
+
   if (
     fieldId.includes('slope_code') &&
     formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code === 'FL'
   ) {
-    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code = 'FL';
+    newFormData = {
+      ...formData,
+      activity_subtype_data: {
+        ...formData.activity_subtype_data,
+        Observation_PlantTerrestrial_Information: {
+          ...formData.activity_subtype_data.Observation_PlantTerrestrial_Information,
+          aspect_code: 'FL'
+        }
+      }
+    };
   }
   if (
     fieldId.includes('aspect_code') &&
     formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code === 'FL'
   ) {
-    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code = 'FL';
+    newFormData = {
+      ...formData,
+      activity_subtype_data: {
+        ...formData.activity_subtype_data,
+        Observation_PlantTerrestrial_Information: {
+          ...formData.activity_subtype_data.Observation_PlantTerrestrial_Information,
+          slope_code: 'FL'
+        }
+      }
+    };
   }
 
-  return formData;
+  return newFormData;
 };
 
 //not sure about this one. should be working, don't know how to test
@@ -316,6 +344,12 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
       ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
           .estimated_biological_agents
       : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.estimated_biological_agents;
+
+  console.log(actual_biological_agents, estimated_biological_agents);
+
+  if (!actual_biological_agents || !estimated_biological_agents) {
+    return formData;
+  }
 
   estimated_biological_agents.forEach((el) => {
     if (!el.release_quantity || !el.biological_agent_stage_code) {
