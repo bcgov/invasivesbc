@@ -55,12 +55,12 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'agent_count',
     'agent_destroyed_ind',
     'legacy_presence_ind',
+    'biocontrol_present',
     'biological_agent_presence_code',
     'invasive_plant_code',
-    'total_bio_agent_quantity',
     'adults_present_ind',
     'tunnels_present_ind',
-    'suitable_collection_site',
+    'plant_count',
     'biological_agent_code'
   ],
   dependencies: {
@@ -69,24 +69,68 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
         {
           properties: {
             monitoring_type: {
-              const: 'Timed'
+              enum: ['Timed']
             },
             plant_count: {
+              title: 'Count Duration (minutes)',
               type: 'number',
-              minimum: 0,
-              title: 'Plant Count (minutes)'
+              minimum: 0
             }
           }
         },
         {
           properties: {
             monitoring_type: {
-              const: 'Count'
+              enum: ['Count']
             },
             plant_count: {
+              title: 'Plant Count',
+              type: 'number'
+            }
+          }
+        }
+      ]
+    },
+    biocontrol_present: {
+      oneOf: [
+        {
+          properties: {
+            biocontrol_present: {
+              enum: [true]
+            },
+            actual_biological_agents: {
+              type: 'array',
+              default: [{}],
+              title: 'Actual Biological Agents',
+              items: {
+                ...Biological_Agent_Stage
+              }
+            },
+            estimated_biological_agents: {
+              type: 'array',
+              default: [{}],
+              title: 'Estimated Biological Agents',
+              items: {
+                ...Biological_Agent_Stage
+              }
+            },
+            total_bio_agent_quantity_estimated: {
               type: 'number',
-              minimum: 0,
-              title: 'Plant Count'
+              default: 0,
+              title: 'Total Bioagent Quantity (Estimated)'
+            },
+            total_bio_agent_quantity_actual: {
+              type: 'number',
+              default: 0,
+              title: 'Total Bioagent Quantity (Actual)'
+            }
+          },
+          required: ['total_bio_agent_quantity_actual', 'total_bio_agent_quantity_estimated']
+        },
+        {
+          properties: {
+            biocontrol_present: {
+              enum: [false]
             }
           }
         }
@@ -106,6 +150,23 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       },
       'x-tooltip-text': 'Target invasive plant species at this location'
     },
+    biological_agent_code: {
+      type: 'string',
+      title: 'Biological Agent',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'biological_agent_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'The biological control agent that was collected.'
+    },
+    biocontrol_present: {
+      type: 'boolean',
+      default: false,
+      title: 'Biocontrol Present'
+    },
     biological_agent_presence_code: {
       type: 'string',
       title: 'Sign of Biocontrol Presence',
@@ -117,18 +178,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
         'x-enum-code-sort-order': 'code_sort_order'
       },
       'x-tooltip-text': 'Visible state of the agent present'
-    },
-    biological_agent_code: {
-      type: 'string',
-      title: 'Biological Control Agent',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biological_agent_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'The biological control agent that was collected.'
     },
     monitoring_type: {
       type: 'string',
@@ -146,18 +195,15 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
         'x-enum-code-sort-order': 'code_sort_order'
       }
     },
-    biological_agent_stages: {
-      type: 'array',
-      default: [{}],
-      minItems: 1,
-      title: 'Biological Agent Stages',
-      items: {
-        ...Biological_Agent_Stage
-      }
-    },
-    total_bio_agent_quantity: {
+    agent_count: {
       type: 'number',
-      title: 'Total Bioagent Quantity'
+      minimum: 0,
+      title: 'Agent Count'
+    },
+    count_duration: {
+      type: 'number',
+      minimum: 0,
+      title: 'Count Duration'
     },
     bio_agent_location_code: {
       type: 'string',
@@ -170,18 +216,10 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
         'x-enum-code-sort-order': 'code_sort_order'
       }
     },
-    agent_count: {
-      type: 'number',
-      title: 'Agent Count'
-    },
-    count_duration: {
-      type: 'number',
-      minimum: 0,
-      title: 'Count Duration'
-    },
     suitable_collection_site: {
       type: 'string',
-      title: 'Suitable Collection Site',
+      title: 'Suitable For Collection',
+      default: 'Unknown',
       enum: ['Unknown', 'Yes', 'No'],
       'x-tooltip-text':
         'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
@@ -230,8 +268,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
     'phen_level_sc',
     'phen_total_percentage',
     'collection_history',
-    'collection_history_comments',
-    'suitable_collection_site'
+    'collection_history_comments'
   ],
   properties: {
     invasive_plant_code: {
@@ -342,7 +379,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
     },
     suitable_collection_site: {
       type: 'string',
-      title: 'Suitable Collection Site',
+      title: 'Suitable For Collection',
       enum: ['Unknown', 'Yes', 'No'],
       'x-tooltip-text':
         'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'

@@ -294,31 +294,42 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
 //Monitoring Biocontrol Dispersal
 export const autoFillTotalBioAgentQuantity = (formData: any) => {
   if (
-    (!formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information ||
-      !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages ||
-      formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages.length < 1) &&
-    (!formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ||
-      !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-        .biological_agent_stages ||
-      formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_stages
-        .length < 1)
+    !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information &&
+    !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
   ) {
     return formData;
   }
-  let total = null;
+
+  let totalEstimated = 0;
+  let totalActual = 0;
 
   const releaseMonitoring = formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information === undefined;
 
-  const bioAgentStagesArr =
+  const actual_biological_agents =
     releaseMonitoring === true
-      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_stages
-      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_stages;
+      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+          .actual_biological_agents
+      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.actual_biological_agents;
 
-  bioAgentStagesArr.forEach((el) => {
+  const estimated_biological_agents =
+    releaseMonitoring === true
+      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+          .estimated_biological_agents
+      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.estimated_biological_agents;
+
+  estimated_biological_agents.forEach((el) => {
     if (!el.release_quantity || !el.biological_agent_stage_code) {
       return formData;
     } else {
-      total += el.release_quantity;
+      totalEstimated += el.release_quantity;
+    }
+  });
+
+  actual_biological_agents.forEach((el) => {
+    if (!el.release_quantity || !el.biological_agent_stage_code) {
+      return formData;
+    } else {
+      totalActual += el.release_quantity;
     }
   });
 
@@ -330,7 +341,8 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
             ...formData.activity_subtype_data,
             Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
               ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
-              total_bio_agent_quantity: total
+              total_bio_agent_quantity_actual: totalActual,
+              total_bio_agent_quantity_estimated: totalEstimated
             }
           }
         }
@@ -340,7 +352,58 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
             ...formData.activity_subtype_data,
             Monitoring_BiocontrolDispersal_Information: {
               ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
-              total_bio_agent_quantity: total
+              total_bio_agent_quantity_actual: totalActual,
+              total_bio_agent_quantity_estimated: totalEstimated
+            }
+          }
+        };
+
+  return newFormData;
+};
+
+export const autoFillBiocontrolPresent = (formData: any) => {
+  if (
+    !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information &&
+    !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+  ) {
+    return formData;
+  }
+
+  const releaseMonitoring = formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information === undefined;
+
+  const biological_agent_presence_code =
+    releaseMonitoring === true
+      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+          .biological_agent_presence_code
+      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_presence_code;
+
+  let biocontrol_present;
+
+  if (biological_agent_presence_code === undefined) {
+    biocontrol_present = false;
+  } else {
+    biocontrol_present = true;
+  }
+
+  const newFormData =
+    releaseMonitoring === true
+      ? {
+          ...formData,
+          activity_subtype_data: {
+            ...formData.activity_subtype_data,
+            Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
+              ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+              biocontrol_present: biocontrol_present
+            }
+          }
+        }
+      : {
+          ...formData,
+          activity_subtype_data: {
+            ...formData.activity_subtype_data,
+            Monitoring_BiocontrolDispersal_Information: {
+              ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
+              biocontrol_present: biocontrol_present
             }
           }
         };

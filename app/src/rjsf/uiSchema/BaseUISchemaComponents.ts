@@ -178,258 +178,18 @@ const TransectData = {
     'veg_transect_recorder'
   ]
 };
-/** 
- * ------------------------  Subtype Information Objects  -----------------------------
-*/
-
-const Treatment_ChemicalPlant_Information = {
-  ...ThreeColumnStyle,
-  applicator1_name: {},
-  applicator1_license: {},
-  applicator2_name: {},
-  applicator2_license: {},
-  pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
-  pesticide_use_permit_PUP: {},
-  pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
-  chemical_method_code: { 'ui:widget': 'single-select-autocomplete' },
-  temperature: { validateOnBlur: true },
-  wind_speed: { validateOnBlur: true },
-  wind_direction_code: { 'ui:widget': 'single-select-autocomplete' },
-  humidity: {},
-  signage_on_site: {},
-  application_start_time: { 'ui:widget': 'datetime' },
-  'ui:order': [
-    'applicator1_name',
-    'applicator1_license',
-    'applicator2_name',
-    'applicator2_license',
-    'pesticide_employer_code',
-    'pesticide_use_permit_PUP',
-    'pest_management_plan',
-    'chemical_method_code',
-    'temperature',
-    'wind_speed',
-    'wind_direction_code',
-    'humidity',
-    'signage_on_site',
-    'application_start_time'
-  ]
-};
-
-const Treatment_MechanicalPlant_Information = {
-  items: {
-    ...ThreeColumnStyle,
-    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-    treated_area: {},
-    mechanical_method_code: { 'ui:widget': 'single-select-autocomplete' },
-    mechanical_disposal_code: { 'ui:widget': 'single-select-autocomplete' },
-    disposed_material: {
-      disposed_material_input_format: {},
-      disposed_material_input_number: {},
-      "ui:order":['disposed_material_input_format','disposed_material_input_number']
-    }, 
-    "ui:order":['invasive_plant_code','treated_area','mechanical_method_code','mechanical_disposal_code','disposed_material']
-  }
-};
-
-const Observation_PlantTerrestrial_Information = {
-  ...ThreeColumnStyle,
-  soil_texture_code: { 'ui:widget': 'single-select-autocomplete' },
-  specific_use_code: { 'ui:widget': 'multi-select-autocomplete' },
-  slope_code: { 'ui:widget': 'single-select-autocomplete' },
-  aspect_code: { 'ui:widget': 'single-select-autocomplete' },
-  research_detection_ind: {},
-  well_ind: {},
-  'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind']
-};
-
-const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
-  ...TwoColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_details: {},
-  'ui:order':['invasive_plant_code','monitoring_details']
-};
-
-const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
-  ...TwoColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_details: {},
-  'ui:order':['invasive_plant_code','monitoring_details']
-};
-
-const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
-  ...ThreeColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
-  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_type: {},
-  plant_count:{},
-  monitoring_method: {},
-  biological_agent_stages: {},
-  total_bio_agent_quantity: { 'ui:readonly': true },
-  bio_agent_location_code: {},
-  agent_count: {},
-  count_duration: {},
-  suitable_collection_site: {},
-  legacy_presence_ind: {},
-  'ui:order':[
-    'invasive_plant_code',
-    'biological_agent_presence_code',
-    'biological_agent_code',
-    'monitoring_type',
-    'plant_count',
-    'monitoring_method',
-    'biological_agent_stages',
-    'total_bio_agent_quantity',
-    'bio_agent_location_code',
-    'agent_count',
-    'count_duration',
-    'suitable_collection_site',
-    'legacy_presence_ind'
-  ]
-};
-
-const Monitoring_BiocontrolDispersal_Information = {
-  ...ThreeColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  applicator1_name: {},
-  applicator2_name: {},
-  linear_segment: {},
-  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
-  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_type: {},
-  monitoring_method: {},
-  plant_count: {},
-  biological_agent_stages: {},
-  total_bio_agent_quantity: { 'ui:readonly': true },
-  biological_agent_count: {},
-  collection_history: { },
-  collection_history_comments: { 'ui:widget': 'textarea' },
-  suitable_collection_site: {},
-  phen_transect_sampler: {},
-  phen_transect_recorder: {},
-  phen_transect_seedlings: {},
-  phen_transect_rosettes: {},
-  phen_transect_bolting: {},
-  phen_transect_flowering: {},
-  phen_transect_seeds: {},
-  phen_transect_senescent: {},
-  phen_total_plants: {},
-  phen_number_stems: {},
-  phen_tallest_1: {},
-  phen_tallest_2: {},
-  phen_tallest_3: {},
-  phen_tallest_4: {},
-  phen_level_se: {},
-  phen_level_ro: {},
-  phen_level_bo: {},
-  phen_level_fl: {},
-  phen_level_sf: {},
-  phen_level_sc: {},
-  override_code: { 'ui:readonly': true },
-  'ui:order': [
-    'biological_agent_presence_code',
-    'biological_agent_code',
-    'biological_agent_count',
-    'monitoring_type',
-    'monitoring_method',
-    'linear_segment',
-    'biological_agent_stages',
-    'plant_count', 
-    'applicator1_name',
-    'applicator2_name',
-    'invasive_plant_code',
-    'phen_transect_sampler',
-    'phen_transect_recorder',
-    'phen_transect_seedlings',
-    'phen_transect_rosettes',
-    'phen_transect_bolting',
-    'phen_transect_flowering',
-    'phen_transect_seeds',
-    'phen_transect_senescent',
-    'phen_total_plants',
-    'phen_number_stems',
-    'phen_tallest_1',
-    'phen_tallest_2',
-    'phen_tallest_3',
-    'phen_tallest_4',
-    'phen_level_se',
-    'phen_level_ro',
-    'phen_level_bo',
-    'phen_level_fl',
-    'phen_level_sf',
-    'total_bio_agent_quantity',
-    'phen_level_sc',
-    'phen_total_percentage',
-    'collection_history',
-    'collection_history_comments',
-    'suitable_collection_site'
-  ],
-};
-
-const Biocontrol_Collection_Information = {
-  items: {
-    ...ThreeColumnStyle,
-    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-    historical_iapp_site_id: {},
-    collection_type: {},
-    plant_count: {},
-    collection_method: { 'ui:widget': 'single-select-autocomplete' },
-    num_of_sweeps: {},
-    start_time: { },
-    stop_time: { 'ui:widget': 'datetime' },
-    total_time: { 'ui:readonly': true },
-    actual_quantity_and_life_stage_of_agent_collected: {},
-    estimated_quantity_and_life_stage_of_agent_collected: {},
-    comment: { 'ui:widget': 'textarea' },
-    'ui:order':[
-      'invasive_plant_code',
-      'biological_agent_code',
-      'historical_iapp_site_id',
-      'collection_type',
-      'plant_count',
-      'collection_method',
-      'num_of_sweeps',
-      'start_time',
-      'stop_time',
-      'total_time',
-      'actual_quantity_and_life_stage_of_agent_collected',
-      'estimated_quantity_and_life_stage_of_agent_collected',
-      'comment']
-  }
-};
-
-export const Biocontrol_Release_Information = {
-  ...ThreeColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  mortality: {},
-  agent_source: {},
-  collection_date: {},
-  plant_collected_from: {},
-  biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_stages: {},
-  total_release_quantity: { 'ui:readonly': true },
-  linear_segment: {},
-  'ui:order':[
-    'invasive_plant_code',
-    'biological_agent_stages',
-    'linear_segment',
-    'release_quantity',
-    'mortality',
-    'agent_source',
-    'collection_date',
-    'plant_collected_from',
-    'total_release_quantity',
-    'biological_agent_code',
-    'biological_agent_stage_code'
-  ],
-};
 
 /** 
  * ------------------------  General Objects  -----------------------------
 */
+
+const Biological_Agent_Stage = {
+  biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
+  release_quantity: {},
+  agent_location: { 'ui:widget': 'single-select-autocomplete' },
+  plant_position: {},
+  'ui:order': ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
+};
 
 const Well_Information = {
   ...TwoColumnStyle,
@@ -1072,6 +832,261 @@ const FREP_FormC = {
   }
 };
 
+/** 
+ * ------------------------  Subtype Information Objects  -----------------------------
+*/
+
+const Treatment_ChemicalPlant_Information = {
+  ...ThreeColumnStyle,
+  applicator1_name: {},
+  applicator1_license: {},
+  applicator2_name: {},
+  applicator2_license: {},
+  pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
+  pesticide_use_permit_PUP: {},
+  pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
+  chemical_method_code: { 'ui:widget': 'single-select-autocomplete' },
+  temperature: { validateOnBlur: true },
+  wind_speed: { validateOnBlur: true },
+  wind_direction_code: { 'ui:widget': 'single-select-autocomplete' },
+  humidity: {},
+  signage_on_site: {},
+  application_start_time: { 'ui:widget': 'datetime' },
+  'ui:order': [
+    'applicator1_name',
+    'applicator1_license',
+    'applicator2_name',
+    'applicator2_license',
+    'pesticide_employer_code',
+    'pesticide_use_permit_PUP',
+    'pest_management_plan',
+    'chemical_method_code',
+    'temperature',
+    'wind_speed',
+    'wind_direction_code',
+    'humidity',
+    'signage_on_site',
+    'application_start_time'
+  ]
+};
+
+const Treatment_MechanicalPlant_Information = {
+  items: {
+    ...ThreeColumnStyle,
+    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+    treated_area: {},
+    mechanical_method_code: { 'ui:widget': 'single-select-autocomplete' },
+    mechanical_disposal_code: { 'ui:widget': 'single-select-autocomplete' },
+    disposed_material: {
+      disposed_material_input_format: {},
+      disposed_material_input_number: {},
+      "ui:order":['disposed_material_input_format','disposed_material_input_number']
+    }, 
+    "ui:order":['invasive_plant_code','treated_area','mechanical_method_code','mechanical_disposal_code','disposed_material']
+  }
+};
+
+const Observation_PlantTerrestrial_Information = {
+  ...ThreeColumnStyle,
+  soil_texture_code: { 'ui:widget': 'single-select-autocomplete' },
+  specific_use_code: { 'ui:widget': 'multi-select-autocomplete' },
+  slope_code: { 'ui:widget': 'single-select-autocomplete' },
+  aspect_code: { 'ui:widget': 'single-select-autocomplete' },
+  research_detection_ind: {},
+  well_ind: {},
+  'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind']
+};
+
+const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
+  ...TwoColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  monitoring_details: {},
+  'ui:order':['invasive_plant_code','monitoring_details']
+};
+
+const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
+  ...TwoColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  monitoring_details: {},
+  'ui:order':['invasive_plant_code','monitoring_details']
+};
+
+const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+  biocontrol_present: {},
+  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
+  monitoring_type: {},
+  monitoring_method: {},
+  plant_count:{},
+  bio_agent_location_code: { 'ui:widget': 'multi-select-autocomplete' },
+  actual_biological_agents: { items: {...Biological_Agent_Stage } },
+  estimated_biological_agents: { items: {...Biological_Agent_Stage } },
+  total_bio_agent_quantity_actual: { 'ui:readonly': true },
+  total_bio_agent_quantity_estimated: { 'ui:readonly': true },
+  agent_count: {},
+  count_duration: {},
+  suitable_collection_site: {},
+  legacy_presence_ind: {},
+  'ui:order':[
+    'invasive_plant_code',
+    'biological_agent_code',
+    'biocontrol_present',
+    'biological_agent_presence_code',
+    'monitoring_type',
+    'monitoring_method',
+    'plant_count',
+    'bio_agent_location_code',
+    'actual_biological_agents',
+    'estimated_biological_agents',
+    'total_bio_agent_quantity_actual',
+    'total_bio_agent_quantity_estimated',
+    'agent_count',
+    'count_duration',
+    'suitable_collection_site',
+    'legacy_presence_ind'
+  ]
+};
+
+const Monitoring_BiocontrolDispersal_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  applicator1_name: {},
+  applicator2_name: {},
+  linear_segment: {},
+  biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+  monitoring_type: {},
+  monitoring_method: {},
+  plant_count: {},
+  biological_agent_stages: {},
+  total_bio_agent_quantity: { 'ui:readonly': true },
+  biological_agent_count: {},
+  collection_history: { },
+  collection_history_comments: { 'ui:widget': 'textarea' },
+  suitable_collection_site: {},
+  phen_transect_sampler: {},
+  phen_transect_recorder: {},
+  phen_transect_seedlings: {},
+  phen_transect_rosettes: {},
+  phen_transect_bolting: {},
+  phen_transect_flowering: {},
+  phen_transect_seeds: {},
+  phen_transect_senescent: {},
+  phen_total_plants: {},
+  phen_number_stems: {},
+  phen_tallest_1: {},
+  phen_tallest_2: {},
+  phen_tallest_3: {},
+  phen_tallest_4: {},
+  phen_level_se: {},
+  phen_level_ro: {},
+  phen_level_bo: {},
+  phen_level_fl: {},
+  phen_level_sf: {},
+  phen_level_sc: {},
+  override_code: { 'ui:readonly': true },
+  'ui:order': [
+    'biological_agent_presence_code',
+    'biological_agent_code',
+    'biological_agent_count',
+    'monitoring_type',
+    'monitoring_method',
+    'linear_segment',
+    'biological_agent_stages',
+    'plant_count', 
+    'applicator1_name',
+    'applicator2_name',
+    'invasive_plant_code',
+    'phen_transect_sampler',
+    'phen_transect_recorder',
+    'phen_transect_seedlings',
+    'phen_transect_rosettes',
+    'phen_transect_bolting',
+    'phen_transect_flowering',
+    'phen_transect_seeds',
+    'phen_transect_senescent',
+    'phen_total_plants',
+    'phen_number_stems',
+    'phen_tallest_1',
+    'phen_tallest_2',
+    'phen_tallest_3',
+    'phen_tallest_4',
+    'phen_level_se',
+    'phen_level_ro',
+    'phen_level_bo',
+    'phen_level_fl',
+    'phen_level_sf',
+    'total_bio_agent_quantity',
+    'phen_level_sc',
+    'phen_total_percentage',
+    'collection_history',
+    'collection_history_comments',
+    'suitable_collection_site'
+  ],
+};
+
+const Biocontrol_Collection_Information = {
+  items: {
+    ...ThreeColumnStyle,
+    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+    historical_iapp_site_id: {},
+    collection_type: {},
+    plant_count: {},
+    collection_method: { 'ui:widget': 'single-select-autocomplete' },
+    num_of_sweeps: {},
+    start_time: { },
+    stop_time: { 'ui:widget': 'datetime' },
+    total_time: { 'ui:readonly': true },
+    actual_quantity_and_life_stage_of_agent_collected: {},
+    estimated_quantity_and_life_stage_of_agent_collected: {},
+    comment: { 'ui:widget': 'textarea' },
+    'ui:order':[
+      'invasive_plant_code',
+      'biological_agent_code',
+      'historical_iapp_site_id',
+      'collection_type',
+      'plant_count',
+      'collection_method',
+      'num_of_sweeps',
+      'start_time',
+      'stop_time',
+      'total_time',
+      'actual_quantity_and_life_stage_of_agent_collected',
+      'estimated_quantity_and_life_stage_of_agent_collected',
+      'comment']
+  }
+};
+
+const Biocontrol_Release_Information = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  mortality: {},
+  agent_source: {},
+  collection_date: {},
+  plant_collected_from: {},
+  biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+  biological_agent_stages: {},
+  total_release_quantity: { 'ui:readonly': true },
+  linear_segment: {},
+  'ui:order':[
+    'invasive_plant_code',
+    'biological_agent_stages',
+    'linear_segment',
+    'release_quantity',
+    'mortality',
+    'agent_source',
+    'collection_date',
+    'plant_collected_from',
+    'total_release_quantity',
+    'biological_agent_code',
+    'biological_agent_stage_code'
+  ],
+};
+
 
 /*
   Export
@@ -1105,6 +1120,7 @@ const BaseUISchemaComponents = {
     Biocontrol_Release_Information
   },
   general_objects: {
+    Biological_Agent_Stage,
     Well_Information,
     WaterbodyData,
     WaterbodyData_AdditionalFields,

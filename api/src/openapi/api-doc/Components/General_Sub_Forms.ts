@@ -262,7 +262,7 @@ export const Microsite_Conditions = {
 };
 export const Biological_Agent_Stage = {
   type: 'object',
-  title: ' ',
+  title: 'invisible',
   properties: {
     biological_agent_stage_code: {
       type: 'string',
@@ -283,9 +283,17 @@ export const Biological_Agent_Stage = {
       maximum: 100000,
       default: 1,
       'x-tooltip-text': 'Number of agents released (exact or approximate)'
+    },
+    agent_location: {
+      type: 'string',
+      title: 'Agent Location'
+    },
+    plant_position: {
+      type: 'string',
+      title: 'Plant Position'
     }
   },
-  required: ['biological_agent_stage_code', 'release_quantity']
+  required: ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
 };
 export const Weather_Conditions = {
   type: 'object',
@@ -446,7 +454,7 @@ export const Spread_Results = {
         {
           properties: {
             spread_details_recorded: {
-              const: true
+              enum: [true]
             },
             agent_density: {
               title: '% Agent Density',
@@ -477,11 +485,6 @@ export const Spread_Results = {
             }
           },
           required: ['max_spread_aspect', 'max_spread_distance', 'plant_attack', 'agent_density']
-        },
-        {
-          spread_details_recorded: {
-            const: false
-          }
         }
       ]
     }
