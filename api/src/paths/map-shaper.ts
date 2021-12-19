@@ -38,7 +38,6 @@ function getSimplifiedGeoJSON(): RequestHandler {
           { 'in.json': JSON.parse(data.toString()) },
           function (err, output) {
             const json = JSON.parse(output['out.json']);
-            console.log(JSON.stringify(json));
             return res.status(200).json(json);
           }
         );
