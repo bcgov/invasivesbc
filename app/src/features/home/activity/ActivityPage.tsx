@@ -180,16 +180,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const getDefaultFormDataValues = (activity: any) => {
     const { activity_data } = activity.formData || {};
+    const activity_type_data = activity.formData.activity_type_data || {
+      activity_persons: [{ person_name: undefined }]
+    };
+
     let needsInsert = false;
     let userNameInject = '';
-    console.log(activity);
-    if (
-      activity_data.activity_persons ||
-      (activity_data.activity_persons && activity_data.activity_persons.length > 0)
-    ) {
-      if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
+    if (activity_type_data?.activity_persons) {
+      if (
+        activity_type_data?.activity_persons.length > 0 &&
+        activity_type_data?.activity_persons[0].person_name === undefined
+      ) {
         needsInsert = true;
-        console.log(authStateContext.userInfo);
         userNameInject = authStateContext.userInfo.name;
       }
     }
@@ -197,8 +199,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       ...activity.formData,
       activity_data: {
         ...activity_data,
-        reported_area: calculateGeometryArea(activity.geometry),
-        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_data.activity_persons
+        reported_area: calculateGeometryArea(activity.geometry)
+      },
+      activity_type_data: {
+        ...activity_type_data,
+        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_type_data?.activity_persons || [{}]
       }
     };
   };
@@ -314,8 +319,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
-
-    console.log(event);
 
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
@@ -620,7 +623,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     if (geometry && geometry[0]) {
       if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
-        console.log('geo here');
         saveGeometry(geometry);
         getJurSuggestions();
       } else {
@@ -660,7 +662,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isMobile()) {
       // Load users from cache
       dataAccess.getApplicationUsers(databaseContext).then((res) => {
-        console.log('RES IN USEEFFECT', res);
         setApplicationUsers(res);
       });
     } else {

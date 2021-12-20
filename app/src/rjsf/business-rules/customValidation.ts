@@ -276,9 +276,16 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
 */
 export function getWeatherCondTemperatureValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.Weather_Conditions) {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.Weather_Conditions ||
+      !formData.activity_subtype_data.Weather_Conditions.temperature
+    ) {
       return errors;
     }
+
+    console.log(formData);
     // validate temperature
 
     errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors = [];
@@ -286,7 +293,7 @@ export function getWeatherCondTemperatureValidator(): rjsfValidator {
 
     //if themperature is out of normal range, display an error
     if (temperature < 10 || temperature > 28) {
-      errors.activity_subtype_data['treatment_chemicalplant_information']['temperature'].addError(
+      errors.activity_subtype_data['Weather_Conditions']['temperature'].addError(
         'Temperature should ideally be between 10 and 28 degrees'
       );
     }
