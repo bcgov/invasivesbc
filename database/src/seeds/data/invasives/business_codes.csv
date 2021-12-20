@@ -1145,47 +1145,47 @@ service_license_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,112
 service_license_code,1838,01838 WESTERN WEED CONTROL (1980) LTD.,113
 service_license_code,23531,23531 YENDOR LOGGING,114
 service_license_code,15142,15142 ZEDI FIELD SERVICES,115
-liquid_herbicide_code,14725,AM500a [2,4-D 2,4-D Amine 500] 14725,1
-liquid_herbicide_code,9528,AM500b [2,4-D 2,4-D Amine 500] 9528,2
-liquid_herbicide_code,5931,AM600a [2,4-D 2,4-D Amine 600] 5931,3
-liquid_herbicide_code,14726,AM600b [2,4-D 2,4-D Amine 600] 14726,4
-liquid_herbicide_code,23713,Arsenal [imazapyr] 23713,5
-liquid_herbicide_code,31641,Aspect [picloram/2,4-D] 31641,6
-liquid_herbicide_code,23957,Banvel II [dicamba] 23957,7
-liquid_herbicide_code,29249,BanvelVM [dicamba] 29249,8
-liquid_herbicide_code,33590,BioLink [Caprylic Acid/Capric Acid] 33590,9
-liquid_herbicide_code,29888,Credit Xtreme [glyphosate] 29888,10
-liquid_herbicide_code,27856,Dyvel DSP [dicamba/2,4-D/mecoprop-p] 27856,11
-liquid_herbicide_code,21053,Garlon4 [triclopyr] 21053,12
-liquid_herbicide_code,29334,GarlonRTU [triclopyr] 29334,13
-liquid_herbicide_code,28945,GarlonXRT [triclopyr] 28945,14
-liquid_herbicide_code,27634,Grazon [2,4-D] 27634,15
-liquid_herbicide_code,31642,GrazonXC [picloram] 31642,16
-liquid_herbicide_code,32374,Habitat Aqua [imazapyr] 32374,17
-liquid_herbicide_code,30264,Kerb SC [Propyzamide] 30264,18
-liquid_herbicide_code,27801,Killex [2,4-D/mecoprop-p/dicamba] 27801,19
-liquid_herbicide_code,23545,Lontrel360 [clopyralid] 23545,20
-liquid_herbicide_code,32957,Method240SL [aminocyclopyrachlor] 32957,21
-liquid_herbicide_code,28517,Milestone [aminopyralid] 28517,22
-liquid_herbicide_code,26722,Oracle [dicamba] 26722,23
-liquid_herbicide_code,27884,ParIII [mecoprop-p/2,4-D/dicamba] 27884,24
-liquid_herbicide_code,30203,Arsenal Powerline [imazapyr] 30203,25
-liquid_herbicide_code,30063,Reclaim II B [2,4-D] 30063,26
-liquid_herbicide_code,28551,RestoreA [Aminopyralid] 28551,27
-liquid_herbicide_code,28552,RestoreB [2,4-D] 28552,28
-liquid_herbicide_code,26271,Reward [diquat] 26271,29
-liquid_herbicide_code,22759,Roundup Super Concentrate [glyphosate] 22759,30
-liquid_herbicide_code,28198,Roundup Transorb [glyphosate] 28198,31
-liquid_herbicide_code,27487,Roundup Weathermax [glyohsate] 27487,32
-liquid_herbicide_code,33653,Roundup WeatherPro [glyphosate] 33653,33
-liquid_herbicide_code,29498,StartUp [glyphosate] 29498,34
-liquid_herbicide_code,9007,Tordon101 [picloram] 9007,35
-liquid_herbicide_code,9005,Tordon22K [picloram] 9005,36
-liquid_herbicide_code,27972,Trillion [2,4-D/mecoprop-p/dicamba] 27972,37
-liquid_herbicide_code,26980,Vanquish [dicamba] 26980,38
-liquid_herbicide_code,27615,Vantage Plus Max [glypohsate] 27615,39
-liquid_herbicide_code,29994,VantageXRT [glyphosate] 29994,40
-liquid_herbicide_code,28840,VP480 [glyphosate] 28840,41
+liquid_herbicide_code,14725,'AM500a [2,4-D 2,4-D Amine 500] 14725',1
+liquid_herbicide_code,9528,'AM500b [2,4-D 2,4-D Amine 500] 9528',2
+liquid_herbicide_code,5931,'AM600a [2,4-D 2,4-D Amine 600] 5931',3
+liquid_herbicide_code,14726,'AM600b [2,4-D 2,4-D Amine 600] 14726',4
+liquid_herbicide_code,23713,'Arsenal [imazapyr] 23713',5
+liquid_herbicide_code,31641,'Aspect [picloram/2,4-D] 31641',6
+liquid_herbicide_code,23957,'Banvel II [dicamba] 23957',7
+liquid_herbicide_code,29249,'BanvelVM [dicamba] 29249',8
+liquid_herbicide_code,33590,'BioLink [Caprylic Acid/Capric Acid] 33590',9
+liquid_herbicide_code,29888,'Credit Xtreme [glyphosate] 29888',10
+liquid_herbicide_code,27856,'Dyvel DSP [dicamba/2,4-D/mecoprop-p] 27856',11
+liquid_herbicide_code,21053,'Garlon4 [triclopyr] 21053',12
+liquid_herbicide_code,29334,'GarlonRTU [triclopyr] 29334',13
+liquid_herbicide_code,28945,'GarlonXRT [triclopyr] 28945',14
+liquid_herbicide_code,27634,'Grazon [2,4-D] 27634',15
+liquid_herbicide_code,31642,'GrazonXC [picloram] 31642',16
+liquid_herbicide_code,32374,'Habitat Aqua [imazapyr] 32374',17
+liquid_herbicide_code,30264,'Kerb SC [Propyzamide] 30264',18
+liquid_herbicide_code,27801,'Killex [2,4-D/mecoprop-p/dicamba] 27801',19
+liquid_herbicide_code,23545,'Lontrel360 [clopyralid] 23545',20
+liquid_herbicide_code,32957,'Method240SL [aminocyclopyrachlor] 32957',21
+liquid_herbicide_code,28517,'Milestone [aminopyralid] 28517',22
+liquid_herbicide_code,26722,'Oracle [dicamba] 26722',23
+liquid_herbicide_code,27884,'ParIII [mecoprop-p/2,4-D/dicamba] 27884',24
+liquid_herbicide_code,30203,'Arsenal Powerline [imazapyr] 30203',25
+liquid_herbicide_code,30063,'Reclaim II B [2,4-D] 30063',26
+liquid_herbicide_code,28551,'RestoreA [Aminopyralid] 28551',27
+liquid_herbicide_code,28552,'RestoreB [2,4-D] 28552',28
+liquid_herbicide_code,26271,'Reward [diquat] 26271',29
+liquid_herbicide_code,22759,'Roundup Super Concentrate [glyphosate] 22759',30
+liquid_herbicide_code,28198,'Roundup Transorb [glyphosate] 28198',31
+liquid_herbicide_code,27487,'Roundup Weathermax [glyohsate] 27487',32
+liquid_herbicide_code,33653,'Roundup WeatherPro [glyphosate] 33653',33
+liquid_herbicide_code,29498,'StartUp [glyphosate] 29498',34
+liquid_herbicide_code,9007,'Tordon101 [picloram] 9007',35
+liquid_herbicide_code,9005,'Tordon22K [picloram] 9005',36
+liquid_herbicide_code,27972,'Trillion [2,4-D/mecoprop-p/dicamba] 27972',37
+liquid_herbicide_code,26980,'Vanquish [dicamba] 26980',38
+liquid_herbicide_code,27615,'Vantage Plus Max [glypohsate] 27615',39
+liquid_herbicide_code,29994,'VantageXRT [glyphosate] 29994',40
+liquid_herbicide_code,28840,'VP480 [glyphosate] 28840',41
 granular_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl] 29752,1
 granular_herbicide_code,23005,Escort [metsulfuron methyl] 23005,2
 granular_herbicide_code,33128,LongRun [flazasulfuron] 33128,3
