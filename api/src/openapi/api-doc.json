@@ -3313,18 +3313,6 @@
                 "title": "Additional authorization information",
                 "x-tooltip-text": "Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc)."
               },
-              "chemical_method_code": {
-                "type": "string",
-                "title": "Chemical Treatment Method",
-                "x-enum-code": {
-                  "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "chemical_method_code",
-                  "x-enum-code-name": "code_name",
-                  "x-enum-code-text": "code_description",
-                  "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Choose treatment application method"
-              },
               "water_temperature": {
                 "type": "number",
                 "title": "Water Temperature (C)",
@@ -3377,7 +3365,6 @@
               "applicator1_name",
               "applicator1_license",
               "pesticide_employer_code",
-              "chemical_method_code",
               "temperature",
               "humidity",
               "wind_speed",
@@ -3444,18 +3431,6 @@
                 },
                 "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
               },
-              "chemical_method_code": {
-                "type": "string",
-                "title": "Chemical Treatment Method",
-                "x-enum-code": {
-                  "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "chemical_method_code",
-                  "x-enum-code-name": "code_name",
-                  "x-enum-code-text": "code_description",
-                  "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Choose treatment application method"
-              },
               "temperature": {
                 "type": "number",
                 "title": "Temperature (C)",
@@ -3474,6 +3449,11 @@
                 "title": "Wind Direction",
                 "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
                 "x-tooltip-text": "Cardinal wind direction at time of treatment"
+              },
+              "wind_aspect": {
+                "type": "number",
+                "title": "Wind Aspect",
+                "x-tooltip-text": "Note the direction the wind is coming from in Degrees"
               },
               "humidity": {
                 "type": "number",
@@ -3531,18 +3511,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
-          },
-          "chemical_method_code": {
-            "type": "string",
-            "title": "Chemical Treatment Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "chemical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Choose treatment application method"
           },
           "invasive_plant_code": {
             "type": "string",
@@ -7825,17 +7793,6 @@
           }
         ],
         "properties": {
-          "chemical_method_code": {
-            "type": "string",
-            "title": "Chemical Treatment Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "chemical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
           "service_license_number": {
             "type": "string",
             "title": "Service License #"

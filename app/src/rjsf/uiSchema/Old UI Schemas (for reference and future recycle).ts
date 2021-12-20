@@ -188,10 +188,8 @@ const Treatment_ChemicalPlant = {
       'applicator1_license',
       'applicator2_name',
       'applicator2_license',
-      'application_start_time',
       'pesticide_employer_code',
       'pesticide_user_license_number',
-      'chemical_method_code',
       'temperature',
       'humidity',
       'pest_management_plan',
@@ -199,6 +197,7 @@ const Treatment_ChemicalPlant = {
       'herbicide',
       'wind_speed',
       'wind_direction_code',
+      'wind_aspect',
       'pesticide_use_permit_PUP',
       'signage_on_site',
       'application_start_time'
@@ -249,7 +248,6 @@ const Treatment_ChemicalPlant_BulkEdit = {
     'pest_management_plan',
     'pesticide_use_permit_PUP',
     'treatment_issues_code',
-    'chemical_method_code',
     'herbicide',
     'invasive_plant_code'
   ]

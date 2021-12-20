@@ -23,16 +23,11 @@ const TankMix: React.FC = (props) => {
     }));
   }, [currentTankMix]);
 
-  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>([]);
-
-  //update choices for autocomplete fields
-  useEffect(() => {
-    setCalculationTypeChoices(
-      businessCodes['calculation_type_code'].filter((herb) => {
-        return herb.value === 'PAR';
-      })
-    );
-  }, []);
+  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
+    businessCodes['calculation_type_code'].filter((herb) => {
+      return herb.value === 'PAR';
+    })
+  );
 
   return (
     <>
@@ -106,30 +101,6 @@ const TankMix: React.FC = (props) => {
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
             delivery_rate_of_mix: Number(event.target.value)
-          }));
-        }}
-        defaultValue={undefined}
-      />
-
-      <Tooltip
-        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-        placement="left"
-        title="Area Treated in square meters">
-        <HelpOutlineIcon />
-      </Tooltip>
-      <TextField
-        className={classes.inputField}
-        type="number"
-        label="Area Treated (sqm)"
-        value={currentTankMix.area_treated_sqm || ''}
-        variant="outlined"
-        onChange={(event) => {
-          if (event.target.value === null) {
-            return;
-          }
-          setCurrentTankMix((prevFields) => ({
-            ...prevFields,
-            area_treated_sqm: Number(event.target.value)
           }));
         }}
         defaultValue={undefined}

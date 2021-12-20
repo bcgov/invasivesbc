@@ -612,12 +612,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     const getJurSuggestions = async () => {
-      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
-      setSuggestedJurisdictions(res.rows);
+      if (geometry[0]) {
+        const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
+        setSuggestedJurisdictions(res.rows);
+      }
     };
 
-    if (geometry) {
-      console.log('turf line', geometry);
+    if (geometry[0]) {
       if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
         console.log('geo here');
         saveGeometry(geometry);

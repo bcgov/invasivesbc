@@ -34,9 +34,31 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
     insideTankMix ? formDetails.formData.tank_mix_object.herbicides[index] : formDetails.formData.herbicides[index]
   );
 
-  const [herbicideTypeChoices, setHerbicideTypeChoices] = useState<any[]>([]);
-  const [herbicideChoices, setHerbicideChoices] = useState<any[]>([]);
-  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>([]);
+  const [herbicideTypeChoices, setHerbicideTypeChoices] = useState<any[]>(
+    chemicalApplicationMethodType === 'spray'
+      ? businessCodes['herbicide_type_code']
+      : chemicalApplicationMethodType === 'direct'
+      ? businessCodes['herbicide_type_code'].filter((herb) => {
+          return herb.value === 'L';
+        })
+      : []
+  );
+  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
+    chemicalApplicationMethodType === 'spray'
+      ? businessCodes['calculation_type_code']
+      : chemicalApplicationMethodType === 'direct'
+      ? businessCodes['calculation_type_code'].filter((herb) => {
+          return herb.value === 'D';
+        })
+      : []
+  );
+  const [herbicideChoices, setHerbicideChoices] = useState<any[]>(
+    herbicide.herbicide_type_code === 'G'
+      ? businessCodes.granular_herbicide_code
+      : herbicide.herbicide_type_code === 'L'
+      ? businessCodes.liquid_herbicide_code
+      : []
+  );
 
   //creating valueLabels to to get the lable for heading
   let optionValueLabels = {};
@@ -45,6 +67,23 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
   Object.values(businessCodes[herbicide_type_code] as any[]).forEach((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
   });
+
+  //update herbicide choices for autocomplete field
+  useEffect(() => {
+    switch (herbicide.herbicide_type_code) {
+      case 'G': {
+        setHerbicideChoices(businessCodes.granular_herbicide_code);
+        break;
+      }
+      case 'L': {
+        setHerbicideChoices(businessCodes.liquid_herbicide_code);
+        break;
+      }
+      default:
+        setHerbicideChoices([]);
+        break;
+    }
+  }, [herbicide]);
 
   //update this herbicide inside context
   useEffect(() => {
@@ -76,49 +115,6 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
       }
     }
   }, [currentHerbicide]);
-
-  //update herbicide type and calc type choices for autocomplete fields
-  useEffect(() => {
-    switch (chemicalApplicationMethodType) {
-      case 'spray':
-        setHerbicideTypeChoices(businessCodes['herbicide_type_code']);
-        setCalculationTypeChoices(businessCodes['calculation_type_code']);
-        break;
-      case 'direct':
-        setHerbicideTypeChoices(
-          businessCodes['herbicide_type_code'].filter((herb) => {
-            return herb.value === 'L';
-          })
-        );
-        setCalculationTypeChoices(
-          businessCodes['calculation_type_code'].filter((herb) => {
-            return herb.value === 'D';
-          })
-        );
-        break;
-      default:
-        setHerbicideTypeChoices([]);
-        setCalculationTypeChoices([]);
-        break;
-    }
-  }, [chemicalApplicationMethodType]);
-
-  //update herbicide choices for autocomplete field
-  useEffect(() => {
-    switch (herbicide.herbicide_type_code) {
-      case 'G': {
-        setHerbicideChoices(businessCodes.granular_herbicide_code);
-        break;
-      }
-      case 'L': {
-        setHerbicideChoices(businessCodes.liquid_herbicide_code);
-        break;
-      }
-      default:
-        setHerbicideChoices([]);
-        break;
-    }
-  }, [herbicide]);
 
   return (
     <>
@@ -219,7 +215,11 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="number"
               // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
-              label="Product Application Rate (l/ha)"
+              label={
+                herbicide?.herbicide_type_code === 'G'
+                  ? 'Product Application Rate (g/ha)'
+                  : 'Product Application Rate (l/ha)'
+              }
               // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
               value={herbicide?.product_application_rate || ''}
               variant="outlined"

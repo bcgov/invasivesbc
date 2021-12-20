@@ -13,25 +13,6 @@ const HerbicidesAccordion = (props) => {
   const classes = useFormStyles();
   const tankMixOn = formDetails.formData.tank_mix;
 
-  const [herbicidesArr, setHerbicidesArr] = useState(formDetails.formData.herbicides);
-
-  useEffect(() => {
-    if (!props.insideTankMix) {
-      setFormDetails((prevDetails) => ({
-        ...prevDetails,
-        formData: { ...prevDetails.formData, herbicides: [...herbicidesArr] }
-      }));
-    } else {
-      setFormDetails((prevDetails) => ({
-        ...prevDetails,
-        formData: {
-          ...prevDetails.formData,
-          tank_mix_object: { ...prevDetails.formData.tank_mix_object, herbicides: [...herbicidesArr] }
-        }
-      }));
-    }
-  }, [herbicidesArr]);
-
   return (
     <Accordion
       expanded={(tankMixOn && props.insideTankMix) || (!tankMixOn && !props.insideTankMix)}
