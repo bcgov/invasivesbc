@@ -1,10 +1,8 @@
 code_header_name,code_name,code_description,code_sort_order
-pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],1
+pest_management_plan,MOTI PMP 102-0671-21-26,MOTI PMP 102-0671-21-26 [South Coastal Mainland of BC],1
 pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],2
 pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
 pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
-pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],5
-pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],6
 plant_life_stage_code,U,unknown,1
 plant_life_stage_code,SG,Small germinating plants,2
 plant_life_stage_code,RO,Rosettes,3
@@ -1147,65 +1145,58 @@ service_license_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,112
 service_license_code,1838,01838 WESTERN WEED CONTROL (1980) LTD.,113
 service_license_code,23531,23531 YENDOR LOGGING,114
 service_license_code,15142,15142 ZEDI FIELD SERVICES,115
-liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
-liquid_herbicide_code,9528,"AM500b [2,4-D 2,4-D Amine 500] 9528",2
-liquid_herbicide_code,5931,"AM600a [2,4-D 2,4-D Amine 600] 5931",3
-liquid_herbicide_code,14726,"AM600b [2,4-D 2,4-D Amine 600] 14726",4
-liquid_herbicide_code,23713,Arsenal [imazapyr Arsenal] 23713,5
-liquid_herbicide_code,31641,"Aspect [picloram/2,4-D Aspect] 31641",6
-liquid_herbicide_code,23957,Banvel2 [dicamba Banvel II] 23957,7
-liquid_herbicide_code,29249,BanvelVM [Banvel VM] 29249,8
-liquid_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] (G) 29752,9
-liquid_herbicide_code,29888,CreditX [glyphosate Credit Xtreme] 29888,10
-liquid_herbicide_code,27856,"Dyvel [dicamba/2,4-D/mecoprop-p Dyvel DSp] 27856",11
-liquid_herbicide_code,23005,Escort [metsulfuron methyl Escort] (G) 23005,12
-liquid_herbicide_code,21053,Garlon4 [triclopyr Garlon 4] 21053,13
-liquid_herbicide_code,29334,GarlonRTU [Garlon RTU] 29334,14
-liquid_herbicide_code,28945,GarlonXRT [Garlon XRT] 28945,15
-liquid_herbicide_code,27634,Grazon [Grazon] 27634,16
-liquid_herbicide_code,31642,GrazonXC [Grazon XC] 31642,17
-liquid_herbicide_code,30841,Habitat [Habitat] 30841,18
-liquid_herbicide_code,27801,"Killex [2,4-D/mecoprop-p/dicamba Killex] 27801",19
-liquid_herbicide_code,33128,LongRun [flazasulfuron LongRun] (G) 33128,20
-liquid_herbicide_code,23545,Lontrel360 [Lontrel 360] 23545,21
-liquid_herbicide_code,32957,Method240SL [Method 240SL] 32957,22
-liquid_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] (G) 30917,23
-liquid_herbicide_code,28517,Milestone [aminopyralid Milestone] 28517,24
-liquid_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] (G) 31382,25
-liquid_herbicide_code,26722,Oracle [Oracle] 26722,26
-liquid_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] (G) 30065,27
-liquid_herbicide_code,27884,"Par3 [mecoprop-p/2,4-D/dicamba Par III] 27884",28
-liquid_herbicide_code,30203,PowerLN [Powerline] 30203,29
-liquid_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] (G) 30062,30
-liquid_herbicide_code,30063,"ReclaimIIB [2,4-D Reclaim II B] 30063",31
-liquid_herbicide_code,28551,RestoreA [Aminopyralid Restore A] 28551,32
-liquid_herbicide_code,28552,"RestoreB [2,4-D Restore B] 28552",33
-liquid_herbicide_code,26271,Reward [Diquat ion Reward] 26271,34
-liquid_herbicide_code,22759,RoundupSC [Roundup Super Concentrate] 22759,35
-liquid_herbicide_code,28198,RoundupTR [Roundup Transorb HC] 28198,36
-liquid_herbicide_code,27487,RoundupWM [Roundup Weathermax] 27487,37
-liquid_herbicide_code,31209,Sandea [halosulfuron Sandea] (G) 31209,38
-liquid_herbicide_code,29498,StartUp [StartUp] 29498,39
-liquid_herbicide_code,9007,Tordon101 [Tordon 101] 9007,40
-liquid_herbicide_code,9005,Tordon22K [picloram Tordon 22K] 9005,41
-liquid_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] (G) 31559,42
-liquid_herbicide_code,27972,"Trillion [2,4-D/mecoprop-p/dicamba Trillion] 27972",43
-liquid_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] (G) 30920,44
-liquid_herbicide_code,26980,Vanquish [Vanquish] 26980,45
-liquid_herbicide_code,27615,VantagePMs [Vantage Plus Max / VPM II] 27615,46
-liquid_herbicide_code,29994,VantageXRT [Vantage XRT] 29994,47
-liquid_herbicide_code,28840,VP480 [VP480] 28840,48
-granular_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] (G)  29752,1
-granular_herbicide_code,23005,Escort [metsulfuron methyl Escort] (G) 23005,2
-granular_herbicide_code,33128,LongRun [flazasulfuron LongRun] (G) 33128,3
-granular_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] (G) 30917,4
-granular_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] (G) 31382,5
-granular_herbicide_code,30922,Navius Flex [  metsulfuron-methyl 12.6% aminocyclopyrachlor 39.5%  ] G 30922,6
-granular_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] (G) 30065,7
-granular_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] (G) 30062,8
-granular_herbicide_code,31209,Sandea [halosulfuron Sandea] (G) 31209,9
-granular_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] (G) 31559,10
-granular_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] (G) 30920,11
+liquid_herbicide_code,14725,AM500a [2,4-D 2,4-D Amine 500] 14725,1
+liquid_herbicide_code,9528,AM500b [2,4-D 2,4-D Amine 500] 9528,2
+liquid_herbicide_code,5931,AM600a [2,4-D 2,4-D Amine 600] 5931,3
+liquid_herbicide_code,14726,AM600b [2,4-D 2,4-D Amine 600] 14726,4
+liquid_herbicide_code,23713,Arsenal [imazapyr] 23713,5
+liquid_herbicide_code,31641,Aspect [picloram/2,4-D] 31641,6
+liquid_herbicide_code,23957,Banvel II [dicamba] 23957,7
+liquid_herbicide_code,29249,BanvelVM [dicamba] 29249,8
+liquid_herbicide_code,33590,BioLink [Caprylic Acid/Capric Acid] 33590,9
+liquid_herbicide_code,29888,Credit Xtreme [glyphosate] 29888,10
+liquid_herbicide_code,27856,Dyvel DSP [dicamba/2,4-D/mecoprop-p] 27856,11
+liquid_herbicide_code,21053,Garlon4 [triclopyr] 21053,12
+liquid_herbicide_code,29334,GarlonRTU [triclopyr] 29334,13
+liquid_herbicide_code,28945,GarlonXRT [triclopyr] 28945,14
+liquid_herbicide_code,27634,Grazon [2,4-D] 27634,15
+liquid_herbicide_code,31642,GrazonXC [picloram] 31642,16
+liquid_herbicide_code,32374,Habitat Aqua [imazapyr] 32374,17
+liquid_herbicide_code,30264,Kerb SC [Propyzamide] 30264,18
+liquid_herbicide_code,27801,Killex [2,4-D/mecoprop-p/dicamba] 27801,19
+liquid_herbicide_code,23545,Lontrel360 [clopyralid] 23545,20
+liquid_herbicide_code,32957,Method240SL [aminocyclopyrachlor] 32957,21
+liquid_herbicide_code,28517,Milestone [aminopyralid] 28517,22
+liquid_herbicide_code,26722,Oracle [dicamba] 26722,23
+liquid_herbicide_code,27884,ParIII [mecoprop-p/2,4-D/dicamba] 27884,24
+liquid_herbicide_code,30203,Arsenal Powerline [imazapyr] 30203,25
+liquid_herbicide_code,30063,Reclaim II B [2,4-D] 30063,26
+liquid_herbicide_code,28551,RestoreA [Aminopyralid] 28551,27
+liquid_herbicide_code,28552,RestoreB [2,4-D] 28552,28
+liquid_herbicide_code,26271,Reward [diquat] 26271,29
+liquid_herbicide_code,22759,Roundup Super Concentrate [glyphosate] 22759,30
+liquid_herbicide_code,28198,Roundup Transorb [glyphosate] 28198,31
+liquid_herbicide_code,27487,Roundup Weathermax [glyohsate] 27487,32
+liquid_herbicide_code,33653,Roundup WeatherPro [glyphosate] 33653,33
+liquid_herbicide_code,29498,StartUp [glyphosate] 29498,34
+liquid_herbicide_code,9007,Tordon101 [picloram] 9007,35
+liquid_herbicide_code,9005,Tordon22K [picloram] 9005,36
+liquid_herbicide_code,27972,Trillion [2,4-D/mecoprop-p/dicamba] 27972,37
+liquid_herbicide_code,26980,Vanquish [dicamba] 26980,38
+liquid_herbicide_code,27615,Vantage Plus Max [glypohsate] 27615,39
+liquid_herbicide_code,29994,VantageXRT [glyphosate] 29994,40
+liquid_herbicide_code,28840,VP480 [glyphosate] 28840,41
+granular_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl] 29752,1
+granular_herbicide_code,23005,Escort [metsulfuron methyl] 23005,2
+granular_herbicide_code,33128,LongRun [flazasulfuron] 33128,3
+granular_herbicide_code,30917,Method50SG [aminocyclopyrachlor] 30917,4
+granular_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor] 31382,5
+granular_herbicide_code,30922,Navius Flex [metsulfuron-methyl/aminocyclopyrachlor] 30922,6
+granular_herbicide_code,30065,Overdrive [diflufenzopyr] 30065,7
+granular_herbicide_code,30062,Reclaim II A [aminopyralid/metsulfuron-methyl] 30062,8
+granular_herbicide_code,31209,Sandea [halosulfuron] 31209,9
+granular_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone] 31559,10
+granular_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor] 30920,11
 calculation_type_code,PAR,Product Application Rate,1
 calculation_type_code,D,Dilution,2
 herbicide_type_code,G,granular,1
