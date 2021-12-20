@@ -35,6 +35,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - ENVIRONMENT=local
       - NODE_ENV=local
+      - REACT_APP_REAL_NODE_ENV=local
     networks:
       - local-network
     links:

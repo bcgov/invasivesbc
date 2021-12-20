@@ -34,6 +34,7 @@ services:
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - ENVIRONMENT=local
+      - REACT_APP_REAL_NODE_ENV=local
       - NODE_ENV=local
     networks:
       - local-network
