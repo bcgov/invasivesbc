@@ -98,7 +98,12 @@ export const LayerPicker = React.memo(
         </ListItemIcon>
       ));
       return (
-        <ListItem id={parent.id} dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 440 }}>
+        <ListItem
+          key={Math.random()}
+          id={parent.id}
+          dense={true}
+          ContainerComponent="div"
+          style={{ width: '100%', maxWidth: 440 }}>
           <Accordion
             id="parent-accordion"
             expanded={getParentAction(layersActions, parent.id).expanded}
@@ -125,6 +130,7 @@ export const LayerPicker = React.memo(
                 id={child.id}
                 container
                 style={{ marginBottom: -5, marginTop: -5 }}
+                key={'layer' + child.id + Math.random()}
                 direction="row"
                 alignItems="center">
                 &emsp;
@@ -216,7 +222,7 @@ export const LayerPicker = React.memo(
     const SortableListContainer = SortableContainer(({ items }: any) => (
       <List>
         {items.map((parent: { id: string; order: number }) => (
-          <SortableParentLayer key={parent.id} index={parent.order} parent={parent} />
+          <SortableParentLayer key={'parent' + parent.id + Math.random()} index={parent.order} parent={parent} />
         ))}
       </List>
     ));
@@ -234,11 +240,11 @@ export const LayerPicker = React.memo(
     return (
       <>
         {layersSelected.map((parent) => (
-          <>
+          <div key={Math.random()}>
             {parent.children.map(
               (child) =>
                 child.enabled && (
-                  <>
+                  <div key={Math.random()}>
                     {child.bcgw_code ? (
                       <DataBCLayer
                         opacity={child.opacity}
@@ -261,10 +267,10 @@ export const LayerPicker = React.memo(
                         zIndex={child.zIndex}
                       />
                     )}
-                  </>
+                  </div>
                 )
             )}
-          </>
+          </div>
         ))}
         <PopupState variant="popover" popupId="layer-picker-popup-state">
           {(popupState) => (

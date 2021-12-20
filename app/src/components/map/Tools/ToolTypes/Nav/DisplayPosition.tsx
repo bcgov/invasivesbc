@@ -62,7 +62,7 @@ export default function DisplayPosition({ map }) {
     if (map) {
       getLocation();
     }
-  }, map);
+  }, [map]);
 
   useEffect(() => {
     if (newPosition) {
