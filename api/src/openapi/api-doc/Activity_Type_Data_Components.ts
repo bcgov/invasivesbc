@@ -12,19 +12,6 @@ export const Observation = {
       default: 'Unknown',
       'x-tooltip-text': 'Choose yes if this observation was completed directly before a treatment'
     },
-    observation_type_code: {
-      type: 'string',
-      title: 'Type',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'observation_type_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      default: 'CU',
-      'x-tooltip-text': 'Choose type of observation from dropdown'
-    },
     activity_persons: {
       type: 'array',
       default: [{}],

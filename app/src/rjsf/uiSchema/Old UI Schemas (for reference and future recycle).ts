@@ -61,7 +61,6 @@ const frep = {
   observation_method: { 'ui:widget': 'single-select-autocomplete' }, //???
   microscopy_species: { 'ui:widget': 'textarea' }, //???
   monitoring_results: { 'ui:widget': 'textarea' }, //???
-  //observation_type_code: { 'ui:widget': 'single-select-autocomplete' },
   //district_code: { 'ui:widget': 'single-select-autocomplete' },
   //override_code: { 'ui:widget': 'single-select-autocomplete' },
   //phen_total_percentage: { 'ui:readonly': true },
