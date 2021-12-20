@@ -900,6 +900,7 @@ const Observation_PlantTerrestrial_Information = {
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
   'ui:order':['invasive_plant_code','monitoring_details']
 };
@@ -907,6 +908,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
   'ui:order':['invasive_plant_code','monitoring_details']
 };

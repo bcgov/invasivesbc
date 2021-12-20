@@ -605,6 +605,47 @@ export function getTargetPhenologySumValidator(): rjsfValidator {
 }
 
 /* 
+  function to validate that the sum of values of all target plant phenology fields equal to 100%
+ */
+export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      (!formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information &&
+        !formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information)
+    ) {
+      return errors;
+    }
+
+    const isChemical =
+      formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information === undefined;
+
+    let informationObject = isChemical
+      ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
+      : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
+
+    if (!informationObject.aquatic_invasive_plant_code && !informationObject.invasive_plant_code) {
+      errors['activity_subtype_data'][
+        isChemical
+          ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+          : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+      ].addError('Either Aquatic or Terrastrial plant has to be specified.');
+    }
+
+    if (informationObject.aquatic_invasive_plant_code && informationObject.invasive_plant_code) {
+      errors['activity_subtype_data'][
+        isChemical
+          ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+          : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+      ].addError("You can't specify both aquatic and terrestrial plants.");
+    }
+
+    return errors;
+  };
+}
+
+/* 
   function to transfer error state from chemical details form to main rjsf form
  */
 export function transferErrorsFromChemDetails(): rjsfValidator {
