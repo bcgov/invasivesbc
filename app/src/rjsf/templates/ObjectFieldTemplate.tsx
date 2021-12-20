@@ -78,7 +78,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
               <AddButton
                 className="object-property-expand"
                 onClick={props.onAddClick(props.schema)}
-                disabled={props.disabled || props.readonly}
+                //disabled={props.disabled || props.readonly}
               />
             </Grid>
           </Grid>

@@ -208,14 +208,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const loginUser = async () => {
     await keycloak?.obj?.login();
     const user = await keycloak?.obj?.loadUserInfo();
-    const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
-    await setUserRoles(roles);
+    //  const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
+    // await setUserRoles(roles);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
       const userInfoAndRoles = {
-        userInfo: user,
-        userRoles: roles
+        userInfo: user
+        //  userRoles: roles
       };
       try {
         await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {});

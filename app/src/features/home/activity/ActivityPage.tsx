@@ -184,7 +184,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let userNameInject = '';
     console.log(activity);
     if (
-      !activity_data.activity_persons ||
+      activity_data.activity_persons ||
       (activity_data.activity_persons && activity_data.activity_persons.length > 0)
     ) {
       if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
@@ -618,7 +618,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
     };
 
-    if (geometry[0]) {
+    if (geometry && geometry[0]) {
       if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
         console.log('geo here');
         saveGeometry(geometry);

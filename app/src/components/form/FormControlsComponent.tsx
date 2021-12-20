@@ -66,6 +66,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                 </Button>
               </Grid>
             )}
+
+          {/*
           {props.onSave && (
             <Grid item>
               <Tooltip
@@ -76,7 +78,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                     : 'Save this form to the InvasivesBC database where other staff can reach it.  Currently this data is only on your device.'
                 }>
                 <Button
-                  disabled={isDisabled || props.disableSave}
+                  //  disabled={isDisabled || props.disableSave}
                   variant="contained"
                   color="primary"
                   onClick={() => props.onSave()}>
@@ -89,7 +91,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             <Grid item>
               <Tooltip TransitionComponent={Zoom} title={ReviewActionDescriptions[props.reviewStatus]}>
                 <Button
-                  disabled={props.disableReview}
+                  //     disabled={props.disableReview}
                   variant="contained"
                   color="primary"
                   onClick={() => props.onReview()}>
@@ -104,7 +106,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                 TransitionComponent={Zoom}
                 title="Approve this form so it will be visible to all InvasivesBC users">
                 <Button
-                  disabled={props.disableApprove}
+                  //       disabled={props.disableApprove}
                   variant="contained"
                   color="primary"
                   onClick={() => props.onApprove()}>
@@ -113,21 +115,21 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               </Tooltip>
             </Grid>
           )}
-          {props.onDisapprove && !props.disableDisapprove && (
+          {props.onDisapprove && props.disableDisapprove && (
             <Grid item>
-              <Tooltip
-                TransitionComponent={Zoom}
-                title="Disapprove this form and kick it back to the original author for revisions">
-                <Button
-                  disabled={props.disableDisapprove}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => props.onDisapprove()}>
-                  Disapprove
-                </Button>
-              </Tooltip>
+              {props.disableDisapprove ? (
+                <Tooltip
+                  TransitionComponent={Zoom}
+                  title="Disapprove this form and kick it back to the original author for revisions">
+                  <Button variant="contained" color="primary" onClick={() => props.onDisapprove()}>
+                    Disapprove
+                  </Button>
+                </Tooltip>
+              ) : (
+                <></>
+              )}
             </Grid>
-          )}
+              */}
         </Grid>
       </Grid>
     </>
