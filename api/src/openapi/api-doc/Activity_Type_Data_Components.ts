@@ -3,7 +3,7 @@ import { Persons } from './Components/General_Sub_Forms';
 export const Observation = {
   title: 'Observation Information',
   type: 'object',
-  required: ['observation_type_code', 'observation_persons'],
+  required: ['observation_type_code', 'activity_persons'],
   properties: {
     pre_treatment_observation: {
       title: 'Pre-treatment Observation',
@@ -25,7 +25,7 @@ export const Observation = {
       default: 'CU',
       'x-tooltip-text': 'Choose type of observation from dropdown'
     },
-    observation_persons: {
+    activity_persons: {
       type: 'array',
       default: [{}],
       minItems: 1,
@@ -41,22 +41,21 @@ export const Observation = {
 export const Monitoring = {
   title: 'Monitoring Information',
   type: 'object',
-  required: ['linked_id', 'observer_first_name', 'observer_last_name'],
+  required: ['linked_id', 'activity_persons'],
   properties: {
     linked_id: {
       type: 'string',
       title: 'Linked Treatment ID',
       'x-tooltip-text': 'Identifier of linked treatment record'
     },
-    observer_first_name: {
-      type: 'string',
-      title: 'First Name',
-      pattern: '[A-Za-z -]+'
-    },
-    observer_last_name: {
-      type: 'string',
-      title: 'Last Name',
-      pattern: '[A-Za-z -]+'
+    activity_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Monitoring Person(s)',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing monitoring'
     }
   }
 };
@@ -64,9 +63,9 @@ export const Monitoring = {
 export const Treatment = {
   title: 'Treatment Information',
   type: 'object',
-  required: ['treatment_persons'],
+  required: ['activity_persons'],
   properties: {
-    treatment_persons: {
+    activity_persons: {
       type: 'array',
       default: [{}],
       title: 'Treatment Person(s)',
@@ -81,9 +80,9 @@ export const Treatment = {
 export const Collection = {
   title: 'Collection Information',
   type: 'object',
-  required: ['collection_persons'],
+  required: ['activity_persons'],
   properties: {
-    collection_persons: {
+    activity_persons: {
       type: 'array',
       default: [{}],
       title: 'Name(s) of Person(s) doing the collection',
