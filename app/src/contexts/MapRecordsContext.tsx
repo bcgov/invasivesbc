@@ -266,7 +266,7 @@ export const MapRecordsContextProvider: React.FC = (props) => {
     }
   }, [currentGeoEdit]);
 
-  const debug = true;
+  const debug = false;
   React.useEffect(() => {
     if (debug) {
       let debugObj = {};
