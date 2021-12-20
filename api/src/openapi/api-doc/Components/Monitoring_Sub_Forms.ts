@@ -234,7 +234,7 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       title: 'Location agent(s) found',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'bio_agent_location_code',
+        'x-enum-code-header-name': 'location_agents_found_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
