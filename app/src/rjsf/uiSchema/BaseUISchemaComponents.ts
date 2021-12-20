@@ -73,25 +73,24 @@ const Activity = {
 const Observation = {
   pre_treatment_observation: {},
   observation_type_code: { 'ui:widget': 'single-select-autocomplete' },
-  observation_persons: {},
-  "ui:order":['pre_treatment_observation','observation_type_code','observation_persons']
+  activity_persons: {},
+  "ui:order":['pre_treatment_observation','observation_type_code','activity_persons']
 };
 
 const Monitoring = {
   linked_id: { 'ui:widget': 'single-select-autocomplete' },
-  observer_first_name: {},
-  observer_last_name: {},
-  'ui:order': ['linked_id', 'observer_first_name', 'observer_last_name'],
+  activity_persons: {},
+  'ui:order': ['linked_id', 'activity_persons'],
 };
 
 const Treatment = {
-    treatment_persons: {},
-    'ui:order':['treatment_persons']
+    activity_persons: {},
+    'ui:order':['activity_persons']
 };
 
 const Collection = {
-  collection_persons: {},
-  'ui:order':['collection_persons']
+  activity_persons: {},
+  'ui:order':['activity_persons']
 };
 
 const TransectData = {
@@ -902,7 +901,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order':['invasive_plant_code','monitoring_details']
+  'ui:order':['invasive_plant_code','aquatic_invasive_plant_code','monitoring_details']
 };
 
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
@@ -910,7 +909,7 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order':['invasive_plant_code','monitoring_details']
+  'ui:order':['invasive_plant_code','aquatic_invasive_plant_code','monitoring_details']
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
