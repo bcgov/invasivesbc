@@ -132,8 +132,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     let argumentFieldName = '';
     if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
       argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';
-    } else if (args[0].includes('root_activity_subtype_data_treatment_chemicalplant_information_')) {
-      argumentFieldName = 'root_activity_subtype_data_treatment_chemicalplant_information_';
+    } else if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_')) {
+      argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_';
+    } else if (args[0].includes('root_activity_subtype_data_Weather_Conditions_')) {
+      argumentFieldName = 'root_activity_subtype_data_Weather_Conditions_';
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
     }
@@ -147,9 +149,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const isActivityChemTreatment = () => {
     if (
-      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
       props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
-      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
       props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
     ) {
       return true;

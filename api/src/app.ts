@@ -3,6 +3,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
+import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
@@ -36,7 +37,7 @@ app.use(function (req: any, res: any, next: any) {
 // Initialize express-openapi framework
 initialize({
   validateApiDoc: false,
-  apiDoc: './src/openapi/api-doc.json', // base open api spec
+  apiDoc: JSON.stringify(api_doc), // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts

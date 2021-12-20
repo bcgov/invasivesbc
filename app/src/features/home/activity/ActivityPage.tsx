@@ -19,16 +19,17 @@ import {
   getAreaValidator,
   getCustomValidator,
   getDateAndTimeValidator,
-  getDuplicateInvasivePlantsValidator,
-  getDurationCountAndPlantCountValidation,
-  getHerbicideApplicationRateValidator,
-  // getPosAndNegObservationValidator,
+  getPosAndNegObservationValidator,
   getInvasivePlantsValidator,
   getVegTransectPointsPercentCoverValidator,
-  getPersonNameNoNumbersValidator,
+  getShorelineTypesPercentValidator,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getTemperatureValidator,
+  getTargetPhenologySumValidator,
+  getBiocontrolPresentFieldValidator,
+  getTerrestrialAquaticPlantsValidator,
+  getWeatherCondTemperatureValidator,
   getTransectOffsetDistanceValidator,
   getWindValidator,
   transferErrorsFromChemDetails,
@@ -36,9 +37,10 @@ import {
 } from '../../../rjsf/business-rules/customValidation';
 import {
   autoFillSlopeAspect,
+  autoFillTotalBioAgentQuantity,
   autoFillTotalCollectionTime,
+  autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
-  populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from '../../../rjsf/business-rules/populateCalculatedFields';
 import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
@@ -51,10 +53,6 @@ import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 
 const useStyles = makeStyles((theme) => ({
-  heading: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
-  },
   mapContainer: {
     height: '600px'
   },
@@ -317,7 +315,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
 
-    updatedFormData.activity_subtype_data = populateHerbicideCalculatedFields(updatedFormData.activity_subtype_data);
+    console.log(event);
+
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 
@@ -325,6 +324,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total collection time (only on biocontrol collection activity)
     updatedFormData = autoFillTotalCollectionTime(updatedFormData);
+    //auto fills total release quantity (only on biocontrol release activity)
+    updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+    //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
+    updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
     await updateDoc({
       formData: updatedFormData,
@@ -480,18 +483,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (!wellIdandProximity) {
       return;
     } else {
-      const newFormData = doc;
+      const newFormData = { ...doc };
       //set well_id and well_proximity fields
-      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id ? wellIdandProximity.id : undefined;
-      newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity
-        ? Number(wellIdandProximity.proximity.toFixed(0))
+      newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] = wellIdandProximity.id
+        ? wellIdandProximity.id
         : undefined;
+      newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] =
+        wellIdandProximity.proximity ? Number(wellIdandProximity.proximity.toFixed(0)) : undefined;
 
       const newValuesAreSame: boolean =
-        newFormData['formData']['activity_data']['well_id'] ===
-          activityResult['formData']['activity_data']['well_id'] &&
-        newFormData['formData']['activity_data']['well_proximity'] ===
-          activityResult['formData']['activity_data']['well_proximity'];
+        newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] ===
+          activityResult['formData']['activity_subtype_data']['Well_Information']['well_id'] &&
+        newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] ===
+          activityResult['formData']['activity_subtype_data']['Well_Information']['well_proximity'];
 
       //if it is a Chemical treatment and there are wells too close, display warning dialog
       if (
@@ -565,7 +569,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //If not in Observation nor in Chemical Treatment, just make changes to fields
       else {
-        await updateDoc({ formData: newFormData['formData'] });
+        await updateDoc({ formData: { ...newFormData['formData'] } });
       }
     }
   };
@@ -747,14 +751,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 getWindValidator(doc.activitySubtype),
                 getSlopeAspectBothFlatValidator(),
                 getTemperatureValidator(doc.activitySubtype),
-                // getPosAndNegObservationValidator(),
+                getPosAndNegObservationValidator(),
+                getTargetPhenologySumValidator(),
+                getTerrestrialAquaticPlantsValidator(),
+                getShorelineTypesPercentValidator(),
+                getWeatherCondTemperatureValidator(),
+                getBiocontrolPresentFieldValidator(),
                 transferErrorsFromChemDetails(),
-                getDuplicateInvasivePlantsValidator(doc.activitySubtype),
-                getHerbicideApplicationRateValidator(),
                 getTransectOffsetDistanceValidator(),
                 getVegTransectPointsPercentCoverValidator(),
-                getDurationCountAndPlantCountValidation(),
-                getPersonNameNoNumbersValidator(applicationUsers),
                 getJurisdictionPercentValidator(),
                 getInvasivePlantsValidator(linkedActivity),
                 getPlotIdentificatiomTreesValidator(doc.activitySubtype)

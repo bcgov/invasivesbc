@@ -6,15 +6,8 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useQuery } from 'hooks/useQuery';
 import { IActivity } from 'interfaces/activity-interfaces';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  getCustomValidator,
-  getHerbicideApplicationRateValidator,
-  getJurisdictionPercentValidator
-} from 'rjsf/business-rules/customValidation';
-import {
-  populateHerbicideCalculatedFields,
-  populateTransectLineAndPointData
-} from 'rjsf/business-rules/populateCalculatedFields';
+import { getCustomValidator, getJurisdictionPercentValidator } from 'rjsf/business-rules/customValidation';
+import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { generateActivityPayload } from 'utils/addActivity';
 import { debounced } from 'utils/FunctionUtils';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
@@ -90,7 +83,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideCalculatedFields(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = { ...event.formData.activity_subtype_data };
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
@@ -122,10 +115,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
             activity={activity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
-            customValidation={getCustomValidator([
-              getHerbicideApplicationRateValidator(),
-              getJurisdictionPercentValidator()
-            ])}
+            customValidation={getCustomValidator([getJurisdictionPercentValidator()])}
             setParentFormRef={setParentFormRef}
             onFormSubmitError={onFormSubmitError}
             hideCheckFormForErrors={true}
