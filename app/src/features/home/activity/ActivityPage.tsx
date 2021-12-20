@@ -320,8 +320,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
 
-    console.log(event);
-
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 
@@ -591,7 +589,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
 
       let updatedFormData = getDefaultFormDataValues(activityResult);
-      console.log(updatedFormData);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
       setGeometry(updatedDoc.geometry);
@@ -626,7 +623,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     if (geometry && geometry[0]) {
       if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
-        console.log('geo here');
         saveGeometry(geometry);
         getJurSuggestions();
       } else {
@@ -666,7 +662,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isMobile()) {
       // Load users from cache
       dataAccess.getApplicationUsers(databaseContext).then((res) => {
-        console.log('RES IN USEEFFECT', res);
         setApplicationUsers(res);
       });
     } else {
