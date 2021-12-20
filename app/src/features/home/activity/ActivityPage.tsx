@@ -180,16 +180,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const getDefaultFormDataValues = (activity: any) => {
     const { activity_data } = activity.formData || {};
+    const activity_type_data = activity.formData.activity_type_data || {
+      activity_persons: [{ person_name: undefined }]
+    };
+
     let needsInsert = false;
     let userNameInject = '';
-    console.log(activity);
-    if (
-      activity_data.activity_persons ||
-      (activity_data.activity_persons && activity_data.activity_persons.length > 0)
-    ) {
-      if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
+    if (activity_type_data?.activity_persons) {
+      if (
+        activity_type_data?.activity_persons.length > 0 &&
+        activity_type_data?.activity_persons[0].person_name === undefined
+      ) {
         needsInsert = true;
-        console.log(authStateContext.userInfo);
         userNameInject = authStateContext.userInfo.name;
       }
     }
@@ -197,8 +199,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       ...activity.formData,
       activity_data: {
         ...activity_data,
-        reported_area: calculateGeometryArea(activity.geometry),
-        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_data.activity_persons
+        reported_area: calculateGeometryArea(activity.geometry)
+      },
+      activity_type_data: {
+        ...activity_type_data,
+        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_type_data?.activity_persons || [{}]
       }
     };
   };
@@ -586,6 +591,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
 
       let updatedFormData = getDefaultFormDataValues(activityResult);
+      console.log(updatedFormData);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
       setGeometry(updatedDoc.geometry);
