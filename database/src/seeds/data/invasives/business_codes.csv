@@ -1431,13 +1431,13 @@ frame_size_code,NA,Unknown or indeterminant,1
 frame_size_code,L,1.0 sq metre,2
 frame_size_code,M,0.75 sq metre,3
 frame_size_code,S,0.1 sq metre,4
-biocontrol_collection_code,As,Aspirate*,1
-biocontrol_collection_code,Hp,Hand pick*,2
-biocontrol_collection_code,Cl,Clipping**,3
-biocontrol_collection_code,Cs,Sweep (counted)**,4
-biocontrol_collection_code,Sw,Sweep (timed)*,5
-biocontrol_collection_code,Tt,Tap and tray*,6
-biocontrol_collection_code,Tp,Transplant**,7
+biocontrol_collection_code,As,Aspirate,1
+biocontrol_collection_code,Hp,Hand pick,2
+biocontrol_collection_code,Cl,Clipping,3
+biocontrol_collection_code,Cs,Sweep (counted),4
+biocontrol_collection_code,Sw,Sweep (timed),5
+biocontrol_collection_code,Tt,Tap and tray,6
+biocontrol_collection_code,Tp,Transplant,7
 invasive_plant_code_withbiocontrol,BL,Black knapweed (CENT NIG Centaurea nigra),1
 invasive_plant_code_withbiocontrol,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),2
 invasive_plant_code_withbiocontrol,BK,Brown knapweed (CENT JAC Centaurea jacea),3
@@ -2241,3 +2241,51 @@ chemical_method_direct,BBA,Basal Bark,2
 chemical_method_direct,CIN,Cut and Insert,3
 chemical_method_direct,CSP,Cut Stump / Cut and Paint,4
 chemical_method_direct,WCK,Wick,5
+plant_position_code,Bg,Basal Growth,1
+plant_position_code,Pu,Plant Upper,2
+plant_position_code,Pl,Plant Lower,3
+plant_position_code,Ro,Rosette,4
+plant_position_code,Rt,Root,5
+plant_position_code,On,On soil,6
+plant_position_code,Is,In soil,7
+plant_position_code,Dl,Duff/Litter,8
+plant_position_code,Te,Tent,9
+plant_position_code,Ot,Other,10
+agent_location_code,Ax,Axil,1
+agent_location_code,Bg,Basal Growth,2
+agent_location_code,Fl - I,Flower (internal),3
+agent_location_code,Fl - E,Flower (external),4
+agent_location_code,Sh - I,Seedhead (internal),5
+agent_location_code,Sh - E,Seedhead (external),6
+agent_location_code,Ls ,Leaf surface upper,7
+agent_location_code,Lu,Leaf underside,8
+agent_location_code,Me,Meristem,9
+agent_location_code,Pe,Root (internal),10
+agent_location_code,Ro - I,Root (external),11
+agent_location_code,Ro - E,Stem (internal),12
+agent_location_code,St - I,Stem (external),13
+agent_location_code,St - E,Stolon/Runner,14
+agent_location_code,St -R,Plant terminal,15
+location_agents_found_code,NS,No Slope,1
+location_agents_found_code,TS,Top of Slope,2
+location_agents_found_code,BS,Base of Slope,3
+location_agents_found_code,MS,Mid Slope,4
+location_agents_found_code,IH,In Hollow,5
+location_agents_found_code,IP,In Protected,6
+location_agents_found_code,WC,Within Canopy,7
+location_agents_found_code,SS,Saturated Soil,8
+location_agents_found_code,S,Shaded,9
+location_agents_found_code,EP,Edge of Patch,10
+location_agents_found_code,CP,Center of Patch,11
+location_agents_found_code,EE,Edge Effects,12
+site_surface_code,ssh,Hollow,1
+site_surface_code,ssr,Rounded ,2
+site_surface_code,ssl,Linear,3
+biocontrol_monitoring_methods_code,As,Aspirate,1
+biocontrol_monitoring_methods_code,Hp,Hand pick,2
+biocontrol_monitoring_methods_code,Cl,Clipping,3
+biocontrol_monitoring_methods_code,S,Sweep,4
+biocontrol_monitoring_methods_code,Tt,Tap and tray,5
+biocontrol_monitoring_methods_code,Tp,Transplant,6
+biocontrol_monitoring_methods_code,Ex,Excavate,7
+biocontrol_monitoring_methods_code,Ob,Observe,8
