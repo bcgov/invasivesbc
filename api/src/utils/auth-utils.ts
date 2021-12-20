@@ -11,7 +11,8 @@ import { getLogger } from './logger';
 const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
-  process.env.APP_CERTIFICATE_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs';
+  process.env.APP_CERTIFICATE_URL ||
+  'https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs';
 
 const KEYCLOAK_CLIENT_ID = 'invasives-bc-1849';
 
@@ -124,7 +125,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     // The user may have multiple roles, but this check only requires 1 role to match for successful authorization
 
     //temp hack:
-    const areUserRolesValid = true//userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
+    const areUserRolesValid = true; //userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
 
     if (!areUserRolesValid) {
       throw {

@@ -43,10 +43,10 @@ parameters:
     value: 'https://oidc.gov.bc.ca'
   - name: SSO_CLIENT_ID
     description: Client Id for application
-    value: 'lucy'
+    value: 'invasives-bc-1849'
   - name: SSO_REALM
     description: Realm identifier or name
-    value: dfmlcg7z
+    value: onestopauth-business
   - name: REPLICAS
     value: '1'
   - name: REPLICA_MAX

@@ -286,11 +286,25 @@ export const Biological_Agent_Stage = {
     },
     agent_location: {
       type: 'string',
-      title: 'Agent Location'
+      title: 'Agent Location',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'agent_location_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
     },
     plant_position: {
       type: 'string',
-      title: 'Plant Position'
+      title: 'Plant Position',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'plant_position_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
     }
   },
   required: ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
