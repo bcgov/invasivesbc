@@ -11,9 +11,9 @@ import { getLogger } from './logger';
 const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
-  process.env.APP_CERTIFICATE_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs';
+  process.env.APP_CERTIFICATE_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs';
 
-const KEYCLOAK_CLIENT_ID = 'invasives-bc';
+const KEYCLOAK_CLIENT_ID = 'invasives-bc-1849';
 
 const TOKEN_IGNORE_EXPIRATION: boolean =
   process.env.TOKEN_IGNORE_EXPIRATION === 'true' ||

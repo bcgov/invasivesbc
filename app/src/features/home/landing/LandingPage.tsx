@@ -83,14 +83,14 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const loginUser = async () => {
     await authContext.keycloak?.obj?.login();
     const user = await authContext.keycloak?.obj?.loadUserInfo();
-    const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
+    //  const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await authContext.setUserRoles(roles);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
       const userInfoAndRoles = {
-        userInfo: user,
-        userRoles: roles
+        userInfo: user
+        //     userRoles: roles
       };
       try {
         console.log('Attempting to cache user info: ', userInfoAndRoles);

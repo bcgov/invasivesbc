@@ -4,9 +4,11 @@ import { AddButtonProps } from '@rjsf/core';
 import React from 'react';
 
 const AddButton: React.FC<AddButtonProps> = (props) => (
-  <Button variant="contained" {...props} color="primary">
-    <AddIcon /> Add Item
-  </Button>
+  <>
+    <Button variant="contained" className={props.className} onClick={props.onClick} color="primary">
+      <AddIcon /> Add Item
+    </Button>
+  </>
 );
 
 export default AddButton;
