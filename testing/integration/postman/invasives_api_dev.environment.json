@@ -34,12 +34,12 @@
 		},
 		{
 			"key": "KEYCLOAK_URL",
-			"value": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+			"value": "https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/token",
 			"enabled": true
 		},
 		{
 			"key": "KEYCLOAK_CLIENT_ID",
-			"value": "invasives-bc",
+			"value": "invasives-bc-1849",
 			"enabled": true
 		},
 		{

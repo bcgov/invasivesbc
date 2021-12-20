@@ -576,7 +576,7 @@ const getToken = () => {
 
   return axios({
     method: 'post',
-    url: 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token',
+    url: 'https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/token',
     data: tokenPostData,
     headers: {
       'content-type': 'application/x-www-form-urlencoded;charset=utf-8'

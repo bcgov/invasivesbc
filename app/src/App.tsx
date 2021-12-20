@@ -38,9 +38,9 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: KeycloakConfig = {
-    realm: 'dfmlcg7z',
+    realm: 'onestopauth-business',
     url: SSO_URL,
-    clientId: 'invasives-bc'
+    clientId: 'invasives-bc-1849'
   };
 
   //@ts-ignore
