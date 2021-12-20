@@ -1179,8 +1179,8 @@ liquid_herbicide_code,28198,'Roundup Transorb [glyphosate] 28198',31
 liquid_herbicide_code,27487,'Roundup Weathermax [glyohsate] 27487',32
 liquid_herbicide_code,33653,'Roundup WeatherPro [glyphosate] 33653',33
 liquid_herbicide_code,29498,'StartUp [glyphosate] 29498',34
-liquid_herbicide_code,9007,T'ordon101 [picloram] 9007',35
-liquid_herbicide_code,9005,T'ordon22K [picloram] 9005',36
+liquid_herbicide_code,9007,'Tordon101 [picloram] 9007',35
+liquid_herbicide_code,9005,'Tordon22K [picloram] 9005',36
 liquid_herbicide_code,27972,'Trillion [2,4-D/mecoprop-p/dicamba] 27972',37
 liquid_herbicide_code,26980,'Vanquish [dicamba] 26980',38
 liquid_herbicide_code,27615,'Vantage Plus Max [glypohsate] 27615',39
