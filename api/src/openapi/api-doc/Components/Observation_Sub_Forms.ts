@@ -16,6 +16,12 @@ export const Observation_PlantTerrestrial_Information = {
       'x-tooltip-text':
         'Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area'
     },
+    suitable_for_biocontrol_agent: {
+      type: 'string',
+      title: 'Suitable for biocontrol agent(s)',
+      enum: ['Unknown', 'Yes', 'No'],
+      default: 'Unknown'
+    },
     specific_use_code: {
       type: 'string',
       title: 'Specific Use',
@@ -65,6 +71,19 @@ export const Observation_PlantTerrestrial_Information = {
       enum: ['Yes', 'No', 'Unknown'],
       default: 'No',
       'x-tooltip-text': 'Is there a visible well nearby? Indicate the distance from the observation in the comments'
+    }
+  }
+};
+
+export const Observation_PlantAquatic_Information = {
+  type: 'object',
+  title: 'Observation Plant Aquatic Information',
+  properties: {
+    suitable_for_biocontrol_agent: {
+      type: 'string',
+      title: 'Suitable for biocontrol agent(s)',
+      enum: ['Unknown', 'Yes', 'NO'],
+      default: 'Unknown'
     }
   }
 };

@@ -39,11 +39,12 @@ const Activity_Observation_PlantAquatic = {
     ...BaseUISchemaComponents.activity_type_data_objects.Observation
   },
   'activity_subtype_data': {
-    WaterbodyData:{...BaseUISchemaComponents.general_objects.WaterbodyData},
+    WaterbodyData:{...BaseUISchemaComponents.general_objects.WaterbodyData, ...BaseUISchemaComponents.general_objects.WaterbodyData_AdditionalFields},
     ShorelineTypes:{...BaseUISchemaComponents.general_objects.ShorelineTypes},
     WaterQuality:{...BaseUISchemaComponents.general_objects.WaterQuality},
+    Observation_PlantAquatic_Information: {...BaseUISchemaComponents.activity_subtype_data_information_objects.Observation_PlantAquatic_Information},
     AquaticPlants:{...BaseUISchemaComponents.general_objects.AquaticPlants},
-    'ui:order':['WaterbodyData', 'ShorelineTypes', 'WaterQuality', 'AquaticPlants']
+    'ui:order':['WaterbodyData', 'ShorelineTypes', 'WaterQuality', 'Observation_PlantAquatic_Information', 'AquaticPlants']
     
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
