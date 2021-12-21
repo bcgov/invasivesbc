@@ -84,7 +84,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     await authContext.keycloak?.obj?.login();
     const user = await authContext.keycloak?.obj?.loadUserInfo();
     //  const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
-    await authContext.setUserRoles(roles);
+    //  await authContext.setUserRoles(roles);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles

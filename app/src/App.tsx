@@ -35,12 +35,28 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     break;
 }
 
+let redirect_uri;
+switch (process.env.REACT_APP_REAL_NODE_ENV) {
+  case 'development':
+    redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    break;
+  case 'test':
+    redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    break;
+  case 'production':
+    redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    break;
+  default:
+    redirect_uri = 'http://127.0.0.1:3000/home/landing';
+    break;
+}
+
 console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: KeycloakConfig = {
-    realm: 'dfmlcg7z',
+    realm: 'onestopauth-business',
     url: SSO_URL,
-    clientId: 'invasives-bc'
+    clientId: 'invasives-bc-1948'
   };
 
   //@ts-ignore
@@ -50,11 +66,16 @@ const App: React.FC<IAppProps> = (props) => {
   if (window['cordova']) {
     keycloakConfig = {
       flow: 'hybrid',
-      redirectUri: 'http://127.0.0.1',
+      redirectUri: redirect_uri,
       checkLoginIframe: false
     };
   } else {
-    keycloakConfig = { checkLoginIframe: false };
+    //keycloakConfig = { checkLoginIframe: false, redirectUri: redirect_uri };
+    keycloakConfig = {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      redirectUri: redirect_uri
+    };
   }
 
   const appRouterProps = {

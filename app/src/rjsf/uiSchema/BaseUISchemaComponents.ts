@@ -72,9 +72,8 @@ const Activity = {
 
 const Observation = {
   pre_treatment_observation: {},
-  observation_type_code: { 'ui:widget': 'single-select-autocomplete' },
   activity_persons: {},
-  "ui:order":['pre_treatment_observation','observation_type_code','activity_persons']
+  "ui:order":['pre_treatment_observation','activity_persons']
 };
 
 const Monitoring = {
@@ -210,30 +209,6 @@ const Authorization_Infotmation = {
   'ui:order':['additional_auth_information']
 };
 
-const WaterbodyData = {
-  ...ThreeColumnStyle,
-  waterbody_type: { 'ui:widget': 'single-select-autocomplete' },
-  waterbody_name_gazetted: {},
-  waterbody_name_local: {},
-  waterbody_access: {},
-  waterbody_use: { 'ui:widget': 'multi-select-autocomplete' },
-  'ui:order':[
-    'waterbody_type',
-    'waterbody_name_gazetted',
-    'waterbody_name_local',
-    'waterbody_access',
-    'waterbody_use',
-    'water_level_management',
-    'substrate_type',
-    'tidal_influence',
-    'adjacent_land_use',
-    'inflow_permanent',
-    'inflow_other',
-    'outflow',
-    'comment'
-  ]
-};
-
 const WaterQuality = {
   ...ThreeColumnStyle,
   water_sample_depth: {},
@@ -313,6 +288,22 @@ const AquaticPlants = {
   }
 };
 
+const WaterbodyData = {
+  ...ThreeColumnStyle,
+  waterbody_type: { 'ui:widget': 'single-select-autocomplete' },
+  waterbody_name_gazetted: {},
+  waterbody_name_local: {},
+  waterbody_access: {},
+  waterbody_use: { 'ui:widget': 'multi-select-autocomplete' },
+  'ui:order':[
+    'waterbody_type',
+    'waterbody_name_gazetted',
+    'waterbody_name_local',
+    'waterbody_access',
+    'waterbody_use'
+  ]
+};
+
 const WaterbodyData_AdditionalFields = {
   water_level_management: { 'ui:widget': 'multi-select-autocomplete' },
   substrate_type: { 'ui:widget': 'multi-select-autocomplete' },
@@ -321,8 +312,14 @@ const WaterbodyData_AdditionalFields = {
   inflow_permanent: { 'ui:widget': 'multi-select-autocomplete' },
   inflow_other: { 'ui:widget': 'multi-select-autocomplete' },
   outflow: { 'ui:widget': 'multi-select-autocomplete' },
+  outflow_other: { 'ui:widget': 'multi-select-autocomplete' },
   comment: { 'ui:widget': 'textarea' },
   'ui:order':[
+    'waterbody_type',
+    'waterbody_name_gazetted',
+    'waterbody_name_local',
+    'waterbody_access',
+    'waterbody_use',
     'water_level_management',
     'substrate_type',
     'tidal_influence',
@@ -330,6 +327,7 @@ const WaterbodyData_AdditionalFields = {
     'inflow_permanent',
     'inflow_other',
     'outflow',
+    'outflow_other',
     'comment'
   ]
 };
@@ -889,11 +887,18 @@ const Observation_PlantTerrestrial_Information = {
   ...ThreeColumnStyle,
   soil_texture_code: { 'ui:widget': 'single-select-autocomplete' },
   specific_use_code: { 'ui:widget': 'multi-select-autocomplete' },
+  suitable_for_biocontrol_agent: {},
   slope_code: { 'ui:widget': 'single-select-autocomplete' },
   aspect_code: { 'ui:widget': 'single-select-autocomplete' },
   research_detection_ind: {},
   well_ind: {},
-  'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind']
+  'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind','suitable_for_biocontrol_agent']
+};
+
+const Observation_PlantAquatic_Information = {
+  ...OneColumnStyle,
+  suitable_for_biocontrol_agent: {},
+  'ui:order':['suitable_for_biocontrol_agent']
 };
 
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
@@ -1083,6 +1088,7 @@ const BaseUISchemaComponents = {
     Treatment_ChemicalPlant_Information,
     Treatment_MechanicalPlant_Information,
     Observation_PlantTerrestrial_Information,
+    Observation_PlantAquatic_Information,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,

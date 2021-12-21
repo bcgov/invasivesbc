@@ -22,7 +22,10 @@ import {
   Monitoring_ChemicalTerrestrialAquaticPlant_Information,
   Monitoring_MechanicalTerrestrialAquaticPlant_Information
 } from '../Components/Monitoring_Sub_Forms';
-import { Observation_PlantTerrestrial_Information } from '../Components/Observation_Sub_Forms';
+import {
+  Observation_PlantAquatic_Information,
+  Observation_PlantTerrestrial_Information
+} from '../Components/Observation_Sub_Forms';
 import {
   Biocontrol_Collection_Information,
   Biocontrol_Release_Information,
@@ -83,6 +86,7 @@ export const Subtype_Data_Observation_PlantAquatic = {
     WaterbodyData: { allOf: [{ ...WaterbodyData }, { ...WaterbodyData_AdditionalFields }] },
     ShorelineTypes: ShorelineTypes,
     WaterQuality: WaterQuality,
+    Observation_PlantAquatic_Information: Observation_PlantAquatic_Information,
     AquaticPlants: AquaticPlants
   }
 };

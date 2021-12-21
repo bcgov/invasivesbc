@@ -136,7 +136,20 @@ export const WaterbodyData_AdditionalFields = {
     },
     outflow: {
       type: 'string',
-      title: 'Outflow',
+      title: 'Outflow (Permanent)',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'outflow_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Select one or more outflow types (downstream) and indicate details or name of outflow water in the comments if known.'
+    },
+    outflow_other: {
+      type: 'string',
+      title: 'Outflow (Seasonal)',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'outflow_code',
@@ -154,7 +167,7 @@ export const WaterbodyData_AdditionalFields = {
       'x-tooltip-text': 'Add a comment'
     }
   },
-  required: ['substrate_type', 'tidal_influence', 'inflow_permanent', 'inflow_other', 'outflow']
+  required: ['substrate_type', 'tidal_influence']
 };
 export const Well_Information = {
   type: 'object',
