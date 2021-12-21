@@ -158,11 +158,12 @@ aspect_code,S,South facing,7
 aspect_code,SW,Southwest facing,8
 aspect_code,W,West facing,9
 aspect_code,NW,Northwest facing,10
-invasive_plant_density_code,NA,unknown,1
+invasive_plant_density_code,U,unknown,1
 invasive_plant_density_code,L,1|<= 1plant/m2 (Low),2
 invasive_plant_density_code,M,2|2-5 plants/m2 (Med),3
 invasive_plant_density_code,H,3|6-10 plants/m2 (High),4
 invasive_plant_density_code,D,4|>10 plants/m2 (Dense),5
+invasive_plant_density_code,NA,Not applicable - actual footprint or sample location,6
 slope_code,NA,variable,1
 slope_code,FL,Flat 0 %,2
 slope_code,NF,Nearly flat 1-4 %,3
@@ -175,14 +176,15 @@ slope_code,ST,Steep slope 30-44 %,9
 slope_code,VT,Very steep slope > 45 %,10
 invasive_plant_distribution_code,X,unknown,1
 invasive_plant_distribution_code,RS,"1|rare individual,a single occurrence",2
-invasive_plant_distribution_code,FS,2|few sporadically occurring individuals,3
-invasive_plant_distribution_code,CL,3|single patch or clump of a species,4
-invasive_plant_distribution_code,SS,4|several sporadically occurring individuals,5
-invasive_plant_distribution_code,FP,5|a few patches or clumps of a species,6
-invasive_plant_distribution_code,WS,6|several well-spaced patches or clumps,7
-invasive_plant_distribution_code,CU,7|continuous uniform occurrence of well-spaced individuals,8
-invasive_plant_distribution_code,CO,8|continuous occurrence of a species with a few gaps in the distribution,9
-invasive_plant_distribution_code,CD,9|continuous dense occurrence of a species,10
+invasive_plant_distribution_code,FS,"2|few sporadically occurring individuals",3
+invasive_plant_distribution_code,CL,"3|single patch or clump of a species",4
+invasive_plant_distribution_code,SS,"4|several sporadically occurring individuals",5
+invasive_plant_distribution_code,FP,"5|a few patches or clumps of a species",6
+invasive_plant_distribution_code,WS,"6|several well-spaced patches or clumps",7
+invasive_plant_distribution_code,CU,"7|continuous uniform occurrence of well-spaced individuals",8
+invasive_plant_distribution_code,CO,"8|continuous occurrence of a species with a few gaps in the distribution",9
+invasive_plant_distribution_code,CD,"9|continuous dense occurrence of a species",10
+invasive_plant_distribution_code,NA,Not applicable - actual footprint or sample location,11
 mechanical_disposal_code,N,In Situ,1
 mechanical_disposal_code,DPC,Dry and Passive Compost,2
 mechanical_disposal_code,IC,Industrial Compost,3
@@ -1503,8 +1505,8 @@ employer_code,COARM,City of Armstrong,25
 employer_code,VOASH,Village of Ashcroft,26
 employer_code,DOBAR,District of Barriere,27
 employer_code,VOBEL,Village of Belcarra,28
-employer_code,IOOF ,Island Municipality of Bowen Island,29
-employer_code,COBUR,City of Burnaby ,30
+employer_code,IOOF,Island Municipality of Bowen Island,29
+employer_code,COBUR,City of Burnaby,30
 employer_code,VOBUR,Village of Burns Lake,31
 employer_code,VOCAC,Village of Cache Creek,32
 employer_code,COCAM,City of Campbell River,33
@@ -1525,7 +1527,7 @@ employer_code,COCRA,City of Cranbrook,47
 employer_code,TOCRE,Town of Creston,48
 employer_code,CODAW,City of Dawson Creek,49
 employer_code,CODEL,City of Delta,50
-employer_code,CODUN,City of Duncan ,51
+employer_code,CODUN,City of Duncan,51
 employer_code,DOELK,District of Elkford,52
 employer_code,COEND,City of Enderby,53
 employer_code,TOESQ,Township of Esquimalt,54
@@ -1536,7 +1538,7 @@ employer_code,VOFRA,Village of Fraser Lake,58
 employer_code,VOFRU,Village of Fruitvale,59
 employer_code,TOGIB,Town of Gibsons,60
 employer_code,VOGOL,Village of Gold River,61
-employer_code,TOGOL,Town of Golden ,62
+employer_code,TOGOL,Town of Golden,62
 employer_code,COGRA,City of Grandforks,63
 employer_code,VOGRA,Village of Granisle,64
 employer_code,COGRE,City of Greenwood,65
@@ -1586,12 +1588,12 @@ employer_code,DONORC,District of North Cowichan,108
 employer_code,DONORS,District of North Saanich,109
 employer_code,CONOR,City of North Vancouver,110
 employer_code,DONOR,District of North Vancouver,111
-employer_code,NRRM,Northern Rockies Regional Municipality ,112
+employer_code,NRRM,Northern Rockies Regional Municipality,112
 employer_code,DOOAK,District of Oak Bay,113
 employer_code,TOOLI,Town of Oliver,114
 employer_code,TOOSO,Town of Osoyoos,115
 employer_code,COPAR,City of Parksville,116
-employer_code,DOPEA,District of Peachland ,117
+employer_code,DOPEA,District of Peachland,117
 employer_code,VOPEM,Village of Pemberton,118
 employer_code,COPEN,City of Penticton,119
 employer_code,COPIT,City of Pitt Meadows,120
@@ -1651,7 +1653,7 @@ employer_code,TOVIE,Town of View Royal,173
 employer_code,VOWAR,Village of Warfield,174
 employer_code,COWES,City of West Kelowna,175
 employer_code,DOWES,District of West Vancouver,176
-employer_code,ROOF, Resort Municipality of Whistler,177
+employer_code,ROOF,Resort Municipality of Whistler,177
 employer_code,COWHI,City of White Rock,178
 employer_code,COWIL,City of Williams Lake,179
 employer_code,VOZEB,Village of Zeballos,180
@@ -1668,72 +1670,74 @@ employer_code,LRISS,Lillooet Regional Invasive Species Society,190
 employer_code,NWIPC,Northwest Invasive Plant Council,191
 employer_code,OOSIM,Okanagan and Similkameen Invasive Species Society,192
 employer_code,SSISC,Sea to Sky Invasive Species Council,193
-employer_code,TNIPMC, Thompson Nicola Invasive Plant Management Committee,194
+employer_code,TNIPMC,Thompson Nicola Invasive Plant Management Committee,194
 employer_code,PCAN,Parks Canada,195
 employer_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,196
-employer_code, TIL, Tolko Industries Ltd., 197
-employer_code, CFP, Canadian Forest Products Ltd., 198
-employer code, GBL, Gorman Brothers Lumber Ltd., 199
-employer code, LML, Lakeland Mills Ltd., 200
-employer code, IFC, Interfor Corporation, 201
-employer code, UBC, University of British Columbia, 202
-employer code, TTL, Tanizul Timber Ltd., 203
-employer code, LPC, Louisiana-Pacific Canada Ltd., 204
-employer code, WCE, Westcoast Energy Inc., 205
-employer code, SIB, Skeetchestn Indian Band, 206
-employer code, NCC, The Nature Conservancy of Canada, 207
-employer code, LKB, Lower Kootenay Band, 208
-employer code, BCH, BC Hydro and Power Authority, 209
-employer code, WFM, West Fraser Mills Ltd., 210
-employer code, TCP, Teal Cedar Products Ltd., 211
-employer code, JPE, Juno Peak Enterprises Ltd., 212
-employer code, TRU, Thompson Rivers University, 213
-employer code, WFP, Western Forest Products Inc., 214
-employer code, SIF, Slocan Integral Forestry Cooperative, 215
-employer code, TIB, Tobacco Plains Indian Band, 216
-employer code, NBC, The Nature Trust of BC, 217
-employer code, AAFC, Agriculture and Agri-Food Canada, 218
-employer code, CFP, Cortes Forestry General Partnership, 219
-employer code, ARC, A Rocha Canada, 220
-employer code, BCP, BC Parks, 221
-employer code, QTS, Quartech Systems, 222
-employer code, HMV, High Mountain Ventures Ltd., 223
-employer code, MBL, Morrow Bioscience Ltd., 224
-employer code, MFM, Mosaic Forest Management, 225
-employer code, NRE, Ntityix Resources, 226
-employer code, BCTS, BC Timber Sales, 227
-employer code, CRD, Capital Regional District, 228
-employer code, CARD, Cariboo Regional District, 229
-employer code, CVRD, Cowichan Valley Regional District, 230
-employer code, RDMW, Regional District of Mount Waddington, 231
-employer code, SCRD, Sunshine Coast Regional District, 232
-employer code, MVRD, Metro Vancouver Regional District, 233
-employer code, TNRD, Thompson Nicola Regional District, 234
-employer code, CSRD, Columbia Shuswap Regional District, 235
-employer code, PRRD, Peace River Regional District, 236
-employer code, FVRD, Fraser Valley Regional District, 237
-employer code, RDNO, Regional District North Okanagan, 238
-employer code, KBRD, Kootenay Boundary Regional District, 239
-employer code, RDCO, Regional District of Central Okanagan, 240
-employer code, RBCM, Royal BC Museum, 241
-employer code, WSP, Whitestar Property Services Ltd., 242
-employer code, PEL, Pathfinder Endeavours Ltd., 243
-employer code, ESI, Econics Services Inc., 244
-employer code, SNC, SNC-Lavalin Inc., 245
-employer code, SRG, Spectrum Resource Group Inc., 246
-employer code, ACRD, Alberni-Clayoquot Regional District, 247
-employer code, RDBN, Regional District of Bulkley-Nechako, 248
-employer code, CCRD, Central Coast Regional District, 249
-employer code, RDCK, Regional District of Central Kootenay, 250
-employer code, RDEK, Regional District of East Kootenay, 251
-employer code, RDFFG, Regional District of Fraser-Fort George, 252
-employer code, RDKS, Regional District of Kitimat-Stikine, 253
-employer code, RDN, Regional District of Nanaimo, 254
-employer code, NCRD, North Coast Regional District, 255
-employer code, RDOS, Regional District of Okanagan-Similkameen, 256
-employer code, qRD, qathet Regional District, 257
-employer code, SLRD, Squamish-Lillooet Regional District, 258
-employer code, SRD, Strathcona Regional District, 259
+employer_code,TIL,Tolko Industries Ltd.,197
+employer_code,CFP,Canadian Forest Products Ltd.,198
+employer code,GBL,Gorman Brothers Lumber Ltd.,199
+employer code,LML,Lakeland Mills Ltd.,200
+employer code,IFC,Interfor Corporation,201
+employer code,UBC,University of British Columbia,202
+employer code,TTL,Tanizul Timber Ltd.,203
+employer code,LPC,Louisiana-Pacific Canada Ltd.,204
+employer code,WCE,Westcoast Energy Inc.,205
+employer code,SIB,Skeetchestn Indian Band,206
+employer code,NCC,The Nature Conservancy of Canada,207
+employer code,LKB,Lower Kootenay Band,208
+employer code,BCH,BC Hydro and Power Authority,209
+employer code,WFM,West Fraser Mills Ltd.,210
+employer code,TCP,Teal Cedar Products Ltd.,211
+employer code,JPE,Juno Peak Enterprises Ltd.,212
+employer code,TRU,Thompson Rivers University,213
+employer code,WFP,Western Forest Products Inc.,214
+employer code,SIF,Slocan Integral Forestry Cooperative,215
+employer code,TIB,Tobacco Plains Indian Band,216
+employer code,NBC,The Nature Trust of BC,217
+employer code,AAFC,Agriculture and Agri-Food Canada,218
+employer code,CFP,Cortes Forestry General Partnership,219
+employer code,ARC,A Rocha Canada,220
+employer code,BCP,BC Parks,221
+employer code,QTS,Quartech Systems,222
+employer code,HMV,High Mountain Ventures Ltd.,223
+employer code,MBL,Morrow Bioscience Ltd.,224
+employer code,MFM,Mosaic Forest Management,225
+employer code,NRE,Ntityix Resources,226
+employer code,BCTS,BC Timber Sales,227
+employer code,CRD,Capital Regional District,228
+employer code,CARD,Cariboo Regional District,229
+employer code,CVRD,Cowichan Valley Regional District,230
+employer code,RDMW,Regional District of Mount Waddington,231
+employer code,SCRD,Sunshine Coast Regional District,232
+employer code,MVRD,Metro Vancouver Regional District,233
+employer code,TNRD,Thompson Nicola Regional District,234
+employer code,CSRD,Columbia Shuswap Regional District,235
+employer code,PRRD,Peace River Regional District,236
+employer code,FVRD,Fraser Valley Regional District,237
+employer code,RDNO,Regional District North Okanagan,238
+employer code,KBRD,Kootenay Boundary Regional District,239
+employer code,RDCO,Regional District of Central Okanagan,240
+employer code,RBCM,Royal BC Museum,241
+employer code,WSP,Whitestar Property Services Ltd.,242
+employer code,PEL,Pathfinder Endeavours Ltd.,243
+employer code,ESI,Econics Services Inc.,244
+employer code,SNC,SNC-Lavalin Inc.,245
+employer code,SRG,Spectrum Resource Group Inc.,246
+employer code,ACRD,Alberni-Clayoquot Regional District,247
+employer code,RDBN,Regional District of Bulkley-Nechako,248
+employer code,CCRD,Central Coast Regional District,249
+employer code,RDCK,Regional District of Central Kootenay,250
+employer code,RDEK,Regional District of East Kootenay,251
+employer code,RDFFG,Regional District of Fraser-Fort George,252
+employer code,RDKS,Regional District of Kitimat-Stikine,253
+employer code,RDN,Regional District of Nanaimo,254
+employer code,NCRD,North Coast Regional District,255
+employer code,RDOS,Regional District of Okanagan-Similkameen,256
+employer code,qRD,qathet Regional District,257
+employer code,SLRD,Squamish-Lillooet Regional District,258
+employer code,SRD,Strathcona Regional District,259
+employer code,AA,A & A Trading (HAIDA GWAII) LTD.,260
+employer code,TTM,Ts'elxweyeqw Tribe Management Ltd.,261
 waterbody_use_code,R,Recreation,1
 waterbody_use_code,F,Fishing,2
 waterbody_use_code,B,Boating,3

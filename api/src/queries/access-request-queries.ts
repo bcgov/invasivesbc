@@ -15,11 +15,28 @@ export const getAccessRequestsSQL = (): SQLStatement => {
  * @param email The user's email
  * @returns The user with that email
  */
-export const getAccessRequestForUserSQL = (email: string): SQLStatement => {
-  if (!email) {
+export const getAccessRequestForUserSQL = (username: string, email?: string): SQLStatement => {
+  if (!username) {
     return null;
   }
-  return SQL`SELECT * FROM access_request WHERE primary_email = ${email};`;
+
+  let isIdir;
+
+  if (username.includes('idir')) {
+    isIdir = true;
+  } else {
+    isIdir = false;
+  }
+
+  if (email) {
+    return isIdir
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email};`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND primary_email = ${email};`;
+  } else {
+    return isIdir
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username};`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username};`;
+  }
 };
 
 /**
