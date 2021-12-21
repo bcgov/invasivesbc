@@ -7,10 +7,10 @@
   "confidential-port": 0,
   "clients": [
     {
-      "clientId": "invasives-bc-1849",
+      "clientId": "invasives-bc-18491234",
       "enabled": true,
       "publicClient": true,
-      "redirectUris": ["http://127.0.0.1"]
+      "redirectUris": ["http://localhost:3000/home/landing"]
     }
   ]
 }
