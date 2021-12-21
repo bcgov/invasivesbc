@@ -14,11 +14,6 @@
   3. Custom Layer
 
 */
--- Sample shape of Vancouver Island
-select
-  public.st_geomFromGeoJSON(
-    '{ "type": "Polygon", "coordinates": [ [ [ -128.594970703125, 50.972264889367494 ], [ -128.551025390625, 50.21909462044748 ], [ -126.221923828125, 48.95858066440977 ], [ -124.53002929687499, 48.44377831058802 ], [ -123.22265625000001, 48.16608541901253 ], [ -123.134765625, 48.777912755501845 ], [ -124.112548828125, 49.50380954152213 ], [ -125.518798828125, 50.41551870402678 ], [ -128.001708984375, 51.069016659603896 ], [ -128.594970703125, 50.972264889367494 ] ] ] }'
-  ) "geom"
 
 
 /**
@@ -102,6 +97,26 @@ with chemical_methods as (
 ),
 
 /**
+  Select the invasive plant species names
+*/
+with species as (
+  select
+    code_name,
+    code_description
+  from
+    code
+  where
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'invasive_plant_code'
+    )
+),
+
+/**
   Test shape of Vancouver Island. Will be eventually 
   replaced with the Metabase form input variable.
 */
@@ -125,6 +140,7 @@ custom_shape as (
 -- ;
 
 /**
+  Main query to consume all our Common Table Expressions (CTE)
 */
 select
   -- TODO: Add the sp and descriptions here
