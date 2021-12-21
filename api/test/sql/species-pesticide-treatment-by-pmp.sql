@@ -1,11 +1,11 @@
 /*
   Need to isolate the following:
-  1. Product Name           - herbicide_code??
-  2. Active Ingredient
-  3. PCP Registration #
+  1. Product Name           - herbicide_code (herbicide_type_code)
+  2. Active Ingredient      - herbicide_code (herbicide_type_code)
+  3. PCP Registration #     - herbicide_code (herbicide_type_code)
   4. Quantity Used Kg.      - amount_of_undiluted_herbicide_used
   5. Area Treated Ha        - area_treated_hectares
-  6. Method of Application  - chemical_method_code
+  6. Method of Application  - chemical_application_method_type (chemical_method_code)
   7. Service license        - applicator1_license
 
   Filtered by
@@ -22,10 +22,9 @@ select
 
 
 /**
-  Select all chemical treatment IDs
-  within our custom shape (VI)
+  Select all liquid herbicide types
 */
-with liquid_herbicide_codes as (
+with liquid_herbicides as (
   select
     code_name,
     code_description
@@ -41,7 +40,11 @@ with liquid_herbicide_codes as (
         code_header_name = 'liquid_herbicide_code'
     )
 ),
-granular_herbicide_codes as (
+
+/**
+  Select all granular herbicide types
+*/
+granular_herbicides as (
   select
     code_name,
     code_description
@@ -57,6 +60,51 @@ granular_herbicide_codes as (
         code_header_name = 'granular_herbicide_code'
     )
 ),
+
+/**
+  Select the names of chemical treatment types
+*/
+with herbicide_types as (
+  select
+    code_name,
+    code_description
+  from
+    code
+  where
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'herbicide_type_code'
+    )
+),
+
+/**
+  Select the methods of chemical applications
+*/
+with chemical_methods as (
+  select
+    code_name,
+    code_description
+  from
+    code
+  where
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'chemical_method_code'
+    )
+),
+
+/**
+  Test shape of Vancouver Island. Will be eventually 
+  replaced with the Metabase form input variable.
+*/
 custom_shape as (
   select
     public.st_setSRID(
@@ -66,18 +114,17 @@ custom_shape as (
     ) "geom"
 )
 
-select
-  p.activity_ids
-from
-  public.treatments_by_species p join
-  custom_shape c on
-  public.st_intersects(
-    p.geom,public.st_transform(c.geom,3005)
-  )
-;
+-- select
+--   p.activity_ids
+-- from
+--   public.treatments_by_species p join
+--   custom_shape c on
+--   public.st_intersects(
+--     p.geom,public.st_transform(c.geom,3005)
+--   )
+-- ;
 
-/*
-  Species chemical treatment by planning unit.
+/**
 */
 select
   -- TODO: Add the sp and descriptions here
@@ -85,7 +132,7 @@ select
   chemical_codes.code_description "Herbicide Type",
   /**
     If shape is within a boundary.. copy it.
-    Otherwise the shape is straddling the PMP border
+    Otherwise the shape is straddling the shape border
     so run an (expensive) intersection
   */
   round(
