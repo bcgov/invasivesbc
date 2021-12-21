@@ -143,9 +143,12 @@ custom_shape as (
   Main query to consume all our Common Table Expressions (CTE)
 */
 select
-  -- TODO: Add the sp and descriptions here
-  species_codes.code_description "Species",
-  chemical_codes.code_description "Herbicide Type",
+  -- TODO: Use a case statement to choose between granular and liquid
+  liquid_herbicide.code_description "Liquid Herbicide",
+  granular_herbicides.code_description "Granular Herbicide",
+  herbicide_types.code_description "Herbicide Type"
+  chemical_methods.code_description "Chemical Method",
+  species.code_description "Species",
   /**
     If shape is within a boundary.. copy it.
     Otherwise the shape is straddling the shape border
@@ -182,32 +185,38 @@ from
     be sent to the above case statement for the decision as to copy
     or clip. Otherwise the treatment just gets copied over.:
   */
-  chemical_codes,
-  species_codes,
-  public.treatments_by_species p join
+  liquid_herbicides and
+  granular_herbicides and
+  herbicide_types and
+  chemical_methods and
+  species and
+  public.treatments_by_species join
   public.pest_management_plan_areas on
   public.st_intersects(
-    p.geom,public.st_transform(
+    treatments_by_species.geom,public.st_transform(
       public.geometry(public.pest_management_plan_areas.geog),
       3005
     )
   )
 where
   -- Where ids match
-  species_codes.code_name = p.species and
-  chemical_codes.code_name = p.method and
-  p.activity_subtype = 'Activity_Treatment_ChemicalPlant' and
+  liquid_herbicides.code_name = treatments_by_species.liquid_herbicide and
+  granular_herbicides = treatments_by_species.granular_herbicides and
+  herbicide_types = treatments_by_species.herbicide_type and
+  chemical_methods = treatments_by_species.chemical_method and
+  species = treatments_by_species.species and
+  treatments_by_species.activity_subtype = 'Activity_Treatment_ChemicalPlant' and
   -- Only records within a year of today
-  date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
-  array_length(p.activity_ids,1) > 0 -- ignore records without shapes
+  date_part('year', treatments_by_species.max_created_timestamp) = date_part('year', CURRENT_DATE) and
+  array_length(treatments_by_species.activity_ids,1) > 0 -- ignore records without shapes
   and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
   -- [[and {{pmp_name}}]] -- This is for metabase
 group by
-  species_codes.code_description,
-  chemical_codes.code_description,
-  p.species,
-  p.activity_ids,
-  p.method,
+  liquid_herbicide.code_description,
+  granular_herbicides.code_description,
+  herbicide_types.code_description,
+  chemical_methods.code_description,
+  species.code_description,
   public.pest_management_plan_areas.pmp_name
 order by
   public.pest_management_plan_areas.pmp_name
