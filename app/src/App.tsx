@@ -56,7 +56,7 @@ const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: KeycloakConfig = {
     realm: 'onestopauth-business',
     url: SSO_URL,
-    clientId: 'invasives-bc-1849'
+    clientId: 'invasives-bc-1948'
   };
 
   //@ts-ignore
@@ -70,7 +70,12 @@ const App: React.FC<IAppProps> = (props) => {
       checkLoginIframe: false
     };
   } else {
-    keycloakConfig = { checkLoginIframe: false, redirectUri: redirect_uri };
+    //keycloakConfig = { checkLoginIframe: false, redirectUri: redirect_uri };
+    keycloakConfig = {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      redirectUri: redirect_uri
+    };
   }
 
   const appRouterProps = {
