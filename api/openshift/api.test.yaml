@@ -28,7 +28,7 @@ parameters:
   - name: CERTIFICATE_URL
     description: Authentication certificate urls
     required: true
-    value: "https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    value: "https://oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs"
   - name: CPU_REQ
     value: "500m"
   - name: CPU_LIMIT
