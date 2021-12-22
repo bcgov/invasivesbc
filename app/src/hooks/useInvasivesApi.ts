@@ -230,6 +230,17 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const getAccessRequestData = async (accessRequest: any): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request-read`,
+      data: accessRequest
+    });
+
+    return data;
+  };
+
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
     const { data } = await Http.request({
       method: 'POST',
@@ -704,6 +715,7 @@ export const useInvasivesApi = () => {
     getPointsOfInterestLean,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
+    getAccessRequestData,
     createMetabaseQuery,
     getBatchUploads,
     postBatchUpload,

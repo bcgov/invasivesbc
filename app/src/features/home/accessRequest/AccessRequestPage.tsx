@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
@@ -194,7 +193,33 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     console.log('Response: ', response);
   };
 
+  const [userInfo, setUserInfo] = useState(undefined);
+
   useEffect(() => {
+    if (userInfo !== undefined) {
+      if (userInfo?.idir_account_name) {
+        setAccountType('IDIR');
+        setIdir(userInfo?.idir_account_name);
+      } else if (userInfo?.bceid_account_name) {
+        setAccountType('BCeID');
+        setBceid(userInfo?.bceid_account_name);
+      }
+
+      userInfo?.first_name && setFirstName(userInfo?.first_name);
+      userInfo?.last_name && setLastName(userInfo?.last_name);
+      userInfo?.primary_email && setEmail(userInfo?.primary_email);
+      userInfo?.work_phone_number && setPhone(userInfo?.work_phone_number);
+      userInfo?.pac_number && setPacNumber(userInfo?.pac_number);
+      userInfo?.pac_service_number_1 && setPsn1(userInfo?.pac_service_number_1);
+      userInfo?.pac_service_number_2 && setPsn2(userInfo?.pac_service_number_2);
+      userInfo?.employer && setEmployer(userInfo?.employer);
+      userInfo?.funding_agencies && setFundingAgencies(userInfo?.funding_agencies.split(','));
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    const userName = authState.keycloak?.obj?.userInfo?.preferred_username;
+    const email = authState.keycloak?.obj?.userInfo?.email;
     const fetchFundingAgencies = async () => {
       const response = await api.getFundingAgencies();
       setFundingAgenciesList(response);
@@ -203,6 +228,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       const response = await api.getEmployers();
       setEmployersList(response);
     };
+    const fetchAccessRequestData = async () => {
+      const response = await api.getAccessRequestData({ username: userName, email: email });
+      setUserInfo(response);
+    };
+    fetchAccessRequestData();
     fetchFundingAgencies();
     fetchEmployers();
   }, []);
