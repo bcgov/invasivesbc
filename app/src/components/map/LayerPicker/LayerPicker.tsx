@@ -44,7 +44,7 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
-import { addOrRemoveLayer, LayersSelector } from './LayersSelectorAndRender';
+import { LayersSelector } from './LayersSelectorAndRender';
 import { ThemeContext } from 'contexts/themeContext';
 
 export const LayerPicker = React.memo(

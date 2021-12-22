@@ -65,20 +65,22 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 50,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: false
         },
         {
           id: 'municipality_boundaries',
           name: 'Municipality Boundaries',
           source: 'null',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          bcgw_code: 'WHSE_TANTALIS.TA_MUNICIPALITIES_SVW',
+          bcgw_code: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
           color_code: '#000',
           order: 1,
           opacity: 0.4,
           zIndex: 40,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: false
         },
         {
           id: 'first_nations_treaty_lands',
@@ -91,7 +93,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 30,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'jurisdiction_layer',
@@ -104,7 +107,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 20,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'riso_boundaries',
@@ -117,7 +121,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 10,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         }
       ]
     },
@@ -140,7 +145,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 70,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'freshwater_atlas_rivers',
@@ -153,7 +159,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 60,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'freshwater_lakes',
@@ -166,7 +173,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 50,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'freshwater_atlas_stream_network',
@@ -179,20 +187,22 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 40,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'water_licenses_drinking_water',
           name: 'Water Licenses Drinking Water',
           source: 'null',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          bcgw_code: 'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SVW',
+          bcgw_code: 'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
           color_code: '#000',
           order: 4,
           opacity: 0.4,
           zIndex: 30,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'water_rights_licenses',
@@ -205,7 +215,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 20,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: false
         },
         {
           id: 'water_wells',
@@ -218,7 +229,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 10,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         }
       ]
     },
@@ -241,7 +253,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 10,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         },
         {
           id: 'city_names',
@@ -254,7 +267,8 @@ export const layers = (networkContext: boolean) => {
           opacity: 0.4,
           zIndex: 20,
           loaded: 70,
-          enabled: false
+          enabled: false,
+          dataBCAcceptsGeometry: true
         }
       ]
     },
