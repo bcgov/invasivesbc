@@ -50,6 +50,7 @@
     "pg-format": "^1.0.4",
     "proj4": "^2.6.3",
     "qs": "~6.9.4",
+    "reproject": "^1.2.6",
     "simple-get": "^4.0.0",
     "sql-template-strings": "~2.2.2",
     "swagger-object-validator": "^1.2.2",

@@ -5,6 +5,8 @@ import { Operation } from 'express-openapi';
 import get from 'simple-get';
 import { applyCommands } from 'mapshaper';
 import decode from 'urldecode';
+import proj4 from 'proj4';
+import reproject from 'reproject';
 
 /**
  * GET api/species?key=123;key=456;key=789
@@ -14,6 +16,22 @@ export const GET: Operation = [getSimplifiedGeoJSON()];
 GET.apiDoc = {
   tags: ['species'],
   description: 'Fetches the simplified GeoJSON from the specified url.'
+};
+
+proj4.defs(
+  'EPSG:3005',
+  '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+);
+
+const albersToGeog = (featureCollection) => {
+  try {
+    const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
+    return reprojected;
+  } catch (e) {
+    console.log('error converting back to geog from albers:');
+    console.log(JSON.stringify(e));
+    console.log(e);
+  }
 };
 
 function getSimplifiedGeoJSON(): RequestHandler {
@@ -34,11 +52,15 @@ function getSimplifiedGeoJSON(): RequestHandler {
 
       try {
         applyCommands(
-          `-i in.json -simplify dp ${percentage}% -o out.json`,
-          { 'in.json': JSON.parse(data.toString()) },
+          `-i in.json -simplify dp ${percentage}% -proj wgs84 -o out.json`,
+          { 'in.json': albersToGeog(JSON.parse(data.toString())) },
           function (err, output) {
-            const json = JSON.parse(output['out.json']);
-            return res.status(200).json(json);
+            if (output) {
+              const json = JSON.parse(output['out.json']);
+              return res.status(200).json(json);
+            } else {
+              return res.status(200).json(err);
+            }
           }
         );
       } catch (e) {
