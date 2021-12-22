@@ -35,6 +35,11 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     break;
 }
 
+/* . If you want to run app locally and point to dev api using
+     ```$ . ./setenv dev```
+     you need to change teh 'development' case below to have the same redirect_uri as the default case.
+     If you don't it will redirect to the dev site on login.
+     */
 let redirect_uri;
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':

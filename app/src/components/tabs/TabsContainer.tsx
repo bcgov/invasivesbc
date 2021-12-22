@@ -446,10 +446,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <IconButton onClick={handleClick} size="small">
                   {userInfoLoaded ? (
                     () => {
-                      if (userInfo.name) {
+                      if (userInfo?.name) {
                         return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
                       }
-                      if (userInfo.bceid_business_name) {
+                      if (userInfo?.bceid_business_name) {
                         return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
                       }
                       if (!userInfo.name && !userInfo.bceid_business_name) {
@@ -457,7 +457,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                       }
                     }
                   ) : (
-                    <></>
+                    <Avatar></Avatar>
                   )}
                 </IconButton>
               </Grid>
@@ -530,7 +530,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     }
                   }
                 ) : (
-                  <></>
+                  <Avatar></Avatar>
                 )}
               </IconButton>
             </Grid>

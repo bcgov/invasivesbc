@@ -99,13 +99,13 @@ function useKeycloakWrapper(): IKeycloak {
    * Return the user's display name
    */
   const getDisplayName = (): string | undefined => {
-    if (userInfo.name) {
+    if (userInfo?.name) {
       return userInfo.name;
     }
-    if (userInfo.preferred_username) {
+    if (userInfo?.preferred_username) {
       return userInfo.preferred_username;
     }
-    if (userInfo.bceid_business_name) {
+    if (userInfo?.bceid_business_name) {
       return userInfo.bceid_business_name;
     }
   };
