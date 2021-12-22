@@ -444,21 +444,23 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </Grid>
               <Grid xs={1} container justifyContent="center" alignItems="center" item>
                 <IconButton onClick={handleClick} size="small">
-                  {userInfoLoaded ? (
-                    () => {
-                      if (userInfo?.name) {
-                        return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                  <>
+                    {userInfoLoaded ? (
+                      () => {
+                        if (userInfo?.name) {
+                          return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                        }
+                        if (userInfo?.bceid_business_name) {
+                          return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                        }
+                        if (!userInfo.name && !userInfo.bceid_business_name) {
+                          return <Avatar></Avatar>;
+                        }
                       }
-                      if (userInfo?.bceid_business_name) {
-                        return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      }
-                      if (!userInfo.name && !userInfo.bceid_business_name) {
-                        return <Avatar></Avatar>;
-                      }
-                    }
-                  ) : (
-                    <Avatar></Avatar>
-                  )}
+                    ) : (
+                      <Avatar></Avatar>
+                    )}
+                  </>
                 </IconButton>
               </Grid>
               <Menu
@@ -517,21 +519,23 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
-                {userInfoLoaded ? (
-                  () => {
-                    if (userInfo.name) {
-                      return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                <>
+                  {userInfoLoaded ? (
+                    () => {
+                      if (userInfo.name) {
+                        return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                      }
+                      if (userInfo.bceid_business_name) {
+                        return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
+                      }
+                      if (!userInfo.name && !userInfo.bceid_business_name) {
+                        return <Avatar></Avatar>;
+                      }
                     }
-                    if (userInfo.bceid_business_name) {
-                      return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                    }
-                    if (!userInfo.name && !userInfo.bceid_business_name) {
-                      return <Avatar></Avatar>;
-                    }
-                  }
-                ) : (
-                  <Avatar></Avatar>
-                )}
+                  ) : (
+                    <Avatar></Avatar>
+                  )}
+                </>
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
