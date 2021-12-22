@@ -4,5 +4,5 @@
   "realm": "onestopauth-business",
   "ssl-required": "external",
   "public-client": true,
-  "resource": "invasives-bc-1948"
+  "resource": "invasives-bc-1849"
 }
