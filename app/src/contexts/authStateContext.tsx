@@ -5,6 +5,8 @@ import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 
 export const info: IUserInfo = {
   username: '',
+  bceid_business_name: '',
+  displayName: '',
   email: '',
   groups: [],
   roles: []
@@ -25,6 +27,8 @@ export const AuthStateContext = React.createContext<IAuthState>({
   keycloak: {},
   userInfo: {
     username: '',
+    bceid_business_name: '',
+    displayName: '',
     email: '',
     groups: [],
     roles: []
@@ -47,6 +51,8 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const loginUser = async () => {
     await keycloak?.obj?.login();
     const user = await keycloak?.obj?.loadUserInfo();
+    console.log('userinfo ');
+    console.dir(user);
     // const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
     await setUserInfo(user);

@@ -12,6 +12,7 @@ export interface IUserInfo {
   displayName?: string;
   username: string;
   name?: string;
+  bceid_business_name?: string;
   preferred_username?: string;
   firstName?: string;
   lastName?: string;
@@ -98,7 +99,15 @@ function useKeycloakWrapper(): IKeycloak {
    * Return the user's display name
    */
   const getDisplayName = (): string | undefined => {
-    return userInfo?.name ?? userInfo?.preferred_username;
+    if (userInfo.name) {
+      return userInfo.name;
+    }
+    if (userInfo.preferred_username) {
+      return userInfo.preferred_username;
+    }
+    if (userInfo.bceid_business_name) {
+      return userInfo.bceid_business_name;
+    }
   };
 
   /**

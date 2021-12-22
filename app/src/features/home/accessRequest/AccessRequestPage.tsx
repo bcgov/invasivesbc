@@ -45,7 +45,16 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       ? authState.keycloak?.obj?.tokenParsed?.preferred_username
       : ''
   );
-  const [bceid, setBceid] = useState(null);
+  const [bceid, setBceid] = useState(
+    authState.keycloak?.obj?.tokenParsed?.preferred_username
+      ? authState.keycloak?.obj?.tokenParsed?.preferred_username
+      : ''
+  );
+  const [bussinessName, setBusinessName] = useState(
+    authState.keycloak?.obj?.tokenParsed?.bceid_bussiness_name
+      ? authState.keycloak?.obj?.tokenParsed?.bceid_bussiness_name
+      : ''
+  );
   const [firstName, setFirstName] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.given_name ? authState.keycloak?.obj?.tokenParsed?.given_name : ''
   );
@@ -200,12 +209,16 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       if (userInfo?.idir_account_name) {
         setAccountType('IDIR');
         setIdir(userInfo?.idir_account_name);
-      } else if (userInfo?.bceid_account_name) {
+      } else if (userInfo?.bceid_business_name) {
         setAccountType('BCeID');
-        setBceid(userInfo?.bceid_account_name);
+        setBceid(userInfo?.bceid_business_name);
       }
 
-      userInfo?.first_name && setFirstName(userInfo?.first_name);
+      if (userInfo?.bceid_business_name) {
+        setFirstName(userInfo?.bceid_business_name);
+      } else {
+        userInfo?.first_name && setFirstName(userInfo?.first_name);
+      }
       userInfo?.last_name && setLastName(userInfo?.last_name);
       userInfo?.primary_email && setEmail(userInfo?.primary_email);
       userInfo?.work_phone_number && setPhone(userInfo?.work_phone_number);
