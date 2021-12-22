@@ -192,7 +192,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         activity_type_data?.activity_persons[0].person_name === undefined
       ) {
         needsInsert = true;
-        userNameInject = authStateContext.userInfo.name;
+        if (authStateContext.userInfo.name) {
+          userNameInject = authStateContext.userInfo?.name;
+        } else {
+          userNameInject = authStateContext.userInfo?.bceid_business_name;
+        }
       }
     }
     return {

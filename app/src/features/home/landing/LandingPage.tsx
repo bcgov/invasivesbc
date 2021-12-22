@@ -185,21 +185,21 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Name</Typography>
-                {userInfo.name}
+                {userInfo?.name || userInfo?.bceid_business_name}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Email</Typography>
-                {userInfo.email}
+                {userInfo?.email}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Username</Typography>
-                {userInfo.preferred_username}
+                {userInfo?.preferred_username}
               </Box>
             </Grid>
           </Grid>
