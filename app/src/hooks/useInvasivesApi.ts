@@ -477,6 +477,20 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch the api json-schema spec.
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getSimplifiedGeoJSON = async (url: string, percentage: string): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/map-shaper?url=${url}&percentage=${percentage}`
+    });
+    return data;
+  };
+
+  /**
    * Fetch the api json-schema spec and save it in the local database.
    * If the request fails (due to lack of internet connection, etc), then return the cached copy of the api spec.
    *
@@ -715,6 +729,7 @@ export const useInvasivesApi = () => {
     getPointsOfInterestLean,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
+    getSimplifiedGeoJSON,
     getAccessRequestData,
     createMetabaseQuery,
     getBatchUploads,

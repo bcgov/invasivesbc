@@ -3,13 +3,14 @@ import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Layer } from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { q } from '../MapContainer';
-import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
+import { buildURLForDataBC, getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
 import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { WellMarker } from './WellMarker';
@@ -22,6 +23,8 @@ interface IRenderWFSFeatures {
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
+  dataBCAcceptsGeometry?: boolean;
+  simplifyPercentage: number;
   setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
@@ -34,6 +37,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const mapRequestContext = useContext(MapRequestContext);
   const { layersSelected } = mapRequestContext;
   const [lastRequestPushed, setLastRequestPushed] = useState(null);
+  const invasivesApi = useInvasivesApi();
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -70,6 +74,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   //this is called on map load and each time the map is moved
   const startFetchingLayers = () => {
     const newLayerArray = [];
+    console.log(layersSelected);
     layersSelected.forEach((parentLayer: any) => {
       parentLayer.children.forEach((childLayer) => {
         if (childLayer.layer_code) {
@@ -106,7 +111,14 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     //if online, just get data from WFSonline consumer
     if (props.online) {
       getStylesDataFromBC(props.dataBCLayerName).then((returnStyles) => {
-        getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
+        setlayerStyles(returnStyles);
+
+        getDataFromDataBC(
+          props.dataBCLayerName,
+          mapExtent,
+          invasivesApi.getSimplifiedGeoJSON,
+          props.dataBCAcceptsGeometry
+        ).then((returnVal) => {
           if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
             props.inputGeo[0] ? setWellFeatures(getClosestWellToPolygon(returnVal)) : setWellFeatures(returnVal);
           } else {
@@ -190,19 +202,18 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     ? props.customOnEachFeature
     : (feature: Feature<Geometry, any>, layer: Layer) => {
         const popupContent = `
-          <div>
+          <div style={{backgroundColor: 'white'}}>
               <p>${feature.id}</p>                  
           </div>
         `;
         layer.bindPopup(popupContent);
       };
 
-  console.log('==========');
-  console.log('bcgw_code', props.dataBCLayerName);
-  console.log('otherfeatures', otherFeatures);
-  console.log('layerStyles', layerStyles);
-  console.log('==========');
-
+  if (otherFeatures && layerStyles) {
+    console.log('hekkoi?');
+    console.log(layerStyles);
+    console.log(otherFeatures);
+  }
   return (
     <>
       {otherFeatures && layerStyles && (
@@ -210,7 +221,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           key={Math.random() + otherFeatures.length}
           onEachFeature={onEachFeature}
           style={function (geoJsonFeature) {
-            return getStyleForLayerFeature(geoJsonFeature, layerStyles, props.opacity);
+            return { ...getStyleForLayerFeature(geoJsonFeature, layerStyles, props.opacity), zIndex: 99999999 };
           }}
           data={otherFeatures}></GeoJSON>
       )}

@@ -16,7 +16,6 @@ export const DataBCLayer = (props) => {
   if (!props.layer_mode) {
     throw new Error('you missed a map mode');
   }
-  console.log(props.layer_mode);
   switch (props.layer_mode) {
     case LayerMode.WMSOnline:
       return (
@@ -35,6 +34,8 @@ export const DataBCLayer = (props) => {
         <RenderWFSFeatures
           inputGeo={props.inputGeo}
           online={true}
+          dataBCAcceptsGeometry={props.dataBCAcceptsGeometry}
+          simplifyPercentage={props.simplifyPercentage}
           opacity={props.opacity}
           dataBCLayerName={props.bcgw_code}
           setWellIdandProximity={props.setWellIdandProximity}
@@ -49,6 +50,8 @@ export const DataBCLayer = (props) => {
         <RenderWFSFeatures
           inputGeo={props.inputGeo}
           online={false}
+          dataBCAcceptsGeometry={props.dataBCAcceptsGeometry}
+          simplifyPercentage={props.simplifyPercentage}
           opacity={props.opacity}
           dataBCLayerName={props.bcgw_code}
           setWellIdandProximity={props.setWellIdandProximity}

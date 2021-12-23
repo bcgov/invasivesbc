@@ -110,6 +110,7 @@
     "stream-to-string": "^1.2.0",
     "typescript": "3.8.3",
     "unzipper": "^0.10.11",
+    "urlencode": "^1.1.0",
     "uuid": "^8.3.0",
     "wkt": "^0.1.1",
     "xmldom": "^0.6.0"

@@ -28,6 +28,8 @@ interface IParentLayer {
 }
 
 interface IChildLayer {
+  dataBCAcceptsGeometry?: boolean;
+  simplifyPercentage?: number;
   id?: string;
   name?: string;
   source?: string;

@@ -66,7 +66,8 @@ export const layers = (networkContext: boolean) => {
           zIndex: 50,
           loaded: 70,
           enabled: false,
-          dataBCAcceptsGeometry: false
+          dataBCAcceptsGeometry: false,
+          simplifyPercentage: 0.02
         },
         {
           id: 'municipality_boundaries',
@@ -80,7 +81,8 @@ export const layers = (networkContext: boolean) => {
           zIndex: 40,
           loaded: 70,
           enabled: false,
-          dataBCAcceptsGeometry: false
+          dataBCAcceptsGeometry: false,
+          simplifyPercentage: 0.02
         },
         {
           id: 'first_nations_treaty_lands',
@@ -216,7 +218,8 @@ export const layers = (networkContext: boolean) => {
           zIndex: 20,
           loaded: 70,
           enabled: false,
-          dataBCAcceptsGeometry: false
+          dataBCAcceptsGeometry: false,
+          simplifyPercentage: 0.02
         },
         {
           id: 'water_wells',

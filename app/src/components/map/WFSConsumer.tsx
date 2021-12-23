@@ -4,6 +4,7 @@ import SLDParser from 'geostyler-sld-parser';
 import proj4 from 'proj4';
 import reproject from 'reproject';
 import { IndependentLayers } from './LayerLoaderHelpers/IndependentRenderLayers';
+import encode from 'urlencode';
 const { stringify } = require('wkt');
 
 const getHTTP = async (url) => {
@@ -24,6 +25,7 @@ const getHTTP = async (url) => {
 
   return ret;
 };
+
 proj4.defs(
   'EPSG:3005',
   '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
@@ -33,7 +35,13 @@ const wktConvert = (input: any) => {
   return stringify(input);
 };
 
-const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number, startIndex?: number) => {
+export const buildURLForDataBC = (
+  layerName: string,
+  geoJSON: Object,
+  dataBCAcceptsGeometry: boolean,
+  pageSize?: number,
+  startIndex?: number
+) => {
   let baseURL =
     'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&outputFormat=json&typeName=pub:';
   const paging = '&startindex=' + startIndex + '&count=' + pageSize;
@@ -41,7 +49,7 @@ const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number
   const reprojected = reproject.reproject(geoJSON, proj4.WGS84, proj4('EPSG:3005'));
   const reprojectedAsWKT = wktConvert(reprojected);
   const customCQL = '&CQL_FILTER=WITHIN(GEOMETRY,' + reprojectedAsWKT + ')';
-  const encodedCQL = encodeURI(customCQL);
+  const encodedCQL = dataBCAcceptsGeometry ? encodeURI(customCQL) : '';
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
@@ -76,6 +84,8 @@ export const getStylesDataFromBC: any = async (layerName: string) => {
 export const getDataFromDataBC: any = async (
   layerName: string,
   geoJSON: Object,
+  getSimplifiedJSON: any,
+  dataBCAcceptsGeometry: boolean,
   pageSize?: number,
   startIndex?: number
 ) => {
@@ -85,25 +95,27 @@ export const getDataFromDataBC: any = async (
   if (Object.values(IndependentLayers).includes(layerName as any)) {
     return [];
   }
-  let URL = buildURLForDataBC(layerName, geoJSON);
-  let resp = await getHTTP(URL);
-  totalInBox = resp.data.numberMatched;
+
+  let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
+
+  let resp = await getSimplifiedJSON(encode(URL), '0.02');
+  // let resp = await getHTTP(URL);
+  console.log(resp);
+  // totalInBox = resp.data.numberMatched;
+  // console.log(resp);
   // console.log('***features found: ' + resp.data.numberMatched);
   // console.log('***converting to geog from albers:');
-  if (!resp.data.numberMatched) {
-    return [];
-  }
-  let returnVal = albersToGeog(resp.data).features;
+  let returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     console.log('no page provided');
     return returnVal;
   } else {
     const subsequentFetches = async (beginningIndex: number) => {
-      URL = buildURLForDataBC(layerName, geoJSON, pageSize, beginningIndex);
+      URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry, pageSize, beginningIndex);
       resp = await getHTTP(URL);
       // code redundancy const reprojected = albersToGeog(resp.data).features;
-      return albersToGeog(resp.data).features;
+      return albersToGeog(resp);
     };
 
     try {

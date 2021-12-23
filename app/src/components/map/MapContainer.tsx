@@ -147,6 +147,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         // minZoom: 13,
         // maxZoom: 19,
         maxZoom: mapMaxZoom,
+        zIndex: 3000,
         //maxZoom: 25,
         maxNativeZoom: props.maxNativeZoom,
         //maxNativeZoom: 20,
