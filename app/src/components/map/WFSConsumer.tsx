@@ -99,12 +99,7 @@ export const getDataFromDataBC: any = async (
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
   let resp = await getSimplifiedJSON(encode(URL), '0.02');
-  // let resp = await getHTTP(URL);
-  console.log(resp);
-  // totalInBox = resp.data.numberMatched;
-  // console.log(resp);
-  // console.log('***features found: ' + resp.data.numberMatched);
-  // console.log('***converting to geog from albers:');
+
   let returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {

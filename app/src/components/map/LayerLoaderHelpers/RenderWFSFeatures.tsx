@@ -10,7 +10,7 @@ import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { q } from '../MapContainer';
-import { buildURLForDataBC, getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
+import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
 import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { WellMarker } from './WellMarker';
@@ -74,13 +74,14 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   //this is called on map load and each time the map is moved
   const startFetchingLayers = () => {
     const newLayerArray = [];
-    console.log(layersSelected);
     layersSelected.forEach((parentLayer: any) => {
       parentLayer.children.forEach((childLayer) => {
-        if (childLayer.layer_code) {
-          newLayerArray.push(childLayer.layer_code);
-        } else if (childLayer.bcgw_code) {
-          newLayerArray.push(childLayer.bcgw_code);
+        if (childLayer.enabled) {
+          if (childLayer.layer_code) {
+            newLayerArray.push(childLayer.layer_code);
+          } else if (childLayer.bcgw_code) {
+            newLayerArray.push(childLayer.bcgw_code);
+          }
         }
       });
     });
@@ -201,19 +202,16 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const onEachFeature = props.customOnEachFeature
     ? props.customOnEachFeature
     : (feature: Feature<Geometry, any>, layer: Layer) => {
-        const popupContent = `
-          <div style={{backgroundColor: 'white'}}>
-              <p>${feature.id}</p>                  
-          </div>
-        `;
-        layer.bindPopup(popupContent);
+        layer.bindPopup(
+          '<table>' +
+            '<tr><th style="font-size: 1.2rem">Property</th><th style="font-size: 1.2rem">Value</th></tr>' +
+            Object.keys(feature.properties).map((key) => {
+              return '<tr><td><b>' + key + '</b></td><td>' + feature.properties[key] + '</td></tr>';
+            }) +
+            '</table>'
+        );
       };
 
-  if (otherFeatures && layerStyles) {
-    console.log('hekkoi?');
-    console.log(layerStyles);
-    console.log(otherFeatures);
-  }
   return (
     <>
       {otherFeatures && layerStyles && (
@@ -226,7 +224,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
-        wellFeatures.map((feature) => {
+        wellFeatures.features.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {

@@ -52,7 +52,7 @@ function getSimplifiedGeoJSON(): RequestHandler {
 
       try {
         applyCommands(
-          `-i in.json -simplify dp ${percentage}% -proj wgs84 -o out.json`,
+          `-i in.json -simplify dp interval=${percentage} -proj wgs84 -o out.json`,
           { 'in.json': albersToGeog(JSON.parse(data.toString())) },
           function (err, output) {
             if (output) {
