@@ -1,3 +1,4 @@
+import { Typography } from '@material-ui/core';
 import { polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
@@ -36,8 +37,8 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
   const { layersSelected } = mapRequestContext;
-  const [lastRequestPushed, setLastRequestPushed] = useState(null);
   const invasivesApi = useInvasivesApi();
+  const [layerStyles, setlayerStyles] = useState(null);
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -47,62 +48,77 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   }, [wellIdandProximity]);
 
   useMapEvent('moveend', () => {
-    startFetchingLayers();
+    fetchLayer();
   });
 
-  //function that compares last extent (with layers selected for it)
-  //with the ones in the queue and deletes queue extents that are no longer needed
-  const qRemove = (lastReqPushed: any, newArray: any) => {
-    q.remove((worker: any) => {
-      if (worker.data && lastReqPushed?.extent) {
-        if (
-          !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
-          !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
-        ) {
-          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
-          return true;
-        }
-        if (!newArray.includes(worker.data.BCGWcode)) {
-          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
-          return true;
-        }
+  useEffect(() => {
+    fetchLayer();
+  }, [layersSelected]);
+
+  // function that compares last extent (with layers selected for it)
+  // with the ones in the queue and deletes queue extents that are no longer needed
+  // const qRemove = (lastReqPushed: any, newArray: any) => {
+  // q.remove((worker: any) => {
+  //   if (worker.data && lastReqPushed?.extent) {
+  //     if (
+  //       !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
+  //       !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
+  //     ) {
+  //       console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+  //       return true;
+  //     }
+  //     if (!newArray.includes(worker.data.BCGWcode)) {
+  //       console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // });
+  // };
+
+  const fetchLayer = () => {
+    q.push(
+      {
+        extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(),
+        layer: props.dataBCLayerName,
+        func: getLayerData
+      },
+      (err) => {
+        if (err) console.log('There has been an error: ' + err);
       }
-      return false;
-    });
+    );
   };
 
   //this is called on map load and each time the map is moved
-  const startFetchingLayers = () => {
-    const newLayerArray = [];
-    layersSelected.forEach((parentLayer: any) => {
-      parentLayer.children.forEach((childLayer) => {
-        if (childLayer.enabled) {
-          if (childLayer.layer_code) {
-            newLayerArray.push(childLayer.layer_code);
-          } else if (childLayer.bcgw_code) {
-            newLayerArray.push(childLayer.bcgw_code);
-          }
-        }
-      });
-    });
+  // const startFetchingLayers = () => {
+  //   const newLayerArray = [];
+  //   layersSelected.forEach((parentLayer: any) => {
+  //     parentLayer.children.forEach((childLayer) => {
+  //       if (childLayer.enabled) {
+  //         if (childLayer.layer_code) {
+  //           newLayerArray.push(childLayer.layer_code);
+  //         } else if (childLayer.bcgw_code) {
+  //           newLayerArray.push(childLayer.bcgw_code);
+  //         }
+  //       }
+  //     });
+  //   });
 
-    //calling function to remove no longer needed elements from the queue
-    qRemove(lastRequestPushed, newLayerArray);
+  //   //calling function to remove no longer needed elements from the queue
+  //   qRemove(lastRequestPushed, newLayerArray);
 
-    //if there are layers selected
-    if (newLayerArray.length > 0) {
-      //for each layer, push it and the map extent to the queue
-      //also set last request pushed use state var to use it in qRemove function
-      newLayerArray.forEach((layer) => {
-        q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
-        setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
-      });
-    }
-    //this just rerenders the map
-    map.invalidateSize();
-  };
-
-  const [layerStyles, setlayerStyles] = useState(null);
+  //   //if there are layers selected
+  //   if (newLayerArray.length > 0) {
+  //     //for each layer, push it and the map extent to the queue
+  //     //also set last request pushed use state var to use it in qRemove function
+  //     newLayerArray.forEach((layer) => {
+  //       q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
+  //       setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+  //     });
+  //   }
+  //   //this just rerenders the map
+  //   map.invalidateSize();
+  // };
 
   //gets layer data based on the layer name
   const getLayerData = async () => {

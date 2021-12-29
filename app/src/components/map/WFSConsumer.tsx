@@ -103,7 +103,6 @@ export const getDataFromDataBC: any = async (
   let returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
-    console.log('no page provided');
     return returnVal;
   } else {
     const subsequentFetches = async (beginningIndex: number) => {

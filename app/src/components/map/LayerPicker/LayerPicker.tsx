@@ -266,7 +266,7 @@ export const LayerPicker = React.memo(
                         inputGeo={props.inputGeo}
                         setWellIdandProximity={props.setWellIdandProximity}
                         color_code={child.color_code}
-                        zIndex={child.zIndex}
+                        zIndex={parent.zIndex + child.zIndex}
                       />
                     )}
                   </div>

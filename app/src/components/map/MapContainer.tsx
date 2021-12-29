@@ -14,6 +14,7 @@ import {
   useMap,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
+import * as turf from '@turf/turf';
 import Spinner from '../../components/spinner/Spinner';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
@@ -22,12 +23,11 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 import './MapContainer.css';
 import { ToolbarContainer } from './ToolbarContainer';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
-import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
 import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
 
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { MapRecordsContext, MapRecordsContextProvider, modes } from 'contexts/MapRecordsContext';
+import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import { Capacitor } from '@capacitor/core';
 
 //Added comment
@@ -99,7 +99,37 @@ export const getZIndex = (doc) => {
 };
 
 export const async = require('async');
-export const q = async.queue(function (task, callback) {
+export const q = async.queue(function async(task, callback) {
+  console.log('Working on layer: ' + task.layer);
+  console.log('Waiting to be processed: ' + q.length() + ' items.');
+  console.log('-----------------------------------');
+
+  console.log(q.workersList());
+
+  q.remove((worker: any) => {
+    if (worker.data) {
+      if (task.layer === worker.data.layer && turf.booleanWithin(task.extent, worker.data.extent)) {
+        console.log(
+          '%cReceived a request for the layer that has already been requested and which area is within the old request area. Deleting old request...',
+          'color:red'
+        );
+        return true;
+      }
+      if (
+        !turf.booleanWithin(worker.data.extent, task.extent) &&
+        !turf.booleanOverlap(worker.data.extent, task.extent)
+      ) {
+        console.log(
+          '%cThe new extent does not overlap with and not inside of previous extent. Deleting all the old requests...',
+          'color:red'
+        );
+        return true;
+      }
+    }
+    return false;
+  });
+
+  task.func();
   callback();
 }, 1);
 
@@ -138,19 +168,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const Offline = (props) => {
     const mapOffline = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
-      // 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      // localforage,
+      // local_storage,
       {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         subdomains: 'abc',
-        // minZoom: 13,
-        // maxZoom: 19,
         maxZoom: mapMaxZoom,
         zIndex: 3000,
-        //maxZoom: 25,
         maxNativeZoom: props.maxNativeZoom,
-        //maxNativeZoom: 20,
         crossOrigin: true
       }
     );
@@ -271,7 +296,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <ReactLeafletMapContainer
             editable={true}
             center={[55, -128]}
-            zoom={5 /* was mapZoom */}
+            zoom={5}
             bounceAtZoomLimits={true}
             maxZoom={mapMaxZoom}
             minZoom={6}
@@ -281,6 +306,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             preferCanvas={true}
             tap={true}>
             {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
+
             <FlyToAndFadeContextProvider>
               <MapRequestContextProvider>
                 <ZoomButtons position="bottomleft" />

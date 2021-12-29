@@ -7,18 +7,21 @@ import { RISOLayer } from './RISOLayer';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
-  POI = 'LEAN_POI',
-  Jurisdictions = 'JURISDICTIONS',
-  RISO = 'RISO'
+  Iapp = 'LEAN_POI',
+  RISO = 'RISO_BOUNDARIES',
+  Jurisdictions = 'JURISDICTION_LAYER',
+  Other = 'other'
 }
 
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
-  if (Object.values(IndependentLayers).includes(props.layer_code.toUpperCase())) {
+
+  if (Object.values(IndependentLayers).includes(props.layer_code)) {
     switch (props.layer_code) {
       case 'LEAN_ACTIVITIES':
         return (
           <ActivitiesLayer
+            activity_subtype={props.activity_subtype}
             color_code={props.color_code}
             online={networkContext.connected}
             opacity={props.opacity}
@@ -28,13 +31,14 @@ export const IndependentLayer = (props) => {
       case 'LEAN_POI':
         return (
           <PoisLayer
+            poi_type={props.poi_type}
             color_code={props.color_code}
             online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
         );
-      case 'JURISDICTIONS':
+      case 'JURISDICTION_LAYER':
         return (
           <JurisdictionsLayer
             color_code={props.color_code}
@@ -43,17 +47,17 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-      case 'RISO':
+
+      case 'RISO_BOUNDARIES':
         return (
-          <>
-            <RISOLayer
-              color_code={props.color_code}
-              online={networkContext}
-              opacity={props.opacity}
-              zIndex={props.zIndex}
-            />
-          </>
+          <RISOLayer
+            color_code={props.color_code}
+            online={networkContext.connected}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
         );
+
       default:
         return <></>;
     }

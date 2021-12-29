@@ -5,7 +5,84 @@ export const actions = () => {
       expanded: false,
       children: [
         {
-          id: 'all_lean_activities',
+          id: 'terrestrial_plant_observation',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'aquatic_plant_observation',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'terrestrial_plant_chemical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'aquatic_plant_chemical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'terrestrial_plant_mechanical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'aquatic_plant_mechanical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'plant_chemical_monitoring',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'plant_mechanical_monitoring',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_collection',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_release',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_dispersal_monitoring',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_release_monitoring',
           dialog_layerselector_open: false,
           dialog_colorpicker_open: false,
           accordion_server_expanded: false,
@@ -18,7 +95,56 @@ export const actions = () => {
       expanded: false,
       children: [
         {
-          id: 'all_lean_pois',
+          id: 'sites',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'surveys',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'chemical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'mechanical_treatment',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'monitoring_records',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_release',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_dispersal',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        },
+        {
+          id: 'biocontrol_monitoring',
           dialog_layerselector_open: false,
           dialog_colorpicker_open: false,
           accordion_server_expanded: false,
