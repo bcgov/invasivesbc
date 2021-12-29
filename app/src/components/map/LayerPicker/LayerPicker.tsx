@@ -192,14 +192,16 @@ export const LayerPicker = React.memo(
                       />
                     </DialogContent>
                     {/* Color Picker */}
-                    <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
-                      <ColorPicker
-                        defaultValue={child.color_code}
-                        onChange={(color: any) => {
-                          updateChild(layersSelected, setLayersSelected, parent.id, child.id, { color_code: color });
-                        }}
-                      />
-                    </DialogContent>
+                    {child.layer_mode !== 'wms_online' && (
+                      <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
+                        <ColorPicker
+                          defaultValue={child.color_code}
+                          onChange={(color: any) => {
+                            updateChild(layersSelected, setLayersSelected, parent.id, child.id, { color_code: color });
+                          }}
+                        />
+                      </DialogContent>
+                    )}
                     <DialogActions>
                       <DialogCloseBtn
                         parent={parent}
@@ -243,34 +245,35 @@ export const LayerPicker = React.memo(
           <div key={Math.random()}>
             {parent.children.map(
               (child) =>
-                child.enabled && (
+                child.enabled &&
+                (child.bcgw_code ? (
                   <div key={Math.random()}>
-                    {child.bcgw_code ? (
-                      <DataBCLayer
-                        opacity={child.opacity}
-                        bcgw_code={child.bcgw_code}
-                        layer_mode={child.layer_mode}
-                        dataBCAcceptsGeometry={child.dataBCAcceptsGeometry}
-                        simplifyPercentage={child.simplifyPercentage}
-                        inputGeo={props.inputGeo}
-                        setWellIdandProximity={props.setWellIdandProximity}
-                        color_code={child.color_code}
-                        zIndex={parent.zIndex + child.zIndex}
-                      />
-                    ) : (
-                      <IndependentLayer
-                        opacity={child.opacity}
-                        layer_code={child.layer_code}
-                        bcgw_code={child.bcgw_code}
-                        layer_mode={child.layer_mode}
-                        inputGeo={props.inputGeo}
-                        setWellIdandProximity={props.setWellIdandProximity}
-                        color_code={child.color_code}
-                        zIndex={parent.zIndex + child.zIndex}
-                      />
-                    )}
+                    <DataBCLayer
+                      opacity={child.opacity}
+                      bcgw_code={child.bcgw_code}
+                      layer_mode={child.layer_mode}
+                      dataBCAcceptsGeometry={child.dataBCAcceptsGeometry}
+                      simplifyPercentage={child.simplifyPercentage}
+                      inputGeo={props.inputGeo}
+                      setWellIdandProximity={props.setWellIdandProximity}
+                      color_code={child.color_code}
+                      zIndex={parent.zIndex + child.zIndex}
+                    />
                   </div>
-                )
+                ) : (
+                  <div key={Math.random()}>
+                    <IndependentLayer
+                      opacity={child.opacity}
+                      layer_code={child.layer_code}
+                      bcgw_code={child.bcgw_code}
+                      layer_mode={child.layer_mode}
+                      inputGeo={props.inputGeo}
+                      setWellIdandProximity={props.setWellIdandProximity}
+                      color_code={child.color_code}
+                      zIndex={parent.zIndex + child.zIndex}
+                    />
+                  </div>
+                ))
             )}
           </div>
         ))}

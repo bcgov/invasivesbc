@@ -47,7 +47,6 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-
       case 'RISO_BOUNDARIES':
         return (
           <RISOLayer
@@ -57,7 +56,6 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-
       default:
         return <></>;
     }

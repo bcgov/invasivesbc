@@ -1,5 +1,7 @@
-export const layers = (networkContext: boolean) => {
-  return [
+export const layers = (networkContext: boolean, zoomLevel: number, existingLayers?: any) => {
+  let returnVal;
+
+  const layers = [
     {
       id: 'invasivesbc_records',
       name: 'INVASIVESBC Records',
@@ -476,7 +478,7 @@ export const layers = (networkContext: boolean) => {
           zIndex: 20,
           loaded: 70,
           enabled: false,
-          dataBCAcceptsGeometry: false,
+          dataBCAcceptsGeometry: true,
           simplifyPercentage: 0.02
         },
         {
@@ -487,7 +489,7 @@ export const layers = (networkContext: boolean) => {
           bcgw_code: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           color_code: '#000',
           order: 6,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 10,
           loaded: 70,
           enabled: false,
@@ -544,4 +546,64 @@ export const layers = (networkContext: boolean) => {
       children: []
     }
   ];
+
+  if (!existingLayers) {
+    returnVal = getLayerModes(layers, networkContext, zoomLevel);
+  } else {
+    returnVal = getLayerModes(existingLayers, networkContext, zoomLevel);
+  }
+
+  return returnVal;
+};
+
+enum LayerModes {
+  WMS_Online = 'wms_online',
+  WFS_Online = 'wfs_online',
+  WFS_Offline = 'wfs_offline',
+  VT_Online = 'vector_tiles_online',
+  VT_Offline = 'vector_tiles_offline'
+}
+
+const getLayerModes = (inputLayers: any[], networkContext: boolean, zoomLevel: number): any[] => {
+  let returnVal = inputLayers.map((parent) => {
+    const newParent = { ...parent };
+    const newChildren = newParent.children.map((child) => {
+      return { ...child, layer_mode: getChildLayerMode(networkContext, zoomLevel, child.source) };
+    });
+    newParent.children = [...newChildren];
+    return newParent;
+  });
+  return returnVal;
+};
+
+const getChildLayerMode = (networkContext: boolean, zoomLevel: number, source: string): LayerModes => {
+  if (source === 'DATABC') {
+    if (networkContext === true) {
+      if (zoomLevel > 14) {
+        return LayerModes.WFS_Online;
+      } else {
+        return LayerModes.WMS_Online;
+      }
+    } else {
+      if (zoomLevel > 14) {
+        return LayerModes.WFS_Offline;
+      } else {
+        return LayerModes.VT_Offline;
+      }
+    }
+  } else {
+    if (networkContext === true) {
+      if (zoomLevel > 10) {
+        return LayerModes.WFS_Online;
+      } else {
+        return LayerModes.VT_Online;
+      }
+    } else {
+      if (zoomLevel > 10) {
+        return LayerModes.WFS_Offline;
+      } else {
+        return LayerModes.VT_Offline;
+      }
+    }
+  }
 };

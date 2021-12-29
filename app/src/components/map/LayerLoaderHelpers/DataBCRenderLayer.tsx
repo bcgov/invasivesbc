@@ -1,5 +1,5 @@
 import React from 'react';
-import { WMSTileLayer } from 'react-leaflet';
+import { useMap, WMSTileLayer } from 'react-leaflet';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
 import { RenderWFSFeatures } from './RenderWFSFeatures';
 
