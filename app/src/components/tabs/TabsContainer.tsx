@@ -515,7 +515,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             })
           }}
           variant="permanent">
-          _{/* removed style component with paddingTop */}
+          {/* removed style component with paddingTop */}
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">

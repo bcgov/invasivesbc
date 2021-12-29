@@ -166,7 +166,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   // don't include deleted or out-dated records
   sqlStatement.append(SQL` AND deleted_timestamp IS NULL`);
 
-  if (searchCriteria.activity_subtype && searchCriteria.activity_type.length) {
+  if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
 
     // add the first activity type, which does not get a comma prefix

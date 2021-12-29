@@ -4,7 +4,7 @@ import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import layers from '../../components/map/LayerPicker/LAYERS.json';
+import { layers } from 'components/map/LayerPicker/JSON/layers';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -14,6 +14,7 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,6 +35,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
+  const networkContext = useContext(NetworkContext);
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -556,24 +558,32 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(layers);
+      const layerNames = getLayerNamesFromJSON(layers(networkContext.connected));
+      console.log('*****LAYER NAMES*********');
+      console.log(JSON.stringify(layerNames));
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
         const layerName = layerNames[layerNamesIndex];
         //get layer styles
         getStylesDataFromBC(layerName).then(async (returnStyles) => {
-          await upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT OR REPLACE INTO LAYER_STYLES (layerName,json) values ('${layerName}','${JSON.stringify(
-                  returnStyles
-                )}');`
-              }
-            ],
-            databaseContext
-          );
+          try {
+            await upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `INSERT OR REPLACE INTO LAYER_STYLES (layerName,json) values ('${layerName}','${JSON.stringify(
+                    returnStyles
+                  )}');`
+                }
+              ],
+              databaseContext
+            );
+          } catch (e) {
+            //todo let user know this layer did not cache
+            console.log('Unable to insert layer data from ' + layerName);
+            console.log(JSON.stringify(e));
+          }
         });
 
         //for each large grid item, do...

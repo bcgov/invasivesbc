@@ -1,8 +1,10 @@
+import { Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import SLDParser from 'geostyler-sld-parser';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
+import React, { useContext, useEffect, useState } from 'react';
+import { useMap, useMapEvents } from 'react-leaflet';
 import { JurisdictionSLD } from '../SldStyles/jurisdiction_sld';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -27,6 +29,7 @@ export const JurisdictionsLayer = (props) => {
       weight: 5
     }
   });
+  const [openZoomWarning, setOpenZoomWarning] = React.useState(false);
 
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
@@ -34,12 +37,33 @@ export const JurisdictionsLayer = (props) => {
     return styles;
   };
 
-  useMapEvent('moveend', () => {
-    getSldStylesFromLocalFile().then((res) => {
-      setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
-      fetchData();
-    });
+  const getJurisdictionFeatures = () => {
+    if (map.getZoom() > 10) {
+      setOpenZoomWarning(false);
+      getSldStylesFromLocalFile().then((res) => {
+        setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
+        fetchData();
+      });
+    } else {
+      setOpenZoomWarning(true);
+    }
+  };
+
+  useMapEvents({
+    moveend: () => {
+      getJurisdictionFeatures();
+    },
+    zoomend: () => {
+      getJurisdictionFeatures();
+    },
+    dragend: () => {
+      getJurisdictionFeatures();
+    }
   });
+
+  useEffect(() => {
+    getJurisdictionFeatures();
+  }, []);
 
   const fetchData = async () => {
     const jurisdictionsData = await dataAccess.getJurisdictions({ search_feature: mapBounds }, databaseContext);
@@ -47,15 +71,19 @@ export const JurisdictionsLayer = (props) => {
     jurisdictionsData?.rows.forEach((row) => {
       jurisdictionsFeatureArray.push(row.geojson ? row.geojson : row);
     });
-
     setJurisdictions({ type: 'FeatureCollection', features: jurisdictionsFeatureArray });
   };
 
   return (
     <>
       {
-        jurisdictions && <GeoJSONVtLayer geoJSON={jurisdictions} options={options} /> //NOSONAR
+        jurisdictions && <GeoJSONVtLayer geoJSON={jurisdictions} zIndex={props.zIndex} options={options} /> //NOSONAR
       }
+      <Snackbar open={openZoomWarning} autoHideDuration={6000}>
+        <Alert severity="warning" style={{ width: '100%' }}>
+          Zoom in to render Jurisdictions layer.
+        </Alert>
+      </Snackbar>
     </>
   );
 };

@@ -1,6 +1,9 @@
 import * as React from 'react';
-import layers from '../components/map/LayerPicker/LAYERS.json';
-import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
+import { layers } from 'components/map/LayerPicker/JSON/layers';
+import { actions } from 'components/map/LayerPicker/JSON/actions';
+import { NetworkContext } from './NetworkContext';
+import { useMap, useMapEvent } from 'react-leaflet';
+
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;
@@ -11,6 +14,8 @@ interface IMapExtentLayersContext {
   setLayersSelected: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
   layersActions: any[];
   setLayersActions: React.Dispatch<React.SetStateAction<any>>;
+  mapZoom: number;
+  setMapZoom: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface IParentLayer {
@@ -26,6 +31,8 @@ interface IParentLayer {
 }
 
 interface IChildLayer {
+  dataBCAcceptsGeometry?: boolean;
+  simplifyPercentage?: number;
   id?: string;
   name?: string;
   source?: string;
@@ -53,13 +60,30 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   layersSelected: [],
   setLayersSelected: () => {},
   layersActions: [],
-  setLayersActions: () => {}
+  setLayersActions: () => {},
+  mapZoom: 5,
+  setMapZoom: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
+  const networkContext = React.useContext(NetworkContext);
   const [mapRequest, setMapRequest] = React.useState(null);
-  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
-  const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
+  const [mapZoom, setMapZoom] = React.useState<number>(5);
+  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers(networkContext.connected, mapZoom));
+  const [layersActions, setLayersActions] = React.useState<any[]>(actions());
+
+  const mapObj = useMap();
+  useMapEvent('zoomend' as any, () => {
+    setMapZoom(mapObj.getZoom());
+  });
+
+  React.useEffect(() => {
+    if (layersSelected) {
+      setLayersSelected(layers(networkContext.connected, mapZoom, layersSelected));
+    } else {
+      setLayersSelected(layers(networkContext.connected, mapZoom));
+    }
+  }, [networkContext, mapZoom]);
 
   return (
     <MapRequestContext.Provider
@@ -69,7 +93,9 @@ export const MapRequestContextProvider: React.FC = (props) => {
         layersSelected,
         setLayersSelected,
         layersActions,
-        setLayersActions
+        setLayersActions,
+        mapZoom,
+        setMapZoom
       }}>
       {props.children}
     </MapRequestContext.Provider>
