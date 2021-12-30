@@ -30,9 +30,10 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
     <Switch>
       <Redirect exact from="/home" to="/home/landing" />
       <PublicRoute
-        exact
         layout={HomeLayout}
         path="/home/map"
+        strict={false}
+        sensitive={false}
         title={getTitle('Map')}
         component={MapPage}
         componentProps={props}

@@ -120,7 +120,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   //on first load:
   useEffect(() => {
     //if (history.location.pathname !== '/home/map') {
-    setUrl(history.location.pathname);
+    //setUrl(history.location.pathname);
     // }
   }, []);
 
@@ -141,7 +141,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         zoom: zoom
       };
       const urlEncoded = encodeURI(JSON.stringify(urlObj));
-      setUrl('/home/map' + urlEncoded);
+      setUrl('/home/map/' + urlEncoded);
     };
     const mapEventHook = useMapEvents({
       zoomend: (eventData) => {

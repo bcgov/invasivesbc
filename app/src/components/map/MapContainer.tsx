@@ -27,7 +27,7 @@ import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
 
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Capacitor } from '@capacitor/core';
 
 //Added comment
