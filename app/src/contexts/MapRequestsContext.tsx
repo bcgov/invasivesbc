@@ -36,6 +36,8 @@ interface IChildLayer {
   simplifyPercentage?: number;
   id?: string;
   name?: string;
+  activity_subtype?: string;
+  poi_type?: string;
   source?: string;
   layer_mode?: string;
   layer_code?: string;

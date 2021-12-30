@@ -3,14 +3,13 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
-import MapRecordsDataGrid from '../MapRecordsDataGrid';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const ActivitiesLayer = (props) => {
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
-  const { setCurrentRecords, layers } = mapRequestContext;
+  const { setCurrentRecords } = mapRequestContext;
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
   const databaseContext = useContext(DatabaseContext);
@@ -20,17 +19,21 @@ export const ActivitiesLayer = (props) => {
     tolerance: 3,
     debug: 0,
     style: {
-      fillColor: props.color_code,
-      color: props.color_code,
+      fillColor: props.color_code || '#0000ff',
+      color: props.color_code || '#0000ff',
       stroke: true,
       opacity: props.opacity,
-      fillOpacity: props.opacity - 0.2,
-      weight: 5
+      fillOpacity: props.opacity / 2,
+      weight: 5,
+      zIndex: 1000000
     }
   };
 
   const fetchData = useCallback(async () => {
-    const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
+    const activitiesData = await dataAccess.getActivitiesLean(
+      { search_feature: mapBounds, activity_subtype: [props.activity_subtype] },
+      databaseContext
+    );
     const activitiesFeatureArray = [];
     activitiesData?.rows.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
