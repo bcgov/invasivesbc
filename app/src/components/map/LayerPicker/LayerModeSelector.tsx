@@ -1,8 +1,13 @@
 import {
   Accordion,
   AccordionSummary,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   FormControl,
   FormControlLabel,
+  Grid,
+  IconButton,
   Radio,
   RadioGroup,
   Typography
@@ -10,8 +15,14 @@ import {
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { getChildAction, updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
+import {
+  DialogCloseBtn,
+  getChildAction,
+  updateChildAction,
+  toggleDialog
+} from './LayersActionsHelper/LayersActionsFunctions';
 import { updateChild } from './Sorting/SortLayerOrder';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const getIndex = (childId, layers) => {
   var index = -1;
@@ -70,7 +81,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
   }
 };
 
-export const LayersSelector = ({ parent, child }) => {
+export const LayerModeSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
   const mapLayersContext = useContext(MapRequestContext);
   const { layers, setLayers } = mapLayersContext;
@@ -144,5 +155,39 @@ export const LayersSelector = ({ parent, child }) => {
         )}
       </Accordion>
     </>
+  );
+};
+
+export const LayerModeDialog = (props) => {
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersActions, setLayersActions } = mapLayersContext;
+  const action = getChildAction(layersActions, props.parent.id, props.child.id);
+
+  return (
+    <Grid item xs={2}>
+      <IconButton
+        id="settings-btn"
+        onClick={() =>
+          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: true })
+        }>
+        <SettingsIcon />
+      </IconButton>
+      <Dialog
+        id="layermode-settings-dialog"
+        open={action.dialog_layerselector_open}
+        onClose={() =>
+          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: false })
+        }>
+        <DialogTitle>{props.child.name}</DialogTitle>
+        <LayerModeSelector parent={props.parent} child={props.child} />
+        <DialogActions id="close-dialog-action">
+          <DialogCloseBtn
+            parent={props.parent}
+            child={props.child}
+            fieldsToUpdate={{ dialog_layerselector_open: false }}
+          />
+        </DialogActions>
+      </Dialog>
+    </Grid>
   );
 };

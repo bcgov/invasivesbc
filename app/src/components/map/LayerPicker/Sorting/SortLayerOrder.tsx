@@ -196,7 +196,7 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
  * @param parentId specified string of a parent object
  * @param fieldsToUpdate specified field to update e.g. { id: "newId" }
  */
-export const updateParentLayer = (inputArray: any[], setInputArray: any, parentId: string, fieldsToUpdate: Object) => {
+export const updateParent = (inputArray: any[], setInputArray: any, parentId: string, fieldsToUpdate: Object) => {
   let pIndex = getParentIndex(inputArray, parentId);
   let parentsBefore: Object[] = getObjectsBeforeIndex(inputArray, pIndex);
   let parentsAfter: Object[] = getObjectsAfterIndex(inputArray, pIndex);
