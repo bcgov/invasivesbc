@@ -220,7 +220,7 @@ export const GeneratePopup = (props) => {
                 setRows={setRows}
               />
             )}
-            {section == 'databc' && <RenderTableDataBC rows={databc} />}
+            {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
             {section == 'poi' && (
               <RenderTablePOI map={props.map} rows={poiTableRows} setPoiMarker={props.setPoiMarker} />
             )}
@@ -232,7 +232,7 @@ export const GeneratePopup = (props) => {
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
               <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
-              <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+              {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
               <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
             </BottomNavigation>
           </Grid>
