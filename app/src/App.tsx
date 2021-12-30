@@ -41,22 +41,24 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
      you need to change teh 'development' case below to have the same redirect_uri as the default case.
      If you don't it will redirect to the dev site on login.
      */
-let redirect_uri;
+let redirect_uri = 'http://127.0.0.1:3000/home/landing';
+/*
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
     //redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
-    redirect_uri = 'http://127.0.0.1:3000/home/landing';
+    redirect_uri = 'http://127.0.0.1:3000/home/map';
     break;
   case 'test':
-    redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
     break;
   case 'production':
-    redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
     break;
   default:
     redirect_uri = 'http://127.0.0.1:3000/home/landing';
     break;
 }
+*/
 
 console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
@@ -72,7 +74,7 @@ const App: React.FC<IAppProps> = (props) => {
 
   if (window['cordova']) {
     keycloakConfig = {
-      flow: 'hybrid',
+      //flow: 'hybrid',
       redirectUri: redirect_uri,
       checkLoginIframe: false
     };
