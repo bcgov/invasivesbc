@@ -8,6 +8,7 @@ import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
@@ -43,7 +44,8 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 let redirect_uri;
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
-    redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    //redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    redirect_uri = 'http://127.0.0.1:3000/home/landing';
     break;
   case 'test':
     redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
@@ -89,6 +91,15 @@ const App: React.FC<IAppProps> = (props) => {
     keycloakConfig
   };
 
+  const DebugRouter = ({ children }: { children: any }) => {
+    const { location } = useHistory();
+    if (['development', 'local'].includes(process.env.REACT_APP_REAL_NODE_ENV)) {
+      console.log(`Route: ${location.pathname}${location.search}, State: ${JSON.stringify(location.state)}`);
+    }
+
+    return children;
+  };
+
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       <NetworkContextProvider>
@@ -98,7 +109,9 @@ const App: React.FC<IAppProps> = (props) => {
               <ThemeContextProvider>
                 <CustomThemeProvider>
                   <IonReactRouter>
-                    <AppRouter {...appRouterProps} />
+                    <DebugRouter>
+                      <AppRouter {...appRouterProps} />
+                    </DebugRouter>
                   </IonReactRouter>
                 </CustomThemeProvider>
               </ThemeContextProvider>

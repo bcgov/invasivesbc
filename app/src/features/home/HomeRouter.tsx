@@ -28,15 +28,15 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
 
   return (
     <Switch>
-      <Redirect exact from="/home" to="/home/landing" />
+      {/*}   <Redirect exact from="/home" to="/home/landing" />*/}
       <PublicRoute
         layout={HomeLayout}
-        path="/home/map"
+        path="/home/map*"
         strict={false}
         sensitive={false}
         title={getTitle('Map')}
         component={MapPage}
-        componentProps={props}
+        //componentProps={props}
       />
       <PublicRoute
         exact
@@ -127,7 +127,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <AppRoute title="*" path="/home/*" component={() => <Redirect to="/page-not-found" />} />
+      {/*} <AppRoute title="*" path="/home/*" component={() => <Redirect to="/page-not-found" />} />*/}
     </Switch>
   );
 };
