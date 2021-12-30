@@ -11,7 +11,7 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
-import { updateChild } from './SortLayerOrder';
+import { updateChild } from './Sorting/SortLayerOrder';
 import { updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 
 const getIndex = (childId, layers) => {
@@ -74,7 +74,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
 export const LayersSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
   const mapLayersContext = useContext(MapRequestContext);
-  const { layersSelected, setLayersSelected } = mapLayersContext;
+  const { layers, setLayers } = mapLayersContext;
   const { layersActions, setLayersActions } = mapLayersContext;
 
   const onServerAccordionChange = (event: any, expanded: any) => {
@@ -108,7 +108,7 @@ export const LayersSelector = ({ parent, child }) => {
                 id="radio-group"
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                  updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                  updateChild(layers, setLayers, parent.id, child.id, {
                     layer_mode: event.target.value
                   });
                 }}>
@@ -136,7 +136,7 @@ export const LayersSelector = ({ parent, child }) => {
               id="radio-group"
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                updateChild(layersSelected, setLayersSelected, parent.id, child.id, { layer_mode: event.target.value });
+                updateChild(layers, setLayers, parent.id, child.id, { layer_mode: event.target.value });
               }}>
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />
               <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />

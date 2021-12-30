@@ -1,4 +1,4 @@
-export const layers = (networkContext: boolean, zoomLevel: number, existingLayers?: any) => {
+export const layersJSON = (networkContext: boolean, zoomLevel: number, existingLayers?: any) => {
   let returnVal;
 
   const layers = [
