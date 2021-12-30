@@ -137,6 +137,8 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   showDrawControls: boolean;
+  zoom?: any;
+  center?: any;
   isPlanPage?: boolean;
   activityId?: string;
   cacheMapTilesFlag?: any;
@@ -295,8 +297,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         >
           <ReactLeafletMapContainer
             editable={true}
-            center={[55, -128]}
-            zoom={5}
+            center={props.center ? props.center : [55, -128]}
+            zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
             bounceAtZoomLimits={true}
             maxZoom={mapMaxZoom}
             minZoom={6}
@@ -331,6 +333,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   setMapMaxNativeZoom={setMapMaxNativeZoom}
                 />
 
+                {props.children}
                 <MapResizer />
 
                 {/*<LayersControl position="topright">
