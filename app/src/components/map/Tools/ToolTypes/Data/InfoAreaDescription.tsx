@@ -18,6 +18,7 @@ import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'contexts/themeContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 // Leaflet and React-Leaflet
@@ -66,6 +67,7 @@ export const GeneratePopup = (props) => {
   const popupElRef = useRef(null);
   const dbContext = useContext(DatabaseContext);
   var activities;
+  const invasivesApi = useInvasivesApi();
 
   useEffect(() => {
     if (popupElRef?.current) {
@@ -87,7 +89,11 @@ export const GeneratePopup = (props) => {
 
   useEffect(() => {
     if (bufferedGeo) {
-      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+      getDataFromDataBC(
+        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+        bufferedGeo,
+        invasivesApi.getSimplifiedGeoJSON
+      ).then((returnVal) => {
         setDataBC(returnVal);
       }, []);
     }
