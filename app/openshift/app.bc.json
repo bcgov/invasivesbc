@@ -129,11 +129,11 @@
                 "resources": {
                     "limits": {
                         "cpu": "1250m",
-                        "memory": "2Gi"
+                        "memory": "3Gi"
                     },
                     "requests": {
                         "cpu": "500m",
-                        "memory": "1Gi"
+                        "memory": "2Gi"
                     }
                 },
                 "runPolicy": "Serial",
