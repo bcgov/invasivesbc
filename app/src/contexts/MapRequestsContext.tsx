@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { layers } from 'components/map/LayerPicker/JSON/layers';
+import { layersJSON } from 'components/map/LayerPicker/JSON/layers';
 import { actions } from 'components/map/LayerPicker/JSON/actions';
 import { NetworkContext } from './NetworkContext';
 import { useMap, useMapEvent } from 'react-leaflet';
@@ -10,8 +10,8 @@ interface IMapExtentLayersContext {
     extent: any;
   };
   setMapRequest: React.Dispatch<React.SetStateAction<any>>;
-  layersSelected: IParentLayer[];
-  setLayersSelected: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
+  layers: IParentLayer[];
+  setLayers: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
   layersActions: any[];
   setLayersActions: React.Dispatch<React.SetStateAction<any>>;
   mapZoom: number;
@@ -57,8 +57,8 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
     extent: null
   },
   setMapRequest: () => {},
-  layersSelected: [],
-  setLayersSelected: () => {},
+  layers: [],
+  setLayers: () => {},
   layersActions: [],
   setLayersActions: () => {},
   mapZoom: 5,
@@ -69,7 +69,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const networkContext = React.useContext(NetworkContext);
   const [mapRequest, setMapRequest] = React.useState(null);
   const [mapZoom, setMapZoom] = React.useState<number>(5);
-  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers(networkContext.connected, mapZoom));
+  const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
 
   const mapObj = useMap();
@@ -78,10 +78,10 @@ export const MapRequestContextProvider: React.FC = (props) => {
   });
 
   React.useEffect(() => {
-    if (layersSelected) {
-      setLayersSelected(layers(networkContext.connected, mapZoom, layersSelected));
+    if (layers) {
+      setLayers(layersJSON(networkContext.connected, mapZoom, layers));
     } else {
-      setLayersSelected(layers(networkContext.connected, mapZoom));
+      setLayers(layersJSON(networkContext.connected, mapZoom));
     }
   }, [networkContext, mapZoom]);
 
@@ -90,8 +90,8 @@ export const MapRequestContextProvider: React.FC = (props) => {
       value={{
         mapRequest,
         setMapRequest,
-        layersSelected,
-        setLayersSelected,
+        layers,
+        setLayers,
         layersActions,
         setLayersActions,
         mapZoom,

@@ -49,30 +49,6 @@ export function getObjectsAfterIndex(inputArray: any[], index: number) {
 }
 
 /**
- * Get childs before index of children array from parent pIndex
- * @param inputArray
- * @param pIndex
- * @param cIndex
- * @returns
- */
-export function getChildObjBeforeIndex(inputArray: any[], pIndex: number, cIndex: number) {
-  const sorted = sortArray(inputArray);
-  return [...sorted[pIndex].children.slice(0, cIndex)];
-}
-
-/**
- * Get childs after index of children array from parent pIndex
- * @param inputArray
- * @param pIndex
- * @param cIndex
- * @returns
- */
-export function getChildObjAfterIndex(inputArray: any[], pIndex: number, cIndex: number) {
-  const sorted = sortArray(inputArray);
-  return [...sorted[pIndex].children.slice(cIndex + 1)];
-}
-
-/**
  *
  * @param inputArray
  * @param id
@@ -131,7 +107,7 @@ export function getChild(inputArray: any[], parentId: string, childId: string) {
  * @param order
  * @returns
  */
-export function getParentByOrder(inputArray: any[], order: number) {
+export function getObjectByOrder(inputArray: any[], order: number) {
   const sorted = sortArray(inputArray);
   const parent = sorted.filter((x) => x.order === order)[0];
   return { ...parent };
@@ -147,21 +123,27 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     //update objects before old index left alone
     let parentsBefore = getObjectsBeforeIndex(objectState, oldIndex);
 
+    let newZindex = getObjectByOrder(objectState, newIndex).zIndex;
+    let swapZindex = newZindex + 1000;
+
     // update objects between old index and new index decrease
     let loopIndex = oldIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < newIndex) {
-      let obj: any = getParentByOrder(objectState, loopIndex);
+      let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order - 1;
+      obj.zIndex = obj.zIndex + 1000;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
-    let objWeMoved: any = getParentByOrder(objectState, oldIndex);
+    let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
-    let objWeSwapped: any = getParentByOrder(objectState, newIndex);
+    let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex - 1;
+    objWeSwapped.zIndex = swapZindex;
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, newIndex);
@@ -174,22 +156,28 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     //      [{ a: 1 }, { b: 2 }, { c: 3 }, { d: 4 }, { e: 5 }, { f: 6 }];
     //      [{ a: 1 }, { b: 2 }, { e: 3 }, { c: 4 }, { d: 5 }, ,{ f: 6 }];
     let parentsBefore = getObjectsBeforeIndex(objectState, newIndex);
+
+    let newZindex = getObjectByOrder(objectState, newIndex).zIndex;
+    let swapZindex = newZindex - 1000;
+
     // update objects between old index and new index decrease
     let loopIndex = newIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < oldIndex) {
-      let obj: any = getParentByOrder(objectState, loopIndex);
+      let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order + 1;
-      console.log('obj', obj.id);
+      obj.zIndex = obj.zIndex - 1000;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
-    let objWeMoved: any = getParentByOrder(objectState, oldIndex);
+    let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
-    let objWeSwapped: any = getParentByOrder(objectState, newIndex);
+    let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex + 1;
+    objWeSwapped.zIndex = swapZindex;
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, oldIndex);
@@ -226,8 +214,8 @@ export const updateChild = (objectState: any[], setObjectState: any, parentId, c
   let parentsAfter = getObjectsAfterIndex(objectState, pIndex);
   const oldParent = getParent(objectState, parentId);
 
-  const childrenBefore = getChildObjBeforeIndex(objectState, pIndex, cIndex);
-  const childrenAfter = getChildObjAfterIndex(objectState, pIndex, cIndex);
+  const childrenBefore = getObjectsBeforeIndex(oldParent.children, cIndex);
+  const childrenAfter = getObjectsAfterIndex(oldParent.children, cIndex);
 
   const newParent = {
     ...oldParent,
