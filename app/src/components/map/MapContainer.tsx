@@ -29,6 +29,7 @@ import ReactLeafletEditable from 'react-leaflet-editable';
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
 import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Capacitor } from '@capacitor/core';
+import { RenderSelectedLayers } from './RenderSelectedLayers';
 
 //Added comment
 
@@ -335,7 +336,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
                 {props.children}
                 <MapResizer />
-
+                <RenderSelectedLayers
+                  inputGeo={props.geometryState.geometry}
+                  setWellIdandProximity={props.setWellIdandProximity}
+                />
                 {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />

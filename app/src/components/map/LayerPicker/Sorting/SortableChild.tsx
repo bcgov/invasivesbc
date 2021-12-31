@@ -5,7 +5,8 @@ import {
   getObjectByOrder,
   sortArray,
   getChild,
-  updateChild
+  updateChild,
+  updateParent
 } from './SortLayerOrder';
 import {
   Grid,
@@ -20,14 +21,13 @@ import {
   ListItemIcon
 } from '@material-ui/core';
 import React, { useContext } from 'react';
-import { updateParent } from './SortLayerOrder';
 import { Checkbox } from '@mui/material';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { LayerModeDialog } from '../LayerModeSelector';
 import { toolStyles } from 'components/map/Tools/Helpers/ToolStyles';
 import { DialogCloseBtn, getChildAction, toggleDialog } from '../LayersActionsHelper/LayersActionsFunctions';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
-import ColorPicker from 'material-ui-color-picker';
+import { ColorPicker } from 'material-ui-color';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 
 /**
@@ -201,17 +201,16 @@ export const SortableChild = (props: any) => {
               />
             </DialogContent>
             {/********** ColorPicker **********/}
-            <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
-              <ColorPicker
-                style={{ backgroundColor: child.color_code }}
-                floatingLabelText={' '}
-                name="color"
-                defaultValue={child.color_code}
-                onChange={(color: any) =>
-                  updateChild(layers, setLayers, props.parent.id, child.id, { color_code: color })
-                }
-              />
-            </DialogContent>
+            {child.layer_mode !== 'wms_online' && (
+              <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
+                <ColorPicker
+                  defaultValue={child.color_code}
+                  onChange={(color: any) =>
+                    updateChild(layers, setLayers, props.parent.id, child.id, { color_code: color })
+                  }
+                />
+              </DialogContent>
+            )}
             {/********** Close Button **********/}
             <DialogActions>
               <DialogCloseBtn parent={props.parent} child={child} fieldsToUpdate={{ dialog_colorpicker_open: false }} />

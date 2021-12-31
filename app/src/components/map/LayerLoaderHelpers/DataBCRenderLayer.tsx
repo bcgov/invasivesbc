@@ -16,6 +16,7 @@ export const DataBCLayer = (props) => {
   if (!props.layer_mode) {
     throw new Error('you missed a map mode');
   }
+  console.log(props.layer_mode);
   switch (props.layer_mode) {
     case LayerMode.WMSOnline:
       return (
