@@ -10,9 +10,8 @@ import {
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
+import { getChildAction, updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 import { updateChild } from './Sorting/SortLayerOrder';
-import { updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 
 const getIndex = (childId, layers) => {
   var index = -1;

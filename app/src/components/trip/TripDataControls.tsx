@@ -15,7 +15,6 @@ import {
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
 import { NetworkContext } from 'contexts/NetworkContext';
-import { useMap, useMapEvent } from 'react-leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 const useStyles = makeStyles((theme) => ({
