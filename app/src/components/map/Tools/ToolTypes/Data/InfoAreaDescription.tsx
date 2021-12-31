@@ -13,7 +13,8 @@ import {
 import AdjustIcon from '@material-ui/icons/Adjust';
 import FolderIcon from '@material-ui/icons/Folder';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import StorageIcon from '@material-ui/icons/Storage';
+// Removed Temporarily until we figure out databc Table:
+// import StorageIcon from '@material-ui/icons/Storage';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -29,7 +30,8 @@ import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
-  RenderTableDataBC,
+  // Removed Temporarily until we figure out databc Table:
+  // RenderTableDataBC,
   RenderTablePOI,
   RenderTablePosition
 } from '../../Helpers/StyledTable';
@@ -59,7 +61,8 @@ export const GeneratePopup = (props) => {
   const [section, setSection] = useState('position');
   const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
-  const [databc, setDataBC] = useState(null);
+  // (NOSONAR)'d Temporarily until we figure out databc Table:
+  const [databc, setDataBC] = useState(null); // NOSONAR
   const [radius, setRadius] = useState(3);
   const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
