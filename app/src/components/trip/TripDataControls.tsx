@@ -656,7 +656,7 @@ export const TripDataControls: React.FC<any> = (props) => {
               }
               break;
             default:
-              featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
+              featuresInArea = await getDataFromDataBC(layerName, bufferedGeo, invasivesApi.getSimplifiedGeoJSON);
               break;
           }
 

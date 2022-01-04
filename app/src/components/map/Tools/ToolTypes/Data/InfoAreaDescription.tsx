@@ -13,11 +13,13 @@ import {
 import AdjustIcon from '@material-ui/icons/Adjust';
 import FolderIcon from '@material-ui/icons/Folder';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import StorageIcon from '@material-ui/icons/Storage';
+// Removed Temporarily until we figure out databc Table:
+// import StorageIcon from '@material-ui/icons/Storage';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'contexts/themeContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 // Leaflet and React-Leaflet
@@ -28,7 +30,8 @@ import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
-  RenderTableDataBC,
+  // Removed Temporarily until we figure out databc Table:
+  // RenderTableDataBC,
   RenderTablePOI,
   RenderTablePosition
 } from '../../Helpers/StyledTable';
@@ -58,7 +61,8 @@ export const GeneratePopup = (props) => {
   const [section, setSection] = useState('position');
   const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
-  const [databc, setDataBC] = useState(null);
+  // (NOSONAR)'d Temporarily until we figure out databc Table:
+  const [databc, setDataBC] = useState(null); // NOSONAR
   const [radius, setRadius] = useState(3);
   const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
@@ -66,6 +70,7 @@ export const GeneratePopup = (props) => {
   const popupElRef = useRef(null);
   const dbContext = useContext(DatabaseContext);
   var activities;
+  const invasivesApi = useInvasivesApi();
 
   useEffect(() => {
     if (popupElRef?.current) {
@@ -87,7 +92,11 @@ export const GeneratePopup = (props) => {
 
   useEffect(() => {
     if (bufferedGeo) {
-      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+      getDataFromDataBC(
+        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+        bufferedGeo,
+        invasivesApi.getSimplifiedGeoJSON
+      ).then((returnVal) => {
         setDataBC(returnVal);
       }, []);
     }
@@ -214,7 +223,7 @@ export const GeneratePopup = (props) => {
                 setRows={setRows}
               />
             )}
-            {section == 'databc' && <RenderTableDataBC rows={databc} />}
+            {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
             {section == 'poi' && (
               <RenderTablePOI map={props.map} rows={poiTableRows} setPoiMarker={props.setPoiMarker} />
             )}
@@ -226,7 +235,7 @@ export const GeneratePopup = (props) => {
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
               <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
-              <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+              {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
               <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
             </BottomNavigation>
           </Grid>
