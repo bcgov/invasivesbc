@@ -1465,8 +1465,8 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             databaseContext
           );
           return {
-            rows: result.rows.map(poiStandardDBMapping),
-            count: result.count
+            rows: result.rows.map(poiStandardDBMapping) || [],
+            count: result.count || 0
           };
         }}
         actions={

@@ -1,0 +1,126 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { DEFAULT_PAGE_SIZE } from 'constants/database';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { getJurisdictions } from 'components/map/Tools/ToolTypes/Data/InfoAreaDescription';
+
+const columns: GridColDef[] = [
+  {
+    field: 'id',
+    headerName: 'Site ID'
+  },
+  {
+    field: 'date_created',
+    headerName: 'Date Created',
+    width: 150
+  },
+  {
+    field: 'jurisdiction_code',
+    headerName: 'Jurisdiction Code',
+    width: 250
+  },
+  {
+    field: 'site_elevation',
+    headerName: 'Site Elevation',
+    width: 120
+  },
+  {
+    field: 'slope_code',
+    headerName: 'Slope Code',
+    width: 120
+  },
+  {
+    field: 'aspect_code',
+    headerName: 'Aspect Code',
+    width: 120
+  },
+  {
+    field: 'soil_texture_code',
+    headerName: 'Soil Texture Code',
+    width: 150
+  },
+  {
+    field: 'latitude',
+    headerName: 'Latitude',
+    width: 110
+  },
+  {
+    field: 'longitude',
+    headerName: 'Longitude',
+    width: 110
+  }
+];
+
+export const POIsTable = () => {
+  const [pois, setPOIs] = useState([]);
+  const [rows, setRows] = useState([]);
+  const dataAccess = useDataAccess();
+  const databaseContext = useContext(DatabaseContext);
+
+  const fetchData = async () => {
+    console.log('...fetching');
+    const IAPPRecords: any = await dataAccess.getPointsOfInterest({ limit: DEFAULT_PAGE_SIZE }, databaseContext);
+    // setRows(IAPPRecords);
+    console.log('fetched');
+
+    setPOIs(IAPPRecords.rows);
+  };
+
+  const convertToTableRows = () => {
+    const tempArr = [];
+    for (const poi of pois) {
+      // shortcut for point of interest payload
+      const payload = poi?.point_of_interest_payload;
+      // shortcut for data in payload
+      const form_data = payload?.form_data;
+      // shortcut for type_data and data in form_data obj
+      const type_data = form_data?.point_of_interest_type_data;
+      const data = form_data?.point_of_interest_data;
+      const jurisdictionArr = [];
+      getJurisdictions(jurisdictionArr, poi);
+      const newArr = [];
+      jurisdictionArr.forEach((item) => {
+        newArr.push(item.code + ' (' + item.percent_covered + '%)');
+      });
+
+      var row = {
+        id: type_data?.site_id,
+        date_created: data?.date_created,
+        jurisdiction_code: newArr,
+        site_elevation: type_data?.site_elevation,
+        slope_code: type_data?.slope_code,
+        aspect_code: type_data?.aspect_code,
+        soil_texture_code: type_data?.soil_texture_code,
+        latitude: payload?.geometry[0].geometry.coordinates[1].toFixed(6),
+        longitude: payload?.geometry[0].geometry.coordinates[0].toFixed(6)
+      };
+      tempArr.push(row);
+    }
+    setRows(tempArr);
+  };
+
+  useEffect(() => {
+    if (pois.length < 1) {
+      fetchData();
+    } else {
+      convertToTableRows();
+    }
+  }, [pois]);
+
+  useEffect(() => {
+    if (rows.length > 0) {
+      console.log('rows', rows);
+    }
+  }, [rows]);
+
+  return (
+    <>
+      {rows.length > 0 && (
+        <div style={{ height: 520, width: '100%' }}>
+          {<DataGrid columns={columns} rows={rows} pageSize={10} rowsPerPageOptions={[10]} />}
+        </div>
+      )}
+    </>
+  );
+};

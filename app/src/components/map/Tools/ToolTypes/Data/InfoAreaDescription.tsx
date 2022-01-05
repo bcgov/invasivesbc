@@ -52,6 +52,28 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
+export const getJurisdictions = (arrJurisdictions, poi) => {
+  var surveys = poi.point_of_interest_payload.form_data.surveys;
+  if (surveys) {
+    surveys.map((survey) => {
+      survey.jurisdictions.map((jurisdiction) => {
+        var flag = 0;
+        for (let i in arrJurisdictions) {
+          if (jurisdiction.jurisdiction_code === arrJurisdictions[i].code) {
+            flag = 1;
+            break;
+          }
+        }
+        if (flag === 0)
+          arrJurisdictions.push({
+            code: jurisdiction.jurisdiction_code,
+            percent_covered: jurisdiction.percent_covered
+          });
+      });
+    });
+  }
+};
+
 export const GeneratePopup = (props) => {
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -128,24 +150,6 @@ export const GeneratePopup = (props) => {
     }
     if (poi.species_positive) {
       poi.species_positive.map((species) => arrSpecies.push(species));
-    }
-  };
-
-  const getJurisdictions = (arrJurisdictions, poi) => {
-    var surveys = poi.point_of_interest_payload.form_data.surveys;
-    if (surveys) {
-      surveys.map((survey) => {
-        survey.jurisdictions.map((jurisdiction) => {
-          var flag = 0;
-          for (let i in arrJurisdictions) {
-            if (jurisdiction.jurisdiction_code === arrJurisdictions[i]) {
-              flag = 1;
-              break;
-            }
-          }
-          if (flag === 0) arrJurisdictions.push(jurisdiction.jurisdiction_code);
-        });
-      });
     }
   };
 

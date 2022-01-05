@@ -29,6 +29,7 @@ import {
   MyPlantMonitoringTable,
   MyPlantTreatmentsTable,
   MyTransectsTable,
+  PointsOfInterestTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
@@ -40,6 +41,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
+import { POIsTable } from 'components/common/IAPPRecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -337,6 +339,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
+              <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
           {isMobile() && networkContext.connected && (
@@ -380,6 +383,13 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Batch Upload' && (
             <Box>
               <BatchUpload />
+            </Box>
+          )}
+          {workflowFunction === 'IAPP Data' && (
+            <Box>
+              {/* should be something */}
+              {<POIsTable />}
+              {/*<PointsOfInterestTable />*/}
             </Box>
           )}
         </Box>
