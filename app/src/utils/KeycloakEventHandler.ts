@@ -1,7 +1,15 @@
+import { Capacitor } from '@capacitor/core';
 import { KeycloakEventHandler } from '@react-keycloak/web';
-import { KeycloakInstance } from 'keycloak-js';
+const getKeycloak = () => {
+  if (Capacitor.getPlatform() !== 'web') {
+    return require('keycloak-ionic');
+  } else {
+    return require('keycloak-js');
+  }
+};
+const KC = getKeycloak();
 
-const getKeycloakEventHandler = (keycloak: KeycloakInstance) => {
+const getKeycloakEventHandler = (keycloak: Keycloak.KeycloakInstance) => {
   const keycloakEventHandler: KeycloakEventHandler = (event, error) => {
     switch (event) {
       case 'onReady':

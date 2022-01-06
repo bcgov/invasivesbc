@@ -27,7 +27,7 @@
 			<string>com.getcapacitor.capacitor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>capacitor</string>
+				<string>invasivesbc</string>
 			</array>
 		</dict>
 	</array>

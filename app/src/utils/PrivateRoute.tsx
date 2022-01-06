@@ -41,7 +41,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
       render={(renderProps) => {
         if (process.env.REACT_APP_REAL_NODE_ENV !== 'production' && networkContext.connected) {
           if (!isAuthenticated()) {
-            return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
+            return <>{/*<Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;*/}</>;
           }
         }
         return (

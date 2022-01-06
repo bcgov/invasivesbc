@@ -4,7 +4,9 @@ import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useMap, useMapEvents } from 'react-leaflet';
+import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -112,6 +114,66 @@ const MapPage: React.FC<IMapProps> = (props) => {
     // fetch all data for the given geo
   };
 
+  const [url, setUrl] = useState(null);
+  const history = useHistory();
+
+  //on first load:
+  useEffect(() => {
+    //if (history.location.pathname !== '/home/map') {
+    //setUrl(history.location.pathname);
+    // }
+  }, []);
+
+  useEffect(() => {
+    console.log('url');
+    console.log(url);
+    // doesn't work:  history.replace(url);
+    window.history.pushState('', 'New Page Title', url);
+  }, [url]);
+
+  const MapUrlListener = (props) => {
+    const map = useMap();
+    const buildAndSetURL = () => {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      const urlObj = {
+        center: center,
+        zoom: zoom
+      };
+      const urlEncoded = encodeURI(JSON.stringify(urlObj));
+      setUrl('/home/map/' + urlEncoded);
+    };
+    const mapEventHook = useMapEvents({
+      zoomend: (eventData) => {
+        buildAndSetURL();
+      },
+      dragend: (eventData) => {
+        buildAndSetURL();
+      }
+    });
+    return null;
+  };
+
+  const initalCenter = () => {
+    if (!url || !(url === '/home/map')) {
+      return [55, -128];
+    } else {
+      const urlEncoded = (url as string).replace('/home/map', '');
+      const urlObj = JSON.parse(urlEncoded);
+      return urlObj.center;
+    }
+  };
+
+  const initialZoom = () => {
+    if (!url || !(url === '/home/map')) {
+      return 5;
+    } else {
+      const urlEncoded = (url as string).replace('/home/map', '');
+      const urlObj = JSON.parse(urlEncoded);
+      return urlObj.zoom;
+    }
+  };
+
   return (
     <Box height="inherit" width="inherit">
       <MapRecordsContextProvider>
@@ -122,13 +184,17 @@ const MapPage: React.FC<IMapProps> = (props) => {
                 <MapContainer
                   classes={classes}
                   showDrawControls={false}
+                  center={initalCenter()}
+                  zoom={initialZoom()}
                   mapId={'mainMap'}
                   pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                   geometryState={{ geometry, setGeometry }}
                   interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                   extentState={{ extent, setExtent }}
                   contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-                />
+                >
+                  <MapUrlListener />
+                </MapContainer>
               ) : (
                 <CircularProgress />
               )}

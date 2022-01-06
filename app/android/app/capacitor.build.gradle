@@ -11,13 +11,14 @@ apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-community-http')
     implementation project(':capacitor-community-sqlite')
+    implementation project(':capacitor-app')
     implementation project(':capacitor-camera')
     implementation project(':capacitor-device')
     implementation project(':capacitor-geolocation')
     implementation project(':capacitor-network')
-
+    implementation "com.android.support:customtabs:23.3.0"
 }
-
+apply from: "../../node_modules/cordova-plugin-browsertab/src/android/BrowserTab.gradle"
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

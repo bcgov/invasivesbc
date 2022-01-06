@@ -53,7 +53,9 @@ export const JumpToTrip = (props) => {
     if (!(IFlyToAndFadeItems.length > 0)) {
       return;
     }
-    flyToContext.go([IFlyToAndFadeItems[index]]);
+    if (IFlyToAndFadeItems[index]?.geometries) {
+      flyToContext.go([IFlyToAndFadeItems[index]]);
+    }
   }, [index]);
 
   // can be replaced with a menu (later):
