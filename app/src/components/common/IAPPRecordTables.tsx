@@ -2,13 +2,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, MuiEvent } from '@mui/x-data-grid';
 import { getJurisdictions } from 'components/map/Tools/ToolTypes/Data/InfoAreaDescription';
+import { useHistory } from 'react-router';
 
 const columns: GridColDef[] = [
   {
     field: 'id',
-    headerName: 'Site ID'
+    headerName: 'IAPP ID',
+    hide: true
+  },
+  {
+    field: 'site_id',
+    headerName: 'IAPP ID'
   },
   {
     field: 'date_created',
@@ -55,13 +61,13 @@ const columns: GridColDef[] = [
 export const POIsTable = () => {
   const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
+  const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
 
   const fetchData = async () => {
     console.log('...fetching');
     const IAPPRecords: any = await dataAccess.getPointsOfInterest({ limit: DEFAULT_PAGE_SIZE }, databaseContext);
-    // setRows(IAPPRecords);
     console.log('fetched');
 
     setPOIs(IAPPRecords.rows);
@@ -85,7 +91,8 @@ export const POIsTable = () => {
       });
 
       var row = {
-        id: type_data?.site_id,
+        id: poi?.point_of_interest_id,
+        site_id: type_data?.site_id,
         date_created: data?.date_created,
         jurisdiction_code: newArr,
         site_elevation: type_data?.site_elevation,
@@ -110,7 +117,7 @@ export const POIsTable = () => {
 
   useEffect(() => {
     if (rows.length > 0) {
-      console.log('rows', rows);
+      console.log('rows', pois);
     }
   }, [rows]);
 
@@ -118,7 +125,18 @@ export const POIsTable = () => {
     <>
       {rows.length > 0 && (
         <div style={{ height: 520, width: '100%' }}>
-          {<DataGrid columns={columns} rows={rows} pageSize={10} rowsPerPageOptions={[10]} />}
+          {
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+              onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+                console.log('params', params);
+                history.push(`/home/iapp/${params.id}`);
+              }}
+            />
+          }
         </div>
       )}
     </>
