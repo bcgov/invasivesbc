@@ -1,15 +1,12 @@
-import { IconButton, Typography } from '@mui/material';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import TouchAppIcon from '@mui/icons-material/TouchApp';
-import { ThemeContext } from 'utils/CustomThemeProvider';
+import { IconButton, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import L from 'leaflet';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import CropIcon from '@mui/icons-material/Crop';
+import { ListItemButton } from '@mui/material';
 
 export const MultiSelectOrEdit = (props) => {
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);
@@ -55,13 +52,16 @@ export const MultiSelectOrEdit = (props) => {
       setMode(modes.WAITING_FOR_SELECT_OR_CANCEL);
     };
     return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Multi Select"
-        onClick={onClick}>
-        <CropIcon />
-        <Typography className={toolClass.Font}>Multi-select</Typography>
-      </IconButton>
+      <ListItem disableGutters className={toolClass.listItem}>
+        <ListItemButton aria-label="Multi Select" onClick={onClick}>
+          <ListItemIcon>
+            <CropIcon />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography className={toolClass.Font}>Multi-select</Typography>
+          </ListItemText>
+        </ListItemButton>
+      </ListItem>
     );
   };
 
@@ -70,10 +70,7 @@ export const MultiSelectOrEdit = (props) => {
       setMode(modes.NOT_PRESSED);
     };
     return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Cancel"
-        onClick={onClick}>
+      <IconButton aria-label="Cancel" onClick={onClick}>
         <CropIcon />
         <Typography className={toolClass.Font}>Cancel</Typography>
       </IconButton>
@@ -81,7 +78,7 @@ export const MultiSelectOrEdit = (props) => {
   };
 
   return (
-    <div ref={divRef}>
+    <div style={{ width: '100%' }} ref={divRef}>
       {
         {
           NOT_PRESSED: <RenderWhenMode_NotPressed />,

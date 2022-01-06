@@ -41,7 +41,7 @@ const Footer: React.FC<IFooterProps> = () => {
         style={{
           position: 'relative',
           minHeight: '10px',
-          maxHeight: '20px',
+          maxHeight: '30px',
           fontSize: '.5rem',
           justifyContent: 'flex-start'
         }}>

@@ -13,7 +13,8 @@ import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
-    height: '100%'
+    height: '100%',
+    padding: 0
   },
   map: {
     height: '100%',

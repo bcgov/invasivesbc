@@ -1,11 +1,7 @@
-import { Grid, IconButton, Typography } from '@mui/material';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { Typography, Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { MapRecordsContext, MODES } from 'contexts/MapRecordsContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { Shape, startBasicShape, stopShape } from './ReactLeafletEditableEventHandlers';
 import PentagonIcon from '@mui/icons-material/Pentagon';
@@ -16,6 +12,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import EggAltIcon from '@mui/icons-material/EggAlt';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SaveIcon from '@mui/icons-material/Save';
+import { ListItemButton } from '@mui/material';
 export const DrawButtonList = (props) => {
   const divRef = useRef(null);
 
@@ -26,27 +23,26 @@ export const DrawButtonList = (props) => {
   }, []);
 
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
 
   const mapRecordsContext = useContext(MapRecordsContext);
 
-  const [index, setIndex] = useState(-1);
   const [inEdit, setInEdit] = useState(false);
 
   const DrawButton = (props) => {
     const Icn = props.icon;
     return (
-      <IconButton
+      <ListItemButton
         disabled={props.disabled ? true : false}
-        className={toolClass.toolBtnLight}
         onClick={() => {
           props.onClick();
         }}>
-        <Typography className={toolClass.Font}> {props.label}</Typography>
-        {props.icon ? <Icn /> : <></>}
-      </IconButton>
+        <ListItemIcon>{props.icon ? <Icn /> : <></>}</ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}> {props.label}</Typography>
+        </ListItemText>
+      </ListItemButton>
     );
   };
 
@@ -218,36 +214,40 @@ export const DrawButtonList = (props) => {
     }
   ];
   return (
-    <Grid ref={divRef} xs={12} container className={toolClass.toolBtnMultiStageMenu}>
+    <List ref={divRef}>
+      <Divider />
       {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
         items.map((i) => {
           const Btn = i.button;
           return (
-            <Grid className={toolClass.toolBtnMultiStageMenuItem} item>
+            <ListItem disableGutters>
               <Btn />
-            </Grid>
+            </ListItem>
           );
         })
       ) : (
         <></>
       )}
       {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
-        <Grid className={toolClass.toolBtnMultiStageMenuItem} item>
-          <IconButton
+        <ListItem disableGutters>
+          <ListItemButton
             disabled={props.disabled ? true : false}
-            className={toolClass.toolBtnLight}
             onClick={() => {
               stopShape(mapRecordsContext);
               setInEdit(false);
             }}>
-            <Typography className={toolClass.Font}>DONE</Typography>
-            <SaveIcon />
-          </IconButton>
-        </Grid>
+            <ListItemIcon>
+              <SaveIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography className={toolClass.Font}>Done</Typography>
+            </ListItemText>
+          </ListItemButton>
+        </ListItem>
       ) : (
-        <> </>
+        <></>
       )}
-    </Grid>
+    </List>
   );
 };
 

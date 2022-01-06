@@ -4,7 +4,10 @@ import {
   BottomNavigationAction,
   Button,
   Grid,
-  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Slider,
   Switch,
   TableContainer,
@@ -317,7 +320,7 @@ function SetPointOnClick({ map }: any) {
   });
 
   return (
-    <>
+    <ListItem disableGutters className={toolClass.listItem}>
       {
         activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
       }
@@ -336,9 +339,8 @@ function SetPointOnClick({ map }: any) {
         </Marker>
       )}
 
-      <IconButton
+      <ListItemButton
         ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={() => setClickMode(!clickMode)}
         style={{
           backgroundColor: clickMode ? '#006ee6' : null,
@@ -346,14 +348,18 @@ function SetPointOnClick({ map }: any) {
           borderTopRightRadius: 5,
           marginTop: 5
         }}>
-        <img
-          style={{ width: 32, height: 32 }}
-          color={themeContext.themeType ? '#000' : 'white'}
-          src={binoculars}
-          aria-label="create-pin"
-        />
-        <Typography className={toolClass.Font}>What's here?</Typography>
-      </IconButton>
+        <ListItemIcon>
+          <img
+            style={{ width: 32, height: 32 }}
+            color={themeContext.themeType ? '#000' : 'white'}
+            src={binoculars}
+            aria-label="create-pin"
+          />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>What's here?</Typography>
+        </ListItemText>
+      </ListItemButton>
       {geoPoint && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
@@ -367,7 +373,7 @@ function SetPointOnClick({ map }: any) {
           />
         </GeoJSON>
       )}
-    </>
+    </ListItem>
   );
 }
 

@@ -52,10 +52,7 @@ export const ToggleDisplayButtons = (props) => {
       setMode('PRESSED');
     };
     return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Create Record"
-        onClick={onClick}>
+      <IconButton aria-label="Create Record" onClick={onClick}>
         <AddIcon />
         <Typography className={toolClass.Font}>New Record</Typography>
       </IconButton>
@@ -72,32 +69,22 @@ export const ToggleDisplayButtons = (props) => {
     return (
       <Grid xs={5} container className={toolClass.toolBtnMultiStageMenu}>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Previous choice"
-            onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
+          <IconButton aria-label="Previous choice" onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
             <KeyboardBackspaceIcon />
           </IconButton>
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Create Record"
-            onClick={createOnClick}>
+          <IconButton aria-label="Create Record" onClick={createOnClick}>
             {items[index].type}
           </IconButton>
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Next Choice"
-            onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
+          <IconButton aria-label="Next Choice" onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
             <ArrowRightAltIcon />
           </IconButton>
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
           <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Cancel"
             onClick={() => {
               setMode('NOT_PRESSED');
@@ -110,7 +97,7 @@ export const ToggleDisplayButtons = (props) => {
   };
 
   return (
-    <div ref={divRef}>
+    <div style={{ width: '100%' }} ref={divRef}>
       {
         {
           NOT_PRESSED: <RenderWhenMode_NotPressed />,

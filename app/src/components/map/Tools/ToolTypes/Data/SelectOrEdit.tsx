@@ -1,7 +1,7 @@
-import { IconButton, Typography } from '@mui/material';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { ThemeContext } from 'utils/CustomThemeProvider';
+import { ListItem, ListItemIcon, ListItemText, ListItemButton, Typography } from '@mui/material';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';
@@ -18,10 +18,6 @@ export const SelectOrEdit = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
-
-  const createOnClick = async () => {
-    console.log('create record');
-  };
 
   //
   /* ref for whatever helper makes records:
@@ -54,13 +50,16 @@ export const SelectOrEdit = (props) => {
       setMode(modes.WAITING_FOR_SELECT_OR_CANCEL);
     };
     return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Select Record"
-        onClick={onClick}>
-        <TouchAppIcon />
-        <Typography className={toolClass.Font}>Select Record</Typography>
-      </IconButton>
+      <ListItem disableGutters className={toolClass.listItem}>
+        <ListItemButton aria-label="Select Record" onClick={onClick}>
+          <ListItemIcon>
+            <TouchAppIcon />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography className={toolClass.Font}>Select Record</Typography>
+          </ListItemText>
+        </ListItemButton>
+      </ListItem>
     );
   };
 
@@ -69,18 +68,21 @@ export const SelectOrEdit = (props) => {
       setMode(modes.NOT_PRESSED);
     };
     return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Cancel"
-        onClick={onClick}>
-        <CancelPresentationIcon />
-        <Typography className={toolClass.Font}>Cancel</Typography>
-      </IconButton>
+      <ListItem disableGutters className={toolClass.listItem}>
+        <ListItemButton aria-label="Cancel" onClick={onClick}>
+          <ListItemIcon>
+            <CancelPresentationIcon />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography className={toolClass.Font}>Cancel</Typography>
+          </ListItemText>
+        </ListItemButton>
+      </ListItem>
     );
   };
 
   return (
-    <div ref={divRef}>
+    <div style={{ width: '100%' }} ref={divRef}>
       {
         {
           NOT_PRESSED: <RenderWhenMode_NotPressed />,

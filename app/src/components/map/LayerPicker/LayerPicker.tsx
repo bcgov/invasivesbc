@@ -14,7 +14,7 @@ import {
   updateParentAction
 } from './LayersActionsHelper/LayersActionsFunctions';
 import { getParentAction } from 'components/map/LayerPicker/LayersActionsHelper/LayersActionsFunctions';
-import { assignPaperBGTheme, toolStyles } from '../Tools/Helpers/ToolStyles';
+import { toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
   Accordion,
@@ -29,8 +29,9 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
-  Paper,
+  ListItemText,
   Popover,
   Slider,
   Typography
@@ -46,7 +47,6 @@ import { ColorPicker } from 'mui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 
 export const LayerPicker = React.memo(
@@ -55,8 +55,6 @@ export const LayerPicker = React.memo(
     const { layers, setLayers } = mapLayersContext;
     const { layersActions, setLayersActions } = mapLayersContext;
     const toolClass = toolStyles();
-    const themeContext = useContext(ThemeContext);
-    const { themeType } = themeContext;
     const divref = useRef();
 
     /* Removed for now:
@@ -285,11 +283,16 @@ export const LayerPicker = React.memo(
         <PopupState variant="popover" popupId="layer-picker-popup-state">
           {(popupState) => (
             <>
-              <Paper id="layer-picker-paper" style={assignPaperBGTheme(themeType)}>
-                <IconButton id="layer-picker-btn" style={{ height: 53, width: 53 }} {...bindTrigger(popupState)}>
-                  <LayersIcon />
-                </IconButton>
-              </Paper>
+              <ListItem disableGutters>
+                <ListItemButton id="layer-picker-btn" {...bindTrigger(popupState)}>
+                  <ListItemIcon>
+                    <LayersIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <Typography className={toolClass.Font}>Layer Picker</Typography>
+                  </ListItemText>
+                </ListItemButton>
+              </ListItem>
               <Popover
                 id="layer-picker-popover"
                 style={{ maxHeight: 500 }}
