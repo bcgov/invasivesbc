@@ -1,3 +1,6 @@
+import { Capacitor } from '@capacitor/core';
+import { Device } from '@capacitor/device';
+
 import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
 import { Box } from '@material-ui/core';
@@ -6,14 +9,26 @@ import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@mater
 import { KeycloakProvider } from '@react-keycloak/web';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
-import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import { ThemeContextProvider } from './contexts/themeContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
+
+//Neither worked in both cases with standard sso realm.
+// 1. keycloak-js with cordova adapater only redirects to localhost, but
+// web origin would be an ip, and standard realm doesn't handle that.
+// 2. keycloak-ionic just plain didn't work in web.
+const getKeycloak = () => {
+  if (Capacitor.getPlatform() !== 'web') {
+    return require('keycloak-ionic');
+  } else {
+    return require('keycloak-js');
+  }
+};
+const KC = getKeycloak();
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -41,12 +56,12 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
      you need to change teh 'development' case below to have the same redirect_uri as the default case.
      If you don't it will redirect to the dev site on login.
      */
+//let redirect_uri = 'InvasivesBC://127.0.0.1:3000/home/landing';
+
 let redirect_uri = 'http://127.0.0.1:3000/home/landing';
-/*
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
-    //redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
-    redirect_uri = 'http://127.0.0.1:3000/home/map';
+    redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
     break;
   case 'test':
     redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
@@ -58,37 +73,58 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     redirect_uri = 'http://127.0.0.1:3000/home/landing';
     break;
 }
-*/
+if (Capacitor.getPlatform() !== 'web') {
+  redirect_uri = 'invasivesbc://192.168.1.105:8100/home/landing';
+}
 
 console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
-  const keycloakInstanceConfig: KeycloakConfig = {
+  const keycloakInstanceConfig: Keycloak.KeycloakConfig = {
     realm: 'onestopauth-business',
+    //    adapter: 'capacitor-native',
     url: SSO_URL,
     clientId: 'invasives-bc-1849'
   };
 
   //@ts-ignore
-  const keycloak: KeycloakInstance = new Keycloak(keycloakInstanceConfig);
+  const keycloak: KeycloakInstance = new KC(keycloakInstanceConfig);
   let keycloakConfig = null;
 
   if (window['cordova']) {
+    console.log('cordova');
+    console.log((window as any).Capacitor);
     keycloakConfig = {
-      //flow: 'hybrid',
+      adapter: 'capacitor-native',
+      //responseMode: 'query',
+      // adapter: 'capacitor',
+      //works kind of : adapter: 'cordova',
+      pkceMethod: 'S256',
       redirectUri: redirect_uri,
       checkLoginIframe: false
     };
   } else {
-    //keycloakConfig = { checkLoginIframe: false, redirectUri: redirect_uri };
     keycloakConfig = {
+      adapter: 'web',
       pkceMethod: 'S256',
       checkLoginIframe: false,
       redirectUri: redirect_uri
     };
   }
 
+  const [deviceInfo, setDeviceInfo] = useState(null);
+  const getDeviceInfo = async () => {
+    const dev = await Device.getInfo();
+    console.log('deviceinfo');
+    console.dir(dev);
+    setDeviceInfo({ ...dev });
+  };
+
+  useEffect(() => {
+    getDeviceInfo();
+  }, []);
+
   const appRouterProps = {
-    deviceInfo: props.deviceInfo,
+    deviceInfo: deviceInfo, //props.deviceInfo,
     keycloak,
     keycloakConfig
   };
@@ -104,23 +140,27 @@ const App: React.FC<IAppProps> = (props) => {
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <NetworkContextProvider>
-        <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
-          <DatabaseContextProvider>
-            <AuthStateContextProvider>
-              <ThemeContextProvider>
-                <CustomThemeProvider>
-                  <IonReactRouter>
-                    <DebugRouter>
-                      <AppRouter {...appRouterProps} />
-                    </DebugRouter>
-                  </IonReactRouter>
-                </CustomThemeProvider>
-              </ThemeContextProvider>
-            </AuthStateContextProvider>
-          </DatabaseContextProvider>
-        </KeycloakProvider>
-      </NetworkContextProvider>
+      {deviceInfo !== null ? (
+        <NetworkContextProvider>
+          <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
+            <DatabaseContextProvider>
+              <AuthStateContextProvider>
+                <ThemeContextProvider>
+                  <CustomThemeProvider>
+                    <IonReactRouter>
+                      <DebugRouter>
+                        <AppRouter {...appRouterProps} />
+                      </DebugRouter>
+                    </IonReactRouter>
+                  </CustomThemeProvider>
+                </ThemeContextProvider>
+              </AuthStateContextProvider>
+            </DatabaseContextProvider>
+          </KeycloakProvider>
+        </NetworkContextProvider>
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };

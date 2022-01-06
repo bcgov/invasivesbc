@@ -317,11 +317,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Assignment fontSize={'small'} />
           });
         }
-        /*    tabsUserHasAccessTo.push({
+        tabsUserHasAccessTo.push({
           label: 'Home',
           path: '/home/landing',
           icon: <Home fontSize={'small'} />
-        });*/
+        });
 
         if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
