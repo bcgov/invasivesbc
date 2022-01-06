@@ -171,18 +171,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
       <IAPPSurveyTable rows={surveys} />
 
-      <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />
+      {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />}
 
-      <IAPPChemicalTreatmentsTable rows={chemical_treatments} />
+      {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />}
 
-      <IAPPBiologicalTreatmentsTable rows={biological_treatments} />
+      {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />}
 
-      <IAPPBiologicalDispersalsTable rows={biological_dispersals} />
-
-      <br />
-      <br />
-      <br />
-      <br />
+      {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />}
     </Container>
   );
 };

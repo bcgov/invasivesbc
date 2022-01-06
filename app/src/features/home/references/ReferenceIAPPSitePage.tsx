@@ -29,5 +29,9 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
     setPOI(poiData.rows[0]);
   };
 
-  return <div>{poi && <IAPPSite record={poi} />}</div>;
+  return (
+    <div id="iapp_site" style={{ marginTop: 30 }}>
+      {poi && <IAPPSite record={poi} />}
+    </div>
+  );
 };
