@@ -44,9 +44,10 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
     padding: 5,
     marginTop: 10,
     marginRight: 10,
-    zIndex: 9500,
-    width: 30,
-    height: 30,
+    zIndex: 1500,
+    width: 40,
+    transition: 'transform 200ms ease-in-out',
+    height: 40,
     spacing: 'space-around',
     backgroundColor: theme.palette.background.default,
     '&:hover': {
@@ -76,20 +77,21 @@ export const ToolbarContainer = (props) => {
   };
 
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
 
   return (
-    <div key={'toolbar1'} ref={divRef} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+    <div key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
       <IconButton
         onClick={() => {
           handleExpand();
         }}
-        className={classes.toggleMenuBTN + ' leaflet-control'}>
-        {expanded ? <KeyboardArrowRightIcon /> : <KeyboardArrowLeftIcon />}
+        className={classes.toggleMenuBTN + ' leaflet-control'}
+        style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+        <KeyboardArrowLeftIcon />
       </IconButton>
       <List
+        ref={divRef}
         key={'toolbar2'}
         className={classes.innerToolBarContainer + ' leaflet-control'}
         style={{ transform: expanded ? 'translateX(0)' : 'translateX(110%)' }}>
