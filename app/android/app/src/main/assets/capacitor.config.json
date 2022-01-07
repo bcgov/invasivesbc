@@ -2,7 +2,10 @@
 	"appId": "io.ionic.starter",
 	"appName": "InvasivesBC",
 	"webDir": "build",
-	"npmClient": "npm",
+	"server": {
+		"hostname": "localhost",
+		"iosScheme": "invasivesbc"
+	},
 	"loggingBehavior": "none",
 	"plugins": {
 		"SplashScreen": {

@@ -74,7 +74,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     break;
 }
 if (Capacitor.getPlatform() !== 'web') {
-  redirect_uri = 'invasivesbc://192.168.1.105:8100/home/landing';
+  redirect_uri = 'invasivesbc://localhost';
 }
 
 console.log('SSO URL:', SSO_URL);
