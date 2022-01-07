@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
-import { IconButton, Typography } from '@mui/material';
+import { IconButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -13,7 +14,6 @@ import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeConte
 export const JumpToActivity = (props) => {
   // style
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);
@@ -37,7 +37,6 @@ export const JumpToActivity = (props) => {
   // What the button cycles through.
 
   const [IFlyToAndFadeItems, setIFlyToAndFadeItems] = useState<Array<IFlyToAndFadeItem>>([]);
-  const [index, setIndex] = useState<number>(0);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
@@ -98,15 +97,18 @@ export const JumpToActivity = (props) => {
     <>
       {' '}
       {props.id && (
-        <IconButton
+        <ListItemButton
           ref={divRef}
-          className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
           aria-label="Jump To Location"
           onClick={jump}
           disabled={!props.id || !IFlyToAndFadeItems[0]}>
-          <KeyboardReturnIcon />
-          <Typography className={toolClass.Font}>Show Record</Typography>
-        </IconButton>
+          <ListItemIcon>
+            <KeyboardReturnIcon />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography className={toolClass.Font}>Show Record</Typography>
+          </ListItemText>
+        </ListItemButton>
       )}
     </>
   );

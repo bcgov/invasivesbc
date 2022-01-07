@@ -6,10 +6,12 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Divider,
   MenuItem,
   Select,
   TextField,
-  Typography
+  Typography,
+  ListSubheader
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -199,29 +201,35 @@ export const NewRecord = (props) => {
 
   const MainButton = (props) => {
     return (
-      <ListItemButton aria-label="Create Record" disabled={mode !== 'NOT_PRESSED'} onClick={props.onClick}>
+      <ListItemButton aria-label="Create Record" onClick={props.onClick}>
         <ListItemIcon>
           <AddIcon />
         </ListItemIcon>
         <ListItemText>
           <Typography className={toolClass.Font}>New Record</Typography>
         </ListItemText>
-        {props.mode === 'PRESSED' ? <ExpandLess /> : <ExpandMore />}
+        {mode === 'PRESSED' ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
     );
   };
 
   const RenderWhenMode_Pressed = (props) => {
     return (
-      <Collapse in={props.mode === 'PRESSED'} style={{ width: '100%' }} timeout="auto" unmountOnExit>
-        <List style={{ backgroundColor: 'rgba(0,0,0,0.03 )' }} component="div">
-          <ListItem>
+      <>
+        {mode !== 'NOT_PRESSED' && <Divider />}
+        <Collapse in={mode !== 'NOT_PRESSED'} style={{ backgroundColor: 'rgba(0,0,0,0.03)' }} timeout="auto">
+          <List
+            component="div"
+            disablePadding
+            subheader={
+              <ListSubheader disableSticky component="div" id="nested-list-subheader">
+                New Record Options
+              </ListSubheader>
+            }>
             <RecordCategorySelector />
-          </ListItem>
-          <ListItem>
+
             <RecordTypeSelector />
-          </ListItem>
-          <ListItem>
+
             <ListItemButton
               aria-label="Create"
               onClick={() => {
@@ -234,8 +242,7 @@ export const NewRecord = (props) => {
                 <Typography className={toolClass.Font}>Create Record</Typography>
               </ListItemText>
             </ListItemButton>
-          </ListItem>
-          <ListItem>
+
             <ListItemButton
               aria-label="Cancel"
               onClick={() => {
@@ -248,24 +255,27 @@ export const NewRecord = (props) => {
                 <Typography className={toolClass.Font}>Cancel</Typography>
               </ListItemText>
             </ListItemButton>
-          </ListItem>
-        </List>
-      </Collapse>
+          </List>
+        </Collapse>
+        {mode !== 'NOT_PRESSED' && <Divider />}
+      </>
     );
   };
 
   return (
     <>
-      <ListItem disableGutters className={toolClass.listItem}>
-        <MainButton
-          onClick={() => {
-            setMode('PRESSED');
-          }}
-        />
-      </ListItem>
-      <ListItem disableGutters className={toolClass.listItem}>
-        <RenderWhenMode_Pressed mode={mode} setMode={setMode} />
-      </ListItem>
+      <MainButton
+        onClick={() => {
+          setMode((prev) => {
+            if (prev !== 'PRESSED') {
+              return 'PRESSED';
+            } else {
+              return 'NOT_PRESSED';
+            }
+          });
+        }}
+      />
+      <RenderWhenMode_Pressed mode={mode} setMode={setMode} />
     </>
   );
 };

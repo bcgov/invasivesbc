@@ -1,4 +1,4 @@
-import { Typography, Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Typography, Divider, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import { MapRecordsContext, MODES } from 'contexts/MapRecordsContext';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -214,40 +214,54 @@ export const DrawButtonList = (props) => {
     }
   ];
   return (
-    <List ref={divRef}>
-      <Divider />
-      {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
-        items.map((i) => {
-          const Btn = i.button;
-          return (
-            <ListItem disableGutters>
-              <Btn />
-            </ListItem>
-          );
-        })
-      ) : (
-        <></>
+    <>
+      {items.length > 0 && (
+        <>
+          <Divider />
+          <List
+            ref={divRef}
+            style={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+            subheader={
+              <ListSubheader disableSticky component="div" id="nested-list-subheader">
+                Edit Geometry Options
+              </ListSubheader>
+            }>
+            {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
+              items.map((i) => {
+                const Btn = i.button;
+                return (
+                  <ListItem disableGutters>
+                    <Btn />
+                  </ListItem>
+                );
+              })
+            ) : (
+              <></>
+            )}
+            {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
+              <ListItem disableGutters>
+                <ListItemButton
+                  disabled={props.disabled ? true : false}
+                  onClick={() => {
+                    stopShape(mapRecordsContext);
+                    setInEdit(false);
+                  }}>
+                  <ListItemIcon>
+                    <SaveIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <Typography className={toolClass.Font}>Done</Typography>
+                  </ListItemText>
+                </ListItemButton>
+              </ListItem>
+            ) : (
+              <></>
+            )}
+          </List>
+          <Divider />
+        </>
       )}
-      {mapRecordsContext.mode === MODES.SINGLE_ACTIVITY_EDIT ? (
-        <ListItem disableGutters>
-          <ListItemButton
-            disabled={props.disabled ? true : false}
-            onClick={() => {
-              stopShape(mapRecordsContext);
-              setInEdit(false);
-            }}>
-            <ListItemIcon>
-              <SaveIcon />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography className={toolClass.Font}>Done</Typography>
-            </ListItemText>
-          </ListItemButton>
-        </ListItem>
-      ) : (
-        <></>
-      )}
-    </List>
+    </>
   );
 };
 

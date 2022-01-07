@@ -1,8 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
-import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
@@ -14,8 +13,10 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
+import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -24,10 +25,11 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
-const useToolbarContainerStyles = makeStyles((theme) => ({
+const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
   innerToolBarContainer: {
     maxWidth: 300,
     minWidth: 150,
+    width: '100%',
     borderRadius: 8,
     boxShadow: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
     transition: 'all 200ms ease',
@@ -65,6 +67,7 @@ export const ToolbarContainer = (props) => {
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
   const classes = useToolbarContainerStyles();
   const [expanded, setExpanded] = useState<boolean>(false);
+  const divRef = useRef();
 
   const handleExpand = () => {
     setExpanded((prev) => {
@@ -72,8 +75,13 @@ export const ToolbarContainer = (props) => {
     });
   };
 
+  useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef?.current);
+    L.DomEvent.disableScrollPropagation(divRef?.current);
+  });
+
   return (
-    <div key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+    <div key={'toolbar1'} ref={divRef} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
       <IconButton
         onClick={() => {
           handleExpand();
