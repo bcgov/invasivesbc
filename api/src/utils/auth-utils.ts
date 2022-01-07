@@ -5,7 +5,6 @@ import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { SQLStatement } from 'sql-template-strings';
 import { promisify } from 'util';
 import { getDBConnection } from '../database/db';
-import { getUserWithRolesSQL } from '../queries/user-queries';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('auth-utils');
@@ -204,54 +203,6 @@ export const verifyUserRoles = function (allowedRoles: string[] | string, userRo
 
   // user contains none of the allowedRoles, return false
   return false;
-};
-
-/**
- * Finds a single user based on their email.
- *
- * @param {string} email
- * @returns user
- */
-export const getUserWithRoles = async function (email: string) {
-  defaultLog.debug({ label: 'getUserWithRoles', message: 'email', email });
-
-  if (!email) {
-    throw {
-      status: 503,
-      message: 'Missing required email'
-    };
-  }
-
-  const connection = await getDBConnection();
-
-  if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
-  }
-
-  try {
-    const sqlStatement: SQLStatement = getUserWithRolesSQL(email);
-
-    if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
-    }
-
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rowCount && response.rows[0]) || null;
-
-    return result;
-  } catch (error) {
-    defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
-    throw error;
-  } finally {
-    connection.release();
-  }
 };
 
 /**

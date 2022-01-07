@@ -1,8 +1,8 @@
 import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-    await knex.raw(`
-    set schema 'invasivesbc';
+  await knex.raw(`
+    set schema 'public';
     set search_path = invasivesbc,public;
     drop table if exists access_request;
     create table access_request(
