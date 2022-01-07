@@ -98,7 +98,6 @@ export const NewRecord = (props) => {
             label="Record Category"
             onChange={(e) => {
               setRecordCategory(e.target.value as recordCategoryTypes);
-              console.log('setting type');
             }}>
             <MenuItem value={recordCategoryTypes.plant}>Plant</MenuItem>
             <MenuItem value={recordCategoryTypes.animal}>Animal</MenuItem>
@@ -199,9 +198,19 @@ export const NewRecord = (props) => {
 
   const [mode, setMode] = useState('NOT_PRESSED');
 
-  const MainButton = (props) => {
-    return (
-      <ListItemButton aria-label="Create Record" onClick={props.onClick}>
+  return (
+    <>
+      <ListItemButton
+        aria-label="Create Record"
+        onClick={() => {
+          setMode((prev) => {
+            if (prev !== 'PRESSED') {
+              return 'PRESSED';
+            } else {
+              return 'NOT_PRESSED';
+            }
+          });
+        }}>
         <ListItemIcon>
           <AddIcon />
         </ListItemIcon>
@@ -210,14 +219,13 @@ export const NewRecord = (props) => {
         </ListItemText>
         {mode === 'PRESSED' ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
-    );
-  };
-
-  const RenderWhenMode_Pressed = (props) => {
-    return (
       <>
         {mode !== 'NOT_PRESSED' && <Divider />}
-        <Collapse in={mode !== 'NOT_PRESSED'} style={{ backgroundColor: 'rgba(0,0,0,0.03)' }} timeout="auto">
+        <Collapse
+          in={mode !== 'NOT_PRESSED'}
+          style={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+          classes={{ root: `{ entered: { innerHeight: 10 } }` }}
+          timeout="auto">
           <List
             component="div"
             disablePadding
@@ -259,23 +267,6 @@ export const NewRecord = (props) => {
         </Collapse>
         {mode !== 'NOT_PRESSED' && <Divider />}
       </>
-    );
-  };
-
-  return (
-    <>
-      <MainButton
-        onClick={() => {
-          setMode((prev) => {
-            if (prev !== 'PRESSED') {
-              return 'PRESSED';
-            } else {
-              return 'NOT_PRESSED';
-            }
-          });
-        }}
-      />
-      <RenderWhenMode_Pressed mode={mode} setMode={setMode} />
     </>
   );
 };
