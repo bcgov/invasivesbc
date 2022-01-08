@@ -30,6 +30,7 @@ import ReactLeafletEditable from 'react-leaflet-editable';
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
 import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Capacitor } from '@capacitor/core';
+import MapRecordsDataGrid from './MapRecordsDataGrid';
 
 //Added comment
 
@@ -325,6 +326,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
                 {props.children}
                 <MapResizer />
+
+                <MapRecordsDataGrid />
 
                 {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
