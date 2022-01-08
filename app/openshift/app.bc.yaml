@@ -40,6 +40,9 @@ parameters:
   - name: REACT_APP_REAL_NODE_ENV
     description: temp - second env var - will consolidate after
     value: 'development'
+  - name: PUBLIC_URL
+    description: other stuff, like pre-packaged leaflet css and js
+    value: 'otherassets'
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -111,6 +114,8 @@ objects:
           env:
             - name: "REACT_APP_REAL_NODE_ENV"
               value: "${REACT_APP_REAL_NODE_ENV}"
+            - name: "PUBLIC_URL"
+              value: "${PUBLIC_URL}"
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:
