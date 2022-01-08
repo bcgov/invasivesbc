@@ -70,7 +70,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
     break;
   default:
-    redirect_uri = 'http://127.0.0.1:3000/home/landing';
+    redirect_uri = 'http://localhost:3000/home/landing';
     break;
 }
 if (Capacitor.getPlatform() !== 'web') {
