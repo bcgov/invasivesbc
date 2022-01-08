@@ -23,3 +23,15 @@
   background-color: #ffff;
   border-radius: 10px;
 }
+
+.leaflet-center {
+  left: 50%;
+}
+
+.leaflet-middle {
+  top: 50%;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  transform: translate(0%, -50%);
+}
