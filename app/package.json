@@ -157,7 +157,7 @@
     "start:ionic": "ionic serve",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
-    "deploy_start": "npm start -- --port 8100",
+    "deploy_start": "PORT=8100 react-scripts start",
     "eject": "react-scripts eject",
     "lint:fix": "npm run lint -- --fix"
   },
