@@ -22,7 +22,8 @@ export async function up(knex: Knex): Promise<void> {
         constraint fk_user foreign key(user_id) references application_user(user_id) on delete cascade,
         constraint fk_role foreign key(role_id) references user_role(role_id) on delete cascade,
         created_at timestamp default CURRENT_TIMESTAMP,
-        updated_at timestamp default CURRENT_TIMESTAMP
+        updated_at timestamp default CURRENT_TIMESTAMP,
+        UNIQUE (user_id, role_id)
     );
   `);
 }
