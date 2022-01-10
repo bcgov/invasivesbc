@@ -36,7 +36,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const databaseContext = useContext(DatabaseContext);
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
-  const { layersSelected } = mapRequestContext;
+  const { layers } = mapRequestContext;
   const invasivesApi = useInvasivesApi();
   const [layerStyles, setlayerStyles] = useState(null);
 
@@ -53,7 +53,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
   useEffect(() => {
     fetchLayer();
-  }, [layersSelected]);
+  }, [layers]);
 
   // function that compares last extent (with layers selected for it)
   // with the ones in the queue and deletes queue extents that are no longer needed
@@ -92,7 +92,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   //this is called on map load and each time the map is moved
   // const startFetchingLayers = () => {
   //   const newLayerArray = [];
-  //   layersSelected.forEach((parentLayer: any) => {
+  //   layers.forEach((parentLayer: any) => {
   //     parentLayer.children.forEach((childLayer) => {
   //       if (childLayer.enabled) {
   //         if (childLayer.layer_code) {

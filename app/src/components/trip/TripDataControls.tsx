@@ -4,7 +4,7 @@ import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import { layers } from 'components/map/LayerPicker/JSON/layers';
+import { layersJSON } from 'components/map/LayerPicker/JSON/layers';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -15,6 +15,7 @@ import {
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
 import { NetworkContext } from 'contexts/NetworkContext';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,6 +37,8 @@ export const TripDataControls: React.FC<any> = (props) => {
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
   const networkContext = useContext(NetworkContext);
+  const mapContext = useContext(MapRequestContext);
+  const { layers } = mapContext;
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -558,7 +561,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(layers(networkContext.connected));
+      const layerNames = getLayerNamesFromJSON(layers);
       console.log('*****LAYER NAMES*********');
       console.log(JSON.stringify(layerNames));
       // for each layer name, do...

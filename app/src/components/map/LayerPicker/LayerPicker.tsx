@@ -4,7 +4,7 @@ import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 /* HelperFiles Parent Layers */
-import { sortArray, getChild, sortObject, updateChild } from './SortLayerOrder';
+import { sortArray, getChild, sortObject, updateChild } from './Sorting/SortLayerOrder';
 /* Helper Files Parent Actions */
 import {
   DialogCloseBtn,
@@ -44,13 +44,13 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
-import { LayersSelector } from './LayersSelectorAndRender';
+import { LayersSelector } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
 
 export const LayerPicker = React.memo(
   (props: any) => {
     const mapLayersContext = useContext(MapRequestContext);
-    const { layersSelected, setLayersSelected } = mapLayersContext;
+    const { layers, setLayers } = mapLayersContext;
     const { layersActions, setLayersActions } = mapLayersContext;
     const toolClass = toolStyles();
     const themeContext = useContext(ThemeContext);
@@ -137,11 +137,11 @@ export const LayerPicker = React.memo(
                 <Grid item xs={2} alignContent="center" justifyContent="center">
                   <Checkbox
                     id="child-checkbox"
-                    checked={getChild(layersSelected, parent.id, child.id).enabled}
+                    checked={getChild(layers, parent.id, child.id).enabled}
                     name={child.name}
                     onChange={() => {
-                      updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
-                        enabled: !getChild(layersSelected, parent.id, child.id).enabled
+                      updateChild(layers, setLayers, parent.id, child.id, {
+                        enabled: !getChild(layers, parent.id, child.id).enabled
                       });
                     }}
                   />
@@ -181,7 +181,7 @@ export const LayerPicker = React.memo(
                         id="slider-control"
                         defaultValue={child.opacity}
                         onChangeCommitted={(event: any, newOpacity: number | number[]) => {
-                          updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                          updateChild(layers, setLayers, parent.id, child.id, {
                             opacity: newOpacity
                           });
                         }}
@@ -197,7 +197,7 @@ export const LayerPicker = React.memo(
                         <ColorPicker
                           defaultValue={child.color_code}
                           onChange={(color: any) => {
-                            updateChild(layersSelected, setLayersSelected, parent.id, child.id, { color_code: color });
+                            updateChild(layers, setLayers, parent.id, child.id, { color_code: color });
                           }}
                         />
                       </DialogContent>
@@ -230,18 +230,18 @@ export const LayerPicker = React.memo(
     ));
 
     const onSortEnd = ({ oldIndex, newIndex }: any) => {
-      const returnVal = sortObject(layersSelected, oldIndex, newIndex);
+      const returnVal = sortObject(layers, oldIndex, newIndex);
       var len = returnVal.length;
       for (var i = 0; i < len; i++) {
         returnVal[i].zIndex = len * 1000;
         len--;
       }
-      setLayersSelected(returnVal);
+      setLayers(returnVal);
     };
 
     return (
       <>
-        {layersSelected.map((parent) => (
+        {layers.map((parent) => (
           <div key={Math.random()}>
             {parent.children.map(
               (child) =>
@@ -298,7 +298,7 @@ export const LayerPicker = React.memo(
                   horizontal: 'right'
                 }}>
                 <SortableListContainer
-                  items={sortArray(layersSelected)}
+                  items={sortArray(layers)}
                   onSortEnd={onSortEnd}
                   useDragHandle={true}
                   lockAxis="y"
@@ -306,14 +306,14 @@ export const LayerPicker = React.memo(
                 <Button
                   id="layer-picker-save-btn"
                   onClick={() => {
-                    localStorage.setItem('mySave', JSON.stringify(layersSelected));
+                    localStorage.setItem('mySave', JSON.stringify(layers));
                   }}>
                   Save
                 </Button>
                 <Button
                   id="layer-picker-load-btn"
                   onClick={() => {
-                    setLayersSelected(JSON.parse(localStorage.getItem('mySave')));
+                    setLayers(JSON.parse(localStorage.getItem('mySave')));
                   }}>
                   Load
                 </Button>
