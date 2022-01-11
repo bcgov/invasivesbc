@@ -128,7 +128,6 @@ jobs:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
       REACT_APP_REAL_NODE_ENV: production
-      PUBLIC_URL: otherassets
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
