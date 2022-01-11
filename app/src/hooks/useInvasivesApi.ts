@@ -240,6 +240,41 @@ export const useInvasivesApi = () => {
 
     return data;
   };
+  const revokeRoleFromUser = async (userId: string, roleId: string): Promise<any> => {
+    return Http.request({
+      method: 'DELETE',
+      url: options.baseUrl + `/api/user-access`,
+      data: { userId: userId, roleId: roleId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const getRolesForUser = async (userId: string): Promise<any> => {
+    return Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/user-access`,
+      data: { userId: userId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const getUsersForRole = async (roleId: string): Promise<any> => {
+    return Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/user-access/role`,
+      data: { roleId: roleId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const batchGrantRoleToUser = async (userIds: string[], roleId: string): Promise<any> => {
+    return Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/user-access`,
+      data: { userIds: userIds, roleId: roleId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
     const { data } = await Http.request({
@@ -745,6 +780,10 @@ export const useInvasivesApi = () => {
     getApplicationUsers,
     submitAccessRequest,
     getEmployers,
-    getFundingAgencies
+    getFundingAgencies,
+    getRolesForUser,
+    getUsersForRole,
+    batchGrantRoleToUser,
+    revokeRoleFromUser
   };
 };
