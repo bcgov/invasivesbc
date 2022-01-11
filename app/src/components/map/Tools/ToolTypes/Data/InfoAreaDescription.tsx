@@ -155,6 +155,7 @@ export const GeneratePopup = (props) => {
 
   const setPoiRowData = (poi, arrSpecies, arrJurisdictions) => {
     return {
+      id: poi.point_of_interest_id,
       site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
       species: arrSpecies,
       jurisdictions: arrJurisdictions,
