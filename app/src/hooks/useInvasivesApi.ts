@@ -240,6 +240,7 @@ export const useInvasivesApi = () => {
 
     return data;
   };
+
   const revokeRoleFromUser = async (userId: string, roleId: string): Promise<any> => {
     return Http.request({
       method: 'DELETE',
@@ -252,8 +253,7 @@ export const useInvasivesApi = () => {
   const getRolesForUser = async (userId: string): Promise<any> => {
     return Http.request({
       method: 'GET',
-      url: options.baseUrl + `/api/user-access`,
-      data: { userId: userId },
+      url: options.baseUrl + `/api/user-access?userId=${userId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
   };
@@ -261,8 +261,7 @@ export const useInvasivesApi = () => {
   const getUsersForRole = async (roleId: string): Promise<any> => {
     return Http.request({
       method: 'GET',
-      url: options.baseUrl + `/api/user-access/role`,
-      data: { roleId: roleId },
+      url: options.baseUrl + `/api/user-access?roleId=${roleId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
   };
