@@ -88,51 +88,6 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       };
     }
 
-    const jwksClient: JwksClient = JwksRsa({ jwksUri: APP_CERTIFICATE_URL });
-
-    const getSigningKeyAsync = promisify(jwksClient.getSigningKey);
-
-    // Get signing key from certificate issuer
-    const key = await getSigningKeyAsync(kid);
-
-    if (!key) {
-      defaultLog.warn({ label: 'authenticate', message: 'get signing key' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
-    const signingKey = key['publicKey'] || key['rsaPublicKey'];
-
-    // Verify token using signing key
-    const verifiedToken = verifyToken(tokenString, signingKey);
-
-    if (!verifiedToken) {
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
-    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
-
-    // Add the verified token to the request for future use, if needed
-    req.auth_payload = verifiedToken;
-
-    // Verify that the user role(s) (from keycloak) align with the required roles for this endpoint (security scopes)
-    // The user may have multiple roles, but this check only requires 1 role to match for successful authorization
-
-    //temp hack:
-    const areUserRolesValid = true; //userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
-
-    if (!areUserRolesValid) {
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });
