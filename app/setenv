@@ -4,23 +4,19 @@ case $1 in
 
   "dev")
     export REACT_APP_REAL_NODE_ENV='development'
-    export PUBLIC_URL='otherassets'
 
     ;;
 
   "local")
     export REACT_APP_REAL_NODE_ENV='local'
-    export PUBLIC_URL='otherassets'
     # TODO prompt user for optional port or use defaults
     ;;
 
   "test")
     export REACT_APP_REAL_NODE_ENV='test'
-    export PUBLIC_URL='otherassets'
     ;;
 
   "prod")
     export REACT_APP_REAL_NODE_ENV='production'
-    export PUBLIC_URL='otherassets'
     ;;
 esac
