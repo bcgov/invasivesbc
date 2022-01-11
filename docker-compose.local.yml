@@ -40,6 +40,7 @@ services:
       - local-network
     links:
       - db
+    restart: on-failure
     depends_on:
       - db
       # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
