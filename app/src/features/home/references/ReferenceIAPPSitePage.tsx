@@ -30,7 +30,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   };
 
   return (
-    <div id="iapp_site" style={{ marginTop: 30 }}>
+    <div id="iapp_site" style={{ marginTop: 30, marginBottom: 30 }}>
       {poi && <IAPPSite record={poi} />}
     </div>
   );
