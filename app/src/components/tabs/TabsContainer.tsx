@@ -25,6 +25,7 @@ import {
   Toolbar
 } from '@material-ui/core';
 import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@material-ui/icons';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -227,6 +228,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setUserInfoLoaded(true);
   };
 
+  const navToAdmin = async () => {
+    // Redirect to /admin
+    history.push('/admin');
+    handleClose();
+  };
+
   useEffect(() => {
     function handleResize() {
       setOpen(false);
@@ -345,6 +352,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             label: 'My Records',
             path: '/home/activities',
             icon: <HomeWork fontSize={'small'} />
+          });
+        }
+
+        if (/* TODO: IS ADMIN */ true) {
+          tabsUserHasAccessTo.push({
+            label: 'Admin',
+            path: '/admin/useraccess',
+            icon: <AdminPanelSettingsIcon fontSize={'small'} />
           });
         }
 
@@ -497,6 +512,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     Log In
                   </MenuItem>
                 )}
+                {/* TODO: Only show this if the user is master administrator */}
+                <MenuItem onClick={navToAdmin}>
+                  <ListItemIcon>
+                    <AdminPanelSettingsIcon />
+                  </ListItemIcon>
+                  Admin
+                </MenuItem>
               </Menu>
             </Hidden>
           </Grid>

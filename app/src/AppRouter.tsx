@@ -1,6 +1,7 @@
 import { Network } from '@capacitor/network';
 import { CircularProgress } from '@material-ui/core';
 import { NetworkContext } from 'contexts/NetworkContext';
+import AdminRouter from 'features/admin/AdminRouter';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
@@ -52,6 +53,13 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         path="/home"
         title={getTitle('Home')}
         component={HomeRouter}
+        layout={PublicLayout}
+        isMobileNoNetwork={isMobileNoNetwork}
+      />
+      <AppRoute
+        path="/admin"
+        title={getTitle('Admin')}
+        component={AdminRouter}
         layout={PublicLayout}
         isMobileNoNetwork={isMobileNoNetwork}
       />
