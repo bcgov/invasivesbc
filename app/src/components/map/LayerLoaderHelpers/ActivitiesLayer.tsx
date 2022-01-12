@@ -1,12 +1,15 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
+import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { useMap, useMapEvents } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const ActivitiesLayer = (props) => {
   const map = useMap();
+  const mapRecordsContext = useContext(MapRecordsContext);
+  const { setRecords } = mapRecordsContext;
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
   const databaseContext = useContext(DatabaseContext);
@@ -25,36 +28,44 @@ export const ActivitiesLayer = (props) => {
     }
   };
 
-  useMapEvent('moveend', () => {
-    fetchData();
+  useMapEvents({
+    moveend: () => {
+      fetchData();
+    },
+    zoomend: () => {
+      fetchData();
+    },
+    dragend: () => {
+      fetchData();
+    }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (activities) {
+      const actArr = activities.features.map((feature) => {
+        return feature.properties;
+      });
+      setRecords(actArr);
+    }
+  }, [activities]);
 
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
     const activitiesFeatureArray = [];
-
     activitiesData?.rows.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
     });
-
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
   };
 
   return (
     <>
       {
-        activities && <GeoJSONVtLayer geoJSON={activities} options={options} /> //NOSONAR
-        /*activities &&
-          activities.features.map((activity) => (
-            <GeoJSON data={activity} style={options.style} key={Math.random()}>
-              {console.log(activity)}
-              <Tooltip>
-                <Typography>{activity.properties.created}</Typography>
-                <Typography>{activity.properties.subtype}</Typography>
-                <Typography>{activity.properties.id}</Typography>
-              </Tooltip>
-            </GeoJSON>
-          ))*/
+        activities && <GeoJSONVtLayer geoJSON={activities} zIndex={props.zIndex} options={options} /> //NOSONAR
       }
     </>
   );

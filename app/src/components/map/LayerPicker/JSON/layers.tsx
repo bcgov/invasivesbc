@@ -20,7 +20,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Observation_PlantTerrestrial',
           color_code: '#000',
           order: 0,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -34,7 +34,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Observation_PlantAquatic',
           color_code: '#000',
           order: 1,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -48,7 +48,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Treatment_ChemicalPlantTerrestrial',
           color_code: '#000',
           order: 2,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -62,7 +62,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Treatment_ChemicalPlantAquatic',
           color_code: '#000',
           order: 3,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -90,7 +90,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Treatment_MechanicalPlantAquatic',
           color_code: '#000',
           order: 5,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -104,7 +104,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Treatment_ChemicalPlantAquatic',
           color_code: '#000',
           order: 6,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -132,7 +132,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Biocontrol_Collection',
           color_code: '#000',
           order: 8,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -146,7 +146,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Biocontrol_Release',
           color_code: '#000',
           order: 9,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -160,7 +160,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
           color_code: '#000',
           order: 10,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false
@@ -174,7 +174,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           activity_subtype: 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
           color_code: '#000',
           order: 11,
-          opacity: 0.4,
+          opacity: 1,
           zIndex: 50,
           loaded: 70,
           enabled: false

@@ -21,7 +21,7 @@ export const ToggleDisplayButtons = (props) => {
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
+  }, []);
 
   const createOnClick = async () => {
     console.log('create record');

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { layersJSON } from 'components/map/LayerPicker/JSON/layers';
 import { actions } from 'components/map/LayerPicker/JSON/actions';
 import { NetworkContext } from './NetworkContext';
-import { useMap, useMapEvent } from 'react-leaflet';
 
 interface IMapExtentLayersContext {
   mapRequest: {
@@ -71,11 +70,6 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
-
-  const mapObj = useMap();
-  useMapEvent('zoomend' as any, () => {
-    setMapZoom(mapObj.getZoom());
-  });
 
   React.useEffect(() => {
     if (layers) {

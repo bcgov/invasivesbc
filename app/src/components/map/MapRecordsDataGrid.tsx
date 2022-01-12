@@ -10,7 +10,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     transition: 'transform 200ms ease',
     padding: 0,
     height: '40vh',
-    width: '500px'
+    maxWidth: '500px',
+    width: '100%'
   },
   dataGrid: {
     margin: 0,
@@ -30,16 +31,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MapRecordsDataGrid = (props) => {
   const mapRecordsContext = useContext(MapRecordsContext);
+  const { records } = mapRecordsContext;
   const classes = useStyles();
   const mainDivRef = useRef(null);
   const [dataGridExpanded, setDataGridExpanded] = useState(false);
-
-  const { records, setRecords, selectedRecords, setSelectedRecords } = mapRecordsContext;
-
-  useEffect(() => {
-    console.log('records: ', records);
-    console.log('selectedRecords: ', selectedRecords);
-  }, [records, setRecords, selectedRecords, setSelectedRecords]);
 
   const toggleExpand = () => {
     setDataGridExpanded((prev) => {
@@ -50,21 +45,10 @@ const MapRecordsDataGrid = (props) => {
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
-      field: 'activity_type',
+      field: 'type',
       headerName: 'Activity Type',
       width: 150
     }
-  ];
-
-  const rows = [
-    { id: 1, activity_type: 'Observation' },
-    { id: 2, activity_type: 'Treatment' },
-    { id: 3, activity_type: 'Observation' },
-    { id: 4, activity_type: 'Treatment' },
-    { id: 5, activity_type: 'Observation' },
-    { id: 6, activity_type: 'Treatment' },
-    { id: 7, activity_type: 'Observation' },
-    { id: 8, activity_type: 'Treatment' }
   ];
 
   useEffect(() => {
@@ -72,12 +56,12 @@ const MapRecordsDataGrid = (props) => {
       DomEvent.disableClickPropagation(mainDivRef?.current);
       DomEvent.disableScrollPropagation(mainDivRef?.current);
     }
-  });
+  }, []);
 
   return (
     <div
       style={{
-        transform: dataGridExpanded ? 'translateY(0px) translateX(-50%)' : 'translateY(320px) translateX(-50%)'
+        transform: dataGridExpanded ? 'translateY(-36px) translateX(-50%)' : 'translateY(90%) translateX(-50%)'
       }}
       className={classes.mainDiv + ' leaflet-center leaflet-bottom leaflet-control'}
       ref={mainDivRef}>
@@ -97,21 +81,12 @@ const MapRecordsDataGrid = (props) => {
         Records Data
       </Button>
 
-      {/* <Button
-        onClick={() => {
-          setRecords((prev) => {
-            return [...prev, { id: Math.random(), activity_type: 'Observation' }];
-          });
-        }}>
-        Add record
-      </Button> */}
-
       <DataGrid
         className={classes.dataGrid + ' leaflet-control'}
-        rows={rows}
+        rows={records}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         disableSelectionOnClick
       />

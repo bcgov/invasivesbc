@@ -82,7 +82,7 @@ export const GeneratePopup = (props) => {
       DomEvent.disableClickPropagation(popupElRef?.current);
       DomEvent.disableScrollPropagation(popupElRef?.current);
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (props.lat && props.lng) {

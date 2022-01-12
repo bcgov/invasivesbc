@@ -17,7 +17,6 @@ import {
 import booleanWithin from '@turf/boolean-within';
 import booleanOverlap from '@turf/boolean-overlap';
 import Spinner from '../../components/spinner/Spinner';
-import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
@@ -31,6 +30,7 @@ import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade'
 import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Capacitor } from '@capacitor/core';
 import MapRecordsDataGrid from './MapRecordsDataGrid';
+import { MapRequestContext, MapRequestContextProvider } from 'contexts/MapRequestsContext';
 
 //Added comment
 
@@ -328,18 +328,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 <MapResizer />
 
                 <MapRecordsDataGrid />
-
-                {/*<LayersControl position="topright">
-          <LayersControl.BaseLayer checked name="Regular Layer">
-            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-          </LayersControl.BaseLayer>
-          <LayersControl.Overlay checked name="Activities">
-            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>}
-            {/* this line below works - its what you need for geosjon}
-            <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-            {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
-          </LayersControl.Overlay>
-        </LayersControl>*/}
               </MapRequestContextProvider>
             </FlyToAndFadeContextProvider>
           </ReactLeafletMapContainer>
