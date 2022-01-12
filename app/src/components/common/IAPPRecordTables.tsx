@@ -58,7 +58,7 @@ const columns: GridColDef[] = [
   }
 ];
 
-export const POIsTable = () => {
+export const PointsOfInterestTable = () => {
   const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
   const history = useHistory();
@@ -66,10 +66,7 @@ export const POIsTable = () => {
   const databaseContext = useContext(DatabaseContext);
 
   const fetchData = async () => {
-    console.log('...fetching');
     const IAPPRecords: any = await dataAccess.getPointsOfInterest({ limit: DEFAULT_PAGE_SIZE }, databaseContext);
-    console.log('fetched');
-
     setPOIs(IAPPRecords.rows);
   };
 
@@ -83,18 +80,18 @@ export const POIsTable = () => {
       // shortcut for type_data and data in form_data obj
       const type_data = form_data?.point_of_interest_type_data;
       const data = form_data?.point_of_interest_data;
-      const jurisdictionArr = [];
-      getJurisdictions(jurisdictionArr, poi);
       const newArr = [];
-      jurisdictionArr.forEach((item) => {
-        newArr.push(item.code + ' (' + item.percent_covered + '%)');
+      const jurisdictionArr = [];
+      getJurisdictions(newArr, poi);
+      newArr.forEach((item) => {
+        jurisdictionArr.push(item.code + ' (' + item.percent_covered + '%)');
       });
 
       var row = {
         id: poi?.point_of_interest_id,
         site_id: type_data?.site_id,
         date_created: data?.date_created,
-        jurisdiction_code: newArr,
+        jurisdiction_code: jurisdictionArr,
         site_elevation: type_data?.site_elevation,
         slope_code: type_data?.slope_code,
         aspect_code: type_data?.aspect_code,
@@ -115,12 +112,6 @@ export const POIsTable = () => {
     }
   }, [pois]);
 
-  useEffect(() => {
-    if (rows.length > 0) {
-      console.log('rows', pois);
-    }
-  }, [rows]);
-
   return (
     <>
       {rows.length > 0 && (
@@ -132,7 +123,6 @@ export const POIsTable = () => {
               pageSize={10}
               rowsPerPageOptions={[10]}
               onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-                console.log('params', params);
                 history.push(`/home/iapp/${params.id}`);
               }}
             />

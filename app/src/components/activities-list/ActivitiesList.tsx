@@ -29,7 +29,6 @@ import {
   MyPlantMonitoringTable,
   MyPlantTreatmentsTable,
   MyTransectsTable,
-  PointsOfInterestTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
@@ -41,7 +40,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
-import { POIsTable } from 'components/common/IAPPRecordTables';
+import { PointsOfInterestTable } from 'components/common/IAPPRecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -388,7 +387,7 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'IAPP Data' && (
             <Box>
               {/* should be something */}
-              {<POIsTable />}
+              {<PointsOfInterestTable />}
               {/*<PointsOfInterestTable />*/}
             </Box>
           )}
