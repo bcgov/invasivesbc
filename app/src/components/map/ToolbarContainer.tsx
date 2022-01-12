@@ -1,5 +1,7 @@
 import { Capacitor } from '@capacitor/core';
-import React from 'react';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import React, { useContext } from 'react';
+import { useMap, useMapEvent } from 'react-leaflet';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
@@ -17,6 +19,14 @@ const POSITION_CLASSES = {
 };
 
 export const ToolbarContainer = (props) => {
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setMapZoom } = mapRequestContext;
+
+  const mapObj = useMap();
+  useMapEvent('zoomend' as any, () => {
+    setMapZoom(mapObj.getZoom());
+  });
+
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
 
   return (

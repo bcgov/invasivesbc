@@ -79,7 +79,7 @@ export const LayerPicker = React.memo(
         DomEvent.disableClickPropagation(divref?.current);
         DomEvent.disableScrollPropagation(divref?.current);
       }
-    });
+    }, []);
 
     /**
      * Function used to print opacity as text
