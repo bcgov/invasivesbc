@@ -14,7 +14,7 @@ export const grantRoleToUserSQL = (user_id, role_id): SQLStatement => {
     INSERT INTO user_access (user_id, role_id) VALUES (
         ${user_id},
         ${role_id}
-    );
+    ) ON CONFLICT DO NOTHING;
   `;
   }
 };
