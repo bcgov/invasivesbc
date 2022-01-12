@@ -40,22 +40,59 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const authState = useContext(AuthStateContext);
   // const [users, setUsers] = useState<any[]>([]);
   const [rows, setRows] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [rowsLoaded, setRowsLoaded] = useState(false);
 
   useEffect(() => {
     api.getApplicationUsers().then((res) => {
       console.log(res);
-      // setUsers(res);
+      setUsers(res);
       getRows(res);
     });
   }, []);
 
+  const renderDetailsButton = (params: GridValueGetterParams) => {
+    return (
+      <Tooltip title="View Details">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            // Open details modal
+            console.log('User ID: ', params.row);
+          }}>
+          Details
+        </Button>
+      </Tooltip>
+    );
+  };
+
+  const handleCellClick = (param, event) => {
+    event.stopPropagation();
+  };
+
+  const handleRowClick = (param, event) => {
+    event.stopPropagation();
+  };
+
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 10 },
-    { field: 'firstName', headerName: 'First Name', width: 20 },
-    { field: 'lastName', headerName: 'Last Name', width: 20 },
-    { field: 'email', headerName: 'Email', width: 20 },
-    { field: 'role', headerName: 'Role(s)', width: 30 }
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'firstName', headerName: 'First Name', width: 130 },
+    { field: 'lastName', headerName: 'Last Name', width: 130 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    {
+      field: 'role',
+      headerName: 'Role(s)',
+      width: 500,
+      style: { overflowWrap: 'break-word' } // allow for words wrap inside this cell
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: renderDetailsButton
+    }
   ];
 
   // Get table rows
@@ -65,19 +102,22 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     console.log('function triggered');
     for (let i = 0; i < users.length; i++) {
       console.log('Moving onto next user');
-      let user = users[i];
-      let roles = await api.getRolesForUser(user.user_id);
-      let roleNames = roles.map((r) => r.name);
-      console.log('Adding another row');
-      rows.push({
-        id: user.user_id,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.preferred_email,
-        role: roleNames.join(', ')
+      const user = users[i];
+      await api.getRolesForUser(user.user_id).then((res) => {
+        console.log('Roles: ', res);
+        const roles = res.data.map((role) => role.role_description);
+        // convert roles to a string
+        const roleString = roles.join(', ');
+        console.log('Roles: ', roles);
+        rows.push({
+          id: user.user_id,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          email: user.email,
+          role: roleString
+        });
       });
     }
-    console.log('Setting rows');
     setRows(rows);
     setRowsLoaded(true);
   };
@@ -167,18 +207,26 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             Grant or Revoke Roles
           </Typography>
         </Grid>
+        {/* Grant or revoke roles of existing users */}
         <Grid item xs={12}>
           <Card elevation={8}>
             <CardContent>
               <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <Grid item>
+                <div style={{ height: 370, width: '100%' }}>
                   {rowsLoaded && (
-                    <DataGrid rows={rows} columns={columns} pageSize={5} rowsPerPageOptions={[5]} checkboxSelection />
+                    <DataGrid
+                      rows={rows}
+                      columns={columns}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      checkboxSelection
+                      onCellClick={handleCellClick}
+                      onRowClick={handleRowClick}
+                    />
                   )}
-                </Grid>
+                </div>
               </Grid>
             </CardContent>
-            <Divider />
             <CardActions>
               <Grid container direction="row" spacing={5} justifyContent="space-between">
                 <Grid item>
@@ -190,6 +238,37 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             </CardActions>
           </Card>
         </Grid>
+        {/* Approve or decline access requests */}
+        {/* <Grid item xs={12}>
+          <Card elevation={8}>
+            <CardContent>
+              <Grid container direction="row" spacing={5} justifyContent="space-between">
+                <div style={{ height: 370, width: '100%' }}>
+                  {rowsLoaded && (
+                    <DataGrid
+                      rows={rows}
+                      columns={columns}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      checkboxSelection
+                      onCellClick={handleCellClick}
+                      onRowClick={handleRowClick}
+                    />
+                  )}
+                </div>
+              </Grid>
+            </CardContent>
+            <CardActions>
+              <Grid container direction="row" spacing={5} justifyContent="space-between">
+                <Grid item>
+                  <Button variant="contained" color="primary">
+                    Save Changes
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardActions>
+          </Card>
+        </Grid> */}
       </Grid>
     </Container>
   );
