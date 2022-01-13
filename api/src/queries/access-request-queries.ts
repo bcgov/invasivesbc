@@ -7,7 +7,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getAccessRequestsSQL = (): SQLStatement => {
-  return SQL`SELECT * FROM access_request where status='Awaiting Approval';`;
+  return SQL`SELECT * FROM access_request where status='NOT_APPROVED';`;
 };
 
 /**
@@ -58,6 +58,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         pac_number,
         pac_service_number_1,
         pac_service_number_2,
+        requested_roles,
         comments,
         status
     )
@@ -73,6 +74,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
         ${accessRequest.psn1 ? accessRequest.psn1 : null},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
+        ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
         ${accessRequest.status}
     );
