@@ -291,6 +291,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
 
+  const isAdmin = () => {
+    if (isAuthenticated()) {
+      // TODO: Need to update authStateContext to check if user is admin
+      return true;
+    }
+  };
+
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);
@@ -355,7 +362,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (/* TODO: IS ADMIN */ true) {
+        if (isAdmin()) {
           tabsUserHasAccessTo.push({
             label: 'Admin',
             path: '/admin/useraccess',
@@ -459,32 +466,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </Grid>
               <Grid xs={1} container justifyContent="center" alignItems="center" item>
                 <IconButton onClick={handleClick} size="small">
-                  <>
-                    {userInfoLoaded ? (
-                      () => {
-                        /*
-                          FIXME: This block creates an error in the console:
-                          
-                          "Warning: Functions are not valid as a React child. 
-                          This may happen if you return a Component instead of <Component /> from render. 
-                          Or maybe you meant to call this function rather than return it."
-
-                          Need to fix to clear console error.
-                        */
-                        if (userInfo?.name) {
-                          return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                        }
-                        if (userInfo?.bceid_business_name) {
-                          return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                        }
-                        if (!userInfo.name && !userInfo.bceid_business_name) {
-                          return <Avatar></Avatar>;
-                        }
-                      }
-                    ) : (
-                      <Avatar></Avatar>
-                    )}
-                  </>
+                  <Avatar></Avatar>
                 </IconButton>
               </Grid>
               <Menu

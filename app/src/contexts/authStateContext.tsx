@@ -47,6 +47,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
   const [userInfo, setUserInfo] = React.useState(info);
   const [userRoles, setUserRoles] = React.useState([]);
+  const [applicationUsers, setApplicationUsers] = React.useState([]);
 
   const loginUser = async () => {
     await keycloak?.obj?.login();
@@ -63,13 +64,12 @@ export const AuthStateContextProvider: React.FC = (props) => {
     if (keycloak?.obj?.authenticated) {
       keycloak?.obj?.loadUserInfo().then((info) => {
         if (info) {
-          // setUserRoles(info?.roles);
+          console.log('userinfo ', info);
           setUserInfo(info);
           setUserInfoLoaded(true);
         }
       });
     }
-    //}, [keycloak?.obj?.authenticated]);
   }, [keycloak?.obj?.authenticated]);
 
   React.useEffect(() => {
