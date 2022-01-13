@@ -462,6 +462,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   <>
                     {userInfoLoaded ? (
                       () => {
+                        /*
+                          FIXME: This block creates an error in the console:
+                          
+                          "Warning: Functions are not valid as a React child. 
+                          This may happen if you return a Component instead of <Component /> from render. 
+                          Or maybe you meant to call this function rather than return it."
+
+                          Need to fix to clear console error.
+                        */
                         if (userInfo?.name) {
                           return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
                         }
