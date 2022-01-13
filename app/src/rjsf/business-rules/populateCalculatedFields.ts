@@ -347,7 +347,7 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
 
   console.log(actual_biological_agents, estimated_biological_agents);
 
-  if (!actual_biological_agents || !estimated_biological_agents) {
+  if (!actual_biological_agents && !estimated_biological_agents) {
     return formData;
   }
 

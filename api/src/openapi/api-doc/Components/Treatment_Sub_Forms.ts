@@ -484,7 +484,7 @@ export const Biocontrol_Collection_Information = {
           {
             properties: {
               collection_method: {
-                enum: ['Cs', 'Cl']
+                enum: ['Cs']
               },
               num_of_sweeps: {
                 type: 'number',

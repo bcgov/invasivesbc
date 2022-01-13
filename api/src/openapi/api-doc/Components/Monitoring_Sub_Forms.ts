@@ -76,7 +76,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   title: 'Biological Monitoring Information',
   type: 'object',
   required: [
-    'agent_count',
     'agent_destroyed_ind',
     'legacy_presence_ind',
     'biocontrol_present',
@@ -85,6 +84,8 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'adults_present_ind',
     'tunnels_present_ind',
     'plant_count',
+    'start_time',
+    'stop_time',
     'biological_agent_code'
   ],
   dependencies: {
@@ -98,7 +99,9 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
             plant_count: {
               title: 'Count Duration (minutes)',
               type: 'number',
-              minimum: 0
+              minimum: 0,
+              'x-tooltip-text':
+                'Enter the total duration in minutes, of all time spent monitoring by all people monitoring (added together).'
             }
           }
         },
@@ -122,9 +125,41 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
             biocontrol_present: {
               enum: [true]
             },
+            biological_agent_presence_code: {
+              type: 'string',
+              title: 'Sign of Biocontrol Presence',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'biological_agent_presence_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text': 'Visible state of the agent present'
+            },
+            bio_agent_location_code: {
+              type: 'string',
+              title: 'Location agent(s) found',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'location_agents_found_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text':
+                'Choose one or more general site location characteristics from the drop down to indicate where the biocontrol presence was observed.'
+            },
+            suitable_collection_site: {
+              type: 'string',
+              title: 'Suitable For Collection',
+              default: 'Unknown',
+              enum: ['Unknown', 'Yes', 'No'],
+              'x-tooltip-text':
+                'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
+            },
             actual_biological_agents: {
               type: 'array',
-              default: [{}],
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
@@ -132,7 +167,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
             },
             estimated_biological_agents: {
               type: 'array',
-              default: [{}],
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
@@ -157,6 +191,23 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
               enum: [false]
             }
           }
+        }
+      ]
+    },
+    monitoring_method: {
+      oneOf: [
+        {
+          properties: {
+            monitoring_method: {
+              enum: ['S']
+            },
+            num_of_sweeps: {
+              type: 'number',
+              title: 'Number of sweeps',
+              minimum: 1
+            }
+          },
+          required: ['num_of_sweeps']
         }
       ]
     }
@@ -191,62 +242,33 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       default: false,
       title: 'Biocontrol Present'
     },
-    biological_agent_presence_code: {
-      type: 'string',
-      title: 'Sign of Biocontrol Presence',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biological_agent_presence_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Visible state of the agent present'
-    },
     monitoring_type: {
       type: 'string',
       title: 'Monitoring Type',
-      enum: ['Timed', 'Count']
+      enum: ['Timed', 'Count'],
+      'x-tooltip-text': 'Choose whether the monitoring duration was timed or by the number of plants checked'
     },
     monitoring_method: {
       type: 'string',
       title: 'Monitoring Method',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biocontrol_methods_code',
+        'x-enum-code-header-name': 'biocontrol_monitoring_methods_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
-      }
+      },
+      'x-tooltip-text': 'Choose the method used for monitoring from the drop down'
     },
-    agent_count: {
-      type: 'number',
-      minimum: 0,
-      title: 'Agent Count'
-    },
-    count_duration: {
-      type: 'number',
-      minimum: 0,
-      title: 'Count Duration'
-    },
-    bio_agent_location_code: {
+    start_time: {
       type: 'string',
-      title: 'Location agent(s) found',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'location_agents_found_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      }
+      format: 'date-time',
+      title: 'Monitoring Start time'
     },
-    suitable_collection_site: {
+    stop_time: {
       type: 'string',
-      title: 'Suitable For Collection',
-      default: 'Unknown',
-      enum: ['Unknown', 'Yes', 'No'],
-      'x-tooltip-text':
-        'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
+      format: 'date-time',
+      title: 'Monitoring Stop time '
     },
     legacy_presence_ind: {
       type: 'string',
@@ -254,123 +276,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       enum: ['Yes', 'No', 'Unknown'],
       default: 'No',
       'x-tooltip-text': 'Please indicate the presence of legacy IAPP records'
-    }
-  }
-};
-export const Monitoring_BiocontrolDispersal_Information = {
-  title: 'Biological Dispersal Information',
-  type: 'object',
-  required: [
-    'biological_agent_presence_code',
-    'biological_agent_code',
-    'biological_agent_count',
-    'monitoring_type',
-    'monitoring_method',
-    'applicator1_name',
-    'applicator2_name',
-    'invasive_plant_code',
-    'total_bio_agent_quantity',
-    'collection_history',
-    'collection_history_comments'
-  ],
-  properties: {
-    invasive_plant_code: {
-      type: 'string',
-      title: 'Invasive Plant',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Target invasive plant species at this location'
-    },
-    applicator1_name: {
-      type: 'string',
-      title: 'Primary Observer Name',
-      'x-tooltip-text': 'Name of primary applicator'
-    },
-    applicator2_name: {
-      type: 'string',
-      title: 'Secondary Observer Name',
-      'x-tooltip-text': 'Name of secondary applicator'
-    },
-    linear_segment: {
-      type: 'string',
-      title: 'Linear segment',
-      default: 'Unknown',
-      enum: ['Unknown', 'Yes', 'No'],
-      'x-tooltip-text': 'If the invasive plant infestation is primarily linear in nature, choose Yes.'
-    },
-    biological_agent_presence_code: {
-      type: 'string',
-      title: 'Sign of Biocontrol Presence',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biological_agent_presence_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Visible state of the agent present'
-    },
-    biological_agent_code: {
-      type: 'string',
-      title: 'Biological Agent',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biological_agent_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
-    },
-    bio_agent_location_code: {
-      type: 'string',
-      title: 'Location agent(s) found',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'bio_agent_location_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      }
-    },
-    biocontrol_present: {
-      type: 'boolean',
-      default: false,
-      title: 'Biocontrol Present'
-    },
-    monitoring_type: {
-      type: 'string',
-      title: 'Monitoring Type',
-      enum: ['Timed', 'Count']
-    },
-    monitoring_method: {
-      type: 'string',
-      title: 'Monitoring Method',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biocontrol_methods_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      }
-    },
-    plant_count: {
-      type: 'number',
-      title: 'Plant Count',
-      minimum: 0,
-      'x-tooltip-text': 'Numeric value (exact or approximate)'
-    },
-
-    biological_agent_count: {
-      type: 'number',
-      title: 'Biological Agent Count',
-      minimum: 0,
-      'x-tooltip-text': 'Numeric value (exact or approximate)'
     },
     collection_history: {
       type: 'number',
@@ -383,16 +288,42 @@ export const Monitoring_BiocontrolDispersal_Information = {
       title: 'Collection History Comments',
       'x-tooltip-text':
         'Enter relevant information about where the biocontrol agents being released came from, how they were shipped, and any related information'
-    },
-    suitable_collection_site: {
-      type: 'string',
-      title: 'Suitable For Collection',
-      enum: ['Unknown', 'Yes', 'No'],
-      'x-tooltip-text':
-        'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
     }
-  },
+  }
+};
+export const Monitoring_BiocontrolDispersal_Information = {
+  title: 'Biological Dispersal Information',
+  type: 'object',
+  required: [
+    'biological_agent_presence_code',
+    'biological_agent_code',
+    'monitoring_type',
+    'monitoring_method',
+    'invasive_plant_code',
+    'start_time',
+    'stop_time',
+    'total_bio_agent_quantity',
+    'collection_history',
+    'collection_history_comments'
+  ],
   dependencies: {
+    monitoring_method: {
+      oneOf: [
+        {
+          properties: {
+            monitoring_method: {
+              enum: ['S']
+            },
+            num_of_sweeps: {
+              type: 'number',
+              title: 'Number of sweeps',
+              minimum: 1
+            }
+          },
+          required: ['num_of_sweeps']
+        }
+      ]
+    },
     monitoring_type: {
       oneOf: [
         {
@@ -427,9 +358,40 @@ export const Monitoring_BiocontrolDispersal_Information = {
             biocontrol_present: {
               enum: [true]
             },
+            biological_agent_presence_code: {
+              type: 'string',
+              title: 'Sign of Biocontrol Presence',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'biological_agent_presence_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text': 'Visible state of the agent present'
+            },
+            bio_agent_location_code: {
+              type: 'string',
+              title: 'Location agent(s) found',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'bio_agent_location_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text':
+                'Choose one or more general site location characteristics from the drop down to indicate where the biocontrol presence was observed.'
+            },
+            suitable_collection_site: {
+              type: 'string',
+              title: 'Suitable For Collection',
+              enum: ['Unknown', 'Yes', 'No'],
+              'x-tooltip-text':
+                'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.'
+            },
             actual_biological_agents: {
               type: 'array',
-              default: [{}],
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
@@ -437,7 +399,6 @@ export const Monitoring_BiocontrolDispersal_Information = {
             },
             estimated_biological_agents: {
               type: 'array',
-              default: [{}],
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
@@ -464,6 +425,81 @@ export const Monitoring_BiocontrolDispersal_Information = {
           }
         }
       ]
+    }
+  },
+  properties: {
+    invasive_plant_code: {
+      type: 'string',
+      title: 'Invasive Plant',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Target invasive plant species at this location'
+    },
+    linear_segment: {
+      type: 'string',
+      title: 'Linear segment',
+      default: 'Unknown',
+      enum: ['Unknown', 'Yes', 'No'],
+      'x-tooltip-text': 'If the invasive plant infestation is primarily linear in nature, choose Yes.'
+    },
+    biological_agent_code: {
+      type: 'string',
+      title: 'Biological Agent',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'biological_agent_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
+    },
+    start_time: {
+      type: 'string',
+      format: 'date-time',
+      title: 'Monitoring Start time'
+    },
+    stop_time: {
+      type: 'string',
+      format: 'date-time',
+      title: 'Monitoring Stop time '
+    },
+
+    biocontrol_present: {
+      type: 'boolean',
+      default: false,
+      title: 'Biocontrol Present',
+      'x-tooltip-text':
+        'Check this box if any biocontrol agents or sign of agents was noted. Leave unchecked if no sign or agents were found.'
+    },
+    monitoring_type: {
+      type: 'string',
+      title: 'Monitoring Type',
+      enum: ['Timed', 'Count'],
+      'x-tooltip-text': 'Choose whether the monitoring duration was timed or by the number of plants checked'
+    },
+    monitoring_method: {
+      type: 'string',
+      title: 'Monitoring Method',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'biocontrol_monitoring_methods_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Choose the method used for monitoring from the drop down'
+    },
+    plant_count: {
+      type: 'number',
+      title: 'Plant Count',
+      minimum: 0,
+      'x-tooltip-text': 'Numeric value (exact or approximate)'
     }
   }
 };

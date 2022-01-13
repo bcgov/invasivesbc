@@ -720,53 +720,6 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
 }
 
 /* 
-  function to validate biocontrol present value
- */
-export function getBiocontrolPresentFieldValidator(): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      (!formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information &&
-        !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information)
-    ) {
-      return errors;
-    }
-
-    const releaseMonitoring = formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information === undefined;
-
-    const biological_agent_presence_code =
-      releaseMonitoring === true
-        ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-            .biological_agent_presence_code
-        : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_presence_code;
-
-    let biocontrol_present =
-      releaseMonitoring === true
-        ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biocontrol_present
-        : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biocontrol_present;
-
-    if (biological_agent_presence_code === undefined && biocontrol_present === true) {
-      errors['activity_subtype_data'][
-        releaseMonitoring
-          ? 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
-          : 'Monitoring_BiocontrolDispersal_Information'
-      ]['biocontrol_present'].addError('This field must to be set to true if Biological Presence Code is entered');
-    } else if (biological_agent_presence_code !== undefined && biocontrol_present === false) {
-      errors['activity_subtype_data'][
-        releaseMonitoring
-          ? 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
-          : 'Monitoring_BiocontrolDispersal_Information'
-      ]['biocontrol_present'].addError(
-        'This field must to be set to false if Biological Presence Code has no value entered'
-      );
-    }
-
-    return errors;
-  };
-}
-
-/* 
   function to validate that the sum of values of all target plant phenology fields equal to 100%
  */
 export function getTargetPhenologySumValidator(): rjsfValidator {
