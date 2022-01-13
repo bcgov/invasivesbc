@@ -186,10 +186,9 @@ function batchGrantRoleToUser(): RequestHandler {
             message: 'Failed to build SQL statement'
           };
         }
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-        const result = { count: (response && response.rowCount) || 0 };
-        return res.status(200).json(result);
+        await connection.query(sqlStatement.text, sqlStatement.values);
       }
+      return res.status(200).json({ count: req.body.userIds.length });
     } catch (error) {
       defaultLog.debug({ label: 'create', message: 'error', error });
       throw error;
