@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
+  enum Mode {
+    GRANT,
+    REVOKE
+  }
+
   const classes = useStyles();
   const api = useInvasivesApi();
 
@@ -43,21 +48,17 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<any[]>([]);
-  const [detailsDialogUser, setDetailsDialogUser] = useState<any>();
+  const [detailsDialogUser, setDetailsDialogUser] = useState<any>({});
+  const [detailsDialogUserLoaded, setDetailsDialogUserLoaded] = useState(false);
 
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
 
   const [availableRoles, setAvailableRoles] = useState<any[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
-  const [selectedRole, setSelectedRole] = useState<any>();
+  const [selectedRole, setSelectedRole] = useState<any>({});
 
-  const [mode, setMode] = useState<any>();
-
-  enum Mode {
-    GRANT,
-    REVOKE
-  }
+  const [mode, setMode] = useState<any>(Mode.GRANT);
 
   /* ROW DATA */
 
@@ -81,7 +82,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const handleRowSelection = (ids) => {
-    console.log(ids);
     setSelectedUserIds(ids);
     // Get user details from ids
     let selectedUsers = [];
@@ -89,10 +89,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       let user = users.find((u) => u.user_id === ids[i]);
       if (user) {
         selectedUsers.push(user);
-        console.log(selectedUsers);
       }
     }
-    console.log('Setting selected users...', selectedUsers);
     setSelectedUsers(selectedUsers);
   };
 
@@ -157,9 +155,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   }, []);
 
   const loadUsers = () => {
-    api.getApplicationUsers().then((res) => {
-      setUsers(res);
-      getRows(res);
+    api.getApplicationUsers().then(async (res) => {
+      await setUsers(res);
+      await getRows(res);
     });
   };
 
@@ -167,22 +165,22 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const openDetailsDialog = (user: any) => {
     setDetailsDialogUser(user);
+    setDetailsDialogUserLoaded(true);
     setDetailsDialogOpen(true);
   };
 
   const closeDetailsDialog = () => {
+    setDetailsDialogUser({});
+    setDetailsDialogUserLoaded(false);
     setDetailsDialogOpen(false);
   };
 
   const openRoleDialog = (mode: any) => {
-    console.log('Available Roles: ', availableRoles);
     if (mode === Mode.GRANT) {
       setMode(Mode.GRANT);
       setRoleDialogOpen(true);
     } else {
-      console.log('selected users: ', selectedUsers);
       api.getRolesForUser(selectedUsers[0].user_id).then((res) => {
-        console.log('Roles for user: ', res.data);
         let roles = [];
         for (let i = 0; i < res.data.length; i++) {
           roles.push({
@@ -190,7 +188,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             name: res.data[i].role_name,
             description: res.data[i].role_description
           });
-          console.log('User roles now: ', roles);
           setUserRoles(roles);
         }
         setMode(Mode.REVOKE);
@@ -201,24 +198,24 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const closeRoleDialog = () => {
     setRoleDialogOpen(false);
-    setSelectedRole(undefined);
+    setSelectedRole('');
   };
 
   /* API CALLS */
 
   const grantRole = () => {
-    console.log('Granting role: ', selectedRole);
     api.batchGrantRoleToUser(selectedUserIds, selectedRole).then(() => {
       setRoleDialogOpen(false);
       loadUsers();
+      setSelectedRole('');
     });
   };
 
   const revokeRole = () => {
     api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then((res) => {
-      console.log('Revoke Role Response: ', res);
       setRoleDialogOpen(false);
       loadUsers();
+      setSelectedRole('');
     });
   };
 
@@ -233,7 +230,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
-            Grant or Revoke Roles
+            Grant or Revoke Roles for Existing Users
           </Typography>
         </Grid>
         {/* Grant or revoke roles of existing users */}
@@ -282,7 +279,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           </Card>
         </Grid>
       </Grid>
-      {detailsDialogUser !== {} && detailsDialogUser && (
+      {detailsDialogUserLoaded && (
         <Dialog
           open={detailsDialogOpen}
           onClose={closeDetailsDialog}
@@ -328,9 +325,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
         fullWidth>
-        <DialogTitle id="form-dialog-title">
-          {mode === Mode.GRANT ? <h3>Grant Role</h3> : <h3>Revoke Role</h3>}
-        </DialogTitle>
+        <DialogTitle id="form-dialog-title">{mode === Mode.GRANT ? 'Grant Role' : 'Revoke Role'}</DialogTitle>
         <Divider />
         <DialogContent>
           <DialogContentText>
@@ -363,8 +358,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {mode === Mode.GRANT
               ? // Map available roles to dropdown list
                 availableRoles.map((role) => (
-                  <MenuItem key={role} value={role}>
-                    {role}
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
                   </MenuItem>
                 ))
               : // Map user's roles to dropdown list
