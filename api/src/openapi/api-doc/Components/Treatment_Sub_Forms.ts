@@ -451,8 +451,7 @@ export const Biocontrol_Collection_Information = {
       'collection_method',
       'collection_type',
       'start_time',
-      'stop_time',
-      'total_time'
+      'stop_time'
     ],
     dependencies: {
       collection_type: {
@@ -474,6 +473,13 @@ export const Biocontrol_Collection_Information = {
             properties: {
               collection_type: {
                 enum: ['Timed']
+              },
+              plant_count: {
+                title: 'Count Duration (minutes)',
+                type: 'number',
+                minimum: 0,
+                'x-tooltip-text':
+                  'Enter the total duration in minutes, of all time spent collection by all people collecting (added together).'
               }
             }
           }
@@ -555,14 +561,8 @@ export const Biocontrol_Collection_Information = {
         format: 'date-time',
         title: 'Stop time collecting'
       },
-      total_time: {
-        type: 'number',
-        title: 'Total time collecting (mins)',
-        minimum: 0
-      },
       actual_quantity_and_life_stage_of_agent_collected: {
         type: 'array',
-        default: [{}],
         title: 'Actual Quantity and Life Stage of Agent Collected',
         items: {
           ...Agent_Quantity_And_Life_Stage
@@ -572,7 +572,6 @@ export const Biocontrol_Collection_Information = {
       },
       estimated_quantity_and_life_stage_of_agent_collected: {
         type: 'array',
-        default: [{}],
         title: 'Estimated Quantity and Life Stage of Agent Collected',
         items: {
           ...Agent_Quantity_And_Life_Stage

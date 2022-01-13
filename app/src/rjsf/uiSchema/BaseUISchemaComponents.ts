@@ -184,9 +184,7 @@ const TransectData = {
 const Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   release_quantity: {},
-  agent_location: { 'ui:widget': 'single-select-autocomplete' },
-  plant_position: {},
-  'ui:order': ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
+  'ui:order': ['biological_agent_stage_code', 'release_quantity']
 };
 
 const Well_Information = {
@@ -1020,7 +1018,6 @@ const Biocontrol_Collection_Information = {
     num_of_sweeps: {},
     start_time: { },
     stop_time: { 'ui:widget': 'datetime' },
-    total_time: { 'ui:readonly': true },
     actual_quantity_and_life_stage_of_agent_collected: {},
     estimated_quantity_and_life_stage_of_agent_collected: {},
     comment: { 'ui:widget': 'textarea' },
@@ -1034,7 +1031,6 @@ const Biocontrol_Collection_Information = {
       'num_of_sweeps',
       'start_time',
       'stop_time',
-      'total_time',
       'actual_quantity_and_life_stage_of_agent_collected',
       'estimated_quantity_and_life_stage_of_agent_collected',
       'comment']
@@ -1055,6 +1051,7 @@ const Biocontrol_Release_Information = {
   linear_segment: {},
   'ui:order':[
     'invasive_plant_code',
+    'biological_agent_code',
     'biological_agent_stages',
     'linear_segment',
     'release_quantity',
@@ -1063,7 +1060,6 @@ const Biocontrol_Release_Information = {
     'collection_date',
     'plant_collected_from',
     'total_release_quantity',
-    'biological_agent_code',
     'biological_agent_stage_code'
   ],
 };

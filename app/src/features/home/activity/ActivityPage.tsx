@@ -37,7 +37,6 @@ import {
 import {
   autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
-  autoFillTotalCollectionTime,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
   populateTransectLineAndPointData
@@ -328,8 +327,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-    //auto fills total collection time (only on biocontrol collection activity)
-    updatedFormData = autoFillTotalCollectionTime(updatedFormData);
     //auto fills total release quantity (only on biocontrol release activity)
     updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
     //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
