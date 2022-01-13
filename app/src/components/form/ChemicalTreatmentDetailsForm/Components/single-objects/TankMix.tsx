@@ -67,7 +67,7 @@ const TankMix: React.FC = (props) => {
       <TextField
         className={classes.inputField}
         type="number"
-        label="Amount of Mix Used"
+        label="Amount of Mix Used (L)"
         value={currentTankMix.amount_of_mix || ''}
         variant="outlined"
         onChange={(event) => {
@@ -91,7 +91,7 @@ const TankMix: React.FC = (props) => {
       <TextField
         className={classes.inputField}
         type="number"
-        label="Delivery Rate of Mix"
+        label="Delivery Rate of Mix (L/ha)"
         value={currentTankMix.delivery_rate_of_mix || ''}
         variant="outlined"
         onChange={(event) => {

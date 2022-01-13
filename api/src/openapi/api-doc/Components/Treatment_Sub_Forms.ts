@@ -146,7 +146,7 @@ export const Treatment_ChemicalPlant_Information = {
     },
     temperature: {
       type: 'number',
-      title: 'Temperature (C)',
+      title: 'Temperature (C°)',
       'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)'
     },
     wind_speed: {
@@ -245,6 +245,32 @@ export const Treatment_MechanicalPlant_Information = {
       disposed_material: {
         type: 'object',
         title: 'Disposed material',
+        dependencies: {
+          disposed_material_input_format: {
+            oneOf: [
+              {
+                properties: {
+                  disposed_material_input_format: {
+                    enum: ['weight']
+                  },
+                  disposed_material_input_number: {
+                    title: 'Disposed Material (kg)'
+                  }
+                }
+              },
+              {
+                properties: {
+                  disposed_material_input_format: {
+                    enum: ['number of plants']
+                  },
+                  disposed_material_input_number: {
+                    title: 'Disposed Material Number'
+                  }
+                }
+              }
+            ]
+          }
+        },
         properties: {
           disposed_material_input_format: {
             type: 'string',
@@ -252,8 +278,8 @@ export const Treatment_MechanicalPlant_Information = {
             enum: ['number of plants', 'weight']
           },
           disposed_material_input_number: {
-            type: 'number',
             title: 'Disposed Material Number',
+            type: 'number',
             minimum: 0
           }
         },
