@@ -30,6 +30,9 @@ interface IAccessRequestPage {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '320px'
+  },
+  paddingTop: {
+    paddingTop: '1rem'
   }
 }));
 
@@ -45,11 +48,19 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [rows, setRows] = useState<any[]>([]);
   const [rowsLoaded, setRowsLoaded] = useState(false);
 
+  const [requestRows, setRequestRows] = useState<any[]>([]);
+  const [requestRowsLoaded, setRequestRowsLoaded] = useState(false);
+
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<any[]>([]);
   const [detailsDialogUser, setDetailsDialogUser] = useState<any>({});
   const [detailsDialogUserLoaded, setDetailsDialogUserLoaded] = useState(false);
+
+  const [selectedRequestUsers, setSelectedRequestUsers] = useState<any[]>([]);
+  const [selectedRequestUserIds, setSelectedRequestUserIds] = useState<any[]>([]);
+  const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<any>({});
+  const [detailsDialogRequestUserLoaded, setDetailsDialogRequestUserLoaded] = useState(false);
 
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
@@ -77,6 +88,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     );
   };
 
+  const renderRequestDetailsButton = (params: GridValueGetterParams) => {
+    return (
+      <Tooltip title="View Details">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            openRequestDetailsDialog(params.row);
+          }}>
+          Details
+        </Button>
+      </Tooltip>
+    );
+  };
+
   const handleRowClick = (param, event) => {
     event.stopPropagation();
   };
@@ -92,6 +118,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       }
     }
     setSelectedUsers(selectedUsers);
+  };
+
+  const handleAccessRequestRowSelection = (users) => {
+    setSelectedRequestUserIds(users);
+    // Get user details from ids
+    console.log(selectedRequestUserIds);
   };
 
   // Get table rows
@@ -115,6 +147,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setRowsLoaded(true);
   };
 
+  const getRequestRows = async (users: any) => {
+    // TODO: IMPLEMENT
+    const rows = [];
+    for (let i = 0; i < users.length; i++) {
+      console.log(users[i]);
+    }
+  };
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'firstName', headerName: 'First Name', width: 130 },
@@ -123,13 +163,28 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     {
       field: 'role',
       headerName: 'Role(s)',
-      width: 500
+      width: 555
     },
     {
       field: 'actions',
       headerName: 'Actions',
       width: 100,
       renderCell: renderDetailsButton
+    }
+  ];
+
+  const requestColumns: GridColDef[] = [
+    //1185 max width
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'firstName', headerName: 'First Name', width: 130 },
+    { field: 'lastName', headerName: 'Last Name', width: 130 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    // { field: ''}
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: renderRequestDetailsButton
     }
   ];
 
@@ -151,6 +206,18 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         });
       }
       setAvailableRoles(roles);
+    });
+
+    api.getAccessRequests().then((res) => {
+      console.log(res);
+      // let userRoles = [];
+      // for (let i = 0; i < res.length; i++) {
+      //   userRoles.push({
+      //     user_id: res[i].user_id,
+      //     role_id: res[i].role_id
+      //   });
+      // }
+      // setUserRoles(userRoles);
     });
   }, []);
 
@@ -201,6 +268,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setSelectedRole('');
   };
 
+  const openRequestDetailsDialog = (user: any) => {
+    setDetailsDialogRequestUser(user);
+    setDetailsDialogRequestUserLoaded(true);
+    setDetailsDialogOpen(true);
+  };
+
   /* API CALLS */
 
   const grantRole = () => {
@@ -219,6 +292,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     });
   };
 
+  const approveUsers = () => {};
+
+  const declineUsers = () => {};
+
   /* FORM CONTROLS */
 
   const handleSelectedRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +304,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      <Grid container spacing={1}>
+      <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
             Grant or Revoke Roles for Existing Users
@@ -241,7 +318,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 <div style={{ height: 370, width: '100%' }}>
                   {rowsLoaded && (
                     <DataGrid
-                      onSelectionModelChange={handleRowSelection}
+                      onSelectionModelChange={handleAccessRequestRowSelection}
                       rows={rows}
                       columns={columns}
                       pageSize={5}
@@ -272,6 +349,59 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     color="secondary"
                     onClick={() => openRoleDialog(Mode.REVOKE)}>
                     Revoke Role
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardActions>
+          </Card>
+        </Grid>
+      </Grid>
+      {/* Approve or decline access requests */}
+      <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" align="center">
+            Approve or Decline Access Requests
+          </Typography>
+        </Grid>
+        {/* Accept or decline checked users */}
+        <Grid item xs={12}>
+          <Card elevation={8}>
+            <CardContent>
+              <Grid container direction="row" spacing={5} justifyContent="space-between">
+                <div style={{ height: 370, width: '100%' }}>
+                  {rowsLoaded && (
+                    <DataGrid
+                      onSelectionModelChange={handleAccessRequestRowSelection}
+                      rows={requestRows}
+                      columns={requestColumns}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      checkboxSelection
+                      onCellClick={handleRowClick}
+                      onRowClick={handleRowClick}
+                    />
+                  )}
+                </div>
+              </Grid>
+            </CardContent>
+            <CardActions>
+              <Grid container direction="row" spacing={5} justifyContent="flex-end">
+                <Grid item>
+                  <Button
+                    disabled={!selectedRequestUsers || selectedRequestUsers.length === 0}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => approveUsers()}>
+                    Approve Selected Users
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    disabled={!selectedRequestUsers || selectedRequestUsers.length === 0}
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => declineUsers()}>
+                    Decline Selected Users
                   </Button>
                 </Grid>
               </Grid>
