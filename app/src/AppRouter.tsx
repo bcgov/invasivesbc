@@ -1,8 +1,7 @@
 import { Network } from '@capacitor/network';
 import { CircularProgress } from '@material-ui/core';
-import { NetworkContext } from 'contexts/NetworkContext';
 import AdminRouter from 'features/admin/AdminRouter';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import PublicLayout from './layouts/PublicLayout';
@@ -19,7 +18,6 @@ interface IAppRouterProps {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const [layout, setLayout] = useState<React.FC<any>>(null);
   const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
-  const networkContext = useContext(NetworkContext);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -38,7 +36,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
     // If on mobile and have no internet connection, then bypass keycloak
     // removed network check for now - can't use current version of capactior network as context
     setLayout(() => PublicLayout);
-  });
+  }, []);
 
   if (!layout) {
     return <CircularProgress />;
