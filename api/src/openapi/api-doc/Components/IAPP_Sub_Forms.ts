@@ -64,7 +64,7 @@ export const IAPP_Site = {
     },
     slope_code: {
       type: 'string',
-      title: 'Slope',
+      title: 'Slope (%)',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'slope_code',
@@ -471,7 +471,7 @@ export const IAPP_Chemical_Treatment = {
     },
     temperature: {
       type: 'number',
-      title: 'Temperature (C)',
+      title: 'Temperature (C°)',
       'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)'
     },
     wind_speed: {

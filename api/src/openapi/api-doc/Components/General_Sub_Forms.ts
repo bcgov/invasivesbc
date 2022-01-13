@@ -338,7 +338,7 @@ export const Weather_Conditions = {
   properties: {
     temperature: {
       type: 'number',
-      title: 'Temperature (C)',
+      title: 'Temperature (C°)',
       'x-tooltip-text': 'Enter the highest temperature (in Celcius) that occurred during the collection period.'
     },
     cloud_cover_code: {
@@ -376,8 +376,8 @@ export const Weather_Conditions = {
       type: 'number',
       minimum: 0,
       default: 0,
-      title: 'Wind Aspect',
-      'x-tooltip-text': 'Describe the direction the wind is coming from in degrees'
+      title: 'Wind Aspect (°)',
+      'x-tooltip-text': 'Direction wind is coming from'
     },
     weather_comments: {
       type: 'string',
@@ -416,37 +416,37 @@ export const Target_Plant_Phenology = {
               enum: [true]
             },
             winter_dormant: {
-              title: 'Winter Dormant',
+              title: 'Winter Dormant (%)',
               type: 'number',
               minimum: 0
             },
             seedlings: {
-              title: 'Seedlings',
+              title: 'Seedlings (%)',
               type: 'number',
               minimum: 0
             },
             rosettes: {
-              title: 'Rosettes',
+              title: 'Rosettes (%)',
               type: 'number',
               minimum: 0
             },
             bolts: {
-              title: 'Bolts',
+              title: 'Bolts (%)',
               type: 'number',
               minimum: 0
             },
             flowering: {
-              title: 'Flowering',
+              title: 'Flowering (%)',
               type: 'number',
               minimum: 0
             },
             seeds_forming: {
-              title: 'Seeds Forming',
+              title: 'Seeds Forming (%)',
               type: 'number',
               minimum: 0
             },
             senescent: {
-              title: 'Senescent',
+              title: 'Senescent (%)',
               type: 'number',
               minimum: 0
             }
@@ -486,14 +486,14 @@ export const Spread_Results = {
               enum: [true]
             },
             agent_density: {
-              title: '% Agent Density',
+              title: 'Agent Density (%)',
               type: 'number',
               minimum: 0,
               maximum: 100,
               'x-tooltip-text': '% Agent density is: Total # agents at the site ÷ total # plants with agents) x 100'
             },
             plant_attack: {
-              title: '% Plant Attack',
+              title: 'Plant Attack (%)',
               type: 'number',
               minimum: 0,
               maximum: 100,
@@ -562,7 +562,7 @@ export const Jurisdiction = {
     },
     percent_covered: {
       type: 'number',
-      title: 'Percent Covered',
+      title: 'Percent Covered (%)',
       maximum: 100,
       minimum: 1,
       'x-tooltip-text': 'Percent covered by this jurisdiction'
@@ -601,7 +601,7 @@ export const ShorelineTypes = {
       },
       percent_covered: {
         type: 'number',
-        title: 'Percent Covered',
+        title: 'Percent Covered (%)',
         maximum: 100,
         'x-tooltip-text': 'Percent covered by this shoreline type'
       }
@@ -652,7 +652,7 @@ export const TerrestrialPlant = {
             },
             invasive_plant_density_code: {
               type: 'string',
-              title: 'Density',
+              title: 'Density (plants/m2)',
               'x-enum-code': {
                 'x-enum-code-category-name': 'invasives',
                 'x-enum-code-header-name': 'invasive_plant_density_code',
@@ -1003,7 +1003,7 @@ export const AquaticPlant = {
             },
             invasive_plant_density_code: {
               type: 'string',
-              title: 'Density',
+              title: 'Density (plants/m2)',
               'x-enum-code': {
                 'x-enum-code-category-name': 'invasives',
                 'x-enum-code-header-name': 'invasive_plant_density_code',
@@ -1276,7 +1276,7 @@ export const TransectInvasivePlants = {
     },
     invasive_plant_density_code: {
       type: 'string',
-      title: 'Density',
+      title: 'Density (plants/m2)',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'invasive_plant_density_code',
@@ -1984,7 +1984,7 @@ export const FireMonitoringTransectLines = {
 };
 export const PercentCovered = {
   type: 'number',
-  title: 'Percent Covered',
+  title: 'Percent Covered (%)',
   maximum: 100
 };
 export const NumberPlants = {

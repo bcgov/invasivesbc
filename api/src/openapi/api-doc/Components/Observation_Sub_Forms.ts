@@ -36,7 +36,7 @@ export const Observation_PlantTerrestrial_Information = {
     },
     slope_code: {
       type: 'string',
-      title: 'Slope',
+      title: 'Slope (%)',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'slope_code',

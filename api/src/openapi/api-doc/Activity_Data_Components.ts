@@ -26,12 +26,12 @@ export const Activity = {
     },
     latitude: {
       type: 'number',
-      title: 'Latitude',
+      title: 'Latitude (°)',
       'x-tooltip-text': 'Latitude of the anchor point for the specified geometry'
     },
     longitude: {
       type: 'number',
-      title: 'Longitude',
+      title: 'Longitude (°)',
       'x-tooltip-text': 'Longitude of the anchor point for the specified geometry'
     },
     utm_zone: {

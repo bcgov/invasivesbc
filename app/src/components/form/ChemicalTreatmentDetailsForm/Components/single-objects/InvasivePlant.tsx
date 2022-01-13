@@ -97,7 +97,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
         value={species.percent_area_covered}
-        label="Percent Area Covered"
+        label="Percent Area Covered (%)"
         variant="outlined"
         onChange={(event) => {
           if (event.target.value === null) {
