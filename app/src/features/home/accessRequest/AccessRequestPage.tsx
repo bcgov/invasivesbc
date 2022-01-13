@@ -38,8 +38,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const api = useInvasivesApi();
   const authState = useContext(AuthStateContext);
   const classes = useStyles();
-  const [transferAccess, setTransferAccess] = useState(null);
-  const [accountType, setAccountType] = useState(null);
+  const [transferAccess, setTransferAccess] = useState('');
+  const [accountType, setAccountType] = useState('');
   const [idir, setIdir] = useState(
     authState.keycloak?.obj?.tokenParsed?.preferred_username
       ? authState.keycloak?.obj?.tokenParsed?.preferred_username
