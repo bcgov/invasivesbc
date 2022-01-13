@@ -169,7 +169,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     fetchFundingAgencies();
     fetchEmployers();
     api.getRoles().then((response) => {
-      console.log('API RESPONSE: ', response);
       const roles = [];
       for (const role of response) {
         roles.push({
