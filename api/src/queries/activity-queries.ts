@@ -151,7 +151,9 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
         'flnroDist', flnro_districts,
         'motiDist', moti_districts,
         'elev', elevation,
-        'wellProx', well_proximity
+        'wellProx', well_proximity,
+        'species_positive', species_positive,
+        'species_negative', species_negative
       ),
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson",
