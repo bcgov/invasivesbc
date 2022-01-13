@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,24 +8,18 @@ import {
   CardActions,
   CardContent,
   Container,
-  Divider,
-  FormControlLabel,
-  FormLabel,
   Grid,
-  Radio,
-  RadioGroup,
-  TextField,
-  FormControl,
-  MenuItem,
   Typography,
   Tooltip,
-  makeStyles,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Divider,
+  MenuItem,
+  TextField,
+  makeStyles
 } from '@material-ui/core';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
@@ -34,23 +27,39 @@ interface IAccessRequestPage {
   classes?: any;
 }
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '320px'
+  }
+}));
+
 const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
-  const history = useHistory();
+  const classes = useStyles();
   const api = useInvasivesApi();
-  const authState = useContext(AuthStateContext);
-  // const [users, setUsers] = useState<any[]>([]);
+
   const [rows, setRows] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [rowsLoaded, setRowsLoaded] = useState(false);
 
-  useEffect(() => {
-    api.getApplicationUsers().then((res) => {
-      console.log(res);
-      setUsers(res);
-      getRows(res);
-    });
-  }, []);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<any[]>([]);
+  const [detailsDialogUser, setDetailsDialogUser] = useState<any>();
+
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [roleDialogOpen, setRoleDialogOpen] = useState(false);
+
+  const [availableRoles, setAvailableRoles] = useState<any[]>([]);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [selectedRole, setSelectedRole] = useState<any>();
+
+  const [mode, setMode] = useState<any>();
+
+  enum Mode {
+    GRANT,
+    REVOKE
+  }
+
+  /* ROW DATA */
 
   const renderDetailsButton = (params: GridValueGetterParams) => {
     return (
@@ -59,8 +68,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           variant="contained"
           color="primary"
           onClick={() => {
-            // Open details modal
-            console.log('User ID: ', params.row);
+            openDetailsDialog(params.row);
           }}>
           Details
         </Button>
@@ -68,47 +76,34 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     );
   };
 
-  const handleCellClick = (param, event) => {
-    event.stopPropagation();
-  };
-
   const handleRowClick = (param, event) => {
     event.stopPropagation();
   };
 
-  const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'firstName', headerName: 'First Name', width: 130 },
-    { field: 'lastName', headerName: 'Last Name', width: 130 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    {
-      field: 'role',
-      headerName: 'Role(s)',
-      width: 500,
-      style: { overflowWrap: 'break-word' } // allow for words wrap inside this cell
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 100,
-      renderCell: renderDetailsButton
+  const handleRowSelection = (ids) => {
+    console.log(ids);
+    setSelectedUserIds(ids);
+    // Get user details from ids
+    let selectedUsers = [];
+    for (let i = 0; i < ids.length; i++) {
+      let user = users.find((u) => u.user_id === ids[i]);
+      if (user) {
+        selectedUsers.push(user);
+        console.log(selectedUsers);
+      }
     }
-  ];
+    console.log('Setting selected users...', selectedUsers);
+    setSelectedUsers(selectedUsers);
+  };
 
   // Get table rows
   const getRows = async (users: any) => {
     const rows = [];
-    console.log('Users: ', users);
-    console.log('function triggered');
     for (let i = 0; i < users.length; i++) {
-      console.log('Moving onto next user');
       const user = users[i];
       await api.getRolesForUser(user.user_id).then((res) => {
-        console.log('Roles: ', res);
         const roles = res.data.map((role) => role.role_description);
-        // convert roles to a string
         const roleString = roles.join(', ');
-        console.log('Roles: ', roles);
         rows.push({
           id: user.user_id,
           firstName: user.first_name,
@@ -122,82 +117,116 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setRowsLoaded(true);
   };
 
-  // const rows = [];
-
-  const rolesList = [
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'firstName', headerName: 'First Name', width: 130 },
+    { field: 'lastName', headerName: 'Last Name', width: 130 },
+    { field: 'email', headerName: 'Email', width: 200 },
     {
-      name: 'Administrator - Plants Only',
-      value: 'administrator_plants'
+      field: 'role',
+      headerName: 'Role(s)',
+      width: 500
     },
     {
-      name: 'Administrator - Animals Only',
-      value: 'administrator_animals'
-    },
-    {
-      name: 'BC Government Staff User - Animals',
-      value: 'bcgov_staff_animals'
-    },
-    {
-      name: 'BC Government Staff User - Plants',
-      value: 'bcgov_staff_plants'
-    },
-    {
-      name: 'BC Government Staff User - Both',
-      value: 'bcgov_staff_both'
-    },
-    {
-      name: 'Contractor Manager - Animals',
-      value: 'contractor_manager_animals'
-    },
-    {
-      name: 'Contractor Manager - Plants',
-      value: 'contractor_manager_plants'
-    },
-    {
-      name: 'Contractor Manager - Both',
-      value: 'contractor_manager_both'
-    },
-    {
-      name: 'Contractor Staff - Animals',
-      value: 'contractor_staff_animals'
-    },
-    {
-      name: 'Contractor Staff - Plants',
-      value: 'contractor_staff_plants'
-    },
-    {
-      name: 'Contractor Staff - Both',
-      value: 'contractor_staff_both'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Animals',
-      value: 'indigenous_riso_manager_animals'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Plants',
-      value: 'indigenous_riso_manager_plants'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Both',
-      value: 'indigenous_riso_manager_both'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Animals',
-      value: 'indigenous_riso_staff_animals'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Plants',
-      value: 'indigenous_riso_staff_plants'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Both',
-      value: 'indigenous_riso_staff_both'
-    },
-    {
-      name: 'Master Administrator',
-      value: 'master_administrator'
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: renderDetailsButton
     }
   ];
+
+  /* LOAD INFO */
+
+  useEffect(() => {
+    api.getApplicationUsers().then((res) => {
+      setUsers(res);
+      getRows(res);
+    });
+
+    api.getRoles().then((res) => {
+      let roles = [];
+      for (let i = 0; i < res.length; i++) {
+        roles.push({
+          id: res[i].role_id,
+          name: res[i].role_name,
+          description: res[i].role_description
+        });
+      }
+      setAvailableRoles(roles);
+    });
+  }, []);
+
+  const loadUsers = () => {
+    api.getApplicationUsers().then((res) => {
+      setUsers(res);
+      getRows(res);
+    });
+  };
+
+  /* DIALOG CONTROLS */
+
+  const openDetailsDialog = (user: any) => {
+    setDetailsDialogUser(user);
+    setDetailsDialogOpen(true);
+  };
+
+  const closeDetailsDialog = () => {
+    setDetailsDialogOpen(false);
+  };
+
+  const openRoleDialog = (mode: any) => {
+    console.log('Available Roles: ', availableRoles);
+    if (mode === Mode.GRANT) {
+      setMode(Mode.GRANT);
+      setRoleDialogOpen(true);
+    } else {
+      console.log('selected users: ', selectedUsers);
+      api.getRolesForUser(selectedUsers[0].user_id).then((res) => {
+        console.log('Roles for user: ', res.data);
+        let roles = [];
+        for (let i = 0; i < res.data.length; i++) {
+          roles.push({
+            id: res.data[i].role_id,
+            name: res.data[i].role_name,
+            description: res.data[i].role_description
+          });
+          console.log('User roles now: ', roles);
+          setUserRoles(roles);
+        }
+        setMode(Mode.REVOKE);
+        setRoleDialogOpen(true);
+      });
+    }
+  };
+
+  const closeRoleDialog = () => {
+    setRoleDialogOpen(false);
+    setSelectedRole(undefined);
+  };
+
+  /* API CALLS */
+
+  const grantRole = () => {
+    console.log('Granting role: ', selectedRole);
+    api.batchGrantRoleToUser(selectedUserIds, selectedRole).then(() => {
+      setRoleDialogOpen(false);
+      loadUsers();
+    });
+  };
+
+  const revokeRole = () => {
+    api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then((res) => {
+      console.log('Revoke Role Response: ', res);
+      setRoleDialogOpen(false);
+      loadUsers();
+    });
+  };
+
+  /* FORM CONTROLS */
+
+  const handleSelectedRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedRole(event.target.value);
+  };
 
   return (
     <Container className={props.classes.container}>
@@ -215,12 +244,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 <div style={{ height: 370, width: '100%' }}>
                   {rowsLoaded && (
                     <DataGrid
+                      onSelectionModelChange={handleRowSelection}
                       rows={rows}
                       columns={columns}
                       pageSize={5}
                       rowsPerPageOptions={[5]}
                       checkboxSelection
-                      onCellClick={handleCellClick}
+                      onCellClick={handleRowClick}
                       onRowClick={handleRowClick}
                     />
                   )}
@@ -228,48 +258,139 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               </Grid>
             </CardContent>
             <CardActions>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
+              <Grid container direction="row" spacing={5} justifyContent="flex-end">
                 <Grid item>
-                  <Button variant="contained" color="primary">
-                    Save Changes
+                  <Button
+                    disabled={!selectedUsers || selectedUsers.length === 0}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => openRoleDialog(Mode.GRANT)}>
+                    Select Role to Grant
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    disabled={!selectedUsers || selectedUsers.length > 1 || selectedUsers.length === 0}
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => openRoleDialog(Mode.REVOKE)}>
+                    Revoke Role
                   </Button>
                 </Grid>
               </Grid>
             </CardActions>
           </Card>
         </Grid>
-        {/* Approve or decline access requests */}
-        {/* <Grid item xs={12}>
-          <Card elevation={8}>
-            <CardContent>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <div style={{ height: 370, width: '100%' }}>
-                  {rowsLoaded && (
-                    <DataGrid
-                      rows={rows}
-                      columns={columns}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      onCellClick={handleCellClick}
-                      onRowClick={handleRowClick}
-                    />
-                  )}
-                </div>
-              </Grid>
-            </CardContent>
-            <CardActions>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <Grid item>
-                  <Button variant="contained" color="primary">
-                    Save Changes
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardActions>
-          </Card>
-        </Grid> */}
       </Grid>
+      {detailsDialogUser !== {} && detailsDialogUser && (
+        <Dialog
+          open={detailsDialogOpen}
+          onClose={closeDetailsDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="sm"
+          fullWidth>
+          <DialogTitle id="alert-dialog-title">
+            <strong>{detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}</strong>
+          </DialogTitle>
+          <DialogContent>
+            <Grid item>
+              <Typography variant="h6">
+                <strong>Email: </strong>
+                {detailsDialogUser.email}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">
+                <strong>Roles: </strong>
+              </Typography>
+            </Grid>
+            <Grid item>
+              {detailsDialogUser.role.split(',').map((role) => (
+                <Typography variant="h6" key={role}>
+                  <li>{role}</li>
+                </Typography>
+              ))}
+            </Grid>
+          </DialogContent>
+          <Divider />
+          <DialogActions>
+            <Button variant="contained" onClick={closeDetailsDialog} autoFocus>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {/* Select a role from a dropdown list to grant or revoke for selected user(s) */}
+      <Dialog
+        open={roleDialogOpen}
+        onClose={closeRoleDialog}
+        aria-labelledby="form-dialog-title"
+        maxWidth="sm"
+        fullWidth>
+        <DialogTitle id="form-dialog-title">
+          {mode === Mode.GRANT ? <h3>Grant Role</h3> : <h3>Revoke Role</h3>}
+        </DialogTitle>
+        <Divider />
+        <DialogContent>
+          <DialogContentText>
+            {mode === Mode.GRANT ? <strong>Selected Users: </strong> : <strong>Selected User: </strong>}
+          </DialogContentText>
+          <Grid item>
+            <Typography variant="h6">
+              {selectedUsers.map((user) => (
+                <li key={user.user_id}>{user.first_name + ' ' + user.last_name}</li>
+              ))}
+            </Typography>
+          </Grid>
+          <DialogContentText>
+            Select a role to {mode === Mode.GRANT ? 'grant to the selected users.' : 'revoke from the selected user.'}
+          </DialogContentText>
+          {/* Single-select dropdown with list of roles should be here */}
+          <TextField
+            style={{ width: '100%' }}
+            classes={{ root: classes.root }}
+            select
+            name="Roles"
+            id="available-roles"
+            variant="outlined"
+            label="Available Roles"
+            SelectProps={{
+              multiple: false,
+              value: selectedRole,
+              onChange: handleSelectedRoleChange
+            }}>
+            {mode === Mode.GRANT
+              ? // Map available roles to dropdown list
+                availableRoles.map((role) => (
+                  <MenuItem key={role} value={role}>
+                    {role}
+                  </MenuItem>
+                ))
+              : // Map user's roles to dropdown list
+                userRoles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))}
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={closeRoleDialog}>
+            Cancel
+          </Button>
+          {mode === Mode.GRANT && (
+            <Button variant="contained" color="primary" onClick={grantRole}>
+              Grant
+            </Button>
+          )}
+          {mode === Mode.REVOKE && (
+            <Button variant="contained" color="secondary" onClick={revokeRole}>
+              Revoke
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
