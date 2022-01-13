@@ -6,6 +6,7 @@ import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Layer } from 'leaflet';
+import { features } from 'process';
 import React, { useContext, useEffect, useState } from 'react';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
@@ -160,7 +161,18 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
         }
       });
       // alert(returnStyles[0].json);
-      setlayerStyles(JSON.parse(returnStyles[0].json));
+
+      /**
+       * It is possible to get no features in the returned object. 
+       * With some testing it was also discovered that DataBC
+       * returns no feature even requesting an area within a large
+       * polygon.
+       */
+      try {
+        setlayerStyles(JSON.parse(returnStyles[0].json));
+      } catch (err) {
+        console.error("Could not parse features in WFS request:",err);
+      }
 
       const allFeatures = await fetchLayerDataFromLocal(props.dataBCLayerName, mapExtent, databaseContext);
 
@@ -216,15 +228,21 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     return arrayOfWells;
   };
 
+
   //this is used to display all geoJSON data except for wells
   const onEachFeature = props.customOnEachFeature
     ? props.customOnEachFeature
     : (feature: Feature<Geometry, any>, layer: Layer) => {
+        // Catch the posibility of no features being returned
+        let wfsProperties = {};
+        if (feature.properties) {
+          wfsProperties = feature.properties;
+        }
         layer.bindPopup(
           '<table>' +
             '<tr><th style="font-size: 1.2rem">Property</th><th style="font-size: 1.2rem">Value</th></tr>' +
-            Object.keys(feature.properties).map((key) => {
-              return '<tr><td><b>' + key + '</b></td><td>' + feature.properties[key] + '</td></tr>';
+            Object.keys(wfsProperties).map((key) => {
+              return '<tr><td><b>' + key + '</b></td><td>' + wfsProperties[key] + '</td></tr>';
             }) +
             '</table>'
         );
