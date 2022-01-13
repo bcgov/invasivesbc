@@ -117,3 +117,14 @@ export const getRoleInfoSQL = (role_id): SQLStatement => {
     `;
   }
 };
+
+/**
+ * SQL query to get all roles
+ * @returns {SQLStatement} sql query object
+ */
+export const getAllRolesSQL = (): SQLStatement => {
+  return SQL`
+    SELECT *
+    FROM user_role;
+  `;
+};

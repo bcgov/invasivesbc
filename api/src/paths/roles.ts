@@ -1,0 +1,87 @@
+'use strict';
+
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { SQLStatement } from 'sql-template-strings';
+import { ALL_ROLES } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import {
+  getAllRolesSQL,
+  getRolesForUserSQL,
+  getUsersForRoleSQL,
+  grantRoleToUserSQL,
+  revokeRoleFromUserSQL
+} from '../queries/role-queries';
+import { getLogger } from '../utils/logger';
+
+const defaultLog = getLogger('roles');
+
+export const GET: Operation = [getRoles()];
+
+GET.apiDoc = {
+  description: 'Get some information about users and their roles',
+  tags: ['roles'],
+  security: [
+    {
+      Bearer: ALL_ROLES
+    }
+  ],
+  responses: {
+    200: {
+      description: 'User Acccess get response object array.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              // Don't specify exact response, as it will vary, and is not currently enforced anyways
+              // Eventually this could be updated to be a oneOf list, similar to the Post request below.
+            }
+          }
+        }
+      }
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    503: {
+      $ref: '#/components/responses/503'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+// Fetch list of roles from db
+//
+// @return {RequestHandler}
+//
+function getRoles(): RequestHandler {
+  return async (req, res, next) => {
+    const connection = await getDBConnection();
+    if (!connection) {
+      throw {
+        status: 503,
+        message: 'Failed to establish database connection'
+      };
+    }
+    try {
+      const sqlStatement: SQLStatement = getAllRolesSQL();
+      if (!sqlStatement) {
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
+      }
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const result = (response && response.rows) || null;
+      return res.status(200).json(result);
+    } catch (error) {
+      defaultLog.debug({ label: 'getRoles', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
