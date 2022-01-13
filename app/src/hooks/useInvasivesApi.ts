@@ -193,6 +193,19 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch roles
+   * @return {*}  {Promise<any>}
+   */
+  const getRoles = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/roles/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+    return data;
+  };
+
+  /**
    * Fetch points of interest by search criteria.
    *
    * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
@@ -241,7 +254,7 @@ export const useInvasivesApi = () => {
     return data;
   };
 
-  const revokeRoleFromUser = async (userId: string, roleId: string): Promise<any> => {
+  const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
     return Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/user-access`,
@@ -266,7 +279,7 @@ export const useInvasivesApi = () => {
     });
   };
 
-  const batchGrantRoleToUser = async (userIds: string[], roleId: string): Promise<any> => {
+  const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
     return Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/user-access`,
@@ -783,6 +796,7 @@ export const useInvasivesApi = () => {
     getRolesForUser,
     getUsersForRole,
     batchGrantRoleToUser,
-    revokeRoleFromUser
+    revokeRoleFromUser,
+    getRoles
   };
 };
