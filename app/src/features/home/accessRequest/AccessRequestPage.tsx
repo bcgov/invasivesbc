@@ -99,8 +99,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       requestedRoles: requestedRoles?.toString(),
       comments: comments,
       status: 'NOT_APPROVED',
-      idir_userid: idir_userid,
-      bceid_userid: bceid_userid
+      idirUserId: idir_userid,
+      bceidUserId: bceid_userid
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
