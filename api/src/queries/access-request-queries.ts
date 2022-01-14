@@ -109,7 +109,6 @@ export const declineAccessRequestSQL = (email): SQLStatement => {
 };
 
 export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
-  updateAccessRequestStatusSQL(accessRequest.primary_email, 'APPROVED');
   let preferredUsername = '';
   if (accessRequest.idir !== (null || '')) {
     preferredUsername = accessRequest.idir_account_name;

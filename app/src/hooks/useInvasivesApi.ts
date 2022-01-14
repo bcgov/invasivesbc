@@ -263,20 +263,22 @@ export const useInvasivesApi = () => {
   };
 
   const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
+    console.log('Access requests received', accessRequests);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/access-request/approve`,
+      url: options.baseUrl + `/api/access-request`,
       data: { approvedAccessRequests: accessRequests }
     });
     return data;
   };
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
+    console.log('Access request received', accessRequest);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/access-request/decline`,
+      url: options.baseUrl + `/api/access-request`,
       data: { declinedAccessRequest: accessRequest }
     });
     return data;

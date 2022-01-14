@@ -375,6 +375,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const approveUsers = () => {
+    console.log('Request users: ', selectedRequestUsers);
     api.approveAccessRequests(selectedRequestUsers).then(() => {
       setApproveDeclineDialogOpen(false);
       loadUsers();
@@ -382,8 +383,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const declineUser = () => {
+    console.log('Request user: ', selectedRequestUsers[0]);
     // Set the status of the selected access request to DECLINED
-    api.declineAccessRequest(selectedRequestUsers[0].email).then(() => {
+    api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
       setApproveDeclineDialogOpen(false);
       loadUsers();
     });

@@ -9,7 +9,8 @@ import {
   createAccessRequestSQL,
   declineAccessRequestSQL,
   approveAccessRequestsSQL,
-  getAccessRequestsSQL
+  getAccessRequestsSQL,
+  updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
 import { getLogger } from '../utils/logger';
 
@@ -192,6 +193,15 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         };
       }
       await connection.query(sqlStatement.text, sqlStatement.values);
+
+      const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED');
+      if (!sqlStatement2) {
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
+      }
+      await connection.query(sqlStatement2.text, sqlStatement2.values);
     }
     return res.status(200).json({ count: requests.length });
   } catch (error) {
