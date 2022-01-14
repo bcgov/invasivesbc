@@ -64,6 +64,12 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [email, setEmail] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.email ? authState.keycloak?.obj?.tokenParsed?.email : ''
   );
+  const [idir_userid, setIdirUserid] = React.useState(
+    authState.keycloak?.obj?.tokenParsed?.idir_userid ? authState.keycloak?.obj?.tokenParsed?.idir_userid : ''
+  );
+  const [bceid_userid, setBceidUserid] = React.useState(
+    authState.keycloak?.obj?.tokenParsed?.bceid_userid ? authState.keycloak?.obj?.tokenParsed?.bceid_userid : ''
+  );
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -92,7 +98,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       fundingAgencies: fundingAgencies?.toString(),
       requestedRoles: requestedRoles?.toString(),
       comments: comments,
-      status: 'NOT_APPROVED'
+      status: 'NOT_APPROVED',
+      idir_userid: idir_userid,
+      bceid_userid: bceid_userid
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
@@ -115,7 +123,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       fundingAgencies: null,
       requestedRoles: null,
       comments: null,
-      status: 'REMOVED'
+      status: 'REMOVED',
+      idir_userid: null,
+      bceid_userid: null
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
@@ -125,6 +135,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
+    console.log('KEYCLOAK OBJ: ', authState.keycloak?.obj);
     if (userInfo !== undefined) {
       if (userInfo?.idir_account_name) {
         setAccountType('IDIR');
