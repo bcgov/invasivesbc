@@ -26,7 +26,9 @@ import {
   GridColDef,
   GridToolbarDensitySelector,
   GridToolbarFilterButton,
-  GridValueGetterParams
+  GridValueGetterParams,
+  GridToolbarExport,
+  GridToolbarColumnsButton
 } from '@mui/x-data-grid';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
@@ -65,8 +67,15 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
         flexWrap: 'wrap'
       }}>
       <div>
+        <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
+        <GridToolbarExport
+          csvOptions={{
+            includeHeaders: true,
+            allColumns: true,
+            fileName: 'InvasivesBC - Application Users (' + new Date().toISOString() + ')'
+          }}
+        />
       </div>
       <TextField
         variant="standard"
@@ -128,7 +137,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [accessRequests, setAccessRequests] = useState<any[]>([]);
 
   const [selectedRequestUsers, setSelectedRequestUsers] = useState<any[]>([]);
-  const [selectedRequestUserIds, setSelectedRequestUserIds] = useState<any[]>([]);
   const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<any>({});
   const [detailsDialogRequestUserLoaded, setDetailsDialogRequestUserLoaded] = useState(false);
 
@@ -224,12 +232,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           lastName: user.last_name,
           email: user.email,
           role: roleString,
-          accountStatus: user.account_status,
-          activationStatus: user.activation_status,
+          accountStatus: user.account_status === 1 ? 'Active' : 'Inactive',
+          activationStatus: user.activation_status === 1 ? 'Complete' : 'Pending',
           bceidUserId: user.bceid_userid,
-          expiryDate: user.expiry_date,
+          expiryDate: new Date(user.expiry_date).toLocaleString(),
           idirUserId: user.idir_userid,
-          preferredUsername: user.preferred_username
+          preferredUsername: user.preferred_username,
+          createdAt: new Date(user.created_at).toLocaleString(),
+          idirAccountName: user.idir_account_name,
+          bceidAccountName: user.bceid_account_name,
+          workPhoneNumber: user.work_phone_number,
+          fundingAgencies: user.funding_agencies,
+          employer: user.employer,
+          pacNumber: user.pac_number,
+          pacServiceNumber1: user.pac_service_number_1,
+          pacServiceNumber2: user.pac_service_number_2
         });
       });
     }
@@ -256,7 +273,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         idirUserId: requests[i].idir_userid,
         pacServiceNumber1: requests[i].pac_service_number_1,
         pacServiceNumber2: requests[i].pac_service_number_2,
-        workPhoneNumber: requests[i].work_phone_number
+        workPhoneNumber: requests[i].work_phone_number,
+        dateRequested: new Date(requests[i].created_at).toLocaleString()
       });
     }
     setRequestRows(rows);
@@ -265,15 +283,53 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   /* COLUMNS */
 
   const columns: GridColDef[] = [
+    /*
+          id: user.user_id,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          email: user.email,
+          expiryDate: new Date(user.expiry_date).toLocaleString(),
+          role: roleString,
+          accountStatus: user.account_status,
+          activationStatus: user.activation_status,
+          bceidUserId: user.bceid_userid,
+          idirUserId: user.idir_userid,
+          preferredUsername: user.preferred_username,
+          createdAt: new Date(user.created_at).toLocaleString(),
+          idirAccountName: user.idir_account_name,
+          bceidAccountName: user.bceid_account_name,
+          workPhoneNumber: user.work_phone_number,
+          fundingAgencies: user.funding_agencies,
+          employer: user.employer,
+          pacNumber: user.pac_number,
+          pacServiceNumber1: user.pac_service_number_1,
+          pacServiceNumber2: user.pac_service_number_2,
+
+          */
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'firstName', headerName: 'First Name', width: 130 },
     { field: 'lastName', headerName: 'Last Name', width: 130 },
     { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'expiryDate', headerName: 'Expiry Date', width: 200 },
     {
       field: 'role',
       headerName: 'Role(s)',
-      width: 558
+      width: 358
     },
+    { field: 'accountStatus', headerName: 'Account Status', width: 200, hide: true },
+    { field: 'activationStatus', headerName: 'Activation Status', width: 200, hide: true },
+    { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200, hide: true },
+    { field: 'idirUserId', headerName: 'IDIR User ID', width: 200, hide: true },
+    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, hide: true },
+    { field: 'createdAt', headerName: 'Created At', width: 200, hide: true },
+    { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200, hide: true },
+    { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200, hide: true },
+    { field: 'workPhoneNumber', headerName: 'Work Phone Number', width: 200, hide: true },
+    { field: 'fundingAgencies', headerName: 'Funding Agencies', width: 200, hide: true },
+    { field: 'employer', headerName: 'Employer', width: 200, hide: true },
+    { field: 'pacNumber', headerName: 'PAC Number', width: 200, hide: true },
+    { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200, hide: true },
+    { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200, hide: true },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -288,7 +344,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     { field: 'firstName', headerName: 'First Name', width: 150 },
     { field: 'lastName', headerName: 'Last Name', width: 150 },
     { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'employer', headerName: 'Employer', width: 200 },
+    { field: 'dateRequested', headerName: 'Date Requested', width: 200 },
     { field: 'pacNumber', headerName: 'PAC Number', width: 158 },
     { field: 'status', headerName: 'Status', width: 159 },
     {
@@ -468,14 +524,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const approveUsers = () => {
     api.approveAccessRequests(selectedRequestUsers).then(() => {
-      setApproveDeclineDialogOpen(false);
+      closeApproveDeclineDialog();
       loadUsers();
     });
   };
 
   const declineUser = () => {
     api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
-      setApproveDeclineDialogOpen(false);
+      closeApproveDeclineDialog();
+      loadUsers();
+    });
+  };
+
+  const renewUser = () => {
+    api.renewUser(detailsDialogUser.id).then(() => {
+      closeDetailsDialog();
       loadUsers();
     });
   };
@@ -633,6 +696,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 {detailsDialogUser.preferredUsername}
               </Typography>
             </Grid>
+            <Grid item>
+              <Typography variant="h6">
+                <strong>Expiry Date: </strong>
+                {detailsDialogUser.expiryDate}
+              </Typography>
+            </Grid>
             {detailsDialogUser.bceidUserId && (
               <Grid item>
                 <Typography variant="h6">
@@ -649,21 +718,107 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 </Typography>
               </Grid>
             )}
+            {detailsDialogUser.idirAccountName && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>IDIR Account Name: </strong>
+                  {detailsDialogUser.idirAccountName}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.workPhoneNumber && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>Work Phone: </strong>
+                  {detailsDialogUser.workPhoneNumber}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.employer && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>Employer: </strong>
+                  {employerCodes.map((employer) => {
+                    if (employer.value === detailsDialogUser.employer) {
+                      return employer.description;
+                    }
+                    return '';
+                  })}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.pacNumber && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>PAC Number: </strong>
+                  {detailsDialogUser.pacNumber}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.pacServiceNumber1 && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>PAC Service Number 1: </strong>
+                  {detailsDialogUser.pacServiceNumber1}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.pacServiceNumber2 && (
+              <Grid item>
+                <Typography variant="h6">
+                  <strong>PAC Service Number 2: </strong>
+                  {detailsDialogUser.pacServiceNumber2}
+                </Typography>
+              </Grid>
+            )}
+            {detailsDialogUser.fundingAgencies && (
+              <Grid item>
+                {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
+                  <Typography variant="h6" key={agency}>
+                    <li key={agency}>
+                      {agencyCodes.map((agencyCode) => {
+                        if (agencyCode.value === agency) {
+                          return agencyCode.description;
+                        }
+                        return '';
+                      })}
+                    </li>
+                  </Typography>
+                ))}
+              </Grid>
+            )}
             <Grid item>
               <Typography variant="h6">
-                <strong>Roles: </strong>
+                <strong>Funding Agencies: </strong>
               </Typography>
             </Grid>
-            <Grid item>
-              {detailsDialogUser.role.split(',').map((role) => (
-                <Typography variant="h6" key={role}>
-                  <li key={role}>{role}</li>
-                </Typography>
-              ))}
-            </Grid>
+            {detailsDialogUser.roles && detailsDialogUser.roles.length > 0 && (
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Roles: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogUser.role.split(',').map((role) => (
+                    <Typography variant="h6" key={role}>
+                      <li key={role}>{role}</li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
+            )}
           </DialogContent>
           <Divider />
           <DialogActions>
+            <Button
+              disabled={new Date(detailsDialogUser.expiryDate) > new Date()}
+              variant="contained"
+              color="secondary"
+              onClick={renewUser}
+              autoFocus>
+              Renew User
+            </Button>
             <Button variant="contained" onClick={closeDetailsDialog} autoFocus>
               Close
             </Button>
