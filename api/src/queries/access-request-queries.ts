@@ -88,13 +88,13 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
 /**
  * SQL query to update an access request's status
  */
-export const updateAccessRequestStatusSQL = (id, status): SQLStatement => {
+export const updateAccessRequestStatusSQL = (email, status): SQLStatement => {
   return SQL`
         update access_request
         set
         status=${status},
-        updated_at=now()
-        where access_request_id=${id};
+        updated_at=CURRENT_TIMESTAMP
+        where primary_email=${email};
     `;
 };
 
@@ -103,20 +103,20 @@ export const declineAccessRequestSQL = (email): SQLStatement => {
         update access_request
         set
         status='DECLINED',
-        updated_at=now()
+        updated_at=CURRENT_TIMESTAMP
         where primary_email=${email};
     `;
 };
 
 export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
-  updateAccessRequestStatusSQL(accessRequest.email, 'APPROVED');
-  let primaryEmail = '';
+  updateAccessRequestStatusSQL(accessRequest.primary_email, 'APPROVED');
+  let preferredUsername = '';
   if (accessRequest.idir !== (null || '')) {
-    primaryEmail = accessRequest.idir;
+    preferredUsername = accessRequest.idir_account_name;
   } else if (accessRequest.bceid !== (null || '')) {
-    primaryEmail = accessRequest.bceid;
+    preferredUsername = accessRequest.bceid_account_name;
   } else {
-    primaryEmail = accessRequest.email;
+    preferredUsername = accessRequest.primary_email;
   }
   return SQL`
         insert into application_user (
@@ -141,25 +141,25 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             pac_service_number_2
             )
         values (
-            ${accessRequest.firstName},
-            ${accessRequest.lastName},
-            ${accessRequest.email},
-            ${primaryEmail},
+            ${accessRequest.first_name},
+            ${accessRequest.last_name},
+            ${accessRequest.primary_email},
+            ${preferredUsername},
             1,
             null,
             1,
-            now(),
-            now(),
-            ${accessRequest.idirUserId},
-            ${accessRequest.bceidUserId},
-            ${accessRequest.idir},
-            ${accessRequest.bceid},
-            ${accessRequest.phone},
-            ${accessRequest.fundingAgencies},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            ${accessRequest.idir_userid},
+            ${accessRequest.bceid_userid},
+            ${accessRequest.idir_account_name},
+            ${accessRequest.bceid_account_name},
+            ${accessRequest.work_phone_number},
+            ${accessRequest.funding_agencies},
             ${accessRequest.employer},
-            ${accessRequest.pacNumber},
-            ${accessRequest.psn1},
-            ${accessRequest.psn2}
+            ${accessRequest.pac_number},
+            ${accessRequest.pac_service_number_1},
+            ${accessRequest.pac_service_number_2}
         );
     `;
 };

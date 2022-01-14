@@ -8,7 +8,10 @@ export async function up(knex: Knex): Promise<void> {
     alter table if exists access_request
       add column if not exists requested_roles varchar(1000) null,
       add column if not exists idir_userid varchar(100) null,
-      add column if not exists bceid_userid varchar(100) null;
+      add column if not exists bceid_userid varchar(100) null,
+      add column if not exists created_at timestamp default CURRENT_TIMESTAMP,
+      add column if not exists updated_at timestamp default CURRENT_TIMESTAMP,
+      drop constraint if exists access_request_primary_email_key;
 
     alter table if exists application_user
       add column if not exists idir_userid varchar(100) null,
@@ -30,6 +33,8 @@ export async function down(knex: Knex): Promise<void> {
       drop column if exists requested_roles;
       drop column if exists bceid_userid;
       drop column if exists idir_userid;
+      drop column if exists created_at;
+      drop column if exists updated_at;
 
     alter table if exists application_user
       drop column if exists idir_userid;

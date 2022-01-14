@@ -4,8 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema 'public';
     set search_path = invasivesbc,public;
-    drop table if exists access_request;
-    create table access_request(
+    create table if not exists access_request(
         access_request_id serial primary key,
         idir_account_name varchar(100) null,
         bceid_account_name varchar(100) null,

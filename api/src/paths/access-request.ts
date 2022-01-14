@@ -181,6 +181,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
   try {
     const requests = approvedAccessRequests;
     // for each request, approve it
+    console.log('Attempting to approve requests...', requests);
     for (const request of requests) {
       console.log('Attempting to approve request...', request);
       const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
@@ -211,13 +212,17 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
   }
   try {
     const request = declinedAccessRequest;
-    const sqlStatement: SQLStatement = declineAccessRequestSQL(request.email);
+    console.log('Attemping to decline request...', request);
+    const sqlStatement: SQLStatement = declineAccessRequestSQL(request.primary_email);
     if (!sqlStatement) {
       throw {
         status: 400,
         message: 'Failed to build SQL statement'
       };
     }
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = { count: (response && response.rowCount) || 0 };
+    return res.status(200).json(result);
   } catch (error) {
     defaultLog.debug({ label: 'declineAccessRequest', message: 'error', error });
     throw error;
