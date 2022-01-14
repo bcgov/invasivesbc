@@ -250,7 +250,15 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
+    return data;
+  };
 
+  const getAccessRequests = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/access-request/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
     return data;
   };
 
@@ -462,7 +470,7 @@ export const useInvasivesApi = () => {
    */
   const getApplicationUsers = async (): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user`
     });
@@ -797,6 +805,7 @@ export const useInvasivesApi = () => {
     getUsersForRole,
     batchGrantRoleToUser,
     revokeRoleFromUser,
-    getRoles
+    getRoles,
+    getAccessRequests
   };
 };
