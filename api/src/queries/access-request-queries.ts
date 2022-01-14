@@ -7,7 +7,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getAccessRequestsSQL = (): SQLStatement => {
-  return SQL`SELECT * FROM access_request';`;
+  return SQL`SELECT * FROM access_request;`;
 };
 
 /**
