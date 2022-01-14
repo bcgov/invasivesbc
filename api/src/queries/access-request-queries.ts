@@ -88,12 +88,78 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
 /**
  * SQL query to update an access request's status
  */
-export const updateAccessRequestStatusSQL = (email, status): SQLStatement => {
+export const updateAccessRequestStatusSQL = (id, status): SQLStatement => {
   return SQL`
         update access_request
         set
         status=${status},
         updated_at=now()
-        where primary_email=${email}
+        where access_request_id=${id};
+    `;
+};
+
+export const declineAccessRequestSQL = (email): SQLStatement => {
+  return SQL`
+        update access_request
+        set
+        status='DECLINED',
+        updated_at=now()
+        where primary_email=${email};
+    `;
+};
+
+export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
+  updateAccessRequestStatusSQL(accessRequest.email, 'APPROVED');
+  let primaryEmail = '';
+  if (accessRequest.idir !== (null || '')) {
+    primaryEmail = accessRequest.idir;
+  } else if (accessRequest.bceid !== (null || '')) {
+    primaryEmail = accessRequest.bceid;
+  } else {
+    primaryEmail = accessRequest.email;
+  }
+  return SQL`
+        insert into application_user (
+            first_name,
+            last_name,
+            email,
+            preferred_username,
+            account_status,
+            expiry_date,
+            activation_status,
+            created_at,
+            updated_at,
+            idir_userid,
+            bceid_userid,
+            idir_account_name,
+            bceid_account_name,
+            work_phone_number,
+            funding_agencies,
+            employer,
+            pac_number,
+            pac_service_number_1,
+            pac_service_number_2
+            )
+        values (
+            ${accessRequest.firstName},
+            ${accessRequest.lastName},
+            ${accessRequest.email},
+            ${primaryEmail},
+            1,
+            null,
+            1,
+            now(),
+            now(),
+            ${accessRequest.idirUserId},
+            ${accessRequest.bceidUserId},
+            ${accessRequest.idir},
+            ${accessRequest.bceid},
+            ${accessRequest.phone},
+            ${accessRequest.fundingAgencies},
+            ${accessRequest.employer},
+            ${accessRequest.pacNumber},
+            ${accessRequest.psn1},
+            ${accessRequest.psn2}
+        );
     `;
 };
