@@ -188,35 +188,6 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
   return updatedActivitySubtypeData;
 }
 
-export const autoFillTotalCollectionTime = (formData: any) => {
-  if (!formData.activity_subtype_data.Biocontrol_Collection_Information) {
-    return formData;
-  }
-  const newCollections = [];
-
-  formData.activity_subtype_data.Biocontrol_Collection_Information.forEach((collection) => {
-    const newCollection = collection;
-    if (collection.start_time && collection.stop_time) {
-      const diff = Math.abs((new Date(collection.stop_time) as any) - (new Date(collection.start_time) as any));
-      const total_minutes = Math.floor(diff / 1000 / 60);
-      newCollection.total_time = total_minutes;
-    } else {
-      newCollection.total_time = undefined;
-    }
-    newCollections.push(newCollection);
-  });
-
-  const newFormData = {
-    ...formData,
-    activity_subtype_data: {
-      ...formData.activity_subtype_data,
-      collections: [...newCollections]
-    }
-  };
-
-  return newFormData;
-};
-
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   if (!lastField) {
     return formData;
@@ -347,7 +318,7 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
 
   console.log(actual_biological_agents, estimated_biological_agents);
 
-  if (!actual_biological_agents || !estimated_biological_agents) {
+  if (!actual_biological_agents && !estimated_biological_agents) {
     return formData;
   }
 

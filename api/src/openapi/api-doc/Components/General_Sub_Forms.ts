@@ -389,22 +389,12 @@ export const Weather_Conditions = {
 export const Target_Plant_Phenology = {
   title: 'Target Plant Phenology',
   type: 'object',
+  'x-tooltip-text':
+    'Optional set of data to indicate the average landscape level phenology of the target invasive plants at the time of monitoring.',
   properties: {
     phenology_details_recorded: {
       title: 'Phenology Details Recorded',
       type: 'boolean'
-    },
-    target_plant_heights: {
-      type: 'array',
-      title: 'Target Plant Heights',
-      default: [{}],
-      maxItems: 10,
-      items: {
-        title: 'Target Plant Height (cm)',
-        type: 'number',
-        minimum: 0,
-        'x-tooltip-text': 'Record of height of up to 10 of the tallest plants at the location in cm'
-      }
     }
   },
   dependencies: {
@@ -414,6 +404,20 @@ export const Target_Plant_Phenology = {
           properties: {
             phenology_details_recorded: {
               enum: [true]
+            },
+            target_plant_heights: {
+              type: 'array',
+              title: 'Target Plant Heights',
+              default: [{}],
+              maxItems: 10,
+              items: {
+                title: 'Target Plant Height (cm)',
+                type: 'number',
+                minimum: 0,
+                'x-tooltip-text': 'Record of height of up to 10 of the tallest plants at the location in cm'
+              },
+              'x-tooltip-text':
+                'Record up to 10 heights in cm of the tallest target invasive plants at the monitoring location.'
             },
             winter_dormant: {
               title: 'Winter Dormant (%)',
@@ -468,7 +472,7 @@ export const Target_Plant_Phenology = {
 export const Spread_Results = {
   title: 'Spread Results',
   type: 'object',
-  required: ['spread_details_recorded', 'max_spread_aspect', 'max_spread_distance', 'plant_attack', 'agent_density'],
+  required: ['spread_details_recorded'],
   properties: {
     spread_details_recorded: {
       title: 'Spread Details Recorded',
