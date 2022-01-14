@@ -1,0 +1,213 @@
+{
+  "point_of_interest_incoming_data_id": 140373,
+  "point_of_interest_id": 140373,
+  "version": null,
+  "point_of_interest_type": "IAPP Site",
+  "point_of_interest_subtype": "First Load",
+  "received_timestamp": "2021-09-08T19:10:20.581Z",
+  "geom": null,
+  "geog": "0101000020E6100000F41E047075D05CC0E15F46A96B9F4840",
+  "point_of_interest_payload": {
+    "media": [],
+    "geometry": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-115.25716782, 49.24547306]
+        },
+        "properties": {}
+      }
+    ],
+    "form_data": {
+      "surveys": [
+        {
+          "genus": "BIE",
+          "density": "2: Med (2-5 plants/m2)",
+          "species": "CENT",
+          "map_code": "SK",
+          "survey_id": "351076",
+          "common_name": "Spotted knapweed",
+          "survey_date": "2010-07-28",
+          "weeds_found": "Y",
+          "distribution": "2: few sporadically",
+          "project_code": [
+            {
+              "description": "HTSPENPP"
+            }
+          ],
+          "employer_code": "200472",
+          "jurisdictions": [
+            {
+              "percent_covered": "100",
+              "jurisdiction_code": "PP"
+            }
+          ],
+          "reported_area": 50,
+          "general_comment": "",
+          "observation_type": "O: Operational",
+          "invasive_plant_code": "SK",
+          "observation_type_code": "OP",
+          "invasive_plant_density_code": "M",
+          "invasive_species_agency_code": "EKIP",
+          "invasive_plant_distribution_code": "FS"
+        },
+        {
+          "genus": "PER",
+          "density": "3: High (6-10 plants/m2)",
+          "species": "HYPE",
+          "map_code": "SJ",
+          "survey_id": "258539",
+          "common_name": "St. John's wort/Goat",
+          "survey_date": "2006-10-18",
+          "weeds_found": "Y",
+          "distribution": "7: continuous / uniform",
+          "project_code": [
+            {
+              "description": ""
+            }
+          ],
+          "employer_code": "200206",
+          "jurisdictions": [
+            {
+              "percent_covered": "100",
+              "jurisdiction_code": "PP"
+            }
+          ],
+          "reported_area": 20000,
+          "general_comment": "",
+          "observation_type": "O: Operational",
+          "invasive_plant_code": "SJ",
+          "observation_type_code": "OP",
+          "invasive_plant_density_code": "H",
+          "invasive_species_agency_code": "MWLA",
+          "invasive_plant_distribution_code": "CU"
+        },
+        {
+          "genus": "REC",
+          "density": "2: Med (2-5 plants/m2)",
+          "species": "POTE",
+          "map_code": "SC",
+          "survey_id": "258538",
+          "common_name": "Sulphur cinquefoil",
+          "survey_date": "2006-10-18",
+          "weeds_found": "Y",
+          "distribution": "7: continuous / uniform",
+          "project_code": [
+            {
+              "description": ""
+            }
+          ],
+          "employer_code": "200206",
+          "jurisdictions": [
+            {
+              "percent_covered": "100",
+              "jurisdiction_code": "PP"
+            }
+          ],
+          "reported_area": 20000,
+          "general_comment": "",
+          "observation_type": "O: Operational",
+          "invasive_plant_code": "SC",
+          "observation_type_code": "OP",
+          "invasive_plant_density_code": "M",
+          "invasive_species_agency_code": "MWLA",
+          "invasive_plant_distribution_code": "CU"
+        },
+        {
+          "genus": "BIE",
+          "density": "1: Low (<= 1 plant/m2)",
+          "species": "CENT",
+          "map_code": "SK",
+          "survey_id": "258536",
+          "common_name": "Spotted knapweed",
+          "survey_date": "2006-10-18",
+          "weeds_found": "Y",
+          "distribution": "7: continuous / uniform",
+          "project_code": [
+            {
+              "description": ""
+            }
+          ],
+          "employer_code": "200210",
+          "jurisdictions": [
+            {
+              "percent_covered": "100",
+              "jurisdiction_code": "PP"
+            }
+          ],
+          "reported_area": 100,
+          "general_comment": "",
+          "observation_type": "O: Operational",
+          "invasive_plant_code": "SK",
+          "observation_type_code": "OP",
+          "invasive_plant_density_code": "L",
+          "invasive_species_agency_code": "MWLA",
+          "invasive_plant_distribution_code": "CU"
+        }
+      ],
+      "chemical_treatments": [],
+      "biological_dispersals": [],
+      "biological_treatments": [],
+      "mechanical_treatments": [
+        {
+          "employer": "200472",
+          "map_code": "SK",
+          "monitoring": [],
+          "common_name": "Spotted knapweed",
+          "project_code": [
+            {
+              "description": "HTSPENPP"
+            }
+          ],
+          "treatment_id": "255855",
+          "mechanical_id": "222727",
+          "reported_area": 50,
+          "treatment_date": "2010-07-28",
+          "general_comment": "",
+          "mechanical_method": "Digging",
+          "mechanical_method_code": "DIG",
+          "invasive_species_agency_code": "EKIP"
+        }
+      ],
+      "point_of_interest_data": {
+        "date_created": "2006-10-18",
+        "project_code": [
+          {
+            "description": "KCP2-01"
+          }
+        ],
+        "general_comment": "",
+        "media_indicator": false,
+        "created_date_on_device": "2021-09-08",
+        "updated_date_on_device": "2021-09-08"
+      },
+      "point_of_interest_type_data": {
+        "slope": "20",
+        "aspect": "200",
+        "site_id": "232784",
+        "slope_code": "VS",
+        "aspect_code": "S",
+        "site_elevation": "820",
+        "original_bec_id": "160",
+        "soil_texture_code": "NA",
+        "specific_use_code": "NA"
+      }
+    },
+    "species_negative": [],
+    "species_positive": ["SC", "SJ", "SK"],
+    "point_of_interest_type": "IAPP Site",
+    "point_of_interest_subtype": "First Load"
+  },
+  "biogeoclimatic_zones": "",
+  "regional_invasive_species_organization_areas": "",
+  "invasive_plant_management_areas": "",
+  "forest_cover_ownership": "",
+  "regional_districts": "",
+  "flnro_districts": "",
+  "moti_districts": "",
+  "media_keys": [],
+  "species_positive": ["SC", "SJ", "SK"],
+  "species_negative": [],
+  "total_rows_count": "100"
+}

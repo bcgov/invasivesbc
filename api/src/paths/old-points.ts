@@ -1,9 +1,8 @@
 'use strict';
 
-import { RequestHandler, response } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getIAPPsurveys } from '../utils/iapp-json-utils';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
@@ -153,31 +152,24 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      let data;
+      const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 
-      if (sanitizedSearchCriteria.iappSiteID) {
-        data = await getIAPPsurveys(246481);
-        return res.status(200).json(data);
-      } else {
-        const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
-
-        if (!sqlStatement) {
-          throw {
-            status: 400,
-            message: 'Failed to build SQL statement'
-          };
-        }
-
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-        // parse the rows from the response
-        const rows = { rows: (response && response.rows) || [] };
-
-        // parse the count from the response
-        const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-        return res.status(200).json({ ...rows, ...count });
+      if (!sqlStatement) {
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
       }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      // parse the rows from the response
+      const rows = { rows: (response && response.rows) || [] };
+
+      // parse the count from the response
+      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
+
+      return res.status(200).json({ ...rows, ...count });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       throw error;
