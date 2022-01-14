@@ -1,5 +1,5 @@
 import * as Knex from 'knex';
-const DB_SCHEMA = 'public';
+const DB_SCHEMA = 'invasivesbc';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     set search_path=invasivesbc,public;
     drop table if exists user_role;
     create table user_role(
-        role_id integer not null,
+        role_id serial primary key not null,
         role_description varchar(250) not null,
         role_name varchar(250) not null,
         created_at timestamp default CURRENT_TIMESTAMP,
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
         UNIQUE (user_id, role_id)
     );
 
-    CREATE SEQUENCE ${DB_SCHEMA}.user_role_role_id_seq
+    CREATE SEQUENCE IF NOT EXISTS ${DB_SCHEMA}.user_role_role_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -35,10 +35,7 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER SEQUENCE ${DB_SCHEMA}.user_role_role_id_seq OWNED BY ${DB_SCHEMA}.user_role.role_id;
 
-    ALTER TABLE ONLY ${DB_SCHEMA}.user_role ALTER COLUMN user_id SET DEFAULT nextval('${DB_SCHEMA}.user_role_role_id_seq'::regclass);
-
-    ALTER TABLE ONLY ${DB_SCHEMA}.user_role
-    ADD CONSTRAINT user_role_pkey PRIMARY KEY (role_id);
+    ALTER TABLE ONLY ${DB_SCHEMA}.user_role ALTER COLUMN role_id SET DEFAULT nextval('${DB_SCHEMA}.user_role_role_id_seq'::regclass);
   `);
 }
 
