@@ -17,9 +17,19 @@ import {
   Divider,
   MenuItem,
   TextField,
-  makeStyles
+  makeStyles,
+  Box,
+  IconButton
 } from '@material-ui/core';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
+import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -34,6 +44,67 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+interface QuickSearchToolbarProps {
+  clearSearch: () => void;
+  onChange: () => void;
+  value: string;
+}
+
+function QuickSearchToolbar(props: QuickSearchToolbarProps) {
+  return (
+    <Box
+      sx={{
+        p: 2,
+        pb: 1,
+        justifyContent: 'space-between',
+        display: 'flex',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap'
+      }}>
+      <div>
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+      </div>
+      <TextField
+        variant="standard"
+        value={props.value}
+        onChange={props.onChange}
+        placeholder="Search…"
+        InputProps={{
+          startAdornment: <SearchIcon fontSize="small" />,
+          endAdornment: (
+            <IconButton
+              title="Clear"
+              aria-label="Clear"
+              size="small"
+              style={{ visibility: props.value ? 'visible' : 'hidden' }}
+              onClick={props.clearSearch}>
+              <ClearIcon fontSize="small" />
+            </IconButton>
+          )
+        }}
+        style={{
+          width: {
+            xs: 1,
+            sm: 'auto'
+          },
+          m: (theme) => theme.spacing(1, 0.5, 1.5),
+          '& .MuiSvgIcon-root': {
+            mr: 0.5
+          },
+          '& .MuiInput-underline:before': {
+            borderBottom: 1,
+            borderColor: 'divider'
+          }
+        }}
+      />
+    </Box>
+  );
+}
+
 const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   enum Mode {
     GRANT,
@@ -47,6 +118,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const [rows, setRows] = useState<any[]>([]);
   const [requestRows, setRequestRows] = useState<any[]>([]);
+  const [searchedRows, setSearchedRows] = useState<any[]>([]);
 
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
@@ -71,6 +143,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [selectedRole, setSelectedRole] = useState<any>({});
+
+  const [searchText, setSearchText] = React.useState('');
 
   const [mode, setMode] = useState<any>(Mode.GRANT);
 
@@ -132,7 +206,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         requests.push(user);
       }
     }
-    console.log(requests);
     setSelectedRequestUsers(requests);
   };
 
@@ -199,7 +272,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     {
       field: 'role',
       headerName: 'Role(s)',
-      width: 557
+      width: 558
     },
     {
       field: 'actions',
@@ -225,6 +298,26 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       renderCell: renderRequestDetailsButton
     }
   ];
+
+  /* SEARCH */
+
+  const requestSearch = (searchValue: string) => {
+    setSearchText(searchValue);
+    const filteredRows = rows.filter((row: any) => {
+      return Object.values(row).some((field: any) => {
+        if (field != null) {
+          return field.toString().includes(searchValue);
+        } else {
+          return false;
+        }
+      });
+    });
+    setSearchedRows(filteredRows);
+  };
+
+  React.useEffect(() => {
+    setSearchedRows(rows);
+  }, [rows]);
 
   /* ON MOUNT */
 
@@ -316,7 +409,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const openApproveDeclineDialog = (mode: any) => {
-    console.log(selectedRequestUsers);
     if (mode === Mode.APPROVE) {
       setMode(Mode.APPROVE);
       setApproveDeclineDialogOpen(true);
@@ -375,7 +467,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const approveUsers = () => {
-    console.log('Request users: ', selectedRequestUsers);
     api.approveAccessRequests(selectedRequestUsers).then(() => {
       setApproveDeclineDialogOpen(false);
       loadUsers();
@@ -383,8 +474,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const declineUser = () => {
-    console.log('Request user: ', selectedRequestUsers[0]);
-    // Set the status of the selected access request to DECLINED
     api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
       setApproveDeclineDialogOpen(false);
       loadUsers();
@@ -413,10 +502,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <Card elevation={8}>
             <CardContent>
               <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <div style={{ height: 370, width: '100%' }}>
+                <div style={{ height: 440, width: '100%' }}>
                   <DataGrid
+                    components={{ Toolbar: QuickSearchToolbar }}
+                    componentsProps={{
+                      toolbar: {
+                        value: searchText,
+                        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+                          requestSearch(event.target.value);
+                        },
+                        clearSearch: () => requestSearch('')
+                      }
+                    }}
                     onSelectionModelChange={handleRowSelection}
-                    rows={rows}
+                    rows={searchedRows}
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
