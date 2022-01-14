@@ -7,7 +7,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getAccessRequestsSQL = (): SQLStatement => {
-  return SQL`SELECT * FROM access_request where status='NOT_APPROVED';`;
+  return SQL`SELECT * FROM access_request';`;
 };
 
 /**
@@ -110,6 +110,8 @@ export const declineAccessRequestSQL = (email): SQLStatement => {
 
 export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
   let preferredUsername = '';
+  const today = new Date();
+  const expiryDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
   if (accessRequest.idir !== (null || '')) {
     preferredUsername = accessRequest.idir_account_name;
   } else if (accessRequest.bceid !== (null || '')) {
@@ -145,7 +147,7 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             ${accessRequest.primary_email},
             ${preferredUsername},
             1,
-            null,
+            ${expiryDate.toUTCString()},
             1,
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP,
