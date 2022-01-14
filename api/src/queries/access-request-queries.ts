@@ -62,7 +62,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         comments,
         status,
         idir_userid,
-        bcied_userid
+        bceid_userid
     )
     VALUES (
         ${accessRequest.idir ? accessRequest.idir : null},

@@ -478,6 +478,22 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const getUserByIDIR = async (idir_userid): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      url: options.baseUrl + `/application-user?idir=${idir_userid}`
+    });
+  };
+
+  const getUserByBCEID = async (bceid_userid): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
+    });
+  };
+
   /**
    * Create a new activity record.
    *
@@ -806,6 +822,8 @@ export const useInvasivesApi = () => {
     batchGrantRoleToUser,
     revokeRoleFromUser,
     getRoles,
-    getAccessRequests
+    getAccessRequests,
+    getUserByIDIR,
+    getUserByBCEID
   };
 };
