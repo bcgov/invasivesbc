@@ -52,7 +52,6 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const loginUser = async () => {
     await keycloak?.obj?.login();
     const user = await keycloak?.obj?.loadUserInfo();
-    console.log('userinfo ');
     console.dir(user);
     // const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
@@ -64,7 +63,6 @@ export const AuthStateContextProvider: React.FC = (props) => {
     if (keycloak?.obj?.authenticated) {
       keycloak?.obj?.loadUserInfo().then((info) => {
         if (info) {
-          console.log('userinfo ', info);
           setUserInfo(info);
           setUserInfoLoaded(true);
         }
