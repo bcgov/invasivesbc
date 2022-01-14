@@ -67,9 +67,10 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
         flexWrap: 'wrap'
       }}>
       <div>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
+        <GridToolbarColumnsButton style={{ color: '#223f75' }} />
+        <GridToolbarFilterButton style={{ color: '#223f75' }} />
         <GridToolbarExport
+          style={{ color: '#223f75' }}
           csvOptions={{
             includeHeaders: true,
             allColumns: true,
@@ -101,10 +102,10 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
             sm: 'auto'
           },
           m: (theme) => theme.spacing(1, 0.5, 1.5),
-          '& .MuiSvgIcon-root': {
+          '& .MuiSvgIconRoot': {
             mr: 0.5
           },
-          '& .MuiInput-underline:before': {
+          '& .MuiInputUnderline:before': {
             borderBottom: 1,
             borderColor: 'divider'
           }
@@ -156,7 +157,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const [mode, setMode] = useState<any>(Mode.GRANT);
 
-  /* ROW DATA CONTROLS */
+  /* 
+    ================================================================================================
+    ROW DATA CONTROLS 
+    ================================================================================================
+  */
 
   const renderDetailsButton = (params: GridValueGetterParams) => {
     return (
@@ -194,7 +199,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleRowSelection = (ids) => {
     setSelectedUserIds(ids);
-    // Get user details from ids
     const selectedUsers = [];
     for (let i = 0; i < ids.length; i++) {
       const user = users.find((u) => u.user_id === ids[i]);
@@ -217,7 +221,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setSelectedRequestUsers(requests);
   };
 
-  /* ROWS */
+  /* 
+    ================================================================================================
+    ROWS 
+    ================================================================================================
+  */
 
   const getRows = async (users: any) => {
     const rows = [];
@@ -256,6 +264,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const getRequestRows = async (requests: any) => {
     const rows = [];
     for (let i = 0; i < requests.length; i++) {
+      console.log(requests[i]);
       rows.push({
         id: requests[i].access_request_id,
         firstName: requests[i].first_name,
@@ -280,32 +289,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setRequestRows(rows);
   };
 
-  /* COLUMNS */
+  /* 
+    ================================================================================================
+    COLUMNS 
+    ================================================================================================
+  */
 
   const columns: GridColDef[] = [
-    /*
-          id: user.user_id,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          email: user.email,
-          expiryDate: new Date(user.expiry_date).toLocaleString(),
-          role: roleString,
-          accountStatus: user.account_status,
-          activationStatus: user.activation_status,
-          bceidUserId: user.bceid_userid,
-          idirUserId: user.idir_userid,
-          preferredUsername: user.preferred_username,
-          createdAt: new Date(user.created_at).toLocaleString(),
-          idirAccountName: user.idir_account_name,
-          bceidAccountName: user.bceid_account_name,
-          workPhoneNumber: user.work_phone_number,
-          fundingAgencies: user.funding_agencies,
-          employer: user.employer,
-          pacNumber: user.pac_number,
-          pacServiceNumber1: user.pac_service_number_1,
-          pacServiceNumber2: user.pac_service_number_2,
-
-          */
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'firstName', headerName: 'First Name', width: 130 },
     { field: 'lastName', headerName: 'Last Name', width: 130 },
@@ -355,7 +345,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     }
   ];
 
-  /* SEARCH */
+  /* 
+    ================================================================================================
+    SEARCH 
+    ================================================================================================
+  */
 
   const requestSearch = (searchValue: string) => {
     setSearchText(searchValue);
@@ -384,7 +378,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     getEmployers();
   }, []);
 
-  /* LOAD INFO */
+  /* 
+    ================================================================================================
+    LOAD INFO 
+    ================================================================================================
+  */
 
   const loadUsers = () => {
     api.getApplicationUsers().then(async (res) => {
@@ -438,7 +436,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     });
   };
 
-  /* DIALOG CONTROLS */
+  /* 
+    ================================================================================================
+    DIALOG CONTROLS 
+    ================================================================================================
+  */
 
   const openDetailsDialog = (user: any) => {
     setDetailsDialogUser(user);
@@ -538,12 +540,16 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const renewUser = () => {
     api.renewUser(detailsDialogUser.id).then(() => {
-      closeDetailsDialog();
       loadUsers();
+      closeDetailsDialog();
     });
   };
 
-  /* FORM CONTROLS */
+  /* 
+    ================================================================================================
+    FORM CONTROLS 
+    ================================================================================================
+  */
 
   const handleSelectedRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRole(event.target.value);
@@ -669,9 +675,17 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Grid>
       </Grid>
 
-      {/* DIALOGS */}
+      {/* 
+        ================================================================================================
+        DIALOGS 
+        ================================================================================================
+      */}
 
-      {/* Details dialog */}
+      {/*
+        ###
+        Details dialog
+        ###
+      */}
       {detailsDialogUserLoaded && (
         <Dialog
           open={detailsDialogOpen}
@@ -787,11 +801,29 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 ))}
               </Grid>
             )}
-            <Grid item>
-              <Typography variant="h6">
-                <strong>Funding Agencies: </strong>
-              </Typography>
-            </Grid>
+            {detailsDialogUser.fundingAgencies && (
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Funding Agencies: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
+                    <Typography variant="h6" key={agency}>
+                      <li key={agency}>
+                        {agencyCodes.map((agencyCode) => {
+                          if (agencyCode.value === agency) {
+                            return agencyCode.description;
+                          }
+                          return '';
+                        })}
+                      </li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
+            )}
             {detailsDialogUser.roles && detailsDialogUser.roles.length > 0 && (
               <>
                 <Grid item>
@@ -826,7 +858,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Dialog>
       )}
 
-      {/* Access Request Details Dialog */}
+      {/* 
+        ### 
+        Access Request Details Dialog 
+        ###
+      */}
       {detailsDialogRequestUserLoaded && (
         <Dialog
           open={requestDetailsDialogOpen}
@@ -960,7 +996,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Dialog>
       )}
 
-      {/* Role grant/revoke flexible dialog */}
+      {/* 
+        ###
+        Role grant/revoke flexible dialog 
+        ###
+      */}
       <Dialog
         open={roleDialogOpen}
         onClose={closeRoleDialog}
@@ -983,7 +1023,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <DialogContentText>
             Select a role to {mode === Mode.GRANT ? 'grant to the selected users.' : 'revoke from the selected user.'}
           </DialogContentText>
-          {/* Single-select dropdown with list of roles should be here */}
           <TextField
             style={{ width: '100%' }}
             classes={{ root: classes.root }}
@@ -998,14 +1037,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               onChange: handleSelectedRoleChange
             }}>
             {mode === Mode.GRANT
-              ? // Map available roles to dropdown list
-                availableRoles.map((role) => (
+              ? availableRoles.map((role) => (
                   <MenuItem key={role.id} value={role.id}>
                     {role.description}
                   </MenuItem>
                 ))
-              : // Map user's roles to dropdown list
-                userRoles.map((role) => (
+              : userRoles.map((role) => (
                   <MenuItem key={role.id} value={role.id}>
                     {role.description}
                   </MenuItem>
@@ -1029,7 +1066,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </DialogActions>
       </Dialog>
 
-      {/* Approve request / decline request flexible dialog */}
+      {/* 
+        ###
+        Approve request / decline request flexible dialog
+        ###
+      */}
       <Dialog
         open={approveDeclineDialogOpen}
         onClose={closeApproveDeclineDialog}
