@@ -262,6 +262,26 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request/approve`,
+      data: { approvedAccessRequests: accessRequests }
+    });
+    return data;
+  };
+
+  const declineAccessRequest = async (accessRequest: any): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request/decline`,
+      data: { declinedAccessRequest: accessRequest }
+    });
+    return data;
+  };
+
   const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
     return Http.request({
       method: 'DELETE',
@@ -301,7 +321,7 @@ export const useInvasivesApi = () => {
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request`,
-      data: accessRequest
+      data: { newAccessRequest: accessRequest }
     });
 
     return data;
@@ -824,6 +844,8 @@ export const useInvasivesApi = () => {
     getRoles,
     getAccessRequests,
     getUserByIDIR,
-    getUserByBCEID
+    getUserByBCEID,
+    approveAccessRequests,
+    declineAccessRequest
   };
 };
