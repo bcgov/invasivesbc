@@ -500,12 +500,22 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const renewUser = async (id): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'POST',
+      url: options.baseUrl + `/api/application-user/renew?userId=${id}`
+    });
+    return data;
+  };
+
   const getUserByIDIR = async (idir_userid): Promise<any> => {
     const { data } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user?idir=${idir_userid}`
     });
+    return data;
   };
 
   const getUserByBCEID = async (bceid_userid): Promise<any> => {
@@ -514,6 +524,7 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
     });
+    return data;
   };
 
   /**
@@ -848,6 +859,7 @@ export const useInvasivesApi = () => {
     getUserByIDIR,
     getUserByBCEID,
     approveAccessRequests,
-    declineAccessRequest
+    declineAccessRequest,
+    renewUser
   };
 };
