@@ -60,7 +60,9 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         pac_service_number_2,
         requested_roles,
         comments,
-        status
+        status,
+        idir_userid,
+        bcied_userid
     )
     VALUES (
         ${accessRequest.idir ? accessRequest.idir : null},
@@ -76,7 +78,9 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
         ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
-        ${accessRequest.status}
+        ${accessRequest.status},
+        ${accessRequest.idirUserId ? accessRequest.idirUserId : null},
+        ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null}
     );
   `;
 };
