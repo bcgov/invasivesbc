@@ -23,156 +23,95 @@ export async function up(knex: Knex): Promise<void> {
 
 	--too big but would simply things:
 	--CREATE INDEX point_of_interest_payload_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_payload);
+	set search_path=invasivesbc;
 
-
-	drop index if exists point_of_interest_id_idx;
-	CREATE INDEX point_of_interest_id_idx ON invasivesbc.point_of_interest_incoming_data (point_of_interest_incoming_data_id);
-
-	drop index if exists point_of_interest_species_positve_idx;
-	CREATE INDEX point_of_interest_species_positve_idx ON invasivesbc.point_of_interest_incoming_data USING btree (((point_of_interest_incoming_data.point_of_interest_payload -> 'species_positive')::text));
-
-
-	drop index if exists point_of_interest_species_negative_idx;
-	CREATE INDEX point_of_interest_species_negative_idx ON invasivesbc.point_of_interest_incoming_data USING btree (((point_of_interest_incoming_data.point_of_interest_payload -> 'species_negative')::text));
-
-	--nested array field indexes
-	drop index if exists point_of_interest_survey_date_idx;
-	CREATE INDEX point_of_interest_survey_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'surveys' -> 'survey_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_chemical_treatment_date_idx;
-	CREATE INDEX point_of_interest_chemical_treatment_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'chemical_treatments' -> 'treatment_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_chemical_monitoring_date_idx;
-	CREATE INDEX point_of_interest_chemical_monitoring_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'chemical_treatments' -> 'monitoring' -> 'monitoring_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_biological_dispersal_date_idx;
-	CREATE INDEX point_of_interest_biological_dispersal_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'biological_dispersals' -> 'monitoring_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_biological_treatment_date_idx;
-	CREATE INDEX point_of_interest_biological_treatment_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'biological_treatments' -> 'treatment_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_biological_treatment_monitoring_date_idx;
-	CREATE INDEX point_of_interest_biological_treatment_monitoring_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'biological_treatments' -> 'monitoring' -> 'monitoring_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_mechanical_treatment_date_idx;
-	CREATE INDEX point_of_interest_mechanical_treatment_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'mechanical_treatments' -> 'treatment_date'::text)::text)) ;
-
-	drop index if exists point_of_interest_mechanical_treatment_monitoring_date_idx;
-	CREATE INDEX point_of_interest_mechanical_treatment_monitoring_date_idx ON invasivesbc.point_of_interest_incoming_data USING btree (immutable_to_date((point_of_interest_payload -> 'form_data' -> 'mechanical_treatments' -> 'monitoring' -> 'monitoring_date'::text)::text)) ;
-
-
-
-	--main view to parse json and sort dates
-
-	drop view if exists IAPP_SITE_SUMMARY_slow cascade;
-	create or replace view IAPP_SITE_SUMMARY_slow as (
-	with summary_fields as  (SELECT
-		point_of_interest_incoming_data.point_of_interest_id as id,
-		btrim((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_type_data'::text) -> 'site_id'::text)::text, '"'::text) AS site_id,
-		btrim((((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_data'::text) -> 'project_code'::text) -> 0) -> 'description'::text)::text, '"'::text) AS project_code,
-		btrim((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_data'::text) -> 'general_comment'::text)::text, '"'::text) AS general_comment,
-		btrim((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_type_data'::text) -> 'site_id'::text)::text, '"'::text) AS jurisdiction,
-		btrim((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_type_data'::text) -> 'slope'::text)::text, '"'::text) AS slope,
-		btrim((((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'point_of_interest_type_data'::text) -> 'aspect'::text)::text, '"'::text) AS aspect,
-		(point_of_interest_incoming_data.point_of_interest_payload -> 'species_positive'::text) as species_positive,
-		(point_of_interest_incoming_data.point_of_interest_payload -> 'species_positive'::text) as species_negative
-		FROM point_of_interest_incoming_data
-	),
-	survey_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'surveys'::text) -> 'survey_date'::text)::text, '"'::text)::text) as survey_dates
-			FROM point_of_interest_incoming_data
-	),
-	chemical_treatment_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id As id,
-			immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'chemical_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as chemical_treatment_dates
-			FROM point_of_interest_incoming_data
-	),
-	chemical_treatment_monitoring_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'chemical_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as chemical_treatment_monitoring_dates
-			FROM point_of_interest_incoming_data
-	),
-	biological_dispersal_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'biological_dispersals'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as bio_dispersal_dates
-			FROM point_of_interest_incoming_data
-	),
-	biological_treatment_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'biological_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as bio_treatment_dates
-			FROM point_of_interest_incoming_data
-	),
-	biological_treatment_monitoring_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'biological_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as bio_treatment_monitoring_dates
-			FROM point_of_interest_incoming_data
-	),
-	mechanical_treatment_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'mechanical_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as mechanical_treatment_dates
-			FROM point_of_interest_incoming_data
-	),
-	mechanical_treatment_monitoring_dates as (
-		SELECT
-			point_of_interest_incoming_data.point_of_interest_id AS id,
-			immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'mechanical_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as mechanical_treatment_monitoring_dates
-			FROM point_of_interest_incoming_data
+	create index if not exists survey_date_idx on survey_extract (survey_date);
+	create index if not exists chemical_treatment_date_idx on chemical_treatment_extract (treatment_date);
+	create index if not exists chemical_monitoring_date_idx on chemical_monitoring_extract (inspection_date);
+	create index if not exists biological_disperal_date_idx on biological_dispersal_extract (inspection_date);
+	create index if not exists biological_treatment_date_idx on biological_treatment_extract (treatment_date);
+	create index if not exists biological_monitoring_date_idx on biological_monitoring_extract (inspection_date);
+	create index if not exists mechanical_treatment_date_idx on mechanical_treatment_extract (treatment_date);
+	create index if not exists mechanical_monitoring_date_idx on mechanical_monitoring_extract (inspection_date);
+	
+	create index if not exists survey_site_id_idx on survey_extract (site_id);
+	create index if not exists chemical_treatment_site_id_idx on chemical_treatment_extract (site_id);
+	create index if not exists chemical_monitoring_site_id_idx on chemical_monitoring_extract (site_id);
+	create index if not exists biological_disperal_site_id_idx on biological_dispersal_extract (site_id);
+	create index if not exists biological_treatment_site_id_idx on biological_treatment_extract (site_id);
+	create index if not exists biological_monitoring_site_id_idx on biological_monitoring_extract (site_id);
+	create index if not exists mechanical_treatment_site_id_idx on mechanical_treatment_extract (site_id);
+	create index if not exists mechanical_monitoring_site_id_idx on mechanical_monitoring_extract (site_id);
+	
+	--drop view if exists iapp_site_summary;
+	--drop view if exists iapp_site_summary_slow;
+	
+	create or replace view iapp_site_summary_slow  as (
+	
+	with date_summary as (
+	   
+	select sse.site_id
+	,min(se.survey_date) as min_survey
+	,max(se.survey_date) as max_survey
+	,min(cte.treatment_date) as min_chemical_treatment_dates
+	,max(cte.treatment_date) as max_chemical_treatment_dates
+	,min(cme.inspection_date) as min_chemical_treatment_monitoring_dates
+	,max(cme.inspection_date) as max_chemical_treatment_monitoring_dates
+	,min(bde.inspection_date) as min_bio_dispersal_dates
+	,max(bde.inspection_date) as max_bio_dispersal_dates
+	,min(bte.treatment_date) as min_bio_treatment_dates
+	,max(bte.treatment_date) as max_bio_treatment_dates
+	,min(bme.inspection_date) as min_bio_treatment_monitoring_dates
+	,max(bme.inspection_date) as max_bio_treatment_monitoring_dates
+	,min(mte.treatment_date) as min_mechanical_treatment_dates
+	,max(mte.treatment_date) as max_mechanical_treatment_dates
+	,min(mme.inspection_date) as min_mechanical_treatment_monitoring_dates
+	,max(mme.inspection_date) as max_mechanical_treatment_monitoring_dates
+	from site_selection_extract sse 
+	left join survey_extract se on sse.site_id = se.site_id
+	left join chemical_treatment_extract cte on sse.site_id = cte.site_id
+	left join chemical_monitoring_extract cme on sse.site_id = cme.site_id
+	left join biological_dispersal_extract bde on sse.site_id = bde.site_id
+	left join biological_treatment_extract bte on sse.site_id = bte.site_id
+	left join biological_monitoring_extract bme on sse.site_id = bme.site_id
+	left join mechanical_treatment_extract mte on sse.site_id = mte.site_id
+	left join mechanical_monitoring_extract mme on sse.site_id = mme.site_id
+	
+	group by sse.site_id 
 	)
-	SELECT
-		sf.id,
-		sf.site_id as site_id,
-		sf.species_positive,
-		sf.species_negative,
-		min(sd.survey_dates) as min_survey,
-		max(sd.survey_dates) as max_survey,
-		min(ct.chemical_treatment_dates) as min_chemical_treatment_dates,
-		max(ct.chemical_treatment_dates) as max_chemical_treatment_dates,
-		min(ctm.chemical_treatment_monitoring_dates) as min_chemical_treatment_monitoring_dates,
-		max(ctm.chemical_treatment_monitoring_dates) as max_chemical_treatment_monitoring_dates,
-		max(bd.bio_dispersal_dates) as max_bio_dispersal_dates,
-		min(bd.bio_dispersal_dates) as min_bio_dispersal_dates,
-		max(bt.bio_treatment_dates) as max_bio_treatment_dates,
-		max(bt.bio_treatment_dates) as min_bio_treatment_dates,
-		max(btm.bio_treatment_monitoring_dates) as max_bio_treatment_monitoring_dates,
-		min(btm.bio_treatment_monitoring_dates) as min_bio_treatment_monitoring_dates,
-		min(mt.mechanical_treatment_dates) as min_mechanical_treatment_dates,
-		max(mt.mechanical_treatment_dates) as max_mechanical_treatment_dates,
-		min(mtm.mechanical_treatment_monitoring_dates) as min_mechanical_treatment_monitoring_dates,
-		max(mtm.mechanical_treatment_monitoring_dates) as max_mechanical_treatment_monitoring_dates,
-		case when min(sd.survey_dates) IS null then false else true end as has_surveys,
-		case when min(btm.bio_treatment_monitoring_dates) IS null then false else true end as has_biological_treatment_monitorings,
-		case when min(bt.bio_treatment_dates) IS null then false else true end as has_biological_treatments,
-		case when min(bd.bio_dispersal_dates) IS null then false else true end as has_biological_dispersals,
-		case when min(ctm.chemical_treatment_monitoring_dates) IS null then false else true end as has_chemical_treatment_monitorings,
-		case when min(ct.chemical_treatment_dates) IS null then false else true end as has_chemical_treatments,
-		case when min(mt.mechanical_treatment_dates) IS null then false else true end as has_mechanical_treatments,
-		case when min(mtm.mechanical_treatment_monitoring_dates) IS null then false else true end as has_mechanical_treatment_monitorings
-	FROM summary_fields sf
-		left join survey_dates sd on sd.id = sf.id
-		left join chemical_treatment_dates ct on ct.id = sf.id
-		left join chemical_treatment_monitoring_dates ctm on ctm.id = sf.id
-		left join biological_dispersal_dates bd on bd.id = sf.id
-		left join biological_treatment_dates bt on bt.id = sf.id
-		left join biological_treatment_monitoring_dates btm on btm.id = sf.id
-		left join mechanical_treatment_dates mt on mt.id = sf.id
-		left join mechanical_treatment_monitoring_dates mtm on mtm.id = sf.id
-		group by sf.id, sf.site_id, sf.species_positive, sf.species_negative
+	select sse.*
+	,ds.min_survey
+	,ds.max_survey 
+	,ds.min_chemical_treatment_dates
+	,ds.max_chemical_treatment_dates
+	,ds.min_chemical_treatment_monitoring_dates
+	,ds.max_chemical_treatment_monitoring_dates
+	,ds.min_bio_dispersal_dates
+	,ds.max_bio_dispersal_dates
+	,ds.min_bio_treatment_dates
+	,ds.max_bio_treatment_dates
+	,ds.min_bio_treatment_monitoring_dates
+	,ds.max_bio_treatment_monitoring_dates
+	,ds.min_mechanical_treatment_dates
+	,ds.max_mechanical_treatment_dates
+	,ds.min_mechanical_treatment_monitoring_dates
+	,ds.max_mechanical_treatment_monitoring_dates
+	,case when ds.min_survey IS null then false else true end as has_surveys
+	,case when ds.max_survey IS null then false else true end as has_biological_treatment_monitorings
+	,case when ds.max_bio_treatment_dates IS null then false else true end as has_biological_treatments
+	,case when ds.min_bio_dispersal_dates IS null then false else true end as has_biological_dispersals
+	,case when ds.max_chemical_treatment_monitoring_dates IS null then false else true end as has_chemical_treatment_monitorings
+	,case when ds.min_chemical_treatment_dates IS null then false else true end as has_chemical_treatments
+	,case when ds.max_mechanical_treatment_dates IS null then false else true end as has_mechanical_treatments
+	,case when ds.max_mechanical_treatment_monitoring_dates IS null then false else true end as has_mechanical_treatment_monitorings
+	from site_selection_extract sse 
+	join date_summary ds on ds.site_id = sse.site_id
+	
 	);
-
-
-	--for testing
-	--select * from IAPP_SITE_SUMMARY limit 100
-
 	--drop materialized view if exists iapp_site_summary;
 	--create materialized view iapp_site_summary as select * from iapp_site_summary_slow;
+	--GRANT SELECT ON iapp_site_summary  TO invasivebc;
+
   `);
 }
 
