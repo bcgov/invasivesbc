@@ -1,5 +1,16 @@
 import { Geolocation } from '@capacitor/geolocation';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  Switch,
+  Typography
+} from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
@@ -38,8 +49,13 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
+  const [liveValidation, setLiveValidation] = useState(false);
   const { keycloak } = useKeycloak();
   const { userInfo } = useContext(AuthStateContext);
+
+  const liveValidationHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLiveValidation(event.target.checked);
+  };
 
   const getLocation = async () => {
     const position = await Geolocation.getCurrentPosition();
@@ -377,9 +393,18 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Activity Form</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.formContainer}>
+          <Typography variant="h6">Form Settings</Typography>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={liveValidation} onChange={liveValidationHandleChange} />}
+              label="Live Validation"
+            />
+          </FormGroup>
+
           <FormContainer
             {...props}
             onSave={onSave}
+            liveValidation={liveValidation}
             saveStatus={activity.syncStatus}
             disableSave={
               activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL ||

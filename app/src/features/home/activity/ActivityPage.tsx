@@ -58,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     zIndex: 0
+  },
+  formContainer: {
+    display: 'block'
   }
 }));
 

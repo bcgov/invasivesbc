@@ -69,6 +69,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   disableApprove?: boolean;
   onDisapprove?: Function;
   disableDisapprove?: boolean;
+  liveValidation: boolean;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
@@ -365,7 +366,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   }}
                   uiSchema={schemas.uiSchema}
                   formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
-                  liveValidate={false}
+                  liveValidate={props.liveValidation}
                   showErrorList={true}
                   validate={props.customValidation}
                   transformErrors={props.customErrorTransformer}
