@@ -285,7 +285,6 @@ export function getWeatherCondTemperatureValidator(): rjsfValidator {
       return errors;
     }
 
-    console.log(formData);
     // validate temperature
 
     errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors = [];
@@ -807,6 +806,41 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
   };
 }
 
+export function getPestManagementPlanValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.Treatment_ChemicalPlant_Information
+    ) {
+      return errors;
+    }
+
+    const { pest_management_plan, unlisted_drop_down } =
+      formData.activity_subtype_data.Treatment_ChemicalPlant_Information;
+
+    if (!pest_management_plan && !unlisted_drop_down) {
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan'].addError(
+        'Either Pest Management Plan or Unlisted Drop Down field has to be filled.'
+      );
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['unlisted_drop_down'].addError(
+        'Either Pest Management Plan or Unlisted Drop Down field has to be filled.'
+      );
+    }
+
+    if (pest_management_plan && unlisted_drop_down) {
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan'].addError(
+        'You must only fill either Pest Management Plan or Unlisted Drop Down field.'
+      );
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['unlisted_drop_down'].addError(
+        'You must only fill either Pest Management Plan or Unlisted Drop Down field.'
+      );
+    }
+
+    return errors;
+  };
+}
+
 /* 
   function to transfer error state from chemical details form to main rjsf form
  */
@@ -815,7 +849,6 @@ export function transferErrorsFromChemDetails(): rjsfValidator {
     if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.chemical_treatment_details) {
       return errors;
     }
-
     if (!formData.activity_subtype_data.chemical_treatment_details.errors !== true) {
       errors.activity_subtype_data.addError('Chemical Treatment details form has errors');
     } else {

@@ -64,6 +64,35 @@ export const Treatment = {
   }
 };
 
+export const Treatment_Chemical = {
+  title: 'Treatment Information',
+  type: 'object',
+  required: ['activity_persons'],
+  properties: {
+    activity_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Treatment Person(s)',
+      items: {
+        allOf: [
+          { ...Persons },
+          {
+            properties: {
+              applicator_license: {
+                type: 'string',
+                title: 'Pesticide Applicator Certificate Number',
+                'x-tooltip-text': 'Valid pesticide applicator certificate number'
+              }
+            },
+            required: ['applicator_license']
+          }
+        ]
+      },
+      'x-tooltip-text': 'Name of person(s) doing treatment'
+    }
+  }
+};
+
 export const Collection = {
   title: 'Collection Information',
   type: 'object',

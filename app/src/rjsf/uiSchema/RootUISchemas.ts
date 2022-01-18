@@ -106,7 +106,11 @@ const Activity_Treatment_ChemicalPlantTerrestrial = {
     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
-'activity_subtype_data': {
+  'activity_type_data':{
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.Treatment_Chemical
+  },
+  'activity_subtype_data': {
     Well_Information: {
       ...BaseUISchemaComponents.general_objects.Well_Information 
     },

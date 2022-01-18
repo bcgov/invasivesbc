@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button } from '@material-ui/core';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
@@ -33,6 +33,7 @@ const HerbicidesAccordion = (props) => {
                       ...prevDetails,
                       formData: {
                         ...prevDetails.formData,
+                        skipAppRateValidation: false,
                         tank_mix_object: {
                           ...prevDetails.formData.tank_mix_object,
                           herbicides: newHerbicidesArr
@@ -48,6 +49,7 @@ const HerbicidesAccordion = (props) => {
                       ...prevDetails,
                       formData: {
                         ...prevDetails.formData,
+                        skipAppRateValidation: false,
                         herbicides: newHerbicidesArr
                       }
                     };
