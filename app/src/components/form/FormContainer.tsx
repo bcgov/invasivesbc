@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -75,12 +75,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
-
   const [formRef, setFormRef] = useState(null);
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
+
+  const [lastPreservedEvent, setlastPreservedEvent] = useState(null);
+  const [blurTriggered, setblurTriggered] = useState(null);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -210,23 +212,31 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   };
 
   //handle blur the field
-  const blurHandler = (...args: string[]) => {
-    const $this = formRef;
-    const field = getFieldNameFromArgs(args);
-    const { formData, uiSchema } = $this.state;
-    let path = getPathToFieldName(uiSchema, (key) => key === field);
-    if (deepFind(uiSchema, path[0] + '')) {
-      if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
-        const { errorSchema } = $this.validate(formData);
-        let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
-        if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
-          setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
-          setField(field);
-          openDialog();
-        }
-      }
-    }
+  const blurHandler = (args: string[]) => {
+    // const $this = formRef;
+    // const field = getFieldNameFromArgs(args);
+    // const { formData, uiSchema } = $this.state;
+    // let path = getPathToFieldName(uiSchema, (key) => key === field);
+    // if (deepFind(uiSchema, path[0] + '')) {
+    //   if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
+    //     const { errorSchema } = $this.validate(formData);
+    //     let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
+    //     if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
+    //       setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
+    //       setField(field);
+    //       openDialog();
+    //     }
+    //   }
+    // }
+    //calling onformchange from onblur to prevent too many rerenders
   };
+
+  useEffect(() => {
+    if (!props.onFormChange || !lastPreservedEvent) {
+      return;
+    }
+    props.onFormChange(lastPreservedEvent, formRef, focusedFieldArgs);
+  }, [blurTriggered]);
 
   //handle focus the field
   //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
@@ -325,130 +335,130 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     getApiSpec();
   }, [props.activity.activitySubtype, props.activity.activity_subtype]);
 
-  if (!schemas.schema || !schemas.uiSchema) {
-    return <CircularProgress />;
-  }
-
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 
-  return (
-    <Box width="100%">
-      <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
-        <SelectAutoCompleteContextProvider>
-          <>
-            <Form
-              ObjectFieldTemplate={ObjectFieldTemplate}
-              FieldTemplate={FieldTemplate}
-              ArrayFieldTemplate={ArrayFieldTemplate}
-              widgets={{
-                'multi-select-autocomplete': MultiSelectAutoComplete,
-                'single-select-autocomplete': SingleSelectAutoComplete
-              }}
-              key={props.activity?._id}
-              disabled={isDisabled}
-              formData={props.activity?.formData || null}
-              schema={schemas.schema}
-              onFocus={focusHandler}
-              onBlur={blurHandler}
-              uiSchema={schemas.uiSchema}
-              formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
-              liveValidate={true}
-              showErrorList={true}
-              validate={props.customValidation}
-              transformErrors={props.customErrorTransformer}
-              autoComplete="off"
-              ErrorList={(err) => {
-                return (
-                  <div>
-                    <Typography color="error" variant="h5">
-                      The form contains one or more errors!
-                    </Typography>
-                    <Typography color="error" variant="h6">
-                      Incorrect fields are highlighted below.
-                    </Typography>
-                  </div>
-                );
-              }}
-              onChange={(event) => {
-                if (!props.onFormChange) {
-                  return;
-                }
-                props.onFormChange(event, formRef, focusedFieldArgs);
-              }}
-              onError={(error) => {
-                if (!props.onFormSubmitError) {
-                  return;
-                }
+  return useMemo(() => {
+    if (!schemas.schema || !schemas.uiSchema) {
+      return <CircularProgress />;
+    } else {
+      return (
+        <Box width="100%">
+          <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
+            <SelectAutoCompleteContextProvider>
+              <>
+                <Form
+                  ObjectFieldTemplate={ObjectFieldTemplate}
+                  FieldTemplate={FieldTemplate}
+                  ArrayFieldTemplate={ArrayFieldTemplate}
+                  widgets={{
+                    'multi-select-autocomplete': MultiSelectAutoComplete,
+                    'single-select-autocomplete': SingleSelectAutoComplete
+                  }}
+                  key={props.activity?._id}
+                  disabled={isDisabled}
+                  formData={props.activity?.formData || null}
+                  schema={schemas.schema}
+                  // onFocus={focusHandler}
+                  onBlur={(...args: string[]) => {
+                    blurHandler(args);
+                    setblurTriggered(Math.random());
+                  }}
+                  uiSchema={schemas.uiSchema}
+                  formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
+                  liveValidate={false}
+                  showErrorList={true}
+                  validate={props.customValidation}
+                  transformErrors={props.customErrorTransformer}
+                  autoComplete="off"
+                  ErrorList={(err) => {
+                    return (
+                      <div>
+                        <Typography color="error" variant="h5">
+                          The form contains one or more errors!
+                        </Typography>
+                        <Typography color="error" variant="h6">
+                          Incorrect fields are highlighted below.
+                        </Typography>
+                      </div>
+                    );
+                  }}
+                  onChange={(event) => {
+                    setlastPreservedEvent(event);
+                  }}
+                  onError={(error) => {
+                    if (!props.onFormSubmitError) {
+                      return;
+                    }
+                    props.onFormSubmitError(error, formRef);
+                  }}
+                  onSubmit={(event) => {
+                    if (!props.onFormSubmitSuccess) {
+                      return;
+                    }
+                    props.onFormSubmitSuccess(event, formRef);
+                  }}
+                  // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+                  // @ts-ignore: No overload matches this call ts(2769)
+                  ref={(form) => {
+                    if (!form) {
+                      return;
+                    }
+                    if (props.setParentFormRef) {
+                      props.setParentFormRef(form);
+                    }
+                    setFormRef(form);
+                  }}>
+                  <React.Fragment />
+                </Form>
 
-                props.onFormSubmitError(error, formRef);
-              }}
-              onSubmit={(event) => {
-                if (!props.onFormSubmitSuccess) {
-                  return;
-                }
+                {isActivityChemTreatment() && (
+                  <ChemicalTreatmentSpeciesForm
+                    onChange={props.onFormChange}
+                    formData={props.activity?.formData || null}
+                    schema={schemas.schema}
+                  />
+                )}
+              </>
+            </SelectAutoCompleteContextProvider>
+          </ThemeProvider>
 
-                props.onFormSubmitSuccess(event, formRef);
-              }}
-              // `ref` does exist, but currently is missing from the `index.d.ts` types file.
-              // @ts-ignore: No overload matches this call ts(2769)
-              ref={(form) => {
-                if (!form) {
-                  return;
-                }
-                if (props.setParentFormRef) {
-                  props.setParentFormRef(form);
-                }
-                setFormRef(form);
-              }}>
-              <React.Fragment />
-            </Form>
-
-            {isActivityChemTreatment() && (
-              <ChemicalTreatmentSpeciesForm
-                onChange={props.onFormChange}
-                formData={props.activity?.formData || null}
-                schema={schemas.schema}
-              />
-            )}
-          </>
-        </SelectAutoCompleteContextProvider>
-      </ThemeProvider>
-
-      <Box mt={3}>
-        <FormControlsComponent
-          onSubmit={() => formRef.submit()}
-          isDisabled={isDisabled}
-          activitySubtype={props.activity.activitySubtype}
-          onCopy={props.copyFormData ? () => props.copyFormData() : null}
-          onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
-          {...props}
-        />
-      </Box>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              proceedClick();
-            }}
-            color="primary"
-            autoFocus>
-            Proceed
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-  );
+          <Box mt={3}>
+            <FormControlsComponent
+              onSubmit={() => formRef.submit()}
+              isDisabled={isDisabled}
+              activitySubtype={props.activity.activitySubtype}
+              onCopy={props.copyFormData ? () => props.copyFormData() : null}
+              onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
+              {...props}
+            />
+          </Box>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description">
+            <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  proceedClick();
+                }}
+                color="primary"
+                autoFocus>
+                Proceed
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      );
+    }
+  }, [props.activity?.formData, schemas, props.onFormChange]);
 };
 
 export default FormContainer;
