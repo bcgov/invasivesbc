@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getSurveysSQL } from '../queries/iapp-queries';
+import { getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('iapp');
@@ -59,6 +59,37 @@ const getSurveyObj = (row: any) => {
     invasive_species_agency_code: row.survey_agency, // Come back later
     invasive_plant_distribution_code: distributionMap[row.distribution]
   };
+};
+
+const getOuterJSON = (response: any) => {
+  const oldRows = response.rows;
+  const newRows = [];
+
+  for (const row of oldRows) {
+    var flag = 0;
+    if (newRows.length < 1) {
+      newRows.push({
+        site_id: row.site_id,
+        surveys: [row]
+      });
+    } else {
+      for (const nRow of newRows) {
+        if (nRow.site_id === row.site_id) {
+          nRow.surveys.push(row);
+          flag = 1;
+          break;
+        }
+      }
+      if (flag === 0) {
+        newRows.push({
+          site_id: row.site_id,
+          surveys: [row]
+        });
+      }
+    }
+  }
+
+  return newRows;
 };
 
 const getIAPPjson = (response: any) => {
@@ -170,9 +201,7 @@ const getIAPPjson = (response: any) => {
   };
 };
 
-export const getIAPPsurveys = async (siteID: number) => {
-  const sanitizedSearchCriteria = new PointOfInterestSearchCriteria({ iappSiteID: 246481 });
-
+export const getIAPPsites = async (searchCriteria: any) => {
   let connection;
   try {
     connection = await getDBConnection();
@@ -189,7 +218,7 @@ export const getIAPPsurveys = async (siteID: number) => {
   }
 
   try {
-    const sqlStatement: SQLStatement = getSurveysSQL(sanitizedSearchCriteria);
+    const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(searchCriteria);
 
     if (!sqlStatement) {
       throw {
@@ -200,7 +229,10 @@ export const getIAPPsurveys = async (siteID: number) => {
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    return getIAPPjson(response);
+    // return getIAPPjson(response);
+    // response check:
+    // return response;
+    return getOuterJSON(response);
   } catch (error) {
     defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw error;
