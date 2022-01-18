@@ -459,7 +459,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         </Box>
       );
     }
-  }, [props.activity?.formData, schemas, props.onFormChange]);
+  }, [props.activity?.formData, schemas, props.onFormChange, props.liveValidation]);
 };
 
 export default FormContainer;
