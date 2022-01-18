@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
 
 	--too big but would simply things:
 	--CREATE INDEX point_of_interest_payload_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_payload);
-	set search_path=invasivesbc;
+	set search_path=invasivesbc,public;
 
 	create index if not exists survey_date_idx on survey_extract (survey_date);
 	create index if not exists chemical_treatment_date_idx on chemical_treatment_extract (treatment_date);
