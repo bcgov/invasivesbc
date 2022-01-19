@@ -183,6 +183,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       const roles = [];
       for (const role of response) {
         roles.push({
+          id: role.id,
           value: role.role_name,
           name: role.role_description
         });
