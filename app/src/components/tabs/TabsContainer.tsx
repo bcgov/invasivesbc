@@ -136,7 +136,7 @@ export interface ITabsContainerProps {
 //const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-  const { keycloak } = useContext(AuthStateContext);
+  const authContext = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -151,7 +151,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setOpen(false);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('keycloak: ', keycloak);
+    console.log('keycloak: ', authContext.keycloak);
     setAnchorEl(event.currentTarget);
   };
 
@@ -196,7 +196,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       }
     } else {
       try {
-        await keycloak?.obj?.logout();
+        await authContext.keycloak?.obj?.logout();
         setUserInfoLoaded(false);
         setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
       } catch (err) {
@@ -207,8 +207,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const loginUser = async () => {
-    await keycloak?.obj?.login();
-    const user = await keycloak?.obj?.loadUserInfo();
+    await authContext.keycloak?.obj?.login();
+    const user = await authContext.keycloak?.obj?.loadUserInfo();
     //  const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
     await setUserInfo(user);
@@ -288,13 +288,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const isAuthenticated = () => {
-    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
+    return (!isMobile() && authContext.keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
 
-  const isAdmin = () => {
+  const isAdmin = (): boolean => {
     if (isAuthenticated()) {
-      // TODO: Need to update authStateContext to check if user is admin
-      return true;
+      return authContext.hasRole('master_administrator');
     }
   };
 
@@ -304,6 +303,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const { connected, setConnected } = networkContext;
 
   useEffect(() => {
+    console.log('Active tab number: ', activeTab);
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname, getActiveTab]);
 
@@ -311,6 +311,18 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const setTabConfigBasedOnRoles = async () => {
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
+        tabsUserHasAccessTo.push({
+          label: 'Home',
+          path: '/home/landing',
+          icon: <Home fontSize={'small'} />
+        });
+
+        tabsUserHasAccessTo.push({
+          label: 'Map',
+          path: '/home/map',
+          icon: <Map fontSize={'small'} />
+        });
+
         if (isAuthenticated()) {
           tabsUserHasAccessTo.push({
             label: 'Search',
@@ -318,24 +330,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Search fontSize={'small'} />
           });
         }
-        tabsUserHasAccessTo.push({
-          label: 'Map',
-          path: '/home/map',
-          icon: <Map fontSize={'small'} />
-        });
 
         if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment fontSize={'small'} />
+            label: 'My Records',
+            path: '/home/activities',
+            icon: <HomeWork fontSize={'small'} />
           });
         }
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home fontSize={'small'} />
-        });
 
         if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
@@ -345,20 +347,20 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
+        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          tabsUserHasAccessTo.push({
+            label: 'Current Activity',
+            path: '/home/activity',
+            icon: <Assignment fontSize={'small'} />
+          });
+        }
+
         if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
             childPaths: ['/home/references/activity'],
             icon: <Bookmarks fontSize={'small'} />
-          });
-        }
-
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-          tabsUserHasAccessTo.push({
-            label: 'My Records',
-            path: '/home/activities',
-            icon: <HomeWork fontSize={'small'} />
           });
         }
 
@@ -374,7 +376,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-  }, [keycloak, userInfo, userInfoLoaded]);
+  }, [authContext.keycloak, userInfo, userInfoLoaded]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
@@ -488,7 +490,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   />
                   Theme
                 </MenuItem>
-                {keycloak.obj?.authenticated ? (
+                {isAdmin() && (
+                  <MenuItem onClick={navToAdmin}>
+                    <ListItemIcon>
+                      <AdminPanelSettingsIcon />
+                    </ListItemIcon>
+                    Admin
+                  </MenuItem>
+                )}
+                {authContext.keycloak.obj?.authenticated ? (
                   <MenuItem onClick={logoutUser}>
                     <ListItemIcon>
                       <LogoutIcon />
@@ -503,13 +513,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     Log In
                   </MenuItem>
                 )}
-                {/* TODO: Only show this if the user is master administrator */}
-                <MenuItem onClick={navToAdmin}>
-                  <ListItemIcon>
-                    <AdminPanelSettingsIcon />
-                  </ListItemIcon>
-                  Admin
-                </MenuItem>
               </Menu>
             </Hidden>
           </Grid>
@@ -555,7 +558,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {keycloak?.obj?.token && <p>Keycloak token is present</p>}
+          {authContext.keycloak?.obj?.token && <p>Keycloak token is present</p>}
           {networkContext.connected ? (
             <div>
               {userInfoLoaded ? (

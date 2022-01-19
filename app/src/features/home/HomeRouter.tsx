@@ -128,6 +128,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
       <AppRoute title="*" path="/home/*" component={() => <Redirect to="/page-not-found" />} />
+      <AppRoute title="Forbidden" path="/forbidden" component={() => <Redirect to="/forbidden" />} />
     </Switch>
   );
 };
