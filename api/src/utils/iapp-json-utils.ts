@@ -1,3 +1,4 @@
+import { speciesRefSql } from '../queries/species_ref';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
@@ -61,23 +62,61 @@ const getSurveyObj = (row: any) => {
   };
 };
 
+const getSpeciesRef = async () => {
+  let connection;
+  try {
+    connection = await getDBConnection();
+  } catch (e) {
+    console.log('error getting database connection');
+    console.log(JSON.stringify(e));
+  }
+
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+
+  try {
+    const sqlStatement: SQLStatement = speciesRefSql();
+
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    // return getIAPPjson(response);
+    // response check:
+    // return response;
+    return response.rows;
+  } catch (error) {
+    defaultLog.debug({ label: 'species_ref', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
+};
+
 export const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
-const getSpeciesRef = () => {
-  return [];
-};
-export const species_ref: Object[] = getSpeciesRef();
+export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: Object[]) => {
+  const species_and_genus_match_array = [...input.matchAll(species_and_genus_regex)];
+  const map_codes_only = species_and_genus_match_array.map((x) => {
+    return species_ref.filter((r: any) => {
+      if (r.genus === x[1] && r.species === x[2]) return r;
+    });
+  });
+  return map_codes_only.map((r: any) => {
+    return r[0].map_symbol;
+  });
+}; //todo: filter based on species (group 1) and genus (group 0)
 
-export const getSpeciesCodesFromIAPPDescriptionList = (input: string) => {
-  const species_and_genus = input.matchAll(species_and_genus_regex);
-  return [...species_and_genus];
-  const relevant_species_ref_row = species_ref.filter((x) => {
-    return x;
-  }); //todo: filter based on species (group 1) and genus (group 0)
-
-  return 'AW';
-};
-
-const mapSitesRowsToJSON = (site_extract_table_response: any) => {
+const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
+  const species_ref: Object[] = await getSpeciesRef();
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return row['site_id'];
   });
@@ -88,7 +127,10 @@ const mapSitesRowsToJSON = (site_extract_table_response: any) => {
 
   return site_extract_table_response.rows.map((row) => {
     let iapp_site = getIAPPjson(row);
-    (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(row['all_species_on_site']);
+    (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
+      row['all_species_on_site'],
+      species_ref
+    );
     //iapp_site.surveys = all_surveys.filter(row['site_id'])
     //      chemical_treatments: [],
     //     biological_dispersals: [],
