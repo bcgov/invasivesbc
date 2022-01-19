@@ -1,5 +1,5 @@
 import { Activity } from '../../Activity_Data_Components';
-import { Treatment } from '../../Activity_Type_Data_Components';
+import { Treatment, Treatment_Chemical } from '../../Activity_Type_Data_Components';
 import {
   Subtype_Data_Treatment_ChemicalPlantAquatic,
   Subtype_Data_Treatment_ChemicalPlantTerrestrial,
@@ -12,6 +12,9 @@ export const Activity_Treatment_ChemicalPlantTerrestrial = {
   properties: {
     activity_data: {
       ...Activity
+    },
+    activity_type_data: {
+      ...Treatment_Chemical
     },
     activity_subtype_data: {
       ...Subtype_Data_Treatment_ChemicalPlantTerrestrial

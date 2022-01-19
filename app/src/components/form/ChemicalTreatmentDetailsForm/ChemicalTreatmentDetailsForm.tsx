@@ -74,12 +74,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
       ? {
           invasive_plants: [],
           herbicides: [],
-          tank_mix: null,
+          tank_mix: false,
           chemical_application_method: null,
           tank_mix_object: {
             herbicides: [],
             calculation_type: null
-          }
+          },
+          skipAppRateValidation: false
         }
       : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
@@ -112,7 +113,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
           formDetails.formData,
           lerrors,
           businessCodes,
-          herbicideDictionary
+          herbicideDictionary,
+          formDetails.formData.skipAppRateValidation
         );
         setLocalErrors([...newErr]);
 
@@ -179,7 +181,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
               actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
 
-                localErrors.splice(index, 1);
+                setFormDetails((prev) => {
+                  return { ...prev, formData: { ...prev.formData, skipAppRateValidation: true } };
+                });
               },
               autoFocus: true
             }
@@ -225,29 +229,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
         <Typography variant="h5">Chemical Treatment Details</Typography>
         <Divider />
-
-        {localErrors.length > 0 && (
-          <>
-            <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
-              There are errors in this sub-form:
-            </Typography>
-            <List dense={true}>
-              {localErrors.map((err, index) => (
-                <ListItem key={index}>
-                  <ListItemText
-                    style={{ color: '#ff000' }}
-                    primary={
-                      <Typography color={'error'} variant="body1">
-                        {`${index + 1}. ${err}`}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </>
-        )}
-
         <FormControl className={classes.formControl}>
           <InvasivePlantsAccordion />
 
@@ -311,16 +292,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
               </Typography>
               <Divider style={{ marginBottom: '1rem' }} />
               <CalculationResultsTable data={calculationResults} />
-              {/* {Object.keys(calculationResults).map((key) => {
-                return (
-                  <Typography key={key} style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
-                    typeof calculationResults[key] === 'object'
-                      ? JSON.stringify(calculationResults[key])
-                      : calculationResults[key]
-                  }`}</Typography>
-                  
-                );
-              })} */}
               {Object.keys(calculationResults).length < 1 && (
                 <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
                   Couldn't perform calculation because of the invalid scenario.
@@ -335,6 +306,27 @@ const ChemicalTreatmentDetailsForm = (props) => {
           dialogActions={warningDialog.dialogActions}
           dialogContentText={warningDialog.dialogContentText}
         />
+        {localErrors.length > 0 && (
+          <>
+            <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
+              There are errors in this sub-form:
+            </Typography>
+            <List dense={true}>
+              {localErrors.map((err, index) => (
+                <ListItem key={index}>
+                  <ListItemText
+                    style={{ color: '#ff000' }}
+                    primary={
+                      <Typography color={'error'} variant="body1">
+                        {`${index + 1}. ${err}`}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
       </ChemicalTreatmentDetailsContextProvider>
     )
   );

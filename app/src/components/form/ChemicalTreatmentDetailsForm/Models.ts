@@ -6,6 +6,7 @@ export interface IGeneralFields {
   chemical_application_method_type?: string;
   herbicides?: IHerbicide[];
   tank_mix_object?: ITankMix;
+  skipAppRateValidation?: boolean;
 }
 
 export interface IInvasivePlant {

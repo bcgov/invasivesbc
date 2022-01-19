@@ -6,7 +6,8 @@ export const runValidation = (
   formData: IGeneralFields,
   errors: any[],
   businessCodes: any,
-  herbicideDictionary: any
+  herbicideDictionary: any,
+  skipAppRateValidation: boolean
 ) => {
   let newErrors = errors;
 
@@ -19,9 +20,16 @@ export const runValidation = (
   newErrors = validate_herbicides_arr_length(formData, errors);
   newErrors = validate_general_fields(formData, errors);
   newErrors = validate_chem_app_method_value(formData, errors, businessCodes);
-  newErrors = validate_herbicide_fields(area, formData, errors, businessCodes, herbicideDictionary);
+  newErrors = validate_herbicide_fields(
+    area,
+    formData,
+    errors,
+    businessCodes,
+    herbicideDictionary,
+    skipAppRateValidation
+  );
   newErrors = validate_tank_mix_fields(area, formData, errors);
-  newErrors = validate_tank_mix_herbicides(formData, errors, businessCodes, herbicideDictionary);
+  newErrors = validate_tank_mix_herbicides(formData, errors, businessCodes, herbicideDictionary, skipAppRateValidation);
 
   return newErrors;
 };
@@ -160,7 +168,8 @@ export const validate_herbicide_fields = (
   formData: IGeneralFields,
   errors: any,
   businessCodes: any,
-  herbicideDictionary: any
+  herbicideDictionary: any,
+  skipAppRateValidation: boolean
 ) => {
   if (!formData || !formData.herbicides || formData.herbicides.length < 1 || formData.tank_mix === true) {
     return errors;
@@ -207,7 +216,7 @@ export const validate_herbicide_fields = (
       negativeAmountOfMix = true;
     }
 
-    if (!herb.product_application_rate || !herb.herbicide_code) {
+    if (!herb.product_application_rate || !herb.herbicide_code || skipAppRateValidation) {
     } else if (
       herb.calculation_type === 'PAR' &&
       herb.product_application_rate &&
@@ -358,7 +367,8 @@ export const validate_tank_mix_herbicides = (
   formData: IGeneralFields,
   errors: any,
   businessCodes: any,
-  herbicideDictionary: any
+  herbicideDictionary: any,
+  skipAppRateValidation: boolean
 ) => {
   if (
     !formData ||
@@ -380,7 +390,7 @@ export const validate_tank_mix_herbicides = (
   let herbCodeList = [];
 
   formData.tank_mix_object.herbicides.forEach((herb) => {
-    if (!herb.product_application_rate || !herb.herbicide_code) {
+    if (!herb.product_application_rate || !herb.herbicide_code || skipAppRateValidation) {
     } else if (
       herb.calculation_type === 'PAR' &&
       herb.product_application_rate &&

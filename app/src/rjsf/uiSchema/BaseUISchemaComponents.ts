@@ -87,6 +87,11 @@ const Treatment = {
     'ui:order':['activity_persons']
 };
 
+const Treatment_Chemical = {
+    activity_persons: {},
+    'ui:order':['activity_persons']
+};
+
 const Collection = {
   activity_persons: {},
   'ui:order':['activity_persons']
@@ -833,13 +838,10 @@ const FREP_FormC = {
 
 const Treatment_ChemicalPlant_Information = {
   ...ThreeColumnStyle,
-  applicator1_name: {},
-  applicator1_license: {},
-  applicator2_name: {},
-  applicator2_license: {},
   pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
   pesticide_use_permit_PUP: {},
   pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
+  unlisted_drop_down:{},
   chemical_method_code: { 'ui:widget': 'single-select-autocomplete' },
   temperature: { validateOnBlur: true },
   wind_speed: { validateOnBlur: true },
@@ -848,13 +850,10 @@ const Treatment_ChemicalPlant_Information = {
   signage_on_site: {},
   application_start_time: { 'ui:widget': 'datetime' },
   'ui:order': [
-    'applicator1_name',
-    'applicator1_license',
-    'applicator2_name',
-    'applicator2_license',
     'pesticide_employer_code',
     'pesticide_use_permit_PUP',
     'pest_management_plan',
+    'unlisted_drop_down',
     'chemical_method_code',
     'temperature',
     'wind_speed',
@@ -1082,6 +1081,7 @@ const BaseUISchemaComponents = {
     Observation,
     Monitoring,
     Treatment,
+    Treatment_Chemical,
     Collection,
     TransectData
   },

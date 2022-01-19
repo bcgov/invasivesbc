@@ -75,33 +75,12 @@ export const Treatment_ChemicalPlant_Information = {
     'pesticide_employer_code',
     'chemical_method_code',
     'temperature',
-    'humidity',
     'wind_speed',
     'wind_direction_code',
     'signage_on_site',
     'application_start_time'
   ],
   properties: {
-    applicator1_name: {
-      type: 'string',
-      title: 'Primary Applicator',
-      'x-tooltip-text': 'Name of primary applicator'
-    },
-    applicator1_license: {
-      type: 'string',
-      title: 'Primary Pesticide Applicator Certificate Number',
-      'x-tooltip-text': 'Valid pesticide applicator certificate number'
-    },
-    applicator2_name: {
-      type: 'string',
-      title: 'Secondary Applicator',
-      'x-tooltip-text': 'Name of secondary applicator'
-    },
-    applicator2_license: {
-      type: 'string',
-      title: 'Secondary Pesticide Applicator Certificate Number',
-      'x-tooltip-text': 'Valid secondary pesticide applicator certificate number'
-    },
     pesticide_employer_code: {
       type: 'string',
       title: 'Service License Number and Company Name',
@@ -132,17 +111,9 @@ export const Treatment_ChemicalPlant_Information = {
       },
       'x-tooltip-text': 'Enter applicable number if treatment is being completed under a pest management plan'
     },
-    chemical_method_code: {
+    unlisted_drop_down: {
       type: 'string',
-      title: 'Chemical Treatment Method',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'chemical_method_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Choose treatment application method'
+      title: 'Unlisted Drop Down'
     },
     temperature: {
       type: 'number',

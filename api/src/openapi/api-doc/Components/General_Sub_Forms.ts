@@ -176,15 +176,19 @@ export const Well_Information = {
     well_id: {
       type: 'string',
       title: 'Well ID',
-      'x-tooltip-text': 'ID of the closest well'
+      'x-tooltip-text':
+        'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
     },
     well_proximity: {
       type: 'number',
       title: 'Well Proximity(m)',
       minimum: 1,
-      'x-tooltip-text': 'Proximity of the closest well'
+      'x-tooltip-text':
+        'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
     }
-  }
+  },
+  'x-tooltip-text':
+    'These fields are autofilled if InvasivesBC detects a mapped well within the vicinity of a treatment. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
 };
 export const WaterQuality = {
   title: 'Water Quality',
