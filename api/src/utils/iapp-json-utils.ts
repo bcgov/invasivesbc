@@ -62,7 +62,7 @@ const getSurveyObj = (row: any) => {
 };
 
 export const species_and_genus_regex = new RegExp('[(]().*?)[)]');
-export const species_regex = new RegExp('[(]([A-Z]{3})[ ]([A-Z]{3})[)]');
+export const species_regex = new RegExp('[(]([A-Z]{4})[ ]([A-Z]{3})[)]');
 export const getSpeciesCodesFromIAPPDescriptionList = (input: string) => {
   const species_and_genus = input.matchAll(species_and_genus_regex);
 };
@@ -77,7 +77,13 @@ const mapSitesRowsToJSON = (site_extract_table_response: any) => {
   const all_chem_treatments = []; // sql call goes here
 
   return site_extract_table_response.rows.map((row) => {
-    return getIAPPjson(row);
+
+    let iapp_site =  getIAPPjson(row);
+    iapp_site.surveys = all_surveys.filter(row['site_id'])
+          chemical_treatments: [],
+          biological_dispersals: [],
+          biological_treatments: [],
+          mechanical_treatments: [],
   });
 };
 
@@ -110,11 +116,6 @@ const getIAPPjson = (row: Object) => {
           }
         ],
         form_data: {
-          surveys: [],
-          chemical_treatments: [],
-          biological_dispersals: [],
-          biological_treatments: [],
-          mechanical_treatments: [],
           point_of_interest_data: {
             //date_created: earliestDate,
             project_code: [], // COME BACK TO LATER
