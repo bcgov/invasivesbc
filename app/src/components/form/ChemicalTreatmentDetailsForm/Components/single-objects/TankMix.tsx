@@ -68,7 +68,7 @@ const TankMix: React.FC = (props) => {
         className={classes.inputField}
         type="number"
         label="Amount of Mix Used (L)"
-        value={currentTankMix.amount_of_mix || ''}
+        value={currentTankMix.amount_of_mix}
         variant="outlined"
         onChange={(event) => {
           if (event.target.value === null) {

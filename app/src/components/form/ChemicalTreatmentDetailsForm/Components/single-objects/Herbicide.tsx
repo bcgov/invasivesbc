@@ -249,7 +249,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="number"
               label="Amount of Mix Used (L)"
-              value={herbicide?.amount_of_mix || ''}
+              value={herbicide?.amount_of_mix}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
