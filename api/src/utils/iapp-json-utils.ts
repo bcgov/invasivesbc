@@ -61,8 +61,10 @@ const getSurveyObj = (row: any) => {
   };
 };
 
+export const species_and_genus_regex = new RegExp('[(]().*?)[)]');
+export const species_regex = new RegExp('[(]([A-Z]{3})[ ]([A-Z]{3})[)]');
 export const getSpeciesCodesFromIAPPDescriptionList = (input: string) => {
-  const species_and_genus = input.matchAll('[(]().*?)[)]');
+  const species_and_genus = input.matchAll(species_and_genus_regex);
 };
 
 const mapSitesRowsToJSON = (site_extract_table_response: any) => {
