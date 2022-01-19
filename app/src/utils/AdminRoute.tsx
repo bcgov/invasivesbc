@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
+import { AuthStateContext } from '../contexts/authStateContext';
+import { Redirect } from 'react-router';
 interface IAdminRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
   title: string;
   componentProps?: any;
 }
-
-// TODO: Fetch the current user's role on mount
 
 /**
  * An AdminRoute only allows a user who has the role of "Master Administrator".
@@ -16,22 +16,27 @@ interface IAdminRouteProps extends RouteProps {
  * @return {*}
  */
 const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
+  const authContext = useContext(AuthStateContext);
+
   let { component: Component, layout: Layout, ...rest } = props;
   document.title = props.title;
 
-  return (
-    <Route
-      {...rest}
-      render={(renderProps) => {
-        // TODO: If current user is not master admin, redirect to forbidden page
-        return (
-          <Layout>
-            <Component {...renderProps} {...rest.componentProps} />
-          </Layout>
-        );
-      }}
-    />
-  );
+  if (authContext.userInfoLoaded && authContext.hasRole('master_administrator')) {
+    return (
+      <Route
+        {...rest}
+        render={(renderProps) => {
+          return (
+            <Layout>
+              <Component {...renderProps} {...rest.componentProps} />
+            </Layout>
+          );
+        }}
+      />
+    );
+  } else {
+    return <Route {...rest} render={() => <Redirect to="/forbidden" />} />;
+  }
 };
 
 export default AdminRoute;
