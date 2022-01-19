@@ -4,12 +4,14 @@ import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
 import { RISOLayer } from './RISOLayer';
+import { AdminUploadsLayer } from './AdminUploadsLayer';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
   Iapp = 'LEAN_POI',
   RISO = 'RISO_BOUNDARIES',
   Jurisdictions = 'JURISDICTION_LAYER',
+  ADMIN_KML = 'ADMIN_UPLOADS',
   Other = 'other'
 }
 
@@ -50,6 +52,15 @@ export const IndependentLayer = (props) => {
       case 'RISO_BOUNDARIES':
         return (
           <RISOLayer
+            color_code={props.color_code}
+            online={networkContext.connected}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
+        );
+      case 'ADMIN_UPLOADS':
+        return (
+          <AdminUploadsLayer
             color_code={props.color_code}
             online={networkContext.connected}
             opacity={props.opacity}

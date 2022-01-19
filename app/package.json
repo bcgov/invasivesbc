@@ -159,7 +159,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "start:ionic": "ionic serve",
+    "start:ionic": "ionic serve --port 3000",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
     "deploy_start": "npx serve -s build -l 8100",

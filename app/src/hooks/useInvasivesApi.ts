@@ -828,6 +828,22 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+
+  /**
+   * Fetch species details.
+   *
+   * @param {string[]} species
+   * @return {*}  {Promise<any>}
+   */
+  const getAdminUploadGeoJSONLayer = async (): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/admin-defined-shapes`
+    });
+
+    return data;
+  };
   return {
     getMedia,
     getSpeciesDetails,
@@ -872,6 +888,7 @@ export const useInvasivesApi = () => {
     getUserByBCEID,
     approveAccessRequests,
     declineAccessRequest,
-    renewUser
+    renewUser,
+    getAdminUploadGeoJSONLayer
   };
 };
