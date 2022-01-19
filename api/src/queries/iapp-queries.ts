@@ -1,6 +1,9 @@
+import { getDBConnection } from '../database/db';
+import { response } from 'express';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-
+import { getLogger } from '../utils/logger';
+const defaultLog = getLogger('point-of-interest');
 /**
  * SQL query to fetch point_of_interest records based on search criteria.
  *
@@ -88,4 +91,91 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(SQL`;`);
 
   return sqlStatement;
+};
+
+/**
+ * SQL query to get biological_dispersal_extract based on site_id
+ * @param {number[]} site_id
+ * @param {string} extractName
+ * @returns {SQLStatement} sql query object
+ */
+export const iapp_extract_sql = (site_id: number[], extractName: string): SQLStatement => {
+  //stupid lib doesn't let you dynamically pass table name
+  const sqlStatement: SQLStatement = SQL`SELECT`;
+
+  sqlStatement.append(SQL` *`);
+  switch (extractName) {
+    case 'biological_dispersal_extract':
+      sqlStatement.append(` from biological_dispersal_extract`);
+      break;
+    case 'biological_monitoring_extract':
+      sqlStatement.append(` from biological_monitoring_extract`);
+      break;
+    case 'biological_treatment_extract':
+      sqlStatement.append(` from biological_treatment_extract`);
+      break;
+    case 'chemical_monitoring_extract':
+      sqlStatement.append(` from chemical_monitoring_extract`);
+      break;
+    case 'chemical_treatment_extract':
+      sqlStatement.append(` from chemical_treatment_extract`);
+      break;
+    case 'mechanical_monitoring_extract':
+      sqlStatement.append(` from mechanical_monitoring_extract`);
+      break;
+    case 'mechanical_treatment_extract':
+      sqlStatement.append(` from mechanical_treatment_extract`);
+      break;
+    case 'site_selection_extract':
+      sqlStatement.append(` from site_selection_extract`);
+      break;
+    case 'survey_extract':
+      sqlStatement.append(` from survey_extract`);
+      break;
+  }
+
+  if (site_id && site_id.length) {
+    sqlStatement.append(SQL` where site_id IN (`);
+
+    // add the first activity subtype, which does not get a comma prefix
+    sqlStatement.append(SQL`${site_id[0]}`);
+
+    for (let idx = 1; idx < site_id.length; idx++) {
+      // add all subsequent activity subtypes, which do get a comma prefix
+      sqlStatement.append(SQL`, ${site_id[idx]}`);
+    }
+
+    sqlStatement.append(SQL`);`);
+  }
+
+  return sqlStatement;
+};
+
+export const getIappExtractFromDB = async (site_ids: number[], extractName: string) => {
+  const connection = await getDBConnection();
+
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+
+  try {
+    const sqlStatement: SQLStatement = iapp_extract_sql(site_ids, extractName);
+
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+
+    const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    return responseIAPP.rows;
+  } catch (e) {
+    console.log(e);
+    throw 'Unable to get iapp extract ' + extractName + ' for sites ' + site_ids;
+  }
 };
