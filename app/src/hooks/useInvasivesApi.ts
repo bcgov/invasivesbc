@@ -293,7 +293,10 @@ export const useInvasivesApi = () => {
     });
   };
 
-  const getRolesForUser = async (userId: string): Promise<any> => {
+  const getRolesForUser = async (userId: string, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
     return Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?userId=${userId}`,
@@ -509,7 +512,10 @@ export const useInvasivesApi = () => {
     return data;
   };
 
-  const getUserByIDIR = async (idir_userid): Promise<any> => {
+  const getUserByIDIR = async (idir_userid, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
     const { data } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
@@ -518,7 +524,10 @@ export const useInvasivesApi = () => {
     return data;
   };
 
-  const getUserByBCEID = async (bceid_userid): Promise<any> => {
+  const getUserByBCEID = async (bceid_userid, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
     const { data } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
