@@ -2,6 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { grantRoleByValueSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
@@ -185,6 +186,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
     console.log('Attempting to approve requests...', requests);
     for (const request of requests) {
       console.log('Attempting to approve request...', request);
+      // Create user record
       const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
       if (!sqlStatement) {
         throw {
@@ -194,6 +196,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       }
       await connection.query(sqlStatement.text, sqlStatement.values);
 
+      // Update request status
       const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED');
       if (!sqlStatement2) {
         throw {
@@ -202,6 +205,17 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         };
       }
       await connection.query(sqlStatement2.text, sqlStatement2.values);
+
+      for (const requestedRole of request.requested_roles.split(',')) {
+        const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
+        if (!sqlStatement3) {
+          throw {
+            status: 400,
+            message: 'Failed to build SQL statement'
+          };
+        }
+        await connection.query(sqlStatement3.text, sqlStatement3.values);
+      }
     }
     return res.status(200).json({ count: requests.length });
   } catch (error) {
