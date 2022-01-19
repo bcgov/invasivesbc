@@ -19,6 +19,19 @@ export const grantRoleToUserSQL = (user_id, role_id): SQLStatement => {
   }
 };
 
+export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
+  if (!email || !role_value) {
+    return null;
+  } else {
+    return SQL`
+    INSERT INTO user_access (user_id, role_id) VALUES (
+        (SELECT user_id from application_user WHERE email = ${email}),
+        (SELECT role_id FROM user_role WHERE role_name = ${role_value})
+    ) ON CONFLICT DO NOTHING;
+  `;
+  }
+};
+
 /**
  * SQL query to revoke a role from a user.
  *
