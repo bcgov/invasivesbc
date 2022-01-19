@@ -61,144 +61,94 @@ const getSurveyObj = (row: any) => {
   };
 };
 
-const getOuterJSON = (response: any) => {
-  const oldRows = response.rows;
-  const newRows = [];
+const mapSitesRowsToJSON = (site_extract_table_response: any) => {
+  const site_ids: [] = site_extract_table_response.rows.map((row) => {
+    return row['site_id'];
+  });
 
-  for (const row of oldRows) {
-    var flag = 0;
-    if (newRows.length < 1) {
-      newRows.push({
-        site_id: row.site_id,
-        surveys: [row]
-      });
-    } else {
-      for (const nRow of newRows) {
-        if (nRow.site_id === row.site_id) {
-          nRow.surveys.push(row);
-          flag = 1;
-          break;
-        }
-      }
-      if (flag === 0) {
-        newRows.push({
-          site_id: row.site_id,
-          surveys: [row]
-        });
-      }
-    }
-  }
+  // get all of them for all the above site ids, vs doing many queries (while looping over sites)
+  const all_surveys = []; // sql call goes here
+  const all_chem_treatments = []; // sql call goes here
 
-  return newRows;
+  return site_extract_table_response.rows.map((row) => {
+    return getIAPPjson(row);
+  });
 };
 
-const getIAPPjson = (response: any) => {
-  const tempSurveys: any[] = [];
-  // removed until figure out species p/n: const tempSpecies: string[] = [];
-  var flag = 0;
-  // Payload data
-  var biogeoclimatic_zone: string = null;
-  var site_id: number = null;
-  var soil_texture: string = null;
-  var site_specific_use: string = null;
-  var earliestDate = null;
-  var earliestCoords = null;
-  // removed for now: var latestDate = null;
-
-  for (const row of response.rows) {
-    if (flag < 1) {
-      biogeoclimatic_zone = row.biogeoclimatic_zone;
-      site_id = row.site_id;
-      soil_texture = row.soil_texture;
-      site_specific_use = row.site_specific_use;
-      flag++;
-    }
-
-    const surveyDate = row.site_created_date;
-    const long = row.decimal_longitude;
-    const lat = row.decimal_latitude;
-    if (earliestDate === null) {
-      earliestDate = surveyDate;
-      earliestCoords = [long, lat];
-    } else {
-      if (surveyDate.valueOf() < earliestDate.valueOf()) {
-        earliestDate = surveyDate;
-        earliestCoords = [long, lat];
-      }
-    }
-
-    tempSurveys.push(getSurveyObj(row));
-  }
-
-  return {
-    point_of_interest_incoming_data_id: null, // COME BACK LATER
-    point_of_interest_id: null, // COME BACK LATER
-    version: '1.0.0',
-    point_of_interest_type: 'IAPP Site',
-    point_of_interest_subtype: 'First Load',
-    received_timestamp: null, // NOT RELAVENT
-    geom: {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: earliestCoords
+const getIAPPjson = (row: Object) => {
+  try {
+    const returnVal = {
+      point_of_interest_id: row['site_id'], // COME BACK LATER
+      version: '1.0.0',
+      point_of_interest_type: 'IAPP Site',
+      point_of_interest_subtype: 'First Load',
+      received_timestamp: null, // NOT RELAVENT
+      geom: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [parseFloat(row['decimal_longitude']), parseFloat(row['decimal_latitude'])]
+        },
+        properties: {}
       },
-      properties: {}
-    },
-    point_of_interest_payload: {
-      media: [], // Could not see
-      geometry: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: earliestCoords
+      point_of_interest_payload: {
+        media: [], // Could not see
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [parseFloat(row['decimal_longitude']), parseFloat(row['decimal_latitude'])]
+            },
+            properties: {}
+          }
+        ],
+        form_data: {
+          surveys: [],
+          chemical_treatments: [],
+          biological_dispersals: [],
+          biological_treatments: [],
+          mechanical_treatments: [],
+          point_of_interest_data: {
+            //date_created: earliestDate,
+            project_code: [], // COME BACK TO LATER
+            general_comment: null, // Each survey has a comment. Redundant?
+            media_indicator: false, // False for now
+            created_date_on_device: null, // Nothing for now
+            updated_date_on_device: null // Nothing for now
           },
-          properties: {}
-        }
-      ],
-      form_data: {
-        surveys: tempSurveys,
-        chemical_treatments: [],
-        biological_dispersals: [],
-        biological_treatments: [],
-        mechanical_treatments: [],
-        point_of_interest_data: {
-          date_created: earliestDate,
-          project_code: [], // COME BACK TO LATER
-          general_comment: null, // Each survey has a comment. Redundant?
-          media_indicator: false, // False for now
-          created_date_on_device: null, // Nothing for now
-          updated_date_on_device: null // Nothing for now
+          point_of_interest_type_data: {
+            slope: null, // Could not find
+            aspect: null, // Could not find
+            site_id: row['site_id'],
+            slope_code: null, // Could not find slope to find code  (IAPP_Migrator)
+            aspect_code: null, // Could not find aspect to find code (IAPP_Migrator)
+            site_elevation: null, // Could not find
+            original_bec_id: null // Could not find
+            //soil_texture_code: soil_texture, // Needs to convert to code
+            //specific_use_code: site_specific_use // COME BACK LATER site_specific_use is empty
+          },
+          species_negative: [], // COME BACK LATER
+          species_positive: [], // COME BACK LATER
+          point_of_interest_type: 'IAPP Site',
+          point_of_interest_subtype: 'First Load' // Could not find
         },
-        point_of_interest_type_data: {
-          slope: null, // Could not find
-          aspect: null, // Could not find
-          site_id: site_id,
-          slope_code: null, // Could not find slope to find code  (IAPP_Migrator)
-          aspect_code: null, // Could not find aspect to find code (IAPP_Migrator)
-          site_elevation: null, // Could not find
-          original_bec_id: null, // Could not find
-          soil_texture_code: soil_texture, // Needs to convert to code
-          specific_use_code: site_specific_use // COME BACK LATER site_specific_use is empty
-        },
-        species_negative: [], // COME BACK LATER
-        species_positive: [], // COME BACK LATER
-        point_of_interest_type: 'IAPP Site',
-        point_of_interest_subtype: 'First Load' // Could not find
-      },
-      biogeoclimatic_zones: biogeoclimatic_zone,
-      regional_invasive_species_organization_areas: '', // COME BACK LATER
-      invasive_plant_management_areas: '', // Could not find
-      forest_cover_ownership: '', // Could not find
-      regional_districts: '', // Could not find
-      flnro_districts: '', // Could not find
-      moti_districts: '', // Could not find
-      media_keys: '', // Could not find
-      species_positive: [], // Could not find
-      species_negative: [] // Could not find
-    }
-  };
+        biogeoclimatic_zones: row['biogeoclimatic_zone'],
+        regional_invasive_species_organization_areas: '', // COME BACK LATER
+        invasive_plant_management_areas: '', // Could not find
+        forest_cover_ownership: '', // Could not find
+        regional_districts: '', // Could not find
+        flnro_districts: '', // Could not find
+        moti_districts: '', // Could not find
+        media_keys: '', // Could not find
+        species_positive: [], // Could not find
+        species_negative: [] // Could not find
+      }
+    };
+    return returnVal;
+  } catch (e) {
+    throw 'error mapping iapp site to point of interest (at site level)';
+  }
 };
 
 export const getIAPPsites = async (searchCriteria: any) => {
@@ -232,7 +182,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
     // return getIAPPjson(response);
     // response check:
     // return response;
-    return getOuterJSON(response);
+    return mapSitesRowsToJSON(response);
   } catch (error) {
     defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw error;
