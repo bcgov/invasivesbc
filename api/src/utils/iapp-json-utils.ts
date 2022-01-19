@@ -61,6 +61,10 @@ const getSurveyObj = (row: any) => {
   };
 };
 
+export const getSpeciesCodesFromIAPPDescriptionList = (input: string) => {
+  const species_and_genus = input.matchAll('[(]().*?)[)]');
+};
+
 const mapSitesRowsToJSON = (site_extract_table_response: any) => {
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return row['site_id'];
