@@ -20,6 +20,7 @@ export interface IAuthState {
   setUserInfo: React.Dispatch<React.SetStateAction<Object>>;
   setUserInfoLoaded: React.Dispatch<React.SetStateAction<Boolean>>;
   setUserRoles: React.Dispatch<React.SetStateAction<any>>;
+  hasRole: (role: string) => boolean;
   loginUser: () => Promise<void>;
 }
 
@@ -38,12 +39,13 @@ export const AuthStateContext = React.createContext<IAuthState>({
   setUserInfo: () => {},
   setUserInfoLoaded: () => {},
   setUserRoles: () => {},
+  hasRole: () => false,
   loginUser: () => Promise.resolve()
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
-  const keycloak = useKeycloakWrapper();
   const invasivesApi = useInvasivesApi();
+  const keycloak = useKeycloakWrapper();
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
   const [userInfo, setUserInfo] = React.useState(info);
   const [userRoles, setUserRoles] = React.useState([]);
@@ -59,12 +61,55 @@ export const AuthStateContextProvider: React.FC = (props) => {
     setUserInfoLoaded(true);
   };
 
+  const hasRole = (role: string) => {
+    // Check if user has a role
+    if (userRoles.some((r) => r.role_name === role)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   React.useEffect(() => {
+    const getUserByIDIR = async (idir_userid) => {
+      const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
+      return user;
+    };
+
+    const getUserByBCEID = async (bceid_userid) => {
+      const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
+      return user;
+    };
+
+    const getRolesForUser = async (user_id) => {
+      const roles = await invasivesApi.getRolesForUser(user_id, keycloak?.obj?.token);
+      return roles;
+    };
+
     if (keycloak?.obj?.authenticated) {
-      keycloak?.obj?.loadUserInfo().then((info) => {
+      keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
-          setUserInfo(info);
-          setUserInfoLoaded(true);
+          const token = keycloak?.obj?.tokenParsed;
+          if (token && token.idir_userid) {
+            const userResponse = await getUserByIDIR(token.idir_userid);
+            const user = userResponse[0];
+            const roles = await getRolesForUser(user.user_id);
+            setUserRoles(roles.data);
+            const mergedInfo = { ...user, ...info, roles: roles.data };
+            console.log('User Info: ', mergedInfo);
+            setUserInfo(mergedInfo);
+            setUserInfoLoaded(true);
+          }
+          if (token && token.bceid_userid) {
+            const userResponse = await getUserByBCEID(token.idir_userid);
+            const user = userResponse[0];
+            const roles = await getRolesForUser(user.user_id);
+            setUserRoles(roles.data);
+            const mergedInfo = { ...user, ...info, roles: roles.data };
+            console.log('User Info: ', mergedInfo);
+            setUserInfo(mergedInfo);
+            setUserInfoLoaded(true);
+          }
         }
       });
     }
@@ -89,6 +134,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
             setUserInfo,
             setUserInfoLoaded,
             setUserRoles,
+            hasRole,
             loginUser
           }}>
           {props.children}
