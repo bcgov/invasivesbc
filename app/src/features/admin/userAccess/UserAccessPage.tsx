@@ -1,5 +1,5 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -19,8 +19,12 @@ import {
   TextField,
   makeStyles,
   Box,
-  IconButton
+  IconButton,
+  CircularProgress,
+  Chip
 } from '@material-ui/core';
+import { GridOverlay } from '@mui/x-data-grid';
+import { styled } from '@mui/material/styles';
 import {
   DataGrid,
   GridColDef,
@@ -30,8 +34,10 @@ import {
   GridToolbarExport,
   GridToolbarColumnsButton
 } from '@mui/x-data-grid';
+import { CustomNoRowsOverlay } from '../../../components/data-grid/CustomNoRowsOverlay';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
+import { ThemeContext } from '@emotion/react';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -40,6 +46,21 @@ interface IAccessRequestPage {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '320px'
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  },
+  warning: {
+    backgroundColor: theme.palette.warning.main
+  },
+  info: {
+    backgroundColor: theme.palette.info.main
+  },
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  gray: {
+    backgroundColor: theme.palette.grey[100]
   },
   paddingTop: {
     paddingTop: '1rem'
@@ -123,8 +144,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     DECLINE
   }
 
+  const themes = useContext(ThemeContext);
+
   const classes = useStyles();
   const api = useInvasivesApi();
+
+  const [usersTableLoading, setUsersTableLoading] = useState(false);
+  const [requestTableLoading, setRequestTableLoading] = useState(false);
 
   const [rows, setRows] = useState<any[]>([]);
   const [requestRows, setRequestRows] = useState<any[]>([]);
@@ -191,6 +217,19 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Button>
       </Tooltip>
     );
+  };
+
+  const renderStatus = (params: GridValueGetterParams) => {
+    // let color = '#FF0000';
+    let style = classes.gray;
+    if (params.row.status === 'APPROVED') {
+      style = classes.success;
+    } else if (params.row.status === 'DECLINED') {
+      style = classes.error;
+    } else if (params.row.status === 'NOT_APPROVED') {
+      style = classes.warning;
+    }
+    return <Chip label={params.row.status} classes={{ root: style }} />;
   };
 
   const handleRowClick = (param, event) => {
@@ -336,7 +375,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'dateRequested', headerName: 'Date Requested', width: 200 },
     { field: 'pacNumber', headerName: 'PAC Number', width: 158 },
-    { field: 'status', headerName: 'Status', width: 159 },
+    { field: 'status', headerName: 'Status', width: 159, renderCell: renderStatus },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -385,14 +424,18 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   */
 
   const loadUsers = () => {
+    setUsersTableLoading(true);
+    setRequestTableLoading(true);
     api.getApplicationUsers().then(async (res) => {
       await setUsers(res);
       await getRows(res);
+      setUsersTableLoading(false);
     });
 
     api.getAccessRequests().then(async (res) => {
       await setAccessRequests(res);
       await getRequestRows(res);
+      setRequestTableLoading(false);
     });
   };
 
@@ -573,7 +616,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               <Grid container direction="row" spacing={5} justifyContent="space-between">
                 <div style={{ height: 440, width: '100%' }}>
                   <DataGrid
-                    components={{ Toolbar: QuickSearchToolbar }}
+                    loading={usersTableLoading}
+                    components={{ Toolbar: QuickSearchToolbar, NoRowsOverlay: CustomNoRowsOverlay }}
                     componentsProps={{
                       toolbar: {
                         value: searchText,
@@ -635,6 +679,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               <Grid container direction="row" spacing={5} justifyContent="space-between">
                 <div style={{ height: 370, width: '100%' }}>
                   <DataGrid
+                    loading={requestTableLoading}
+                    components={{
+                      NoRowsOverlay: CustomNoRowsOverlay
+                    }}
                     onSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
@@ -783,22 +831,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                   <strong>PAC Service Number 2: </strong>
                   {detailsDialogUser.pacServiceNumber2}
                 </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.fundingAgencies && (
-              <Grid item>
-                {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
-                  <Typography variant="h6" key={agency}>
-                    <li key={agency}>
-                      {agencyCodes.map((agencyCode) => {
-                        if (agencyCode.value === agency) {
-                          return agencyCode.description;
-                        }
-                        return '';
-                      })}
-                    </li>
-                  </Typography>
-                ))}
               </Grid>
             )}
             {detailsDialogUser.fundingAgencies && (
