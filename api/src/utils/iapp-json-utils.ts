@@ -94,7 +94,7 @@ const getSpeciesRef = async () => {
     // return response;
     return response.rows;
   } catch (error) {
-    defaultLog.debug({ label: 'species_ref', message: 'error', error });
+    defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
     throw error;
   } finally {
     connection.release();
@@ -268,10 +268,12 @@ export const getIAPPsites = async (searchCriteria: any) => {
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    // return getIAPPjson(response);
-    // response check:
-    // return response;
-    return mapSitesRowsToJSON(response);
+    const returnVal = await mapSitesRowsToJSON(response);
+
+    return {
+      rows: returnVal,
+      count: returnVal.length
+    };
   } catch (error) {
     defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw error;
