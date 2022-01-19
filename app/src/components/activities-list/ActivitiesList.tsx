@@ -339,7 +339,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
-          {isMobile && networkContext.connected && (
+          {isMobile() && networkContext.connected && (
             <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
               Sync Cached Records
             </Button>
