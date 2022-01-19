@@ -9,6 +9,7 @@ import {
   FormGroup,
   Grid,
   Switch,
+  Tooltip,
   Typography
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
@@ -393,14 +394,28 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Activity Form</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.formContainer}>
-          <Typography variant="h6">Form Settings</Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={<Switch checked={liveValidation} onChange={liveValidationHandleChange} />}
-              label="Live Validation"
-            />
-          </FormGroup>
-
+          <Box className={props.classes.formSettingsContainer}>
+            <Typography variant="h6">Form Settings</Typography>
+            <FormGroup>
+              <Tooltip
+                enterTouchDelay={0}
+                title={
+                  'Set if you want all the errors to show while you fill the form. Note: may affect how fast form changes are applied. To disable this, reload this page.'
+                }
+                placement="left">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      disabled={liveValidation === true}
+                      checked={liveValidation}
+                      onChange={liveValidationHandleChange}
+                    />
+                  }
+                  label="Live Validation"
+                />
+              </Tooltip>
+            </FormGroup>
+          </Box>
           <FormContainer
             {...props}
             onSave={onSave}

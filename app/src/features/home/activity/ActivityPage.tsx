@@ -61,6 +61,12 @@ const useStyles = makeStyles((theme) => ({
   },
   formContainer: {
     display: 'block'
+  },
+  formSettingsContainer: {
+    padding: 20,
+    backgroundColor: theme.palette.background.default,
+    border: '1px solid lightgray',
+    marginBottom: 20
   }
 }));
 
