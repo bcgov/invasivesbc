@@ -42,6 +42,7 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
+  setLiveValidation?: any;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
@@ -56,6 +57,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
 
   const liveValidationHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLiveValidation(event.target.checked);
+    props.setLiveValidation(event.target.checked);
   };
 
   const getLocation = async () => {

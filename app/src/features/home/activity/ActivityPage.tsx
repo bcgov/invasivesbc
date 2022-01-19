@@ -86,6 +86,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const authStateContext = useContext(AuthStateContext);
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
+  const [liveValidation, setLiveValidation] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
@@ -341,11 +342,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
     updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
+    let formStatus;
+    if (!liveValidation && ref?.state?.errors?.length) {
+      formStatus = FormValidationStatus.NOT_VALIDATED;
+    } else if (liveValidation && ref?.state?.errors?.length) {
+      formStatus = FormValidationStatus.VALID;
+    } else {
+      formStatus = FormValidationStatus.INVALID;
+    }
+
     await updateDoc({
       formData: updatedFormData,
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: ref?.state?.errors?.length === 0 ? FormValidationStatus.VALID : FormValidationStatus.INVALID
+      formStatus: formStatus
     });
 
     if (callbackFun) {
@@ -777,6 +787,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               customErrorTransformer={getCustomErrorTransformer()}
               classes={classes}
               activity={doc}
+              setLiveValidation={setLiveValidation}
               suggestedJurisdictions={suggestedJurisdictions}
               linkedActivity={linkedActivity}
               onFormChange={onFormChange}
