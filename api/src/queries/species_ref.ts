@@ -7,6 +7,6 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  */
 export const speciesRefSql = (): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
-    select * from invasivesbc.species_ref;`;
+    select * from invasivesbc.species_ref_raw;`;
   return sqlStatement;
 };
