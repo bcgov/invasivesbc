@@ -61,10 +61,20 @@ const getSurveyObj = (row: any) => {
   };
 };
 
-export const species_and_genus_regex = new RegExp('[(]().*?)[)]');
-export const species_regex = new RegExp('[(]([A-Z]{4})[ ]([A-Z]{3})[)]');
+export const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
+const getSpeciesRef = () => {
+  return [];
+};
+export const species_ref: Object[] = getSpeciesRef();
+
 export const getSpeciesCodesFromIAPPDescriptionList = (input: string) => {
   const species_and_genus = input.matchAll(species_and_genus_regex);
+  return [...species_and_genus];
+  const relevant_species_ref_row = species_ref.filter((x) => {
+    return x;
+  }); //todo: filter based on species (group 1) and genus (group 0)
+
+  return 'AW';
 };
 
 const mapSitesRowsToJSON = (site_extract_table_response: any) => {
@@ -77,13 +87,14 @@ const mapSitesRowsToJSON = (site_extract_table_response: any) => {
   const all_chem_treatments = []; // sql call goes here
 
   return site_extract_table_response.rows.map((row) => {
-
-    let iapp_site =  getIAPPjson(row);
-    iapp_site.surveys = all_surveys.filter(row['site_id'])
-          chemical_treatments: [],
-          biological_dispersals: [],
-          biological_treatments: [],
-          mechanical_treatments: [],
+    let iapp_site = getIAPPjson(row);
+    (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(row['all_species_on_site']);
+    //iapp_site.surveys = all_surveys.filter(row['site_id'])
+    //      chemical_treatments: [],
+    //     biological_dispersals: [],
+    //    biological_treatments: [],
+    //   mechanical_treatments: [],
+    return iapp_site;
   });
 };
 

@@ -4,6 +4,7 @@
     "lib": ["es2020.string"],
     "baseUrl": "src",
     "outDir": "dist",
+    "downlevelIteration": true,
     "target": "es5",
     "sourceMap": true,
     "allowJs": false,
