@@ -214,22 +214,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //handle blur the field
   const blurHandler = (args: string[]) => {
-    // const $this = formRef;
-    // const field = getFieldNameFromArgs(args);
-    // const { formData, uiSchema } = $this.state;
-    // let path = getPathToFieldName(uiSchema, (key) => key === field);
-    // if (deepFind(uiSchema, path[0] + '')) {
-    //   if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
-    //     const { errorSchema } = $this.validate(formData);
-    //     let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
-    //     if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
-    //       setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
-    //       setField(field);
-    //       openDialog();
-    //     }
-    //   }
-    // }
-    //calling onformchange from onblur to prevent too many rerenders
+    const $this = formRef;
+    const field = getFieldNameFromArgs(args);
+    const { formData, uiSchema } = $this.state;
+    let path = getPathToFieldName(uiSchema, (key) => key === field);
+    if (deepFind(uiSchema, path[0] + '')) {
+      if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
+        const { errorSchema } = $this.validate(formData);
+        let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
+        if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
+          setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
+          setField(field);
+          openDialog();
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -359,7 +358,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   disabled={isDisabled}
                   formData={props.activity?.formData || null}
                   schema={schemas.schema}
-                  // onFocus={focusHandler}
+                  onFocus={focusHandler}
                   onBlur={(...args: string[]) => {
                     blurHandler(args);
                     setblurTriggered(Math.random());
