@@ -291,7 +291,8 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
       'properties', json_build_object(
         'point_of_interest_id', point_of_interest_id,
         'point_of_interest_type', point_of_interest_type,
-        'point_of_interest_subtype', point_of_interest_subtype
+        'point_of_interest_subtype', point_of_interest_subtype,
+        'species_on_site', species_on_site
       ),
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson",

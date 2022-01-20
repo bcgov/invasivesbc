@@ -41,7 +41,7 @@ const getSurveyObj = (row: any) => {
   };
 };
 
-const getSpeciesRef = async () => {
+export const getSpeciesRef = async () => {
   let connection;
   try {
     connection = await getDBConnection();
@@ -82,7 +82,7 @@ const getSpeciesRef = async () => {
 };
 
 export const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
-export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: Object[]) => {
+export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: any[]) => {
   const species_and_genus_match_array = [...input.matchAll(species_and_genus_regex)];
   const map_codes_only = species_and_genus_match_array.map((x) => {
     return species_ref.filter((r: any) => {
@@ -95,7 +95,7 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
 }; //todo: filter based on species (group 1) and genus (group 0)
 
 const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
-  const species_ref: Object[] = await getSpeciesRef();
+  const species_ref: any[] = await getSpeciesRef();
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
@@ -112,7 +112,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
   const all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
 
   return site_extract_table_response.rows.map((row) => {
-    let iapp_site = getIAPPjson(row);
+    const iapp_site = getIAPPjson(row);
     (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
       row['all_species_on_site'],
       species_ref
@@ -149,7 +149,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
   });
 };
 
-const getIAPPjson = (row: Object) => {
+const getIAPPjson = (row: any) => {
   try {
     return {
       point_of_interest_id: row['site_id'],

@@ -3,13 +3,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
+import { getIAPPsites, getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from '../utils/iapp-json-utils';
+import { SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
 
 import { getLogger } from '../utils/logger';
+import { isIAPPrelated } from './points-of-interest';
+import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -142,24 +145,58 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
+      if (isIAPPrelated(sanitizedSearchCriteria)) {
+        const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(sanitizedSearchCriteria);
+        if (!sqlStatement) {
+          throw {
+            status: 400,
+            message: 'Failed to build SQL statement'
+          };
+        }
 
-      if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+        console.log('GOT SITES BASED ON SEARCH CRITERIA');
+
+        const speciesRef = await getSpeciesRef();
+
+        const returnVal = response.rows.map((row) => {
+          const newGeoJSON = row.geo;
+          const species_on_site = getSpeciesCodesFromIAPPDescriptionList(row.all_species_on_site, speciesRef);
+
+          return {
+            type: 'Feature',
+            geometry: {
+              ...newGeoJSON
+            },
+            properties: {
+              site_id: row.site_id,
+              species_on_site: species_on_site
+            }
+          };
+        });
+
+        return res.status(200).json({ rows: returnVal, count: returnVal.length });
+      } else {
+        const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
+
+        if (!sqlStatement) {
+          throw {
+            status: 400,
+            message: 'Failed to build SQL statement'
+          };
+        }
+
+        const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+        // parse the rows from the response
+        const rows = { rows: (response && response.rows) || [] };
+
+        // parse the count from the response
+        const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
+
+        return res.status(200).json({ ...rows, ...count });
       }
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      return res.status(200).json({ ...rows, ...count });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       throw error;
