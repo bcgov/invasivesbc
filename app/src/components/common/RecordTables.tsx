@@ -228,7 +228,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { userInfo } = useContext(AuthStateContext);
+  const { userInfo, hasRole } = useContext(AuthStateContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -343,7 +343,19 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
                     // TODO limit to only some subtypes too
                     // TODO IAPP POIs not editable
-                    rowCondition: undefined,
+                    rowCondition: (row) => {
+                      console.log("Here's a row");
+                      if (row && row.activity_payload) {
+                        const createdBy = row.activity_payload.created_by;
+                        if (createdBy === userInfo.preferred_username) {
+                          console.log("User's own activity: ");
+                        }
+                        if (hasRole('master_administrator')) {
+                          console.log('User is master admin: ');
+                        }
+                        return createdBy === userInfo.preferred_username || hasRole('master_administrator');
+                      }
+                    },
                     displayInvalid: 'error',
                     invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
                     ...actions?.edit
