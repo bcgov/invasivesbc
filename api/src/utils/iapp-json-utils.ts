@@ -27,6 +27,34 @@ const distributionMap = {
   '9: continuous / dense': 'CD'
 };
 
+const mapSlope = (slope) => {
+  if (slope === '') return 'NA';
+  slope = Number(slope);
+  if (!slope) return 'FL';
+  if (slope < 5) return 'NF';
+  if (slope < 10) return 'GS';
+  if (slope < 15) return 'MS';
+  if (slope < 20) return 'SS';
+  if (slope < 25) return 'VS';
+  if (slope < 30) return 'ES';
+  if (slope < 45) return 'ST';
+  if (slope >= 45) return 'VT';
+  return 'NA';
+};
+
+const mapAspect = (aspect) => {
+  aspect = Number(aspect);
+  if ((aspect > 333.5 && aspect <= 360) || aspect <= 22.5) return 'N';
+  if (aspect <= 67.5) return 'NE';
+  if (aspect <= 112.5) return 'E';
+  if (aspect <= 157.5) return 'SE';
+  if (aspect <= 202.5) return 'S';
+  if (aspect <= 247.5) return 'SW';
+  if (aspect <= 292.5) return 'W';
+  if (aspect <= 333.5) return 'NW';
+  return 'NA';
+};
+
 const getSurveyObj = (row: any) => {
   return {
     genus: null, // Could not see (COME BACK LATER)
@@ -171,8 +199,8 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
 
 const getIAPPjson = (row: Object) => {
   try {
-    const returnVal = {
-      point_of_interest_id: row['site_id'], // COME BACK LATER
+    return {
+      point_of_interest_id: row['site_id'],
       version: '1.0.0',
       point_of_interest_type: 'IAPP Site',
       point_of_interest_subtype: 'First Load',
@@ -207,14 +235,14 @@ const getIAPPjson = (row: Object) => {
             updated_date_on_device: null // Nothing for now
           },
           point_of_interest_type_data: {
-            slope: null, // Could not find
-            aspect: null, // Could not find
+            slope: row['slope'], // site_selection_extract
+            aspect: row['aspect'], // Could not find
             site_id: row['site_id'],
-            slope_code: null, // Could not find slope to find code  (IAPP_Migrator)
-            aspect_code: null, // Could not find aspect to find code (IAPP_Migrator)
-            site_elevation: null, // Could not find
-            original_bec_id: null // Could not find
-            //soil_texture_code: soil_texture, // Needs to convert to code
+            slope_code: mapSlope(row['slope']), // Could not find slope to find code  (IAPP_Migrator)
+            aspect_code: mapAspect(row['aspect']), // Could not find aspect to find code (IAPP_Migrator)
+            site_elevation: row['elevation'], // Could not find
+            original_bec_id: null, // Could not find
+            soil_texture_code: row['soil_texture'] // Needs to convert to code
             //specific_use_code: site_specific_use // COME BACK LATER site_specific_use is empty
           },
           species_negative: [], // COME BACK LATER
@@ -234,7 +262,6 @@ const getIAPPjson = (row: Object) => {
         species_negative: [] // Could not find
       }
     };
-    return returnVal;
   } catch (e) {
     throw 'error mapping iapp site to point of interest (at site level)';
   }
