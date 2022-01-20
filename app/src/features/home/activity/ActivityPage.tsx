@@ -344,12 +344,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
     let formStatus;
-    if (!liveValidation && ref?.state?.errors?.length) {
-      formStatus = FormValidationStatus.NOT_VALIDATED;
-    } else if (liveValidation && ref?.state?.errors?.length) {
-      formStatus = FormValidationStatus.INVALID;
+    if (!liveValidation) {
+      if (ref?.state?.errors?.length > 0) {
+        formStatus = FormValidationStatus.INVALID;
+      } else {
+        formStatus = FormValidationStatus.NOT_VALIDATED;
+      }
     } else {
-      formStatus = FormValidationStatus.VALID;
+      if (ref?.state?.errors?.length > 0) {
+        formStatus = FormValidationStatus.INVALID;
+      } else {
+        formStatus = FormValidationStatus.VALID;
+      }
     }
 
     await updateDoc({

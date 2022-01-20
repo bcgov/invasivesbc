@@ -137,7 +137,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           props.dataBCAcceptsGeometry
         ).then((returnVal) => {
           if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
-            props.inputGeo[0] ? setWellFeatures(getClosestWellToPolygon(returnVal)) : setWellFeatures(returnVal);
+            props.inputGeo && props.inputGeo[0]
+              ? setWellFeatures(getClosestWellToPolygon(returnVal))
+              : setWellFeatures(returnVal);
           } else {
             setOtherFeatures(returnVal);
           }

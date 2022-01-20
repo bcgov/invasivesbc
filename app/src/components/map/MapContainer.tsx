@@ -103,9 +103,6 @@ export const q = async.queue(function async(task, callback) {
   console.log('Working on layer: ' + task.layer);
   console.log('Waiting to be processed: ' + q.length() + ' items.');
   console.log('-----------------------------------');
-
-  console.log(q.workersList());
-
   q.remove((worker: any) => {
     if (worker.data) {
       if (task.layer === worker.data.layer && turf.booleanWithin(task.extent, worker.data.extent)) {
