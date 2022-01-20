@@ -347,9 +347,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (!liveValidation && ref?.state?.errors?.length) {
       formStatus = FormValidationStatus.NOT_VALIDATED;
     } else if (liveValidation && ref?.state?.errors?.length) {
-      formStatus = FormValidationStatus.VALID;
-    } else {
       formStatus = FormValidationStatus.INVALID;
+    } else {
+      formStatus = FormValidationStatus.VALID;
     }
 
     await updateDoc({
