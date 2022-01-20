@@ -2,7 +2,7 @@ import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-    set schema 'public';
+    set schema 'invasivesbc';
     set search_path = invasivesbc,public;
     create table if not exists access_request(
         access_request_id serial primary key,
