@@ -312,6 +312,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   created_by?: string;
+  /**
+   * Identifies if this is an IAPP record
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  isIAPP?: boolean;
 }
 
 /**

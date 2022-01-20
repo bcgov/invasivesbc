@@ -1,7 +1,7 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
@@ -46,22 +46,20 @@ export const PoisLayer = (props) => {
     }
   };
 
-  useMapEvent('moveend', () => {
+  useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   const fetchData = async () => {
-    const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds }, databaseContext);
+    const poisData = await dataAccess.getPointsOfInterestLean(
+      { search_feature: mapBounds, isIAPP: true },
+      databaseContext
+    );
     const poisFeatureArray = [];
     const poisIDArray = [];
-    console.log(poisData?.rows);
     poisData?.rows.forEach((row) => {
       poisFeatureArray.push(row.geojson ? row.geojson : row);
-      poisIDArray.push(
-        row.geojson
-          ? row.geojson.properties.point_of_interest_id.toString()
-          : row.properties.point_of_interest_id.toString()
-      );
+      poisIDArray.push(row.properties.site_id.toString());
     });
 
     // removed for now: setPoiIDs(poisIDArray);
@@ -76,7 +74,7 @@ export const PoisLayer = (props) => {
   return (
     <>
       {
-        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
+        pois && <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} /> //NOSONAR
         /*poiToRender &&
           poiToRender.map((poi) => {
             var coords = poi.point_of_interest_payload.geometry[0].geometry.coordinates;
