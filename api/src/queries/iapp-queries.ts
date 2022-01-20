@@ -1,5 +1,4 @@
 import { getDBConnection } from '../database/db';
-import { response } from 'express';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getLogger } from '../utils/logger';
@@ -14,11 +13,11 @@ const defaultLog = getLogger('point-of-interest');
 export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-  sqlStatement.append(SQL` *`);
-  sqlStatement.append(SQL` FROM iapp_site_summary`);
+  sqlStatement.append(SQL` *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
+  sqlStatement.append(SQL` FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id WHERE 1=1`);
 
   if (searchCriteria.iappSiteID) {
-    sqlStatement.append(SQL` WHERE site_id = ${searchCriteria.iappSiteID}`);
+    sqlStatement.append(SQL` AND site_id = ${searchCriteria.iappSiteID}`);
   }
   if (searchCriteria.pointOfInterest_subtype) {
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
@@ -60,17 +59,13 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     sqlStatement.append(SQL`]::varchar[] && species_positive`);
   }
 
-  if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`
-      AND public.ST_INTERSECTS(
+  if (searchCriteria.search_feature?.geometry) {
+    sqlStatement.append(SQL` AND  public.ST_INTERSECTS(
         geog,
         public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-              4326
-            )
-          )
+              	public.geography( public.ST_Force2D(  
+				    public.ST_SetSRID(  
+				        public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),  4326  ) ) )
         )
       )
     `);
@@ -103,8 +98,18 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
   //stupid lib doesn't let you dynamically pass table name
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-  sqlStatement.append(SQL` *`);
   switch (extractName) {
+    case 'iapp_spatial':
+      sqlStatement.append(SQL` site_id, public.st_asGeoJSON(geog)::jsonb as geo`);
+      break;
+    default:
+      sqlStatement.append(SQL` *`);
+      break;
+  }
+  switch (extractName) {
+    case 'iapp_spatial':
+      sqlStatement.append(` from iapp_spatial`);
+      break;
     case 'biological_dispersal_extract':
       sqlStatement.append(` from biological_dispersal_extract`);
       break;
