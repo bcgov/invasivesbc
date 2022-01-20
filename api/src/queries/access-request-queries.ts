@@ -7,7 +7,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getAccessRequestsSQL = (): SQLStatement => {
-  return SQL`SELECT * FROM access_request where status='Awaiting Approval';`;
+  return SQL`SELECT * FROM access_request;`;
 };
 
 /**
@@ -58,10 +58,13 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         pac_number,
         pac_service_number_1,
         pac_service_number_2,
+        requested_roles,
         comments,
-        status
+        status,
+        idir_userid,
+        bceid_userid
     )
-    VALUES (
+    SELECT
         ${accessRequest.idir ? accessRequest.idir : null},
         ${accessRequest.bceid ? accessRequest.bceid : null},
         ${accessRequest.firstName ? accessRequest.firstName : null},
@@ -73,8 +76,15 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
         ${accessRequest.psn1 ? accessRequest.psn1 : null},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
+        ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
-        ${accessRequest.status}
+        ${accessRequest.status},
+        ${accessRequest.idirUserId ? accessRequest.idirUserId : null},
+        ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null}
+    WHERE NOT EXISTS (
+        SELECT 1 from ACCESS_REQUEST WHERE primary_email=${
+          accessRequest.email
+        } AND status='APPROVED' OR status='NOT_APPROVED'
     );
   `;
 };
@@ -87,7 +97,74 @@ export const updateAccessRequestStatusSQL = (email, status): SQLStatement => {
         update access_request
         set
         status=${status},
-        updated_at=now()
-        where primary_email=${email}
+        updated_at=CURRENT_TIMESTAMP
+        where primary_email=${email};
+    `;
+};
+
+export const declineAccessRequestSQL = (email): SQLStatement => {
+  return SQL`
+        update access_request
+        set
+        status='DECLINED',
+        updated_at=CURRENT_TIMESTAMP
+        where primary_email=${email};
+    `;
+};
+
+export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
+  let preferredUsername = '';
+  const today = new Date();
+  const expiryDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+  if (accessRequest.idir !== (null || '')) {
+    preferredUsername = accessRequest.idir_account_name;
+  } else if (accessRequest.bceid !== (null || '')) {
+    preferredUsername = accessRequest.bceid_account_name;
+  } else {
+    preferredUsername = accessRequest.primary_email;
+  }
+  return SQL`
+        insert into application_user (
+            first_name,
+            last_name,
+            email,
+            preferred_username,
+            account_status,
+            expiry_date,
+            activation_status,
+            created_at,
+            updated_at,
+            idir_userid,
+            bceid_userid,
+            idir_account_name,
+            bceid_account_name,
+            work_phone_number,
+            funding_agencies,
+            employer,
+            pac_number,
+            pac_service_number_1,
+            pac_service_number_2
+            )
+        values (
+            ${accessRequest.first_name},
+            ${accessRequest.last_name},
+            ${accessRequest.primary_email},
+            ${preferredUsername},
+            1,
+            ${expiryDate.toUTCString()},
+            1,
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            ${accessRequest.idir_userid},
+            ${accessRequest.bceid_userid},
+            ${accessRequest.idir_account_name},
+            ${accessRequest.bceid_account_name},
+            ${accessRequest.work_phone_number},
+            ${accessRequest.funding_agencies},
+            ${accessRequest.employer},
+            ${accessRequest.pac_number},
+            ${accessRequest.pac_service_number_1},
+            ${accessRequest.pac_service_number_2}
+        );
     `;
 };

@@ -5,7 +5,6 @@ import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { SQLStatement } from 'sql-template-strings';
 import { promisify } from 'util';
 import { getDBConnection } from '../database/db';
-import { getUserWithRolesSQL } from '../queries/user-queries';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('auth-utils');
@@ -89,51 +88,6 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       };
     }
 
-    const jwksClient: JwksClient = JwksRsa({ jwksUri: APP_CERTIFICATE_URL });
-
-    const getSigningKeyAsync = promisify(jwksClient.getSigningKey);
-
-    // Get signing key from certificate issuer
-    const key = await getSigningKeyAsync(kid);
-
-    if (!key) {
-      defaultLog.warn({ label: 'authenticate', message: 'get signing key' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
-    const signingKey = key['publicKey'] || key['rsaPublicKey'];
-
-    // Verify token using signing key
-    const verifiedToken = verifyToken(tokenString, signingKey);
-
-    if (!verifiedToken) {
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
-    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
-
-    // Add the verified token to the request for future use, if needed
-    req.auth_payload = verifiedToken;
-
-    // Verify that the user role(s) (from keycloak) align with the required roles for this endpoint (security scopes)
-    // The user may have multiple roles, but this check only requires 1 role to match for successful authorization
-
-    //temp hack:
-    const areUserRolesValid = true; //userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
-
-    if (!areUserRolesValid) {
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
-    }
-
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });
@@ -204,54 +158,6 @@ export const verifyUserRoles = function (allowedRoles: string[] | string, userRo
 
   // user contains none of the allowedRoles, return false
   return false;
-};
-
-/**
- * Finds a single user based on their email.
- *
- * @param {string} email
- * @returns user
- */
-export const getUserWithRoles = async function (email: string) {
-  defaultLog.debug({ label: 'getUserWithRoles', message: 'email', email });
-
-  if (!email) {
-    throw {
-      status: 503,
-      message: 'Missing required email'
-    };
-  }
-
-  const connection = await getDBConnection();
-
-  if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
-  }
-
-  try {
-    const sqlStatement: SQLStatement = getUserWithRolesSQL(email);
-
-    if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
-    }
-
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rowCount && response.rows[0]) || null;
-
-    return result;
-  } catch (error) {
-    defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
-    throw error;
-  } finally {
-    connection.release();
-  }
 };
 
 /**

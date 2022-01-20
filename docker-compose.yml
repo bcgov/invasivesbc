@@ -40,6 +40,8 @@ services:
       - local-network
     links:
       - db
+    # We want to run this after the db container is up and running
+    restart: on-failure
     depends_on:
       - db
       # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully

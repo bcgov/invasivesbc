@@ -5,12 +5,12 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
-import { getUsersSQL } from '../queries/user-queries';
+import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity/{activityId}');
 
-export const GET: Operation = [getUsers(), returnUsers()];
+export const GET: Operation = [getHandler()];
 
 GET.apiDoc = {
   description: 'Fetches a list of users from the database',
@@ -48,49 +48,111 @@ GET.apiDoc = {
   }
 };
 
+function getHandler() {
+  return async (req, res, next) => {
+    const bceid = req.query.bceid;
+    const idir = req.query.idir;
+    console.log('bceid', bceid);
+    console.log('idir', idir);
+    if (idir && bceid) {
+      return res.status(400).send('Cannot specify both BCEID ID and IDIR IDs');
+    } else if (bceid) {
+      return await getUserByBCEID(req, res, next, bceid);
+    } else if (idir) {
+      return await getUserByIDIR(req, res, next, idir);
+    } else {
+      // Fetch all application users
+      return await getUsers(req, res, next);
+    }
+  };
+}
+
 /**
  * Fetches a list of users
  *
  * @return {RequestHandler}
  */
-function getUsers(): RequestHandler {
-  return async (req, res, next) => {
-    const connection = await getDBConnection();
-    if (!connection) {
+async function getUsers(req, res, next) {
+  const connection = await getDBConnection();
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+  try {
+    const sqlStatement: SQLStatement = getUsersSQL();
+    if (!sqlStatement) {
       throw {
-        status: 503,
-        message: 'Failed to establish database connection'
+        status: 400,
+        message: 'Failed to build SQL statement'
       };
     }
-    try {
-      const sqlStatement: SQLStatement = getUsersSQL();
-      if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
-      }
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      const result = (response && response.rows) || null;
-      req['users'] = result;
-    } catch (error) {
-      defaultLog.debug({ label: 'getUsers', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-
-    return next();
-  };
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+    return res.status(200).json(result);
+  } catch (error) {
+    defaultLog.debug({ label: 'getUsers', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
 }
 
-/**
- * Sends a 200 response with JSON contents of `raw.users`.
- *
- * @return {RequestHandler}
- */
-function returnUsers(): RequestHandler {
-  return async (req, res) => {
-    return res.status(200).json(req['users']);
-  };
+async function getUserByBCEID(req, res, next, bceid) {
+  defaultLog.debug({ label: '{bceid}', message: 'getUserByBCEID', body: req.query });
+  const connection = await getDBConnection();
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+  try {
+    const sqlStatement: SQLStatement = getUserByBCEIDSQL(bceid);
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+    console.log('result', result);
+    return res.status(200).json(result);
+  } catch (error) {
+    defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
+async function getUserByIDIR(req, res, next, idir) {
+  defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
+  const connection = await getDBConnection();
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+  try {
+    const sqlStatement: SQLStatement = getUserByIDIRSQL(idir);
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+    console.log('result', result);
+    return res.status(200).json(result);
+  } catch (error) {
+    defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
 }

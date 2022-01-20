@@ -38,8 +38,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const api = useInvasivesApi();
   const authState = useContext(AuthStateContext);
   const classes = useStyles();
-  const [transferAccess, setTransferAccess] = useState(null);
-  const [accountType, setAccountType] = useState(null);
+  const [transferAccess, setTransferAccess] = useState('');
+  const [accountType, setAccountType] = useState('');
   const [idir, setIdir] = useState(
     authState.keycloak?.obj?.tokenParsed?.preferred_username
       ? authState.keycloak?.obj?.tokenParsed?.preferred_username
@@ -64,6 +64,12 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [email, setEmail] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.email ? authState.keycloak?.obj?.tokenParsed?.email : ''
   );
+  const [idir_userid, setIdirUserid] = React.useState(
+    authState.keycloak?.obj?.tokenParsed?.idir_userid ? authState.keycloak?.obj?.tokenParsed?.idir_userid : ''
+  );
+  const [bceid_userid, setBceidUserid] = React.useState(
+    authState.keycloak?.obj?.tokenParsed?.bceid_userid ? authState.keycloak?.obj?.tokenParsed?.bceid_userid : ''
+  );
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -75,87 +81,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [employersList, setEmployersList] = React.useState<any[]>([]);
   const [submitted, setSubmitted] = React.useState(false);
   const [comments, setComments] = React.useState('');
-
-  const apiEmployers = api.getEmployers();
-  const apiFundingAgencies = api.getFundingAgencies();
-
-  console.log(apiEmployers);
-  console.log(apiFundingAgencies);
-
-  const rolesList = [
-    {
-      name: 'Administrator - Plants Only',
-      value: 'administrator_plants'
-    },
-    {
-      name: 'Administrator - Animals Only',
-      value: 'administrator_animals'
-    },
-    {
-      name: 'BC Government Staff User - Animals',
-      value: 'bcgov_staff_animals'
-    },
-    {
-      name: 'BC Government Staff User - Plants',
-      value: 'bcgov_staff_plants'
-    },
-    {
-      name: 'BC Government Staff User - Both',
-      value: 'bcgov_staff_both'
-    },
-    {
-      name: 'Contractor Manager - Animals',
-      value: 'contractor_manager_animals'
-    },
-    {
-      name: 'Contractor Manager - Plants',
-      value: 'contractor_manager_plants'
-    },
-    {
-      name: 'Contractor Manager - Both',
-      value: 'contractor_manager_both'
-    },
-    {
-      name: 'Contractor Staff - Animals',
-      value: 'contractor_staff_animals'
-    },
-    {
-      name: 'Contractor Staff - Plants',
-      value: 'contractor_staff_plants'
-    },
-    {
-      name: 'Contractor Staff - Both',
-      value: 'contractor_staff_both'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Animals',
-      value: 'indigenous_riso_manager_animals'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Plants',
-      value: 'indigenous_riso_manager_plants'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Manager - Both',
-      value: 'indigenous_riso_manager_both'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Animals',
-      value: 'indigenous_riso_staff_animals'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Plants',
-      value: 'indigenous_riso_staff_plants'
-    },
-    {
-      name: 'Indigenous/Local Gov/RISO Staff - Both',
-      value: 'indigenous_riso_staff_both'
-    },
-    {
-      name: 'Master Administrator',
-      value: 'master_administrator'
-    }
-  ];
+  const [roles, setRoles] = React.useState<any[]>([]);
 
   const submitAccessRequest = async () => {
     const accessRequest = {
@@ -172,7 +98,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       fundingAgencies: fundingAgencies?.toString(),
       requestedRoles: requestedRoles?.toString(),
       comments: comments,
-      status: 'NOT_APPROVED'
+      status: 'NOT_APPROVED',
+      idirUserId: idir_userid,
+      bceidUserId: bceid_userid
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
@@ -195,7 +123,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       fundingAgencies: null,
       requestedRoles: null,
       comments: null,
-      status: 'REMOVED'
+      status: 'REMOVED',
+      idir_userid: null,
+      bceid_userid: null
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
@@ -205,6 +135,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
+    console.log('KEYCLOAK OBJ: ', authState.keycloak?.obj);
     if (userInfo !== undefined) {
       if (userInfo?.idir_account_name) {
         setAccountType('IDIR');
@@ -248,6 +179,17 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     fetchAccessRequestData();
     fetchFundingAgencies();
     fetchEmployers();
+    api.getRoles().then((response) => {
+      const roles = [];
+      for (const role of response) {
+        roles.push({
+          id: role.id,
+          value: role.role_name,
+          name: role.role_description
+        });
+      }
+      setRoles(roles);
+    });
   }, []);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -534,7 +476,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 value: requestedRoles,
                                 onChange: handleRequestedRoleChange
                               }}>
-                              {rolesList.map((role) => (
+                              {roles.map((role) => (
                                 <MenuItem key={role.value} value={role.value}>
                                   {role.name}
                                 </MenuItem>

@@ -193,6 +193,19 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch roles
+   * @return {*}  {Promise<any>}
+   */
+  const getRoles = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/roles/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+    return data;
+  };
+
+  /**
    * Fetch points of interest by search criteria.
    *
    * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
@@ -237,8 +250,75 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
-
     return data;
+  };
+
+  const getAccessRequests = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/access-request/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+    return data;
+  };
+
+  const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
+    console.log('Access requests received', accessRequests);
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request`,
+      data: { approvedAccessRequests: accessRequests }
+    });
+    return data;
+  };
+
+  const declineAccessRequest = async (accessRequest: any): Promise<any> => {
+    console.log('Access request received', accessRequest);
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/access-request`,
+      data: { declinedAccessRequest: accessRequest }
+    });
+    return data;
+  };
+
+  const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
+    return Http.request({
+      method: 'DELETE',
+      url: options.baseUrl + `/api/user-access`,
+      data: { userId: userId, roleId: roleId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const getRolesForUser = async (userId: string, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
+    return Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/user-access?userId=${userId}`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const getUsersForRole = async (roleId: string): Promise<any> => {
+    return Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/user-access?roleId=${roleId}`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+  };
+
+  const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
+    return Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/user-access`,
+      data: { userIds: userIds, roleId: roleId },
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
   };
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
@@ -246,7 +326,7 @@ export const useInvasivesApi = () => {
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request`,
-      data: accessRequest
+      data: { newAccessRequest: accessRequest }
     });
 
     return data;
@@ -415,11 +495,44 @@ export const useInvasivesApi = () => {
    */
   const getApplicationUsers = async (): Promise<any> => {
     const { data } = await Http.request({
-      headers: { ...options.headers },
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user`
     });
 
+    return data;
+  };
+
+  const renewUser = async (id): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'POST',
+      url: options.baseUrl + `/api/application-user/renew?userId=${id}`
+    });
+    return data;
+  };
+
+  const getUserByIDIR = async (idir_userid, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
+    const { data } = await Http.request({
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      url: options.baseUrl + `/application-user?idir=${idir_userid}`
+    });
+    return data;
+  };
+
+  const getUserByBCEID = async (bceid_userid, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
+    const { data } = await Http.request({
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
+    });
     return data;
   };
 
@@ -745,6 +858,17 @@ export const useInvasivesApi = () => {
     getApplicationUsers,
     submitAccessRequest,
     getEmployers,
-    getFundingAgencies
+    getFundingAgencies,
+    getRolesForUser,
+    getUsersForRole,
+    batchGrantRoleToUser,
+    revokeRoleFromUser,
+    getRoles,
+    getAccessRequests,
+    getUserByIDIR,
+    getUserByBCEID,
+    approveAccessRequests,
+    declineAccessRequest,
+    renewUser
   };
 };
