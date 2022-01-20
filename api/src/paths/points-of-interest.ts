@@ -130,7 +130,7 @@ POST.apiDoc = {
   }
 };
 
-const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
+export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
   return PointOfInterestSearchCriteria.isIAPP;
 };
 
