@@ -807,6 +807,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               setParentFormRef={props.setParentFormRef}
               showDrawControls={true}
               setWellIdandProximity={setWellIdandProximity}
+              liveValidation={false}
             />
           </>
         )}
