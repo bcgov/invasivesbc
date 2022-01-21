@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
 
 -- DROP TABLE invasivesbc.species_ref_raw;
 
-CREATE TABLE invasivesbc.species_ref_raw (
+CREATE TABLE  if not exists invasivesbc.species_ref_raw (
 	species_id serial4 NOT NULL,
 	common_name varchar(50) NOT NULL,
 	latin_name varchar(50) NOT NULL,
@@ -281,7 +281,7 @@ INSERT INTO invasivesbc.species_ref_raw (common_name,latin_name,genus,species,ma
 	 ('White spanish broom','Cytisus multiflorus','CYTI','MUL','SR'),
 	 ('Reed canary grass','Phalaris arundinacea','PHAL','ARU','RE');
   
-	 create view iapp_species_ref_raw as (
+	 create view  if not exists iapp_species_ref_raw as (
 
 		with all_plant_codes as (
 			select

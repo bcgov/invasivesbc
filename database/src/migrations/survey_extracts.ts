@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
 
 -- DROP TABLE invasivesbc.survey_extract;
 
-CREATE TABLE invasivesbc.survey_extract (
+CREATE TABLE if not exists invasivesbc.survey_extract (
 	surveyid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(20) NULL,
