@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
 
 -- DROP TABLE invasivesbc.site_selection_extract;
 
-CREATE TABLE invasivesbc.site_selection_extract (
+CREATE TABLE if not exists invasivesbc.site_selection_extract (
 	siteselectionid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(20) NULL,
@@ -55,7 +55,7 @@ CREATE TABLE invasivesbc.site_selection_extract (
 
 -- DROP TABLE invasivesbc.biological_dispersal_extract;
 
-CREATE TABLE invasivesbc.biological_dispersal_extract (
+CREATE TABLE if not exists invasivesbc.biological_dispersal_extract (
 	biologicaldispersalid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(120) NULL,
@@ -96,8 +96,8 @@ CREATE TABLE invasivesbc.biological_dispersal_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX biological_disperal_date_idx ON invasivesbc.biological_dispersal_extract USING btree (inspection_date);
-CREATE INDEX biological_disperal_site_id_idx ON invasivesbc.biological_dispersal_extract USING btree (site_id);
+CREATE INDEX if not exists biological_disperal_date_idx ON invasivesbc.biological_dispersal_extract USING btree (inspection_date);
+CREATE INDEX  if not exists biological_disperal_site_id_idx ON invasivesbc.biological_dispersal_extract USING btree (site_id);
 
 
 -- invasivesbc.biological_monitoring_extract definition
@@ -106,7 +106,7 @@ CREATE INDEX biological_disperal_site_id_idx ON invasivesbc.biological_dispersal
 
 -- DROP TABLE invasivesbc.biological_monitoring_extract;
 
-CREATE TABLE invasivesbc.biological_monitoring_extract (
+CREATE TABLE if not exists invasivesbc.biological_monitoring_extract (
 	biologicalmonitoringid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(120) NULL,
@@ -152,9 +152,9 @@ CREATE TABLE invasivesbc.biological_monitoring_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX biological_monitoring_date_idx ON invasivesbc.biological_monitoring_extract USING btree (inspection_date);
-CREATE INDEX biological_monitoring_extract_idx ON invasivesbc.biological_monitoring_extract USING btree (inspection_date);
-CREATE INDEX biological_monitoring_site_id_idx ON invasivesbc.biological_monitoring_extract USING btree (site_id);
+CREATE INDEX if not exists biological_monitoring_date_idx ON invasivesbc.biological_monitoring_extract USING btree (inspection_date);
+CREATE INDEX if not exists biological_monitoring_extract_idx ON invasivesbc.biological_monitoring_extract USING btree (inspection_date);
+CREATE INDEX if not exists biological_monitoring_site_id_idx ON invasivesbc.biological_monitoring_extract USING btree (site_id);
 
 
 -- invasivesbc.biological_treatment_extract definition
@@ -163,7 +163,7 @@ CREATE INDEX biological_monitoring_site_id_idx ON invasivesbc.biological_monitor
 
 -- DROP TABLE invasivesbc.biological_treatment_extract;
 
-CREATE TABLE invasivesbc.biological_treatment_extract (
+CREATE TABLE if not exists invasivesbc.biological_treatment_extract (
 	biotreatmentid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(20) NULL,
@@ -199,9 +199,9 @@ CREATE TABLE invasivesbc.biological_treatment_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX biological_treatment_date_idx ON invasivesbc.biological_treatment_extract USING btree (treatment_date);
-CREATE INDEX biological_treatment_extract_idx ON invasivesbc.biological_treatment_extract USING btree (treatment_date);
-CREATE INDEX biological_treatment_site_id_idx ON invasivesbc.biological_treatment_extract USING btree (site_id);
+CREATE INDEX if not exists biological_treatment_date_idx ON invasivesbc.biological_treatment_extract USING btree (treatment_date);
+CREATE INDEX if not exists biological_treatment_extract_idx ON invasivesbc.biological_treatment_extract USING btree (treatment_date);
+CREATE INDEX if not exists biological_treatment_site_id_idx ON invasivesbc.biological_treatment_extract USING btree (site_id);
 
 
 -- invasivesbc.chemical_monitoring_extract definition
@@ -210,7 +210,7 @@ CREATE INDEX biological_treatment_site_id_idx ON invasivesbc.biological_treatmen
 
 -- DROP TABLE invasivesbc.chemical_monitoring_extract;
 
-CREATE TABLE invasivesbc.chemical_monitoring_extract (
+CREATE TABLE if not exists invasivesbc.chemical_monitoring_extract (
 	chemicalmonitoringid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(120) NULL,
@@ -250,8 +250,8 @@ CREATE TABLE invasivesbc.chemical_monitoring_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX chemical_monitoring_date_idx ON invasivesbc.chemical_monitoring_extract USING btree (inspection_date);
-CREATE INDEX chemical_monitoring_site_id_idx ON invasivesbc.chemical_monitoring_extract USING btree (site_id);
+CREATE INDEX if not exists  chemical_monitoring_date_idx ON invasivesbc.chemical_monitoring_extract USING btree (inspection_date);
+CREATE INDEX if not exists chemical_monitoring_site_id_idx ON invasivesbc.chemical_monitoring_extract USING btree (site_id);
 
 
 -- invasivesbc.chemical_treatment_extract definition
@@ -260,7 +260,7 @@ CREATE INDEX chemical_monitoring_site_id_idx ON invasivesbc.chemical_monitoring_
 
 -- DROP TABLE invasivesbc.chemical_treatment_extract;
 
-CREATE TABLE invasivesbc.chemical_treatment_extract (
+CREATE TABLE if not exists invasivesbc.chemical_treatment_extract (
 	chemicaltreatmentid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(20) NULL,
@@ -302,8 +302,8 @@ CREATE TABLE invasivesbc.chemical_treatment_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX chemical_treatment_date_idx ON invasivesbc.chemical_treatment_extract USING btree (treatment_date);
-CREATE INDEX chemical_treatment_site_id_idx ON invasivesbc.chemical_treatment_extract USING btree (site_id);
+CREATE INDEX if not exists chemical_treatment_date_idx ON invasivesbc.chemical_treatment_extract USING btree (treatment_date);
+CREATE INDEX if not exists chemical_treatment_site_id_idx ON invasivesbc.chemical_treatment_extract USING btree (site_id);
 
 
 -- invasivesbc.mechanical_monitoring_extract definition
@@ -312,7 +312,7 @@ CREATE INDEX chemical_treatment_site_id_idx ON invasivesbc.chemical_treatment_ex
 
 -- DROP TABLE invasivesbc.mechanical_monitoring_extract;
 
-CREATE TABLE invasivesbc.mechanical_monitoring_extract (
+CREATE TABLE if not exists invasivesbc.mechanical_monitoring_extract (
 	mechmonitoringid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(120) NULL,
@@ -348,8 +348,8 @@ CREATE TABLE invasivesbc.mechanical_monitoring_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX mechanical_monitoring_date_idx ON invasivesbc.mechanical_monitoring_extract USING btree (inspection_date);
-CREATE INDEX mechanical_monitoring_site_id_idx ON invasivesbc.mechanical_monitoring_extract USING btree (site_id);
+CREATE INDEX if not exists mechanical_monitoring_date_idx ON invasivesbc.mechanical_monitoring_extract USING btree (inspection_date);
+CREATE INDEX if not exists mechanical_monitoring_site_id_idx ON invasivesbc.mechanical_monitoring_extract USING btree (site_id);
 
 
 -- invasivesbc.mechanical_treatment_extract definition
@@ -358,7 +358,7 @@ CREATE INDEX mechanical_monitoring_site_id_idx ON invasivesbc.mechanical_monitor
 
 -- DROP TABLE invasivesbc.mechanical_treatment_extract;
 
-CREATE TABLE invasivesbc.mechanical_treatment_extract (
+CREATE TABLE  if not exists invasivesbc.mechanical_treatment_extract (
 	mechanicaltreatmentid serial4 NOT NULL,
 	site_id int4 NOT NULL,
 	site_paper_file_id varchar(20) NULL,
@@ -390,8 +390,8 @@ CREATE TABLE invasivesbc.mechanical_treatment_extract (
 	site_location varchar(2000) NULL,
 	site_comments varchar(2000) NULL
 );
-CREATE INDEX mechanical_treatment_date_idx ON invasivesbc.mechanical_treatment_extract USING btree (treatment_date);
-CREATE INDEX mechanical_treatment_site_id_idx ON invasivesbc.mechanical_treatment_extract USING btree (site_id);
+CREATE INDEX  if not exists mechanical_treatment_date_idx ON invasivesbc.mechanical_treatment_extract USING btree (treatment_date);
+CREATE INDEX  if not exists mechanical_treatment_site_id_idx ON invasivesbc.mechanical_treatment_extract USING btree (site_id);
   `);
 }
 

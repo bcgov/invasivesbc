@@ -118,6 +118,7 @@ export async function up(knex: Knex): Promise<void> {
 		site_id int  not null,
 		geog geography(geometry, 4326) NULL
 	);
+	delete from invasivesbc.iapp_spatial;
 	
 	create index if not exists spatial_iapp_site_id_idx on invasivesbc.iapp_spatial (site_id);
 	CREATE INDEX if not exists spatial_iapp_geog_idx ON invasivesbc.iapp_spatial  USING gist (geog);
