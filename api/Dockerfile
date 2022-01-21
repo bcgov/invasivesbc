@@ -9,8 +9,6 @@ RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
 
-COPY --chown=1001:0 ./package.json $HOME 
-COPY --chown=1001:0 ./package-lock.json $HOME
 # Make Directory for uploading issue logs
 
 RUN mkdir -p ${HOME}/../temp/uploads/issues
@@ -27,7 +25,8 @@ WORKDIR ${HOME}
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied where available (npm@5+)
 # RUN npm install --only=production
-COPY ./package*.json ./
+COPY --chown=1001:0 ./package.json ./
+COPY --chown=1001:0 ./package-lock.json ./
 
 RUN npm install
 
