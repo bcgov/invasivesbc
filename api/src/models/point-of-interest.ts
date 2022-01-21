@@ -79,6 +79,7 @@ export class PointOfInterestSearchCriteria {
   pointOfInterest_type: string;
   pointOfInterest_subtype: string;
   iappType: string;
+  isIAPP: boolean;
   iappSiteID: string;
   date_range_start: Date;
   date_range_end: Date;
@@ -106,6 +107,7 @@ export class PointOfInterestSearchCriteria {
     this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
     this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
     this.iappType = (obj && obj.iappType) || null;
+    this.isIAPP = (obj && obj.isIAPP) || false;
     this.iappSiteID = (obj && obj.iappSiteID) || null;
     this.point_of_interest_ids = (obj && obj.point_of_interest_ids) || [];
     this.species_positive = obj?.species_positive || [];

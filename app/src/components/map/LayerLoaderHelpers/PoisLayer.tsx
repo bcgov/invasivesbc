@@ -1,8 +1,8 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import L from 'leaflet';
-import React, { useContext, useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
+import L, { LatLngBoundsExpression } from 'leaflet';
+import React, { useContext, useEffect, useState } from 'react';
+import { Marker, SVGOverlay, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -12,21 +12,8 @@ export const PoisLayer = (props) => {
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [pois, setPois] = useState(null);
   //const [poiIDs, setPoiIDs] = useState(null);
-  const [poiToRender, setPoiToRender] = useState([]);
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  /*
-  useEffect(() => {
-  const [poiIDs, setPoiIDs] = useState(null);
-  const [pois, setPois] = useState(null);
-  const [poiToRender, setPoiToRender] = useState([]);
-  const dataAccess = useDataAccess();
-
-  /*useEffect(() => {
-    if (poiIDs.length > 0) {
-      fetchPOIs();
-    }
-  }, [poiIDs]);*/
 
   const markerIcon = L.icon({
     iconUrl: marker,
@@ -37,8 +24,8 @@ export const PoisLayer = (props) => {
     tolerance: 3,
     debug: 0,
     style: {
-      fillColor: '#00000',
-      color: '#00000',
+      fillColor: '#2CFA1F',
+      color: '#2CFA1F',
       stroke: true,
       opacity: props.opacity,
       fillOpacity: props.opacity - 0.2,
@@ -46,54 +33,53 @@ export const PoisLayer = (props) => {
     }
   };
 
-  useMapEvent('moveend', () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useMapEvent('zoomend', () => {
     fetchData();
   });
 
   const fetchData = async () => {
-    const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds }, databaseContext);
+    const poisData = await dataAccess.getPointsOfInterestLean(
+      { search_feature: mapBounds, isIAPP: true },
+      databaseContext
+    );
     const poisFeatureArray = [];
     const poisIDArray = [];
-    console.log(poisData?.rows);
     poisData?.rows.forEach((row) => {
       poisFeatureArray.push(row.geojson ? row.geojson : row);
-      poisIDArray.push(
-        row.geojson
-          ? row.geojson.properties.point_of_interest_id.toString()
-          : row.properties.point_of_interest_id.toString()
-      );
+      poisIDArray.push(row.properties.site_id.toString());
     });
 
-    // removed for now: setPoiIDs(poisIDArray);
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
-  /*
-  const fetchPOIs = async () => {
-    console.log('fetching');
-    console.log(await dataAccess.getPointsOfInterest({ point_of_interest_ids: things, limit: 50 }, databaseContext));
-  };*/
+
+  if (!pois) {
+    return null;
+  }
+
+  console.log(map.getZoom());
 
   return (
     <>
-      {
-        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
-        /*poiToRender &&
-          poiToRender.map((poi) => {
-            var coords = poi.point_of_interest_payload.geometry[0].geometry.coordinates;
-            var species_positive = poi.point_of_interest_payload.species_positive;
-            var species_negative = poi.point_of_interest_payload.species_negative;
+      {map.getZoom() < 16 ? (
+        <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />
+      ) : (
+        <>
+          {pois.features.map((feature) => {
+            var coords = feature.geometry.coordinates;
             return (
               <Marker position={[coords[1], coords[0]]} icon={markerIcon}>
-                <Tooltip direction="top" opacity={0.7}>
-                  <div style={{ display: 'flex ', flexFlow: 'row nowrap' }}>
-                    {species_positive && species_positive.map((s) => <>{s} </>)}
-                    {species_negative && species_negative.map((s) => <>{s} </>)}
-                  </div>
+                <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
+                  {feature.properties.species_on_site.toString()}
                 </Tooltip>
               </Marker>
             );
-          })*/
-      }
+          })}
+        </>
+      )}
     </>
   );
 };

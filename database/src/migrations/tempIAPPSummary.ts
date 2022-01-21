@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
 
 	--too big but would simply things:
 	--CREATE INDEX point_of_interest_payload_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_payload);
-	set search_path=invasivesbc;
+	set search_path=invasivesbc,public;
 
 	create index if not exists survey_date_idx on survey_extract (survey_date);
 	create index if not exists chemical_treatment_date_idx on chemical_treatment_extract (treatment_date);
@@ -108,9 +108,33 @@ export async function up(knex: Knex): Promise<void> {
 	join date_summary ds on ds.site_id = sse.site_id
 	
 	);
-	--drop materialized view if exists iapp_site_summary;
-	--create materialized view iapp_site_summary as select * from iapp_site_summary_slow;
-	--GRANT SELECT ON iapp_site_summary  TO invasivebc;
+
+	drop materialized view if exists iapp_site_summary;
+	create materialized view iapp_site_summary as select * from iapp_site_summary_slow;
+
+	GRANT SELECT ON iapp_site_summary  TO invasivebc;
+
+	create table if not exists invasivesbc.iapp_spatial  (
+		site_id int  not null,
+		geog geography(geometry, 4326) NULL
+	);
+	
+	create index if not exists spatial_iapp_site_id_idx on invasivesbc.iapp_spatial (site_id);
+	CREATE INDEX if not exists spatial_iapp_geog_idx ON invasivesbc.iapp_spatial  USING gist (geog);
+	
+	with iapp_spatial_calculated as (
+	select site_id
+	,public.geography( public.ST_Force2D(  
+		public.ST_SetSRID(  
+			public.ST_GeomFromGeoJSON(' { "type": "Point","coordinates": [ ' 
+				|| cast(decimal_longitude as text) || ',' 
+				|| cast(decimal_latitude as text) || ' ]  }'),  4326  ) ) )
+	from invasivesbc.site_selection_extract
+	)
+	insert into 
+	invasivesbc.iapp_spatial
+	select * from iapp_spatial_calculated;
+
 
   `);
 }
