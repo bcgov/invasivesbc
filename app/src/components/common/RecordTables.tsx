@@ -12,6 +12,7 @@ import {
 import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import moment from 'moment';
 import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -135,6 +136,7 @@ export const defaultActivitiesFetch =
     dataAccess,
     activitySubtypes = [],
     created_by = undefined,
+    user_roles = [],
     review_status = [],
     linked_id = undefined
   }) =>
@@ -145,22 +147,20 @@ export const defaultActivitiesFetch =
       // if page is right near the db page limit
       dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
     const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
-    const result = await dataAccess.getActivities(
-      {
-        page: Math.floor((page * rowsPerPage) / dbPageSize),
-        limit: dbPageSize,
-        order: order,
-        // search_feature: geometry TODO
-        activity_type: types,
-        activity_subtype: arrayWrap(activitySubtypes),
-        // startDate, endDate will be filters
-        created_by: created_by, // my_keycloak_id
-        review_status: review_status,
-        linked_id: linked_id
-      },
-      databaseContext,
-      true
-    );
+    const criteria: IActivitySearchCriteria = {
+      page: Math.floor((page * rowsPerPage) / dbPageSize),
+      limit: dbPageSize,
+      order: order,
+      user_roles: user_roles,
+      // search_feature: geometry TODO
+      activity_type: types,
+      activity_subtype: arrayWrap(activitySubtypes),
+      // startDate, endDate will be filters
+      created_by: created_by, // my_keycloak_id
+      review_status: review_status,
+      linked_id: linked_id
+    };
+    const result = await dataAccess.getActivities(criteria, databaseContext, true);
     return {
       rows: result?.rows?.map(activityStandardMapping) || [],
       count: result?.count || 0
@@ -228,7 +228,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { userInfo, hasRole } = useContext(AuthStateContext);
+  const { userInfo, hasRole, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -290,6 +290,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       dataAccess,
       activitySubtypes: arrayWrap(activitySubtypes),
       created_by,
+      user_roles: rolesUserHasAccessTo,
       review_status: review_status
     });
   }
@@ -784,6 +785,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
+  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -877,6 +879,7 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               rows={defaultActivitiesFetch({
                 databaseContext,
                 dataAccess,
+                user_roles: rolesUserHasAccessTo,
                 linked_id: row._id
               })}
               hideEmpty
@@ -928,6 +931,7 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
+  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1014,6 +1018,7 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               rows={defaultActivitiesFetch({
                 databaseContext,
                 dataAccess,
+                user_roles: rolesUserHasAccessTo,
                 linked_id: row._id
               })}
               hideEmpty
@@ -1872,6 +1877,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
+  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1896,6 +1902,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           defaultActivitiesFetch({
             databaseContext,
             dataAccess,
+            user_roles: rolesUserHasAccessTo,
             activitySubtypes: Object.values(ActivitySubtype),
             review_status: [ReviewStatus.UNDER_REVIEW]
           })
