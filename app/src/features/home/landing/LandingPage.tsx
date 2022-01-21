@@ -163,20 +163,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
-
-      {networkContext.connected && (
-        <>
-          {localStorage.getItem('accessRequested') !== 'true' ? (
-            <Box mt={2}>
-              <Button variant="outlined" color="primary" onClick={requestAccess}>
-                Request Access
-              </Button>
-            </Box>
-          ) : (
-            <>Thank you, Access Request Submitted</>
-          )}
-        </>
-      )}
       {userInfoLoaded && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
@@ -204,6 +190,53 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             </Grid>
           </Grid>
         </Box>
+      )}
+      {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
+        <Box mt={2}>
+          <Typography variant="h5">User Information</Typography>
+          <br />
+          <Grid className={classes.userInfoItemGrid} container spacing={2}>
+            <Grid item md={2}>
+              <Box overflow="hidden" textOverflow="ellipsis">
+                <Typography>Name</Typography>
+                {authContext.keycloak?.obj?.tokenParsed?.name}
+              </Box>
+            </Grid>
+            <Divider flexItem={true} orientation="vertical" />
+            <Grid item md={2}>
+              <Box overflow="hidden" textOverflow="ellipsis">
+                <Typography>Email</Typography>
+                {authContext.keycloak?.obj?.tokenParsed?.email}
+              </Box>
+            </Grid>
+            <Divider flexItem={true} orientation="vertical" />
+            <Grid item md={2}>
+              <Box overflow="hidden" textOverflow="ellipsis">
+                <Typography>Username</Typography>
+                {authContext.keycloak?.obj?.tokenParsed?.preferred_username}
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+      {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
+        <Typography variant="h5">
+          <br />
+          <strong>To gain full access to the InvasivesBC Application, please submit an access request.</strong>
+        </Typography>
+      )}
+      {networkContext.connected && (
+        <>
+          {localStorage.getItem('accessRequested') !== 'true' ? (
+            <Box mt={2}>
+              <Button variant="outlined" color="primary" onClick={requestAccess}>
+                Request Access
+              </Button>
+            </Box>
+          ) : (
+            <>Thank you, Access Request Submitted</>
+          )}
+        </>
       )}
       {/*
       <Box mt={4}>

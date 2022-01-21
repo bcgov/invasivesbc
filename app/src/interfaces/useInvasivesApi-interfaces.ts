@@ -89,6 +89,13 @@ export interface IActivitySearchCriteria {
    */
   created_by?: string;
   /**
+   * Identifier of the requesting user's role
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  user_roles?: string[];
+  /**
    * Review status of the record
    *
    * @type {string}
