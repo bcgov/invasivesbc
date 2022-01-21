@@ -281,7 +281,7 @@ INSERT INTO invasivesbc.species_ref_raw (common_name,latin_name,genus,species,ma
 	 ('White spanish broom','Cytisus multiflorus','CYTI','MUL','SR'),
 	 ('Reed canary grass','Phalaris arundinacea','PHAL','ARU','RE');
   
-	 create view  if not exists iapp_species_ref_raw as (
+	 create or replace view iapp_species_ref_raw as (
 
 		with all_plant_codes as (
 			select
