@@ -196,7 +196,10 @@ export const useInvasivesApi = () => {
    * Fetch roles
    * @return {*}  {Promise<any>}
    */
-  const getRoles = async (): Promise<any> => {
+  const getRoles = async (bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
     const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/roles/`,

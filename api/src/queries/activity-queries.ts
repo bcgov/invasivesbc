@@ -297,6 +297,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`)`);
   }
 
+  if (searchCriteria.user_roles) {
+    console.log('USER ROLES: ', searchCriteria.user_roles);
+  }
+
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
     sqlStatement.append(SQL` AND activity_subtype IN (`);
 
@@ -312,7 +316,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   }
 
   if (searchCriteria.created_by) {
-    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
+    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`); // TODO: Change this so that only a user's own activities are returned
   }
 
   if (searchCriteria.review_status && searchCriteria.review_status.length) {
@@ -394,6 +398,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   }
 
   sqlStatement.append(SQL`;`);
+  console.log('SQL: ', sqlStatement);
 
   return sqlStatement;
 };
