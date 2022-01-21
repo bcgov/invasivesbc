@@ -188,7 +188,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       zIndex: 5000,
       source: 'INVASIVESBC',
       loaded: 70,
-      enabled: false,
+      enabled: true,
       children: [
         {
           id: 'sites',
@@ -202,7 +202,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           opacity: 0.4,
           zIndex: 80,
           loaded: 70,
-          enabled: false
+          enabled: true
         }
         // {
         //   id: 'surveys',
