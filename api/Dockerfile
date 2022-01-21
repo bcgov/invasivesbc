@@ -8,6 +8,9 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
+
+COPY --chown=1001:0 ./package.json $HOME 
+COPY --chown=1001:0 ./package-lock.json $HOME
 # Make Directory for uploading issue logs
 
 RUN mkdir -p ${HOME}/../temp/uploads/issues
