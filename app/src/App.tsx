@@ -64,10 +64,10 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
     break;
   case 'test':
-    redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
+    redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
     break;
   case 'production':
-    redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/*';
+    redirect_uri = 'https://invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
     break;
   default:
     redirect_uri = 'http://localhost:3000/home/landing';
