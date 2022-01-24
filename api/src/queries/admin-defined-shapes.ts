@@ -6,13 +6,15 @@ import {PointOfInterestPostRequestBody, PointOfInterestSearchCriteria} from '../
  *
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativelyDefinedShapesSQL = () => {
+export const getAdministrativelyDefinedShapesSQL = (username: string) => {
   const sqlStatement: SQLStatement = SQL`
     SELECT json_build_object(
              'type', 'FeatureCollection',
              'features', json_agg(ST_AsGeoJSON(t.*)::json)
              ) as geojson
-    FROM (select id, geog from admin_defined_shapes where visible is true) as t;
+    FROM (select id, geog from admin_defined_shapes where visible is true and created_by = $1) as t;
   `;
+
+  sqlStatement.values = [username];
   return sqlStatement;
 };

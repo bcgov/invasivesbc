@@ -15,6 +15,7 @@ import {
   IPointOfInterestSearchCriteria,
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
+import {IShapeUploadRequest} from "../components/map-buddy-components/KMLShapesUpload";
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -844,6 +845,23 @@ export const useInvasivesApi = () => {
 
     return data;
   };
+
+  /**
+   * Create a new shapefile upload
+   *
+   // * @param {IShapeUploadRequest} uploadRequest
+   * @return {*}  {Promise<any>}
+   */
+  const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: uploadRequest,
+      url: `${options.baseUrl}/api/admin-defined-shapes`
+    });
+    return data;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -889,6 +907,7 @@ export const useInvasivesApi = () => {
     approveAccessRequests,
     declineAccessRequest,
     renewUser,
-    getAdminUploadGeoJSONLayer
+    getAdminUploadGeoJSONLayer,
+    postAdminUploadShape
   };
 };

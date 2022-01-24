@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Test Lines for Upload</name>
+	<gx:CascadingStyle kml:id="__managed_style_2801F333DB1FA68366B8">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/rpc/cc/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1CEFFCF9531FA68366B8">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/rpc/cc/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0D3530B17D1FA68366B8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1CEFFCF9531FA68366B8</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2801F333DB1FA68366B8</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_209DC98A9D1FA682F72E">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/rpc/cc/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406b7900</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1BCD463D3D1FA682F72E">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/rpc/cc/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406b7900</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0A99DC36561FA682F72E">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1BCD463D3D1FA682F72E</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_209DC98A9D1FA682F72E</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="02F7CBFAD61FA682E304">
+		<name>Test Shape 1</name>
+		<LookAt>
+			<longitude>-123.0139774070416</longitude>
+			<latitude>50.11603913700603</latitude>
+			<altitude>784.2674568462896</altitude>
+			<heading>359.8195049384767</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>598882.3244588077</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0A99DC36561FA682F72E</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-124.0974409947034,50.2225191286538,1116.623434408165 -123.8961629453605,50.13185095429093,754.3160200363589 -123.8927255725463,49.94348615845618,769.2766754391796 -123.64207109582,49.8137918565593,1041.667649633405 -123.4613759716952,49.96039971053269,1390.230568728041 -123.386388742656,50.18434542276243,589.6466203179465 -123.0645073278515,50.29123392513596,1514.801076334941 -122.8700067502774,50.24529885612208,411.5018242760755 -122.9761373589847,49.63786474766852,996.9930584850021 -122.570680090776,49.59802121185795,1189.58349176058 -122.5044973929078,50.10918944036165,390.3392057655983 -122.9193594735323,50.62174037960933,1075.522418458121 -123.30093158173,50.830024345852,2074.358699520402 -123.5876325361446,50.82935931638747,1873.880126679536 -123.8110077015502,50.74995787028647,1908.779797881714 -123.6478162530137,50.68735624343915,1478.563523453005 -123.3842146514622,50.70218394985134,1860.300209327943 -123.3330883248944,50.56780166546548,1383.85153435904 -123.6511283395338,50.54154325678832,1621.68271496816 -124.0948347947466,50.6167573613869,1557.204169229339 -124.3109325579291,50.29150145102729,1083.761098228831 -124.0974409947034,50.2225191286538,1116.623434408165 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0598DD7D2B1FA68366B8">
+		<name>Test Shape 2</name>
+		<LookAt>
+			<longitude>-123.0139774070998</longitude>
+			<latitude>50.11603905246729</latitude>
+			<altitude>784.2674826721108</altitude>q=:qq::q!:q
+			<heading>359.8195049384767</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>598882.3244588078</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0D3530B17D1FA68366B8</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-124.0737623223543,51.65706447640376,1187.809142605274 -124.2090343405203,51.4396538765692,1495.955081125818 -123.6383548639846,51.2466243899766,1952.407703784011 -123.3776008718803,51.293568732889,2351.15312365451 -124.0737623223543,51.65706447640376,1187.809142605274 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<GroundOverlay id="00B68956D31FA683C5AB">
+		<name>Untitled Overlay</name>
+		<styleUrl>#__managed_style_0D3530B17D1FA68366B8</styleUrl>
+		<Icon>
+			<href>data:image/gif;base64,R0lGODlhAQABAIAAAP//:q
+:q!
+/wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==</href>
+		</Icon>
+		<LatLonBox>
+			<north>85</north>
+			<south>-85</south>
+			<east>180</east>
+			<west>-180</west>
+		</LatLonBox>
+		<gx:MapTilePyramid>
+			<gx:minLevel>0</gx:minLevel>
+			<gx:maxLevel>22</gx:maxLevel>
+		</gx:MapTilePyramid>
+	</GroundOverlay>
+</Document>
+</kml>
