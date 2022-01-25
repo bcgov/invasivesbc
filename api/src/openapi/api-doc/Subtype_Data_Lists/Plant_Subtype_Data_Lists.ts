@@ -30,7 +30,8 @@ import {
   Biocontrol_Collection_Information,
   Biocontrol_Release_Information,
   Treatment_ChemicalPlant_Information,
-  Treatment_MechanicalPlant_Information
+  Treatment_MechanicalPlant_Information,
+  Treatment_MechanicalPlant_Information_Aquiatic
 } from '../Components/Treatment_Sub_Forms';
 
 // ------------------------Treatments--------------------
@@ -65,7 +66,7 @@ export const Subtype_Data_Treatment_MechanicalPlantAquatic = {
   properties: {
     Authorization_Infotmation: Authorization_Infotmation,
     ShorelineTypes: ShorelineTypes,
-    Treatment_MechanicalPlant_Information: Treatment_MechanicalPlant_Information
+    Treatment_MechanicalPlant_Information: Treatment_MechanicalPlant_Information_Aquiatic
   }
 };
 
