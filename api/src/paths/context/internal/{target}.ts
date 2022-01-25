@@ -94,6 +94,8 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
       )
   `;
 
+  console.log('sql',sql);
+
   try {
     const response = await connection.query(sql);
     const target = response.rows[0]?.target || '';
@@ -116,7 +118,6 @@ function getContext(): RequestHandler {
     // Grab coordinates from the query string
     const { lon, lat } = req.query;
 
-    console.log(typeof lon, typeof lat);
     // Error if no coordinates
     if (!lon || !lat || lon === 'undefined' || lat === 'undefined') {
       throw {
