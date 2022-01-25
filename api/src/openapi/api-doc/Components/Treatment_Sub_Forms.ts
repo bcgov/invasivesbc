@@ -111,9 +111,10 @@ export const Treatment_ChemicalPlant_Information = {
       },
       'x-tooltip-text': 'Enter applicable number if treatment is being completed under a pest management plan'
     },
-    unlisted_drop_down: {
+    pmp_not_in_dropdown: {
       type: 'string',
-      title: 'Unlisted Drop Down'
+      title: 'PMP # not in dropdown',
+      'x-tooltip-text': 'Include a PMP number here if it is not available on the drop down in the "Pest Management Plan'
     },
     temperature: {
       type: 'number',
