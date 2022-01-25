@@ -627,7 +627,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                         clearSearch: () => requestSearch('')
                       }
                     }}
-                    sortModel={[{ field: 'id', sort: 'asc' }]}
                     onSelectionModelChange={handleRowSelection}
                     rows={searchedRows}
                     columns={columns}

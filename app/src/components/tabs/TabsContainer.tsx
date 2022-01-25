@@ -288,7 +288,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const isAuthenticated = () => {
-    return userInfoLoaded;
+    return (!isMobile() && authContext.keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
 
   const isAdmin = (): boolean => {

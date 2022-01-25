@@ -113,8 +113,6 @@ export class ActivitySearchCriteria {
 
   search_feature: GeoJSON.Feature;
 
-  user_roles: string[];
-
   column_names: string[];
 
   created_by: string;
@@ -148,8 +146,6 @@ export class ActivitySearchCriteria {
     this.activity_ids = (obj && obj.activity_ids) || [];
 
     this.search_feature = (obj && obj.search_feature) || null;
-
-    this.user_roles = (obj && obj.user_roles) || [];
 
     this.column_names = (obj && obj.column_names) || [];
 

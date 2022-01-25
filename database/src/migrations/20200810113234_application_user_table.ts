@@ -14,7 +14,8 @@ export async function up(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    CREATE TABLE if not exists ${DB_SCHEMA}.application_user (
+    drop table if exists ${DB_SCHEMA}.application_user;
+    CREATE TABLE ${DB_SCHEMA}.application_user (
         user_id integer NOT NULL,
         first_name character varying(100),
         last_name character varying(100),

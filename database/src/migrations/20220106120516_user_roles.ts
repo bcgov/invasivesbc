@@ -5,7 +5,8 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path=invasivesbc,public;
-    create table if not exists user_role(
+    drop table if exists user_role;
+    create table user_role(
         role_id serial primary key not null,
         role_description varchar(250) not null,
         role_name varchar(250) not null,
@@ -13,7 +14,8 @@ export async function up(knex: Knex): Promise<void> {
         updated_at timestamp default CURRENT_TIMESTAMP
     );
     
-    create table if not exists user_access(
+    drop table if exists user_access;
+    create table user_access(
         access_id serial primary key not null,
         user_id integer,
         role_id integer,
