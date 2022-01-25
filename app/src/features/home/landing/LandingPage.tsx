@@ -121,6 +121,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
+    console.log('LandingPage useEffect on user info load');
     if (Capacitor.getPlatform() !== 'web' && !userInfoLoaded) {
       loadUserFromCache();
     }
