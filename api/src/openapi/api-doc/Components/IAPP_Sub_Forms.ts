@@ -207,7 +207,9 @@ export const IAPP_Survey = {
       default: [{}],
       items: {
         $ref: '#/components/schemas/ProjectCode'
-      }
+      },
+      'x-tooltip-text':
+        'Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
     },
     jurisdictions: {
       type: 'array',
@@ -287,7 +289,9 @@ export const IAPP_Treatment = {
       default: [{}],
       items: {
         $ref: '#/components/schemas/ProjectCode'
-      }
+      },
+      'x-tooltip-text':
+        'Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
     },
     general_comment: {
       type: 'string',
@@ -345,7 +349,9 @@ export const IAPP_Monitoring = {
       type: 'string',
       title: 'Comment',
       maxLength: 300
-    }
+    },
+    'x-tooltip-text':
+      'Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
   }
 };
 export const IAPP_Mechanical_Treatment = {

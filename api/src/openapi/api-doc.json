@@ -5073,7 +5073,7 @@
                           "edna_sample": {
                             "enum": ["Yes"]
                           },
-                          "enda_sample_information": {
+                          "edna_sample_information": {
                             "type": "object",
                             "title": "eDNA Sample Information",
                             "properties": {
@@ -5089,7 +5089,7 @@
                             "required": ["edna_sample_id", "genetic_structure_collected"]
                           }
                         },
-                        "required": ["enda_sample_information"]
+                        "required": ["edna_sample_information"]
                       },
                       {
                         "properties": {
@@ -5363,7 +5363,7 @@
                           "edna_sample": {
                             "enum": ["Yes"]
                           },
-                          "enda_sample_information": {
+                          "edna_sample_information": {
                             "type": "object",
                             "title": "eDNA Sample Information",
                             "properties": {
@@ -5391,7 +5391,7 @@
                             "required": ["edna_sample_id", "sample_type"]
                           }
                         },
-                        "required": ["enda_sample_information"]
+                        "required": ["edna_sample_information"]
                       },
                       {
                         "properties": {

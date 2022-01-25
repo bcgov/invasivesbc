@@ -35,7 +35,7 @@ const frep = {
   //uncommon_tree_species: { 'ui:widget': 'single-select-autocomplete' },
   //ecological_moisture_regime_code: { 'ui:widget': 'single-select-autocomplete' },
   efficacy_code: { 'ui:widget': 'single-select-autocomplete' }, //???
-  //enda_sample_information: { control_sample_taken: { 'ui:widget': 'select' } },
+  //edna_sample_information: { control_sample_taken: { 'ui:widget': 'select' } },
   //evaluator_opinion: { evaluator_opinion_code: { 'ui:widget': 'single-select-autocomplete' } },
   herbicide_code: { 'ui:widget': 'single-select-autocomplete' }, //???
   application_rate: { validateOnBlur: true }, //???
