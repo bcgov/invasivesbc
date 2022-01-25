@@ -56,7 +56,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             key={index}
             style={{ marginBottom: '10px' }}>
             <>
-              {element.content.props && element.content.props.schema && (
+              {element.content.props.schema['x-tooltip-text'] && (
                 <Tooltip
                   enterTouchDelay={0}
                   title={
