@@ -228,7 +228,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { userInfo, hasRole, rolesUserHasAccessTo } = useContext(AuthStateContext);
+  const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -248,13 +248,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   } = props;
 
   const createAction = (type: string, subtype: string) => ({
+    // TODO: Add stuff to the payload
     key: `create_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
+      dbActivity.user_role = userRoles;
       await dataAccess.createActivity(dbActivity, databaseContext);
-
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
       setTimeout(() => {
         history.push({ pathname: `/home/activity` });
