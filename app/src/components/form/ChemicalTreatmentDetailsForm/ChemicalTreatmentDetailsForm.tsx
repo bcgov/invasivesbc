@@ -85,6 +85,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
       : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
     herbicideDictionary: herbicideDictionary,
+    activitySubType: props.activitySubType,
     classes: classes,
     errors: []
   });
