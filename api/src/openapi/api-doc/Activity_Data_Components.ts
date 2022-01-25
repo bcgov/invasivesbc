@@ -113,7 +113,8 @@ export const Activity = {
       items: {
         ...ProjectCode
       },
-      'x-tooltip-text': 'User defined identifier that can be used to filter or sort records'
+      'x-tooltip-text':
+        'Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
     },
     general_comment: {
       type: 'string',

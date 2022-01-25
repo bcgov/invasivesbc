@@ -247,7 +247,7 @@ const TerrestrialPlant = {
     voucher_verification_completed_by: {},
     exact_utm_coords: {}
   },
-  enda_sample_information: {
+  edna_sample_information: {
       edna_sample_id: {},
       genetic_structure_collected: {}
   },
@@ -260,7 +260,7 @@ const TerrestrialPlant = {
     'plant_life_stage_code',
     'voucher_specimen_collected',
     'voucher_specimen_collection_information',
-    'enda_sample_information'
+    'edna_sample_information'
   ]
 };
 
@@ -282,7 +282,7 @@ const AquaticPlant = {
   edna_sample: { 'ui:widget': 'single-select-autocomplete' },
   genetic_sample_id: {},
   genetic_structure_collected: {},
-  enda_sample_information: {
+  edna_sample_information: {
     edna_sample_id: {},
     sample_type: { 'ui:widget': 'single-select-autocomplete' },
     field_replicates_num: {},
