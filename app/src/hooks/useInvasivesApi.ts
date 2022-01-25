@@ -15,7 +15,7 @@ import {
   IPointOfInterestSearchCriteria,
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
-import {IShapeUploadRequest} from "../components/map-buddy-components/KMLShapesUpload";
+import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -57,6 +57,7 @@ console.log('API_URL', API_URL);
 const useRequestOptions = () => {
   const { keycloak } = useContext(AuthStateContext); //useKeycloak();
   // const instance = useMemo(() => {
+  console.log('keycloak @ useRequestOptions', keycloak);
   return {
     baseUrl: API_URL,
     headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
@@ -828,7 +829,6 @@ export const useInvasivesApi = () => {
     });
     return data;
   };
-
 
   /**
    * Fetch species details.

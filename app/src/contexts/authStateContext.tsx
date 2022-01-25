@@ -59,6 +59,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const loginUser = async () => {
     await keycloak?.obj?.login();
     const user = await keycloak?.obj?.loadUserInfo();
+    console.log('user @ loginUser', user);
     console.dir(user);
     // const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
@@ -68,9 +69,12 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
   const hasRole = (role: string) => {
     // Check if user has a role
+    console.log('hasRole called');
     if (userRoles.some((r) => r.role_name === role)) {
+      console.log('hasRole returning true');
       return true;
     } else {
+      console.log('hasRole returning false');
       return false;
     }
   };
@@ -78,22 +82,27 @@ export const AuthStateContextProvider: React.FC = (props) => {
   React.useEffect(() => {
     const getUserByIDIR = async (idir_userid) => {
       const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
+      console.log('user @ getUserByIDIR', user);
       return user;
     };
 
     const getUserByBCEID = async (bceid_userid) => {
       const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
+      console.log('user @ getUserByBCEID', user);
       return user;
     };
 
     const getRolesForUser = async (user_id) => {
       const roles = await invasivesApi.getRolesForUser(user_id, keycloak?.obj?.token);
+      console.log('roles @ getRolesForUser', roles);
       return roles;
     };
 
     const getRolesUserHasAccessTo = async (user_id) => {
       const all_roles = await invasivesApi.getRoles(keycloak?.obj?.token);
+      console.log('all_roles @ getRolesUserHasAccessTo', all_roles);
       const roles = await getRolesForUser(user_id);
+      console.log('roles for user @ getRolesUserHasAccessTo', roles);
       const accessRoles = [];
       for (const role of roles.data) {
         accessRoles.push(role);
@@ -134,15 +143,20 @@ export const AuthStateContextProvider: React.FC = (props) => {
     };
 
     if (keycloak?.obj?.authenticated) {
+      console.log('keycloak.obj.authenticated is true');
       keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
+          console.log('info @ loadUserInfo', info);
           const token = keycloak?.obj?.tokenParsed;
           if (token && token.idir_userid) {
             const userResponse = await getUserByIDIR(token.idir_userid);
             if (userResponse && userResponse.length > 0) {
               const user = userResponse[0];
+              console.log('user @ getUserByIDIR', user);
               const roles = await getRolesForUser(user.user_id);
+              console.log('roles @ getRolesForUser', roles);
               const accessibleRoles = await getRolesUserHasAccessTo(user.user_id);
+              console.log('accessibleRoles @ getRolesUserHasAccessTo', accessibleRoles);
               setRolesUserHasAccessTo(accessibleRoles);
               setUserRoles(roles.data);
               const mergedInfo = { ...user, ...info, roles: roles.data };
