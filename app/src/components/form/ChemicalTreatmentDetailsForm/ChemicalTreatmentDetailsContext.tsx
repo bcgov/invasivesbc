@@ -7,6 +7,7 @@ export interface IChemicalDetailsContextformDetails {
   errors?: any[];
   herbicideDictionary?: any;
   businessCodes?: any;
+  activitySubType?: any;
   classes?: ClassNameMap;
 }
 
