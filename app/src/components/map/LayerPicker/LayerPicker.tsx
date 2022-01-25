@@ -46,6 +46,7 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
+import {KMLShapesUpload} from "../../map-buddy-components/KMLShapesUpload";
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -317,6 +318,10 @@ export const LayerPicker = React.memo(
                   }}>
                   Load
                 </Button>
+                <Accordion id="admin-shape-upload-accordion">
+                  <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
+                  <KMLShapesUpload/>
+                </Accordion>
                 <Accordion id="layer-picker-kml-accordion">
                   <AccordionSummary>KML upload</AccordionSummary>
                   <KMLUpload />

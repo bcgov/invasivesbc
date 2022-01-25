@@ -271,7 +271,15 @@ export const actions = () => {
     {
       id: 'user_uploaded_layers',
       expanded: false,
-      children: []
+      children: [
+        {
+          id: 'admin_uploads',
+          dialog_layerselector_open: false,
+          dialog_colorpicker_open: false,
+          accordion_server_expanded: false,
+          accordion_local_expanded: false
+        }
+      ]
     }
   ];
 };
