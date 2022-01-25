@@ -74,10 +74,11 @@ const TestUsers = [
       email: 'hryhorii.pertaia@gov.bc.ca',
       preferred_username: 'hpertaia@idir',
       first_name: 'Hryhorii',
-      last_name: 'Pertaia'
+      last_name: 'Pertaia',
+      idir_userid: '293C3914BCDA483E8F3BD91AFCE8E884'
     },
     user_role: {
-      roles: [1, 2, 3, 4, 5]
+      roles: [18]
     }
   },
   {
