@@ -2543,6 +2543,18 @@ export const ChemicalTreatment_Species_Codes = {
       },
       'x-tooltip-text': 'Target invasive plant species being treated at this location'
     },
+    invasive_plant_aquatic_code: {
+      type: 'string',
+      title: 'Invasive Plant',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'invasive_plant_aquatic_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Target invasive plant species being treated at this location'
+    },
     liquid_herbicide_code: {
       type: 'string',
       title: 'Herbicide (liquid)',

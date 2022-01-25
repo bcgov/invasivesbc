@@ -29,8 +29,7 @@ import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplet
 import rjsfTheme from '../../themes/rjsfTheme';
 import { getShortActivityID } from '../../utils/addActivity';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
-import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
-import { ChemicalTreatmentDetailsContextProvider } from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
+import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -416,7 +415,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 </Form>
 
                 {isActivityChemTreatment() && (
-                  <ChemicalTreatmentSpeciesForm
+                  <ChemicalTreatmentDetailsForm
+                    activitySubType={props.activity.activitySubtype || props.activity.activity_subtype || null}
                     onChange={props.onFormChange}
                     formData={props.activity?.formData || null}
                     schema={schemas.schema}
