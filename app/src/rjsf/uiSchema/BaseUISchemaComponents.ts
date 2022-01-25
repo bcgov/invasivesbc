@@ -43,7 +43,12 @@ const Activity = {
   utm_northing: { 'ui:readonly': true },
   employer_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_species_agency_code: { 'ui:widget': 'multi-select-autocomplete' },
-  jurisdictions: {},
+  jurisdictions: { 
+    items: {
+      jurisdiction_code: {'ui:widget': 'single-select-autocomplete'},
+      percent_covered: {}
+    } 
+  },
   location_description: { 'ui:widget': 'textarea'},
   access_description: { 'ui:widget': 'textarea'},
   project_code: {},
