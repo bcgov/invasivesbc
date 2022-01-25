@@ -241,19 +241,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   //handle focus the field
   //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
   //so that the user will be tasked to force the value out of range again
-  const focusHandler = (...args: string[]) => {
-    let field = getFieldNameFromArgs(args);
-    setFocusedFieldArgs(args);
-    const $this = formRef;
-    const { formData } = $this.state;
-    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
-      const index = formData.forceNoValidationFields.indexOf(field);
-      if (index > -1) {
-        formData.forceNoValidationFields.splice(index, 1);
+  const focusHandler = (args: string[]) => {
+    if (formRef) {
+      let field = getFieldNameFromArgs(args);
+      setFocusedFieldArgs(args);
+      const $this = formRef;
+      const { formData } = $this.state;
+      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
+        const index = formData.forceNoValidationFields.indexOf(field);
+        if (index > -1) {
+          formData.forceNoValidationFields.splice(index, 1);
+        }
+        $this.setState({ formData: formData }, () => {
+          props.onFormChange({ formData: formData }, formRef);
+        });
       }
-      $this.setState({ formData: formData }, () => {
-        props.onFormChange({ formData: formData }, formRef);
-      });
     }
   };
 
@@ -358,7 +360,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   disabled={isDisabled}
                   formData={props.activity?.formData || null}
                   schema={schemas.schema}
-                  onFocus={focusHandler}
+                  onFocus={(...args: string[]) => {
+                    focusHandler(args);
+                  }}
                   onBlur={(...args: string[]) => {
                     blurHandler(args);
                     setblurTriggered(Math.random());
