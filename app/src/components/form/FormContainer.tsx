@@ -68,7 +68,6 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   disableApprove?: boolean;
   onDisapprove?: Function;
   disableDisapprove?: boolean;
-  liveValidation: boolean;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
@@ -368,7 +367,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   }}
                   uiSchema={schemas.uiSchema}
                   formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
-                  liveValidate={props.liveValidation}
+                  liveValidate={false}
                   showErrorList={true}
                   validate={props.customValidation}
                   transformErrors={props.customErrorTransformer}
@@ -428,7 +427,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
           <Box mt={3}>
             <FormControlsComponent
-              onSubmit={() => formRef.submit()}
+              onSubmit={() => {
+                formRef.submit();
+              }}
               isDisabled={isDisabled}
               activitySubtype={props.activity.activitySubtype}
               onCopy={props.copyFormData ? () => props.copyFormData() : null}
@@ -462,7 +463,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         </Box>
       );
     }
-  }, [props.activity?.formData, schemas, props.onFormChange, props.liveValidation]);
+  }, [props.activity?.formData, schemas, props.onFormChange, formRef]);
 };
 
 export default FormContainer;
