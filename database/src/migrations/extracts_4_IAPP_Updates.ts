@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
   set search_path=invasivesbc,public;
 
   drop materialized view if exists iapp_site_summary;
-  --drop view if exists iapp_site_summary_slow;
+  drop view if exists iapp_site_summary_slow;
   
   create or replace view iapp_site_summary_slow  as (
   
