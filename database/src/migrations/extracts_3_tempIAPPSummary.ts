@@ -43,7 +43,7 @@ export async function up(knex: Knex): Promise<void> {
 	create index if not exists mechanical_treatment_site_id_idx on mechanical_treatment_extract (site_id);
 	create index if not exists mechanical_monitoring_site_id_idx on mechanical_monitoring_extract (site_id);
 	
-	drop view if exists iapp_site_summary;
+	drop materialized view if exists iapp_site_summary;	
 	drop view if exists iapp_site_summary_slow;
 	
 	create or replace view iapp_site_summary_slow  as (
