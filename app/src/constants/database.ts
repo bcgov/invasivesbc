@@ -19,7 +19,12 @@ export enum DocType {
   LEAN_POI = 'lean_poi',
   LAYER_STYLES = 'layer_styles',
   USER_INFO = 'user_info',
-  APPLICATION_USER = 'application_user'
+  APPLICATION_USER = 'application_user',
+  USER_ROLE = 'user_role',
+  ROLE = 'role',
+  EMPLOYER = 'employer',
+  AGENCY = 'agency',
+  USER = 'user'
 }
 
 // max and default db page row limit
