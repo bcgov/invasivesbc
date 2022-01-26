@@ -249,13 +249,12 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   } = props;
 
   const createAction = (type: string, subtype: string) => ({
-    // TODO: Add stuff to the payload
     key: `create_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      dbActivity.user_role = userRoles;
+      dbActivity.user_role = userRoles?.map((role) => role.role_id);
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
       setTimeout(() => {

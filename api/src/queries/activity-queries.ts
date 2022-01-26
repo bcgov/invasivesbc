@@ -298,11 +298,11 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   }
 
   if (searchCriteria.user_roles) {
-    console.log('USER ROLES: ', searchCriteria.user_roles);
-    sqlStatement.append(SQL`
-      AND (
-      )
-    `);
+    const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
+    sqlStatement.append(
+      SQL` AND ${roles} @> ARRAY(select array_agg(x)::int[] || array[]::int[] from jsonb_array_elements_text(activity_payload->'user_role') t(x))`
+    );
+    console.log('SQL STATEMENT HERE: ', sqlStatement);
   }
 
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
@@ -319,9 +319,15 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`)`);
   }
 
-  if (searchCriteria.created_by) {
-    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`); // TODO: Change this so that only a user's own activities are returned
-  }
+  // if (searchCriteria.created_by) {
+  //   const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
+  //   sqlStatement.append(SQL` AND (created_by = ${searchCriteria.created_by}`); // TODO: Change this so that only a user's own activities are returned
+  //   if (searchCriteria.user_roles) {
+  //     sqlStatement.append(SQL` OR ${roles} @> array[1])`);
+  //   } else {
+  //     sqlStatement.append(SQL`)`);
+  //   }
+  // }
 
   if (searchCriteria.review_status && searchCriteria.review_status.length) {
     sqlStatement.append(SQL` AND review_status IN (`);

@@ -184,6 +184,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     Function to logout current user by wiping their keycloak access token
   */
   const logoutUser = async () => {
+    history.push('/home/landing');
     // Reset user info object
     if (isMobile()) {
       try {
