@@ -42,7 +42,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
-  setLiveValidation?: any;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
@@ -51,14 +50,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const [liveValidation, setLiveValidation] = useState(false);
   const { keycloak } = useKeycloak();
   const { userInfo } = useContext(AuthStateContext);
-
-  const liveValidationHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLiveValidation(event.target.checked);
-    props.setLiveValidation(event.target.checked);
-  };
 
   const getLocation = async () => {
     const position = await Geolocation.getCurrentPosition();
@@ -396,32 +389,9 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Activity Form</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.formContainer}>
-          <Box className={props.classes.formSettingsContainer}>
-            <Typography variant="h6">Form Settings</Typography>
-            <FormGroup>
-              <Tooltip
-                enterTouchDelay={0}
-                title={
-                  'Set if you want all the errors to show while you fill the form. Note: may affect how fast form changes are applied. To disable this, reload this page.'
-                }
-                placement="left">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      disabled={liveValidation === true}
-                      checked={liveValidation}
-                      onChange={liveValidationHandleChange}
-                    />
-                  }
-                  label="Live Validation"
-                />
-              </Tooltip>
-            </FormGroup>
-          </Box>
           <FormContainer
             {...props}
             onSave={onSave}
-            liveValidation={liveValidation}
             saveStatus={activity.syncStatus}
             disableSave={
               activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL ||
