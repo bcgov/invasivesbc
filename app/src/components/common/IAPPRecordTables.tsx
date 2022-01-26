@@ -121,21 +121,19 @@ export const PointsOfInterestTable = () => {
 
   return (
     <>
-      {rows.length > 0 && (
-        <div style={{ height: 520, width: '100%' }}>
-          {
-            <DataGrid
-              columns={columns}
-              rows={rows}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
-              onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-                history.push(`/home/iapp/${params.id}`);
-              }}
-            />
-          }
-        </div>
-      )}
+      <div style={{ height: 520, width: '100%' }}>
+        {
+          <DataGrid
+            columns={columns}
+            rows={rows}
+            pageSize={10}
+            rowsPerPageOptions={[10]}
+            onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+              history.push(`/home/iapp/${params.id}`);
+            }}
+          />
+        }
+      </div>
     </>
   );
 };

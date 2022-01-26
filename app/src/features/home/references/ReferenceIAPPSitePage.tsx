@@ -25,7 +25,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   }, [poi]);
 
   const fetchPOI = async () => {
-    const poiData = await dataAccess.getPointsOfInterest({ point_of_interest_ids: arr });
+    const poiData = await dataAccess.getPointsOfInterest({ point_of_interest_ids: arr, isIAPP: true });
     setPOI(poiData.rows[0]);
   };
 

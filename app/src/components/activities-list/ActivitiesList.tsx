@@ -386,9 +386,7 @@ const ActivitiesList: React.FC = () => {
           )}
           {workflowFunction === 'IAPP Data' && (
             <Box>
-              {/* should be something */}
-              {<PointsOfInterestTable />}
-              {/*<PointsOfInterestTable />*/}
+              <PointsOfInterestTable />
             </Box>
           )}
         </Box>
