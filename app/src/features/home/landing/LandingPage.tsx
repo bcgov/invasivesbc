@@ -235,7 +235,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
               </Button>
             </Box>
           ) : (
-            <>Thank you, Access Request Submitted</>
+            <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
           )}
         </>
       )}

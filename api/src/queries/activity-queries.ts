@@ -299,6 +299,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
 
   if (searchCriteria.user_roles) {
     console.log('USER ROLES: ', searchCriteria.user_roles);
+    sqlStatement.append(SQL`
+      AND (
+      )
+    `);
   }
 
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
