@@ -223,7 +223,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
         <Typography variant="h5">
           <br />
-          <strong>To gain full access to the InvasivesBC Application, please submit an access request.</strong>
+          <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
         </Typography>
       )}
       {networkContext.connected && (
@@ -235,7 +235,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
               </Button>
             </Box>
           ) : (
-            <>Thank you, Access Request Submitted</>
+            <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
           )}
         </>
       )}
