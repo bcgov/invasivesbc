@@ -17,7 +17,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(SQL` FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id WHERE 1=1`);
 
   if (searchCriteria.iappSiteID) {
-    sqlStatement.append(SQL` AND site_id = ${searchCriteria.iappSiteID}`);
+    sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
   }
   if (searchCriteria.pointOfInterest_subtype) {
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);

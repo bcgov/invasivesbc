@@ -103,8 +103,8 @@ export const PointsOfInterestTable = () => {
         slope_code: type_data?.slope_code,
         aspect_code: type_data?.aspect_code,
         soil_texture_code: type_data?.soil_texture_code,
-        latitude: payload?.geometry[0].geometry.coordinates[1].toFixed(6),
-        longitude: payload?.geometry[0].geometry.coordinates[0].toFixed(6)
+        latitude: poi.geom.geometry.coordinates[1],
+        longitude: poi.geom.geometry.coordinates[0]
       };
       tempArr.push(row);
     }
@@ -112,7 +112,7 @@ export const PointsOfInterestTable = () => {
   };
 
   useEffect(() => {
-    if (pois.length < 1) {
+    if (pois?.length < 1) {
       fetchData();
     } else {
       convertToTableRows();

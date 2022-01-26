@@ -6,15 +6,8 @@ import { useParams } from 'react-router';
 export const ReferenceIAPPSitePage: React.FC = (props) => {
   const urlParams: { id: string } = useParams();
   const dataAccess = useDataAccess();
-  let arr = [];
 
   const [poi, setPOI] = useState(null);
-
-  useEffect(() => {
-    if (urlParams) {
-      arr.push(urlParams.id);
-    }
-  }, [urlParams]);
 
   useEffect(() => {
     if (!poi) {
@@ -25,7 +18,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   }, [poi]);
 
   const fetchPOI = async () => {
-    const poiData = await dataAccess.getPointsOfInterest({ point_of_interest_ids: arr, isIAPP: true });
+    const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: urlParams.id, isIAPP: true });
     setPOI(poiData.rows[0]);
   };
 
