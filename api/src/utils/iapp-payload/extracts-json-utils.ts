@@ -14,13 +14,13 @@ export const chemicalTreatmentJSON = (treatment: any) => {
       treatment.treatment_paper_file_id // What is the difference between site_paper_file_id
     ], //  and treatment_paper_file_id????
     treatment_id: treatment.chemicaltreatmentid,
-    reported_area: null, // area of POI or treated area??????
-    treatment_date: treatment.site_crated_date,
+    reported_area: treatment.area_treated, // area of POI or treated area??????
+    treatment_date: treatment.treatment_date,
     treatment_time: null, // Could not find: no treatment time; just the date
     wind_direction: null, // Could not find: no wind direction
     chemical_method: treatment.method,
-    general_comment: [treatment.site_comments, treatment.treatment_comments],
-    pmra_reg_number: null, // Could not find: No pmra_reg_number
+    general_comment: treatment.treatment_comments,
+    pmra_reg_number: null, // Could not find: Primary Aplicator??????
     application_rate: treatment.application_rate,
     herbicide_amount: treatment.amount_of_undiluted_herbicide_used, // find herbicide amount
     mix_delivery_rate: treatment.delivery_rate,

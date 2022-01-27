@@ -65,15 +65,9 @@ export const PointsOfInterestTable = () => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
 
-  useEffect(() => {
-    console.log('fetched iapp stuff', pois);
-  }, [pois]);
-
   const fetchData = async () => {
-    const searchCriteria = { limit: 100, isIAPP: true, page: 0 };
-    console.log('fetching with ', searchCriteria);
+    const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
     const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
-    console.log('fetched', IAPPRecords);
     setPOIs(IAPPRecords.rows);
   };
 
