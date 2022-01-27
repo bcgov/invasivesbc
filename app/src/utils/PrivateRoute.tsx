@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -27,6 +27,8 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
 
   document.title = props.title;
 
+  const roles = props.roles;
+
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
@@ -35,13 +37,21 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && authStateContext.userInfoLoaded);
   };
 
+  const isAuthorized = () => {
+    return isAuthenticated() && roles.length > 0 ? true : false;
+  };
+
+  useEffect(() => {
+    console.log('***Is authorized? ' + isAuthorized());
+  }, []);
+
   return (
     <Route
       {...rest}
       render={(renderProps) => {
         if (process.env.REACT_APP_REAL_NODE_ENV !== 'production' && networkContext.connected) {
-          if (!isAuthenticated()) {
-            return <>{/*<Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;*/}</>;
+          if (!isAuthorized()) {
+            return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
           }
         }
         return (
