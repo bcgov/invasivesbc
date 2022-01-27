@@ -52,20 +52,41 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
+export const getJurisdictions = (arrJurisdictions, poi) => {
+  var surveys = poi.point_of_interest_payload.form_data.surveys;
+  if (surveys) {
+    surveys.map((survey) => {
+      survey.jurisdictions.map((jurisdiction) => {
+        var flag = 0;
+        for (let i in arrJurisdictions) {
+          if (jurisdiction.jurisdiction_code === arrJurisdictions[i].code) {
+            flag = 1;
+            break;
+          }
+        }
+        if (flag === 0)
+          arrJurisdictions.push({
+            code: jurisdiction.jurisdiction_code,
+            percent_covered: jurisdiction.percent_covered
+          });
+      });
+    });
+  }
+};
+
 export const GeneratePopup = (props) => {
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [bufferedGeo, setBufferedGeo] = useState(null);
-  const [poiTableRows, setPoiTableRows] = useState([]);
+  const [rowsPoi, setRowsPoi] = useState([]);
   const [section, setSection] = useState('position');
   const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   const [databc, setDataBC] = useState(null); // NOSONAR
   const [radius, setRadius] = useState(3);
-  const [pois, setPOIs] = useState([]);
-  const [rows, setRows] = useState([]);
+  const [rowsActivity, setRowsActivity] = useState([]);
   const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
   const dbContext = useContext(DatabaseContext);
@@ -89,36 +110,21 @@ export const GeneratePopup = (props) => {
       }
     }
   }, [radius, pointMode]);
-
-  useEffect(() => {
-    if (bufferedGeo) {
-      getDataFromDataBC(
-        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-        bufferedGeo,
-        invasivesApi.getSimplifiedGeoJSON
-      ).then((returnVal) => {
-        setDataBC(returnVal);
-      }, []);
-    }
-  }, [bufferedGeo]);
-
-  useEffect(() => {
-    if ((pois as any)?.rows) {
-      (pois as any)?.rows?.map((poi) => {
-        var arrSpecies = [];
-        var arrJurisdictions = [];
-        getSpecies(arrSpecies, poi);
-        getJurisdictions(arrJurisdictions, poi);
-        setPoiTableRows((oldArray) => [...oldArray, setPoiRowData(poi, arrSpecies, arrJurisdictions)]);
-      });
-    }
-  }, [pois]);
+  // Removed for now:
+  // useEffect(() => {
+  //   if (bufferedGeo) {
+  //     getDataFromDataBC(
+  //       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+  //       bufferedGeo,
+  //       invasivesApi.getSimplifiedGeoJSON
+  //     ).then((returnVal) => {
+  //       setDataBC(returnVal);
+  //     }, []);
+  //   }
+  // }, [bufferedGeo]);
 
   useEffect(() => {
     updateActivityRecords();
-  }, [bufferedGeo]);
-
-  useEffect(() => {
     updatePOIRecords();
   }, [bufferedGeo]);
 
@@ -129,33 +135,6 @@ export const GeneratePopup = (props) => {
     if (poi.species_positive) {
       poi.species_positive.map((species) => arrSpecies.push(species));
     }
-  };
-
-  const getJurisdictions = (arrJurisdictions, poi) => {
-    var surveys = poi.point_of_interest_payload.form_data.surveys;
-    if (surveys) {
-      surveys.map((survey) => {
-        survey.jurisdictions.map((jurisdiction) => {
-          var flag = 0;
-          for (let i in arrJurisdictions) {
-            if (jurisdiction.jurisdiction_code === arrJurisdictions[i]) {
-              flag = 1;
-              break;
-            }
-          }
-          if (flag === 0) arrJurisdictions.push(jurisdiction.jurisdiction_code);
-        });
-      });
-    }
-  };
-
-  const setPoiRowData = (poi, arrSpecies, arrJurisdictions) => {
-    return {
-      site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
-      species: arrSpecies,
-      jurisdictions: arrJurisdictions,
-      geometry: poi.point_of_interest_payload.geometry
-    };
   };
 
   const updateActivityRecords = useCallback(async () => {
@@ -172,8 +151,8 @@ export const GeneratePopup = (props) => {
             });
           }
         }
-        setRows(tempArr);
-      } else setRows(null);
+        setRowsActivity(tempArr);
+      } else setRowsActivity(null);
     }
   }, [bufferedGeo]);
 
@@ -182,13 +161,35 @@ export const GeneratePopup = (props) => {
       var pointsofinterest = await dataAccess.getPointsOfInterest(
         {
           search_feature: bufferedGeo,
+          isIAPP: true,
           limit: 500,
           page: 0
         },
         dbContext
       );
 
-      setPOIs(pointsofinterest);
+      // setPoisObj(pointsofinterest);
+      const tempArr = [];
+      pointsofinterest.rows.map((poi) => {
+        var arrSpecies = [];
+        const newArr = [];
+        var arrJurisdictions = [];
+        getSpecies(arrSpecies, poi);
+        getJurisdictions(newArr, poi);
+        newArr.forEach((item) => {
+          arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
+        });
+
+        var row = {
+          id: poi.point_of_interest_id,
+          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
+          jurisdiction_code: arrJurisdictions,
+          species_code: arrSpecies,
+          geometry: poi.point_of_interest_payload.geometry
+        };
+        tempArr.push(row);
+      });
+      setRowsPoi(tempArr);
     }
   }, [bufferedGeo]);
 
@@ -219,18 +220,16 @@ export const GeneratePopup = (props) => {
               <RenderTableActivity
                 setActivityGeo={props.setActivityGeo}
                 map={props.map}
-                rows={rows}
-                setRows={setRows}
+                rows={rowsActivity}
+                setRows={setRowsActivity}
               />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && (
-              <RenderTablePOI map={props.map} rows={poiTableRows} setPoiMarker={props.setPoiMarker} />
-            )}
+            {section == 'poi' && <RenderTablePOI map={props.map} rows={rowsPoi} setPoiMarker={props.setPoiMarker} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
-              style={{ backgroundColor: themeType ? '#333' : null, width: 301 }}
+              style={{ backgroundColor: themeType ? '#333' : null, width: 500 }}
               value={section}
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
@@ -240,7 +239,7 @@ export const GeneratePopup = (props) => {
             </BottomNavigation>
           </Grid>
           <Grid container>
-            <Stack direction="row" spacing={1} style={{ width: 301 }} alignItems="center">
+            <Stack direction="row" spacing={1} style={{ width: 500 }} alignItems="center">
               <Typography
                 className={assignPointModeTheme(!pointMode, themeType)}
                 style={assignPtDefaultTheme(pointMode, themeType)}>

@@ -17,6 +17,7 @@ import TablePaginationActions from '@material-ui/core/TablePagination/TablePagin
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { createStyles, withStyles } from '@material-ui/styles';
+import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
 import * as turf from '@turf/turf';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -423,75 +424,52 @@ export const RenderTableDataBC = ({ rows }) => {
 };
 
 export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
+  const history = useHistory();
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
-
-  const labels = ['SITE ID', 'SPECIES', 'JURISDICTION'];
-
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'IAPP ID',
+      hide: true
+    },
+    {
+      field: 'site_id',
+      headerName: 'IAPP ID',
+      width: 80
+    },
+    {
+      field: 'jurisdiction_code',
+      headerName: 'Jurisdiction Code',
+      width: 150
+    },
+    {
+      field: 'species_code',
+      headerName: 'Species Code',
+      width: 150
+    },
+    {
+      field: 'geometry',
+      headerName: 'Geometry',
+      hide: true
+    }
+  ];
 
   return (
-    <Table padding="none" size="small">
-      <CreateTableHead labels={labels} />
-      <TableBody>
-        <>
-          {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
-            <>
-              <StyledTableRow key={row?.site_id}>
-                <StyledTableCell style={{ width: 51 }} component="th" scope="row">
-                  <a
-                    onClick={() => {
-                      if (row.geometry)
-                        map.flyTo(
-                          [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
-                          17
-                        );
-                      setPoiMarker({
-                        geometry: row.geometry[0],
-                        species: row.species
-                      });
-                    }}>
-                    {row.site_id}
-                  </a>
-                </StyledTableCell>
-                <StyledTableCell style={{ width: 125 }}>
-                  {row.species.map((s) => (
-                    <>
-                      {s}
-                      <br />
-                    </>
-                  ))}
-                </StyledTableCell>
-                <StyledTableCell style={{ width: 125 }}>
-                  {row.jurisdictions.map((j) => (
-                    <>
-                      {j}
-                      <br />
-                    </>
-                  ))}
-                </StyledTableCell>
-              </StyledTableRow>
-            </>
-          ))}
-        </>
-        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
-        <CreateTableFooter
-          records={rows}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </TableBody>
-    </Table>
+    <div style={{ height: 300, width: '100%' }}>
+      <DataGrid
+        columns={columns}
+        rows={rows}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        rowHeight={30}
+        headerHeight={30}
+        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+          console.log('params', params);
+        }}
+        onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+          history.push(`/home/iapp/${params.id}`);
+        }}
+      />
+    </div>
   );
 };
