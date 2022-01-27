@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {Box, Paper, Typography} from '@material-ui/core';
-import {useInvasivesApi} from "../../hooks/useInvasivesApi";
-import CodeTablePreview from "./CodeTablePreview";
+import React, { useEffect, useState } from 'react';
+import { Box, Paper, Typography } from '@mui/material';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import CodeTablePreview from './CodeTablePreview';
 
 const CodeTablesDownload: React.FC = () => {
   const api = useInvasivesApi();
@@ -29,22 +29,31 @@ const CodeTablesDownload: React.FC = () => {
   return (
     <Paper>
       <Box mx={3} my={3} py={3}>
-        <Typography variant={"h4"}>Code Tables Download</Typography>
+        <Typography variant={'h4'}>Code Tables Download</Typography>
         <table>
           <thead>
-          <tr>
-            <th>Code</th>
-            <th>Description</th>
-          </tr>
+            <tr>
+              <th>Code</th>
+              <th>Description</th>
+            </tr>
           </thead>
           <tbody>
-          {codeTablesList.map((code) => (<tr key={code.code_table}>
-            <td>{code.title}</td>
-            <td>{code.description}</td>
-            <td><span style={{textDecoration: "underline", cursor: "pointer"}}
-                      onClick={() => downloadCodeTable(code.code_table, code.title)}>Download (CSV)</span></td>
-            <td><CodeTablePreview codeTableId={code.code_table} /></td>
-          </tr>))}
+            {codeTablesList.map((code) => (
+              <tr key={code.code_table}>
+                <td>{code.title}</td>
+                <td>{code.description}</td>
+                <td>
+                  <span
+                    style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                    onClick={() => downloadCodeTable(code.code_table, code.title)}>
+                    Download (CSV)
+                  </span>
+                </td>
+                <td>
+                  <CodeTablePreview codeTableId={code.code_table} />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </Box>

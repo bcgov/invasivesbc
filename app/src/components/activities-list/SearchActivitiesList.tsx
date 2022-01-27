@@ -6,12 +6,12 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  makeStyles,
   Paper,
   SvgIcon,
   Theme,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { ActivitySubtype, ActivityTypeIcon } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';

@@ -15,7 +15,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Menu,
   MenuItem,
   Switch,
@@ -23,7 +22,8 @@ import {
   Tabs,
   Theme,
   Toolbar
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@material-ui/icons';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
@@ -37,7 +37,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { ThemeContext } from 'contexts/themeContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
@@ -410,6 +410,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         ]}
       />
       <AppBar
+        color="primary"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open
         })}
@@ -457,10 +458,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
-                <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
+                <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons={true}>
                   {tabConfig.map((tab) => (
                     <Tab
                       style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                      color="primary"
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
                       icon={tab.icon}

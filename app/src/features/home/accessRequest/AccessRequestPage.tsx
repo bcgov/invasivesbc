@@ -19,11 +19,12 @@ import {
   MenuItem,
   Typography,
   Tooltip,
-  makeStyles
-} from '@material-ui/core';
+  Theme
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { SelectChangeEvent } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '320px'
   }

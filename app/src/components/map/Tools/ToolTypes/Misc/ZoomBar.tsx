@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Slider } from '@material-ui/core';
+import { Slider } from '@mui/material';
 import React from 'react';
 
 const POSITION_CLASSES = {

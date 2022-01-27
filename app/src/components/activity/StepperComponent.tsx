@@ -1,4 +1,4 @@
-import { Box, Step, StepLabel, Stepper, Typography } from '@material-ui/core';
+import { Box, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import React from 'react';
 
 interface IStepperComponentProps {

@@ -6,12 +6,12 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  makeStyles,
   MenuItem,
   Select,
   Theme,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
@@ -33,7 +33,7 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
-import { Sync } from '@material-ui/icons';
+import { Sync } from '@mui/icons-material';
 import { IonAlert } from '@ionic/react';
 import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';

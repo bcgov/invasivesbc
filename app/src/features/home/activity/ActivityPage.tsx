@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
-import { Box, Button, CircularProgress, Container, makeStyles, Tooltip, Typography, Zoom } from '@material-ui/core';
-import { FileCopy } from '@material-ui/icons';
+import { Box, Button, CircularProgress, Container, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { FileCopy } from '@mui/icons-material';
 import * as turf from '@turf/turf';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -51,7 +52,7 @@ import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
     height: '600px'
   },

@@ -1,5 +1,6 @@
-import { Box, Button, CircularProgress, Container, makeStyles } from '@material-ui/core';
-import { Save } from '@material-ui/icons';
+import { Box, Button, CircularProgress, Container, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Save } from '@mui/icons-material';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -23,7 +24,7 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { getActivityByIdFromApi } from 'utils/getActivity';
 import { MapContextMenuData } from '../map/MapContextMenu';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular

@@ -11,10 +11,10 @@ import {
   Container,
   Divider,
   Grid,
-  makeStyles,
   Theme,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';

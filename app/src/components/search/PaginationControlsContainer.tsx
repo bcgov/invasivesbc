@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Grid, Select } from '@material-ui/core';
+import { FormControl, FormLabel, Grid, Select } from '@mui/material';
 import { Pagination, ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { calculatePaginationLabel } from 'components/search/paginationUtils';
 import React from 'react';

@@ -9,15 +9,14 @@ import {
   TableFooter,
   TableHead,
   TablePagination,
+  TablePaginationProps,
   TableRow,
   Theme,
   Tooltip
-} from '@material-ui/core';
-import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
-import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import { createStyles, withStyles } from '@material-ui/styles';
-import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
+} from '@mui/material';
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import { createStyles, withStyles } from '@mui/styles';
 import * as turf from '@turf/turf';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -61,7 +60,6 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
           }}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          ActionsComponent={TablePaginationActions}
         />
       </TableRow>
     </TableFooter>

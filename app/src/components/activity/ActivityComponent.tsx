@@ -11,8 +11,8 @@ import {
   Switch,
   Tooltip,
   Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';

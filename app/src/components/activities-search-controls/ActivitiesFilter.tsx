@@ -1,18 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  Box,
-  Button,
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  makeStyles,
-  MenuItem,
-  Paper,
-  Select,
-  Switch
-} from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
+import { Box, Button, Grid, InputLabel, List, ListItem, Theme, MenuItem, Paper, Select, Switch } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Add, DeleteForever } from '@mui/icons-material';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
@@ -27,7 +16,7 @@ interface IActivityChoices {
   endDate: string;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',

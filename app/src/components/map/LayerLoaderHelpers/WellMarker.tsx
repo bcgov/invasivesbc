@@ -1,4 +1,5 @@
-import { Divider, makeStyles, Theme } from '@material-ui/core';
+import { Divider, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import L from 'leaflet';
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';

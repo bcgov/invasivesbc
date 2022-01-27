@@ -11,8 +11,8 @@ import {
   Grid,
   IconButton,
   TextField
-} from '@material-ui/core';
-import { AddAPhoto, DeleteForever } from '@material-ui/icons';
+} from '@mui/material';
+import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React from 'react';
 
 export interface IPhoto {

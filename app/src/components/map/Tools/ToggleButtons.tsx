@@ -1,4 +1,4 @@
-import { Grid, IconButton, Typography } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';

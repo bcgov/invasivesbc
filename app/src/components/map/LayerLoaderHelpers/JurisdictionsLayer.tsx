@@ -1,4 +1,4 @@
-import { Snackbar } from '@material-ui/core';
+import { Snackbar } from '@mui/material';
 import { Alert } from '@material-ui/lab';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import SLDParser from 'geostyler-sld-parser';

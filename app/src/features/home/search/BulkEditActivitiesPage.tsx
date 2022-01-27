@@ -1,5 +1,5 @@
-import { Accordion, AccordionDetails, Box, Button, CircularProgress, Container } from '@material-ui/core';
-import { Save } from '@material-ui/icons';
+import { Accordion, AccordionDetails, Box, Button, CircularProgress, Container } from '@mui/material';
+import { Save } from '@mui/icons-material';
 import FormContainer from 'components/form/FormContainer';
 import { ActivityStatus, ActivitySubtype, ActivityType, FormValidationStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';

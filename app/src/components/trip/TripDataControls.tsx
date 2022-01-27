@@ -1,4 +1,5 @@
-import { Box, Button, makeStyles } from '@material-ui/core';
+import { Box, Button, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import * as turf from '@turf/turf';
 import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ import {
 import { NetworkContext } from 'contexts/NetworkContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',

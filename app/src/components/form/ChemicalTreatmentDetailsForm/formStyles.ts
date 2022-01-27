@@ -1,4 +1,5 @@
-import { Theme, makeStyles } from '@material-ui/core';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 export const useFormStyles = makeStyles((theme: Theme) => ({
   formContainer: { width: '100%', paddingTop: '2rem', paddingBottom: '2rem' },
