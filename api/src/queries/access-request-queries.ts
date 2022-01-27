@@ -129,7 +129,7 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             first_name=${accessRequest.first_name},
             last_name=${accessRequest.last_name},
             email=${accessRequest.primary_email},
-            preferred_username${preferredUsername},
+            preferred_username=${preferredUsername},
             account_status=1,
             expiry_date=${expiryDate.toUTCString()},
             activation_status=1,
@@ -143,6 +143,8 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             pac_number=${accessRequest.pac_number},
             pac_service_number_1=${accessRequest.pac_service_number_1},
             pac_service_number_2=${accessRequest.pac_service_number_2}
-            where bceid_userid=${accessRequest.bceid_userid} OR idir_userid=${accessRequest.idir_userid};
+            where (bceid_userid is not null and bceid_userid=${
+              accessRequest.bceid_userid
+            }) OR (idir_userid is not null and idir_userid=${accessRequest.idir_userid});
     `;
 };
