@@ -292,10 +292,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     return userInfoLoaded;
   };
 
+  const isAuthorized = () => {
+    return isAuthenticated() && authContext.userRoles.length > 0;
+  };
+
   const isAdmin = (): boolean => {
-    if (isAuthenticated()) {
+    if (isAuthorized()) {
       return authContext.hasRole('master_administrator');
-    }
+    } else return false;
   };
 
   const themeContext = useContext(ThemeContext);
@@ -323,7 +327,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map fontSize={'small'} />
         });
 
-        if (isAuthenticated()) {
+        if (isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
@@ -331,7 +335,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
@@ -339,7 +343,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -347,7 +351,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -355,7 +359,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
