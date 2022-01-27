@@ -124,47 +124,27 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
     preferredUsername = accessRequest.primary_email;
   }
   return SQL`
-        insert into application_user (
-            first_name,
-            last_name,
-            email,
-            preferred_username,
-            account_status,
-            expiry_date,
-            activation_status,
-            created_at,
-            updated_at,
-            idir_userid,
-            bceid_userid,
-            idir_account_name,
-            bceid_account_name,
-            work_phone_number,
-            funding_agencies,
-            employer,
-            pac_number,
-            pac_service_number_1,
-            pac_service_number_2
-            )
-        values (
-            ${accessRequest.first_name},
-            ${accessRequest.last_name},
-            ${accessRequest.primary_email},
-            ${preferredUsername},
-            1,
-            ${expiryDate.toUTCString()},
-            1,
-            CURRENT_TIMESTAMP,
-            CURRENT_TIMESTAMP,
-            ${accessRequest.idir_userid},
-            ${accessRequest.bceid_userid},
-            ${accessRequest.idir_account_name},
-            ${accessRequest.bceid_account_name},
-            ${accessRequest.work_phone_number},
-            ${accessRequest.funding_agencies},
-            ${accessRequest.employer},
-            ${accessRequest.pac_number},
-            ${accessRequest.pac_service_number_1},
-            ${accessRequest.pac_service_number_2}
-        );
+        update application_user 
+        set
+            first_name=${accessRequest.first_name},
+            last_name=${accessRequest.last_name},
+            email=${accessRequest.primary_email},
+            preferred_username${preferredUsername},
+            account_status=1,
+            expiry_date=${expiryDate.toUTCString()},
+            activation_status=1,
+            created_at=CURRENT_TIMESTAMP,
+            updated_at=CURRENT_TIMESTAMP,
+            idir_userid=${accessRequest.idir_userid},
+            bceid_userid=${accessRequest.bceid_userid},
+            idir_account_name=${accessRequest.idir_account_name},
+            bceid_account_name=${accessRequest.bceid_account_name},
+            work_phone_number=${accessRequest.work_phone_number},
+            funding_agencies=${accessRequest.funding_agencies},
+            employer=${accessRequest.employer},
+            pac_number=${accessRequest.pac_number},
+            pac_service_number_1=${accessRequest.pac_service_number_1},
+            pac_service_number_2=${accessRequest.pac_service_number_2}
+            where bceid_userid=${accessRequest.bceid_userid} OR idir_userid=${accessRequest.idir_userid};
     `;
 };
