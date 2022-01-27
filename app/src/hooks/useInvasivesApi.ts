@@ -57,7 +57,7 @@ console.log('API_URL', API_URL);
 const useRequestOptions = () => {
   const { keycloak } = useContext(AuthStateContext); //useKeycloak();
   // const instance = useMemo(() => {
-  console.log('keycloak @ useRequestOptions', keycloak);
+  //console.log('keycloak @ useRequestOptions', keycloak);
   return {
     baseUrl: API_URL,
     headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
@@ -245,6 +245,31 @@ export const useInvasivesApi = () => {
     console.log('Observations as geojson', geojson);
     /******************End of GeoJSON*******************/
 
+    return data;
+  };
+
+  const createUser = async (userInfo: any, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
+    console.dir('userinfo to create user from if not exists: ', userInfo);
+    let type = '';
+    let id = '';
+
+    if (userInfo.idir_userid) {
+      type = 'idir';
+      id = userInfo.idir_userid;
+    }
+    if (userInfo.bceid_userid) {
+      type = 'bceid';
+      id = userInfo.bceid_userid;
+    }
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/create-user`,
+      data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
+    });
     return data;
   };
 
@@ -887,6 +912,7 @@ export const useInvasivesApi = () => {
     downloadTemplate,
     listCodeTables,
     fetchCodeTable,
+    createUser,
     getJurisdictions,
     getRISOs,
     cacheUserInfo,
