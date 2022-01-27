@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
   alter table application_user ADD CONSTRAINT unique_idir_userid UNIQUE (idir_userid);
+  alter table application_user ADD CONSTRAINT unique_bceid_userid UNIQUE (bceid_userid);
 
  
   `;
@@ -27,6 +28,8 @@ export async function down(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    alter table application_user drop CONSTRAINT unique_idir_userid UNIQUE (idir_userid);
+    alter table application_user drop CONSTRAINT unique_idir_userid ;
+    alter table application_user drop CONSTRAINT unique_bceid_userid;
+
   `);
 }
