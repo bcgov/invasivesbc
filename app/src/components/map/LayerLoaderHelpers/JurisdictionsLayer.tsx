@@ -1,5 +1,5 @@
 import { Snackbar } from '@mui/material';
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/lab';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import SLDParser from 'geostyler-sld-parser';
 import { useDataAccess } from 'hooks/useDataAccess';

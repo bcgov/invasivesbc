@@ -12,9 +12,9 @@ import {
   ThemeOptions,
   ThemeProvider,
   Typography
-} from '@mui/material';
+} from '@material-ui/core';
 import { ISubmitEvent } from '@rjsf/core';
-import Form from '@rjsf/material-ui';
+import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';

@@ -67,6 +67,7 @@ const appTheme: ThemeOptions = {
       fontSize: '1rem'
     }
   },
+  spacing: 4,
   components: {
     MuiCircularProgress: {
       styleOverrides: {
