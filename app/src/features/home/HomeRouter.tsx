@@ -17,12 +17,15 @@ import PrivateRoute from 'utils/PrivateRoute';
 import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
+import { AuthStateContext } from '../../contexts/authStateContext';
 
 interface IHomeRouterProps {
   classes: any;
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
+  const authContext = React.useContext(AuthStateContext);
+
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
@@ -37,7 +40,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         sensitive={false}
         title={getTitle('Map')}
         component={MapPage}
-        //componentProps={props}
       />
       <PublicRoute
         exact
@@ -47,9 +49,8 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         component={LandingPage}
         componentProps={props}
       />
-      <PrivateRoute
+      <PublicRoute
         exact
-        roles={ALL_ROLES}
         layout={HomeLayout}
         path="/home/access-request"
         title={getTitle('Access Request')}
@@ -61,7 +62,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search"
         title={getTitle('Search')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={SearchPage}
         componentProps={props}
       />
@@ -69,7 +70,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search/activity/:id?"
         title={getTitle('Edit')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={SearchActivityPage}
         componentProps={props}
       />
@@ -78,7 +79,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={BulkEditActivitiesPage}
         componentProps={props}
       />
@@ -87,7 +88,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity/observation"
         title={getTitle('Create Observation')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={ObservationCreationStepperPage}
         componentProps={props}
       />
@@ -96,7 +97,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/plan"
         title={getTitle('Plan')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={PlanPage}
         componentProps={props}
       />
@@ -105,7 +106,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/references"
         title={getTitle('Reference')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={ReferencesPage}
         componentProps={props}
       />
@@ -114,7 +115,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activities"
         title={getTitle('Activities')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={ActivitiesPage}
         componentProps={props}
       />
@@ -123,7 +124,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity"
         title={getTitle('Activity')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={ActivityPage}
         componentProps={props}
       />
@@ -132,7 +133,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/iapp/:id?"
         title={getTitle('IAPP Site')}
-        roles={ALL_ROLES}
+        roles={authContext.userRoles}
         component={ReferenceIAPPSitePage}
         componentProps={props}
       />
