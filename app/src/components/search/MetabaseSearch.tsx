@@ -2,7 +2,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import { Button, Grid, List, ListItem, MenuItem, Theme, Paper, Select, TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Add, DeleteForever } from '@mui/icons-material';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -141,81 +140,79 @@ export const MetabaseSearch: React.FC<any> = (props) => {
 
   return (
     <>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid className={classes.metabaseFilter}>
-          <List>
-            {metabaseChoices.map((metabaseChoice, index) => {
-              return (
-                <ListItem key={index}>
-                  <Paper className={classes.metabaseRecordsChoice}>
-                    <Grid container spacing={2} direction="row">
-                      <Grid container item xs={8}>
-                        {metabaseOptions && metabaseOptions.length ? (
-                          <Select
-                            className={classes.metabaseSearchField}
-                            label="Metabase Query"
-                            id="select"
-                            value={metabaseChoice.metabaseQueryId}
-                            onClick={() => {}}
-                            onChange={(e) => {
-                              updateMetabaseChoice(
-                                {
-                                  ...metabaseChoice,
-                                  metabaseQueryId: '' + e.target.value,
-                                  metabaseQueryName: metabaseOptions
-                                    .filter((option) => option.id === e.target.value)
-                                    .map((option) => option.name)
-                                },
-                                index
-                              );
-                            }}>
-                            {metabaseOptions.map((option) => (
-                              <MenuItem key={option.id} value={option.id}>
-                                {option.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        ) : (
-                          <TextField
-                            className={classes.metabaseSearchField}
-                            label="Metabase Query ID"
-                            value={metabaseChoice.metabaseQueryId}
-                            onClick={() => {}}
-                            onChange={(e) => {
-                              updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
-                            }}
-                          />
-                        )}
-                      </Grid>
-                      <Grid container item xs={4} justifyContent="flex-end">
-                        <Button
-                          variant="contained"
-                          startIcon={<DeleteForever />}
-                          onClick={() => deleteMetabaseChoice(index)}>
-                          Remove
-                        </Button>
-                      </Grid>
+      <Grid className={classes.metabaseFilter}>
+        <List>
+          {metabaseChoices.map((metabaseChoice, index) => {
+            return (
+              <ListItem key={index}>
+                <Paper className={classes.metabaseRecordsChoice}>
+                  <Grid container spacing={2} direction="row">
+                    <Grid container item xs={8}>
+                      {metabaseOptions && metabaseOptions.length ? (
+                        <Select
+                          className={classes.metabaseSearchField}
+                          label="Metabase Query"
+                          id="select"
+                          value={metabaseChoice.metabaseQueryId}
+                          onClick={() => {}}
+                          onChange={(e) => {
+                            updateMetabaseChoice(
+                              {
+                                ...metabaseChoice,
+                                metabaseQueryId: '' + e.target.value,
+                                metabaseQueryName: metabaseOptions
+                                  .filter((option) => option.id === e.target.value)
+                                  .map((option) => option.name)
+                              },
+                              index
+                            );
+                          }}>
+                          {metabaseOptions.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                              {option.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      ) : (
+                        <TextField
+                          className={classes.metabaseSearchField}
+                          label="Metabase Query ID"
+                          value={metabaseChoice.metabaseQueryId}
+                          onClick={() => {}}
+                          onChange={(e) => {
+                            updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
+                          }}
+                        />
+                      )}
                     </Grid>
-                  </Paper>
-                </ListItem>
-              );
-            })}
-          </List>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.metabaseAddButton}
-            startIcon={<Add />}
-            onClick={async () => {
-              await getMetabaseQueryOptions();
-              addMetabaseChoice({
-                metabaseQueryId: ''
-              });
-            }}>
-            Add New
-          </Button>
-        </Grid>
-      </MuiPickersUtilsProvider>
+                    <Grid container item xs={4} justifyContent="flex-end">
+                      <Button
+                        variant="contained"
+                        startIcon={<DeleteForever />}
+                        onClick={() => deleteMetabaseChoice(index)}>
+                        Remove
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </ListItem>
+            );
+          })}
+        </List>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.metabaseAddButton}
+          startIcon={<Add />}
+          onClick={async () => {
+            await getMetabaseQueryOptions();
+            addMetabaseChoice({
+              metabaseQueryId: ''
+            });
+          }}>
+          Add New
+        </Button>
+      </Grid>
     </>
   );
 };

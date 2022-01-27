@@ -1,5 +1,5 @@
 import { TextField } from '@mui/material';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
 import { Box, Typography } from '@mui/material';
 import { WidgetProps } from '@rjsf/core';

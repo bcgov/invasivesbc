@@ -24,12 +24,12 @@ import {
   Toolbar
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@material-ui/icons';
+import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import Brightness2Icon from '@material-ui/icons/Brightness2';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import MenuIcon from '@material-ui/icons/Menu';
-import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import Brightness2Icon from '@mui/icons-material/Brightness2';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
