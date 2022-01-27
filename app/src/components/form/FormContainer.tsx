@@ -12,7 +12,7 @@ import {
   ThemeOptions,
   ThemeProvider,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
 import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import React, { useContext, useEffect, useMemo, useState } from 'react';

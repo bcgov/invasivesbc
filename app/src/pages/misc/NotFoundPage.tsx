@@ -1,9 +1,10 @@
-import { Box, Button, Container, makeStyles, Typography } from '@material-ui/core';
-import { ArrowBack, Warning } from '@material-ui/icons';
+import { Box, Button, Container, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { ArrowBack, Warning } from '@mui/icons-material';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   warningIcon: {
     verticalAlign: 'middle',
     fontSize: '3rem',

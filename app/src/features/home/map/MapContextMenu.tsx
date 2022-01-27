@@ -7,17 +7,18 @@ import {
   IconButton,
   ListItemIcon,
   ListItemText,
-  makeStyles,
+  Theme,
   Slide,
   SlideProps,
   Toolbar,
+  List,
+  ListItem,
   Typography
-} from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import CloseIcon from '@material-ui/icons/Close';
-import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
-import SearchIcon from '@material-ui/icons/Search';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import SearchIcon from '@mui/icons-material/Search';
 import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import React, { useContext } from 'react';
@@ -44,7 +45,7 @@ export interface MapContextMenuData {
   lat?: number;
   lng?: number;
 }
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
     position: 'relative'
   },

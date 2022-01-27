@@ -9,10 +9,10 @@ import {
   ListItemAvatar,
   ListItemText,
   Typography
-} from '@material-ui/core';
-import DoneIcon from '@material-ui/icons/Done';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import ErrorIcon from '@material-ui/icons/Error';
+} from '@mui/material';
+import DoneIcon from '@mui/icons-material/Done';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import ErrorIcon from '@mui/icons-material/Error';
 import React, { useEffect, useState } from 'react';
 
 export interface IProgressDialog {

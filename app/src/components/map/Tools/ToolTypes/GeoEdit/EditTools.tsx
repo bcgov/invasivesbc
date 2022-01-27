@@ -1,4 +1,4 @@
-import { Grid, IconButton, Typography } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MODES } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'contexts/themeContext';

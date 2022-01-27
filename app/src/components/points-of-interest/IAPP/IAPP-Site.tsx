@@ -1,13 +1,6 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Container,
-  Grid,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import {
   IAPPBiologicalDispersalsTable,
@@ -17,7 +10,7 @@ import {
   IAPPSurveyTable
 } from '../../common/RecordTables';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular,

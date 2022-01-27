@@ -6,7 +6,7 @@ import {
   Radio,
   RadioGroup,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';

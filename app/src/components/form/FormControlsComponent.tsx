@@ -1,4 +1,4 @@
-import { Button, Grid, Tooltip, Zoom } from '@material-ui/core';
+import { Button, Grid, Tooltip, Zoom } from '@mui/material';
 import React from 'react';
 import { ActivitySyncStatus, ReviewActionDescriptions } from '../../constants/activities';
 

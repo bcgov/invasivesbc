@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
@@ -163,7 +163,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       // alert(returnStyles[0].json);
 
       /**
-       * It is possible to get no features in the returned object. 
+       * It is possible to get no features in the returned object.
        * With some testing it was also discovered that DataBC
        * returns no feature even requesting an area within a large
        * polygon.
@@ -171,7 +171,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       try {
         setlayerStyles(JSON.parse(returnStyles[0].json));
       } catch (err) {
-        console.error("Could not parse features in WFS request:",err);
+        console.error('Could not parse features in WFS request:', err);
       }
 
       const allFeatures = await fetchLayerDataFromLocal(props.dataBCLayerName, mapExtent, databaseContext);
@@ -227,7 +227,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     }
     return arrayOfWells;
   };
-
 
   //this is used to display all geoJSON data except for wells
   const onEachFeature = props.customOnEachFeature

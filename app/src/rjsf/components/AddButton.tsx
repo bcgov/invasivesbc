@@ -1,5 +1,6 @@
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
+import { Button } from '@mui/material';
+
+import AddIcon from '@mui/icons-material/Add';
 import { AddButtonProps } from '@rjsf/core';
 import React from 'react';
 

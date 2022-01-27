@@ -1,8 +1,4 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import { FormControl, FormHelperText, List, ListItem, Typography } from '@mui/material';
 import { FieldTemplateProps } from '@rjsf/core';
 import React from 'react';
 import WrapIfAdditional from './WrapIfAdditional';

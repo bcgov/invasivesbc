@@ -1,9 +1,14 @@
 import 'styles/fonts.scss';
+import { ThemeOptions } from '@mui/material';
 
-const appTheme = {
+const appTheme: ThemeOptions = {
   palette: {
     // https://material-ui.com/customization/palette/
-    type: 'light',
+    mode: 'light',
+    common: {
+      black: '#000',
+      white: '#fff'
+    },
     primary: {
       light: '#5469a4',
       main: '#223f75', // BC ID: corporate blue
@@ -42,54 +47,55 @@ const appTheme = {
     }
   },
   typography: {
-    fontFamily: ['BCSans', '"Noto Sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(',')
-  },
-  overrides: {
-    MuiTypography: {
-      // https://material-ui.com/api/typography/
-      h1: {
-        fontSize: '3rem'
-      },
-      h2: {
-        fontSize: '2.5rem'
-      },
-      h3: {
-        fontSize: '2rem'
-      },
-      h4: {
-        fontSize: '1.5rem'
-      },
-      h5: {
-        fontSize: '1.25rem'
-      },
-      h6: {
-        fontSize: '1rem'
-      }
+    fontFamily: ['BCSans', '"Noto Sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
+    h1: {
+      fontSize: '3rem'
     },
+    h2: {
+      fontSize: '2.5rem'
+    },
+    h3: {
+      fontSize: '2rem'
+    },
+    h4: {
+      fontSize: '1.5rem'
+    },
+    h5: {
+      fontSize: '1.25rem'
+    },
+    h6: {
+      fontSize: '1rem'
+    }
+  },
+  components: {
     MuiCircularProgress: {
-      // https://material-ui.com/api/circular-progress/
-      root: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        height: '60px !important',
-        width: '60px !important',
-        marginLeft: '-30px',
-        marginTop: '-30px'
+      styleOverrides: {
+        root: {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          height: '60px !important',
+          width: '60px !important',
+          marginLeft: '-30px',
+          marginTop: '-30px'
+        }
       }
     },
     MuiContainer: {
-      // https://material-ui.com/api/container/
-      root: {
-        maxWidth: 'xl',
-        margin: 'auto'
+      styleOverrides: {
+        root: {
+          maxWidth: 'xl',
+          margin: 'auto'
+        }
       }
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: '1rem',
-        color: 'white',
-        backgroundColor: '#223F75'
+      styleOverrides: {
+        tooltip: {
+          fontSize: '1rem',
+          color: 'white',
+          backgroundColor: '#223F75'
+        }
       }
     }
   }

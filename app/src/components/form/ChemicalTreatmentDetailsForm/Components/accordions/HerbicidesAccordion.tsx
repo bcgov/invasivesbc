@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button } from '@material-ui/core';
+import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button } from '@mui/material';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import Herbicide from '../single-objects/Herbicide';
 import AddIcon from '@mui/icons-material/Add';

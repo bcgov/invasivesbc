@@ -1,4 +1,4 @@
-import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
+import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';

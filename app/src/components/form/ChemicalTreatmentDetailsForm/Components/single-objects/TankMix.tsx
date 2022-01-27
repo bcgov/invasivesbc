@@ -1,4 +1,4 @@
-import { TextField, Tooltip } from '@material-ui/core';
+import { TextField, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';

@@ -3,7 +3,7 @@ import { Device } from '@capacitor/device';
 
 import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
-import { Box } from '@material-ui/core';
+import Box from '@mui/material/Box';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';

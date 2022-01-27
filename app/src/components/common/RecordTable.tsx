@@ -7,7 +7,6 @@ import {
   Checkbox,
   Collapse,
   IconButton,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -15,13 +14,15 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Theme,
   TableSortLabel,
   Toolbar,
   Tooltip,
   Typography
-} from '@material-ui/core';
-import { lighten } from '@material-ui/core/styles';
-import { ExpandMore, FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { lighten } from '@mui/material';
+import { ExpandMore, FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import clsx from 'clsx';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -61,7 +62,7 @@ const arraysEqual = (a, b) => {
   return true;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   component: {
     marginTop: '15px'
   },
@@ -144,13 +145,13 @@ const useStyles = makeStyles((theme) => ({
   dateCell: {}
 }));
 
-const useToolbarStyles = makeStyles((theme) => ({
+const useToolbarStyles = makeStyles((theme: Theme) => ({
   root: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1)
   },
   highlight:
-    theme.palette.type === 'light'
+    theme.palette.mode === 'light'
       ? {
           color: theme.palette.secondary.main,
           backgroundColor: lighten(theme.palette.secondary.light, 0.85)

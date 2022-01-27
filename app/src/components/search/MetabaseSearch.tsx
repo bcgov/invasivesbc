@@ -1,6 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Button, Grid, List, ListItem, makeStyles, MenuItem, Paper, Select, TextField } from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
+import { Button, Grid, List, ListItem, MenuItem, Theme, Paper, Select, TextField } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Add, DeleteForever } from '@mui/icons-material';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
@@ -12,7 +13,7 @@ interface IMetabaseChoices {
   metabaseQueryId: string;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     textAlign: 'center',
     color: theme.palette.text.secondary

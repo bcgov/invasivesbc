@@ -1,4 +1,4 @@
-import TextField from '@material-ui/core/TextField';
+import { TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
 import { Box, Typography } from '@mui/material';
