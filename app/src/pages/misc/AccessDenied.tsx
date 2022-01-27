@@ -22,7 +22,7 @@ const AccessDenied = () => {
   const history = useHistory();
 
   const navigateToHome = () => {
-    history.push('/home');
+    history.push('/home/landing');
   };
 
   const emailSubject = encodeURIComponent('InvasivesBC Access Request');
