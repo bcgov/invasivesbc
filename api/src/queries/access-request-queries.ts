@@ -135,8 +135,6 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             activation_status=1,
             created_at=CURRENT_TIMESTAMP,
             updated_at=CURRENT_TIMESTAMP,
-            idir_userid=${accessRequest.idir_userid},
-            bceid_userid=${accessRequest.bceid_userid},
             idir_account_name=${accessRequest.idir_account_name},
             bceid_account_name=${accessRequest.bceid_account_name},
             work_phone_number=${accessRequest.work_phone_number},
