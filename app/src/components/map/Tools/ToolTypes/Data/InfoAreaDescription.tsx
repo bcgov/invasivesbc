@@ -161,6 +161,7 @@ export const GeneratePopup = (props) => {
       var pointsofinterest = await dataAccess.getPointsOfInterest(
         {
           search_feature: bufferedGeo,
+          isIAPP: true,
           limit: 500,
           page: 0
         },

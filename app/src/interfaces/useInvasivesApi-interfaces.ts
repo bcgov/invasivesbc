@@ -332,7 +332,7 @@ export interface IPointOfInterestSearchCriteria {
    * @type {string}
    * @memberof IPointOfInterestSearchCriteria
    */
-  iappSiteID: string;
+  iappSiteID?: string;
 }
 
 /**
