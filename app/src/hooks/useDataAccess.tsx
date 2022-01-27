@@ -731,6 +731,29 @@ export const useDataAccess = () => {
     }
   };
 
+
+  const createUser = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.USER_ROLE,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETROLESFORUSER: ', res);
+        return res;
+      }
+    });
+  };
+
   /**
    * Get appState
    *

@@ -59,15 +59,26 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [applicationUsers, setApplicationUsers] = React.useState([]);
   const [rolesUserHasAccessTo, setRolesUserHasAccessTo] = React.useState([]);
 
-  const loginUser = async () => {
-    await keycloak?.obj?.login();
+  const afterLoginStuff = async () => {
+    console.log('after login, before load info from context');
     const user = await keycloak?.obj?.loadUserInfo();
     console.log('user @ loginUser', user);
     console.dir(user);
     // const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
+    await invasivesApi.createUser(user, keycloak?.obj?.token);
     await setUserInfo(user);
     setUserInfoLoaded(true);
+  };
+
+  React.useEffect(() => {
+    console.log('after login hook');
+    afterLoginStuff();
+  }, [keycloak.obj.authenticated]);
+
+  const loginUser = async () => {
+    console.log('login user from context');
+    await keycloak?.obj?.login();
   };
 
   const isMobile = () => {
@@ -76,9 +87,9 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
   const hasRole = (role: string) => {
     // Check if user has a role
-    console.log('hasRole called');
+    //console.log('hasRole called');
     if (userRoles.some((r) => r.role_name === role)) {
-      console.log('hasRole returning true');
+      //  console.log('hasRole returning true');
       return true;
     } else {
       console.log('hasRole returning false');
@@ -113,13 +124,13 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
     const getUserByIDIR = async (idir_userid) => {
       const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
-      console.log('user @ getUserByIDIR', user);
+      //   console.log('user @ getUserByIDIR', user);
       return user;
     };
 
     const getUserByBCEID = async (bceid_userid) => {
       const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
-      console.log('user @ getUserByBCEID', user);
+      //  console.log('user @ getUserByBCEID', user);
       return user;
     };
 
@@ -131,9 +142,9 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
     const getRolesUserHasAccessTo = async (user_id) => {
       const all_roles = await invasivesApi.getRoles(keycloak?.obj?.token);
-      console.log('all_roles @ getRolesUserHasAccessTo', all_roles);
+      // console.log('all_roles @ getRolesUserHasAccessTo', all_roles);
       const roles = await getRolesForUser(user_id);
-      console.log('roles for user @ getRolesUserHasAccessTo', roles);
+      // console.log('roles for user @ getRolesUserHasAccessTo', roles);
       const accessRoles = [];
       for (const role of roles.data) {
         accessRoles.push(role);
@@ -208,7 +219,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
               // Cache the current user's roles and info by bceid
               await cacheCurrentUserBCEID(token.bceid_userid);
             }
-            const userResponse = await getUserByBCEID(token.idir_userid);
+            const userResponse = await getUserByBCEID(token.bceid_userid);
             if (userResponse && userResponse.length > 0) {
               const user = userResponse[0];
               const roles = await getRolesForUser(user.user_id);

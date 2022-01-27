@@ -208,11 +208,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const loginUser = async () => {
-    await authContext.keycloak?.obj?.login();
+    console.log('*****caling auth state context logni');
+    await authContext.loginUser();
+    console.log('*****called it');
     const user = await authContext.keycloak?.obj?.loadUserInfo();
     //  const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
-    await setUserInfo(user);
+    //await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
       const userInfoAndRoles = {
@@ -226,7 +228,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       }
     }
     handleClose();
-    setUserInfoLoaded(true);
+    // setUserInfoLoaded(true);
   };
 
   const navToAdmin = async () => {
