@@ -12,8 +12,6 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   useEffect(() => {
     if (!poi) {
       fetchPOI();
-    } else {
-      console.log('poi', poi);
     }
   }, [poi]);
 

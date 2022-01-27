@@ -1,4 +1,5 @@
 export const chemicalTreatmentJSON = (treatment: any) => {
+  const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   return {
     dilution: treatment.dilution_percent, // find dilution amount???
     employer: treatment.employer,
@@ -7,7 +8,7 @@ export const chemicalTreatmentJSON = (treatment: any) => {
     monitoring: [], // Could not find
     pup_number: treatment.pup_number,
     wind_speed: null, // Could not find
-    common_name: treatment.invasive_plant, // use common name
+    common_name: common_name, // use common name
     tank_mix_id: null, // Could not find tank mix id
     temperature: null, // Could not find tempurature
     project_code: [
@@ -34,11 +35,14 @@ export const chemicalTreatmentJSON = (treatment: any) => {
 };
 
 export const biologicalDispersalJSON = (dispersal: any) => {
+  const leftBracket = dispersal.invasive_plant.indexOf('(');
+  const common_name = dispersal.invasive_plant.substring(0, leftBracket - 1);
+  const plant_code = dispersal.invasive_plant.substring(leftBracket + 5, dispersal.invasive_plant.length - 1);
   return {
     map_code: dispersal.invasive_plant, // convert to map code (XX)
     utm_zone: dispersal.utm_zone,
     agent_count: null,
-    common_name: dispersal.invasive_plant, // use common name
+    common_name: common_name, // use common name
     plant_count: dispersal.density,
     utm_easting: dispersal.utm_easting,
     project_code: [dispersal.dispersal_paper_file_id],
@@ -51,7 +55,7 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     pupae_present_ind: dispersal.pupea_present,
     adults_present_ind: dispersal.adults_present,
     larvae_present_ind: dispersal.larvae_present,
-    invasive_plant_code: dispersal.invasive_plant, // convert to code (XXX)
+    invasive_plant_code: plant_code, // convert to code (XXX)
     tunnels_present_ind: dispersal.tunnels_present,
     biological_agent_code: dispersal.biological_agent,
     oviposition_marks_ind: dispersal.oviposition_marks,
@@ -64,11 +68,12 @@ export const biologicalDispersalJSON = (dispersal: any) => {
 };
 
 export const biologicalTreatmentsJSON = (treatment: any) => {
+  const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   return {
     map_code: treatment.invasive_plant, // convert to code (XX)
     utm_zone: treatment.utm_zone,
     monitoring: [],
-    common_name: treatment.invasive_plant, // use common name
+    common_name: common_name, // use common name
     utm_easting: treatment.utm_easting,
     agent_source: treatment.bioagent_source,
     project_code: [treatment.treatment_paper_file_id],
@@ -90,11 +95,12 @@ export const biologicalTreatmentsJSON = (treatment: any) => {
 };
 
 export const mechanicalTreatmenntsJSON = (treatment: any) => {
+  const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   return {
     employer: treatment.employer,
     map_code: treatment.invasive_plant, // convert to code (XX)
     monitoring: [],
-    common_name: treatment.invasive_plant, // use common name
+    common_name: common_name, // use common name
     project_code: [treatment.treatment_paper_file_id],
     treatment_id: treatment.mechanicaltreatmentid,
     mechanical_id: treatment.mechanicaltreatmentid, // what is this supposed to be???? different id??
