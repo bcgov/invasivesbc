@@ -159,6 +159,13 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         onFocus={(event) => {
           props.onFocus(event.target.id, event.target.nodeValue);
         }}
+        isOptionEqualToValue={(option) => {
+          if (option === value) {
+            return true;
+          } else if (value === '') {
+            return true;
+          }
+        }}
         clearOnEscape={!props.required}
         disableClearable={props.required}
         id={props.id}

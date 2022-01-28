@@ -112,7 +112,7 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
     return obj;
   }
 
-  // update the object, adding an `anyOf` field whose value is an array of enum objects
+  // update the object, adding an `options` field whose value is an array of enum objects
   obj = {
     ...obj,
     options: codeRows
