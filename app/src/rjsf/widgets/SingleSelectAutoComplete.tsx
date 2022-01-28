@@ -56,7 +56,10 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
-  let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
+  // @ts-ignore
+  let enumOptions =
+    (props.schema.options as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
+
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
     const suggestedJurisdictions = props.formContext.suggestedJurisdictions
@@ -140,9 +143,10 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         autoSelect={props.required}
         blurOnSelect
         openOnFocus
-        renderOption={(option, props) => {
+        renderOption={(props, option) => {
           return (
-            <Box style={{ display: 'flex', flexDirection: 'row' }}>
+            //@ts-ignore
+            <Box {...props} style={{ display: 'flex', flexDirection: 'row' }}>
               {optionValueSuggested[option] && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
               <Typography>
                 {option ? optionValueLabels[option] : ''}
@@ -182,13 +186,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           }
         }}
         options={optionValues}
-        getOptionSelected={(option) => {
-          if (option === value) {
-            return true;
-          } else if (value === '') {
-            return true;
-          }
-        }}
         filterOptions={createFilterOptions({
           // limit: 500, // NOTE: removed for now, but might want with very long lists
           stringify: (option) => option + ' ' + optionValueLabels[option]
