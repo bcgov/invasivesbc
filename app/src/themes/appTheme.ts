@@ -82,6 +82,13 @@ const appTheme: ThemeOptions = {
         }
       }
     },
+    MuiTab: {
+      styleOverrides: {
+        textColorPrimary: '#ffffff',
+        textColorSecondary: '#ffffff',
+        textColorInherit: '#ffffff'
+      }
+    },
     MuiContainer: {
       styleOverrides: {
         root: {

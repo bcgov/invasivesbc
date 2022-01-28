@@ -1,5 +1,16 @@
 import { Capacitor } from '@capacitor/core';
-import { Box, Button, CircularProgress, Container, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Snackbar,
+  Theme,
+  Tooltip,
+  Typography,
+  Zoom
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FileCopy } from '@mui/icons-material';
 import * as turf from '@turf/turf';
@@ -292,11 +303,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
+  const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
+
   const onFormSubmitError = () => {
-    alert('There are errors in your form. Please make sure your form contains no errors and try again.');
+    setAlertErrorsOpen(true);
     updateDoc({
       formStatus: FormValidationStatus.INVALID
     });
+  };
+
+  const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertErrorsOpen(false);
   };
 
   /**
@@ -807,6 +828,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           dialogContentText={warningDialog.dialogContentText}
         />
       </MapRecordsContextProvider>
+      <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
+        <Alert onClose={handleAlertErrorsClose} severity="error" sx={{ width: '100%' }}>
+          There are errors in your form. Please make sure your form contains no errors and try again.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

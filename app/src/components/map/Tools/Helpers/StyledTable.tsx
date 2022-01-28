@@ -24,6 +24,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
 
 const CreateTableHead = ({ labels }) => {
   return (
