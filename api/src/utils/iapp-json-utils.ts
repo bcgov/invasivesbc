@@ -162,7 +162,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     });
     (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
       (x) => {
-        const returnVal = biologicalTreatmentsJSON(x);
+        const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }
@@ -176,14 +176,14 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     );
     (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
       (x) => {
-        const returnVal = chemicalTreatmentJSON(x);
+        const returnVal = chemicalTreatmentJSON(x, relevant_chemical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }
     );
     (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = relevant_mechanical_treatment_extracts.map(
       (x) => {
-        const returnVal = mechanicalTreatmenntsJSON(x);
+        const returnVal = mechanicalTreatmenntsJSON(x, relevant_mechanical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }

@@ -1,11 +1,18 @@
-export const chemicalTreatmentJSON = (treatment: any) => {
+export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => {
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
+  const monitoring = [];
+  all_monitoring.forEach((item) => {
+    if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
+      monitoring.push(item);
+    }
+  });
+  console.log(monitoring);
   return {
     dilution: treatment.dilution_percent, // find dilution amount???
     employer: treatment.employer,
     humidity: null, // Could not find
     map_code: treatment.invasive_plant, // convert to code
-    monitoring: [], // Could not find
+    monitoring: monitoring.length > 0 ? monitoring : [], // Could not find
     pup_number: treatment.pup_number,
     wind_speed: null, // Could not find
     common_name: common_name, // use common name
@@ -67,12 +74,19 @@ export const biologicalDispersalJSON = (dispersal: any) => {
   };
 };
 
-export const biologicalTreatmentsJSON = (treatment: any) => {
+export const biologicalTreatmentsJSON = (treatment: any, all_monitoring: any[]) => {
+  console.log(all_monitoring);
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
+  const monitoring = [];
+  all_monitoring.forEach((item) => {
+    if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
+      monitoring.push(item);
+    }
+  });
   return {
     map_code: treatment.invasive_plant, // convert to code (XX)
     utm_zone: treatment.utm_zone,
-    monitoring: [],
+    monitoring: monitoring.length > 0 ? monitoring : [],
     common_name: common_name, // use common name
     utm_easting: treatment.utm_easting,
     agent_source: treatment.bioagent_source,
@@ -94,12 +108,19 @@ export const biologicalTreatmentsJSON = (treatment: any) => {
   };
 };
 
-export const mechanicalTreatmenntsJSON = (treatment: any) => {
+export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[]) => {
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
+  const monitoring = [];
+  all_monitoring.forEach((item) => {
+    if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
+      monitoring.push(item);
+    }
+  });
+  console.log(monitoring);
   return {
     employer: treatment.employer,
     map_code: treatment.invasive_plant, // convert to code (XX)
-    monitoring: [],
+    monitoring: monitoring.length > 0 ? monitoring : [],
     common_name: common_name, // use common name
     project_code: [treatment.treatment_paper_file_id],
     treatment_id: treatment.mechanicaltreatmentid,

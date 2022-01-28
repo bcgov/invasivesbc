@@ -45,7 +45,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
-  console.log('poi', site);
   return (
     <Container>
       <Accordion defaultExpanded={true}>

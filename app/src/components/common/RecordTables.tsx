@@ -1623,6 +1623,7 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
                 project_code_label: row.project_code[0].description
               }))
         }
+        dropdown={(row) => (!row.monitoring?.length ? undefined : <IAPPMonitoringTable rows={row.monitoring} />)}
       />
     );
   }, [rows?.length]);
@@ -1709,6 +1710,7 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
               rows={[row]} // singleton expanded table
               enableFiltering={false}
             />
+            {row.monitoring.length > 0 && <IAPPMonitoringTable rows={row.monitoring} />}
           </React.Fragment>
         )}
       />
@@ -1759,6 +1761,9 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
                 ...row,
                 project_code_label: row.project_code[0].description
               }))
+        }
+        dropdown={(row) =>
+          !row.monitoring?.length ? undefined : <IAPPBiologicalTreatmentsMonitoringTable rows={row.monitoring} />
         }
       />
     );
