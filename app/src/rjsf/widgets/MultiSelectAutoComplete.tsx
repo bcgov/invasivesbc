@@ -6,7 +6,7 @@ import { MultipleSelect } from 'react-select-material-ui';
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   // @ts-ignore
-  const enumOptions = props.schema.options as any[];
+  const enumOptions = (props.schema.options as any[]) || (props.options.enumOptions as any[]);
   const [focused, setFocused] = useState(false);
   const [hasValues, setHasValues] = useState(false);
   const themeContext = useContext(ThemeContext);
