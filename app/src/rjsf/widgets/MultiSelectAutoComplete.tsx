@@ -48,7 +48,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       borderWidth: !hasValues && focused ? '2px' : '1px',
       boxSizing: 'border-box',
       borderRadius: '4px',
-      zIndex: '1000',
+
       borderColor: props.rawErrors?.length > 0 ? 'red' : '#C4C4C4',
       marginTop: '0px',
       ':hover': {
@@ -71,10 +71,14 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       outline: 'none',
       justifyContent: 'center'
     }),
+    menu: (styles) => ({
+      ...styles,
+      zIndex: 2
+    }),
     valueContainer: (styles) => ({
       ...styles,
       padding: '12px 4px',
-      zIndex: '1000',
+
       fontSize: '1.2rem',
       lineHeight: '1.2rem'
     }),
@@ -123,7 +127,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
             transform: focused === true ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
             backgroundColor: themeType ? '#424242' : 'white',
             paddingInline: focused === true ? '5px' : '0px',
-            zIndex: focused === true ? 1111111 : 0,
+            zIndex: focused === true ? 1 : 0,
             position: 'absolute'
           }
         }}
