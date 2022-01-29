@@ -1,4 +1,4 @@
-import { IconButton, Typography } from '@material-ui/core';
+import { IconButton, Typography } from '@mui/material';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { ThemeContext } from 'contexts/themeContext';

@@ -33,19 +33,20 @@ import {
   Popover,
   Slider,
   Typography
-} from '@material-ui/core';
-import ColorLens from '@material-ui/icons/ColorLens';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+} from '@mui/material';
+import ColorLens from '@mui/icons-material/ColorLens';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // MUI Icons
-import LayersIcon from '@material-ui/icons/Layers';
-import SettingsIcon from '@material-ui/icons/Settings';
+import LayersIcon from '@mui/icons-material/Layers';
+import SettingsIcon from '@mui/icons-material/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
+import {KMLShapesUpload} from "../../map-buddy-components/KMLShapesUpload";
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -317,6 +318,10 @@ export const LayerPicker = React.memo(
                   }}>
                   Load
                 </Button>
+                <Accordion id="admin-shape-upload-accordion">
+                  <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
+                  <KMLShapesUpload/>
+                </Accordion>
                 <Accordion id="layer-picker-kml-accordion">
                   <AccordionSummary>KML upload</AccordionSummary>
                   <KMLUpload />

@@ -1,4 +1,4 @@
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import CachedRecordsList from 'components/activities-list/CachedRecordsList';
 import React from 'react';
 

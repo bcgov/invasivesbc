@@ -1,4 +1,3 @@
-import DateFnsUtils from '@date-io/date-fns';
 import {
   Box,
   Button,
@@ -6,14 +5,16 @@ import {
   InputLabel,
   List,
   ListItem,
-  makeStyles,
+  Theme,
   MenuItem,
   Paper,
   Select,
-  Switch
-} from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+  Switch,
+  TextField
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Add, DeleteForever } from '@mui/icons-material';
+import { DatePicker } from '@mui/lab';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ interface IActivityChoices {
   endDate: string;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
@@ -104,125 +105,108 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
 
   return (
     <>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <List>
-          {activityChoices.map((activityChoice, index) => {
-            return (
-              <ListItem key={index}>
-                <Paper className={classes.activityRecordsChoice}>
-                  <Grid xs={8} container spacing={3}>
-                    <Grid item xs={4}>
-                      <div>
-                        <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={activityChoice.activityType}
-                          onChange={(e) => {
-                            updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
-                          }}>
-                          <MenuItem value={''}>All</MenuItem>
-                          <MenuItem value={'Observation'}>Observation</MenuItem>
-                          <MenuItem value={'Treatment'}>Treatment</MenuItem>
-                          <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
-                        </Select>
-                      </div>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <InputLabel>Photos</InputLabel>
-                      <Switch
-                        color="primary"
-                        checked={activityChoice.includePhotos}
-                        value={activityChoice.includePhotos}
-                        onChange={() => {
-                          updateActivityChoice(
-                            { ...activityChoice, includePhotos: !activityChoice.includePhotos },
-                            index
-                          );
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <InputLabel>Forms</InputLabel>
-                      <Switch
-                        color="primary"
-                        checked={activityChoice.includeForms}
-                        value={activityChoice.includeForms}
-                        onChange={() => {
-                          updateActivityChoice(
-                            { ...activityChoice, includeForms: !activityChoice.includeForms },
-                            index
-                          );
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <KeyboardDatePicker
-                        autoOk
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Earliest Date"
-                        value={activityChoice.startDate}
+      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
+      <List>
+        {activityChoices.map((activityChoice, index) => {
+          return (
+            <ListItem key={index}>
+              <Paper className={classes.activityRecordsChoice}>
+                <Grid xs={8} container spacing={3}>
+                  <Grid item xs={4}>
+                    <div>
+                      <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={activityChoice.activityType}
                         onChange={(e) => {
-                          updateActivityChoice({ ...activityChoice, startDate: e }, index);
-                        }}
-                        KeyboardButtonProps={{
-                          'aria-label': 'change date start'
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <KeyboardDatePicker
-                        autoOk
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Latest Date"
-                        value={activityChoice.endDate}
-                        onChange={(e) => {
-                          updateActivityChoice({ ...activityChoice, endDate: e }, index);
-                        }}
-                        KeyboardButtonProps={{
-                          'aria-label': 'change date end'
-                        }}
-                      />
-                    </Grid>
-                    <Grid container item justifyContent="flex-end">
-                      <Button
-                        variant="contained"
-                        startIcon={<DeleteForever />}
-                        onClick={() => deleteActivityChoice(index)}>
-                        Remove
-                      </Button>
-                    </Grid>
+                          updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
+                        }}>
+                        <MenuItem value={''}>All</MenuItem>
+                        <MenuItem value={'Observation'}>Observation</MenuItem>
+                        <MenuItem value={'Treatment'}>Treatment</MenuItem>
+                        <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
+                      </Select>
+                    </div>
                   </Grid>
-                </Paper>
-              </ListItem>
-            );
-          })}
-        </List>
-        <Box>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Add />}
-            onClick={() => {
-              addActivityChoice({
-                activityType: '',
-                includePhotos: false,
-                includeForms: false,
-                species: [],
-                startDate: null,
-                endDate: null
-              });
-            }}>
-            Add New
-          </Button>
-        </Box>
-      </MuiPickersUtilsProvider>
+                  <Grid item xs={4}>
+                    <InputLabel>Photos</InputLabel>
+                    <Switch
+                      color="primary"
+                      checked={activityChoice.includePhotos}
+                      value={activityChoice.includePhotos}
+                      onChange={() => {
+                        updateActivityChoice(
+                          { ...activityChoice, includePhotos: !activityChoice.includePhotos },
+                          index
+                        );
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <InputLabel>Forms</InputLabel>
+                    <Switch
+                      color="primary"
+                      checked={activityChoice.includeForms}
+                      value={activityChoice.includeForms}
+                      onChange={() => {
+                        updateActivityChoice({ ...activityChoice, includeForms: !activityChoice.includeForms }, index);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <DatePicker
+                      renderInput={(params) => <TextField {...params} />}
+                      label="Earliest Date"
+                      value={activityChoice.startDate}
+                      onChange={(e) => {
+                        updateActivityChoice({ ...activityChoice, startDate: e }, index);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <DatePicker
+                      renderInput={(params) => <TextField {...params} />}
+                      label="Latest Date"
+                      value={activityChoice.endDate}
+                      onChange={(e) => {
+                        updateActivityChoice({ ...activityChoice, endDate: e }, index);
+                      }}
+                    />
+                  </Grid>
+                  <Grid container item justifyContent="flex-end">
+                    <Button
+                      variant="contained"
+                      startIcon={<DeleteForever />}
+                      onClick={() => deleteActivityChoice(index)}>
+                      Remove
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </ListItem>
+          );
+        })}
+      </List>
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={() => {
+            addActivityChoice({
+              activityType: '',
+              includePhotos: false,
+              includeForms: false,
+              species: [],
+              startDate: null,
+              endDate: null
+            });
+          }}>
+          Add New
+        </Button>
+      </Box>
+      {/* </MuiPickersUtilsProvider> */}
     </>
   );
 };

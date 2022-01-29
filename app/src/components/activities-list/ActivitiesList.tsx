@@ -6,12 +6,12 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  makeStyles,
   MenuItem,
   Select,
   Theme,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
@@ -33,13 +33,14 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
-import { Sync } from '@material-ui/icons';
+import { Sync } from '@mui/icons-material';
 import { IonAlert } from '@ionic/react';
 import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
+import { PointsOfInterestTable } from 'components/common/IAPPRecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -337,6 +338,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
+              <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
           {isMobile() && networkContext.connected && (
@@ -380,6 +382,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Batch Upload' && (
             <Box>
               <BatchUpload />
+            </Box>
+          )}
+          {workflowFunction === 'IAPP Data' && (
+            <Box>
+              <PointsOfInterestTable />
             </Box>
           )}
         </Box>

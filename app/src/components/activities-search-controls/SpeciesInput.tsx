@@ -1,6 +1,6 @@
-import { TextField } from '@material-ui/core';
-import { ChevronRight, ExpandMore } from '@material-ui/icons/';
-import { TreeItem, TreeView } from '@material-ui/lab';
+import { TextField } from '@mui/material';
+import { ChevronRight, ExpandMore } from '@mui/icons-material/';
+import { TreeItem, TreeView } from '@mui/lab';
 import React from 'react';
 
 export const SpeciesTree = () => {

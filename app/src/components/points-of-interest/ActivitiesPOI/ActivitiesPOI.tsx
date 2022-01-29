@@ -1,10 +1,11 @@
-import { Accordion, AccordionDetails, AccordionSummary, makeStyles, Typography } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { ExpandMore } from '@mui/icons-material';
 import FormContainer from 'components/form/FormContainer';
 import PhotoContainer from 'components/photo/PhotoContainer';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular

@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { useState } from 'react';
 import BatchUploader from './BatchUploader';
 import BatchUploadList from './BatchUploadList';
@@ -17,7 +17,7 @@ const BatchUpload: React.FC = (props) => {
       <BatchUploadList serial={serial} />
       <BatchUploader onUploadComplete={incrementSerial} />
       <TemplateDownload />
-      <CodeTablesDownload/>
+      <CodeTablesDownload />
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { Typography, Box, TextField, Button, Tooltip } from '@material-ui/core';
+import { Typography, Box, TextField, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useState } from 'react';
 import { IInvasivePlant } from '../../Models';

@@ -1,4 +1,5 @@
-import { Box, Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Grid, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';

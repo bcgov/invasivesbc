@@ -1,7 +1,9 @@
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress } from '@mui/material';
 import * as React from 'react';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
 import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
+import { useDataAccess } from '../hooks/useDataAccess';
+import { Capacitor } from '@capacitor/core';
 
 export const info: IUserInfo = {
   username: '',
@@ -48,6 +50,7 @@ export const AuthStateContext = React.createContext<IAuthState>({
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
+  const dataAccess = useDataAccess();
   const invasivesApi = useInvasivesApi();
   const keycloak = useKeycloakWrapper();
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
@@ -56,44 +59,92 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [applicationUsers, setApplicationUsers] = React.useState([]);
   const [rolesUserHasAccessTo, setRolesUserHasAccessTo] = React.useState([]);
 
-  const loginUser = async () => {
-    await keycloak?.obj?.login();
+  const afterLoginStuff = async () => {
+    console.log('after login, before load info from context');
     const user = await keycloak?.obj?.loadUserInfo();
+    console.log('user @ loginUser', user);
     console.dir(user);
     // const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     // await setUserRoles(roles);
+    await invasivesApi.createUser(user, keycloak?.obj?.token);
     await setUserInfo(user);
     setUserInfoLoaded(true);
   };
 
+  React.useEffect(() => {
+    console.log('after login hook');
+    afterLoginStuff();
+  }, [keycloak.obj.authenticated]);
+
+  const loginUser = async () => {
+    console.log('login user from context');
+    await keycloak?.obj?.login();
+  };
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
+
   const hasRole = (role: string) => {
     // Check if user has a role
+    //console.log('hasRole called');
     if (userRoles.some((r) => r.role_name === role)) {
+      //  console.log('hasRole returning true');
       return true;
     } else {
+      console.log('hasRole returning false');
       return false;
     }
   };
 
   React.useEffect(() => {
+    const cacheRoles = async () => {
+      await dataAccess.cacheRoles();
+    };
+
+    const cacheRolesForUser = async (userId) => {
+      await dataAccess.cacheRolesForUser(userId);
+    };
+
+    const cacheEmployers = async () => {
+      await dataAccess.cacheEmployers();
+    };
+
+    const cacheFundingAgencies = async () => {
+      await dataAccess.cacheFundingAgencies();
+    };
+
+    const cacheCurrentUserBCEID = async (bceid_userid) => {
+      await dataAccess.cacheCurrentUserBCEID(bceid_userid);
+    };
+
+    const cacheCurrentUserIDIR = async (idir_userid) => {
+      await dataAccess.cacheCurrentUserIDIR(idir_userid);
+    };
+
     const getUserByIDIR = async (idir_userid) => {
       const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
+      //   console.log('user @ getUserByIDIR', user);
       return user;
     };
 
     const getUserByBCEID = async (bceid_userid) => {
       const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
+      //  console.log('user @ getUserByBCEID', user);
       return user;
     };
 
     const getRolesForUser = async (user_id) => {
       const roles = await invasivesApi.getRolesForUser(user_id, keycloak?.obj?.token);
+      console.log('roles @ getRolesForUser', roles);
       return roles;
     };
 
     const getRolesUserHasAccessTo = async (user_id) => {
       const all_roles = await invasivesApi.getRoles(keycloak?.obj?.token);
+      // console.log('all_roles @ getRolesUserHasAccessTo', all_roles);
       const roles = await getRolesForUser(user_id);
+      // console.log('roles for user @ getRolesUserHasAccessTo', roles);
       const accessRoles = [];
       for (const role of roles.data) {
         accessRoles.push(role);
@@ -134,33 +185,51 @@ export const AuthStateContextProvider: React.FC = (props) => {
     };
 
     if (keycloak?.obj?.authenticated) {
+      console.log('keycloak.obj.authenticated is true');
       keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
+          if (isMobile()) {
+            await cacheRoles();
+            await cacheEmployers();
+            await cacheFundingAgencies();
+          }
           const token = keycloak?.obj?.tokenParsed;
           if (token && token.idir_userid) {
+            if (isMobile()) {
+              // Cache the current user's roles and info by idir
+              await cacheCurrentUserIDIR(token.idir_userid);
+            }
             const userResponse = await getUserByIDIR(token.idir_userid);
             if (userResponse && userResponse.length > 0) {
               const user = userResponse[0];
               const roles = await getRolesForUser(user.user_id);
+              if (isMobile()) {
+                await cacheRolesForUser(user.user_id);
+              }
               const accessibleRoles = await getRolesUserHasAccessTo(user.user_id);
               setRolesUserHasAccessTo(accessibleRoles);
               setUserRoles(roles.data);
               const mergedInfo = { ...user, ...info, roles: roles.data };
-              console.log('User Info: ', mergedInfo);
               setUserInfo(mergedInfo);
               setUserInfoLoaded(true);
             }
           }
           if (token && token.bceid_userid) {
-            const userResponse = await getUserByBCEID(token.idir_userid);
+            if (isMobile()) {
+              // Cache the current user's roles and info by bceid
+              await cacheCurrentUserBCEID(token.bceid_userid);
+            }
+            const userResponse = await getUserByBCEID(token.bceid_userid);
             if (userResponse && userResponse.length > 0) {
               const user = userResponse[0];
               const roles = await getRolesForUser(user.user_id);
+              if (isMobile()) {
+                await cacheRolesForUser(user.user_id);
+              }
               const accessibleRoles = await getRolesUserHasAccessTo(user.user_id);
               setRolesUserHasAccessTo(accessibleRoles);
               setUserRoles(roles.data);
               const mergedInfo = { ...user, ...info, roles: roles.data };
-              console.log('User Info: ', mergedInfo);
               setUserInfo(mergedInfo);
               setUserInfoLoaded(true);
             }

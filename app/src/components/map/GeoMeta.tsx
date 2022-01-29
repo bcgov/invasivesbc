@@ -1,4 +1,4 @@
-import { Color } from '@material-ui/lab';
+import { Color } from '@mui/material';
 import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import { FunctionComponent } from 'react';

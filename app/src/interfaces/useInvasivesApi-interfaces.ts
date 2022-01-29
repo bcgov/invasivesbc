@@ -326,6 +326,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   isIAPP?: boolean;
+  /**
+   * Site ID associated to the specific point_of_interest
+   *
+   * @type {string}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  iappSiteID?: string;
 }
 
 /**

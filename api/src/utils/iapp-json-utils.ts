@@ -5,6 +5,12 @@ import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
 import { getLogger } from './logger';
 import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
+import {
+  biologicalTreatmentsJSON,
+  biologicalDispersalJSON,
+  chemicalTreatmentJSON,
+  mechanicalTreatmenntsJSON
+} from './iapp-payload/extracts-json-utils';
 const defaultLog = getLogger('point-of-interest');
 
 const getSurveyObj = (row: any) => {
@@ -141,9 +147,42 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     const relevant_survey_extracts = all_survey_extracts.filter((r) => {
       return r.site_id === row.site_id;
     });
-    (iapp_site as any).surveys = relevant_survey_extracts.map((x) => {
-      return getSurveyObj(x);
+    (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts.map((x) => {
+      const returnVal = getSurveyObj(x);
+      if (returnVal) return returnVal;
+      else return [];
     });
+    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
+      (x) => {
+        const returnVal = biologicalTreatmentsJSON(x);
+        if (returnVal) return returnVal;
+        else return [];
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = relevant_biological_dispersal_extracts.map(
+      (x) => {
+        const returnVal = biologicalDispersalJSON(x);
+        if (returnVal) return returnVal;
+        else return [];
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
+      (x) => {
+        const returnVal = chemicalTreatmentJSON(x);
+        if (returnVal) return returnVal;
+        else return [];
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatmennts = relevant_mechanical_treatment_extracts.map(
+      (x) => {
+        const returnVal = mechanicalTreatmenntsJSON(x);
+        if (returnVal) return returnVal;
+        else return [];
+      }
+    );
+    // (iapp_site as any).form_data.
+    // (iapp_site as any).form_data.
+    // (iapp_site as any).form_data.
 
     return iapp_site;
   });

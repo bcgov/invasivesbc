@@ -17,7 +17,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(SQL` FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id WHERE 1=1`);
 
   if (searchCriteria.iappSiteID) {
-    sqlStatement.append(SQL` AND site_id = ${searchCriteria.iappSiteID}`);
+    sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
   }
   if (searchCriteria.pointOfInterest_subtype) {
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
@@ -177,10 +177,12 @@ export const getIappExtractFromDB = async (site_ids: number[], extractName: stri
     }
 
     const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    return responseIAPP.rows;
+    if (responseIAPP.rows) return responseIAPP.rows;
+    else return [];
   } catch (e) {
     console.log(e);
     throw 'Unable to get iapp extract ' + extractName + ' for sites ' + site_ids;
+  } finally {
+    connection.release();
   }
 };

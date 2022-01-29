@@ -1,13 +1,6 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Container,
-  Grid,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import {
   IAPPBiologicalDispersalsTable,
@@ -17,7 +10,7 @@ import {
   IAPPSurveyTable
 } from '../../common/RecordTables';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular,
@@ -57,7 +50,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     <Container>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Legacy IAPP Site: {site.site_id}</Typography>
+          <Typography className={classes.heading}>Legacy IAPP Site: {site?.site_id}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={1}>
@@ -65,26 +58,26 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Created
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.created_date_on_device)}
+              {ifApplicable(site?.created_date_on_device)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Slope
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.slope_code)}
+              {ifApplicable(site?.slope_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
               PaperFile
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.project_code[0].description)}
+              {ifApplicable(site?.project_code[0]?.description)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Aspect
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.aspect_code)}
+              {ifApplicable(site?.aspect_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -104,26 +97,26 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Elevation
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.elevation)}
+              {ifApplicable(site?.elevation)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Specific Use
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.specific_use_code)}
+              {ifApplicable(site?.specific_use_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
               Mapsheet
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.map_sheet)}
+              {ifApplicable(site?.map_sheet)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Soil Texture
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.soil_texture_code)}
+              {ifApplicable(site?.soil_texture_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -131,24 +124,24 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             </Grid>
             <Grid item xs={3}>
               {(surveys?.[0]?.jurisdictions?.length > 0 &&
-                ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
+                ifApplicable(surveys[0]?.jurisdictions[0]?.jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[0].percent_covered +
+                  surveys[0]?.jurisdictions[0]?.percent_covered +
                   '%)') ||
                 'Not Provided'}
             </Grid>
             <Grid item xs={3}>
               {surveys?.[0]?.jurisdictions?.length > 1 &&
-                ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
+                ifApplicable(surveys[0]?.jurisdictions[1]?.jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[1].percent_covered +
+                  surveys[0]?.jurisdictions[1]?.percent_covered +
                   '%)'}
             </Grid>
             <Grid item xs={3}>
               {surveys?.[0]?.jurisdictions?.length > 2 &&
-                ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
+                ifApplicable(surveys[0]?.jurisdictions[2].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[2].percent_covered +
+                  surveys[0]?.jurisdictions[2]?.percent_covered +
                   '%)'}
             </Grid>
 
@@ -156,14 +149,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Access Description
             </Grid>
             <Grid item xs={9} sm={10}>
-              {ifApplicable(site.access_description)}
+              {ifApplicable(site?.access_description)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
               Comments
             </Grid>
             <Grid item xs={9} sm={10}>
-              {ifApplicable(site.general_comment)}
+              {ifApplicable(site?.general_comment)}
             </Grid>
           </Grid>
         </AccordionDetails>
@@ -171,18 +164,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
       <IAPPSurveyTable rows={surveys} />
 
-      <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />
+      {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />}
 
-      <IAPPChemicalTreatmentsTable rows={chemical_treatments} />
+      {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />}
 
-      <IAPPBiologicalTreatmentsTable rows={biological_treatments} />
+      {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />}
 
-      <IAPPBiologicalDispersalsTable rows={biological_dispersals} />
-
-      <br />
-      <br />
-      <br />
-      <br />
+      {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />}
     </Container>
   );
 };

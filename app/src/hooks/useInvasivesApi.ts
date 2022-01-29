@@ -15,6 +15,7 @@ import {
   IPointOfInterestSearchCriteria,
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
+import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -56,6 +57,7 @@ console.log('API_URL', API_URL);
 const useRequestOptions = () => {
   const { keycloak } = useContext(AuthStateContext); //useKeycloak();
   // const instance = useMemo(() => {
+  //console.log('keycloak @ useRequestOptions', keycloak);
   return {
     baseUrl: API_URL,
     headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
@@ -243,6 +245,31 @@ export const useInvasivesApi = () => {
     console.log('Observations as geojson', geojson);
     /******************End of GeoJSON*******************/
 
+    return data;
+  };
+
+  const createUser = async (userInfo: any, bearer?: string): Promise<any> => {
+    if (bearer) {
+      options.headers.Authorization = `Bearer ${bearer}`;
+    }
+    console.dir('userinfo to create user from if not exists: ', userInfo);
+    let type = '';
+    let id = '';
+
+    if (userInfo.idir_userid) {
+      type = 'idir';
+      id = userInfo.idir_userid;
+    }
+    if (userInfo.bceid_userid) {
+      type = 'bceid';
+      id = userInfo.bceid_userid;
+    }
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/create-user`,
+      data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
+    });
     return data;
   };
 
@@ -828,6 +855,38 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  /**
+   * Fetch species details.
+   *
+   * @param {string[]} species
+   * @return {*}  {Promise<any>}
+   */
+  const getAdminUploadGeoJSONLayer = async (): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/admin-defined-shapes`
+    });
+
+    return data;
+  };
+
+  /**
+   * Create a new shapefile upload
+   *
+   // * @param {IShapeUploadRequest} uploadRequest
+   * @return {*}  {Promise<any>}
+   */
+  const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: uploadRequest,
+      url: `${options.baseUrl}/api/admin-defined-shapes`
+    });
+    return data;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -853,6 +912,7 @@ export const useInvasivesApi = () => {
     downloadTemplate,
     listCodeTables,
     fetchCodeTable,
+    createUser,
     getJurisdictions,
     getRISOs,
     cacheUserInfo,
@@ -872,6 +932,8 @@ export const useInvasivesApi = () => {
     getUserByBCEID,
     approveAccessRequests,
     declineAccessRequest,
-    renewUser
+    renewUser,
+    getAdminUploadGeoJSONLayer,
+    postAdminUploadShape
   };
 };

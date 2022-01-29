@@ -1,8 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { RefresherEventDetail } from '@ionic/core';
 import { IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
-import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
-import { DeleteForever } from '@material-ui/icons';
+import { Button, CircularProgress, Container, IconButton, Theme, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { DeleteForever } from '@mui/icons-material';
 import { DocType } from 'constants/database';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
@@ -21,7 +22,7 @@ interface IPlanPageProps {
   classes?: any;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   accordionSummary: {
     padding: theme.spacing(2),
     //todo more spacing, above doesnt work

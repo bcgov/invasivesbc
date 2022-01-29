@@ -1,4 +1,4 @@
-import { Accordion, AccordionSummary, Typography, AccordionDetails, Box } from '@material-ui/core';
+import { Accordion, AccordionSummary, Typography, AccordionDetails, Box } from '@mui/material';
 import React, { useContext } from 'react';
 import TankMix from '../single-objects/TankMix';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

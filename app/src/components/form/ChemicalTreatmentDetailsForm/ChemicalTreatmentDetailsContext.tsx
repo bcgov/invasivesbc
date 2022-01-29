@@ -1,4 +1,4 @@
-import { ClassNameMap } from '@material-ui/styles';
+import { ClassNameMap } from '@mui/styles';
 import * as React from 'react';
 import { IGeneralFields } from './Models';
 

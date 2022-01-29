@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { IconButton, Typography } from '@material-ui/core';
+import { IconButton, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'contexts/themeContext';

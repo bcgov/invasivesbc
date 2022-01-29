@@ -11,7 +11,6 @@ export const PoisLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [pois, setPois] = useState(null);
-  //const [poiIDs, setPoiIDs] = useState(null);
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
 
@@ -46,11 +45,10 @@ export const PoisLayer = (props) => {
       { search_feature: mapBounds, isIAPP: true },
       databaseContext
     );
+
     const poisFeatureArray = [];
-    const poisIDArray = [];
-    poisData?.rows.forEach((row) => {
+    poisData?.rows?.forEach((row) => {
       poisFeatureArray.push(row.geojson ? row.geojson : row);
-      poisIDArray.push(row.properties.site_id.toString());
     });
 
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
@@ -60,7 +58,7 @@ export const PoisLayer = (props) => {
     return null;
   }
 
-  console.log(map.getZoom());
+  // map zoom check: console.log(map.getZoom());
 
   return (
     <>

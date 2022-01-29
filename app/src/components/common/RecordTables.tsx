@@ -1,4 +1,4 @@
-import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
+import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
@@ -228,7 +228,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { userInfo, hasRole, rolesUserHasAccessTo } = useContext(AuthStateContext);
+  const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
+  console.log('roles: ', rolesUserHasAccessTo);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -253,8 +254,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
+      dbActivity.user_role = userRoles?.map((role) => role.role_id);
       await dataAccess.createActivity(dbActivity, databaseContext);
-
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
       setTimeout(() => {
         history.push({ pathname: `/home/activity` });
@@ -786,6 +787,7 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  console.log('roles: ', rolesUserHasAccessTo);
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -932,6 +934,8 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  console.log('roles: ', rolesUserHasAccessTo);
+
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1461,8 +1465,8 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             databaseContext
           );
           return {
-            rows: result.rows.map(poiStandardDBMapping),
-            count: result.count
+            rows: result.rows.map(poiStandardDBMapping) || [],
+            count: result.count || 0
           };
         }}
         actions={
@@ -1878,6 +1882,8 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  console.log('roles: ', rolesUserHasAccessTo);
+
   return useMemo(() => {
     return (
       <ActivitiesTable

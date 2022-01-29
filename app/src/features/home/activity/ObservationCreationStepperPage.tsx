@@ -1,5 +1,6 @@
-import { Box, Button, Container, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { Box, Button, Container, FormControl, InputLabel, Theme, MenuItem, Select } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StepperComponent from 'components/activity/StepperComponent';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import ActivityPage from 'features/home/activity/ActivityPage';
@@ -9,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular

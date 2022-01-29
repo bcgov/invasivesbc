@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material';
 
-export const toolStyles = makeStyles((theme) => ({
+export const toolStyles = makeStyles((theme: Theme) => ({
   toolBtn: {
     height: 43,
     width: 43,
@@ -140,7 +141,7 @@ export const toolStyles = makeStyles((theme) => ({
   }
 }));
 
-export const layerPickerStyles = makeStyles((theme) => ({
+export const layerPickerStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '360px',
     height: '360px',

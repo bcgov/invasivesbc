@@ -1,4 +1,4 @@
-import { Typography, Box, Button, TextField, Tooltip } from '@material-ui/core';
+import { Typography, Box, Button, TextField, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useState } from 'react';
 import { IHerbicide } from '../../Models';

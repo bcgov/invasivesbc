@@ -12,10 +12,10 @@ import {
   ThemeOptions,
   ThemeProvider,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
 import { ISubmitEvent } from '@rjsf/core';
-import Form from '@rjsf/material-ui';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -74,7 +74,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
-  const [formRef, setFormRef] = useState(null);
+  const formRef = useRef(null);
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
@@ -105,7 +105,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const proceedClick = () => {
     //setTimeout is called so that the setState works as expected
     setTimeout(() => {
-      const $this = formRef;
+      const $this = formRef.current;
       //declare and initialize no validation fields array from formData if any
       let noValidationFields: string[] = [];
       if ($this.state.formData.forceNoValidationFields) {
@@ -122,7 +122,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        props.onFormChange({ formData: formRef.state.formData }, formRef);
+        props.onFormChange({ formData: formRef.current.state.formData }, formRef);
       });
     }, 100);
     handleClose();
@@ -212,7 +212,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //handle blur the field
   const blurHandler = (args: string[]) => {
-    const $this = formRef;
+    const $this = formRef.current;
     const field = getFieldNameFromArgs(args);
     const { formData, uiSchema } = $this.state;
     let path = getPathToFieldName(uiSchema, (key) => key === field);
@@ -243,7 +243,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (formRef) {
       let field = getFieldNameFromArgs(args);
       setFocusedFieldArgs(args);
-      const $this = formRef;
+      const $this = formRef.current;
       const { formData } = $this.state;
       if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
         const index = formData.forceNoValidationFields.indexOf(field);
@@ -391,12 +391,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     if (!props.onFormSubmitError) {
                       return;
                     }
+                    console.log('error');
                     props.onFormSubmitError(error, formRef);
                   }}
                   onSubmit={(event) => {
                     if (!props.onFormSubmitSuccess) {
                       return;
                     }
+                    console.log('onsubmit');
                     props.onFormSubmitSuccess(event, formRef);
                   }}
                   // `ref` does exist, but currently is missing from the `index.d.ts` types file.
@@ -408,7 +410,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     if (props.setParentFormRef) {
                       props.setParentFormRef(form);
                     }
-                    setFormRef(form);
+                    formRef.current = form;
                   }}>
                   <React.Fragment />
                 </Form>
@@ -428,7 +430,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           <Box mt={3}>
             <FormControlsComponent
               onSubmit={() => {
-                formRef.submit();
+                //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
+                (formRef.current as any).formElement.dispatchEvent(
+                  new CustomEvent('submit', {
+                    cancelable: true,
+                    bubbles: true // <-- actual fix
+                  })
+                );
               }}
               isDisabled={isDisabled}
               activitySubtype={props.activity.activitySubtype}
@@ -463,7 +471,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         </Box>
       );
     }
-  }, [props.activity?.formData, schemas, props.onFormChange, formRef]);
+  }, [props.activity?.formData, schemas, props.onFormChange]);
 };
 
 export default FormContainer;

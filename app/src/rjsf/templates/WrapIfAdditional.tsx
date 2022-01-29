@@ -1,7 +1,4 @@
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Grid, Input, InputLabel } from '@mui/material';
 import { utils } from '@rjsf/core';
 import { JSONSchema7 } from 'json-schema';
 import React from 'react';

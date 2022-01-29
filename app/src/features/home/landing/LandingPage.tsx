@@ -11,10 +11,10 @@ import {
   Container,
   Divider,
   Grid,
-  makeStyles,
   Theme,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -121,6 +121,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
+    console.log('LandingPage useEffect on user info load');
     if (Capacitor.getPlatform() !== 'web' && !userInfoLoaded) {
       loadUserFromCache();
     }
@@ -222,7 +223,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
         <Typography variant="h5">
           <br />
-          <strong>To gain full access to the InvasivesBC Application, please submit an access request.</strong>
+          <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
         </Typography>
       )}
       {networkContext.connected && (
@@ -234,7 +235,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
               </Button>
             </Box>
           ) : (
-            <>Thank you, Access Request Submitted</>
+            <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
           )}
         </>
       )}

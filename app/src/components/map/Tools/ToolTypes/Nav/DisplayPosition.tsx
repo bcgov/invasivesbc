@@ -1,6 +1,6 @@
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton, Typography } from '@material-ui/core';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { CircularProgress, IconButton, Typography } from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { ThemeContext } from 'contexts/themeContext';
 import L from 'leaflet';
 import proj4 from 'proj4';

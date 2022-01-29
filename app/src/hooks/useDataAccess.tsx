@@ -378,6 +378,212 @@ export const useDataAccess = () => {
     }
   };
 
+  const cacheEmployers = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+    if (networkContext.connected && isMobile()) {
+      const employers = await api.getEmployers();
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.EMPLOYER, ID: '1', json: employers }],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  const cacheFundingAgencies = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }) => {
+    if (networkContext.connected && isMobile()) {
+      const agencies = await api.getFundingAgencies();
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.AGENCY, ID: '1', json: agencies }],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  const cacheRolesForUser = async (
+    userId,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ) => {
+    if (networkContext.connected && isMobile()) {
+      const userRoles = await api.getRolesForUser(userId);
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles }],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  const cacheRoles = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+    if (networkContext.connected && isMobile()) {
+      const roles = await api.getRoles();
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.ROLE, ID: '1', json: roles }], dbcontext);
+        }
+      });
+    }
+  };
+
+  const cacheCurrentUserBCEID = async (
+    bceid_userid,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ) => {
+    if (networkContext.connected && isMobile()) {
+      const user = await api.getUserByBCEID(bceid_userid);
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }], dbcontext);
+        }
+      });
+    }
+  };
+
+  const cacheCurrentUserIDIR = async (
+    idir_userid,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    }
+  ) => {
+    if (networkContext.connected && isMobile()) {
+      const user = await api.getUserByIDIR(idir_userid);
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }], dbcontext);
+        }
+      });
+    }
+  };
+
+  const getEmployers = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.EMPLOYER,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETEMPLOYERS: ', res);
+        return res;
+      }
+    });
+  };
+
+  const getFundingAgencies = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.AGENCY,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETFUNDINGAGENCIES: ', res);
+        return res;
+      }
+    });
+  };
+
+  const getRolesForUser = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.USER_ROLE,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETROLESFORUSER: ', res);
+        return res;
+      }
+    });
+  };
+
+  const getRoles = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.ROLE,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETROLES: ', res);
+        return res;
+      }
+    });
+  };
+
+  const getCurrentUser = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.USER,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM getCurrentUser: ', res);
+        return res;
+      }
+    });
+  };
+
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
    *
@@ -525,6 +731,29 @@ export const useDataAccess = () => {
     }
   };
 
+
+  const createUser = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.USER_ROLE,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETROLESFORUSER: ', res);
+        return res;
+      }
+    });
+  };
+
   /**
    * Get appState
    *
@@ -648,6 +877,17 @@ export const useDataAccess = () => {
     getRISOs,
     syncCachedRecords,
     getApplicationUsers,
-    cacheApplicationUsers
+    cacheApplicationUsers,
+    getRoles,
+    getRolesForUser,
+    getEmployers,
+    getFundingAgencies,
+    cacheEmployers,
+    cacheFundingAgencies,
+    cacheRoles,
+    cacheRolesForUser,
+    cacheCurrentUserBCEID,
+    cacheCurrentUserIDIR,
+    getCurrentUser
   };
 };
