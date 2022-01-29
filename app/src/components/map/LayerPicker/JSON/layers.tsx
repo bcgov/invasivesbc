@@ -359,7 +359,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
         },
         {
           id: 'jurisdiction_layer',
-          name: 'Jurisdiction Layaer',
+          name: 'Jurisdiction Layer',
           source: 'INVASIVESBC',
           layer_mode: networkContext ? 'vector_tiles_online' : 'vector_tiles_offline',
           layer_code: 'JURISDICTION_LAYER',
@@ -557,7 +557,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           zIndex: 50,
           loaded: 70,
           enabled: false
-        },
+        }
       ]
     }
   ];

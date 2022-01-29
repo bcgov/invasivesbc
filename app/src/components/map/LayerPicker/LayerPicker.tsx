@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useRef, useMemo } from 'react';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
@@ -46,7 +47,7 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
-import {KMLShapesUpload} from "../../map-buddy-components/KMLShapesUpload";
+import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -95,7 +96,7 @@ export const LayerPicker = React.memo(
       };
       const DragHandle = SortableHandle(() => (
         <ListItemIcon>
-          {getParentAction(layersActions, parent.id).expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          <ImportExportIcon />
         </ListItemIcon>
       ));
       return (
@@ -119,6 +120,9 @@ export const LayerPicker = React.memo(
               <Grid id="accordion-summary" item xs={10}>
                 <AccordionSummary>
                   <Typography variant="subtitle1">{parent.name}</Typography>
+                  <ListItemIcon>
+                    {getParentAction(layersActions, parent.id).expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                  </ListItemIcon>
                 </AccordionSummary>
               </Grid>
               {/* DragHandle */}
@@ -320,7 +324,7 @@ export const LayerPicker = React.memo(
                 </Button>
                 <Accordion id="admin-shape-upload-accordion">
                   <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
-                  <KMLShapesUpload/>
+                  <KMLShapesUpload />
                 </Accordion>
                 <Accordion id="layer-picker-kml-accordion">
                   <AccordionSummary>KML upload</AccordionSummary>
