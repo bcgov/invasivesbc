@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress } from '@mui/material';
 import * as React from 'react';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
 import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';

@@ -12,32 +12,35 @@ import {
   Hidden,
   IconButton,
   List,
+  Container,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Menu,
   MenuItem,
   Switch,
   Tab,
   Tabs,
   Theme,
-  Toolbar
-} from '@material-ui/core';
-import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@material-ui/icons';
+  Toolbar,
+  Typography,
+  Box
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import Brightness2Icon from '@material-ui/icons/Brightness2';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import MenuIcon from '@material-ui/icons/Menu';
-import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import Brightness2Icon from '@mui/icons-material/Brightness2';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
@@ -101,11 +104,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(1, 1),
-    paddingLeft: theme.spacing(3),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar
   },
@@ -409,58 +407,61 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           }
         ]}
       />
-      <AppBar
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open
-        })}
-        position="static">
-        <Toolbar>
-          <Hidden mdUp>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, {
-                [classes.hide]: open
-              })}>
-              <MenuIcon />
-            </IconButton>
-          </Hidden>
 
-          <Grid className={classes.alignment} flex-direction="row" container>
-            {/*<Grid style={{ width: '200px' }} item>*/}
-            <Grid
-              style={{ alignItems: 'center', display: 'flex', width: '200px' }}
-              item
-              container
-              align-items="center"
-              flex-direction="row">
-              <Grid item>
-                <img
-                  className={classes.pointer}
-                  src={invbclogo}
-                  width="60"
-                  style={{ marginRight: '5px' }}
-                  height="60"
-                  alt="B.C. Government Logo"
-                  onClick={() => history.push('/')}
-                />
-              </Grid>
-              <Grid item>
-                <b>InvasivesBC</b>
-              </Grid>
-              <Grid item>
-                <div className={'beta'}>BETA</div>
-              </Grid>
-              {/*</Grid>*/}
-            </Grid>
-            <Hidden smDown>
-              <Grid xs={11} item>
-                <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
+      <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters style={{ display: 'flex' }}>
+            <Hidden mdUp>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                className={clsx(classes.menuButton, {
+                  [classes.hide]: open
+                })}>
+                <MenuIcon />
+              </IconButton>
+            </Hidden>
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+              <img
+                className={classes.pointer}
+                src={invbclogo}
+                style={{
+                  marginRight: '5px',
+                  objectFit: 'contain',
+                  backgroundColor: 'white',
+                  padding: 4,
+                  borderRadius: 4
+                }}
+                height="60"
+                width="60"
+                alt="B.C. Government Logo"
+                onClick={() => history.push('/')}
+              />
+              <b>InvasivesBC</b>
+            </Box>
+            <Hidden mdDown>
+              <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+                <Tabs
+                  indicatorColor="secondary"
+                  textColor="inherit"
+                  value={activeTab}
+                  color="primary"
+                  centered
+                  style={{ width: '80%', color: '#fff' }}
+                  onChange={handleChange}>
                   {tabConfig.map((tab) => (
                     <Tab
                       style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                      color="primary"
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
                       icon={tab.icon}
@@ -468,58 +469,58 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     />
                   ))}
                 </Tabs>
-              </Grid>
-              <Grid xs={1} container justifyContent="center" alignItems="center" item>
+              </Box>
+              <Box sx={{ flexGrow: 0 }}>
                 <IconButton onClick={handleClick} size="small">
                   <Avatar></Avatar>
                 </IconButton>
-              </Grid>
-              <Menu
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleClose}
-                PaperProps={{
-                  elevation: 3
-                }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                <MenuItem>
-                  <Switch
-                    color="secondary"
-                    checked={themeType}
-                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
-                    onChange={() => {
-                      setThemeType(!themeType);
-                    }}
-                  />
-                  Theme
-                </MenuItem>
-                {isAdmin() && (
-                  <MenuItem onClick={navToAdmin}>
-                    <ListItemIcon>
-                      <AdminPanelSettingsIcon />
-                    </ListItemIcon>
-                    Admin
+                <Menu
+                  anchorEl={anchorEl}
+                  open={openMenu}
+                  onClose={handleClose}
+                  PaperProps={{
+                    elevation: 3
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                  <MenuItem>
+                    <Switch
+                      color="secondary"
+                      checked={themeType}
+                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        setThemeType(!themeType);
+                      }}
+                    />
+                    Theme
                   </MenuItem>
-                )}
-                {authContext.keycloak.obj?.authenticated ? (
-                  <MenuItem onClick={logoutUser}>
-                    <ListItemIcon>
-                      <LogoutIcon />
-                    </ListItemIcon>
-                    Logout
-                  </MenuItem>
-                ) : (
-                  <MenuItem onClick={loginUser}>
-                    <ListItemIcon>
-                      <LoginIcon />
-                    </ListItemIcon>
-                    Log In
-                  </MenuItem>
-                )}
-              </Menu>
+                  {isAdmin() && (
+                    <MenuItem onClick={navToAdmin}>
+                      <ListItemIcon>
+                        <AdminPanelSettingsIcon />
+                      </ListItemIcon>
+                      Admin
+                    </MenuItem>
+                  )}
+                  {authContext.keycloak.obj?.authenticated ? (
+                    <MenuItem onClick={logoutUser}>
+                      <ListItemIcon>
+                        <LogoutIcon />
+                      </ListItemIcon>
+                      Logout
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={loginUser}>
+                      <ListItemIcon>
+                        <LoginIcon />
+                      </ListItemIcon>
+                      Log In
+                    </MenuItem>
+                  )}
+                </Menu>
+              </Box>
             </Hidden>
-          </Grid>
-        </Toolbar>
+          </Toolbar>
+        </Container>
       </AppBar>
       <Hidden mdUp>
         <Drawer

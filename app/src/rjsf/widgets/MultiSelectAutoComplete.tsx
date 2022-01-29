@@ -1,11 +1,12 @@
 import { WidgetProps } from '@rjsf/core';
 import chroma from 'chroma-js';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import React, { useContext, useState } from 'react';
 import { MultipleSelect } from 'react-select-material-ui';
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  const enumOptions = props.options.enumOptions as any[];
+  // @ts-ignore
+  const enumOptions = (props.schema.options as any[]) || (props.options.enumOptions as any[]);
   const [focused, setFocused] = useState(false);
   const [hasValues, setHasValues] = useState(false);
   const themeContext = useContext(ThemeContext);

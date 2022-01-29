@@ -71,6 +71,18 @@ const TestUsers = [
   },
   {
     application_users: {
+      email: 'hryhorii.pertaia@gov.bc.ca',
+      preferred_username: 'hpertaia@idir',
+      first_name: 'Hryhorii',
+      last_name: 'Pertaia',
+      idir_userid: '293C3914BCDA483E8F3BD91AFCE8E884'
+    },
+    user_role: {
+      roles: [18]
+    }
+  },
+  {
+    application_users: {
       email: 'rstens@stens.ca',
       preferred_username: 'postman',
       first_name: 'Postman',

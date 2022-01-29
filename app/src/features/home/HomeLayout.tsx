@@ -1,4 +1,4 @@
-import { Box, Collapse } from '@material-ui/core';
+import { Box, Collapse } from '@mui/material';
 import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import React, { useState } from 'react';
@@ -8,14 +8,11 @@ export interface IHomeLayoutProps {
 }
 
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
       <Box height="80px">
         <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
       </Box>
-      <Collapse timeout={50} in={isOpen}></Collapse>
       <Box height="100%" width="inherit" overflow="auto">
         {props.children}
       </Box>

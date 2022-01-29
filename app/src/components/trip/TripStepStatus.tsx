@@ -1,9 +1,10 @@
-import { makeStyles } from '@material-ui/core';
-import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
-import HighlightOffTwoToneIcon from '@material-ui/icons/HighlightOffTwoTone';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
+import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   status: {}
 }));
 

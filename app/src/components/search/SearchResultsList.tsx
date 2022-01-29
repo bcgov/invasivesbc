@@ -1,4 +1,5 @@
-import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Button, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import SearchActivitiesList from 'components/activities-list/SearchActivitiesList';
 import { ISearchActivity } from 'features/home/search/SearchPage';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';

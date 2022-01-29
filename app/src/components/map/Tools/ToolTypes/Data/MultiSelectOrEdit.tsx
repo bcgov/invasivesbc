@@ -1,7 +1,7 @@
-import { IconButton, Typography } from '@material-ui/core';
+import { IconButton, Typography } from '@mui/material';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';

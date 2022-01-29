@@ -1,6 +1,6 @@
-import { Grid, Tooltip } from '@material-ui/core';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import { makeStyles } from '@material-ui/styles';
+import { Grid, Tooltip } from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { makeStyles } from '@mui/styles';
 import { ObjectFieldTemplateProps, utils } from '@rjsf/core';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
@@ -56,7 +56,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             key={index}
             style={{ marginBottom: '10px' }}>
             <>
-              {element.content.props && element.content.props.schema && (
+              {element.content.props.schema['x-tooltip-text'] && (
                 <Tooltip
                   enterTouchDelay={0}
                   title={

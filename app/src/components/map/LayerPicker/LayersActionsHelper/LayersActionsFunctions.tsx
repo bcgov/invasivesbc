@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useContext } from 'react';
 

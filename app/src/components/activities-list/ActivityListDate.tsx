@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography } from '@material-ui/core';
+import { Divider, Grid, Typography } from '@mui/material';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';

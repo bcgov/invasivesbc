@@ -1,7 +1,7 @@
-import { Grid, IconButton, Typography } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MODES } from 'contexts/MapRecordsContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';

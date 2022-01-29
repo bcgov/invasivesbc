@@ -1,6 +1,18 @@
 import { Capacitor } from '@capacitor/core';
-import { Box, Button, CircularProgress, Container, makeStyles, Tooltip, Typography, Zoom } from '@material-ui/core';
-import { FileCopy, LocalConvenienceStoreOutlined } from '@material-ui/icons';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Snackbar,
+  Theme,
+  Tooltip,
+  Typography,
+  Zoom
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { FileCopy } from '@mui/icons-material';
 import * as turf from '@turf/turf';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -51,7 +63,7 @@ import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
     height: '600px'
   },
@@ -87,7 +99,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const authStateContext = useContext(AuthStateContext);
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
-  const [liveValidation, setLiveValidation] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
@@ -292,11 +303,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
+  const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
+
   const onFormSubmitError = () => {
-    alert('There are errors in your form. Please make sure your form contains no errors and try again.');
+    setAlertErrorsOpen(true);
     updateDoc({
       formStatus: FormValidationStatus.INVALID
     });
+  };
+
+  const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertErrorsOpen(false);
   };
 
   /**
@@ -343,26 +364,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
     updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
-    let formStatus;
-    if (!liveValidation) {
-      if (ref?.state?.errors?.length > 0) {
-        formStatus = FormValidationStatus.INVALID;
-      } else {
-        formStatus = FormValidationStatus.NOT_VALIDATED;
-      }
-    } else {
-      if (ref?.state?.errors?.length > 0) {
-        formStatus = FormValidationStatus.INVALID;
-      } else {
-        formStatus = FormValidationStatus.VALID;
-      }
-    }
-
     await updateDoc({
       formData: updatedFormData,
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: formStatus
+      formStatus: FormValidationStatus.NOT_VALIDATED
     });
 
     if (callbackFun) {
@@ -795,7 +801,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               customErrorTransformer={getCustomErrorTransformer()}
               classes={classes}
               activity={doc}
-              setLiveValidation={setLiveValidation}
               suggestedJurisdictions={suggestedJurisdictions}
               linkedActivity={linkedActivity}
               onFormChange={onFormChange}
@@ -813,7 +818,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               setParentFormRef={props.setParentFormRef}
               showDrawControls={true}
               setWellIdandProximity={setWellIdandProximity}
-              liveValidation={false}
             />
           </>
         )}
@@ -824,6 +828,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           dialogContentText={warningDialog.dialogContentText}
         />
       </MapRecordsContextProvider>
+      <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
+        <Alert onClose={handleAlertErrorsClose} severity="error" sx={{ width: '100%' }}>
+          There are errors in your form. Please make sure your form contains no errors and try again.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

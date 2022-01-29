@@ -11,8 +11,8 @@ import {
   Switch,
   Tooltip,
   Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
@@ -42,7 +42,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
-  setLiveValidation?: any;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
@@ -51,14 +50,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const [liveValidation, setLiveValidation] = useState(false);
   const { keycloak } = useKeycloak();
   const { userInfo } = useContext(AuthStateContext);
-
-  const liveValidationHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLiveValidation(event.target.checked);
-    props.setLiveValidation(event.target.checked);
-  };
 
   const getLocation = async () => {
     const position = await Geolocation.getCurrentPosition();
@@ -358,23 +351,23 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid alignItems="flex-start" container>
-            <Grid xs={2} item>
+          <Grid justifyContent={'space-around'} container>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record Buffered Line!
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="secondary" onClick={endTrack}>
                 End Track Recording
               </Button>
@@ -396,32 +389,9 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Activity Form</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.formContainer}>
-          <Box className={props.classes.formSettingsContainer}>
-            <Typography variant="h6">Form Settings</Typography>
-            <FormGroup>
-              <Tooltip
-                enterTouchDelay={0}
-                title={
-                  'Set if you want all the errors to show while you fill the form. Note: may affect how fast form changes are applied. To disable this, reload this page.'
-                }
-                placement="left">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      disabled={liveValidation === true}
-                      checked={liveValidation}
-                      onChange={liveValidationHandleChange}
-                    />
-                  }
-                  label="Live Validation"
-                />
-              </Tooltip>
-            </FormGroup>
-          </Box>
           <FormContainer
             {...props}
             onSave={onSave}
-            liveValidation={liveValidation}
             saveStatus={activity.syncStatus}
             disableSave={
               activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL ||

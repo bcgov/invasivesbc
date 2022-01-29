@@ -11,7 +11,7 @@ import {
   RadioGroup,
   Tooltip,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
@@ -85,6 +85,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
       : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
     herbicideDictionary: herbicideDictionary,
+    activitySubType: props.activitySubType,
     classes: classes,
     errors: []
   });

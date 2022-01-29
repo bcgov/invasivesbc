@@ -72,7 +72,7 @@ export const PlantFormSubmissionFromData = (data) => {
               observation_type: data.invasive_plants_observation_type,
               invasive_plant_code: data.invasive_plants_code,
               plant_life_stage_code: data.invasive_plants_life_stage_code,
-              enda_sample_information: {},
+              edna_sample_information: {},
               voucher_specimen_collected: 'No',
               invasive_plant_density_code: data.invasive_plants_density_code,
               invasive_plant_distribution_code: data.invasive_plants_distribution_code,
@@ -92,4 +92,3 @@ export const PlantFormSubmissionFromData = (data) => {
     }
   };
 };
-

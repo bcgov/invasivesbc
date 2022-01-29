@@ -112,24 +112,24 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
     return obj;
   }
 
-  // update the object, adding an `anyOf` field whose value is an array of enum objects
+  // update the object, adding an `options` field whose value is an array of enum objects
   obj = {
     ...obj,
-    anyOf: codeRows
+    options: codeRows
       .map((codeRow) => {
         return {
           // the `type` specified by the parent object that contains this enum object (their types must match)
-          type: obj['type'],
+          // type: obj['type'],
           // the column that contains the unique value for this code
-          enum: [codeRow[codeName]],
+          value: codeRow[codeName],
           // the column that contains the human readable name of this code
-          title: codeRow[codeText],
+          label: codeRow[codeText]
           // the column that contains the sort order
-          'x-code_sort_order': codeRow[codeSortOrder]
+          // 'x-code_sort_order': codeRow[codeSortOrder]
         };
       })
       // sort by code sort order, and secondarily by title
-      .sort(getAscObjectSorter([`x-${codeSortOrder}`, 'title']))
+      .sort(getAscObjectSorter([`x-${codeSortOrder}`, 'label']))
   };
 
   return obj;

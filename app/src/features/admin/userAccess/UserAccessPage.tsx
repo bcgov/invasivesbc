@@ -17,12 +17,13 @@ import {
   Divider,
   MenuItem,
   TextField,
-  makeStyles,
   Box,
+  Theme,
   IconButton,
   CircularProgress,
   Chip
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { GridOverlay } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import {
@@ -43,7 +44,7 @@ interface IAccessRequestPage {
   classes?: any;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '320px'
   },

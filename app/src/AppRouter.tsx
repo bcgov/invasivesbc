@@ -1,5 +1,5 @@
 import { Network } from '@capacitor/network';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress } from '@mui/material';
 import AdminRouter from 'features/admin/AdminRouter';
 import React, { useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';

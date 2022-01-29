@@ -1,4 +1,4 @@
-import { Box, Collapse } from '@material-ui/core';
+import { Box, Collapse } from '@mui/material';
 import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import React, { useState } from 'react';

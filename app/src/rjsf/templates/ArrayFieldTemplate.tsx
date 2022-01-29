@@ -1,10 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import { Box, Grid, Paper } from '@mui/material';
 import { ArrayFieldTemplateProps, IdSchema, utils } from '@rjsf/core';
-import React from 'react';
+import React, { useContext } from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import IconButton from 'rjsf/components/IconButton';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 
 const { isMultiSelect, getDefaultRegistry } = utils;
 
@@ -52,6 +51,8 @@ const ArrayFieldDescription = ({ DescriptionField, idSchema, description }: Arra
 
 // Used in the two templates
 const DefaultArrayItem = (props: any) => {
+  const { themeType } = useContext(ThemeContext);
+
   const btnStyle = {
     flex: 1,
     paddingLeft: 6,

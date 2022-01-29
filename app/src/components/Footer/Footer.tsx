@@ -1,4 +1,4 @@
-import { AppBar, Tab, Tabs, Toolbar } from '@material-ui/core';
+import { AppBar, Tab, Tabs, Toolbar } from '@mui/material';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -53,14 +53,9 @@ const Footer: React.FC<IFooterProps> = () => {
           height="17px"
           onClick={() => history.push('/')}
         />
-        <Tabs style={{ minHeight: '25px', maxHeight: '25px' }} value={false} variant="scrollable" scrollButtons="on">
+        <Tabs indicatorColor="secondary" textColor="inherit" value={false}>
           {tabs.map((tab) => (
-            <Tab
-              style={{ minHeight: '10px', fontSize: '0.6rem' }}
-              label={tab.label}
-              key={tab.label}
-              onClick={() => window.open(tab.url)}
-            />
+            <Tab label={tab.label} sx={{ fontSize: '0.6rem' }} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}
         </Tabs>
       </Toolbar>

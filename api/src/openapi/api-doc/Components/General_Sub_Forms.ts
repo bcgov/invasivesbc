@@ -579,6 +579,7 @@ export const Jurisdiction = {
 };
 export const Authorization_Infotmation = {
   type: 'object',
+  title: 'Authorization Infotmation',
   properties: {
     additional_auth_information: {
       type: 'string',
@@ -802,7 +803,7 @@ export const TerrestrialPlant = {
                     edna_sample: {
                       enum: ['Yes']
                     },
-                    enda_sample_information: {
+                    edna_sample_information: {
                       type: 'object',
                       title: 'eDNA Sample Information',
                       properties: {
@@ -818,7 +819,7 @@ export const TerrestrialPlant = {
                       required: ['edna_sample_id', 'genetic_structure_collected']
                     }
                   },
-                  required: ['enda_sample_information']
+                  required: ['edna_sample_information']
                 },
                 {
                   properties: {
@@ -1107,7 +1108,7 @@ export const AquaticPlant = {
                     edna_sample: {
                       enum: ['Yes']
                     },
-                    enda_sample_information: {
+                    edna_sample_information: {
                       type: 'object',
                       title: 'eDNA Sample Information',
                       properties: {
@@ -1135,7 +1136,7 @@ export const AquaticPlant = {
                       required: ['edna_sample_id', 'sample_type']
                     }
                   },
-                  required: ['enda_sample_information']
+                  required: ['edna_sample_information']
                 },
                 {
                   properties: {
@@ -1961,7 +1962,9 @@ export const Point_Of_Interest = {
       default: [{}],
       items: {
         ...ProjectCode
-      }
+      },
+      'x-tooltip-text':
+        'Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
     }
   }
 };
@@ -2536,6 +2539,18 @@ export const ChemicalTreatment_Species_Codes = {
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'invasive_plant_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Target invasive plant species being treated at this location'
+    },
+    invasive_plant_aquatic_code: {
+      type: 'string',
+      title: 'Invasive Plant',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'invasive_plant_aquatic_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'

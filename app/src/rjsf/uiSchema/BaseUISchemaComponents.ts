@@ -43,7 +43,12 @@ const Activity = {
   utm_northing: { 'ui:readonly': true },
   employer_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_species_agency_code: { 'ui:widget': 'multi-select-autocomplete' },
-  jurisdictions: {},
+  jurisdictions: { 
+    items: {
+      jurisdiction_code: {'ui:widget': 'single-select-autocomplete'},
+      percent_covered: {}
+    } 
+  },
   location_description: { 'ui:widget': 'textarea'},
   access_description: { 'ui:widget': 'textarea'},
   project_code: {},
@@ -242,7 +247,7 @@ const TerrestrialPlant = {
     voucher_verification_completed_by: {},
     exact_utm_coords: {}
   },
-  enda_sample_information: {
+  edna_sample_information: {
       edna_sample_id: {},
       genetic_structure_collected: {}
   },
@@ -255,7 +260,7 @@ const TerrestrialPlant = {
     'plant_life_stage_code',
     'voucher_specimen_collected',
     'voucher_specimen_collection_information',
-    'enda_sample_information'
+    'edna_sample_information'
   ]
 };
 
@@ -277,7 +282,7 @@ const AquaticPlant = {
   edna_sample: { 'ui:widget': 'single-select-autocomplete' },
   genetic_sample_id: {},
   genetic_structure_collected: {},
-  enda_sample_information: {
+  edna_sample_information: {
     edna_sample_id: {},
     sample_type: { 'ui:widget': 'single-select-autocomplete' },
     field_replicates_num: {},
@@ -841,7 +846,7 @@ const Treatment_ChemicalPlant_Information = {
   pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
   pesticide_use_permit_PUP: {},
   pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
-  unlisted_drop_down:{},
+  pmp_not_in_dropdown:{},
   chemical_method_code: { 'ui:widget': 'single-select-autocomplete' },
   temperature: { validateOnBlur: true },
   wind_speed: { validateOnBlur: true },
@@ -853,7 +858,7 @@ const Treatment_ChemicalPlant_Information = {
     'pesticide_employer_code',
     'pesticide_use_permit_PUP',
     'pest_management_plan',
-    'unlisted_drop_down',
+    'pmp_not_in_dropdown',
     'chemical_method_code',
     'temperature',
     'wind_speed',

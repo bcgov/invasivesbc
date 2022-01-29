@@ -5,12 +5,12 @@ import {
   Box,
   Button,
   Container,
-  makeStyles,
   Paper,
   Theme,
   Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { ExpandMore } from '@mui/icons-material';
 import FilterControlsContainer, { ISearchFilterCriteria } from 'components/search/FilterControlsContainer';
 import PaginationControlsContainer from 'components/search/PaginationControlsContainer';
 import { calculateTotalPages } from 'components/search/paginationUtils';

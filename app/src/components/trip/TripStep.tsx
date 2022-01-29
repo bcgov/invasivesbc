@@ -1,16 +1,7 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Grid,
-  Tooltip,
-  Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
-import HelpIcon from '@material-ui/icons/Help';
-import { ClassNameMap } from '@material-ui/styles';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Tooltip, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import HelpIcon from '@mui/icons-material/Help';
+import { ClassNameMap } from '@mui/styles';
 import React from 'react';
 import TripStepStatus, { TripStatusCode } from './TripStepStatus';
 

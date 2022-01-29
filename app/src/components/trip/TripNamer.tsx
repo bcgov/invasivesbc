@@ -1,9 +1,10 @@
-import { Input, makeStyles } from '@material-ui/core';
+import { Input, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   status: {}
 }));
 

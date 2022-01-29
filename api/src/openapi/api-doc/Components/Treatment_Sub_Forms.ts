@@ -111,9 +111,10 @@ export const Treatment_ChemicalPlant_Information = {
       },
       'x-tooltip-text': 'Enter applicable number if treatment is being completed under a pest management plan'
     },
-    unlisted_drop_down: {
+    pmp_not_in_dropdown: {
       type: 'string',
-      title: 'Unlisted Drop Down'
+      title: 'PMP # not in dropdown',
+      'x-tooltip-text': 'Include a PMP number here if it is not available on the drop down in the "Pest Management Plan'
     },
     temperature: {
       type: 'number',
@@ -225,7 +226,10 @@ export const Treatment_MechanicalPlant_Information = {
                     enum: ['weight']
                   },
                   disposed_material_input_number: {
-                    title: 'Disposed Material (kg)'
+                    title: 'Disposed Material (kg)',
+                    type: 'number',
+                    minimum: 0,
+                    'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
                   }
                 }
               },
@@ -235,7 +239,10 @@ export const Treatment_MechanicalPlant_Information = {
                     enum: ['number of plants']
                   },
                   disposed_material_input_number: {
-                    title: 'Disposed Material Number'
+                    title: 'Disposed material amount',
+                    type: 'number',
+                    minimum: 0,
+                    'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
                   }
                 }
               }
@@ -246,15 +253,128 @@ export const Treatment_MechanicalPlant_Information = {
           disposed_material_input_format: {
             type: 'string',
             title: 'Disposed Material Format',
-            enum: ['number of plants', 'weight']
+            enum: ['number of plants', 'weight'],
+            'x-tooltip-text': 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
           },
           disposed_material_input_number: {
-            title: 'Disposed Material Number',
+            title: 'Disposed material amount',
             type: 'number',
-            minimum: 0
+            minimum: 0,
+            'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
           }
         },
-        required: ['disposed_material_input_number', 'disposed_material_input_format']
+        required: ['disposed_material_input_format']
+      }
+    }
+  }
+};
+export const Treatment_MechanicalPlant_Information_Aquiatic = {
+  type: 'array',
+  title: 'Mechanical Treatments',
+  default: [{}],
+  minItems: 1,
+  items: {
+    type: 'object',
+    title: 'Mechanical Treatment Information',
+    required: [
+      'invasive_plant_code',
+      'treated_area',
+      'mechanical_method_code',
+      'mechanical_disposal_code',
+      'disposed_material'
+    ],
+    properties: {
+      invasive_plant_code: {
+        type: 'string',
+        title: 'Invasive Plant',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'invasive_plant_aquatic_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Target invasive plant species treated at this location'
+      },
+      treated_area: {
+        type: 'number',
+        title: 'Treated Area (m2)',
+        'x-tooltip-text': 'Treated Area (m2)'
+      },
+      mechanical_method_code: {
+        type: 'string',
+        title: 'Mechanical Method',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'mechanical_method_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Specific treatment technique, device or method'
+      },
+      mechanical_disposal_code: {
+        type: 'string',
+        title: 'Disposal Method',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'mechanical_disposal_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Indicate disposal method'
+      },
+      disposed_material: {
+        type: 'object',
+        title: 'Disposed material',
+        dependencies: {
+          disposed_material_input_format: {
+            oneOf: [
+              {
+                properties: {
+                  disposed_material_input_format: {
+                    enum: ['weight']
+                  },
+                  disposed_material_input_number: {
+                    title: 'Disposed Material (kg)',
+                    type: 'number',
+                    minimum: 0,
+                    'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
+                  }
+                }
+              },
+              {
+                properties: {
+                  disposed_material_input_format: {
+                    enum: ['number of plants']
+                  },
+                  disposed_material_input_number: {
+                    title: 'Disposed material amount',
+                    type: 'number',
+                    minimum: 0,
+                    'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
+                  }
+                }
+              }
+            ]
+          }
+        },
+        properties: {
+          disposed_material_input_format: {
+            type: 'string',
+            title: 'Disposed Material Format',
+            enum: ['number of plants', 'weight'],
+            'x-tooltip-text': 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
+          },
+          disposed_material_input_number: {
+            title: 'Disposed material amount',
+            type: 'number',
+            minimum: 0,
+            'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
+          }
+        },
+        required: ['disposed_material_input_format']
       }
     }
   }

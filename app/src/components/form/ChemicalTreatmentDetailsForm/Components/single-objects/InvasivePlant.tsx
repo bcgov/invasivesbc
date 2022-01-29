@@ -1,4 +1,4 @@
-import { Typography, Box, TextField, Button, Tooltip } from '@material-ui/core';
+import { Typography, Box, TextField, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useState } from 'react';
 import { IInvasivePlant } from '../../Models';
@@ -27,9 +27,15 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
 
   //creating valueLabels to to get the lable for heading
   let optionValueLabels = {};
-  Object.values(businessCodes['invasive_plant_code'] as any[]).forEach((option) => {
-    optionValueLabels[option.value] = option.label || option.title || option.value;
-  });
+  if (formDetails.activitySubType.toLowerCase().includes('aquatic')) {
+    Object.values(businessCodes['invasive_plant_aquatic_code'] as any[]).forEach((option) => {
+      optionValueLabels[option.value] = option.label || option.title || option.value;
+    });
+  } else {
+    Object.values(businessCodes['invasive_plant_code'] as any[]).forEach((option) => {
+      optionValueLabels[option.value] = option.label || option.title || option.value;
+    });
+  }
 
   //update this invasive plant inside invasive plants arr
   useEffect(() => {
@@ -63,7 +69,11 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete
-        choices={businessCodes['invasive_plant_code']}
+        choices={
+          formDetails.activitySubType.toLowerCase().includes('aquatic')
+            ? businessCodes['invasive_plant_aquatic_code']
+            : businessCodes['invasive_plant_code']
+        }
         className={'inputField'}
         classes={classes}
         actualValue={species.invasive_plant_code}

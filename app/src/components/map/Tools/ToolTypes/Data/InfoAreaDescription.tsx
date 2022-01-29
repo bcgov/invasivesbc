@@ -9,16 +9,16 @@ import {
   Switch,
   TableContainer,
   Typography
-} from '@material-ui/core';
-import AdjustIcon from '@material-ui/icons/Adjust';
-import FolderIcon from '@material-ui/icons/Folder';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+} from '@mui/material';
+import AdjustIcon from '@mui/icons-material/Adjust';
+import FolderIcon from '@mui/icons-material/Folder';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 // Removed Temporarily until we figure out databc Table:
-// import StorageIcon from '@material-ui/icons/Storage';
+// import StorageIcon from '@mui/icons-material/Storage';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';

@@ -1,16 +1,18 @@
-import { Button, Grid, IconButton, makeStyles, Popover, Typography } from '@material-ui/core';
-import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { Button, Grid, IconButton, Popover, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { area, polygon } from '@turf/turf';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet';
 import dotMarker from '../../../Icons/dotMarker.png';
 import ruler from '../../../Icons/ruler.png';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import { Theme } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   typography: {
     paddingLeft: theme.spacing(2),
     fontSize: 16,

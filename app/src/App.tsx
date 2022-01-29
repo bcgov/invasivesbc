@@ -3,9 +3,8 @@ import { Device } from '@capacitor/device';
 
 import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
-import { Box } from '@material-ui/core';
+import Box from '@mui/material/Box';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
-import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
@@ -14,7 +13,6 @@ import { useHistory } from 'react-router-dom';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
-import { ThemeContextProvider } from './contexts/themeContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 
 //Neither worked in both cases with standard sso realm.
@@ -145,15 +143,13 @@ const App: React.FC<IAppProps> = (props) => {
           <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
             <DatabaseContextProvider>
               <AuthStateContextProvider>
-                <ThemeContextProvider>
-                  <CustomThemeProvider>
-                    <IonReactRouter>
-                      <DebugRouter>
-                        <AppRouter {...appRouterProps} />
-                      </DebugRouter>
-                    </IonReactRouter>
-                  </CustomThemeProvider>
-                </ThemeContextProvider>
+                <CustomThemeProvider>
+                  <IonReactRouter>
+                    <DebugRouter>
+                      <AppRouter {...appRouterProps} />
+                    </DebugRouter>
+                  </IonReactRouter>
+                </CustomThemeProvider>
               </AuthStateContextProvider>
             </DatabaseContextProvider>
           </KeycloakProvider>
