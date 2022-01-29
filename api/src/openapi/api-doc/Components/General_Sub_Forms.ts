@@ -851,7 +851,11 @@ export const TerrestrialPlant = {
 };
 export const TerrestrialPlants = {
   type: 'array',
-  default: [{}],
+  default: [
+    {
+      occurrence: 'Positive occurrence'
+    }
+  ],
   title: 'Terrestrial Invasive Plants',
   minItems: 1,
   items: {
