@@ -199,7 +199,7 @@ const MeasureTool = (props: any) => {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={handleClick}>
         <img className={toolClass.toolImg} src={ruler} />
-        <Typography className={toolClass.Font}>Meaure</Typography>
+        <Typography className={toolClass.Font}>Measure</Typography>
       </IconButton>
       <Popover
         id={id}
