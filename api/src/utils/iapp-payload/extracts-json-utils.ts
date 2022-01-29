@@ -3,10 +3,9 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
   const monitoring = [];
   all_monitoring.forEach((item) => {
     if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
-      monitoring.push(item);
+      monitoring.push(monitoringJSON({ item: item, type: 'chemical' }));
     }
   });
-  console.log(monitoring);
   return {
     dilution: treatment.dilution_percent, // find dilution amount???
     employer: treatment.employer,
@@ -75,12 +74,11 @@ export const biologicalDispersalJSON = (dispersal: any) => {
 };
 
 export const biologicalTreatmentsJSON = (treatment: any, all_monitoring: any[]) => {
-  console.log(all_monitoring);
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   const monitoring = [];
   all_monitoring.forEach((item) => {
     if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
-      monitoring.push(item);
+      monitoring.push(monitoringJSON({ item: item, type: 'biological' }));
     }
   });
   return {
@@ -113,17 +111,16 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
   const monitoring = [];
   all_monitoring.forEach((item) => {
     if (treatment.treatment_date.valueOf() === item.treatment_date.valueOf()) {
-      monitoring.push(item);
+      monitoring.push(monitoringJSON({ item: item, type: 'mechanical' }));
     }
   });
-  console.log(monitoring);
   return {
     employer: treatment.employer,
     map_code: treatment.invasive_plant, // convert to code (XX)
     monitoring: monitoring.length > 0 ? monitoring : [],
     common_name: common_name, // use common name
     project_code: [treatment.treatment_paper_file_id],
-    treatment_id: treatment.mechanicaltreatmentid,
+    treatment_id: treatment.treatment_id,
     mechanical_id: treatment.mechanicaltreatmentid, // what is this supposed to be???? different id??
     reported_area: null,
     treatment_date: treatment.treatment_date,
@@ -131,5 +128,32 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
     mechanical_method: treatment.treatment_method,
     mechanical_method_code: treatment.treatment_method, // convert to code
     invasive_species_agency_code: treatment.treatment_agency
+  };
+};
+
+const monitoringJSON = (props: any) => {
+  const { type, item } = props;
+  var monitoringID;
+  switch (type as string) {
+    case 'mechanical':
+      monitoringID = item.mechmonitoringid;
+      break;
+    case 'chemical':
+      monitoringID = item.chemicalmonitoringid;
+      break;
+    case 'biological':
+      monitoringID = item.biologicalmonitoringid;
+      break;
+    default:
+      monitoringID = null;
+  }
+  return {
+    monitoring_id: monitoringID,
+    project_code: [{ description: item?.monitoring_paper_file_id }],
+    efficiency_code: 0,
+    general_comment: item?.general_comment,
+    monitoring_date: item?.inspection_date,
+    efficiancy_percent: (type as string) !== 'biological' ? item?.efficiency_rate : null,
+    invasive_species_agency_code: item?.monitoring_agency
   };
 };

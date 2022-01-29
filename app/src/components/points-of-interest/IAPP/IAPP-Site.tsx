@@ -45,6 +45,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
+
+  console.log('props', props);
   return (
     <Container>
       <Accordion defaultExpanded={true}>
@@ -163,11 +165,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
       <IAPPSurveyTable rows={surveys} />
 
-      {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />}
+      {/* {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
+      <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments} />
 
-      {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />}
+      {/* {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
+      <TreatmentsTable type={'Chemical'} treatments={chemical_treatments} />
 
-      {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />}
+      {/* {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
+      <TreatmentsTable type={'Biological'} treatments={biological_treatments} />
 
       {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />}
     </Container>
