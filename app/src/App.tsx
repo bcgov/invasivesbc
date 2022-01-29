@@ -13,7 +13,6 @@ import { useHistory } from 'react-router-dom';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
-import { ThemeContextProvider } from './contexts/themeContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 
 //Neither worked in both cases with standard sso realm.
@@ -144,15 +143,13 @@ const App: React.FC<IAppProps> = (props) => {
           <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
             <DatabaseContextProvider>
               <AuthStateContextProvider>
-                <ThemeContextProvider>
-                  <CustomThemeProvider>
-                    <IonReactRouter>
-                      <DebugRouter>
-                        <AppRouter {...appRouterProps} />
-                      </DebugRouter>
-                    </IonReactRouter>
-                  </CustomThemeProvider>
-                </ThemeContextProvider>
+                <CustomThemeProvider>
+                  <IonReactRouter>
+                    <DebugRouter>
+                      <AppRouter {...appRouterProps} />
+                    </DebugRouter>
+                  </IonReactRouter>
+                </CustomThemeProvider>
               </AuthStateContextProvider>
             </DatabaseContextProvider>
           </KeycloakProvider>

@@ -18,7 +18,7 @@ import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
-import { ThemeContext } from '../../contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from '../../rjsf/templates/FieldTemplate';
@@ -87,7 +87,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { themeType } = themeContext;
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
-    palette: { ...rjsfTheme.palette, type: 'dark' }
+    palette: { ...rjsfTheme.palette, mode: 'dark' }
   } as ThemeOptions);
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 

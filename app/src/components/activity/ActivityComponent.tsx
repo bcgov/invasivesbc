@@ -351,23 +351,23 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid alignItems="flex-start" container>
-            <Grid xs={2} item>
+          <Grid justifyContent={'space-around'} container>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record Buffered Line!
               </Button>
             </Grid>
-            <Grid xs={2} item>
+            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="secondary" onClick={endTrack}>
                 End Track Recording
               </Button>

@@ -46,7 +46,7 @@ import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 
 export const LayerPicker = React.memo(

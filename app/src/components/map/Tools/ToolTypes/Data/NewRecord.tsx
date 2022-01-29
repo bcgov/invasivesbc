@@ -17,7 +17,7 @@ import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, Activi
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';

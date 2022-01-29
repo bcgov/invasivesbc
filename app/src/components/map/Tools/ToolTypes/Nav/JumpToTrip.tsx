@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { IconButton, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';

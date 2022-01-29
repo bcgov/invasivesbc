@@ -1,7 +1,7 @@
 import { Geolocation } from '@capacitor/geolocation';
 import { CircularProgress, IconButton, Typography } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useContext, useEffect, useRef, useState } from 'react';

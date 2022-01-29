@@ -38,7 +38,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';

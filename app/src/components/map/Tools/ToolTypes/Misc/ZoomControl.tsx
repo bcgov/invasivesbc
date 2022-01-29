@@ -1,7 +1,7 @@
 import { IconButton, Typography } from '@mui/material';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';

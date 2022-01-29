@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { area, polygon } from '@turf/turf';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet';

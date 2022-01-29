@@ -18,7 +18,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { ThemeContext } from 'contexts/themeContext';
+import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
