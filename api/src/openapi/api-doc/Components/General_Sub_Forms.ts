@@ -992,7 +992,8 @@ export const AquaticPlant = {
       title: 'Observation Type',
       enum: ['Positive Observation', 'Negative Observation'],
       default: 'Positive Observation',
-      'x-tooltip-text': 'The observation describes the absence of target invasive plants within a defined area'
+      'x-tooltip-text':
+        'The observation describes the presence or absence of target invasive plants within a defined area'
     }
   },
   dependencies: {
