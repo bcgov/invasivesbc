@@ -20,7 +20,9 @@ export const Observation_PlantTerrestrial_Information = {
       type: 'string',
       title: 'Suitable for biocontrol agent(s)',
       enum: ['Unknown', 'Yes', 'No'],
-      default: 'Unknown'
+      default: 'Unknown',
+      'x-tooltip-text':
+        'Choose Yes if the infestation is large, evenly infested and the site is secure from future disturbance.'
     },
     specific_use_code: {
       type: 'string',
@@ -83,7 +85,9 @@ export const Observation_PlantAquatic_Information = {
       type: 'string',
       title: 'Suitable for biocontrol agent(s)',
       enum: ['Unknown', 'Yes', 'NO'],
-      default: 'Unknown'
+      default: 'Unknown',
+      'x-tooltip-text':
+        'Choose Yes if the infestation is large, evenly infested and the site is secure from future disturbance.'
     }
   }
 };

@@ -44,14 +44,25 @@ const ChemicalTreatmentDetailsForm = (props) => {
   const getBusinessCodes = () => {
     const newBusinessCodes = {};
     for (let key of Object.keys(props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties)) {
-      newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[key].anyOf.map(
-        (code) => {
+      if (props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[key].anyOf) {
+        newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[
+          key
+        ].anyOf.map((code) => {
           return {
             value: code.enum[0],
             label: code.title
           };
-        }
-      );
+        });
+      } else {
+        newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[
+          key
+        ].options.map((code) => {
+          return {
+            value: code.value,
+            label: code.label
+          };
+        });
+      }
     }
     return newBusinessCodes;
   };

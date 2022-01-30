@@ -170,21 +170,26 @@ export const WaterbodyData_AdditionalFields = {
   required: ['substrate_type', 'tidal_influence']
 };
 export const Well_Information = {
-  type: 'object',
+  type: 'array',
   title: 'Wells Information',
-  properties: {
-    well_id: {
-      type: 'string',
-      title: 'Well ID',
-      'x-tooltip-text':
-        'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
-    },
-    well_proximity: {
-      type: 'number',
-      title: 'Well Proximity(m)',
-      minimum: 1,
-      'x-tooltip-text':
-        'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
+  default: [{ well_id: 'No wells found', well_proximity: 'No wells found' }],
+  items: {
+    properties: {
+      well_id: {
+        type: 'string',
+        default: 'No wells found',
+        title: 'Well ID',
+        'x-tooltip-text':
+          'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
+      },
+      well_proximity: {
+        type: 'string',
+        default: 'No wells found',
+        title: 'Well Proximity(m)',
+        minimum: 1,
+        'x-tooltip-text':
+          'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
+      }
     }
   },
   'x-tooltip-text':
@@ -851,7 +856,11 @@ export const TerrestrialPlant = {
 };
 export const TerrestrialPlants = {
   type: 'array',
-  default: [{}],
+  default: [
+    {
+      occurrence: 'Positive occurrence'
+    }
+  ],
   title: 'Terrestrial Invasive Plants',
   minItems: 1,
   items: {
@@ -992,7 +1001,8 @@ export const AquaticPlant = {
       title: 'Observation Type',
       enum: ['Positive Observation', 'Negative Observation'],
       default: 'Positive Observation',
-      'x-tooltip-text': 'The observation describes the absence of target invasive plants within a defined area'
+      'x-tooltip-text':
+        'The observation describes the presence or absence of target invasive plants within a defined area'
     }
   },
   dependencies: {
