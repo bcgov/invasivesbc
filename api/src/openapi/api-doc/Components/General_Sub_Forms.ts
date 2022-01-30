@@ -174,24 +174,21 @@ export const Well_Information = {
   title: 'Wells Information',
   default: [{}],
   items: {
-    well_object: {
-      title: 'invisible',
-      properties: {
-        well_id: {
-          type: 'string',
-          default: 'No wells found',
-          title: 'Well ID',
-          'x-tooltip-text':
-            'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
-        },
-        well_proximity: {
-          type: 'string',
-          default: 'No wells found',
-          title: 'Well Proximity(m)',
-          minimum: 1,
-          'x-tooltip-text':
-            'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
-        }
+    properties: {
+      well_id: {
+        type: 'string',
+        default: 'No wells found',
+        title: 'Well ID',
+        'x-tooltip-text':
+          'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
+      },
+      well_proximity: {
+        type: 'string',
+        default: 'No wells found',
+        title: 'Well Proximity(m)',
+        minimum: 1,
+        'x-tooltip-text':
+          'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
       }
     }
   },

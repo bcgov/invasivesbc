@@ -198,10 +198,17 @@ const Biological_Agent_Stage = {
 };
 
 const Well_Information = {
+  items:{
   ...TwoColumnStyle,
   well_id: { 'ui:readonly': true },
   well_proximity: { 'ui:readonly': true },
-  'ui:order':['well_id','well_proximity']
+  'ui:order':['well_id','well_proximity'],
+  },
+    'ui:options': {
+      'addable': false,
+      'orderable': false,
+      'removable': false,
+    },
 };
 
 const ShorelineTypes = {
