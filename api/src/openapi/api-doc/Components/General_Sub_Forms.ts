@@ -172,7 +172,7 @@ export const WaterbodyData_AdditionalFields = {
 export const Well_Information = {
   type: 'array',
   title: 'Wells Information',
-  default: [{}],
+  default: [{ well_id: 'No wells found', well_proximity: 'No wells found' }],
   items: {
     properties: {
       well_id: {
