@@ -56,8 +56,7 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
-  // @ts-ignore
-  let enumOptions =
+  let enumOptions = // @ts-ignore
     (props.schema.options as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
 
   if (!enumOptions) enumOptions = [];
