@@ -40,8 +40,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   const [calculationResults, setCalculationResults] = useState(null);
 
-  console.log(props);
-
   //get business codes from schema
   const getBusinessCodes = () => {
     const newBusinessCodes = {};

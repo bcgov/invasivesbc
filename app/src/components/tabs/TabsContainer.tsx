@@ -304,7 +304,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const { connected, setConnected } = networkContext;
 
   useEffect(() => {
-    console.log('Active tab number: ', activeTab);
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname, getActiveTab]);
 
