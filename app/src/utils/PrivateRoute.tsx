@@ -3,6 +3,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
+import AccessDenied from '../pages/misc/AccessDenied';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -19,45 +20,49 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const { keycloak } = useContext(AuthStateContext);
   const networkContext = useContext(NetworkContext);
-  const authStateContext = useContext(AuthStateContext);
+
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
 
   let { component: Component, layout: Layout, ...rest } = props;
+  const { userInfoLoaded, keycloak, userRoles } = props.componentProps;
 
   document.title = props.title;
-
-  const roles = props.roles;
+  console.log('authContext in privateRoute: ', props.componentProps);
 
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
 
   const isAuthenticated = () => {
-    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && authStateContext.userInfoLoaded);
-  };
-
-  const isAuthorized = () => {
-    return isAuthenticated() && roles.length > 0 ? true : false;
+    return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
   };
 
   useEffect(() => {
-    console.log('***Is authorized? ' + isAuthorized());
-  }, []);
+    if (userInfoLoaded) {
+      if (userRoles.length > 0 && isAuthenticated()) {
+        console.log('user is authorized: true');
+        setIsAuthorized(true);
+      } else {
+        console.log('user is authorized: false');
+        setIsAuthorized(false);
+      }
+    }
+  }, [userInfoLoaded, keycloak.obj?.authenticated]);
 
   return (
     <Route
       {...rest}
       render={(renderProps) => {
-        if (process.env.REACT_APP_REAL_NODE_ENV !== 'production' && networkContext.connected) {
-          if (!isAuthorized()) {
-            return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
-          }
-        }
         return (
-          <Layout>
-            <Component {...renderProps} {...rest.componentProps} />
-          </Layout>
+          <>
+            {isAuthorized && (
+              <Layout>
+                <Component {...renderProps} {...props.componentProps} />
+              </Layout>
+            )}
+            {!isAuthorized && <AccessDenied />}
+          </>
         );
       }}
     />
