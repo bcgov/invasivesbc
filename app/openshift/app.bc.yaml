@@ -92,10 +92,10 @@ objects:
       resources:
         limits:
           cpu: 3
-          memory: 12Gi
+          memory: 15Gi
         requests:
           cpu: 2
-          memory: 12Gi
+          memory: 15Gi
       runPolicy: Serial
       source:
         contextDir: '${SOURCE_CONTEXT_DIR}'
@@ -109,6 +109,8 @@ objects:
             kind: ImageStreamTag
             name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
           env:
+            - name: "GENERATE_SOURCEMAP"
+              value: "false"
             - name: "REACT_APP_REAL_NODE_ENV"
               value: "${REACT_APP_REAL_NODE_ENV}"
         type: Docker
