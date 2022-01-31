@@ -429,7 +429,7 @@ export const useDataAccess = () => {
     }
   };
 
-  const cacheRoles = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+  const cacheAllRoles = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
     if (networkContext.connected && isMobile()) {
       const roles = await api.getRoles();
       const dbcontext = context;
@@ -731,7 +731,6 @@ export const useDataAccess = () => {
     }
   };
 
-
   const createUser = async (context?: {
     asyncQueue: (request: DBRequest) => Promise<any>;
     ready: boolean;
@@ -884,10 +883,11 @@ export const useDataAccess = () => {
     getFundingAgencies,
     cacheEmployers,
     cacheFundingAgencies,
-    cacheRoles,
+    cacheAllRoles,
     cacheRolesForUser,
     cacheCurrentUserBCEID,
     cacheCurrentUserIDIR,
-    getCurrentUser
+    getCurrentUser,
+    createUser
   };
 };
