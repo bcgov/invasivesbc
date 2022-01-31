@@ -4,6 +4,7 @@ import { Device } from '@capacitor/device';
 import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import { KeycloakProvider } from '@react-keycloak/web';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
@@ -136,11 +137,26 @@ const App: React.FC<IAppProps> = (props) => {
     return children;
   };
 
+  const loadingComponent = (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+      <CircularProgress />
+    </Box>
+  );
+
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       {deviceInfo !== null ? (
         <NetworkContextProvider>
-          <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
+          <KeycloakProvider
+            keycloak={keycloak}
+            LoadingComponent={loadingComponent}
+            initConfig={keycloakConfig}
+            onEvent={getKeycloakEventHandler(keycloak)}>
             <DatabaseContextProvider>
               <AuthStateContextProvider>
                 <CustomThemeProvider>
