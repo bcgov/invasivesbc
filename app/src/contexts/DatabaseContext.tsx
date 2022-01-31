@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import PQueue from 'p-queue/dist';
+import PQueue from 'p-queue';
 import { useSQLite } from 'react-sqlite-hook/dist';
 import { AuthStateContext } from './authStateContext';
 // Singleton SQLite Hook

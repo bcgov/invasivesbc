@@ -1,17 +1,15 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Theme,
-  Typography
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+
+import makeStyles from '@mui/styles/makeStyles';
 import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
@@ -33,7 +31,7 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
-import { Sync } from '@mui/icons-material';
+import Sync from '@mui/icons-material/Sync';
 import { IonAlert } from '@ionic/react';
 import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';
