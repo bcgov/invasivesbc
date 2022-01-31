@@ -1,16 +1,13 @@
-import {
-  Box,
-  Checkbox,
-  Divider,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  Paper,
-  SvgIcon,
-  Theme,
-  Typography
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Paper from '@mui/material/Paper';
+import SvgIcon from '@mui/material/SvgIcon';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { ActivitySubtype, ActivityTypeIcon } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
@@ -20,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 import { getShortActivityID } from 'utils/addActivity';
 import ActivityListItem from './ActivityListItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   activitiyListItem: {
     display: 'flex',
     flexDirection: 'row',

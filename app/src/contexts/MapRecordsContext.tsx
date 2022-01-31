@@ -1,4 +1,4 @@
-import PQueue from 'p-queue';
+import PQueue from 'p-queue/dist';
 import * as React from 'react';
 
 // A place for the app to track what records are passed to map & which are selected

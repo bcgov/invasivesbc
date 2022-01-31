@@ -1,4 +1,6 @@
-import { Box, Grid, Paper } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import { ArrayFieldTemplateProps, IdSchema, utils } from '@rjsf/core';
 import React, { useContext } from 'react';
 import AddButton from 'rjsf/components/AddButton';

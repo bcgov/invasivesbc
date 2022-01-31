@@ -16,6 +16,7 @@ import { ExpandMore } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
+import distance from '@turf/distance';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
@@ -66,13 +67,13 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   }, []);
 
-  const isGreaterDistanceThan = (from, to, distance) => {
+  const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;
     try {
       var fromAsPoint = turf.point(from);
       var toAsPoint = turf.point(to);
 
-      returnVal = turf.distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distance;
+      returnVal = distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distanceV;
     } catch (e) {
       console.dir(e);
     }

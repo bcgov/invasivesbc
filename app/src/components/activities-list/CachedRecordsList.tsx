@@ -1,4 +1,10 @@
-import { Box, Button, Container, List, Paper, Theme, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import List from '@mui/material/List';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { Check } from '@mui/icons-material';
 import booleanIntersects from '@turf/boolean-intersects';

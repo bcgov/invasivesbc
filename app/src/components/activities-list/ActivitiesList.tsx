@@ -40,7 +40,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
 import { PointsOfInterestTable } from 'components/common/IAPPRecordTables';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   newActivityButtonsRow: {
     '& Button': {
       marginRight: '0.5rem',
@@ -220,7 +220,7 @@ const ActivitiesList: React.FC = () => {
   const syncCachedActivities = async () => {
     try {
       await dataAccess.syncCachedRecords();
-    } catch (e: any) {
+    } catch (e) {
       console.log('Error syncing cached records: ', e);
     }
   };

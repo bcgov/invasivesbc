@@ -1,7 +1,8 @@
-import { TextField } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { WidgetProps } from '@rjsf/core';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
 import React, { useContext, useEffect, useState } from 'react';
