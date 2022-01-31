@@ -15,8 +15,10 @@ import {
 import { ExpandMore } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
-import * as turf from '@turf/turf';
 import distance from '@turf/distance';
+import * as turf from '@turf/helpers';
+import { lineString } from '@turf/helpers';
+import lineToPolygon from '@turf/line-to-polygon';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
@@ -146,8 +148,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     try {
       // convert poly to polygon
       if (workingPolyline.length >= 4) {
-        var line = turf.lineString(workingPolyline);
-        var polygon = turf.lineToPolygon(line);
+        var line = lineString(workingPolyline);
+        var polygon = lineToPolygon(line);
         if (window.confirm('Convert track to polygon?')) {
           props.geometryState.setGeometry([polygon as any]);
           //          notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));

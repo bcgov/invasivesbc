@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FileCopy } from '@mui/icons-material';
-import * as turf from '@turf/turf';
+import booleanWithin from '@turf/boolean-within';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
@@ -654,7 +654,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     if (geometry && geometry[0]) {
-      if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
+      if (booleanWithin(geometry[0] as any, bcArea as any)) {
         saveGeometry(geometry);
         getJurSuggestions();
       } else {

@@ -1,7 +1,7 @@
 import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import circle from '@turf/circle';
-import { BBox, Geometries } from '@turf/turf';
+import { Geometries } from '@turf/turf';
 import union from '@turf/union';
 import L, { LatLngExpression } from 'leaflet';
 import React, { createContext, useContext, useState } from 'react';
@@ -26,7 +26,7 @@ export enum FlyToAndFadeItemTransitionType {
   zoomToBoundsAndShowGeometries = 'ZOOM_TO_BOTH'
 }
 
-export const bboxToLtlngExpression = (aBbox: BBox) => {
+export const bboxToLtlngExpression = (aBbox: any) => {
   //let ltlngExpression: L.LatLngBounds = new L.LatLngBounds(aBbox.));
   let southWest: LatLngExpression = [aBbox[1], aBbox[0]];
   let northEast: LatLngExpression = [aBbox[3], aBbox[2]];

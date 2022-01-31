@@ -14,7 +14,8 @@ import {
   useMap,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
-import * as turf from '@turf/turf';
+import booleanWithin from '@turf/boolean-within';
+import booleanOverlap from '@turf/boolean-overlap';
 import Spinner from '../../components/spinner/Spinner';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
@@ -105,17 +106,14 @@ export const q = async.queue(function async(task, callback) {
   console.log('-----------------------------------');
   q.remove((worker: any) => {
     if (worker.data) {
-      if (task.layer === worker.data.layer && turf.booleanWithin(task.extent, worker.data.extent)) {
+      if (task.layer === worker.data.layer && booleanWithin(task.extent, worker.data.extent)) {
         console.log(
           '%cReceived a request for the layer that has already been requested and which area is within the old request area. Deleting old request...',
           'color:red'
         );
         return true;
       }
-      if (
-        !turf.booleanWithin(worker.data.extent, task.extent) &&
-        !turf.booleanOverlap(worker.data.extent, task.extent)
-      ) {
+      if (!booleanWithin(worker.data.extent, task.extent) && !booleanOverlap(worker.data.extent, task.extent)) {
         console.log(
           '%cThe new extent does not overlap with and not inside of previous extent. Deleting all the old requests...',
           'color:red'

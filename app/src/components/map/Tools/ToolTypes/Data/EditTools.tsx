@@ -1,6 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { useLeafletContext } from '@react-leaflet/core';
-import * as turf from '@turf/turf';
+import buffer from '@turf/buffer';
+import bbox from '@turf/bbox';
+import centroid from '@turf/centroid';
+import * as turf from '@turf/helpers';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -142,8 +145,8 @@ const EditTools = (props: any) => {
 
   const convertLineStringToPoly = (aGeo: any) => {
     if (aGeo?.geometry.type === 'LineString') {
-      const buffer = prompt('Enter buffer width (total) in meters', '1');
-      const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
+      const buffer2 = prompt('Enter buffer width (total) in meters', '1');
+      const buffered = buffer(aGeo.geometry, parseInt(buffer2, 10) / 1000, { units: 'kilometers', steps: 1 });
       const result = turf.featureCollection([buffered, aGeo.geometry]);
 
       return { ...aGeo, geometry: result.features[0].geometry };
@@ -161,7 +164,7 @@ const EditTools = (props: any) => {
         type: 'FeatureCollection',
         features: [...props.geometryState.geometry]
       };
-      const bboxCoords = turf.bbox(allGeosFeatureCollection);
+      const bboxCoords = bbox(allGeosFeatureCollection);
 
       map.fitBounds([
         [bboxCoords[1], bboxCoords[0]],
@@ -235,7 +238,7 @@ const EditTools = (props: any) => {
               // Formulate a table containing all attributes
               let table = formulateTable(feature);
 
-              const loc = turf.centroid(feature);
+              const loc = centroid(feature);
               const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
 
               if (feature.properties.uploadedSpatial) {

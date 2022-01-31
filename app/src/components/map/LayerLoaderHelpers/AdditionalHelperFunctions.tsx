@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf';
+import booleanOverlap from '@turf/boolean-overlap';
+import booleanContains from '@turf/boolean-contains';
 import { query, QueryType } from 'contexts/DatabaseContext';
 
 export const getStyleForLayerFeature = (feature: any, layerStyles: any, opacity: number): any => {
@@ -87,7 +88,7 @@ export const fetchLayerDataFromLocal = async (layerName: string, mapExtent: any,
     const featuresInArea = JSON.parse(row.featuresInArea);
 
     featuresInArea.forEach((feature) => {
-      if (turf.booleanContains(mapExtent, feature) || turf.booleanOverlap(mapExtent, feature)) {
+      if (booleanContains(mapExtent, feature) || booleanOverlap(mapExtent, feature)) {
         allFeatures = allFeatures.concat(feature);
       }
     });

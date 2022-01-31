@@ -1,6 +1,6 @@
 import { Box, Button, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import * as turf from '@turf/turf';
+import buffer from '@turf/buffer';
 import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
@@ -618,7 +618,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           const gridResult = smallGridResult[smallGridResultIndex];
           const feature = JSON.parse(gridResult.geo);
           const gridId = gridResult.id;
-          const bufferedGeo = turf.buffer(feature, 0);
+          const bufferedGeo = buffer(feature, 0);
 
           //push gridItem and callback function to the queue
 

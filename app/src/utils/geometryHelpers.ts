@@ -1,4 +1,6 @@
-import * as turf from '@turf/turf';
+import area from '@turf/area';
+import center from '@turf/center';
+import * as turf from '@turf/helpers';
 import { Feature } from 'geojson';
 
 /**
@@ -31,7 +33,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
   } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {
-    totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
+    totalArea = area(turf.polygon(geo.geometry['coordinates']));
   }
 
   return parseFloat(totalArea.toFixed(0));
@@ -65,7 +67,7 @@ export function calculateLatLng(geom: Feature[]) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
-    const centerPoint = turf.center(turf.polygon(geo['coordinates'])).geometry;
+    const centerPoint = center(turf.polygon(geo['coordinates'])).geometry;
     latitude = centerPoint.coordinates[1];
     longitude = centerPoint.coordinates[0];
   }

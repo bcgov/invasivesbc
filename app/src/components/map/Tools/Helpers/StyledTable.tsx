@@ -16,8 +16,10 @@ import {
 } from '@mui/material';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import area from '@turf/area';
+import center from '@turf/center';
 import { createStyles, withStyles } from '@mui/styles';
-import * as turf from '@turf/turf';
+import * as turf from '@turf/helpers';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -135,7 +137,7 @@ const getPlantCodes = (obj) => {
 const getArea = (shape) => {
   if (shape.geometry.type === 'Polygon') {
     var polygon = turf.polygon(shape.geometry.coordinates);
-    return turf.area(polygon);
+    return area(polygon);
   } else {
     return Math.PI * shape.properties?.radius;
   }
@@ -144,7 +146,7 @@ const getArea = (shape) => {
 const getCenter = (shape) => {
   if (shape.geometry.type === 'Polygon') {
     var polygon = turf.polygon(shape.geometry.coordinates);
-    return turf.center(polygon).geometry.coordinates;
+    return center(polygon).geometry.coordinates;
   } else {
     return shape.geometry.coordinates;
   }
