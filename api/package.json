@@ -55,7 +55,7 @@
     "proj4": "^2.6.3",
     "qs": "~6.9.4",
     "reproject": "^1.2.6",
-    "simple-get": "^4.0.0",
+    "simple-get": "^4.0.1",
     "sql-template-strings": "~2.2.2",
     "swagger-object-validator": "^1.2.2",
     "typescript": "~3.9.7",
