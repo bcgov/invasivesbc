@@ -158,7 +158,7 @@
     "test": "react-scripts test",
     "start:ionic": "ionic serve --port 3000",
     "start:ionic:reload": "ionic serve",
-    "build-prod": "react-scripts build --prod",
+    "build-prod": "react-scripts build --prod src/app --max-old-space-size=8192",
     "deploy_start": "npx serve -s build -l 8100",
     "eject": "react-scripts eject",
     "lint:fix": "npm run lint -- --fix"
