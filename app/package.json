@@ -162,7 +162,7 @@
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start max_old_space_size=8128",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "start:ionic": "ionic serve --port 3000",
