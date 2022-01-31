@@ -141,9 +141,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const openMenu = Boolean(anchorEl);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const api = useInvasivesApi();
-  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded, userRoles, setUserRoles } =
-    useContext(AuthStateContext);
+  const { userInfo, userInfoLoaded } = useContext(AuthStateContext);
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
@@ -157,76 +155,19 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setShowAlert(true);
   };
 
-  const loadUserFromCache = async () => {
-    try {
-      // Try to fetch user info from cache and set it to userInfo
-      api.getUserInfoFromCache().then((res: any) => {
-        if (res) {
-          setUserInfo(res.userInfo);
-          setUserInfoLoaded(true);
-        } else {
-        }
-      });
-    } catch (error) {
-      console.log('Error: ', error);
-    }
-  };
-
-  useEffect(() => {
-    if (isMobile() && !userInfoLoaded) {
-      loadUserFromCache();
-    }
-  }, [userInfoLoaded]);
   // loadUserFromCache();
   /*
     Function to logout current user by wiping their keycloak access token
   */
   const logoutUser = async () => {
     history.push('/home/landing');
-    // Reset user info object
-    if (isMobile()) {
-      try {
-        await api.clearUserInfoFromCache().then((res: any) => {
-          setUserInfoLoaded(false);
-          setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-        });
-      } catch (err) {
-        console.log('Error clearing cache: ', err);
-      }
-    } else {
-      try {
-        await authContext.keycloak?.obj?.logout();
-        setUserInfoLoaded(false);
-        setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-      } catch (err) {
-        console.log('Error logging out: ', err);
-      }
-    }
+    await authContext.logoutUser();
     handleClose();
   };
 
   const loginUser = async () => {
-    console.log('*****caling auth state context logni');
     await authContext.loginUser();
-    console.log('*****called it');
-    const user = await authContext.keycloak?.obj?.loadUserInfo();
-    //  const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
-    // await setUserRoles(roles);
-    //await setUserInfo(user);
-    if (isMobile()) {
-      // Cache user info and roles
-      const userInfoAndRoles = {
-        userInfo: user
-        //  userRoles: roles
-      };
-      try {
-        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {});
-      } catch (err) {
-        console.log('Error caching user roles: ', err);
-      }
-    }
     handleClose();
-    // setUserInfoLoaded(true);
   };
 
   const navToAdmin = async () => {
@@ -288,14 +229,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     return Capacitor.getPlatform() !== 'web';
   };
 
-  const isAuthenticated = () => {
-    return userInfoLoaded;
+  const isAuthorized = () => {
+    return userInfoLoaded && authContext.userRoles.length > 0;
   };
 
   const isAdmin = (): boolean => {
-    if (isAuthenticated()) {
+    if (isAuthorized()) {
       return authContext.hasRole('master_administrator');
-    }
+    } else return false;
   };
 
   const themeContext = useContext(ThemeContext);
@@ -323,7 +264,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map fontSize={'small'} />
         });
 
-        if (isAuthenticated()) {
+        if (isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
@@ -331,7 +272,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
             path: '/home/activities',
@@ -339,7 +280,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -347,7 +288,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -355,7 +296,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
             path: '/home/references',
@@ -541,14 +482,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <>
                   {userInfoLoaded ? (
                     () => {
-                      if (userInfo.name) {
-                        return <Avatar>{userInfo.name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      }
-                      if (userInfo.bceid_business_name) {
-                        return <Avatar>{userInfo.bceid_business_name?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      }
-                      if (!userInfo.name && !userInfo.bceid_business_name) {
-                        return <Avatar></Avatar>;
+                      if (userInfo.displayName) {
+                        return <Avatar>{userInfo.displayName?.match(/\b(\w)/g)?.join('')}</Avatar>;
                       }
                     }
                   ) : (

@@ -1,7 +1,8 @@
 import { Network } from '@capacitor/network';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress } from '@material-ui/core';
+import { AuthStateContext } from 'contexts/authStateContext';
 import AdminRouter from 'features/admin/AdminRouter';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import PublicLayout from './layouts/PublicLayout';
@@ -18,6 +19,7 @@ interface IAppRouterProps {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const [layout, setLayout] = useState<React.FC<any>>(null);
   const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
+  const authContext = useContext(AuthStateContext);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -52,6 +54,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         title={getTitle('Home')}
         component={HomeRouter}
         layout={PublicLayout}
+        props={authContext}
         isMobileNoNetwork={isMobileNoNetwork}
       />
       <AppRoute
@@ -59,6 +62,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         title={getTitle('Admin')}
         component={AdminRouter}
         layout={PublicLayout}
+        props={authContext}
         isMobileNoNetwork={isMobileNoNetwork}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

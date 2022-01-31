@@ -229,7 +229,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
-  console.log('roles: ', rolesUserHasAccessTo);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -787,7 +786,6 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
-  console.log('roles: ', rolesUserHasAccessTo);
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -934,7 +932,6 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
-  console.log('roles: ', rolesUserHasAccessTo);
 
   return useMemo(() => {
     return (
@@ -1882,7 +1879,6 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
-  console.log('roles: ', rolesUserHasAccessTo);
 
   return useMemo(() => {
     return (
