@@ -269,29 +269,31 @@ export const mapDocToDBActivity = (doc: any) => {
   Note for future refactoring: favor DB representation.
 */
 export const mapDBActivityToDoc = (dbActivity: any) => {
-  const { _id, ...otherKeys } = dbActivity;
-  let doc: any = {
-    ...generateActivityPayload(
-      dbActivity.form_data,
-      dbActivity.geometry,
-      dbActivity.activity_type,
-      dbActivity.activity_subtype,
-      dbActivity.docType
-    ),
-    ...mapKeys(otherKeys, camelCase)
-  };
-  doc = {
-    ...doc,
-    ...mapKeys(dbActivity.activity_payload, camelCase),
-    sync: {
-      ...doc.sync,
-      ...dbActivity.activity_payload?.sync,
-      status: dbActivity.sync_status
-    },
-    _id: dbActivity.activity_id,
-    id: dbActivity.id
-  };
-  return doc;
+  if (dbActivity) {
+    const { _id, ...otherKeys } = dbActivity;
+    let doc: any = {
+      ...generateActivityPayload(
+        dbActivity.form_data,
+        dbActivity.geometry,
+        dbActivity.activity_type,
+        dbActivity.activity_subtype,
+        dbActivity.docType
+      ),
+      ...mapKeys(otherKeys, camelCase)
+    };
+    doc = {
+      ...doc,
+      ...mapKeys(dbActivity.activity_payload, camelCase),
+      sync: {
+        ...doc.sync,
+        ...dbActivity.activity_payload?.sync,
+        status: dbActivity.sync_status
+      },
+      _id: dbActivity.activity_id,
+      id: dbActivity.id
+    };
+    return doc;
+  }
 };
 
 /*
