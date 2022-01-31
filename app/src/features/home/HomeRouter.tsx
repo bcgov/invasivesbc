@@ -25,7 +25,6 @@ interface IHomeRouterProps {
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
   const authContext = React.useContext(AuthStateContext);
-
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
