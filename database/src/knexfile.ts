@@ -58,6 +58,8 @@ module.exports = {
       max: 10
     },
     migrations: {
+      searchPath: 'public',
+      schemaName: 'public',
       tableName: 'migration',
       directory: './migrations'
     }
