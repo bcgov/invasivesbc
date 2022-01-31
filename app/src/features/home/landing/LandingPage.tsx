@@ -123,14 +123,14 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           <Typography variant="h5">User Information</Typography>
           <br />
           <Grid className={classes.userInfoItemGrid} container spacing={2}>
-            <Grid item md={2}>
-              <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Name</Typography>
-                {userInfo?.first_name + ' ' + userInfo?.last_name ||
-                  userInfo?.bceid_business_name ||
-                  userInfo?.displayName}
-              </Box>
-            </Grid>
+            {userInfo.displayName && (
+              <Grid item md={2}>
+                <Box overflow="hidden" textOverflow="ellipsis">
+                  <Typography>Name</Typography>
+                  {userInfo?.displayName}
+                </Box>
+              </Grid>
+            )}
             <Divider flexItem={true} orientation="vertical" />
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
