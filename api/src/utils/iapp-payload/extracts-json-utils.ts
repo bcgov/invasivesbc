@@ -1,3 +1,18 @@
+const mapEfficacyCode = (percent) => {
+  percent = Number(percent);
+  if (percent < 10) return 10;
+  if (percent < 20) return 9;
+  if (percent < 30) return 8;
+  if (percent < 40) return 7;
+  if (percent < 50) return 6;
+  if (percent < 60) return 5;
+  if (percent < 70) return 4;
+  if (percent < 80) return 3;
+  if (percent < 90) return 2;
+  if (percent <= 100) return 1;
+  return;
+};
+
 export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => {
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   const monitoring = [];
@@ -18,7 +33,7 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
     tank_mix_id: null, // Could not find tank mix id
     temperature: null, // Could not find tempurature
     project_code: [
-      treatment.treatment_paper_file_id // What is the difference between site_paper_file_id
+      { description: treatment.treatment_paper_file_id } // What is the difference between site_paper_file_id
     ], //  and treatment_paper_file_id????
     treatment_id: treatment.chemicaltreatmentid,
     reported_area: treatment.area_treated, // area of POI or treated area??????
@@ -47,11 +62,12 @@ export const biologicalDispersalJSON = (dispersal: any) => {
   return {
     map_code: dispersal.invasive_plant, // convert to map code (XX)
     utm_zone: dispersal.utm_zone,
+    monitoring: [],
     agent_count: null,
     common_name: common_name, // use common name
     plant_count: dispersal.density,
     utm_easting: dispersal.utm_easting,
-    project_code: [dispersal.dispersal_paper_file_id],
+    project_code: [{ description: dispersal.dispersal_paper_file_id }],
     utm_northing: dispersal.utm_northing,
     monitoring_id: dispersal.biologicaldispersalid, // What is this??? (used dispersal id)
     count_duration: null, // Could not find or don't know what it means
@@ -88,7 +104,7 @@ export const biologicalTreatmentsJSON = (treatment: any, all_monitoring: any[]) 
     common_name: common_name, // use common name
     utm_easting: treatment.utm_easting,
     agent_source: treatment.bioagent_source,
-    project_code: [treatment.treatment_paper_file_id],
+    project_code: [{ description: treatment.treatment_paper_file_id }],
     treatment_id: treatment.biotreatmentid,
     utm_northing: treatment.utm_northing,
     stage_egg_ind: null,
@@ -119,7 +135,7 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
     map_code: treatment.invasive_plant, // convert to code (XX)
     monitoring: monitoring.length > 0 ? monitoring : [],
     common_name: common_name, // use common name
-    project_code: [treatment.treatment_paper_file_id],
+    project_code: [{ description: treatment.treatment_paper_file_id }],
     treatment_id: treatment.treatment_id,
     mechanical_id: treatment.mechanicaltreatmentid, // what is this supposed to be???? different id??
     reported_area: null,
@@ -150,8 +166,8 @@ const monitoringJSON = (props: any) => {
   return {
     monitoring_id: monitoringID,
     project_code: [{ description: item?.monitoring_paper_file_id }],
-    efficiency_code: 0,
-    general_comment: item?.general_comment,
+    efficiency_code: mapEfficacyCode(item.efficiency_rate), // not in extract
+    general_comment: null, // not in extract
     monitoring_date: item?.inspection_date,
     efficiancy_percent: (type as string) !== 'biological' ? item?.efficiency_rate : null,
     invasive_species_agency_code: item?.monitoring_agency
