@@ -1,6 +1,6 @@
 import Knex from 'knex';
 
-const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_SCHEMA = 'invasivesbc';
 
 /**
  * Create the `DB_SCHEMA` schema.
