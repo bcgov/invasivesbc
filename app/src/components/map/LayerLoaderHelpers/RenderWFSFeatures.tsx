@@ -2,7 +2,8 @@ import { Typography } from '@mui/material';
 import { polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
-import * as turf from '@turf/turf';
+import booleanWithin from '@turf/boolean-within';
+import inside from '@turf/inside';
 import { Feature, Geometry } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Layer } from 'leaflet';
@@ -194,14 +195,12 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     let nearestWellIndex = null;
     let minDistanceKm = null;
     let wellInside = false;
-    if (
-      turf.booleanWithin(props.inputGeo[0].geometry as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())
-    ) {
+    if (booleanWithin(props.inputGeo[0].geometry as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
       arrayOfWells.forEach((well) => {
         const turfPolygon = polygon((props.inputGeo[0].geometry as any).coordinates);
         const distanceKm = pointToLineDistance(well, polygonToLine(turfPolygon));
         //label points that are inside the polygon
-        if (turf.inside(well, turfPolygon)) {
+        if (inside(well, turfPolygon)) {
           arrayOfWells[index] = { ...arrayOfWells[index], inside: true, closest: false };
           wellInside = true;
         }

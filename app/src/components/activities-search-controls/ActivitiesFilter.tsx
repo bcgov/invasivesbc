@@ -1,20 +1,18 @@
-import {
-  Box,
-  Button,
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  Theme,
-  MenuItem,
-  Paper,
-  Select,
-  Switch,
-  TextField
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { Add, DeleteForever } from '@mui/icons-material';
-import { DatePicker } from '@mui/lab';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import makeStyles from '@mui/styles/makeStyles';
+import Add from '@mui/icons-material/Add';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import DatePicker from '@mui/lab/DatePicker';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -28,7 +26,7 @@ interface IActivityChoices {
   endDate: string;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: any) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',

@@ -1,6 +1,7 @@
-import { Grid, Tooltip } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { makeStyles } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ObjectFieldTemplateProps, utils } from '@rjsf/core';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';

@@ -16,7 +16,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
 import { Stack } from '@mui/material';
-import * as turf from '@turf/turf';
+import * as turf from '@turf/helpers';
+import buffer from '@turf/buffer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -47,7 +48,7 @@ import { calc_utm } from '../Nav/DisplayPosition';
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
     var point = turf.point([lng, lat]);
-    var buffer = turf.buffer(point, 50, { units: 'meters' });
+    var buffer = buffer(point, 50, { units: 'meters' });
     setGeoPoint(buffer);
   }
 };
@@ -106,7 +107,7 @@ export const GeneratePopup = (props) => {
       if (pointMode) {
         setBufferedGeo(point);
       } else {
-        setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
+        setBufferedGeo(buffer(point, radius, { units: 'kilometers' }));
       }
     }
   }, [radius, pointMode]);

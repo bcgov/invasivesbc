@@ -97,6 +97,6 @@
     "prettier": "~2.0.5",
     "supertest": "~4.0.2",
     "ts-mocha": "~7.0.0",
-    "ts-node": "~8.10.2"
+    "ts-node": "~10.4.0"
   }
 }

@@ -1,4 +1,4 @@
-import { Button, IconButtonProps as MuiIconButtonProps } from '@mui/material';
+import Button from '@mui/material/Button';
 import Add from '@mui/icons-material/Add';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import ArrowUpward from '@mui/icons-material/ArrowUpward';
@@ -12,11 +12,11 @@ const mappings: any = {
   'arrow-down': <ArrowDownward />
 };
 
-type IconButtonProps = MuiIconButtonProps & {
+type IconButtonProps = {
   icon: string;
 };
 
-const IconButton = (props: IconButtonProps) => {
+const IconButton = (props: any) => {
   const { icon, className, ...otherProps } = props;
   return (
     <Button variant="outlined" size="small">
