@@ -48,8 +48,8 @@ import { calc_utm } from '../Nav/DisplayPosition';
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
     var point = turf.point([lng, lat]);
-    var buffer = buffer(point, 50, { units: 'meters' });
-    setGeoPoint(buffer);
+    var buffer2 = buffer(point, 50, { units: 'meters' });
+    setGeoPoint(buffer2);
   }
 };
 

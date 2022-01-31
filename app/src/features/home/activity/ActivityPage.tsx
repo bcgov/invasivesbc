@@ -183,8 +183,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...mapDocToDBActivity(updated)
         };
 
-        if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        else await dataAccess.updateActivity(newActivity, databaseContext);
+        // this has to be a bug? if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
+        await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       return true;
