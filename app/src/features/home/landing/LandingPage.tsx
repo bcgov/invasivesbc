@@ -55,64 +55,20 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const history = useHistory();
   const networkContext = useContext(NetworkContext);
   const api = useInvasivesApi();
-  const authContext = useContext(AuthStateContext);
-  const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(AuthStateContext);
+  const { userInfo, userInfoLoaded, loginUser, keycloak } = useContext(AuthStateContext);
 
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
 
-  const loadUserFromCache = async () => {
-    try {
-      // Try to fetch user info from cache and set it to userInfo
-      console.log('Attempting to get user info from cache in context...');
-      api.getUserInfoFromCache().then((res: any) => {
-        if (res) {
-          console.log('User info found in cache from context');
-          setUserInfo(res.userInfo);
-          setUserInfoLoaded(true);
-        } else {
-          console.log('No cached user info');
-        }
-      });
-    } catch (error) {
-      console.log('Error: ', error);
-    }
-  };
-
-  const loginUser = async () => {
-    await authContext.keycloak?.obj?.login();
-    const user = await authContext.keycloak?.obj?.loadUserInfo();
-    //  const roles = await authContext.keycloak?.obj?.resourceAccess['invasives-bc'].roles;
-    //  await authContext.setUserRoles(roles);
-    await setUserInfo(user);
-    if (isMobile()) {
-      // Cache user info and roles
-      const userInfoAndRoles = {
-        userInfo: user
-        //     userRoles: roles
-      };
-      try {
-        console.log('Attempting to cache user info: ', userInfoAndRoles);
-        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
-          console.log('User info and roles cached successfully.');
-        });
-      } catch (err) {
-        console.log('Error caching user roles: ', err);
-      }
-    }
-    setUserInfoLoaded(true);
-  };
-
   const isAuthenticated = () => {
-    return authContext.userInfoLoaded;
+    return userInfoLoaded;
   };
 
   const requestAccess = async () => {
     if (!isAuthenticated()) {
       // log in user
       await loginUser().then(() => {
-        console.log('User logged in');
         history.push('/home/access-request');
       });
     } else {
@@ -121,11 +77,9 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
-    console.log('LandingPage useEffect on user info load');
-    if (Capacitor.getPlatform() !== 'web' && !userInfoLoaded) {
-      loadUserFromCache();
-    }
-  }, [userInfoLoaded]);
+    console.log('kc: ', keycloak);
+    console.log('userInfo: ', userInfo);
+  }, [keycloak.obj.authenticated, userInfo]);
 
   /*
     Generate reusable card component with info to guide users through the app
@@ -172,7 +126,9 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Name</Typography>
-                {userInfo?.name || userInfo?.bceid_business_name}
+                {userInfo?.first_name + ' ' + userInfo?.last_name ||
+                  userInfo?.bceid_business_name ||
+                  userInfo?.displayName}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
@@ -192,7 +148,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Grid>
         </Box>
       )}
-      {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
+      {!userInfoLoaded && keycloak?.obj?.authenticated && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
           <br />
@@ -200,27 +156,27 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Name</Typography>
-                {authContext.keycloak?.obj?.tokenParsed?.name}
+                {keycloak?.obj?.tokenParsed?.name}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Email</Typography>
-                {authContext.keycloak?.obj?.tokenParsed?.email}
+                {keycloak?.obj?.tokenParsed?.email}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
             <Grid item md={2}>
               <Box overflow="hidden" textOverflow="ellipsis">
                 <Typography>Username</Typography>
-                {authContext.keycloak?.obj?.tokenParsed?.preferred_username}
+                {keycloak?.obj?.tokenParsed?.preferred_username}
               </Box>
             </Grid>
           </Grid>
         </Box>
       )}
-      {!userInfoLoaded && authContext.keycloak?.obj?.authenticated && (
+      {!userInfoLoaded && keycloak?.obj?.authenticated && (
         <Typography variant="h5">
           <br />
           <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
