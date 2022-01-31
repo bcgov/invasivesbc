@@ -161,8 +161,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   */
   const logoutUser = async () => {
     history.push('/home/landing');
-    // Reset user info object
-
+    await authContext.logoutUser();
     handleClose();
   };
 
