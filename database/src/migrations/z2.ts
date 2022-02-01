@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
   const sql = `
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
-  alter table acccess_request ADD UNIQUE (idir_userid, bceid_userid);
+  alter table invasivesbc.access_request ADD UNIQUE (idir_userid, bceid_userid);
   `;
 
   await knex.raw(sql);
