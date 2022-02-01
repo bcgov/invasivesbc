@@ -436,17 +436,17 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
     {
       field: 'site_id',
       headerName: 'IAPP ID',
-      width: 80
+      minWidth: 80
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
-      width: 150
+      width: 200
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
-      width: 150
+      width: 200
     },
     {
       field: 'geometry',
@@ -456,7 +456,7 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
   ];
 
   return (
-    <div style={{ height: 300, width: '100%' }}>
+    <div style={{ height: 300, minWidth: '100%' }}>
       <DataGrid
         columns={columns}
         rows={rows}
