@@ -64,7 +64,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         idir_userid,
         bceid_userid
     )
-    SELECT
+    values(
         ${accessRequest.idir ? accessRequest.idir : null},
         ${accessRequest.bceid ? accessRequest.bceid : null},
         ${accessRequest.firstName ? accessRequest.firstName : null},
@@ -81,11 +81,8 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.status},
         ${accessRequest.idirUserId ? accessRequest.idirUserId : null},
         ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null}
-    WHERE NOT EXISTS (
-        SELECT 1 from ACCESS_REQUEST WHERE primary_email=${
-          accessRequest.email
-        } AND status='APPROVED' OR status='NOT_APPROVED'
-    );
+    )
+    on conflict (idir_userid, bceid_userid) do nothing;
   `;
 };
 
