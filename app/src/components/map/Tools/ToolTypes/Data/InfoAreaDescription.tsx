@@ -129,15 +129,6 @@ export const GeneratePopup = (props) => {
     updatePOIRecords();
   }, [bufferedGeo]);
 
-  const getSpecies = (arrSpecies, poi) => {
-    if (poi.species_negative) {
-      poi.species_negative.map((species) => arrSpecies.push(species));
-    }
-    if (poi.species_positive) {
-      poi.species_positive.map((species) => arrSpecies.push(species));
-    }
-  };
-
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
@@ -169,7 +160,7 @@ export const GeneratePopup = (props) => {
         dbContext
       );
 
-      // setPoisObj(pointsofinterest);
+      // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
       pointsofinterest.rows.map((poi) => {
         var arrJurisdictions = [];
