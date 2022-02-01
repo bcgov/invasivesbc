@@ -342,7 +342,7 @@ export const TreatmentsTable = (props) => {
   return (
     <Accordion style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
-        {type} Treatments
+        {type} {type === 'Mechanical' || type === 'Chemical' ? <>Treatment</> : null}
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
