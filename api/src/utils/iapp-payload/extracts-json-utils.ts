@@ -10,7 +10,6 @@ const mapEfficacyCode = (percent) => {
   if (percent < 80) return 3;
   if (percent < 90) return 2;
   if (percent <= 100) return 1;
-  return;
 };
 
 export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => {

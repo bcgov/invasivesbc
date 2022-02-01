@@ -172,20 +172,18 @@ export const GeneratePopup = (props) => {
       // setPoisObj(pointsofinterest);
       const tempArr = [];
       pointsofinterest.rows.map((poi) => {
-        var arrSpecies = [];
-        const newArr = [];
         var arrJurisdictions = [];
-        getSpecies(arrSpecies, poi);
-        getJurisdictions(newArr, poi);
-        newArr.forEach((item) => {
-          arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
-        });
+        // Removed For Now:
+        // getJurisdictions(newArr, poi);
+        // newArr.forEach((item) => {
+        //   arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
+        // });
 
         var row = {
           id: poi.point_of_interest_id,
           site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
           jurisdiction_code: arrJurisdictions,
-          species_code: arrSpecies,
+          species_code: poi.species_on_site,
           geometry: poi.point_of_interest_payload.geometry
         };
         tempArr.push(row);

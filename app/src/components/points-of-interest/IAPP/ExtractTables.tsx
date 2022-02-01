@@ -185,8 +185,14 @@ const Row = (props) => {
           style={{ height: 80 }}
           onClick={() => {
             if (column.id === 'general_comment') setShortComment(!shortComment);
+            if (!bioTreatmentColumns && column.id === 'treatment_id') {
+              setOpen(!open);
+            }
           }}>
-          <Box>{column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}</Box>
+          <Box>
+            {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
+            {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+          </Box>
         </TableCell>
       );
     });
