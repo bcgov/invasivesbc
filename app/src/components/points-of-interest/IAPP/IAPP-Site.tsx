@@ -2,13 +2,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, 
 import { ExpandMore } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import React from 'react';
-import {
-  IAPPBiologicalDispersalsTable,
-  IAPPBiologicalTreatmentsTable,
-  IAPPChemicalTreatmentsTable,
-  IAPPMechanicalTreatmentsTable,
-  IAPPSurveyTable
-} from '../../common/RecordTables';
+import { IAPPSurveyTable } from '../../common/RecordTables';
+import { TreatmentsTable } from './ExtractTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -164,13 +159,17 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
       <IAPPSurveyTable rows={surveys} />
 
-      {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />}
+      {/* oldRecords {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
+      <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments} />
 
-      {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />}
+      {/* oldRecords {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
+      <TreatmentsTable type={'Chemical'} treatments={chemical_treatments} />
 
-      {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />}
+      {/* oldRecords {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
+      <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />
 
-      {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />}
+      {/* oldRecords {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />} */}
+      <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
     </Container>
   );
 };

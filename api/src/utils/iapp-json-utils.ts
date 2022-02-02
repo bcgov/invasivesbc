@@ -13,14 +13,18 @@ import {
 } from './iapp-payload/extracts-json-utils';
 const defaultLog = getLogger('point-of-interest');
 
-const getSurveyObj = (row: any) => {
+const getSurveyObj = (row: any, map_code: any) => {
+  const leftBracket = row.invasive_plant.indexOf('(');
+  const common_name = row.invasive_plant.substring(0, leftBracket - 1);
+  const plant_code = row.invasive_plant.substring(leftBracket + 6, row.invasive_plant.length - 1);
+  const genus = row.invasive_plant.substring(leftBracket + 1, leftBracket + 5);
   return {
-    genus: null, // Could not see (COME BACK LATER)
+    genus: genus, // Could not see (COME BACK LATER)
     density: row.density,
     species: row.invasive_plant, // NEEDS to be converted to plant code
-    map_code: row.map_sheet, // Could not see (Maybe from project code)
+    map_code: map_code, // Could not see (Maybe from project code)
     survey_id: row.surveyid,
-    common_name: row.invasive_plant,
+    common_name: common_name,
     survey_date: row.site_created_date,
     weeds_found: row.estimated_area > 0 ? true : false,
     distribution: row.distribution,
@@ -39,7 +43,7 @@ const getSurveyObj = (row: any) => {
     reported_area: row.estimated_area,
     general_comment: row.survey_comments,
     observation_type: null, // Could not see (COME BACK LATER)
-    invasive_plant_code: row.invasive_plant, // COME BACK TO LATER
+    invasive_plant_code: plant_code, // COME BACK TO LATER
     observation_type_code: null, // Could not see (COME BACK TO LATER)
     invasive_plant_density_code: densityMap[row.density],
     invasive_species_agency_code: row.survey_agency, // Come back later
@@ -75,9 +79,6 @@ export const getSpeciesRef = async () => {
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    // return getIAPPjson(response);
-    // response check:
-    // return response;
     return response.rows;
   } catch (error) {
     defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
@@ -114,15 +115,21 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
   const all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
   const all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
   const all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
-  //const all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
+  const all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
   const all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
 
   return site_extract_table_response.rows.map((row) => {
-    const iapp_site = getIAPPjson(row);
+    // Fetching site selection extract
+    const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
+      return r.site_id === row.site_id;
+    });
+    // Setting iapp site object
+    const iapp_site = getIAPPjson(row, relevant_site_selection_extracts[0]);
     (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
       row['all_species_on_site'],
       species_ref
     );
+    // Fetching Extracts
     const relevant_biological_dispersal_extracts = all_biological_dispersal_extracts.filter((r) => {
       return r.site_id === row.site_id;
     });
@@ -147,14 +154,15 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     const relevant_survey_extracts = all_survey_extracts.filter((r) => {
       return r.site_id === row.site_id;
     });
+    // Assigning extracts into form_data
     (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts.map((x) => {
-      const returnVal = getSurveyObj(x);
+      const returnVal = getSurveyObj(x, row['map_symbol']);
       if (returnVal) return returnVal;
       else return [];
     });
     (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
       (x) => {
-        const returnVal = biologicalTreatmentsJSON(x);
+        const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }
@@ -168,14 +176,14 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     );
     (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
       (x) => {
-        const returnVal = chemicalTreatmentJSON(x);
+        const returnVal = chemicalTreatmentJSON(x, relevant_chemical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }
     );
-    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatmennts = relevant_mechanical_treatment_extracts.map(
+    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = relevant_mechanical_treatment_extracts.map(
       (x) => {
-        const returnVal = mechanicalTreatmenntsJSON(x);
+        const returnVal = mechanicalTreatmenntsJSON(x, relevant_mechanical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
       }
@@ -188,7 +196,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
   });
 };
 
-const getIAPPjson = (row: any) => {
+const getIAPPjson = (row: any, extract: any) => {
   try {
     return {
       point_of_interest_id: row['site_id'],
@@ -218,23 +226,28 @@ const getIAPPjson = (row: any) => {
         ],
         form_data: {
           point_of_interest_data: {
-            //date_created: earliestDate,
-            project_code: [], // COME BACK TO LATER
-            general_comment: null, // Each survey has a comment. Redundant?
+            date_created: extract.site_created_date,
+            project_code: [
+              {
+                description: extract.site_paper_file_id
+              }
+            ],
+            general_comment: extract.site_comments,
+            map_sheet: extract.mapsheet,
             media_indicator: false, // False for now
             created_date_on_device: null, // Nothing for now
             updated_date_on_device: null // Nothing for now
           },
           point_of_interest_type_data: {
-            slope: row['slope'], // site_selection_extract
-            aspect: row['aspect'], // Could not find
+            slope: extract.slope,
+            aspect: extract.aspect,
             site_id: row['site_id'],
-            slope_code: mapSlope(row['slope']), // Could not find slope to find code  (IAPP_Migrator)
-            aspect_code: mapAspect(row['aspect']), // Could not find aspect to find code (IAPP_Migrator)
-            site_elevation: row['elevation'], // Could not find
+            slope_code: mapSlope(extract.slope),
+            aspect_code: mapAspect(extract.aspect),
+            site_elevation: extract.elevation,
             original_bec_id: null, // Could not find
-            soil_texture_code: row['soil_texture'] // Needs to convert to code
-            //specific_use_code: site_specific_use // COME BACK LATER site_specific_use is empty
+            soil_texture_code: extract.soil_texture,
+            specific_use_code: extract.site_specific_use
           },
           species_negative: [], // COME BACK LATER
           species_positive: [], // COME BACK LATER
