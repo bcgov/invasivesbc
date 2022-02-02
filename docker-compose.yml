@@ -3,7 +3,6 @@ version: '3.5'
 services:
   ## Build postgres docker image
   db:
-    platform: linux/amd64
     image: ${PROJECT_NAME}-${TAG}-postgres-img
     container_name: ${PROJECT_NAME}-${TAG}-db
     build:
@@ -24,7 +23,6 @@ services:
   ## Run the database migrations and seeding
   db_setup:
     image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
-    platform: linux/arm64/v8
     container_name: ${PROJECT_NAME}-${TAG}-db-setup
     build:
       context: ./database
