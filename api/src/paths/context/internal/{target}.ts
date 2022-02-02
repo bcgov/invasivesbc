@@ -116,7 +116,6 @@ function getContext(): RequestHandler {
     // Grab coordinates from the query string
     const { lon, lat } = req.query;
 
-    console.log(typeof lon, typeof lat);
     // Error if no coordinates
     if (!lon || !lat || lon === 'undefined' || lat === 'undefined') {
       throw {
