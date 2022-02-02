@@ -416,7 +416,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                       </Grid>
                     </Grid>
                     <Grid item>
-                      <Grid container direction="row" spacing={5}>
+                      <Grid container direction="row" spacing={5} style={{ 'margin-bottom': '10px' }}>
                         <Grid item>
                           <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
@@ -462,7 +462,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container direction="row" spacing={5}>
-                        <Grid item>
+                        <Grid item style={{ 'margin-bottom': '10px' }}>
                           <Tooltip placement="left" title="Select one or more roles to request.">
                             <TextField
                               style={{ width: 320 }}
@@ -487,7 +487,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container direction="row" spacing={5}>
-                        <Grid item>
+                        <Grid item style={{ 'margin-bottom': '10px' }}>
                           <Tooltip
                             placement="left"
                             title="If your employer or agency were not on our lists, please enter it here.">
