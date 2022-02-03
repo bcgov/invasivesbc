@@ -8,14 +8,20 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Grid } from '@mui/material';
 import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { ActivitySubtypeShortLabels } from '../../../../constants/activities';
 
 const PlantObservationsTable = () => {
   const dataAccess = useDataAccess();
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
+
+  const subtypesList = [
+    ActivitySubtypeShortLabels.Activity_Observation_PlantAquatic,
+    ActivitySubtypeShortLabels.Activity_Observation_PlantTerrestrial
+  ];
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -45,6 +51,7 @@ const PlantObservationsTable = () => {
         <Typography>Observations</Typography>
       </AccordionSummary>
       <AccordionDetails>
+        <Grid container></Grid>
         {!activities ? (
           <CircularProgress />
         ) : (

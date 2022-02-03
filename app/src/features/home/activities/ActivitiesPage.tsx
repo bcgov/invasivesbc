@@ -10,7 +10,7 @@ interface IStatusPageProps {
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
-      <ActivitiesList />
+      {/* <ActivitiesList /> */}
       <ActivitiesList2 />
     </Container>
   );
