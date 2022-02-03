@@ -305,9 +305,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
 
-  const onFormSubmitError = () => {
+  const onFormSubmitError = (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     updateDoc({
+      formData: formRef.current.state.formData,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
       formStatus: FormValidationStatus.INVALID
     });
   };
@@ -363,13 +366,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
     //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
     updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-
-    await updateDoc({
-      formData: updatedFormData,
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
-    });
 
     if (callbackFun) {
       callbackFun();
