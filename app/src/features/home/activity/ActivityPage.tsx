@@ -172,14 +172,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const appStateResults = await dataAccess.getAppState(databaseContext);
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(
-          updated._id,
-          databaseContext,
-          false,
-          appStateResults.referenceData
-        );
+        // const oldActivity = await dataAccess.getActivityById(
+        //   updated._id,
+        //   databaseContext,
+        //   false,
+        //   appStateResults.referenceData
+        // );
         const newActivity = {
-          ...oldActivity,
+          // ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
 

@@ -250,7 +250,7 @@ export const sanitizeRecord = (input: any) => {
   naming variables differently in different contexts was a good idea.
   Note for future refactoring: favor DB representation.
 */
-export const mapDocToDBActivity = (doc: any) => {
+export const mapDocToDBActivity = (doc: any): any => {
   const retVal = {
     ...mapKeys(doc, snakeCase),
     _id: doc._id || doc.activity_id,
