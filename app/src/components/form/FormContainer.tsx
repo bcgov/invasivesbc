@@ -229,12 +229,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (!props.onFormChange || !lastPreservedEvent) {
-      return;
-    }
-    props.onFormChange(lastPreservedEvent, formRef, focusedFieldArgs);
-  }, [blurTriggered]);
+  // useEffect(() => {
+  //   if (!props.onFormChange || !lastPreservedEvent) {
+  //     return;
+  //   }
+  //   props.onFormChange(lastPreservedEvent, formRef, focusedFieldArgs);
+  // }, [blurTriggered]);
 
   //handle focus the field
   //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
@@ -363,13 +363,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   }}
                   onBlur={(...args: string[]) => {
                     blurHandler(args);
-                    setblurTriggered(Math.random());
+                    // setblurTriggered(Math.random());
                   }}
                   uiSchema={schemas.uiSchema}
                   formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
-                  liveValidate={false}
+                  liveValidate={true}
                   showErrorList={true}
-                  validate={props.customValidation}
                   transformErrors={props.customErrorTransformer}
                   autoComplete="off"
                   ErrorList={(err) => {
@@ -385,7 +384,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   onChange={(event) => {
-                    setlastPreservedEvent(event);
+                    // setlastPreservedEvent(event);
+                    props.onFormChange(event, formRef, focusedFieldArgs);
                   }}
                   onError={(error) => {
                     if (!props.onFormSubmitError) {
