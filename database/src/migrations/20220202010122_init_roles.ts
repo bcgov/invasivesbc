@@ -77,7 +77,7 @@ export async function up(knex: Knex): Promise<void> {
     },
     {
       description: 'FREP User',
-      namne: 'frep'
+      name: 'frep'
     }
   ];
 
