@@ -825,8 +825,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         />
       </MapRecordsContextProvider>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
-        <Alert onClose={handleAlertErrorsClose} severity="error" sx={{ width: '100%' }}>
-          There are errors in your form. Please make sure your form contains no errors and try again.
+        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
+          The form was saved with errors.
         </Alert>
       </Snackbar>
     </Container>

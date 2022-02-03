@@ -42,7 +42,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
 
                   props.onSubmit();
                 }}>
-                Check Form For Errors
+                Save Form
               </Button>
             )}
           </Grid>
