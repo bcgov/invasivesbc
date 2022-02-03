@@ -74,19 +74,18 @@ export async function up(knex: Knex): Promise<void> {
     {
       description: 'Master Administrator',
       name: 'master_administrator'
+    },
+    {
+      description: 'FREP User',
+      namne: 'frep'
     }
   ];
 
   // If the current table has duplicate role entries, delete them
   await knex.raw(`
     set search_path=public,invasivesbc;
-    DELETE FROM user_role WHERE role_name IN (
-        SELECT role_name FROM (
-            SELECT role_name, ROW_NUMBER() OVER (PARTITION BY role_name ORDER BY role_name) AS rnum
-            FROM user_role
-        ) t
-        WHERE t.rnum > 1
-    )`);
+    DELETE FROM user_role WHERE role_id > 18;
+    `);
 
   // Check if roles already exist in table
   const existingRoleNames = await knex(`${DB_SCHEMA}.user_role`).select('role_name');
@@ -106,11 +105,6 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
         set search_path=public,invasivesbc;
-        DELETE FROM user_role WHERE role_name IN (
-            SELECT role_name FROM (
-                SELECT role_name, ROW_NUMBER() OVER (PARTITION BY role_name ORDER BY role_name) AS rnum
-                FROM user_role
-            ) t
-            WHERE t.rnum > 1
-        )`);
+        DELETE FROM user_role;
+    `);
 }

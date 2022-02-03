@@ -10,7 +10,7 @@ export async function seed(knex: Knex): Promise<void> {
   // If the role table has duplicate role entries, delete them
   await knex.raw(`
     set search_path=public,invasivesbc;
-    DELETE FROM user_role WHERE role_id > 18;
+    DELETE FROM user_role WHERE role_id > 19;
   `);
 
   await knex.raw(`alter sequence ${DB_SCHEMA}.code_code_id_seq restart with 1`);
