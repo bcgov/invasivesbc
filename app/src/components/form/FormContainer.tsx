@@ -80,9 +80,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
 
-  const [lastPreservedEvent, setlastPreservedEvent] = useState(null);
-  const [blurTriggered, setblurTriggered] = useState(null);
-
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const rjsfThemeDark = createTheme({
@@ -229,13 +226,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (!props.onFormChange || !lastPreservedEvent) {
-  //     return;
-  //   }
-  //   props.onFormChange(lastPreservedEvent, formRef, focusedFieldArgs);
-  // }, [blurTriggered]);
-
   //handle focus the field
   //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
   //so that the user will be tasked to force the value out of range again
@@ -363,7 +353,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   }}
                   onBlur={(...args: string[]) => {
                     blurHandler(args);
-                    // setblurTriggered(Math.random());
                   }}
                   uiSchema={schemas.uiSchema}
                   formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
@@ -384,21 +373,18 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   onChange={(event) => {
-                    // setlastPreservedEvent(event);
                     props.onFormChange(event, formRef, focusedFieldArgs);
                   }}
                   onError={(error) => {
                     if (!props.onFormSubmitError) {
                       return;
                     }
-                    console.log('error');
                     props.onFormSubmitError(error, formRef);
                   }}
                   onSubmit={(event) => {
                     if (!props.onFormSubmitSuccess) {
                       return;
                     }
-                    console.log('onsubmit');
                     props.onFormSubmitSuccess(event, formRef);
                   }}
                   // `ref` does exist, but currently is missing from the `index.d.ts` types file.
