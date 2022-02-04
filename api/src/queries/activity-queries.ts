@@ -161,10 +161,9 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
   // sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
-  sqlStatement.append(SQL` FROM activity_incoming_data WHERE 1 = 1`);
-
-  // don't include deleted or out-dated records
-  sqlStatement.append(SQL` AND deleted_timestamp IS NULL`);
+  sqlStatement.append(
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id where 1=1`
+  );
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
@@ -278,10 +277,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
-  sqlStatement.append(SQL` FROM activity_incoming_data WHERE 1 = 1`);
-
-  // don't include deleted or out-dated records
-  sqlStatement.append(SQL` AND deleted_timestamp IS NULL`);
+  sqlStatement.append(
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id WHERE 1 = 1`
+  );
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
@@ -424,9 +422,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
  */
 export const getActivitySQL = (activityId: string): SQLStatement => {
   return SQL`
-    SELECT * FROM activity_incoming_data
-    WHERE activity_id = ${activityId}
-    AND deleted_timestamp IS NULL;
+    SELECT a.* FROM activity_incoming_data a
+    join activity_current b on a.activity_incoming_data_id = b.incoming_data_id
+    WHERE a.activity_id = ${activityId}
   `;
 };
 
