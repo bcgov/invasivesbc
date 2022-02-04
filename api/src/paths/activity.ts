@@ -74,7 +74,7 @@ const post_put_apiDoc = {
               description: 'Whether the activity was saved or not, or had a saving error'
             },
             form_status: {
-              enum: ['Valid', 'Invalid', 'Not Validated'],
+              enum: ['Submitted', 'In review', 'Draft'],
               type: 'string',
               title: 'Form status',
               description: 'Validation status of the activity form.'

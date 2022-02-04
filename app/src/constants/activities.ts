@@ -159,8 +159,9 @@ export enum ActivityLetter {
 }
 
 export enum ActivityStatus {
-  NEW = 'New',
-  EDITED = 'Edited'
+  DRAFT = 'Draft',
+  SUBMITTED = 'Submitted',
+  IN_REVIEW = 'In Review'
 }
 
 export enum ActivitySyncStatus {

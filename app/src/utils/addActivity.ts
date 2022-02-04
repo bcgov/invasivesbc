@@ -51,7 +51,7 @@ export const activityDefaults = {
   created_by: undefined,
   user_role: undefined,
   sync_status: ActivitySyncStatus.NOT_SAVED,
-  form_status: FormValidationStatus.NOT_VALIDATED,
+  form_status: ActivityStatus.DRAFT,
   review_status: ReviewStatus.NOT_REVIEWED,
   reviewed_by: undefined,
   reviewed_at: undefined
@@ -198,7 +198,7 @@ export const sanitizeRecord = (input: any) => {
       // db-field overrides:
       created_timestamp: created_timestamp || flattened.date_created || now,
       sync_status: sync_status || flattened.sync?.status || ActivitySyncStatus.NOT_SAVED,
-      form_status: form_status || FormValidationStatus.NOT_VALIDATED,
+      form_status: form_status || ActivityStatus.DRAFT,
       geom: geom || flattened.geometry || flattened.activity_payload.geometry,
       geog: geog || flattened.geography,
       short_id: flattened.short_id || getShortActivityID(flattened),
@@ -228,7 +228,7 @@ export const sanitizeRecord = (input: any) => {
       },
 
       // legacy: dont actually care about these:
-      status: flattened.status || ActivityStatus.NEW,
+      status: flattened.status || ActivityStatus.DRAFT,
       date_created: flattened.date_created || now,
       date_updated: flattened.date_updated || flattened.date_created || null,
       media: flattened.photos?.map((photo) => ({
@@ -320,7 +320,7 @@ export function generateActivityPayload(
     docType: docType,
     activityType,
     activitySubtype,
-    status: ActivityStatus.NEW,
+    status: ActivityStatus.DRAFT,
     sync: {
       ready: false,
       status: ActivitySyncStatus.NOT_SAVED,
@@ -329,7 +329,7 @@ export function generateActivityPayload(
     dateCreated: new Date(),
     dateUpdated: null,
     formData,
-    formStatus: FormValidationStatus.NOT_VALIDATED,
+    formStatus: ActivityStatus.DRAFT,
     geometry
   };
 }
@@ -371,7 +371,7 @@ export function generateDBActivityPayload(
     created_by: undefined,
     user_role: undefined,
     sync_status: ActivitySyncStatus.NOT_SAVED,
-    form_status: FormValidationStatus.NOT_VALIDATED,
+    form_status: ActivityStatus.DRAFT,
     review_status: 'Not Reviewed',
     reviewed_by: undefined,
     reviewed_at: undefined
@@ -386,7 +386,7 @@ export function cloneDBRecord(dbRecord) {
     _id: id,
     date_created: time,
     date_updated: null,
-    status: ActivityStatus.NEW,
+    status: ActivityStatus.DRAFT,
     activity_id: id
   };
   clonedRecord.short_id = getShortActivityID(clonedRecord);
@@ -423,7 +423,7 @@ export async function cloneActivity(clonedRecord: any) {
     _id: id,
     dateCreated: new Date(),
     dateUpdated: null,
-    status: ActivityStatus.NEW,
+    status: ActivityStatus.DRAFT,
     activityId: id
   };
 

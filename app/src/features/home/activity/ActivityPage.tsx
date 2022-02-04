@@ -334,11 +334,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       props.setFormHasErrors(false);
     }
 
-    await formRef.setState({
+    /*await formRef.setState({
       ...formRef.state,
       schemaValidationErrors: [],
       schemaValidationErrorSchema: {}
-    });
+    });*/
 
     updateDoc({
       formData: event.formData,
@@ -379,9 +379,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const pasteFormData = async () => {
     await updateDoc({
       formData: retrieveFormDataFromSession(doc),
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
