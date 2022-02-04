@@ -385,7 +385,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     if (!props.onFormSubmitSuccess) {
                       return;
                     }
-                    props.onFormSubmitSuccess(event, formRef);
+                    console.log('on submit success');
+                    try {
+                      props.onFormSubmitSuccess(event, formRef);
+                    } catch (e) {
+                      console.log(e);
+                    }
                   }}
                   // `ref` does exist, but currently is missing from the `index.d.ts` types file.
                   // @ts-ignore: No overload matches this call ts(2769)

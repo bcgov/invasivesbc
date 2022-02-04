@@ -274,7 +274,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         },
         geometry: geom,
-        status: ActivityStatus.EDITED,
+        status: ActivityStatus.DRAFT,
         dateUpdated: new Date()
       };
       await updateDoc(activityDoc);
@@ -310,9 +310,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     console.log(error);
     updateDoc({
       formData: formRef.current.state.formData,
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.INVALID
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
@@ -342,9 +342,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     updateDoc({
       formData: event.formData,
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
