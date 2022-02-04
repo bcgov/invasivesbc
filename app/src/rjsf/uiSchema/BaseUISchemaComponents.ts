@@ -1,13 +1,13 @@
 /**
- * 
+ *
  * This file should contain UI Schema items.
  *
  */
 
-/** 
+/**
  * ------------------  Styling  -----------------------
-*/
- 
+ */
+
 const FourColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
@@ -29,9 +29,9 @@ const OneColumnStyle = {
   'ui:column-lg': 12
 };
 
-/** 
+/**
  * ------------------  Activity Data Objects  -----------------------
-*/
+ */
 
 const Activity = {
   activity_date_time: { 'ui:widget': 'datetime' },
@@ -43,17 +43,17 @@ const Activity = {
   utm_northing: { 'ui:readonly': true },
   employer_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_species_agency_code: { 'ui:widget': 'multi-select-autocomplete' },
-  jurisdictions: { 
+  jurisdictions: {
     items: {
-      jurisdiction_code: {'ui:widget': 'single-select-autocomplete'},
+      jurisdiction_code: { 'ui:widget': 'single-select-autocomplete' },
       percent_covered: {}
-    } 
+    }
   },
-  location_description: { 'ui:widget': 'textarea'},
-  access_description: { 'ui:widget': 'textarea'},
+  location_description: { 'ui:widget': 'textarea' },
+  access_description: { 'ui:widget': 'textarea' },
   project_code: {},
   general_comment: { 'ui:widget': 'textarea' },
-  'ui:order':[
+  'ui:order': [
     'activity_date_time',
     'reported_area',
     'latitude',
@@ -71,35 +71,35 @@ const Activity = {
   ]
 };
 
-/** 
+/**
  * ------------------  Activity Type Data Objects  -----------------------
-*/
+ */
 
 const Observation = {
   pre_treatment_observation: {},
   activity_persons: {},
-  "ui:order":['pre_treatment_observation','activity_persons']
+  'ui:order': ['pre_treatment_observation', 'activity_persons']
 };
 
 const Monitoring = {
   linked_id: { 'ui:widget': 'single-select-autocomplete' },
   activity_persons: {},
-  'ui:order': ['linked_id', 'activity_persons'],
+  'ui:order': ['linked_id', 'activity_persons']
 };
 
 const Treatment = {
-    activity_persons: {},
-    'ui:order':['activity_persons']
+  activity_persons: {},
+  'ui:order': ['activity_persons']
 };
 
 const Treatment_Chemical = {
-    activity_persons: {},
-    'ui:order':['activity_persons']
+  activity_persons: {},
+  'ui:order': ['activity_persons']
 };
 
 const Collection = {
   activity_persons: {},
-  'ui:order':['activity_persons']
+  'ui:order': ['activity_persons']
 };
 
 const TransectData = {
@@ -143,7 +143,7 @@ const TransectData = {
   plot_location: {},
   veg_transect_sampler: {},
   veg_transect_recorder: {},
-  'ui:order':[  
+  'ui:order': [
     'utm_zone',
     'transect_start_date_time',
     'transect_end_date_time',
@@ -187,9 +187,9 @@ const TransectData = {
   ]
 };
 
-/** 
+/**
  * ------------------------  General Objects  -----------------------------
-*/
+ */
 
 const Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -198,17 +198,17 @@ const Biological_Agent_Stage = {
 };
 
 const Well_Information = {
-  items:{
-  ...TwoColumnStyle,
-  well_id: { 'ui:readonly': true },
-  well_proximity: { 'ui:readonly': true },
-  'ui:order':['well_id','well_proximity'],
+  items: {
+    ...TwoColumnStyle,
+    well_id: { 'ui:readonly': true },
+    well_proximity: { 'ui:readonly': true },
+    'ui:order': ['well_id', 'well_proximity']
   },
-    'ui:options': {
-      'addable': false,
-      'orderable': false,
-      'removable': false,
-    },
+  'ui:options': {
+    addable: false,
+    orderable: false,
+    removable: false
+  }
 };
 
 const ShorelineTypes = {
@@ -221,7 +221,7 @@ const ShorelineTypes = {
 
 const Authorization_Infotmation = {
   additional_auth_information: {},
-  'ui:order':['additional_auth_information']
+  'ui:order': ['additional_auth_information']
 };
 
 const WaterQuality = {
@@ -229,11 +229,7 @@ const WaterQuality = {
   water_sample_depth: {},
   secchi_depth: {},
   water_colour: {},
-  'ui:order':[
-    'water_sample_depth',
-    'secchi_depth',
-    'water_colour'
-  ]
+  'ui:order': ['water_sample_depth', 'secchi_depth', 'water_colour']
 };
 
 const TerrestrialPlant = {
@@ -255,10 +251,10 @@ const TerrestrialPlant = {
     exact_utm_coords: {}
   },
   edna_sample_information: {
-      edna_sample_id: {},
-      genetic_structure_collected: {}
+    edna_sample_id: {},
+    genetic_structure_collected: {}
   },
-  'ui:order':[
+  'ui:order': [
     'invasive_plant_code',
     'occurrence',
     'edna_sample',
@@ -310,13 +306,7 @@ const WaterbodyData = {
   waterbody_name_local: {},
   waterbody_access: {},
   waterbody_use: { 'ui:widget': 'multi-select-autocomplete' },
-  'ui:order':[
-    'waterbody_type',
-    'waterbody_name_gazetted',
-    'waterbody_name_local',
-    'waterbody_access',
-    'waterbody_use'
-  ]
+  'ui:order': ['waterbody_type', 'waterbody_name_gazetted', 'waterbody_name_local', 'waterbody_access', 'waterbody_use']
 };
 
 const WaterbodyData_AdditionalFields = {
@@ -329,7 +319,7 @@ const WaterbodyData_AdditionalFields = {
   outflow: { 'ui:widget': 'multi-select-autocomplete' },
   outflow_other: { 'ui:widget': 'multi-select-autocomplete' },
   comment: { 'ui:widget': 'textarea' },
-  'ui:order':[
+  'ui:order': [
     'waterbody_type',
     'waterbody_name_gazetted',
     'waterbody_name_local',
@@ -355,14 +345,14 @@ const Weather_Conditions = {
   wind_speed: { validateOnBlur: true },
   wind_aspect: {},
   weather_comments: { 'ui:widget': 'textarea' },
-  'ui:order':['temperature','cloud_cover_code','precipitation_code','wind_speed','wind_aspect','weather_comments']
+  'ui:order': ['temperature', 'cloud_cover_code', 'precipitation_code', 'wind_speed', 'wind_aspect', 'weather_comments']
 };
 
 const Microsite_Conditions = {
   ...TwoColumnStyle,
   mesoslope_position_code: { 'ui:widget': 'single-select-autocomplete' },
   site_surface_shape_code: { 'ui:widget': 'single-select-autocomplete' },
-  'ui:order':['mesoslope_position_code','site_surface_shape_code']
+  'ui:order': ['mesoslope_position_code', 'site_surface_shape_code']
 };
 
 const Target_Plant_Phenology = {
@@ -376,7 +366,18 @@ const Target_Plant_Phenology = {
   seeds_forming: {},
   senescent: {},
   target_plant_height: {},
-  'ui:order':['phenology_details_recorded','target_plant_heights','winter_dormant','seedlings','rosettes','bolts','flowering','seeds_forming','senescent','target_plant_height']
+  'ui:order': [
+    'phenology_details_recorded',
+    'target_plant_heights',
+    'winter_dormant',
+    'seedlings',
+    'rosettes',
+    'bolts',
+    'flowering',
+    'seeds_forming',
+    'senescent',
+    'target_plant_height'
+  ]
 };
 
 const Spread_Results = {
@@ -386,7 +387,7 @@ const Spread_Results = {
   plant_attack: {},
   max_spread_distance: {},
   max_spread_aspect: {},
-  'ui:order':['spread_details_recorded','agent_density','plant_attack','max_spread_distance','max_spread_aspect']
+  'ui:order': ['spread_details_recorded', 'agent_density', 'plant_attack', 'max_spread_distance', 'max_spread_aspect']
 };
 
 const TransectLine = {
@@ -399,7 +400,7 @@ const TransectLine = {
   end_y_utm: {},
   transect_length: { 'ui:readonly': true },
   transect_bearing: { 'ui:readonly': true },
-  'ui:order':[  
+  'ui:order': [
     'transect_line_id',
     'transect_comment',
     'start_x_utm',
@@ -412,8 +413,8 @@ const TransectLine = {
 };
 
 const InvasivePlants = {
-    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-    'ui:order':['invasive_plant_code'] 
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  'ui:order': ['invasive_plant_code']
 };
 
 const FireMonitoringTransectPoints = {
@@ -433,7 +434,7 @@ const FireMonitoringTransectPoints = {
       ...InvasivePlants
     }
   },
-  'ui:order':[    
+  'ui:order': [
     'sample_point_id',
     'offset_distance',
     'utm_x',
@@ -457,12 +458,12 @@ const FireMonitoringTransectLine = {
       ...FireMonitoringTransectPoints
     }
   },
-  'ui:order':['transect_line','fire_monitoring_transect_points']
+  'ui:order': ['transect_line', 'fire_monitoring_transect_points']
 };
 
 const FireMonitoringTransectLines = {
   items: {
-    ...FireMonitoringTransectLine,
+    ...FireMonitoringTransectLine
   }
 };
 
@@ -471,7 +472,7 @@ const VegetationTransectPoints = {
   offset_distance: {},
   utm_x: { 'ui:readonly': true },
   utm_y: { 'ui:readonly': true },
-  'ui:order':['sample_point_id','offset_distance','utm_x','utm_y']
+  'ui:order': ['sample_point_id', 'offset_distance', 'utm_x', 'utm_y']
 };
 
 const VegetationTransectSpeciesDaubenmire = {
@@ -479,24 +480,24 @@ const VegetationTransectSpeciesDaubenmire = {
     items: {
       invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
       daubenmire_classification: { 'ui:widget': 'single-select-autocomplete' },
-      'ui:order':['invasive_plant_code','daubenmire_classification']
+      'ui:order': ['invasive_plant_code', 'daubenmire_classification']
     }
   },
   lumped_species: {
     items: {
       lumped_species_type: { 'ui:widget': 'single-select-autocomplete' },
       daubenmire_classification: { 'ui:widget': 'single-select-autocomplete' },
-      'ui:order':['lumped_species_type','daubenmire_classification']
+      'ui:order': ['lumped_species_type', 'daubenmire_classification']
     }
   },
   custom_species: {
     items: {
       custom_species_type: { 'ui:widget': 'single-select-autocomplete' },
       daubenmire_classification: { 'ui:widget': 'single-select-autocomplete' },
-      'ui:order':['custom_species_type','daubenmire_classification']
+      'ui:order': ['custom_species_type', 'daubenmire_classification']
     }
   },
-  'ui:order':['invasive_plants','lumped_species','custom_species']
+  'ui:order': ['invasive_plants', 'lumped_species', 'custom_species']
 };
 
 const VegetationTransectPointsDaubenmire = {
@@ -506,7 +507,7 @@ const VegetationTransectPointsDaubenmire = {
   vegetation_transect_species: {
     ...VegetationTransectSpeciesDaubenmire
   },
-  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+  'ui:order': ['vegetation_transect_points', 'vegetation_transect_species']
 };
 
 const VegetationTransectSpeciesPercentCover = {
@@ -514,24 +515,24 @@ const VegetationTransectSpeciesPercentCover = {
     items: {
       invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
       percent_covered: {},
-      'ui:order':['invasive_plant_code','percent_covered']
+      'ui:order': ['invasive_plant_code', 'percent_covered']
     }
   },
   lumped_species: {
     items: {
       lumped_species_type: { 'ui:widget': 'single-select-autocomplete' },
       percent_covered: {},
-      'ui:order':['lumped_species_type','percent_covered']
+      'ui:order': ['lumped_species_type', 'percent_covered']
     }
   },
   custom_species: {
     items: {
       custom_species_type: { 'ui:widget': 'single-select-autocomplete' },
       percent_covered: {},
-      'ui:order':['custom_species_type','percent_covered']
+      'ui:order': ['custom_species_type', 'percent_covered']
     }
   },
-  'ui:order':['invasive_plants','lumped_species','custom_species']
+  'ui:order': ['invasive_plants', 'lumped_species', 'custom_species']
 };
 
 const VegetationTransectSpeciesNumberPlants = {
@@ -539,24 +540,24 @@ const VegetationTransectSpeciesNumberPlants = {
     items: {
       invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
       number_plants: {},
-      'ui:order':['invasive_plant_code','number_plants']
+      'ui:order': ['invasive_plant_code', 'number_plants']
     }
   },
   lumped_species: {
     items: {
       lumped_species_type: { 'ui:widget': 'single-select-autocomplete' },
       number_plants: {},
-      'ui:order':['lumped_species_type','number_plants']
+      'ui:order': ['lumped_species_type', 'number_plants']
     }
   },
   custom_species: {
     items: {
       custom_species_type: { 'ui:widget': 'single-select-autocomplete' },
       number_plants: {},
-      'ui:order':['custom_species_type','number_plants']
+      'ui:order': ['custom_species_type', 'number_plants']
     }
   },
-  'ui:order':['invasive_plants','lumped_species','custom_species']
+  'ui:order': ['invasive_plants', 'lumped_species', 'custom_species']
 };
 
 const VegetationTransectPointsNumberPlants = {
@@ -566,7 +567,7 @@ const VegetationTransectPointsNumberPlants = {
   vegetation_transect_species: {
     ...VegetationTransectSpeciesNumberPlants
   },
-  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+  'ui:order': ['vegetation_transect_points', 'vegetation_transect_species']
 };
 
 const VegetationTransectPointsPercentCover = {
@@ -576,7 +577,7 @@ const VegetationTransectPointsPercentCover = {
   vegetation_transect_species: {
     ...VegetationTransectSpeciesPercentCover
   },
-  'ui:order':['vegetation_transect_points','vegetation_transect_species']
+  'ui:order': ['vegetation_transect_points', 'vegetation_transect_species']
 };
 
 const VegetationTransectLine = {
@@ -599,7 +600,7 @@ const VegetationTransectLine = {
       ...VegetationTransectPointsDaubenmire
     }
   },
-  'ui:order':[
+  'ui:order': [
     'transect_line',
     'count_type',
     'vegetation_transect_points_percent_cover',
@@ -622,7 +623,7 @@ const TransectInvasivePlants = {
   soil_texture_code: { 'ui:widget': 'single-select-autocomplete' },
   linear_infestation: {},
   biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  'ui:order':[  
+  'ui:order': [
     'invasive_plant_code',
     'invasive_plant_density_code',
     'invasive_plant_distribution_code',
@@ -647,7 +648,7 @@ const BiocontrolEfficacyTransectPoint = {
   veg_transect_bryophytes: {},
   veg_transect_litter: {},
   veg_total_percentage: { 'ui:readonly': true },
-  'ui:order': [  
+  'ui:order': [
     'sample_point_id',
     'offset_distance',
     'utm_x',
@@ -673,7 +674,7 @@ const BiocontrolEfficacyTransectLine = {
       ...BiocontrolEfficacyTransectPoint
     }
   },
-  'ui:order': ['transect_line','biocontrol_efficacy_transect_points']
+  'ui:order': ['transect_line', 'biocontrol_efficacy_transect_points']
 };
 
 const BiocontrolEfficacyTransectLines = {
@@ -701,40 +702,40 @@ const FREP_Stand_Table = {
 };
 
 const FREP_FormA = {
-    plot_identification: {
-      ...ThreeColumnStyle,
-        date: {},
-        opening_id: {},
-        assessed_by: {},
-        plot_number: {},
-        utm_zone: {},
-        easting: {},
-        northing: {}
-    },
-    plot_identification_trees: {
-      ...ThreeColumnStyle,
-      trees_exist: {},
-      baf: {},
-      fixed_area: {},
-      full_count_area: {},
-      tree_comments: { 'ui:widget': 'textarea' }
-    },
-    stand_table: {
+  plot_identification: {
+    ...ThreeColumnStyle,
+    date: {},
+    opening_id: {},
+    assessed_by: {},
+    plot_number: {},
+    utm_zone: {},
+    easting: {},
+    northing: {}
+  },
+  plot_identification_trees: {
+    ...ThreeColumnStyle,
+    trees_exist: {},
+    baf: {},
+    fixed_area: {},
+    full_count_area: {},
+    tree_comments: { 'ui:widget': 'textarea' }
+  },
+  stand_table: {
+    items: {
+      ...FREP_Stand_Table
+    }
+  },
+  plot_information: {
+    ...ThreeColumnStyle,
+    cwd_in_transect: {},
+    first_leg: {},
+    second_leg: {},
+    log: {
       items: {
-        ...FREP_Stand_Table
+        ...FREP_Log
       }
     },
-    plot_information: {
-      ...ThreeColumnStyle,
-      cwd_in_transect: {},
-      first_leg: {},
-      second_leg: {},
-      log: {
-        items: {
-          ...FREP_Log
-        }
-      },
-      log_comments: {}
+    log_comments: {}
   }
 };
 
@@ -812,17 +813,17 @@ const FREP_FormB = {
 const FREP_FormC = {
   opening_identification: {
     ...ThreeColumnStyle,
-      opening_number: {},
-      opening_id: {},
-      license_number: {},
-      cp_number: {},
-      block: {},
-      licensee: {},
-      district_code: { 'ui:widget': 'single-select-autocomplete' },
-      location_description: { 'ui:widget': 'textarea'},
-      nar: {},
-      gross_area: {},
-      override_code: { 'ui:widget': 'single-select-autocomplete' }
+    opening_number: {},
+    opening_id: {},
+    license_number: {},
+    cp_number: {},
+    block: {},
+    licensee: {},
+    district_code: { 'ui:widget': 'single-select-autocomplete' },
+    location_description: { 'ui:widget': 'textarea' },
+    nar: {},
+    gross_area: {},
+    override_code: { 'ui:widget': 'single-select-autocomplete' }
   },
   innovative_practices: {
     ...ThreeColumnStyle,
@@ -834,9 +835,9 @@ const FREP_FormC = {
   },
   evaluator_opinion: {
     ...ThreeColumnStyle,
-      evaluator_opinion_code: { 'ui:widget': 'single-select-autocomplete' },
-      rationale: {}
-    },
+    evaluator_opinion_code: { 'ui:widget': 'single-select-autocomplete' },
+    rationale: {}
+  },
   form_b: {
     items: {
       ...FREP_FormB
@@ -844,16 +845,16 @@ const FREP_FormC = {
   }
 };
 
-/** 
+/**
  * ------------------------  Subtype Information Objects  -----------------------------
-*/
+ */
 
 const Treatment_ChemicalPlant_Information = {
   ...ThreeColumnStyle,
   pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
   pesticide_use_permit_PUP: {},
   pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
-  pmp_not_in_dropdown:{},
+  pmp_not_in_dropdown: {},
   chemical_method_code: { 'ui:widget': 'single-select-autocomplete' },
   temperature: { validateOnBlur: true },
   wind_speed: { validateOnBlur: true },
@@ -886,9 +887,15 @@ const Treatment_MechanicalPlant_Information = {
     disposed_material: {
       disposed_material_input_format: {},
       disposed_material_input_number: {},
-      "ui:order":['disposed_material_input_format','disposed_material_input_number']
-    }, 
-    "ui:order":['invasive_plant_code','treated_area','mechanical_method_code','mechanical_disposal_code','disposed_material']
+      'ui:order': ['disposed_material_input_format', 'disposed_material_input_number']
+    },
+    'ui:order': [
+      'invasive_plant_code',
+      'treated_area',
+      'mechanical_method_code',
+      'mechanical_disposal_code',
+      'disposed_material'
+    ]
   }
 };
 
@@ -901,13 +908,21 @@ const Observation_PlantTerrestrial_Information = {
   aspect_code: { 'ui:widget': 'single-select-autocomplete' },
   research_detection_ind: {},
   well_ind: {},
-  'ui:order':['soil_texture_code','specific_use_code','slope_code','aspect_code','research_detection_ind','well_ind','suitable_for_biocontrol_agent']
+  'ui:order': [
+    'soil_texture_code',
+    'specific_use_code',
+    'slope_code',
+    'aspect_code',
+    'research_detection_ind',
+    'well_ind',
+    'suitable_for_biocontrol_agent'
+  ]
 };
 
 const Observation_PlantAquatic_Information = {
   ...OneColumnStyle,
   suitable_for_biocontrol_agent: {},
-  'ui:order':['suitable_for_biocontrol_agent']
+  'ui:order': ['suitable_for_biocontrol_agent']
 };
 
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
@@ -915,7 +930,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order':['invasive_plant_code','aquatic_invasive_plant_code','monitoring_details']
+  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details']
 };
 
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
@@ -923,7 +938,7 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order':['invasive_plant_code','aquatic_invasive_plant_code','monitoring_details']
+  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details']
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
@@ -933,22 +948,22 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   biocontrol_present: {},
   biological_agent_presence_code: { 'ui:widget': 'multi-select-autocomplete' },
   monitoring_type: {},
-  plant_count:{},
+  plant_count: {},
   monitoring_method: {},
-  num_of_sweeps:{},
+  num_of_sweeps: {},
   start_time: {},
   stop_time: {},
   bio_agent_location_code: { 'ui:widget': 'multi-select-autocomplete' },
-  actual_biological_agents: { items: {...Biological_Agent_Stage } },
-  estimated_biological_agents: { items: {...Biological_Agent_Stage } },
+  actual_biological_agents: { items: { ...Biological_Agent_Stage } },
+  estimated_biological_agents: { items: { ...Biological_Agent_Stage } },
   total_bio_agent_quantity_actual: { 'ui:readonly': true },
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   count_duration: {},
   suitable_collection_site: {},
-  collection_history: { },
+  collection_history: {},
   collection_history_comments: { 'ui:widget': 'textarea' },
   legacy_presence_ind: {},
-  'ui:order':[
+  'ui:order': [
     'invasive_plant_code',
     'biological_agent_code',
     'biocontrol_present',
@@ -983,12 +998,12 @@ const Monitoring_BiocontrolDispersal_Information = {
   monitoring_type: {},
   plant_count: {},
   monitoring_method: {},
-  num_of_sweeps:{},
+  num_of_sweeps: {},
   start_time: {},
   stop_time: {},
   bio_agent_location_code: { 'ui:widget': 'multi-select-autocomplete' },
-  actual_biological_agents: { items: {...Biological_Agent_Stage } },
-  estimated_biological_agents: { items: {...Biological_Agent_Stage } },
+  actual_biological_agents: { items: { ...Biological_Agent_Stage } },
+  estimated_biological_agents: { items: { ...Biological_Agent_Stage } },
   total_bio_agent_quantity_actual: { 'ui:readonly': true },
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   total_bio_agent_quantity: { 'ui:readonly': true },
@@ -1014,7 +1029,7 @@ const Monitoring_BiocontrolDispersal_Information = {
     'total_bio_agent_quantity_estimated',
     'total_bio_agent_quantity',
     'suitable_collection_site'
-  ],
+  ]
 };
 
 const Biocontrol_Collection_Information = {
@@ -1027,12 +1042,12 @@ const Biocontrol_Collection_Information = {
     plant_count: {},
     collection_method: { 'ui:widget': 'single-select-autocomplete' },
     num_of_sweeps: {},
-    start_time: { },
+    start_time: {},
     stop_time: { 'ui:widget': 'datetime' },
     actual_quantity_and_life_stage_of_agent_collected: {},
     estimated_quantity_and_life_stage_of_agent_collected: {},
     comment: { 'ui:widget': 'textarea' },
-    'ui:order':[
+    'ui:order': [
       'invasive_plant_code',
       'biological_agent_code',
       'historical_iapp_site_id',
@@ -1044,7 +1059,8 @@ const Biocontrol_Collection_Information = {
       'stop_time',
       'actual_quantity_and_life_stage_of_agent_collected',
       'estimated_quantity_and_life_stage_of_agent_collected',
-      'comment']
+      'comment'
+    ]
   }
 };
 
@@ -1060,7 +1076,7 @@ const Biocontrol_Release_Information = {
   biological_agent_stages: {},
   total_release_quantity: { 'ui:readonly': true },
   linear_segment: {},
-  'ui:order':[
+  'ui:order': [
     'invasive_plant_code',
     'biological_agent_code',
     'biological_agent_stages',
@@ -1072,9 +1088,8 @@ const Biocontrol_Release_Information = {
     'plant_collected_from',
     'total_release_quantity',
     'biological_agent_stage_code'
-  ],
+  ]
 };
-
 
 /*
   Export
@@ -1130,7 +1145,7 @@ const BaseUISchemaComponents = {
     TransectInvasivePlants,
     BiocontrolEfficacyTransectLines,
     FREP_FormC
-  },
+  }
 };
 
 export default BaseUISchemaComponents;

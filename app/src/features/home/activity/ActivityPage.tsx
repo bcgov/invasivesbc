@@ -172,14 +172,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const appStateResults = await dataAccess.getAppState(databaseContext);
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(
-          updated._id,
-          databaseContext,
-          false,
-          appStateResults.referenceData
-        );
+        // const oldActivity = await dataAccess.getActivityById(
+        //   updated._id,
+        //   databaseContext,
+        //   false,
+        //   appStateResults.referenceData
+        // );
         const newActivity = {
-          ...oldActivity,
+          // ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
 
@@ -274,7 +274,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         },
         geometry: geom,
-        status: ActivityStatus.EDITED,
+        status: ActivityStatus.DRAFT,
         dateUpdated: new Date()
       };
       await updateDoc(activityDoc);
@@ -307,11 +307,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const onFormSubmitError = (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
+    console.log(error);
     updateDoc({
       formData: formRef.current.state.formData,
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.INVALID
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
@@ -333,17 +334,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       props.setFormHasErrors(false);
     }
 
-    await formRef.setState({
+    /*await formRef.setState({
       ...formRef.state,
       schemaValidationErrors: [],
       schemaValidationErrorSchema: {}
-    });
+    });*/
 
     updateDoc({
       formData: event.formData,
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
@@ -378,9 +379,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const pasteFormData = async () => {
     await updateDoc({
       formData: retrieveFormDataFromSession(doc),
-      status: ActivityStatus.EDITED,
+      status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
+      formStatus: ActivityStatus.DRAFT
     });
   };
 
@@ -825,8 +826,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         />
       </MapRecordsContextProvider>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
-        <Alert onClose={handleAlertErrorsClose} severity="error" sx={{ width: '100%' }}>
-          There are errors in your form. Please make sure your form contains no errors and try again.
+        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
+          The form was saved with errors.
         </Alert>
       </Snackbar>
     </Container>

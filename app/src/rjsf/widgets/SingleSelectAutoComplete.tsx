@@ -182,6 +182,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             setValue('');
             props.onChange('');
           } else {
+            console.log('on change!');
             setValue(option);
             setEvent(event);
 

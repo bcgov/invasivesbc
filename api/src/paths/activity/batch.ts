@@ -121,7 +121,7 @@ const batch_apiDoc = {
                     description: 'Whether the activity was saved or not, or had a saving error'
                   },
                   form_status: {
-                    enum: ['Valid', 'Invalid', 'Not Validated'],
+                    enum: ['Submitted', 'In Review'],
                     type: 'string',
                     title: 'Form status',
                     description: 'Validation status of the activity form.'

@@ -3,7 +3,7 @@ import { Persons } from './Components/General_Sub_Forms';
 export const Observation = {
   title: 'Observation Information',
   type: 'object',
-  required: ['observation_type_code', 'activity_persons'],
+  required: ['activity_persons'],
   properties: {
     pre_treatment_observation: {
       title: 'Pre-treatment Observation',

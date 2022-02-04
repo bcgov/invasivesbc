@@ -38,7 +38,6 @@ const post_put_apiDoc = {
             'activity_type',
             'activity_subtype',
             'created_by',
-            'sync_status',
             'form_status'
           ],
           properties: {
@@ -74,7 +73,7 @@ const post_put_apiDoc = {
               description: 'Whether the activity was saved or not, or had a saving error'
             },
             form_status: {
-              enum: ['Valid', 'Invalid', 'Not Validated'],
+              enum: ['Submitted', 'In review', 'Draft'],
               type: 'string',
               title: 'Form status',
               description: 'Validation status of the activity form.'
@@ -153,7 +152,7 @@ const post_put_apiDoc = {
                       description: 'Whether the activity was saved or not, or had a saving error'
                     },
                     form_status: {
-                      enum: ['Valid'],
+                      enum: ['Submitted', 'In Review', 'Draft'],
                       type: 'string',
                       title: 'Form status',
                       description: 'Validation status of the activity form.'
@@ -163,7 +162,7 @@ const post_put_apiDoc = {
                 {
                   properties: {
                     form_status: {
-                      enum: ['Invalid', 'Not Validated'],
+                      enum: ['Submitted', 'Draft', 'In Review'],
                       type: 'string',
                       title: 'Form status',
                       description: 'Validation status of the activity form.'
