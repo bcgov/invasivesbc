@@ -21,6 +21,18 @@ export const Observation = {
         ...Persons
       },
       'x-tooltip-text': 'Name of person(s) doing the observation'
+    },
+    observation_type_code: {
+      type: 'string',
+      title: 'Type',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'observation_type_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      default: 'OP'
     }
   }
 };

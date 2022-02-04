@@ -307,6 +307,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const onFormSubmitError = (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
+    console.log(error);
     updateDoc({
       formData: formRef.current.state.formData,
       status: ActivityStatus.EDITED,
