@@ -629,21 +629,8 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       <ActivitiesTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          },
-          ...activitesDefaultHeaders
-        ]}
+        headers={[...headers, 'form_status', ...activitesDefaultHeaders]}
         created_by={userInfo?.preferred_username}
-        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -762,18 +749,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
       <ObservationsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -907,18 +883,7 @@ export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
       <PlantTreatmentsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1047,18 +1012,7 @@ export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
       <AnimalTreatmentsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1135,18 +1089,7 @@ export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
       <PlantMonitoringTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1221,18 +1164,7 @@ export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
       <AnimalMonitoringTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1284,18 +1216,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
       <TransectsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1391,18 +1312,7 @@ export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
       <BiocontrolTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
+        headers={[...headers, 'form_status']}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
@@ -1886,19 +1796,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         tableName="Under Review"
         startingOrderBy="created_timestamp"
         startingOrder="asc"
-        headers={[
-          ...headers,
-          {
-            id: 'sync_status',
-            title: 'Save Status'
-          },
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          },
-          ...activitesDefaultHeaders
-        ]}
+        headers={[...headers, 'form_status', ...activitesDefaultHeaders]}
         rows={
           rows ||
           defaultActivitiesFetch({

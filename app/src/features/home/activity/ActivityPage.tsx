@@ -193,6 +193,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  const onSubmitAsOfficial = () => {
+    let newDoc = { ...doc };
+    newDoc.form_status = ActivityStatus.SUBMITTED;
+    updateDoc(newDoc);
+  };
+
   /**
    * Set the default form data values
    *
@@ -813,6 +819,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               linkedActivity={linkedActivity}
               onFormChange={onFormChange}
               onFormSubmitSuccess={onFormSubmitSuccess}
+              onSubmitAsOfficial={onSubmitAsOfficial}
               onFormSubmitError={onFormSubmitError}
               photoState={{ photos, setPhotos }}
               mapId={doc._id}

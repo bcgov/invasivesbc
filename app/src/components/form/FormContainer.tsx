@@ -59,15 +59,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
    */
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
   onSave?: Function;
-  saveStatus?: string;
-  disableSave?: boolean;
-  onReview?: Function;
-  reviewStatus?: string;
-  disableReview?: boolean;
-  onApprove?: Function;
-  disableApprove?: boolean;
-  onDisapprove?: Function;
-  disableDisapprove?: boolean;
+  onSubmitAsOfficial?: Function;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
@@ -434,6 +426,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               onCopy={props.copyFormData ? () => props.copyFormData() : null}
               onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
               {...props}
+              onSubmitAsOfficial={props.onSubmitAsOfficial ? () => props.onSubmitAsOfficial() : null}
             />
           </Box>
           <Dialog

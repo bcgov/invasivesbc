@@ -1,5 +1,6 @@
 import { Button, Grid, Tooltip, Zoom } from '@mui/material';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { ActivitySyncStatus, ReviewActionDescriptions } from '../../constants/activities';
 
 export interface IFormControlsComponentProps {
@@ -11,19 +12,12 @@ export interface IFormControlsComponentProps {
   activitySubtype?: string;
   hideCheckFormForErrors?: boolean;
   onSave?: Function;
-  saveStatus?: string;
-  disableSave?: boolean;
-  onReview?: Function;
-  reviewStatus?: string;
-  disableReview?: boolean;
-  onApprove?: Function;
-  disableApprove?: boolean;
-  onDisapprove?: Function;
-  disableDisapprove?: boolean;
+  onSubmitAsOfficial?: Function;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
   const isDisabled = props.isDisabled || false;
+  const history = useHistory();
 
   return (
     <>
@@ -42,7 +36,35 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
 
                   props.onSubmit();
                 }}>
-                Save Form
+                Save Record
+              </Button>
+            )}
+          </Grid>
+          <Grid item>
+            {!props.hideCheckFormForErrors && (
+              <Button
+                disabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (!props.onSubmitAsOfficial) {
+                    return;
+                  }
+
+                  props.onSubmitAsOfficial();
+                }}>
+                Submit Record to InvasivesBC
+              </Button>
+            )}
+          </Grid>
+          <Grid item>
+            {!props.hideCheckFormForErrors && (
+              <Button
+                disabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onClick={() => history.push('/home/activities')}>
+                Go Back to My Records
               </Button>
             )}
           </Grid>
