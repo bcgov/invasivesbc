@@ -197,134 +197,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   };
 
-  const onReview = async () => {
-    try {
-      if (
-        activity.formStatus !== FormValidationStatus.VALID ||
-        activity.syncStatus !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-        activity.reviewStatus === ReviewStatus.UNDER_REVIEW
-      )
-        return;
-      const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
-      const result = await dataAccess.updateActivity(
-        sanitizeRecord({
-          ...dbActivity,
-          review_status: ReviewStatus.UNDER_REVIEW
-        }),
-        databaseContext
-      );
-      if (!result?.activity_id) console.log('Count not submit form for review.');
-      else window.location.reload();
-    } catch (error) {
-      console.log('Could not submit form for review.  Are you connected to the internet?');
-    }
-  };
-
-  const onApprove = async () => {
-    try {
-      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW) return;
-      const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
-      const result = await dataAccess.updateActivity(
-        sanitizeRecord({
-          ...dbActivity,
-          review_status: ReviewStatus.APPROVED,
-          reviewed_by: userInfo.preferred_username, // latest reviewer
-          reviewed_at: moment(new Date()).format()
-        }),
-        databaseContext
-      );
-      if (!result?.activity_id) console.log('Count not approve form.');
-      else window.location.reload();
-    } catch (error) {
-      //notifyError(databaseContext, 'Could not approve form.  Are you connected to the internet?');
-    }
-  };
-
-  const onDisapprove = async () => {
-    try {
-      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW) return;
-      const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
-      const result = await dataAccess.updateActivity(
-        sanitizeRecord({
-          ...dbActivity,
-          review_status: ReviewStatus.DISAPPROVED,
-          reviewed_by: userInfo.preferred_username, // latest reviewer
-          reviewed_at: moment(new Date()).format()
-        }),
-        databaseContext
-      );
-      if (!result?.activity_id) console.log('Count not disapprove form.');
-      else window.location.reload();
-    } catch (error) {
-      console.log('Could not disapprove form.  Are you connected to the internet?');
-    }
-  };
-
-  /*
-  useEffect(() => {
-    if (watchPosition) {
-      if (workingPolyline.length == 0) {
-        let newPolyline = [[watchPosition.coords.longitude, watchPosition.coords.latitude]];
-        setWorkingPolyline(newPolyline);
-
-        const userTrack: Feature = JSON.parse(
-          `
-          {
-            "type": "Feature",
-            "geometry": {
-              "type": "LineString",
-              "coordinates": ` +
-            JSON.stringify(newPolyline) +
-            `
-            },
-            "properties": {
-            }
-          }
-          `
-        );
-
-        props.geometryState.setGeometry([userTrack as any]);
-      } else {
-        try {
-          if (
-            isGreaterDistanceThan(
-              [watchPosition.coords.longitude, watchPosition.coords.latitude],
-              workingPolyline[workingPolyline.length - 1],
-              0.001
-            )
-          ) {
-            setWorkingPolyline([...workingPolyline, [watchPosition.coords.longitude, watchPosition.coords.latitude]]);
-
-            const userTrack = JSON.parse(
-              `
-          {
-            "type": "Feature",
-            "geometry": {
-              "type": "LineString",
-              "coordinates": ` +
-                JSON.stringify(workingPolyline) +
-                `
-            },
-            "properties": {
-            }
-          }
-          `
-            );
-            props.geometryState.setGeometry([userTrack as any]);
-          }
-        } catch (e) {
-          notifySuccess(databaseContext, JSON.stringify('Computer says no.  ' + JSON.stringify(e)));
-        }
-      }
-    }
-  }, [watchPosition]);
-  */
-
   const history = useHistory();
   return (
     <>
       {props.cloneActivityButton && props.cloneActivityButton()}
-
       {/* Display the linked activity record information alongside the actual activity record */}
       {props.linkedActivity && (
         <>
@@ -348,7 +224,6 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           )}
         </>
       )}
-
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={props.classes.heading}>Map</Typography>
@@ -387,34 +262,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           </Grid>
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-form-content" id="panel-form-header">
-          <Typography className={props.classes.heading}>Activity Form</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={props.classes.formContainer}>
-          <FormContainer
-            {...props}
-            onSave={onSave}
-            saveStatus={activity.syncStatus}
-            disableSave={
-              activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.formStatus !== FormValidationStatus.VALID
-            }
-            onReview={onReview}
-            reviewStatus={activity.reviewStatus}
-            disableReview={
-              activity.syncStatus !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.formStatus !== FormValidationStatus.VALID ||
-              activity.reviewStatus === ReviewStatus.UNDER_REVIEW
-            }
-            onApprove={onApprove}
-            disableApprove={activity.reviewStatus !== ReviewStatus.UNDER_REVIEW} // admins only check needed too
-            onDisapprove={onDisapprove}
-            disableDisapprove={activity.reviewStatus !== ReviewStatus.UNDER_REVIEW} // admins only check needed too
-          />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
+      <Accordion defaultExpanded={false}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
           <Typography className={props.classes.heading}>Activity Photos</Typography>
         </AccordionSummary>
@@ -422,15 +270,24 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <PhotoContainer {...props} />
         </AccordionDetails>
       </Accordion>
-      <Box display="flex" paddingTop={5} justifyContent="center" width="100%">
-        <Button
-          color="primary"
-          style={{ width: 200, height: 100 }}
-          variant="contained"
-          onClick={() => history.push('/home/activities')}>
-          I'm done here
-        </Button>
-      </Box>
+      {
+        <>
+          {/*<Accordion defaultExpanded={true}>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-form-content" id="panel-form-header">
+          <Typography className={props.classes.heading}>Activity Form</Typography>
+        </AccordionSummary>
+        <AccordionDetails className={props.classes.formContainer}>
+          */}
+        </>
+      }{' '}
+      <FormContainer {...props} onSave={onSave} />
+      {
+        <>
+          {/*</></AccordionDetails>
+      </Accordion>*/}
+        </>
+      }
+      <Box display="flex" paddingTop={5} justifyContent="center" width="100%"></Box>
     </>
   );
 };
