@@ -304,6 +304,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function that runs if the form submit fails and has errors
   */
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
+  const [alertSavedOpen, setAlertSavedOpen] = useState(false);
 
   const onFormSubmitError = (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
@@ -324,6 +325,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setAlertErrorsOpen(false);
   };
 
+  const handleAlertSavedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertSavedOpen(false);
+  };
+
+  /**
   /**
    * Save the form when it is submitted.
    *
@@ -340,12 +350,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       schemaValidationErrorSchema: {}
     });*/
 
-    updateDoc({
+    await updateDoc({
       formData: event.formData,
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT
     });
+    setAlertSavedOpen(true);
   };
 
   /**
@@ -828,6 +839,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
         <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
           The form was saved with errors.
+        </Alert>
+      </Snackbar>
+      <Snackbar open={alertSavedOpen} autoHideDuration={6000} onClose={handleAlertSavedClose}>
+        <Alert onClose={handleAlertSavedClose} severity="success" sx={{ width: '100%' }}>
+          The form was saved successfully.
         </Alert>
       </Snackbar>
     </Container>
