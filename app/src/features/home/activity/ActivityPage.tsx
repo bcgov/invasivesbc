@@ -62,6 +62,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -113,6 +114,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
   */
 
+  const history = useHistory();
   const [doc, setDoc] = useState(null);
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
@@ -192,11 +194,56 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
   };
+  const onNavBack = () => {
+    setWarningDialog({
+      dialogOpen: true,
+      dialogTitle: 'Unsaved Changes will be lost',
+      dialogContentText: 'Are you sure you are ready to leave?  You will be lose unsaved changes.',
+      dialogActions: [
+        {
+          actionName: 'No',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+          }
+        },
+        {
+          actionName: 'Yes',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            history.push('/home/activities');
+          },
+          autoFocus: true
+        }
+      ]
+    });
+  };
 
   const onSubmitAsOfficial = () => {
-    let newDoc = { ...doc };
-    newDoc.form_status = ActivityStatus.SUBMITTED;
-    updateDoc(newDoc);
+    setWarningDialog({
+      dialogOpen: true,
+      dialogTitle: 'Submit / Publish from Draft to Official Record',
+      dialogContentText:
+        'Are you sure you are ready to publish the record?  You will be unable to further edit the record.',
+      dialogActions: [
+        {
+          actionName: 'No',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+          }
+        },
+        {
+          actionName: 'Yes',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            let newDoc = { ...doc };
+            newDoc.form_status = ActivityStatus.SUBMITTED;
+            await updateDoc(newDoc);
+            setAlertSavedOpen(true);
+          },
+          autoFocus: true
+        }
+      ]
+    });
   };
 
   /**
@@ -820,6 +867,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               onFormChange={onFormChange}
               onFormSubmitSuccess={onFormSubmitSuccess}
               onSubmitAsOfficial={onSubmitAsOfficial}
+              onNavBack={onNavBack}
               onFormSubmitError={onFormSubmitError}
               photoState={{ photos, setPhotos }}
               mapId={doc._id}

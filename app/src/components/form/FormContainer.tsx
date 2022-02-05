@@ -60,6 +60,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
   onSave?: Function;
   onSubmitAsOfficial?: Function;
+  OnNavBack?: Function;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {

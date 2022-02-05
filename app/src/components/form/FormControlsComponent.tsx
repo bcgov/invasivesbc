@@ -13,6 +13,7 @@ export interface IFormControlsComponentProps {
   hideCheckFormForErrors?: boolean;
   onSave?: Function;
   onSubmitAsOfficial?: Function;
+  onNavBack?: Function;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
@@ -58,12 +59,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             )}
           </Grid>
           <Grid item>
-            {!props.hideCheckFormForErrors && (
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                color="primary"
-                onClick={() => history.push('/home/activities')}>
+            {props.onNavBack && (
+              <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onNavBack()}>
                 Go Back to My Records
               </Button>
             )}
