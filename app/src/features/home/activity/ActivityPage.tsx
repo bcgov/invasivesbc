@@ -114,6 +114,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
   */
 
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
   const history = useHistory();
   const [doc, setDoc] = useState(null);
 
@@ -131,7 +132,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} updates Updates as subsets of the doc/activity object
    */
-  const updateDoc = async (updates) => {
+  const updateDoc = async (updates, saveReason?) => {
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
@@ -156,9 +157,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         }
       }
     };
-    const hashedNewDoc = JSON.stringify(updatedDoc);
+    /* const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
     if (!updatedDoc || hashedDoc === hashedNewDoc) {
+      return false;
+    }*/
+
+    if (!updatedDoc) {
       return false;
     }
 
@@ -169,28 +174,23 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
 
-    setDoc(updatedDoc);
     try {
-      const appStateResults = await dataAccess.getAppState(databaseContext);
-      const dbUpdates = debounced(1000, async (updated) => {
-        // TODO use an api endpoint to do this merge logic instead
-        // const oldActivity = await dataAccess.getActivityById(
-        //   updated._id,
-        //   databaseContext,
-        //   false,
-        //   appStateResults.referenceData
-        // );
+      const dbUpdates = async (updated) => {
         const newActivity = {
-          // ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
 
-        // this has to be a bug? if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        await dataAccess.updateActivity(newActivity, databaseContext);
-      });
+        if (Capacitor.getPlatform() !== 'web') {
+          await dataAccess.updateActivity(newActivity, databaseContext);
+        } else if (['Manual Save', 'Official Submit'].includes(saveReason)) {
+          await dataAccess.updateActivity(newActivity, databaseContext);
+        }
+      };
       await dbUpdates(updatedDoc);
+      setDoc(updatedDoc);
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
   };
@@ -237,7 +237,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
             let newDoc = { ...doc };
             newDoc.form_status = ActivityStatus.SUBMITTED;
-            await updateDoc(newDoc);
+            await updateDoc(newDoc, 'Official Submit');
             setAlertSavedOpen(true);
           },
           autoFocus: true
@@ -290,14 +290,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = useCallback((geom: Feature[]) => {
-    setDoc(async (activity: any) => {
-      const { latitude, longitude } = calculateLatLng(geom) || {};
-      var utm = calc_utm(longitude, latitude);
-      let utm_zone = utm[0];
-      let utm_easting = utm[1];
-      let utm_northing = utm[2];
-      /*****exported DisplayPosition utm_zone function
+  const saveGeometry = async (geom: Feature[]) => {
+    if (doc.geometry === geom) {
+      return doc;
+    }
+    const activity = doc;
+    const { latitude, longitude } = calculateLatLng(geom) || {};
+    var utm = calc_utm(longitude, latitude);
+    let utm_zone = utm[0];
+    let utm_easting = utm[1];
+    let utm_northing = utm[2];
+    /*****exported DisplayPosition utm_zone function
       //latlong to utms / utm zone conversion
       let utm_easting, utm_northing, utm_zone;
       //if statement prevents errors on page load, as lat/long isn't defined
@@ -312,28 +315,27 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         utm_northing = Number(en_m[1].toFixed(4));
       }*/
 
-      const activityDoc = {
-        ...activity,
-        formData: {
-          ...activity.formData,
-          activity_data: {
-            ...activity.formData.activity_data,
-            latitude,
-            longitude,
-            utm_zone,
-            utm_easting,
-            utm_northing,
-            reported_area: calculateGeometryArea(geom)
-          }
-        },
-        geometry: geom,
-        status: ActivityStatus.DRAFT,
-        dateUpdated: new Date()
-      };
-      await updateDoc(activityDoc);
-      return activityDoc;
-    });
-  }, []);
+    const activityDoc = {
+      ...activity,
+      formData: {
+        ...activity.formData,
+        activity_data: {
+          ...activity.formData.activity_data,
+          latitude,
+          longitude,
+          utm_zone,
+          utm_easting,
+          utm_northing,
+          reported_area: calculateGeometryArea(geom)
+        }
+      },
+      geometry: geom,
+      status: ActivityStatus.DRAFT,
+      dateUpdated: new Date()
+    };
+    await updateDoc(activityDoc);
+    return activityDoc;
+  };
 
   /**
    * Save the map Extent within the database
@@ -436,6 +438,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       callbackFun();
     }
   });
+
+  const onSave = () => {
+    updateDoc(doc, 'Manual Save');
+  };
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
@@ -681,6 +687,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return;
       }
 
+      //MW: i think this makes old forms fragile to new changes
       let updatedFormData = getDefaultFormDataValues(activityResult);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
@@ -716,6 +723,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     if (geometry && geometry[0]) {
       if (booleanWithin(geometry[0] as any, bcArea as any)) {
+        // might need to throw these in the same async so we can avoid a race condition
         saveGeometry(geometry);
         getJurSuggestions();
       } else {
@@ -744,7 +752,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
-      saveExtent(extent);
+      //  saveExtent(extent); //this fires all the time, probably on map re render, does not have anything in it anyway
     }
   }, [extent, isLoading, saveExtent]);
 
@@ -865,8 +873,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               suggestedJurisdictions={suggestedJurisdictions}
               linkedActivity={linkedActivity}
               onFormChange={onFormChange}
+              // whenever the save button is hit:
+              onSave={onSave}
+              // when save form button and rjsf submit say no errors:
               onFormSubmitSuccess={onFormSubmitSuccess}
+              //user action to submit as official record:
               onSubmitAsOfficial={onSubmitAsOfficial}
+              // user action to go back to my records or map:
               onNavBack={onNavBack}
               onFormSubmitError={onFormSubmitError}
               photoState={{ photos, setPhotos }}
@@ -893,12 +906,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       </MapRecordsContextProvider>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
         <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
-          The form was saved with errors.
+          The record was saved, but has changes required before changing status from Draft to Submitted.
         </Alert>
       </Snackbar>
       <Snackbar open={alertSavedOpen} autoHideDuration={6000} onClose={handleAlertSavedClose}>
         <Alert onClose={handleAlertSavedClose} severity="success" sx={{ width: '100%' }}>
-          The form was saved successfully.
+          The record was saved successfully.
         </Alert>
       </Snackbar>
     </Container>

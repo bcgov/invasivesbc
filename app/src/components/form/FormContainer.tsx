@@ -356,11 +356,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   ErrorList={(err) => {
                     return (
                       <div>
-                        <Typography color="error" variant="h5">
-                          The form contains one or more errors!
-                        </Typography>
+                        <br></br>
+                        <br></br>
+                        <br></br>
                         <Typography color="error" variant="h6">
-                          Incorrect fields are highlighted below.
+                          Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can
+                          however save in progress work, and come back later.
                         </Typography>
                       </div>
                     );
@@ -421,6 +422,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     bubbles: true // <-- actual fix
                   })
                 );
+                props.onSave();
               }}
               isDisabled={isDisabled}
               activitySubtype={props.activity.activitySubtype}
