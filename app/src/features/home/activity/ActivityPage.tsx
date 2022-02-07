@@ -133,6 +133,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates, saveReason?) => {
+    console.log('update doc');
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
@@ -370,6 +371,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT
     });
+
+    // MW TRIED HERE
+    formRef.current.setState({
+      ...formRef.current.state,
+      schemaValidationErrors: [],
+      schemaValidationErrorSchema: {}
+    });
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -399,11 +407,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       props.setFormHasErrors(false);
     }
 
-    /*await formRef.setState({
+    /*
+    await formRef.setState({
       ...formRef.state,
       schemaValidationErrors: [],
       schemaValidationErrorSchema: {}
-    });*/
+
+    });
+    */
 
     await updateDoc({
       formData: event.formData,
@@ -414,6 +425,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setAlertSavedOpen(true);
   };
 
+  //MW:  We should just publish events we care about for specific fields vs listen to every typing event on every field
   /**
    * Save the form whenever it changes.
    *
@@ -434,12 +446,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
     updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
+    ///updateDoc({})
+    console.log('doc here');
+    console.log(doc);
+
     if (callbackFun) {
       callbackFun();
     }
   });
 
   const onSave = () => {
+    console.log('manual save data entering update doc:');
+    console.dir(doc);
     updateDoc(doc, 'Manual Save');
   };
   /**
@@ -549,6 +567,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   //this sets up initial values for some of the fields in activity.
+  //MW:  This should all happen when you call dataAccess.createActivity - no good reason to do it here.
   const setUpInitialValues = (activity: any, formData: any): Object => {
     //Observations -- all:
     if (activity.activityType === 'Observation' && !formData.activity_subtype_data) {
@@ -699,8 +718,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       await updateDoc(updatedDoc);
 
       if (updatedDoc.geometry) {
-        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
-        setSuggestedJurisdictions(res.rows);
+        try {
+          const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
+          setSuggestedJurisdictions(res.rows);
+        } catch (e) {
+          console.log('error setting jurisdictions');
+          console.log(e);
+        }
       }
 
       setIsLoading(false);
@@ -746,6 +770,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   }, [geometry, isLoading, saveGeometry]);
 
+  //MW THESE HOOKS NEED DOC
   useEffect(() => {
     if (isLoading || !doc) {
       return;

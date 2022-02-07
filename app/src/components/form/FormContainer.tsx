@@ -367,6 +367,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   onChange={(event) => {
+                    console.log('con change form container');
                     props.onFormChange(event, formRef, focusedFieldArgs);
                   }}
                   onError={(error) => {
