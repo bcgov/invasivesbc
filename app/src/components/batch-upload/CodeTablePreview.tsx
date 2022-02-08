@@ -1,22 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import {useInvasivesApi} from "../../hooks/useInvasivesApi";
-import {Button} from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { Button } from '@mui/material';
 
 type CodeTablesPreviewProps = {
   codeTableId: string;
 };
 
-const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({codeTableId}) => {
+const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({ codeTableId }) => {
   const api = useInvasivesApi();
 
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
   const [codeValues, setCodeValues] = useState([]);
 
-
   useEffect(() => {
     if (showPreview) {
       setLoading(true);
+      console.log('Fetching code tables...');
       api.fetchCodeTable(codeTableId).then((result) => {
         setCodeValues(result);
         setLoading(false);
@@ -24,35 +24,32 @@ const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({codeTableId}) => {
     }
   }, [codeTableId, showPreview]);
 
-
   if (loading) {
-    return (<span>Preview loading...</span>);
+    return <span>Preview loading...</span>;
   }
 
   if (showPreview) {
     return (
       <table>
         <thead>
-        <tr>
-          <th>Code</th>
-          <th>Description</th>
-        </tr>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+          </tr>
         </thead>
         <tbody>
-        {codeValues.map((code) => (<tr key={code.code}>
-          <td>{code.code}</td>
-          <td>{code.description}</td>
-        </tr>))}
+          {codeValues.map((code) => (
+            <tr key={code.code}>
+              <td>{code.code}</td>
+              <td>{code.description}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     );
   } else {
-    return (
-      <Button onClick={() => setShowPreview(true)}>Preview Values</Button>
-    )
+    return <Button onClick={() => setShowPreview(true)}>Preview Values</Button>;
   }
-
 };
-
 
 export default CodeTablesPreview;
