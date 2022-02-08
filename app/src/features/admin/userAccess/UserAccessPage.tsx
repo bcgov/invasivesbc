@@ -835,7 +835,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 </Typography>
               </Grid>
             )}
-            {detailsDialogUser.fundingAgencies && (
+            {detailsDialogUser.fundingAgencies && detailsDialogUser.fundingAgencies.length > 0 && (
               <>
                 <Grid item>
                   <Typography variant="h6">
@@ -982,44 +982,52 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 {detailsDialogRequestUser.pacServiceNumber2}
               </Typography>
             </Grid>
-            <Grid item>
-              <Typography variant="h6">
-                <strong>Funding Agencies: </strong>
-              </Typography>
-            </Grid>
-            <Grid item>
-              {detailsDialogRequestUser.fundingAgencies.split(',').map((agency) => (
-                <Typography variant="h6" key={agency}>
-                  <li key={agency}>
-                    {agencyCodes.map((agencyCode) => {
-                      if (agencyCode.value === agency) {
-                        return agencyCode.description;
-                      }
-                      return '';
-                    })}
-                  </li>
-                </Typography>
-              ))}
-            </Grid>
-            <Grid item>
-              <Typography variant="h6">
-                <strong>Requested Roles: </strong>
-              </Typography>
-            </Grid>
-            <Grid item>
-              {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
-                <Typography variant="h6" key={role}>
-                  <li key={role}>
-                    {availableRoles.map((roleCode) => {
-                      if (roleCode.name === role) {
-                        return roleCode.description;
-                      }
-                      return '';
-                    })}
-                  </li>
-                </Typography>
-              ))}
-            </Grid>
+            {detailsDialogRequestUser.fundingAgencies && detailsDialogRequestUser.fundingAgencies.length > 0 && (
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Funding Agencies: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogRequestUser.fundingAgencies.split(',').map((agency) => (
+                    <Typography variant="h6" key={agency}>
+                      <li key={agency}>
+                        {agencyCodes.map((agencyCode) => {
+                          if (agencyCode.value === agency) {
+                            return agencyCode.description;
+                          }
+                          return '';
+                        })}
+                      </li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
+            )}
+            {detailsDialogRequestUser.requestedRoles && detailsDialogRequestUser.requestedRoles.length > 0 && (
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Requested Roles: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
+                    <Typography variant="h6" key={role}>
+                      <li key={role}>
+                        {availableRoles.map((roleCode) => {
+                          if (roleCode.name === role) {
+                            return roleCode.description;
+                          }
+                          return '';
+                        })}
+                      </li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
+            )}
           </DialogContent>
           <Divider />
           <DialogActions>
