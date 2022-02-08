@@ -304,7 +304,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const getRequestRows = async (requests: any) => {
     const rows = [];
     for (let i = 0; i < requests.length; i++) {
-      console.log(requests[i]);
       rows.push({
         id: requests[i].access_request_id,
         firstName: requests[i].first_name,

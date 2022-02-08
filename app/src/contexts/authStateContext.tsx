@@ -154,7 +154,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
 
   const getUserByIDIR = async (idir_userid) => {
     const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
-    console.log('USER FOUND: ', user);
     return user;
   };
 
@@ -180,7 +179,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
         await cacheRolesForUser(user.user_id);
         await cacheUserInfo(mergedInfo);
       }
-      console.log('Setting userinfo to ', mergedInfo);
       setUserInfo(mergedInfo);
       setUserInfoLoaded(true);
     }
