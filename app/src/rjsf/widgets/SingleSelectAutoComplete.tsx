@@ -182,10 +182,8 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             setValue('');
             props.onChange('');
           } else {
-            console.log('on change!');
             setValue(option);
             setEvent(event);
-
             // NOTE: passing string value to onChange, which might be expecting format
             // object: { value, label }
             // this will likely result in future compatibility errors with custom onChange functions

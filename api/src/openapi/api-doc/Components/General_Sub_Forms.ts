@@ -384,7 +384,6 @@ export const Weather_Conditions = {
     wind_aspect: {
       type: 'number',
       minimum: 0,
-      default: 0,
       title: 'Wind Aspect (°)',
       'x-tooltip-text': 'Direction wind is coming from'
     },

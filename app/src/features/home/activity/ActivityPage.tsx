@@ -420,23 +420,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
-    let updatedFormData = event.formData;
+  const onFormChange = debounced(
+    100,
+    async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
+      let updatedFormData = event.formData;
 
-    updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
-    updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
+      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
+      updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 
-    //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
-    updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-    //auto fills total release quantity (only on biocontrol release activity)
-    updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-    //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-    updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+      //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
+      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
+      //auto fills total release quantity (only on biocontrol release activity)
+      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+      //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
+      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
-    if (callbackFun) {
-      callbackFun();
+      if (callbackFun) {
+        callbackFun(updatedFormData);
+      }
     }
-  });
+  );
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
