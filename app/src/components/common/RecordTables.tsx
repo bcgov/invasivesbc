@@ -345,15 +345,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     // TODO limit to only some subtypes too
                     // TODO IAPP POIs not editable
                     rowCondition: (row) => {
-                      console.log("Here's a row");
                       if (row && row.activity_payload) {
                         const createdBy = row.activity_payload.created_by;
-                        if (createdBy === userInfo.preferred_username) {
-                          console.log("User's own activity: ");
-                        }
-                        if (hasRole('master_administrator')) {
-                          console.log('User is master admin: ');
-                        }
                         return createdBy === userInfo.preferred_username || hasRole('master_administrator');
                       }
                     },
