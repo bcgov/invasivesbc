@@ -139,7 +139,7 @@ const Row = (props) => {
       });
       setMonitoringRows(tempArr);
     }
-  });
+  }, [row]);
 
   const shortValOutput = (value: string) => {
     if (shortComment) return <>{getShortVal(value)}</>;
@@ -147,7 +147,7 @@ const Row = (props) => {
   };
 
   const getShortVal = (value: string) => {
-    if (value.length < 10) return value;
+    if (value?.length < 10) return value;
     else return value.substring(0, 10) + '...';
   };
 
@@ -184,14 +184,20 @@ const Row = (props) => {
           align={column.align}
           style={{ height: 80 }}
           onClick={() => {
-            if (column.id === 'general_comment') setShortComment(!shortComment);
-            if (!bioTreatmentColumns && column.id === 'treatment_id') {
+            if (column.id === 'general_comment') {
+              setShortComment(!shortComment);
+            }
+            if (column.id === 'treatment_id') {
               setOpen(!open);
+              console.log(row);
+              console.log(monitoringRows);
             }
           }}>
           <Box>
+            {monitoringRows.length > 0 && column.id === 'treatment_id' && (
+              <> {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} </>
+            )}
             {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
-            {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
           </Box>
         </TableCell>
       );
@@ -203,31 +209,33 @@ const Row = (props) => {
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <ExtractRow />
       </TableRow>
-      <TableRow>
-        <TableCell size="small" style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography>Monitoring</Typography>
-              <Table size="small" aria-label="monitoring">
-                <TableHead>
-                  <TableRow>
-                    {monitoringColumns.map((column) => (
-                      <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-                        {column.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {monitoringRows.map((item) => {
-                    return <MonitoringRow row={item} />;
-                  })}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+      {monitoringRows && (
+        <TableRow>
+          <TableCell size="small" style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Typography>Monitoring</Typography>
+                <Table size="small" aria-label="monitoring">
+                  <TableHead>
+                    <TableRow>
+                      {monitoringColumns.map((column) => (
+                        <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
+                          {column.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {monitoringRows.map((item) => {
+                      return <MonitoringRow row={item} />;
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
     </React.Fragment>
   );
 };
@@ -306,7 +314,8 @@ export const TreatmentsTable = (props) => {
           agent_source: treatment.agent_source,
           release_quantity: treatment.release_quantity,
           project_code: treatment?.project_code[0]?.description,
-          general_comment: treatment.general_comment
+          general_comment: treatment.general_comment,
+          monitoring: treatment.monitoring
         };
         break;
       default:

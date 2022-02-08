@@ -45,7 +45,8 @@ export const MonitoringRow = (props) => {
                   setShortComment(!shortComment);
                 }
               }}>
-              {getValue(value)}
+              {/* Removed for now until we get monitoring comment {getValue(value)} */}
+              {value}
             </TableCell>
           );
         })}
