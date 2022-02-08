@@ -19,7 +19,7 @@ type IconButtonProps = {
 const IconButton = (props: any) => {
   const { icon, className, ...otherProps } = props;
   return (
-    <Button variant="outlined" size="small">
+    <Button variant="outlined" {...otherProps} size="small">
       {mappings[icon]}
     </Button>
   );

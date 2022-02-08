@@ -52,8 +52,6 @@ const ArrayFieldDescription = ({ DescriptionField, idSchema, description }: Arra
 
 // Used in the two templates
 const DefaultArrayItem = (props: any) => {
-  // const { themeType } = useContext(ThemeContext);
-
   const btnStyle = {
     flex: 1,
     paddingLeft: 6,

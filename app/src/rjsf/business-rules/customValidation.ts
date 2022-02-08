@@ -5,7 +5,6 @@ type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 // keep track of all business rules for custom form validation logic
 export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    console.log('getcustomvalidator');
     for (const validator of validators) {
       errors = validator(formData, errors);
     }
@@ -787,13 +786,25 @@ export function transferErrorsFromChemDetails(): rjsfValidator {
 */
 export function getTreatedAreaValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.Treatment_MechanicalPlant_Information ||
+      !formData.activity_data.reported_area ||
+      formData.activity_subtype_data.Treatment_MechanicalPlant_Information.length < 1
+    ) {
+      return errors;
+    }
     console.log(formData);
 
-    // if (wind_speed > 0 && wind_direction_code === 'No Wind') {
-    //   errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['wind_direction_code'].addError(
-    //     'Must specify a wind direction when wind speed is > 0'
-    //   );
-    // }
+    const reported_area = formData.activity_data.reported_area;
+
+    formData.activity_subtype_data.Treatment_MechanicalPlant_Information.forEach((invPlant, index) => {
+      if (invPlant.treated_area && invPlant.treated_area > reported_area) {
+        errors.activity_subtype_data['Treatment_MechanicalPlant_Information'][index]['treated_area'].addError(
+          "Can 't be bigger than reported area"
+        );
+      }
+    });
 
     return errors;
   };

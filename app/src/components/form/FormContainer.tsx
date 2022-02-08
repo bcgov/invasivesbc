@@ -367,7 +367,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   onChange={(event) => {
-                    console.log('before onformchange');
                     props.onFormChange(event, formRef, focusedFieldArgs);
                   }}
                   onError={(error) => {
@@ -380,7 +379,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     if (!props.onFormSubmitSuccess) {
                       return;
                     }
-                    console.log('on submit success');
                     try {
                       props.onFormSubmitSuccess(event, formRef);
                     } catch (e) {
