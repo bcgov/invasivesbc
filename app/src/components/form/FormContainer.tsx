@@ -350,6 +350,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   uiSchema={schemas.uiSchema}
                   formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
                   liveValidate={true}
+                  validate={props.customValidation}
                   showErrorList={true}
                   transformErrors={props.customErrorTransformer}
                   autoComplete="off"
@@ -378,7 +379,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     if (!props.onFormSubmitSuccess) {
                       return;
                     }
-                    console.log('on submit success');
                     try {
                       props.onFormSubmitSuccess(event, formRef);
                     } catch (e) {

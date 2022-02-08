@@ -1,6 +1,4 @@
 import { FormValidation } from '@rjsf/core';
-import { IHerbicide } from 'components/form/ChemicalTreatmentDetailsForm/Models';
-import { HerbicideApplicationRates } from './constants/herbicideApplicationRates';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -502,81 +500,6 @@ export function getPersonNameNoNumbersValidator(users): rjsfValidator {
 }
 
 /*
-  Function to validate that if the herbicide mix is set to true,
-  there must be 2 or more herbicides chosen
-*/
-export function getHerbicideMixValidation(): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.chemical_treatment_details ||
-      !formData.activity_subtype_data.chemical_treatment_details.tank_mix ||
-      !formData.activity_subtype_data.chemical_treatment_details.herbicides
-    ) {
-      return errors;
-    }
-
-    let chemical_treatment_details = formData.activity_subtype_data.chemical_treatment_details;
-
-    if (chemical_treatment_details.tank_mix === true && chemical_treatment_details.herbicides.length < 2) {
-      errors.activity_subtype_data['chemical_treatment_details']['herbicides'].addError(
-        'There must be 2 or more herbicides added if the tank mix field is checked'
-      );
-    }
-
-    return errors;
-  };
-}
-
-/*
-  Function to validate that the application rate specified for a given herbicide
-  does not exceed the limit based on guideline values
-*/
-export function getHerbicideApplicationRateValidator(): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.chemical_treatment_details ||
-      !formData.activity_subtype_data.chemical_treatment_details.herbicides ||
-      formData.activity_subtype_data.chemical_treatment_details.herbicides.length < 1
-    ) {
-      return errors;
-    }
-
-    let herbicides: IHerbicide[] = [...formData.activity_subtype_data.chemical_treatment_details.herbicides];
-
-    let herbIndex = 0;
-    herbicides.forEach((herbicide) => {
-      if (!herbicide.application_rate || !herbicide.herbicide_code) {
-      } else if (
-        herbicide.application_rate &&
-        herbicide.application_rate > HerbicideApplicationRates[herbicide.herbicide_code.toString()]
-      ) {
-        errors.activity_subtype_data['chemical_treatment_details']['herbicides'][herbIndex][
-          'application_rate'
-        ].addError(
-          `Application rate exceeds maximum applicable rate of ${
-            HerbicideApplicationRates[herbicide.herbicide_code]
-          } L/ha for this herbicide`
-        );
-      }
-
-      //if user clicked proceed in the warning dialog, remove the error
-      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
-        errors.activity_subtype_data['chemical_treatment_details']['herbicides'][herbIndex][
-          'application_rate'
-        ].__errors.pop();
-      }
-      herbIndex++;
-    });
-
-    return { ...errors };
-  };
-}
-
-/*
   Function used by offset distance validation function to identify and set error
   on specific field of nested object structure based on transect type
 */
@@ -854,6 +777,35 @@ export function transferErrorsFromChemDetails(): rjsfValidator {
     } else {
       errors.activity_subtype_data.__errors.pop();
     }
+    return errors;
+  };
+}
+
+/*
+  Function to validate that treated_area field is is not larger than the area field that autofills after you draw geometry
+*/
+export function getTreatedAreaValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.Treatment_MechanicalPlant_Information ||
+      !formData.activity_data.reported_area ||
+      formData.activity_subtype_data.Treatment_MechanicalPlant_Information.length < 1
+    ) {
+      return errors;
+    }
+    console.log(formData);
+
+    const reported_area = formData.activity_data.reported_area;
+
+    formData.activity_subtype_data.Treatment_MechanicalPlant_Information.forEach((invPlant, index) => {
+      if (invPlant.treated_area && invPlant.treated_area > reported_area) {
+        errors.activity_subtype_data['Treatment_MechanicalPlant_Information'][index]['treated_area'].addError(
+          "Can 't be bigger than reported area"
+        );
+      }
+    });
+
     return errors;
   };
 }
