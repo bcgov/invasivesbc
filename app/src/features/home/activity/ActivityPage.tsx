@@ -37,6 +37,7 @@ import {
   getShorelineTypesPercentValidator,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
+  getTreatedAreaValidator,
   getTemperatureValidator,
   getTargetPhenologySumValidator,
   getTerrestrialAquaticPlantsValidator,
@@ -421,6 +422,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
+
+    console.log('hello');
 
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
@@ -847,6 +850,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 getSlopeAspectBothFlatValidator(),
                 getTemperatureValidator(doc.activitySubtype),
                 getPosAndNegObservationValidator(),
+                getTreatedAreaValidator(),
                 getTargetPhenologySumValidator(),
                 getTerrestrialAquaticPlantsValidator(),
                 getShorelineTypesPercentValidator(),

@@ -2,10 +2,9 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { ArrayFieldTemplateProps, IdSchema, utils } from '@rjsf/core';
-import React, { useContext } from 'react';
+import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import IconButton from 'rjsf/components/IconButton';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 
 const { isMultiSelect, getDefaultRegistry } = utils;
 
@@ -53,7 +52,7 @@ const ArrayFieldDescription = ({ DescriptionField, idSchema, description }: Arra
 
 // Used in the two templates
 const DefaultArrayItem = (props: any) => {
-  const { themeType } = useContext(ThemeContext);
+  // const { themeType } = useContext(ThemeContext);
 
   const btnStyle = {
     flex: 1,
