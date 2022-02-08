@@ -292,76 +292,68 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
 
 //Monitoring Biocontrol Dispersal
 export const autoFillTotalBioAgentQuantity = (formData: any) => {
-  if (
-    !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information &&
-    !formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-  ) {
+  if (!formData.activity_subtype_data) {
+    return formData;
+  }
+
+  const currentForm =
+    formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information ||
+    formData.activity_subtype_data.Biocontrol_Release_Information ||
+    formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ||
+    undefined;
+
+  let formLabel = '';
+
+  if (formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information) {
+    formLabel = 'Monitoring_BiocontrolDispersal_Information';
+  } else if (formData.activity_subtype_data.Biocontrol_Release_Information) {
+    formLabel = 'Biocontrol_Release_Information';
+  } else if (formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information) {
+    formLabel = 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information';
+  } else {
+    return formData;
+  }
+  if (!currentForm) {
     return formData;
   }
 
   let totalEstimated = 0;
   let totalActual = 0;
 
-  const releaseMonitoring = formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information === undefined;
+  const { actual_biological_agents, estimated_biological_agents } = currentForm;
 
-  const actual_biological_agents =
-    releaseMonitoring === true
-      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-          .actual_biological_agents
-      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.actual_biological_agents;
-
-  const estimated_biological_agents =
-    releaseMonitoring === true
-      ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-          .estimated_biological_agents
-      : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.estimated_biological_agents;
-
-  console.log(actual_biological_agents, estimated_biological_agents);
-
-  if (!actual_biological_agents && !estimated_biological_agents) {
-    return formData;
+  if (estimated_biological_agents) {
+    estimated_biological_agents.forEach((el) => {
+      if (!el.release_quantity || !el.biological_agent_stage_code) {
+        return formData;
+      } else {
+        totalEstimated += el.release_quantity;
+      }
+    });
+  }
+  if (actual_biological_agents) {
+    actual_biological_agents.forEach((el) => {
+      if (!el.release_quantity || !el.biological_agent_stage_code) {
+        return formData;
+      } else {
+        totalActual += el.release_quantity;
+      }
+    });
   }
 
-  estimated_biological_agents.forEach((el) => {
-    if (!el.release_quantity || !el.biological_agent_stage_code) {
-      return formData;
-    } else {
-      totalEstimated += el.release_quantity;
+  const newFormData = {
+    ...formData,
+    activity_subtype_data: {
+      ...formData.activity_subtype_data,
+      [formLabel]: {
+        ...formData.activity_subtype_data[formLabel],
+        total_bio_agent_quantity_actual: totalActual,
+        total_bio_agent_quantity_estimated: totalEstimated
+      }
     }
-  });
+  };
 
-  actual_biological_agents.forEach((el) => {
-    if (!el.release_quantity || !el.biological_agent_stage_code) {
-      return formData;
-    } else {
-      totalActual += el.release_quantity;
-    }
-  });
-
-  const newFormData =
-    releaseMonitoring === true
-      ? {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
-              total_bio_agent_quantity_actual: totalActual,
-              total_bio_agent_quantity_estimated: totalEstimated
-            }
-          }
-        }
-      : {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolDispersal_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
-              total_bio_agent_quantity_actual: totalActual,
-              total_bio_agent_quantity_estimated: totalEstimated
-            }
-          }
-        };
+  // console.log(newFormData);
 
   return newFormData;
 };

@@ -454,9 +454,6 @@ export const Biocontrol_Release_Information = {
     'release_quantity',
     'mortality',
     'agent_source',
-    'collection_date',
-    'plant_collected_from',
-    'total_release_quantity',
     'biological_agent_code',
     'biological_agent_stage_code'
   ],
@@ -483,7 +480,7 @@ export const Biocontrol_Release_Information = {
       title: 'Agent Source',
       maxLength: 50,
       'x-tooltip-text':
-        'etails of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.'
+        'Details of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.'
     },
     collection_date: {
       title: 'Collection Date',
@@ -492,7 +489,21 @@ export const Biocontrol_Release_Information = {
     },
     plant_collected_from: {
       type: 'string',
-      title: 'Plant Collected From'
+      title: 'Plant Collected From',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'invasive_plant_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'If known, choose the species from the list that the agents were collected from'
+    },
+    plant_collected_from_unlisted: {
+      type: 'string',
+      title: 'Plant Collected From - unlisted',
+      'x-tooltip-text':
+        'If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required.'
     },
     biological_agent_code: {
       type: 'string',
@@ -506,18 +517,29 @@ export const Biocontrol_Release_Information = {
       },
       'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
     },
-    biological_agent_stages: {
+    actual_biological_agents: {
       type: 'array',
-      default: [{}],
-      minItems: 1,
-      title: 'Biological Agent Stages',
+      title: 'Actual Biological Agents',
       items: {
         ...Biological_Agent_Stage
       }
     },
-    total_release_quantity: {
+    estimated_biological_agents: {
+      type: 'array',
+      title: 'Estimated Biological Agents',
+      items: {
+        ...Biological_Agent_Stage
+      }
+    },
+    total_bio_agent_quantity_estimated: {
       type: 'number',
-      title: 'Total Release Quantity'
+      default: 0,
+      title: 'Total Bioagent Quantity (Estimated)'
+    },
+    total_bio_agent_quantity_actual: {
+      type: 'number',
+      default: 0,
+      title: 'Total Bioagent Quantity (Actual)'
     },
     linear_segment: {
       type: 'string',
@@ -658,8 +680,7 @@ export const Biocontrol_Collection_Information = {
         items: {
           ...Agent_Quantity_And_Life_Stage
         },
-        'x-tooltip-text':
-          'The quantity of the biocontrol agent collected in the life stage it was collected. If it was a life stage within a gall the number of galls would the quantity collected. This may not be the ACTUAL (TRUE) quantities of the collection noting that some agents collected in seedheads or galls may have more than one agent or no agents / part collected. '
+        'x-tooltip-text': 'The quantity of the biocontrol agent collected in the life stage it w '
       },
       estimated_quantity_and_life_stage_of_agent_collected: {
         type: 'array',

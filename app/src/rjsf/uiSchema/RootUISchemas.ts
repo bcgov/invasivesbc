@@ -288,7 +288,8 @@ const Activity_Biocontrol_Collection = {
     Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
     Biocontrol_Collection_Information: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Collection_Information,
-    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Collection_Information']
+    Target_Plant_Phenology:BaseUISchemaComponents.general_objects.Target_Plant_Phenology,
+    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Collection_Information','Target_Plant_Phenology']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -306,7 +307,8 @@ const Activity_Biocontrol_Release = {
     Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
     Biocontrol_Release_Information: BaseUISchemaComponents.activity_subtype_data_information_objects.Biocontrol_Release_Information,
-    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Release_Information']
+    Target_Plant_Phenology:BaseUISchemaComponents.general_objects.Target_Plant_Phenology,
+    'ui:order':['Weather_Conditions','Microsite_Conditions','Biocontrol_Release_Information','Target_Plant_Phenology']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };

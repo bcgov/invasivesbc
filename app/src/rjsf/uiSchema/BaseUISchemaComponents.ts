@@ -194,7 +194,9 @@ const TransectData = {
 const Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   release_quantity: {},
-  'ui:order': ['biological_agent_stage_code', 'release_quantity']
+  agent_location: {},
+  plant_position: {},
+  'ui:order': ['biological_agent_stage_code', 'release_quantity','agent_location','plant_position']
 };
 
 const Well_Information = {
@@ -1006,7 +1008,6 @@ const Monitoring_BiocontrolDispersal_Information = {
   estimated_biological_agents: { items: { ...Biological_Agent_Stage } },
   total_bio_agent_quantity_actual: { 'ui:readonly': true },
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
-  total_bio_agent_quantity: { 'ui:readonly': true },
   suitable_collection_site: {},
   override_code: { 'ui:readonly': true },
   'ui:order': [
@@ -1073,7 +1074,10 @@ const Biocontrol_Release_Information = {
   plant_collected_from: {},
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_stages: {},
+  actual_biological_agents: { items: { ...Biological_Agent_Stage } },
+  estimated_biological_agents: { items: { ...Biological_Agent_Stage } },
+  total_bio_agent_quantity_actual: { 'ui:readonly': true },
+  total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   total_release_quantity: { 'ui:readonly': true },
   linear_segment: {},
   'ui:order': [
@@ -1086,8 +1090,13 @@ const Biocontrol_Release_Information = {
     'agent_source',
     'collection_date',
     'plant_collected_from',
+    'plant_collected_from_unlisted',
     'total_release_quantity',
-    'biological_agent_stage_code'
+    'biological_agent_stage_code',
+    'actual_biological_agents',
+    'estimated_biological_agents',
+    'total_bio_agent_quantity_actual',
+    'total_bio_agent_quantity_estimated'
   ]
 };
 

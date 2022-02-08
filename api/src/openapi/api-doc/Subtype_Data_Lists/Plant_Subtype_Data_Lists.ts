@@ -140,7 +140,8 @@ export const Subtype_Data_Biocontrol_Release = {
   properties: {
     Microsite_Conditions: Microsite_Conditions,
     Weather_Conditions: Weather_Conditions,
-    Biocontrol_Release_Information: Biocontrol_Release_Information
+    Biocontrol_Release_Information: Biocontrol_Release_Information,
+    Target_Plant_Phenology: Target_Plant_Phenology
   }
 };
 export const Subtype_Data_Biocontrol_Collection = {
@@ -149,7 +150,8 @@ export const Subtype_Data_Biocontrol_Collection = {
   properties: {
     Microsite_Conditions: Microsite_Conditions,
     Weather_Conditions: Weather_Conditions,
-    Biocontrol_Collection_Information: Biocontrol_Collection_Information
+    Biocontrol_Collection_Information: Biocontrol_Collection_Information,
+    Target_Plant_Phenology: Target_Plant_Phenology
   }
 };
 
