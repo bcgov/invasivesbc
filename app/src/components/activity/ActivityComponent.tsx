@@ -171,6 +171,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
 
   const activity = props.activity;
 
+  /*
   const onSave = async () => {
     try {
       // NOTE: duplicate code from RecordTables.  Should be moved to a common Actions definitions file
@@ -195,7 +196,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     } catch (error) {
       //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
-  };
+  };*/
 
   const history = useHistory();
   return (
@@ -280,7 +281,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           */}
         </>
       }{' '}
-      <FormContainer {...props} onSave={onSave} />
+      <FormContainer {...props} />
       {
         <>
           {/*</></AccordionDetails>
