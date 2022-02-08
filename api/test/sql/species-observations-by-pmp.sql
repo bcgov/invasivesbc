@@ -30,7 +30,7 @@ select
   ) "Area"
 from
   code c,
-  public.activities_by_species p join
+  public.observations_by_species p join
   public.pest_management_plan_areas on
   public.st_intersects(
     p.geom,public.st_transform(

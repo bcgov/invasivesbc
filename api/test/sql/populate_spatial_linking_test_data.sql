@@ -36,4 +36,3 @@ SELECT pg_catalog.setval('invasivesbc.activity_incoming_data_activity_incoming_d
 --
 
 
-update activity_incoming_data set species_positive = '{BC}' where activity_incoming_data_id = 3469;
