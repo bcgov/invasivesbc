@@ -10,10 +10,12 @@ import {
   FormControl,
   Grid,
   IconButton,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface IPhoto {
   filepath: string;
@@ -42,7 +44,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       const photo = {
         filepath: fileName,
         dataUrl: cameraPhoto.dataUrl,
-        description: 'text'
+        description: 'untitled'
       };
 
       props.photoState.setPhotos([...props.photoState.photos, photo]);
@@ -67,6 +69,13 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const reducedPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
     props.photoState.setPhotos(reducedPhotos);
   };
+  const [editing, setEditing] = useState(false);
+  const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
+  const editPhotoDesc = () => {
+    if (editing === false) {
+      setEditing(true);
+    }
+  };
 
   if (!props.photoState) {
     return <CircularProgress />;
@@ -81,20 +90,40 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card>
                   <CardMedia src={photo.dataUrl} component="img" />
+                  <Typography style={{ marginTop: '15px' }} textAlign={'center'} variant="h5">
+                    {photo.description}
+                  </Typography>
                   {!props.isDisabled && (
-                    <CardActions>
+                    <CardActions style={{ width: '100%', display: 'flex', justifyContent: 'space-around' }}>
                       <IconButton onClick={() => deletePhoto(photo.filepath)}>
                         <DeleteForever />
                       </IconButton>
+                      <IconButton disabled={editing} onClick={() => editPhotoDesc()}>
+                        <EditIcon />
+                      </IconButton>
                     </CardActions>
                   )}
+
                   <FormControl>
-                    {photo.description}
-                    <TextField
-                      label="Change Description"
-                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: e.target.value })}
-                    />
-                    <Button>Save</Button>
+                    {editing && (
+                      <>
+                        <TextField
+                          label="Change Description"
+                          onChange={(e) => {
+                            setNewPhotoDesc(e.target.value);
+                          }}
+                          // onBlur={(e) => changePhotoDescription(photo.filepath, { description: e.target.value })}
+                        />
+                        <Button
+                          onClick={() => {
+                            changePhotoDescription(photo.filepath, { description: newPhotoDesc });
+                            setEditing(false);
+                            setNewPhotoDesc('untitled');
+                          }}>
+                          Save
+                        </Button>
+                      </>
+                    )}
                   </FormControl>
                 </Card>
               </Grid>
