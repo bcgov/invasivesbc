@@ -9,8 +9,8 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const PoisLayer = (props) => {
   const map = useMap();
-  const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [pois, setPois] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
 
@@ -34,15 +34,29 @@ export const PoisLayer = (props) => {
 
   useEffect(() => {
     fetchData();
+    return () => {
+      setPois(null);
+      setIsReady(false);
+    };
   }, []);
 
-  useMapEvent('zoomend', () => {
-    fetchData();
+  useMapEvent('zoomend', async () => {
+    await fetchData();
   });
 
+  useEffect(() => {
+    if (pois) setIsReady(true);
+
+    return () => {
+      setIsReady(false);
+    };
+  }, [pois]);
+
   const fetchData = async () => {
+    const newMapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+
     const poisData = await dataAccess.getPointsOfInterestLean(
-      { search_feature: mapBounds, isIAPP: true },
+      { search_feature: newMapBounds, isIAPP: true },
       databaseContext
     );
 
@@ -54,7 +68,7 @@ export const PoisLayer = (props) => {
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
 
-  if (!pois) {
+  if (!pois || !isReady) {
     return null;
   }
 
