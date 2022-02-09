@@ -187,34 +187,71 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
   return updatedActivitySubtypeData;
 }
 
-export const autoFillUserInfo = (formData: any, userName: any, pacNumber: any) => {
-  console.log(formData);
-  console.log('userName', userName);
-  console.log('pacNumber', pacNumber);
+export const autoFillNameByPAC = (formData: any, appUsers: any) => {
+  let newFormData = formData;
   if (
     formData &&
     formData.activity_type_data &&
     formData.activity_type_data.activity_persons &&
     formData.activity_type_data.activity_persons.length > 0
   ) {
-    const personName = formData.activity_type_data.activity_persons[0].person_name;
-    const personApplicatorLicense = formData.activity_type_data.activity_persons[0].applicator_license;
+    // We have activity persons
+    let index = 0;
+    for (const person of formData.activity_type_data.activity_persons) {
+      const name = person.person_name;
+      const pac = person.applicator_license;
+      // If we have name, but no pac, and pacNumber is provided, auto fill pac
+      if (name && (!pac || pac === '')) {
+        console.log('Have name and no pac but have pacNumber');
+        // Check if name exists in appUsers
+        const appUser = appUsers.find((user) => user.first_name + ' ' + user.last_name === name);
+        if (appUser) {
+          console.log('Found appUser', appUser);
+          newFormData = {
+            ...newFormData,
+            activity_type_data: {
+              ...newFormData.activity_type_data,
+              activity_persons: [
+                ...newFormData.activity_type_data.activity_persons.slice(0, index),
+                {
+                  ...newFormData.activity_type_data.activity_persons[index],
+                  applicator_license: appUser.pac_number
+                },
+                ...newFormData.activity_type_data.activity_persons.slice(index + 1)
+              ]
+            }
+          };
+        }
+      }
 
-    if (personName && personName.length > 0) {
-      formData.activity_type_data.activity_persons[0].person_name = 'TEST';
+      // If we have pac, but no name, and userName is provided, auto fill name
+      if (pac && (!name || name === '')) {
+        console.log('Have pac and no name but have userName');
+        // Check if pac exists in appUsers
+        const appUser = appUsers.find((user) => user.pac_number === pac);
+        if (appUser) {
+          console.log('Found appUser', appUser);
+          newFormData = {
+            ...newFormData,
+            activity_type_data: {
+              ...newFormData.activity_type_data,
+              activity_persons: [
+                ...newFormData.activity_type_data.activity_persons.slice(0, index),
+                {
+                  ...newFormData.activity_type_data.activity_persons[index],
+                  person_name: appUser.first_name + ' ' + appUser.last_name
+                },
+                ...newFormData.activity_type_data.activity_persons.slice(index + 1)
+              ]
+            }
+          };
+        }
+      }
+      index++;
     }
-    if (personApplicatorLicense && personApplicatorLicense.length > 0) {
-      formData.activity_type_data.activity_persons[0].applicator_license = 'TEST2';
-    }
-    console.log('PERSON NAME IS ', personName);
-    console.log('PERSON APPLICATOR LICENSE IS ', personApplicatorLicense);
   }
   return formData;
 };
-
-export const autoFillEmployer = (formData: any) => {};
-
-export const autoFillPSN = (formData: any) => {};
 
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   if (!lastField) {
@@ -313,7 +350,6 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
       }
     }
   };
-
   return newFormData;
 };
 
