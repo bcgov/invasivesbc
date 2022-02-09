@@ -127,7 +127,6 @@ export const Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
     Weather_Conditions: Weather_Conditions,
     Microsite_Conditions: Microsite_Conditions,
     Monitoring_BiocontrolDispersal_Information: Monitoring_BiocontrolDispersal_Information,
-    Spread_Results: Spread_Results,
     Target_Plant_Phenology: Target_Plant_Phenology
   }
 };

@@ -276,18 +276,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       enum: ['Yes', 'No', 'Unknown'],
       default: 'No',
       'x-tooltip-text': 'Please indicate the presence of legacy IAPP records'
-    },
-    collection_history: {
-      type: 'number',
-      title: 'Collection History',
-      'x-tooltip-text':
-        'Enter the IAPP or InvasivesBC record number to indicate the location where the biocontrol agents were collected from'
-    },
-    collection_history_comments: {
-      type: 'string',
-      title: 'Collection History Comments',
-      'x-tooltip-text':
-        'Enter relevant information about where the biocontrol agents being released came from, how they were shipped, and any related information'
     }
   }
 };
@@ -302,9 +290,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
     'invasive_plant_code',
     'start_time',
     'stop_time',
-    'total_bio_agent_quantity',
-    'collection_history',
-    'collection_history_comments'
+    'total_bio_agent_quantity'
   ],
   dependencies: {
     monitoring_method: {
@@ -375,7 +361,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
               title: 'Location agent(s) found',
               'x-enum-code': {
                 'x-enum-code-category-name': 'invasives',
-                'x-enum-code-header-name': 'bio_agent_location_code',
+                'x-enum-code-header-name': 'location_agents_found_code',
                 'x-enum-code-name': 'code_name',
                 'x-enum-code-text': 'code_description',
                 'x-enum-code-sort-order': 'code_sort_order'
