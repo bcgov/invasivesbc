@@ -262,13 +262,11 @@ const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
     Microsite_Conditions:BaseUISchemaComponents.general_objects.Microsite_Conditions,
     Monitoring_BiocontrolDispersal_Information:BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_BiocontrolDispersal_Information,
     Target_Plant_Phenology:BaseUISchemaComponents.general_objects.Target_Plant_Phenology,
-    Spread_Results: BaseUISchemaComponents.general_objects.Spread_Results,
     'ui:order':[
       'Weather_Conditions',
       'Microsite_Conditions',
       'Monitoring_BiocontrolDispersal_Information',
-      'Target_Plant_Phenology',
-      'Spread_Results']
+      'Target_Plant_Phenology']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };

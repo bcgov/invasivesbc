@@ -502,14 +502,15 @@ export const Spread_Results = {
               type: 'number',
               minimum: 0,
               maximum: 100,
-              'x-tooltip-text': '% Agent density is: Total # agents at the site ÷ total # plants with agents) x 100'
+              'x-tooltip-text': 'Total # of bioagents at the site ÷ total # of plants surveyed (or sweeps) x 100'
             },
             plant_attack: {
               title: 'Plant Attack (%)',
               type: 'number',
               minimum: 0,
               maximum: 100,
-              'x-tooltip-text': '% Attack is: Total # agents at the site ÷ total # plants with agents, x 100'
+              'x-tooltip-text':
+                'Total # of plants with bioagents at the site ÷ total # of plants surveyed (or sweeps) x 100'
             },
             max_spread_distance: {
               title: 'Max Spread Distance (m)',

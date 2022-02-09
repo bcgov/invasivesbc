@@ -47,6 +47,23 @@ export const Monitoring = {
   }
 };
 
+export const Monitoring_Biocontrol = {
+  title: 'Monitoring Information',
+  type: 'object',
+  required: ['linked_id', 'activity_persons'],
+  properties: {
+    activity_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Monitoring Person(s)',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing monitoring'
+    }
+  }
+};
+
 export const Treatment = {
   title: 'Treatment Information',
   type: 'object',

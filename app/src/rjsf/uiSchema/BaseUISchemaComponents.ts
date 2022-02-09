@@ -194,8 +194,8 @@ const TransectData = {
 const Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   release_quantity: {},
-  agent_location: {},
-  plant_position: {},
+  agent_location: {'ui:widget': 'single-select-autocomplete'},
+  plant_position: {'ui:widget': 'single-select-autocomplete'},
   'ui:order': ['biological_agent_stage_code', 'release_quantity','agent_location','plant_position']
 };
 
@@ -962,8 +962,6 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   count_duration: {},
   suitable_collection_site: {},
-  collection_history: {},
-  collection_history_comments: { 'ui:widget': 'textarea' },
   legacy_presence_ind: {},
   'ui:order': [
     'invasive_plant_code',
@@ -981,8 +979,6 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'estimated_biological_agents',
     'total_bio_agent_quantity_actual',
     'total_bio_agent_quantity_estimated',
-    'collection_history',
-    'collection_history_comments',
     'suitable_collection_site',
     'legacy_presence_ind'
   ]

@@ -65,7 +65,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
-
+  const [formData, setformData] = useState(props.activity?.formData);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = useRef(null);
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
@@ -112,7 +112,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        props.onFormChange({ formData: formRef.current.state.formData }, formRef);
+        props.onFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {
+          setformData(updatedFormData);
+        });
       });
     }, 100);
     handleClose();
@@ -120,12 +122,16 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
+    console.log();
     let argumentFieldName = '';
     if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
       argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';
     } else if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_')) {
       argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_';
-    } else if (args[0].includes('root_activity_subtype_data_Weather_Conditions_')) {
+    } else if (
+      args[0].includes('root_activity_subtype_data_Weather_Conditions_') &&
+      !props.activity.activitySubtype.toString().toLowerCase().includes('biocontrol')
+    ) {
       argumentFieldName = 'root_activity_subtype_data_Weather_Conditions_';
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
@@ -318,7 +324,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     getApiSpec();
   }, [props.activity.activitySubtype, props.activity.activity_subtype]);
 
-  const [formData, setformData] = useState(props.activity?.formData);
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 
   if (!schemas.schema || !schemas.uiSchema) {
@@ -350,6 +355,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 uiSchema={schemas.uiSchema}
                 formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
                 liveValidate={true}
+                validate={props.customValidation}
                 showErrorList={true}
                 transformErrors={props.customErrorTransformer}
                 autoComplete="off"
