@@ -121,7 +121,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             </Grid>
             <Grid item xs={3}>
               {jurisdictions.map((jurisdiction) => {
-                console.log(jurisdiction);
                 return (
                   <>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
