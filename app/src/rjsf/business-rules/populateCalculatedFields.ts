@@ -202,11 +202,9 @@ export const autoFillNameByPAC = (formData: any, appUsers: any) => {
       const pac = person.applicator_license;
       // If we have name, but no pac, and pacNumber is provided, auto fill pac
       if (name && (!pac || pac === '')) {
-        console.log('Have name and no pac but have pacNumber');
         // Check if name exists in appUsers
         const appUser = appUsers.find((user) => user.first_name + ' ' + user.last_name === name);
         if (appUser) {
-          console.log('Found appUser', appUser);
           newFormData = {
             ...newFormData,
             activity_type_data: {
@@ -226,11 +224,9 @@ export const autoFillNameByPAC = (formData: any, appUsers: any) => {
 
       // If we have pac, but no name, and userName is provided, auto fill name
       if (pac && (!name || name === '')) {
-        console.log('Have pac and no name but have userName');
         // Check if pac exists in appUsers
         const appUser = appUsers.find((user) => user.pac_number === pac);
         if (appUser) {
-          console.log('Found appUser', appUser);
           newFormData = {
             ...newFormData,
             activity_type_data: {

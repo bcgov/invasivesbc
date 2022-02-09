@@ -27,7 +27,6 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
 
   // Fetch user info from params
   if (user) {
-    console.log('USER: ', user);
     pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+/, ''));
     pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+/, ''));
     employers.push(user.employer);
@@ -38,10 +37,6 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
       }
     }
   }
-
-  console.log('$$$ PSNS: ', pesticideServiceNumbers);
-  console.log('$$$ EMPLOYERS: ', employers);
-  console.log('$$$ AGENCIES: ', agencies);
 
   if (!connection) {
     throw {

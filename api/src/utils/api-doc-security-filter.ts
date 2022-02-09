@@ -20,10 +20,6 @@ const defaultLog = getLogger('api-doc-security-filter');
 export async function applyApiDocSecurityFilters(req: any) {
   try {
     await authenticate(req, []);
-
-    console.log('allCodeEntities got');
-    console.log('Request: ', Object.keys(req));
-    console.log('Token: ', req['keycloak_token']);
     const token = req['keycloak_token'];
     let user = {};
     if (token) {

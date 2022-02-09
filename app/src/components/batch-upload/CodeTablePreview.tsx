@@ -16,7 +16,6 @@ const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({ codeTableId }) =>
   useEffect(() => {
     if (showPreview) {
       setLoading(true);
-      console.log('Fetching code tables...');
       api.fetchCodeTable(codeTableId).then((result) => {
         setCodeValues(result);
         setLoading(false);
