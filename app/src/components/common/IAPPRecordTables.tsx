@@ -3,7 +3,7 @@ import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { DataGrid, GridCellParams, GridColDef, MuiEvent } from '@mui/x-data-grid';
-import { getJurisdictions } from 'components/map/Tools/ToolTypes/Data/InfoAreaDescription';
+import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { useHistory } from 'react-router';
 
 const columns: GridColDef[] = [
@@ -81,11 +81,11 @@ export const PointsOfInterestTable = () => {
       // shortcut for type_data and data in form_data obj
       const type_data = form_data?.point_of_interest_type_data;
       const data = form_data?.point_of_interest_data;
-      const newArr = [];
+      const surveys = form_data.surveys;
+      const newArr = getJurisdictions(surveys);
       const jurisdictionArr = [];
-      getJurisdictions(newArr, poi);
       newArr.forEach((item) => {
-        jurisdictionArr.push(item.code + ' (' + item.percent_covered + '%)');
+        jurisdictionArr.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
       });
 
       var row = {

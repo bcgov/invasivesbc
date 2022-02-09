@@ -18,14 +18,34 @@ const getSurveyObj = (row: any, map_code: any) => {
   const common_name = row.invasive_plant.substring(0, leftBracket - 1);
   const plant_code = row.invasive_plant.substring(leftBracket + 6, row.invasive_plant.length - 1);
   const genus = row.invasive_plant.substring(leftBracket + 1, leftBracket + 5);
+  const tempJurisdictions = row.jurisdictions.split('),');
+
+  const formatJurisdictions = (arr: any[]) => {
+    const tempArr = [];
+
+    arr.forEach((item) => {
+      const leftItemBracket = item.indexOf('(');
+      const percent = item.indexOf('%');
+
+      tempArr.push({
+        jurisdiction_code: item.substring(0, leftItemBracket - 1),
+        percent_covered: item.substring(leftItemBracket + 1, percent)
+      });
+    });
+
+    return tempArr;
+  };
+
+  const jurisdictions = formatJurisdictions(tempJurisdictions);
+
   return {
-    genus: genus, // Could not see (COME BACK LATER)
+    genus: genus, // (XXXX)
     density: row.density,
     species: row.invasive_plant, // NEEDS to be converted to plant code
     map_code: map_code, // Could not see (Maybe from project code)
     survey_id: row.surveyid,
     common_name: common_name,
-    survey_date: row.site_created_date,
+    survey_date: row.survey_date,
     weeds_found: row.estimated_area > 0 ? true : false,
     distribution: row.distribution,
     project_code: [
@@ -34,12 +54,7 @@ const getSurveyObj = (row: any, map_code: any) => {
       }
     ],
     employer_code: null, // Could not see
-    jurisdictions: [
-      {
-        percent_covered: row.jurisdictions.substring(row.jurisdictions.indexOf(',')),
-        jurisdiction_code: row.jurisdictions // Needs to convert to code
-      }
-    ],
+    jurisdictions: jurisdictions,
     reported_area: row.estimated_area,
     general_comment: row.survey_comments,
     observation_type: null, // Could not see (COME BACK LATER)

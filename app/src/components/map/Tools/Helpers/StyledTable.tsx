@@ -402,11 +402,11 @@ export const RenderTableDataBC = ({ rows }) => {
                 <StyledTableCell style={{ width: 51 }} component="th" scope="row">
                   {row.properties.AQUIFER_ID}
                 </StyledTableCell>
-                <StyledTableCell style={{ width: 125 }}>
+                <StyledTableCell style={{ width: 150 }}>
                   {row.geometry.coordinates[0].toFixed(2)}, {row.geometry.coordinates[1].toFixed(2)}
                   <></>
                 </StyledTableCell>
-                <StyledTableCell style={{ width: 125 }}>{row.properties.STREET_ADDRESS}</StyledTableCell>
+                <StyledTableCell style={{ width: 150 }}>{row.properties.STREET_ADDRESS}</StyledTableCell>
               </StyledTableRow>
             </>
           ))}
@@ -437,6 +437,11 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
       field: 'site_id',
       headerName: 'IAPP ID',
       minWidth: 80
+    },
+    {
+      field: 'reported_area',
+      headerName: 'Reported Area',
+      minWidth: 130
     },
     {
       field: 'jurisdiction_code',

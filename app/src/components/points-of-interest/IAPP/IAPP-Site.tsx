@@ -4,6 +4,7 @@ import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { IAPPSurveyTable } from '../../common/RecordTables';
 import { TreatmentsTable } from './ExtractTables';
+import { getJurisdictions } from './IAPP-Functions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -37,6 +38,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
+  const jurisdictions = getJurisdictions(surveys);
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -118,26 +120,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {(surveys?.[0]?.jurisdictions?.length > 0 &&
-                ifApplicable(surveys[0]?.jurisdictions[0]?.jurisdiction_code) +
-                  ' (' +
-                  surveys[0]?.jurisdictions[0]?.percent_covered +
-                  '%)') ||
-                'Not Provided'}
-            </Grid>
-            <Grid item xs={3}>
-              {surveys?.[0]?.jurisdictions?.length > 1 &&
-                ifApplicable(surveys[0]?.jurisdictions[1]?.jurisdiction_code) +
-                  ' (' +
-                  surveys[0]?.jurisdictions[1]?.percent_covered +
-                  '%)'}
-            </Grid>
-            <Grid item xs={3}>
-              {surveys?.[0]?.jurisdictions?.length > 2 &&
-                ifApplicable(surveys[0]?.jurisdictions[2].jurisdiction_code) +
-                  ' (' +
-                  surveys[0]?.jurisdictions[2]?.percent_covered +
-                  '%)'}
+              {jurisdictions.map((jurisdiction) => {
+                return (
+                  <>
+                    {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
+                    <br />
+                  </>
+                );
+              }) || 'Not Provided'}
             </Grid>
 
             <Grid item xs={3} sm={2}>
