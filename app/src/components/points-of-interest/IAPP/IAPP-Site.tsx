@@ -125,6 +125,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 return (
                   <>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
+                    <br />
                   </>
                 );
               }) || 'Not Provided'}
