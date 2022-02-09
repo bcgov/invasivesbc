@@ -27,9 +27,15 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
 
   // Fetch user info from params
   if (user) {
-    pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+/, ''));
-    pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+/, ''));
-    employers.push(user.employer);
+    if (user.pac_service_number_1) {
+      pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+/, ''));
+    }
+    if (user.pac_service_number_2) {
+      pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+/, ''));
+    }
+    if (user.employer) {
+      employers.push(user.employer);
+    }
     if (user.funding_agencies && user.funding_agencies?.split(',')?.length > 0) {
       const agenciesSplit = user.funding_agencies?.split(',');
       for (let i = 0; i < agenciesSplit.length; i++) {
