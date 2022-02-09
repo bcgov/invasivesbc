@@ -53,8 +53,8 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
-  populateTransectLineAndPointData
-  // autoFillNameByPAC
+  populateTransectLineAndPointData,
+  autoFillNameByPAC
 } from '../../../rjsf/business-rules/populateCalculatedFields';
 import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
 import { debounced } from '../../../utils/FunctionUtils';
@@ -529,11 +529,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
-      // updatedFormData = autoFillUserInfo(
-      //   updatedFormData,
-      //   authStateContext.userInfo.first_name + ' ' + authStateContext.userInfo.last_name,
-      //   authStateContext.userInfo.pac_number
-      // );
+      updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
       if (callbackFun) {
         callbackFun(updatedFormData);
