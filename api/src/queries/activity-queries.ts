@@ -300,7 +300,6 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(
       SQL` AND ${roles} @> ARRAY(select array_agg(x)::int[] || array[]::int[] from jsonb_array_elements_text(activity_payload->'user_role') t(x))`
     );
-    console.log('SQL STATEMENT HERE: ', sqlStatement);
   }
 
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
@@ -406,7 +405,6 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   }
 
   sqlStatement.append(SQL`;`);
-  console.log('SQL: ', sqlStatement);
 
   return sqlStatement;
 };
