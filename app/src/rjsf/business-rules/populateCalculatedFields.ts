@@ -250,7 +250,7 @@ export const autoFillNameByPAC = (formData: any, appUsers: any) => {
       index++;
     }
   }
-  return formData;
+  return newFormData;
 };
 
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
