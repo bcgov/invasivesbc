@@ -184,9 +184,37 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
     ...newSubtypeData,
     [transectLinesMatchingKeys[0]]: updatedTransectLinesList.length && updatedTransectLinesList
   };
-
   return updatedActivitySubtypeData;
 }
+
+export const autoFillUserInfo = (formData: any, userName: any, pacNumber: any) => {
+  console.log(formData);
+  console.log('userName', userName);
+  console.log('pacNumber', pacNumber);
+  if (
+    formData &&
+    formData.activity_type_data &&
+    formData.activity_type_data.activity_persons &&
+    formData.activity_type_data.activity_persons.length > 0
+  ) {
+    const personName = formData.activity_type_data.activity_persons[0].person_name;
+    const personApplicatorLicense = formData.activity_type_data.activity_persons[0].applicator_license;
+
+    if (personName && personName.length > 0) {
+      formData.activity_type_data.activity_persons[0].person_name = 'TEST';
+    }
+    if (personApplicatorLicense && personApplicatorLicense.length > 0) {
+      formData.activity_type_data.activity_persons[0].applicator_license = 'TEST2';
+    }
+    console.log('PERSON NAME IS ', personName);
+    console.log('PERSON APPLICATOR LICENSE IS ', personApplicatorLicense);
+  }
+  return formData;
+};
+
+export const autoFillEmployer = (formData: any) => {};
+
+export const autoFillPSN = (formData: any) => {};
 
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   if (!lastField) {
@@ -226,7 +254,6 @@ export const autoFillSlopeAspect = (formData: any, lastField: string) => {
       }
     };
   }
-
   return newFormData;
 };
 
@@ -352,9 +379,6 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
       }
     }
   };
-
-  // console.log(newFormData);
-
   return newFormData;
 };
 
@@ -404,6 +428,5 @@ export const autoFillBiocontrolPresent = (formData: any) => {
             }
           }
         };
-
   return newFormData;
 };
