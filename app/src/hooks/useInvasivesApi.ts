@@ -46,8 +46,8 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
-console.dir(process.env);
-console.log('API_URL', API_URL);
+// console.dir(process.env);
+// console.log('API_URL', API_URL);
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
@@ -252,7 +252,6 @@ export const useInvasivesApi = () => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    console.dir('userinfo to create user from if not exists: ', userInfo);
     let type = '';
     let id = '';
 
@@ -293,7 +292,6 @@ export const useInvasivesApi = () => {
   };
 
   const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
-    console.log('Access requests received', accessRequests);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -304,7 +302,6 @@ export const useInvasivesApi = () => {
   };
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
-    console.log('Access request received', accessRequest);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },

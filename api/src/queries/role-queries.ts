@@ -46,7 +46,6 @@ export const revokeRoleFromUserSQL = (user_id, role_id): SQLStatement => {
         WHERE user_id = ${user_id}
         AND role_id = ${role_id};
     `;
-    console.log('SQL: ', sql);
     return sql;
   }
 };
@@ -57,7 +56,6 @@ export const revokeRoleFromUserSQL = (user_id, role_id): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getRolesForUserSQL = (user_id): SQLStatement => {
-  console.log('USER ID: ', user_id);
   if (!user_id) {
     return null;
   } else {
@@ -75,7 +73,6 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
       where 
         user_access.user_id=${user_id};
     `;
-    console.log('SQL: ', sql);
     return sql;
   }
 };
@@ -86,7 +83,6 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getUsersForRoleSQL = (role_id): SQLStatement => {
-  console.log('ROLE ID: ', role_id);
   if (!role_id) {
     return null;
   } else {
@@ -109,7 +105,6 @@ export const getUsersForRoleSQL = (role_id): SQLStatement => {
       where 
         user_access.role_id=${role_id};
     `;
-    console.log('SQL: ', sql);
     return sql;
   }
 };

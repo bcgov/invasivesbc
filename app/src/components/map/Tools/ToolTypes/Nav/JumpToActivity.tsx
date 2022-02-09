@@ -27,7 +27,6 @@ export const JumpToActivity = (props) => {
   // initial setup & events to block:
   useEffect(() => {
     if (!props.id) {
-      console.log(props.id);
       return;
     }
     L.DomEvent.disableClickPropagation(divRef?.current);

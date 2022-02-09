@@ -28,7 +28,6 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   const { userInfoLoaded, keycloak, userRoles } = props.componentProps;
 
   document.title = props.title;
-  console.log('authContext in privateRoute: ', props.componentProps);
 
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
@@ -41,10 +40,8 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   useEffect(() => {
     if (userInfoLoaded) {
       if (userRoles.length > 0 && isAuthenticated()) {
-        console.log('user is authorized: true');
         setIsAuthorized(true);
       } else {
-        console.log('user is authorized: false');
         setIsAuthorized(false);
       }
     }

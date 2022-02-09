@@ -53,7 +53,8 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
-  populateTransectLineAndPointData
+  populateTransectLineAndPointData,
+  autoFillNameByPAC
 } from '../../../rjsf/business-rules/populateCalculatedFields';
 import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
 import { debounced } from '../../../utils/FunctionUtils';
@@ -253,37 +254,130 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} activity The doc/activity object
    */
   const getDefaultFormDataValues = (activity: any) => {
-    const { activity_data } = activity.formData || {};
-    const activity_type_data = activity.formData.activity_type_data || {
-      activity_persons: [{ person_name: undefined }]
+    let activitySubtype = activity.activitySubtype;
+    let updatedActivity = activity;
+    let { activity_data } = activity.formData || {};
+    let activity_subtype_data = activity.formData.activity_subtype_data || {};
+    let activity_type_data = activity.formData.activity_type_data || {
+      activity_persons: [{ person_name: '', applicator_license: '' }]
     };
 
-    let needsInsert = false;
+    let nameNeedsInsert = false;
+    let pacNeedsInsert = false;
+    let employerNeedsInsert = false;
+    let agenciesNeedInsert = false;
+    let psnNeedsInsert = false;
+    let isGovernmentWorker = false;
+
     let userNameInject = '';
+    let applicatorLicenseInject = '';
+    let employerInject = '';
+    let agenciesInject = '';
+    let psnInject = '';
+
+    // Check if user is govt worker
+    if (
+      authStateContext.hasRole('bcgov_staff_animals') ||
+      authStateContext.hasRole('bcgov_staff_plants') ||
+      authStateContext.hasRole('bcgov_staff_both')
+    ) {
+      isGovernmentWorker = true;
+    }
     if (activity_type_data?.activity_persons) {
+      // ALL RECORDS: Auto fill first user's name based on their name in authStateContext
       if (
         activity_type_data?.activity_persons.length > 0 &&
-        activity_type_data?.activity_persons[0].person_name === undefined
+        (activity_type_data?.activity_persons[0].person_name === undefined ||
+          activity_type_data?.activity_persons[0].person_name === '')
       ) {
-        needsInsert = true;
-        if (authStateContext.userInfo.displayName) {
-          userNameInject = authStateContext.userInfo?.displayName;
-        } else {
-          userNameInject = authStateContext.userInfo?.bceid_business_name;
+        nameNeedsInsert = true;
+        if (authStateContext.userInfo.first_name && authStateContext.userInfo.last_name) {
+          userNameInject = authStateContext.userInfo?.first_name + ' ' + authStateContext.userInfo.last_name;
+        }
+      }
+      if (
+        activity_type_data?.activity_persons.length > 0 &&
+        (activity_type_data?.activity_persons[0].applicator_license === undefined ||
+          activity_type_data?.activity_persons[0].applicator_license === '')
+      ) {
+        pacNeedsInsert = true;
+        if (authStateContext.userInfo.pac_number) {
+          applicatorLicenseInject = authStateContext.userInfo?.pac_number;
         }
       }
     }
-    return {
+
+    // ALL RECORDS: Auto fill user's employer
+    if (!activity_data?.employer_code || activity_data?.employer_code === '') {
+      employerNeedsInsert = true;
+      employerInject = authStateContext.userInfo.employer;
+    }
+
+    if (!activity_data?.invasive_species_agency_code || activity_data?.invasive_species_agency_code === '') {
+      agenciesNeedInsert = true;
+      agenciesInject = authStateContext.userInfo.funding_agencies;
+    }
+
+    // // If chemical treatment, auto fill service license number
+    if (
+      activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
+      activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
+    ) {
+      if (
+        !activity_subtype_data?.Treatment_ChemicalPlant_Information?.pesticide_employer_code ||
+        activity_subtype_data.Treatment_ChemicalPlant_Information?.pesticide_employer_code === ''
+      ) {
+        psnNeedsInsert = true;
+        psnInject = authStateContext.userInfo.pac_service_number_1
+          ? authStateContext.userInfo.pac_service_number_1
+          : authStateContext.userInfo.pac_service_number_2
+          ? authStateContext.userInfo.pac_service_number_2
+          : '';
+      }
+    }
+
+    let activitySubtypeData;
+    if (psnNeedsInsert) {
+      activitySubtypeData = {
+        ...activity_subtype_data,
+        Treatment_ChemicalPlant_Information: {
+          // if government user, auto fill as 000000
+          pesticide_employer_code: isGovernmentWorker ? '0' : psnInject.replace(/^0+/, '')
+        }
+      };
+    } else {
+      activitySubtypeData = {
+        ...activity_subtype_data
+      };
+    }
+
+    updatedActivity = {
       ...activity.formData,
       activity_data: {
         ...activity_data,
+        employer_code: employerNeedsInsert
+          ? employerInject
+          : activity_data?.employer_code
+          ? activity_data.employer_code
+          : '',
+        invasive_species_agency_code: agenciesNeedInsert
+          ? agenciesInject
+          : activity_data?.invasive_species_agency_code
+          ? activity_data.invasive_species_agency_code
+          : '',
         reported_area: calculateGeometryArea(activity.geometry)
       },
       activity_type_data: {
         ...activity_type_data,
-        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_type_data?.activity_persons || [{}]
-      }
+        activity_persons:
+          nameNeedsInsert || pacNeedsInsert
+            ? [{ person_name: userNameInject, applicator_license: applicatorLicenseInject }]
+            : activity_type_data?.activity_persons || [{}]
+      },
+      activity_subtype_data: activitySubtypeData
     };
+
+    return updatedActivity;
   };
 
   /**
@@ -434,6 +528,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+
+      updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
       if (callbackFun) {
         callbackFun(updatedFormData);

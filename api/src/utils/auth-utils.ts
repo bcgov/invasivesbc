@@ -88,6 +88,8 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       };
     }
 
+    req['keycloak_token'] = decodedToken;
+
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });

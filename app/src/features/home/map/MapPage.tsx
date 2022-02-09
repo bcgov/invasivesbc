@@ -126,8 +126,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log('url');
-    console.log(url);
+    // console.log('url');
+    // console.log(url);
     // doesn't work:  history.replace(url);
     window.history.pushState('', 'New Page Title', url);
   }, [url]);

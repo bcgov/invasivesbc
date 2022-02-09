@@ -184,9 +184,70 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
     ...newSubtypeData,
     [transectLinesMatchingKeys[0]]: updatedTransectLinesList.length && updatedTransectLinesList
   };
-
   return updatedActivitySubtypeData;
 }
+
+export const autoFillNameByPAC = (formData: any, appUsers: any) => {
+  let newFormData = formData;
+  if (
+    formData &&
+    formData.activity_type_data &&
+    formData.activity_type_data.activity_persons &&
+    formData.activity_type_data.activity_persons.length > 0
+  ) {
+    // We have activity persons
+    let index = 0;
+    for (const person of formData.activity_type_data.activity_persons) {
+      const name = person.person_name;
+      const pac = person.applicator_license;
+      // If we have name, but no pac, and pacNumber is provided, auto fill pac
+      if (name && (!pac || pac === '')) {
+        // Check if name exists in appUsers
+        const appUser = appUsers.find((user) => user.first_name + ' ' + user.last_name === name);
+        if (appUser) {
+          newFormData = {
+            ...newFormData,
+            activity_type_data: {
+              ...newFormData.activity_type_data,
+              activity_persons: [
+                ...newFormData.activity_type_data.activity_persons.slice(0, index),
+                {
+                  ...newFormData.activity_type_data.activity_persons[index],
+                  applicator_license: appUser.pac_number
+                },
+                ...newFormData.activity_type_data.activity_persons.slice(index + 1)
+              ]
+            }
+          };
+        }
+      }
+
+      // If we have pac, but no name, and userName is provided, auto fill name
+      if (pac && (!name || name === '')) {
+        // Check if pac exists in appUsers
+        const appUser = appUsers.find((user) => user.pac_number === pac);
+        if (appUser) {
+          newFormData = {
+            ...newFormData,
+            activity_type_data: {
+              ...newFormData.activity_type_data,
+              activity_persons: [
+                ...newFormData.activity_type_data.activity_persons.slice(0, index),
+                {
+                  ...newFormData.activity_type_data.activity_persons[index],
+                  person_name: appUser.first_name + ' ' + appUser.last_name
+                },
+                ...newFormData.activity_type_data.activity_persons.slice(index + 1)
+              ]
+            }
+          };
+        }
+      }
+      index++;
+    }
+  }
+  return newFormData;
+};
 
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   if (!lastField) {
@@ -226,7 +287,6 @@ export const autoFillSlopeAspect = (formData: any, lastField: string) => {
       }
     };
   }
-
   return newFormData;
 };
 
@@ -286,7 +346,6 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
       }
     }
   };
-
   return newFormData;
 };
 
@@ -352,9 +411,6 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
       }
     }
   };
-
-  // console.log(newFormData);
-
   return newFormData;
 };
 
@@ -404,6 +460,5 @@ export const autoFillBiocontrolPresent = (formData: any) => {
             }
           }
         };
-
   return newFormData;
 };

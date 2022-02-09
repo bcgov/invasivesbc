@@ -27,6 +27,15 @@ export const getFundingAgencyCodesSQL = (): SQLStatement =>
   SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=41;`;
 
 /**
+ * SQL query to fetch service license codes.
+ *
+ * @returns {SQLStatement} sql query object
+ *
+ */
+export const getServiceLicenseCodesSQL = (): SQLStatement =>
+  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=43;`;
+
+/**
  * SQL query to fetch code headers.
  *
  * @returns {SQLStatement} sql query object

@@ -76,11 +76,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     }
   };
 
-  useEffect(() => {
-    console.log('kc: ', keycloak);
-    console.log('userInfo: ', userInfo);
-  }, [keycloak.obj.authenticated, userInfo]);
-
   /*
     Generate reusable card component with info to guide users through the app
   */

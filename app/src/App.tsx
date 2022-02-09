@@ -76,7 +76,7 @@ if (Capacitor.getPlatform() !== 'web') {
   redirect_uri = 'invasivesbc://localhost';
 }
 
-console.log('SSO URL:', SSO_URL);
+// console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: Keycloak.KeycloakConfig = {
     realm: 'onestopauth-business',
@@ -113,8 +113,6 @@ const App: React.FC<IAppProps> = (props) => {
   const [deviceInfo, setDeviceInfo] = useState(null);
   const getDeviceInfo = async () => {
     const dev = await Device.getInfo();
-    console.log('deviceinfo');
-    console.dir(dev);
     setDeviceInfo({ ...dev });
   };
 
