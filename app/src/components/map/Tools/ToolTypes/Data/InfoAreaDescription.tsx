@@ -44,34 +44,17 @@ import {
 } from '../../Helpers/ToolStyles';
 // App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
+import {
+  getJurisdictions,
+  getLatestReportedArea,
+  getReportedAreaOutput
+} from 'components/points-of-interest/IAPP/IAPP-Functions';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
     var point = turf.point([lng, lat]);
     var buffer2 = buffer(point, 50, { units: 'meters' });
     setGeoPoint(buffer2);
-  }
-};
-
-export const getJurisdictions = (arrJurisdictions, poi) => {
-  var surveys = poi.point_of_interest_payload.form_data.surveys;
-  if (surveys) {
-    surveys.map((survey) => {
-      survey.jurisdictions.map((jurisdiction) => {
-        var flag = 0;
-        for (let i in arrJurisdictions) {
-          if (jurisdiction.jurisdiction_code === arrJurisdictions[i].code) {
-            flag = 1;
-            break;
-          }
-        }
-        if (flag === 0)
-          arrJurisdictions.push({
-            code: jurisdiction.jurisdiction_code,
-            percent_covered: jurisdiction.percent_covered
-          });
-      });
-    });
   }
 };
 
@@ -163,29 +146,12 @@ export const GeneratePopup = (props) => {
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
       pointsofinterest.rows.map((poi) => {
-        var tempSurveyDate = null;
-        var tempSurveyArea = null;
         const surveys = poi.point_of_interest_payload.form_data.surveys;
-        if (surveys.length > 0) {
-          console.log('surveys', poi.point_of_interest_payload.form_data.surveys);
-          surveys.map((survey) => {
-            const surveyDate = new Date(survey.survey_date);
-            if (tempSurveyDate === null) {
-              tempSurveyDate = surveyDate;
-              tempSurveyArea = survey.reported_area;
-            }
-            if (tempSurveyDate.valueOf() < surveyDate.valueOf()) {
-              tempSurveyDate = surveyDate;
-              tempSurveyArea = survey.reported_area;
-            }
-          });
-        }
-        const newArr = [];
+        const tempSurveyArea = getLatestReportedArea(surveys);
+        const newArr = getJurisdictions(surveys);
         const arrJurisdictions = [];
-
-        getJurisdictions(newArr, poi);
         newArr.forEach((item) => {
-          arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
+          arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 
         var row = {
@@ -194,7 +160,7 @@ export const GeneratePopup = (props) => {
           jurisdiction_code: arrJurisdictions,
           species_code: poi.species_on_site,
           geometry: poi.point_of_interest_payload.geometry,
-          reported_area: tempSurveyArea === 0 || tempSurveyArea === null ? 'NWF' : tempSurveyArea
+          reported_area: getReportedAreaOutput(tempSurveyArea)
         };
         tempArr.push(row);
       });
