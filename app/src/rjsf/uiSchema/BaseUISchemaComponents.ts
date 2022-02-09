@@ -216,7 +216,7 @@ const Well_Information = {
 const ShorelineTypes = {
   items: {
     ...TwoColumnStyle,
-    shoreline_type: {},
+    shoreline_type: {'ui:widget': 'single-select-autocomplete'},
     percent_covered: {}
   }
 };

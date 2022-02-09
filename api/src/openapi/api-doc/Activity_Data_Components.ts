@@ -6,7 +6,6 @@ export const Activity = {
   required: [
     'invasive_species_agency_code',
     'jurisdictions',
-    'access_description',
     'activity_date_time',
     'latitude',
     'longitude',

@@ -624,7 +624,7 @@ export const ShorelineTypes = {
 };
 export const TerrestrialPlant = {
   type: 'object',
-  required: ['invasive_plant_code', 'occurrence', 'voucher_specimen_collected', 'edna_sample'],
+  required: ['invasive_plant_code', 'occurrence', 'voucher_specimen_collected'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -641,7 +641,7 @@ export const TerrestrialPlant = {
     },
     occurrence: {
       type: 'string',
-      title: 'Occurrence',
+      title: 'Observation Type',
       enum: ['Positive occurrence', 'Negative occurrence'],
       default: 'Positive occurrence',
       'x-tooltip-text':
@@ -656,14 +656,14 @@ export const TerrestrialPlant = {
             occurrence: {
               enum: ['Positive occurrence']
             },
-            edna_sample: {
-              title: 'eDNA sample',
-              type: 'string',
-              enum: ['Yes', 'No'],
-              default: 'No',
-              'x-tooltip-text':
-                'Genetic material that can be extracted from bulk environmental samples such as water and soil.'
-            },
+            // edna_sample: {
+            //   title: 'eDNA sample',
+            //   type: 'string',
+            //   enum: ['Yes', 'No'],
+            //   default: 'No',
+            //   'x-tooltip-text':
+            //     'Genetic material that can be extracted from bulk environmental samples such as water and soil.'
+            // },
             invasive_plant_density_code: {
               type: 'string',
               title: 'Density (plants/m2)',
@@ -721,13 +721,13 @@ export const TerrestrialPlant = {
                       type: 'object',
                       title: 'Voucher Specimen Collection Information',
                       required: [
-                        'voucher_sample_id',
-                        'date_voucher_collected',
-                        'accession_number',
-                        'name_of_herbarium',
-                        'voucher_verification_completed_by',
-                        'exact_utm_coords',
-                        'date_voucher_verified'
+                        // 'voucher_sample_id',
+                        // 'date_voucher_collected',
+                        // 'accession_number',
+                        // 'name_of_herbarium',
+                        // 'voucher_verification_completed_by',
+                        // 'exact_utm_coords',
+                        // 'date_voucher_verified'
                       ],
                       properties: {
                         voucher_sample_id: {
@@ -800,41 +800,41 @@ export const TerrestrialPlant = {
                   }
                 }
               ]
-            },
-            edna_sample: {
-              oneOf: [
-                {
-                  properties: {
-                    edna_sample: {
-                      enum: ['Yes']
-                    },
-                    edna_sample_information: {
-                      type: 'object',
-                      title: 'eDNA Sample Information',
-                      properties: {
-                        edna_sample_id: {
-                          title: 'eDNA sample ID',
-                          type: 'number'
-                        },
-                        genetic_structure_collected: {
-                          title: 'Genetic Structure Collected',
-                          type: 'string'
-                        }
-                      },
-                      required: ['edna_sample_id', 'genetic_structure_collected']
-                    }
-                  },
-                  required: ['edna_sample_information']
-                },
-                {
-                  properties: {
-                    edna_sample: {
-                      enum: ['No']
-                    }
-                  }
-                }
-              ]
             }
+            // edna_sample: {
+            //   oneOf: [
+            //     {
+            //       properties: {
+            //         edna_sample: {
+            //           enum: ['Yes']
+            //         },
+            //         edna_sample_information: {
+            //           type: 'object',
+            //           title: 'eDNA Sample Information',
+            //           properties: {
+            //             edna_sample_id: {
+            //               title: 'eDNA sample ID',
+            //               type: 'number'
+            //             },
+            //             genetic_structure_collected: {
+            //               title: 'Genetic Structure Collected',
+            //               type: 'string'
+            //             }
+            //           },
+            //           required: ['edna_sample_id', 'genetic_structure_collected']
+            //         }
+            //       },
+            //       required: ['edna_sample_information']
+            //     },
+            //     {
+            //       properties: {
+            //         edna_sample: {
+            //           enum: ['No']
+            //         }
+            //       }
+            //     }
+            //   ]
+            // }
           },
           required: [
             'invasive_plant_density_code',
@@ -1062,16 +1062,17 @@ export const AquaticPlant = {
               title: 'Voucher Specimen Collected',
               enum: ['Yes', 'No'],
               'x-tooltip-text': 'If specimen collected, provide details in observation comments'
-            },
-            edna_sample: {
-              type: 'string',
-              title: 'eDNA Sample',
-              enum: ['Yes', 'No'],
-              default: 'No',
-              'x-tooltip-text':
-                'Genetic material that can be extracted from bulk environmental samples such as water and soil'
             }
+            // edna_sample: {
+            //   type: 'string',
+            //   title: 'eDNA Sample',
+            //   enum: ['Yes', 'No'],
+            //   default: 'No',
+            //   'x-tooltip-text':
+            //     'Genetic material that can be extracted from bulk environmental samples such as water and soil'
+            // }
           },
+
           required: [
             'edna_sample',
             'invasive_plant_density_code',
@@ -1087,20 +1088,80 @@ export const AquaticPlant = {
                     voucher_specimen_collected: {
                       enum: ['Yes']
                     },
-                    genetic_sample_id: {
-                      type: 'string',
-                      title: 'Genetic Sample ID',
-                      'x-tooltip-text':
-                        'Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name'
-                    },
-                    genetic_structure_collected: {
-                      type: 'string',
-                      title: 'Genetic Structure Collected',
-                      'x-tooltip-text':
-                        'Describe plant parts collected. Ideal to collect entire plant structure for verification purposes'
+                    voucher_specimen_collection_information: {
+                      type: 'object',
+                      title: 'Voucher Specimen Collection Information',
+                      required: [
+                        // 'voucher_sample_id',
+                        // 'date_voucher_collected',
+                        // 'accession_number',
+                        // 'name_of_herbarium',
+                        // 'voucher_verification_completed_by',
+                        // 'exact_utm_coords',
+                        // 'date_voucher_verified'
+                      ],
+                      properties: {
+                        voucher_sample_id: {
+                          title: 'Voucher Sample ID',
+                          type: 'string',
+                          'x-tooltip-text': 'Unique identifier for each voucher collected.'
+                        },
+                        date_voucher_collected: {
+                          title: 'Date Voucher Collected',
+                          type: 'string',
+                          format: 'date'
+                        },
+                        date_voucher_verified: {
+                          title: 'Date voucher verified',
+                          type: 'string',
+                          format: 'date'
+                        },
+                        name_of_herbarium: {
+                          title: 'Name of Herbarium',
+                          type: 'string'
+                        },
+                        accession_number: {
+                          title: 'Accession number',
+                          type: 'string'
+                        },
+                        voucher_verification_completed_by: {
+                          type: 'object',
+                          title: 'Voucher verification completed by',
+                          required: ['person_name', 'organization'],
+                          properties: {
+                            person_name: {
+                              type: 'string',
+                              title: 'Name'
+                            },
+                            organization: {
+                              type: 'string',
+                              title: 'Organization'
+                            }
+                          }
+                        },
+                        exact_utm_coords: {
+                          title: 'Exact UTM coordinates of voucher collection site',
+                          type: 'object',
+                          required: ['utm_zone', 'utm_easting', 'utm_northing'],
+                          properties: {
+                            utm_zone: {
+                              title: 'UTM Zone',
+                              type: 'number'
+                            },
+                            utm_easting: {
+                              title: 'UTM Easting',
+                              type: 'number'
+                            },
+                            utm_northing: {
+                              title: 'UTM Northing',
+                              type: 'number'
+                            }
+                          }
+                        }
+                      }
                     }
                   },
-                  required: ['genetic_structure_collected', 'genetic_sample_id']
+                  required: ['voucher_specimen_collection_information']
                 },
                 {
                   properties: {
@@ -1110,53 +1171,53 @@ export const AquaticPlant = {
                   }
                 }
               ]
-            },
-            edna_sample: {
-              oneOf: [
-                {
-                  properties: {
-                    edna_sample: {
-                      enum: ['Yes']
-                    },
-                    edna_sample_information: {
-                      type: 'object',
-                      title: 'eDNA Sample Information',
-                      properties: {
-                        edna_sample_id: {
-                          title: 'eDNA sample ID',
-                          type: 'number'
-                        },
-                        sample_type: {
-                          title: 'Sample Type',
-                          type: 'string',
-                          enum: ['water', 'soil', 'plant material', 'animal material'],
-                          default: 'water'
-                        },
-                        field_replicates_num: {
-                          title: 'Number of field replicates',
-                          type: 'number'
-                        },
-                        control_sample_taken: {
-                          title: 'Control sample taken',
-                          type: 'string',
-                          enum: ['Yes', 'No'],
-                          default: ['No']
-                        }
-                      },
-                      required: ['edna_sample_id', 'sample_type']
-                    }
-                  },
-                  required: ['edna_sample_information']
-                },
-                {
-                  properties: {
-                    edna_sample: {
-                      enum: ['No']
-                    }
-                  }
-                }
-              ]
             }
+            // edna_sample: {
+            //   oneOf: [
+            //     {
+            //       properties: {
+            //         edna_sample: {
+            //           enum: ['Yes']
+            //         },
+            //         edna_sample_information: {
+            //           type: 'object',
+            //           title: 'eDNA Sample Information',
+            //           properties: {
+            //             edna_sample_id: {
+            //               title: 'eDNA sample ID',
+            //               type: 'number'
+            //             },
+            //             sample_type: {
+            //               title: 'Sample Type',
+            //               type: 'string',
+            //               enum: ['water', 'soil', 'plant material', 'animal material'],
+            //               default: 'water'
+            //             },
+            //             field_replicates_num: {
+            //               title: 'Number of field replicates',
+            //               type: 'number'
+            //             },
+            //             control_sample_taken: {
+            //               title: 'Control sample taken',
+            //               type: 'string',
+            //               enum: ['Yes', 'No'],
+            //               default: ['No']
+            //             }
+            //           },
+            //           required: ['edna_sample_id', 'sample_type']
+            //         }
+            //       },
+            //       required: ['edna_sample_information']
+            //     },
+            //     {
+            //       properties: {
+            //         edna_sample: {
+            //           enum: ['No']
+            //         }
+            //       }
+            //     }
+            //   ]
+            // }
           }
         }
       ]
