@@ -2,8 +2,11 @@ import jsonpatch from 'fast-json-patch';
 import traverse from 'json-schema-traverse';
 import { CacheKeys, X_API_DOC_KEYS, X_ENUM_CODE } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from './code-utils';
+import { getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from './logger';
+import { authenticate } from './auth-utils';
 import { cached } from './utils';
+import { getUserByBCEID, getUserByIDIR } from './user-utils';
 
 const defaultLog = getLogger('api-doc-security-filter');
 
@@ -16,9 +19,31 @@ const defaultLog = getLogger('api-doc-security-filter');
  */
 export async function applyApiDocSecurityFilters(req: any) {
   try {
-    const allCodeEntities: IAllCodeEntities = await cached(CacheKeys.ALL_CODE_CATEGORIES, 3600000, () =>
-      getAllCodeEntities()
-    )();
+    await authenticate(req, []);
+
+    console.log('allCodeEntities got');
+    console.log('Request: ', Object.keys(req));
+    console.log('Token: ', req['keycloak_token']);
+    const token = req['keycloak_token'];
+    let user = {};
+    if (token) {
+      // User is authenticated
+      if (token.payload.idir_userid) {
+        user = await getUserByIDIR(token.payload.idir_userid);
+        // user = await getUserByIDIR(token.payload.idir_userid);
+      }
+      if (token.payload.bceid_userid) {
+        user = await getUserByBCEID(token.payload.bceid_userid);
+      }
+    }
+
+    let allCodeEntities: IAllCodeEntities;
+
+    if (user) {
+      allCodeEntities = await getAllCodeEntities(user);
+    } else {
+      allCodeEntities = await getAllCodeEntities();
+    }
 
     if (!allCodeEntities) {
       return req;
