@@ -163,19 +163,38 @@ export const GeneratePopup = (props) => {
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
       pointsofinterest.rows.map((poi) => {
-        var arrJurisdictions = [];
-        // Removed For Now:
-        // getJurisdictions(newArr, poi);
-        // newArr.forEach((item) => {
-        //   arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
-        // });
+        var tempSurveyDate = null;
+        var tempSurveyArea = null;
+        const surveys = poi.point_of_interest_payload.form_data.surveys;
+        if (surveys.length > 0) {
+          console.log('surveys', poi.point_of_interest_payload.form_data.surveys);
+          surveys.map((survey) => {
+            const surveyDate = new Date(survey.survey_date);
+            if (tempSurveyDate === null) {
+              tempSurveyDate = surveyDate;
+              tempSurveyArea = survey.reported_area;
+            }
+            if (tempSurveyDate.valueOf() < surveyDate.valueOf()) {
+              tempSurveyDate = surveyDate;
+              tempSurveyArea = survey.reported_area;
+            }
+          });
+        }
+        const newArr = [];
+        const arrJurisdictions = [];
+
+        getJurisdictions(newArr, poi);
+        newArr.forEach((item) => {
+          arrJurisdictions.push(item.code + ' (' + item.percent_covered + '%)');
+        });
 
         var row = {
           id: poi.point_of_interest_id,
           site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
           jurisdiction_code: arrJurisdictions,
           species_code: poi.species_on_site,
-          geometry: poi.point_of_interest_payload.geometry
+          geometry: poi.point_of_interest_payload.geometry,
+          reported_area: tempSurveyArea === 0 || tempSurveyArea === null ? 'NWF' : tempSurveyArea
         };
         tempArr.push(row);
       });

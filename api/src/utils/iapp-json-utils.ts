@@ -19,13 +19,13 @@ const getSurveyObj = (row: any, map_code: any) => {
   const plant_code = row.invasive_plant.substring(leftBracket + 6, row.invasive_plant.length - 1);
   const genus = row.invasive_plant.substring(leftBracket + 1, leftBracket + 5);
   return {
-    genus: genus, // Could not see (COME BACK LATER)
+    genus: genus, // (XXXX)
     density: row.density,
     species: row.invasive_plant, // NEEDS to be converted to plant code
     map_code: map_code, // Could not see (Maybe from project code)
     survey_id: row.surveyid,
     common_name: common_name,
-    survey_date: row.site_created_date,
+    survey_date: row.survey_date,
     weeds_found: row.estimated_area > 0 ? true : false,
     distribution: row.distribution,
     project_code: [
