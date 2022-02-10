@@ -34,17 +34,6 @@ interface TreatmentColumn {
   format?: (value: number) => string;
 }
 
-const treatmentColumns: readonly TreatmentColumn[] = [
-  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
-  { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 230 },
-  { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
-  { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
-];
-
 interface BioDispersalColumn {
   id:
     | 'dispersal_id'
@@ -69,25 +58,6 @@ interface BioDispersalColumn {
   format?: (value: number) => string;
 }
 
-const bioDispersalColumns: readonly BioDispersalColumn[] = [
-  { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
-  { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
-  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
-  { id: 'biological_agent_code', label: 'Agent Code', minWidth: 150 },
-  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
-  { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
-  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
-  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 150 },
-  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 150 },
-  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
-  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
-  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
-  { id: 'general_comment', label: 'General_comment', minWidth: 250 }
-];
-
 interface BioTreatmentColumn {
   id:
     | 'treatment_id'
@@ -108,6 +78,36 @@ interface BioTreatmentColumn {
   align?: 'right';
   format?: (value: number) => string;
 }
+
+const treatmentColumns: readonly TreatmentColumn[] = [
+  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
+  { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
+  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 230 },
+  { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
+  { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 150 },
+  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
+];
+
+const bioDispersalColumns: readonly BioDispersalColumn[] = [
+  { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
+  { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 150 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
+  { id: 'biological_agent_code', label: 'Agent Code', minWidth: 150 },
+  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
+  { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
+  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
+  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 150 },
+  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 150 },
+  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
+  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
+  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
+  { id: 'general_comment', label: 'General_comment', minWidth: 250 }
+];
 
 const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
