@@ -2,7 +2,6 @@ import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, 
 import { ExpandMore } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import React from 'react';
-import { IAPPSurveyTable } from '../../common/RecordTables';
 import { TreatmentsTable } from './ExtractTables';
 import { getJurisdictions } from './IAPP-Functions';
 import { SurveysTable } from './SurveyTable';
