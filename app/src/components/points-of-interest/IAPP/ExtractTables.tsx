@@ -83,11 +83,11 @@ const treatmentColumns: readonly TreatmentColumn[] = [
   { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 230 },
+  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
   { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
   { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
   { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
 const bioDispersalColumns: readonly BioDispersalColumn[] = [
@@ -106,7 +106,7 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
   { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
   { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
-  { id: 'general_comment', label: 'General_comment', minWidth: 250 }
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
 const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
@@ -114,7 +114,7 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'collection_date', label: 'Collection Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 150 },
+  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
   { id: 'classified_area_code', label: 'Classified Area Code', minWidth: 150 },
   { id: 'biological_agent_code', label: 'Biological Agent Code', minWidth: 150 },
   { id: 'bioagent_source', label: 'Bioagent Source', minWidth: 150 },
@@ -122,10 +122,10 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'agent_source', label: 'Agent Source', minWidth: 150 },
   { id: 'release_quantity', label: 'Release Quantity', minWidth: 150 },
   { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
-const Row = (props) => {
+const Row = (props: any) => {
   const { row, type } = props;
   const [monitoringRows, setMonitoringRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
@@ -147,8 +147,8 @@ const Row = (props) => {
   };
 
   const getShortVal = (value: string) => {
-    if (value?.length < 10) return value;
-    else return value.substring(0, 10) + '...';
+    if (value?.length < 35) return value;
+    else return value.substring(0, 35) + '...';
   };
 
   const convertData = (item: any) => {
@@ -189,8 +189,6 @@ const Row = (props) => {
             }
             if (column.id === 'treatment_id') {
               setOpen(!open);
-              console.log(row);
-              console.log(monitoringRows);
             }
           }}>
           <Box>

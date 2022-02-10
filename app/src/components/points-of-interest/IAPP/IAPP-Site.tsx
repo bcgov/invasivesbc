@@ -5,6 +5,7 @@ import React from 'react';
 import { IAPPSurveyTable } from '../../common/RecordTables';
 import { TreatmentsTable } from './ExtractTables';
 import { getJurisdictions } from './IAPP-Functions';
+import { SurveysTable } from './SurveyTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -147,18 +148,19 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      <IAPPSurveyTable rows={surveys} />
+      {/* oldRecords Table <IAPPSurveyTable rows={surveys} /> */}
+      <SurveysTable surveys={surveys} />
 
-      {/* oldRecords {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
+      {/* oldRecords Table {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
       <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments} />
 
-      {/* oldRecords {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
+      {/* oldRecords Table {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
       <TreatmentsTable type={'Chemical'} treatments={chemical_treatments} />
 
-      {/* oldRecords {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
+      {/* oldRecords Table {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
       <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />
 
-      {/* oldRecords {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />} */}
+      {/* oldRecords Table {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />} */}
       <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
     </Container>
   );
