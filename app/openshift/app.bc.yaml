@@ -30,7 +30,7 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: registry.access.redhat.com/ubi8/nodejs-16:1-5
+    value: registry.access.redhat.com/ubi8/nodejs-16:13
   - name: SOURCE_IMAGE_NAME
     required: true
     value: nodejs-16
@@ -91,10 +91,10 @@ objects:
       postCommit: {}
       resources:
         limits:
-          cpu: 1
+          cpu: 2
           memory: 7.5Gi
         requests:
-          cpu: 1
+          cpu: 2
           memory: 7.5Gi
       runPolicy: Serial
       source:
