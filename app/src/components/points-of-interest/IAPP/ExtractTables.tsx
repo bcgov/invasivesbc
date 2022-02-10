@@ -86,7 +86,7 @@ const treatmentColumns: readonly TreatmentColumn[] = [
   { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
   { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
   { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
   { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
@@ -94,7 +94,7 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
   { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
   { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
   { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
   { id: 'biological_agent_code', label: 'Agent Code', minWidth: 150 },
@@ -121,7 +121,7 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'biological_agent_stage_code', label: 'Biological Agent Stage Code', minWidth: 150 },
   { id: 'agent_source', label: 'Agent Source', minWidth: 150 },
   { id: 'release_quantity', label: 'Release Quantity', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
   { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
@@ -209,7 +209,7 @@ const Row = (props: any) => {
         <TableRow>
           <TableCell padding="none" colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box margin={1}>
+              <Box margin={1} marginLeft={5}>
                 <Typography fontSize={'0.925rem'}>Monitoring Table</Typography>
                 <Table size="small" aria-label="monitoring">
                   <TableHead>
