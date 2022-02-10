@@ -204,7 +204,7 @@ const Row = (props: any) => {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
         <ExtractRow />
       </TableRow>
       {monitoringRows && (
@@ -215,7 +215,7 @@ const Row = (props: any) => {
                 <Typography>Monitoring</Typography>
                 <Table size="small" aria-label="monitoring">
                   <TableHead>
-                    <TableRow>
+                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       {monitoringColumns.map((column) => (
                         <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
                           {column.label}
@@ -359,7 +359,7 @@ export const TreatmentsTable = (props) => {
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
-          <Table stickyHeader aria-label="treatments table">
+          <Table size="small" stickyHeader aria-label="treatments table">
             <TableHead>
               <TableRow>
                 <TreatmentTableHead />

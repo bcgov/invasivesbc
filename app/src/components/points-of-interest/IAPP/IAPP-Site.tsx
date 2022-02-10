@@ -120,7 +120,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <Grid item xs={3} sm={2}>
               Jurisdiction
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={9}>
               {jurisdictions.map((jurisdiction) => {
                 return (
                   <>
@@ -130,7 +130,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 );
               }) || 'Not Provided'}
             </Grid>
-
             <Grid item xs={3} sm={2}>
               Access Description
             </Grid>

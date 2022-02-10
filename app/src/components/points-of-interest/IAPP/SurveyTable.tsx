@@ -88,7 +88,7 @@ const Row = (props: any) => {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
         {surveyColumns.map((column) => {
           const value = row[column.id];
           return (
@@ -167,7 +167,7 @@ export const SurveysTable = (props: any) => {
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
-          <Table stickyHeader aria-lable="surveys table">
+          <Table size="small" stickyHeader aria-lable="surveys table">
             <TableHead>
               <TableRow>
                 <SurveyTableHead />
