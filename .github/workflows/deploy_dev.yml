@@ -35,6 +35,8 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+    needs:
+      - buildAPI
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -99,6 +101,9 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+    needs:
+      - buildAPP
+
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
