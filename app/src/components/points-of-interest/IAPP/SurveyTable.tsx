@@ -9,7 +9,8 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  Typography
 } from '@mui/material';
 import React from 'react';
 import { getReportedAreaOutput } from './IAPP-Functions';
@@ -62,8 +63,8 @@ const Row = (props: any) => {
   const [shortComment, setShortComment] = React.useState(true);
 
   const shortValOutput = (value: string) => {
-    if (shortComment) return <>{getShortVal(value)}</>;
-    else return <>{value}</>;
+    if (shortComment) return <Typography fontSize={'1rem'}>{getShortVal(value)}</Typography>;
+    else return <Typography fontSize={'1rem'}>{value}</Typography>;
   };
 
   const getShortVal = (value: string) => {
@@ -80,9 +81,9 @@ const Row = (props: any) => {
         if ((value as number) > 0) {
           returnVal = value;
         } else returnVal = 'NWF';
-        return <>{returnVal}</>;
+        return <Typography fontSize={'1rem'}>{returnVal}</Typography>;
       default:
-        return <>{value}</>;
+        return <Typography fontSize={'1rem'}>{value}</Typography>;
     }
   };
 
@@ -93,10 +94,8 @@ const Row = (props: any) => {
           const value = row[column.id];
           return (
             <TableCell
-              size="small"
               key={column.id}
               align={column.align}
-              style={{ height: 80 }}
               onClick={() => {
                 if (column.id === 'general_comment') setShortComment(!shortComment);
               }}>
@@ -129,7 +128,7 @@ export const SurveysTable = (props: any) => {
   const SurveyTableHead = () => {
     return (surveyColumns as any).map((column) => (
       <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-        <>{column.label}</>
+        <Typography fontSize={'1rem'}>{column.label}</Typography>
       </TableCell>
     ));
   };

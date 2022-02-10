@@ -92,7 +92,7 @@ const treatmentColumns: readonly TreatmentColumn[] = [
 
 const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
   { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
   { id: 'project_code', label: 'Project Code', minWidth: 150 },
   { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
@@ -111,7 +111,7 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
 
 const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'collection_date', label: 'Collection Date', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
@@ -142,8 +142,8 @@ const Row = (props: any) => {
   }, [row]);
 
   const shortValOutput = (value: string) => {
-    if (shortComment) return <>{getShortVal(value)}</>;
-    else return <>{value}</>;
+    if (shortComment) return <Typography fontSize={'1rem'}>{getShortVal(value)}</Typography>;
+    else return <Typography fontSize={'1rem'}>{value}</Typography>;
   };
 
   const getShortVal = (value: string) => {
@@ -182,7 +182,7 @@ const Row = (props: any) => {
           size="small"
           key={column.id}
           align={column.align}
-          style={{ height: 80 }}
+          style={{ fontSize: '1rem' }}
           onClick={() => {
             if (column.id === 'general_comment') {
               setShortComment(!shortComment);
@@ -191,12 +191,10 @@ const Row = (props: any) => {
               setOpen(!open);
             }
           }}>
-          <Box>
-            {monitoringRows.length > 0 && column.id === 'treatment_id' && (
-              <> {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} </>
-            )}
-            {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
-          </Box>
+          {monitoringRows.length > 0 && column.id === 'treatment_id' && (
+            <>{open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}</>
+          )}
+          {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
         </TableCell>
       );
     });
@@ -209,16 +207,16 @@ const Row = (props: any) => {
       </TableRow>
       {monitoringRows && (
         <TableRow>
-          <TableCell size="small" style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+          <TableCell padding="none" colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: 1 }}>
-                <Typography>Monitoring</Typography>
+              <Box margin={1}>
+                <Typography fontSize={'0.925rem'}>Monitoring Table</Typography>
                 <Table size="small" aria-label="monitoring">
                   <TableHead>
                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       {monitoringColumns.map((column) => (
                         <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-                          {column.label}
+                          <Typography fontSize={'0.875rem'}>{column.label}</Typography>
                         </TableCell>
                       ))}
                     </TableRow>
@@ -347,7 +345,7 @@ export const TreatmentsTable = (props) => {
     }
     return columnsObj.map((column) => (
       <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-        {column.label}
+        <Typography fontSize={'1rem'}>{column.label}</Typography>
       </TableCell>
     ));
   };
@@ -355,7 +353,8 @@ export const TreatmentsTable = (props) => {
   return (
     <Accordion style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
-        {type} {type === 'Mechanical' || type === 'Chemical' ? <>Treatment</> : null}
+        <>{type}</>
+        {type === 'Mechanical' || type === 'Chemical' ? <>Treatment</> : null}
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
