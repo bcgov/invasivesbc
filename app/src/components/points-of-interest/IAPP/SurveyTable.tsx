@@ -45,6 +45,18 @@ const surveyColumns: readonly SurveyColumn[] = [
   { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
+const sortArray = (inputArray: any[]) => {
+  return [...inputArray].sort((a, b) => {
+    if (a.survey_date.valueOf() > b.survey_date.valueOf()) {
+      return 1;
+    }
+    if (a.survey_date.valueOf() < b.survey_date.valueOf()) {
+      return -1;
+    }
+    return 0;
+  });
+};
+
 const Row = (props: any) => {
   const { row } = props;
   const [shortComment, setShortComment] = React.useState(true);
@@ -110,7 +122,7 @@ export const SurveysTable = (props: any) => {
       surveys.forEach((survey) => {
         tempArr.push(createData(survey));
       });
-      setRows(tempArr);
+      setRows(sortArray(tempArr));
     }
   }, [surveys]);
 
@@ -147,11 +159,10 @@ export const SurveysTable = (props: any) => {
   };
 
   return (
-    <Accordion
-      expanded={expanded}
-      onClick={() => setExpanded(!expanded)}
-      style={{ marginTop: 15, alignItems: 'center' }}>
-      <AccordionSummary style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
+    <Accordion expanded={expanded} style={{ marginTop: 15, alignItems: 'center' }}>
+      <AccordionSummary
+        onClick={() => setExpanded(!expanded)}
+        style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
         Survey Details
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
