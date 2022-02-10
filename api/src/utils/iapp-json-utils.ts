@@ -203,9 +203,6 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
         else return [];
       }
     );
-    // (iapp_site as any).form_data.
-    // (iapp_site as any).form_data.
-    // (iapp_site as any).form_data.
 
     return iapp_site;
   });
