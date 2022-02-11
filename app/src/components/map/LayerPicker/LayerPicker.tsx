@@ -35,6 +35,7 @@ import {
   ListItemText,
   Popover,
   Slider,
+  Tooltip,
   Typography
 } from '@mui/material';
 import ColorLens from '@mui/icons-material/ColorLens';
@@ -42,6 +43,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // MUI Icons
 import LayersIcon from '@mui/icons-material/Layers';
+import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ColorPicker } from 'mui-color';
@@ -151,6 +153,14 @@ export const LayerPicker = React.memo(
                   />
                 </Grid>
                 <Grid item xs={6}>
+                  <Tooltip
+                    disableFocusListener
+                    placement="right"
+                    title={child.bcgw_code ? child.bcgw_code : child.layer_code}>
+                    <IconButton sx={{ marginLeft: -10, padding: 3 }}>
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
                   <Typography variant="caption">{child.name}</Typography>
                 </Grid>
                 {/* Settings Dialog Box */}
