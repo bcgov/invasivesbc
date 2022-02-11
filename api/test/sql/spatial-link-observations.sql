@@ -10,8 +10,8 @@
 */
 -- Positive Layer
 drop table if exists test_spatial_expload_positive;
-create table test_spatial_expload_positive as
--- create temporary table test_spatial_expload_positive as
+-- create table test_spatial_expload_positive as
+create temporary table test_spatial_expload_positive as
   select 
     activity_type,
     activity_subtype,
@@ -39,8 +39,8 @@ alter table test_spatial_expload_positive add primary key (gid);
 
 -- Negative Layer
 drop table if exists test_spatial_expload_negative;
-create table test_spatial_expload_negative as
--- create temporary table test_spatial_expload_negative as
+-- create table test_spatial_expload_negative as
+create temporary table test_spatial_expload_negative as
   select 
     activity_subtype,
     created_timestamp,

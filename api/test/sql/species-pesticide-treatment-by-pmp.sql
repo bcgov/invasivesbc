@@ -210,8 +210,10 @@ where
   -- Only records within a year of today
   date_part('year', treatments_by_species.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   array_length(treatments_by_species.activity_ids,1) > 0 -- ignore records without shapes
-  and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
-  -- [[and {{pmp_name}}]] -- This is for metabase
+  -- and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
+  [[and {{pmp_name}}]] -- Pest Management Planning Units
+  [[and {{jurisdictn}}]] -- Jurisdiction
+  [[and {{shape}}]] -- GeoJSON string
 group by
   liquid_herbicide.code_description,
   granular_herbicides.code_description,
