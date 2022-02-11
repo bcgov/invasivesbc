@@ -148,7 +148,7 @@ export interface IMapContainerProps {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
-  setWellIdandProximity?: (wellIdandProximity: any) => void;
+  setClosestWells?: (closestWells: any) => void;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -323,7 +323,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   id={props.activityId}
                   map={map}
                   inputGeo={props.geometryState.geometry}
-                  setWellIdandProximity={props.setWellIdandProximity}
+                  setClosestWells={props.setClosestWells}
                   mapMaxNativeZoom={mapMaxNativeZoom}
                   setMapMaxNativeZoom={setMapMaxNativeZoom}
                 />

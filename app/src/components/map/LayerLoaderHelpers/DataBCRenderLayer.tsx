@@ -38,7 +38,7 @@ export const DataBCLayer = (props) => {
           simplifyPercentage={props.simplifyPercentage}
           opacity={props.opacity}
           dataBCLayerName={props.bcgw_code}
-          setWellIdandProximity={props.setWellIdandProximity}
+          setClosestWells={props.setClosestWells}
         />
       );
     case LayerMode.VectorTilesOnline:
@@ -54,7 +54,7 @@ export const DataBCLayer = (props) => {
           simplifyPercentage={props.simplifyPercentage}
           opacity={props.opacity}
           dataBCLayerName={props.bcgw_code}
-          setWellIdandProximity={props.setWellIdandProximity}
+          setClosestWells={props.setClosestWells}
         />
       );
     default:

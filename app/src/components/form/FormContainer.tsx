@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { ISubmitEvent } from '@rjsf/core';
 import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
@@ -72,6 +72,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;

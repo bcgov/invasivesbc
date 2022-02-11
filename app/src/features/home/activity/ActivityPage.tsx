@@ -92,7 +92,7 @@ interface IActivityPageProps {
   setObservation?: Function;
   setFormHasErrors?: Function;
   setParentFormRef?: Function;
-  setWellIdandProximity?: Function;
+  setClosestWells?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -171,6 +171,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
 
+    console.log('setting doc', updatedDoc);
     setDoc(updatedDoc);
     try {
       const appStateResults = await dataAccess.getAppState(databaseContext);
@@ -673,100 +674,136 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   });
 
   //sets well id and proximity if there are any
-  const setWellIdandProximity = async (wellIdandProximity: any) => {
-    const activityResult = await getActivityResultsFromDB(props.activityId || null);
+  const setClosestWells = async (closestWells: any) => {
     //if nothing is received, don't do anything
-    if (!wellIdandProximity) {
+    if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
       return;
-    } else {
-      const newFormData = { ...doc };
-      //set well_id and well_proximity fields
-      newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] = wellIdandProximity.id
-        ? wellIdandProximity.id
-        : undefined;
-      newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] =
-        wellIdandProximity.proximity ? Number(wellIdandProximity.proximity.toFixed(0)) : undefined;
+    }
+    const { well_objects, areWellsInside } = closestWells;
+    const wellInformationArr = well_objects.map((well) => {
+      return { well_id: well.id, well_proximity: well.proximity };
+    });
 
-      const newValuesAreSame: boolean =
-        newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] ===
-          activityResult['formData']['activity_subtype_data']['Well_Information']['well_id'] &&
-        newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] ===
-          activityResult['formData']['activity_subtype_data']['Well_Information']['well_proximity'];
+    const areEqual = (first, second) => {
+      if (first.length !== second.length) {
+        console.log(first);
+        console.log(second);
+        return false;
+      }
+      for (let i = 0; i < first.length; i++) {
+        if (second[i].well_id !== first[i].well_id) {
+          console.log(second[i].well_id, first[i].well_id);
+          return false;
+        }
+      }
+      return true;
+    };
 
-      //if it is a Chemical treatment and there are wells too close, display warning dialog
-      if (
-        doc.activitySubtype.includes('Treatment_ChemicalPlant') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
-          dialogActions: [
-            {
-              actionName: 'No',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-                setGeometry(null);
+    console.log([...doc['formData']['activity_subtype_data']['Well_Information']], [...wellInformationArr]);
 
-                await updateDoc({
-                  ...doc,
-                  formData: {
-                    ...doc.formData,
-                    activity_data: {
-                      ...doc.formData.activity_data,
-                      latitude: undefined,
-                      longitude: undefined,
-                      utm_zone: undefined,
-                      utm_northing: undefined,
-                      utm_easting: undefined,
-                      well_id: undefined,
-                      well_proximity: undefined,
-                      reported_area: undefined
-                    }
+    const newValuesAreSame: boolean = areEqual(
+      [...doc['formData']['activity_subtype_data']['Well_Information']],
+      [...wellInformationArr]
+    );
+
+    console.log(newValuesAreSame);
+
+    //if it is a Chemical treatment and there are wells too close, display warning dialog
+    if (
+      doc.activitySubtype.includes('Treatment_ChemicalPlant') &&
+      (well_objects[0].proximity < 50 || areWellsInside) &&
+      !newValuesAreSame
+    ) {
+      setWarningDialog({
+        dialogOpen: true,
+        dialogTitle: 'Warning!',
+        dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+        dialogActions: [
+          {
+            actionName: 'No',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              setGeometry(null);
+
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_data: {
+                    ...doc.formData.activity_data,
+                    latitude: undefined,
+                    longitude: undefined,
+                    utm_zone: undefined,
+                    utm_northing: undefined,
+                    utm_easting: undefined,
+                    reported_area: undefined
+                  },
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [
+                      {
+                        well_id: 'No wells found',
+                        well_proximity: 'No wells found'
+                      }
+                    ]
                   }
-                });
-              }
+                }
+              });
+            }
+          },
+          {
+            actionName: 'Yes',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
             },
-            {
-              actionName: 'Yes',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-
-                await updateDoc({ formData: newFormData['formData'] });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      }
-      //if it is a Observation and there are wells too close, display warning dialog
-      else if (
-        doc.activitySubtype.includes('Observation') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it.',
-          dialogActions: [
-            {
-              actionName: 'Ok',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-                await updateDoc({ formData: newFormData['formData'] });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      }
-      //If not in Observation nor in Chemical Treatment, just make changes to fields
-      else {
-        await updateDoc({ formData: { ...newFormData['formData'] } });
-      }
+            autoFocus: true
+          }
+        ]
+      });
+    }
+    //if it is a Observation and there are wells too close, display warning dialog
+    else if (
+      doc.activitySubtype.includes('Observation') &&
+      (well_objects[0].proximity < 50 || areWellsInside) &&
+      !newValuesAreSame
+    ) {
+      setWarningDialog({
+        dialogOpen: true,
+        dialogTitle: 'Warning!',
+        dialogContentText: 'There are wells that either inside your area or too close to it.',
+        dialogActions: [
+          {
+            actionName: 'Ok',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
+            },
+            autoFocus: true
+          }
+        ]
+      });
+    }
+    //If not in Observation nor in Chemical Treatment, just make changes to fields
+    else {
     }
   };
 
@@ -981,7 +1018,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               //cloneActivityButton={generateCloneActivityButton}
               setParentFormRef={props.setParentFormRef}
               showDrawControls={true}
-              setWellIdandProximity={setWellIdandProximity}
+              setClosestWells={setClosestWells}
             />
           </>
         )}

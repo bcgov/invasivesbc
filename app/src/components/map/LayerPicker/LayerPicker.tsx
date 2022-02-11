@@ -260,7 +260,7 @@ export const LayerPicker = React.memo(
                       dataBCAcceptsGeometry={child.dataBCAcceptsGeometry}
                       simplifyPercentage={child.simplifyPercentage}
                       inputGeo={props.inputGeo}
-                      setWellIdandProximity={props.setWellIdandProximity}
+                      setClosestWells={props.setClosestWells}
                       color_code={child.color_code}
                       zIndex={parent.zIndex + child.zIndex}
                     />
@@ -273,7 +273,7 @@ export const LayerPicker = React.memo(
                       bcgw_code={child.bcgw_code}
                       layer_mode={child.layer_mode}
                       inputGeo={props.inputGeo}
-                      setWellIdandProximity={props.setWellIdandProximity}
+                      setClosestWells={props.setClosestWells}
                       color_code={child.color_code}
                       zIndex={parent.zIndex + child.zIndex}
                     />
