@@ -1,4 +1,4 @@
-import { TableCell, TableRow } from '@mui/material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 import React from 'react';
 
 interface MonitoringColumn {
@@ -46,7 +46,7 @@ export const MonitoringRow = (props) => {
                 }
               }}>
               <>{/* Removed for now until we get monitoring comment {getValue(value)} */}</>
-              <>{value}</>
+              <Typography fontSize={'0.875rem'}>{value}</Typography>
             </TableCell>
           );
         })}

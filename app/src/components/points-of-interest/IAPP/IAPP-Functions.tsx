@@ -10,7 +10,6 @@ export const getJurisdictions = (surveys: any[]) => {
 
         tempArr.forEach((item) => {
           if (item.jurisdiction_code === jurisdiction.jurisdiction_code) {
-            console.log('flag', item.jurisdiction_code, jurisdiction.jurisdiction_code);
             flag = 1;
           }
         });

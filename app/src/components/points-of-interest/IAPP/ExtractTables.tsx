@@ -34,17 +34,6 @@ interface TreatmentColumn {
   format?: (value: number) => string;
 }
 
-const treatmentColumns: readonly TreatmentColumn[] = [
-  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
-  { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 230 },
-  { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
-  { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
-];
-
 interface BioDispersalColumn {
   id:
     | 'dispersal_id'
@@ -69,25 +58,6 @@ interface BioDispersalColumn {
   format?: (value: number) => string;
 }
 
-const bioDispersalColumns: readonly BioDispersalColumn[] = [
-  { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
-  { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
-  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
-  { id: 'biological_agent_code', label: 'Agent Code', minWidth: 150 },
-  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
-  { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
-  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
-  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 150 },
-  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 150 },
-  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
-  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
-  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
-  { id: 'general_comment', label: 'General_comment', minWidth: 250 }
-];
-
 interface BioTreatmentColumn {
   id:
     | 'treatment_id'
@@ -109,23 +79,53 @@ interface BioTreatmentColumn {
   format?: (value: number) => string;
 }
 
-const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
+const treatmentColumns: readonly TreatmentColumn[] = [
   { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
+  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
+  { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
+  { id: 'method_code', label: 'Mehtod Code', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
+];
+
+const bioDispersalColumns: readonly BioDispersalColumn[] = [
+  { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
+  { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
+  { id: 'biological_agent_code', label: 'Agent Code', minWidth: 150 },
+  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
+  { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
+  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
+  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 150 },
+  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 150 },
+  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
+  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
+  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
+];
+
+const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
+  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
+  { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
+  { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'collection_date', label: 'Collection Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 150 },
+  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
   { id: 'classified_area_code', label: 'Classified Area Code', minWidth: 150 },
   { id: 'biological_agent_code', label: 'Biological Agent Code', minWidth: 150 },
   { id: 'bioagent_source', label: 'Bioagent Source', minWidth: 150 },
   { id: 'biological_agent_stage_code', label: 'Biological Agent Stage Code', minWidth: 150 },
   { id: 'agent_source', label: 'Agent Source', minWidth: 150 },
   { id: 'release_quantity', label: 'Release Quantity', minWidth: 150 },
-  { id: 'project_code', label: 'Project Code', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 250 }
+  { id: 'project_code', label: 'Project Code', minWidth: 350 },
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
-const Row = (props) => {
+const Row = (props: any) => {
   const { row, type } = props;
   const [monitoringRows, setMonitoringRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
@@ -142,13 +142,13 @@ const Row = (props) => {
   }, [row]);
 
   const shortValOutput = (value: string) => {
-    if (shortComment) return <>{getShortVal(value)}</>;
-    else return <>{value}</>;
+    if (shortComment) return <Typography fontSize={'1rem'}>{getShortVal(value)}</Typography>;
+    else return <Typography fontSize={'1rem'}>{value}</Typography>;
   };
 
   const getShortVal = (value: string) => {
-    if (value?.length < 10) return value;
-    else return value.substring(0, 10) + '...';
+    if (value?.length < 35) return value;
+    else return value.substring(0, 35) + '...';
   };
 
   const convertData = (item: any) => {
@@ -182,23 +182,19 @@ const Row = (props) => {
           size="small"
           key={column.id}
           align={column.align}
-          style={{ height: 80 }}
+          style={{ fontSize: '1rem' }}
           onClick={() => {
             if (column.id === 'general_comment') {
               setShortComment(!shortComment);
             }
             if (column.id === 'treatment_id') {
               setOpen(!open);
-              console.log(row);
-              console.log(monitoringRows);
             }
           }}>
-          <Box>
-            {monitoringRows.length > 0 && column.id === 'treatment_id' && (
-              <> {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} </>
-            )}
-            {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
-          </Box>
+          {monitoringRows.length > 0 && column.id === 'treatment_id' && (
+            <>{open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}</>
+          )}
+          {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
         </TableCell>
       );
     });
@@ -206,21 +202,21 @@ const Row = (props) => {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
         <ExtractRow />
       </TableRow>
       {monitoringRows && (
         <TableRow>
-          <TableCell size="small" style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+          <TableCell padding="none" colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: 1 }}>
-                <Typography>Monitoring</Typography>
+              <Box margin={1} marginLeft={5}>
+                <Typography fontSize={'0.925rem'}>Monitoring Table</Typography>
                 <Table size="small" aria-label="monitoring">
                   <TableHead>
-                    <TableRow>
+                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       {monitoringColumns.map((column) => (
                         <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-                          {column.label}
+                          <Typography fontSize={'0.875rem'}>{column.label}</Typography>
                         </TableCell>
                       ))}
                     </TableRow>
@@ -349,7 +345,7 @@ export const TreatmentsTable = (props) => {
     }
     return columnsObj.map((column) => (
       <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
-        {column.label}
+        <Typography fontSize={'1rem'}>{column.label}</Typography>
       </TableCell>
     ));
   };
@@ -357,11 +353,12 @@ export const TreatmentsTable = (props) => {
   return (
     <Accordion style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
-        {type} {type === 'Mechanical' || type === 'Chemical' ? <>Treatment</> : null}
+        <>{type}</>
+        {type === 'Mechanical' || type === 'Chemical' ? <>Treatment</> : null}
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
-          <Table stickyHeader aria-label="treatments table">
+          <Table size="small" stickyHeader aria-label="treatments table">
             <TableHead>
               <TableRow>
                 <TreatmentTableHead />
