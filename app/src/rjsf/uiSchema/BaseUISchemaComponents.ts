@@ -932,7 +932,9 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details']
+  efficacy_code: {'ui:widget': 'single-select-autocomplete'},
+  comment: {},
+  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details','efficacy_code', 'comment']
 };
 
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
@@ -940,7 +942,9 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   monitoring_details: {},
-  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details']
+  efficacy_code: {'ui:widget': 'single-select-autocomplete'},
+  comment: {},
+  'ui:order': ['invasive_plant_code', 'aquatic_invasive_plant_code', 'monitoring_details','efficacy_code', 'comment']
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {

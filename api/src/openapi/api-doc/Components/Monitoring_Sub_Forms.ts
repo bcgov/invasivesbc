@@ -1,9 +1,9 @@
 import { Biological_Agent_Stage } from './General_Sub_Forms';
 
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
-  title: 'Chemical Terrestrial Aquatic Monitoring Information',
+  title: 'Chemical Treatment Monitoring Information',
   type: 'object',
-  required: ['monitoring_details'],
+  required: ['monitoring_details', 'efficacy_code'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -32,13 +32,30 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     monitoring_details: {
       type: 'string',
       title: 'Monitoring details'
+    },
+    efficacy_code: {
+      type: 'string',
+      title: 'Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
+    },
+    comment: {
+      type: 'string',
+      title: 'Comment',
+      'x-tooltip-text':
+        'Note whether chlorosis, necrosis, curling, browning, yellow, epicormic growth etc. is observed, or any additional relevant information'
     }
   }
 };
 export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   title: 'Mechanical Terrestrial Aquatic Monitoring Information',
   type: 'object',
-  required: ['monitoring_details'],
+  required: ['monitoring_details', 'efficacy_code'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -67,6 +84,23 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     monitoring_details: {
       type: 'string',
       title: 'Monitoring details'
+    },
+    efficacy_code: {
+      type: 'string',
+      title: 'Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
+    },
+    comment: {
+      type: 'string',
+      title: 'Comment',
+      'x-tooltip-text':
+        'Note whether chlorosis, necrosis, curling, browning, yellow, epicormic growth etc. is observed, or any additional relevant information'
     }
   }
 };

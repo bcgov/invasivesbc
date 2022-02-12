@@ -136,6 +136,7 @@ export interface IMapContainerProps {
   center?: any;
   isPlanPage?: boolean;
   activityId?: string;
+  activity?: any;
   cacheMapTilesFlag?: any;
   pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
@@ -144,11 +145,6 @@ export interface IMapContainerProps {
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
   extentState: { extent: any; setExtent: (extent: any) => void };
-  contextMenuState: {
-    state: MapContextMenuData;
-    setContextMenuState: (contextMenuState: MapContextMenuData) => void;
-  };
-  setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -323,7 +319,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   id={props.activityId}
                   map={map}
                   inputGeo={props.geometryState.geometry}
-                  setWellIdandProximity={props.setWellIdandProximity}
                   mapMaxNativeZoom={mapMaxNativeZoom}
                   setMapMaxNativeZoom={setMapMaxNativeZoom}
                 />

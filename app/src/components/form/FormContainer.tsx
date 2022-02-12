@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { ISubmitEvent } from '@rjsf/core';
 import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
@@ -73,6 +73,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
 
+  useEffect(() => {
+    if (!props.activity?.formData) {
+      return;
+    }
+    setformData(props.activity?.formData);
+  }, [props.activity]);
+
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const rjsfThemeDark = createTheme({
@@ -122,7 +129,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
-    console.log();
     let argumentFieldName = '';
     if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
       argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';

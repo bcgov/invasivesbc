@@ -1,25 +1,14 @@
 import { Capacitor } from '@capacitor/core';
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Snackbar,
-  Theme,
-  Tooltip,
-  Typography,
-  Zoom
-} from '@mui/material';
+import { Alert, Box, Button, Container, Snackbar, Theme, Tooltip, Typography, Zoom } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FileCopy } from '@mui/icons-material';
 import booleanWithin from '@turf/boolean-within';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { ActivityStatus, FormValidationStatus } from 'constants/activities';
+import { ActivityStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
@@ -65,6 +54,9 @@ import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { useHistory } from 'react-router';
+import ActivityMapComponent from 'components/activity/ActivityMapComponent';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { getClosestWells } from 'components/activity/closestWellsHelpers';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -92,7 +84,7 @@ interface IActivityPageProps {
   setObservation?: Function;
   setFormHasErrors?: Function;
   setParentFormRef?: Function;
-  setWellIdandProximity?: Function;
+  setClosestWells?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -105,24 +97,23 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
+  const invasivesApi = useInvasivesApi();
   const [extent, setExtent] = useState(null);
-  // "is it open?", "what coordinates of the mouse?", that kind of thing:
-  const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
-  const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+  const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
+  const [alertSavedOpen, setAlertSavedOpen] = useState(false);
   const [suggestedJurisdictions, setSuggestedJurisdictions] = useState();
-  /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
-    const handleContextMenuClose = () => {
-      setContextMenuState({ ...contextMenuState, isOpen: false });
-    };
-  */
-
   const history = useHistory();
   const [doc, setDoc] = useState(null);
-
   const [photos, setPhotos] = useState<IPhoto[]>([]);
-
+  const networkContext = useContext(NetworkContext);
+  const { connected } = networkContext;
   const [applicationUsers, setApplicationUsers] = useState([]);
-
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
   const isMobile = () => {
     return Capacitor.platform !== 'web';
   };
@@ -196,6 +187,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
   };
+
+  /**
+   * Sets warning dialog when user tries to leave the page.
+   * Warns user that unsaved form data will be lost
+   */
   const onNavBack = () => {
     setWarningDialog({
       dialogOpen: true,
@@ -220,6 +216,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  /**
+   * Submits activity as official record
+   */
   const onSubmitAsOfficial = () => {
     setWarningDialog({
       dialogOpen: true,
@@ -392,21 +391,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let utm_zone = utm[0];
       let utm_easting = utm[1];
       let utm_northing = utm[2];
-      /*****exported DisplayPosition utm_zone function
-      //latlong to utms / utm zone conversion
-      let utm_easting, utm_northing, utm_zone;
-      //if statement prevents errors on page load, as lat/long isn't defined
-      if (longitude !== undefined && latitude !== undefined) {
-        utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
-        proj4.defs([
-          ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-          ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
-        ]);
-        const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-        utm_easting = Number(en_m[0].toFixed(4));
-        utm_northing = Number(en_m[1].toFixed(4));
-      }*/
-
       const activityDoc = {
         ...activity,
         formData: {
@@ -451,12 +435,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
-  const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
-  const [alertSavedOpen, setAlertSavedOpen] = useState(false);
-
   const onFormSubmitError = (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
-    console.log(error);
     updateDoc({
       formData: formRef.current.state.formData,
       status: ActivityStatus.DRAFT,
@@ -469,7 +449,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setAlertErrorsOpen(false);
   };
 
@@ -477,7 +456,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setAlertSavedOpen(false);
   };
 
@@ -536,6 +514,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
     }
   );
+
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
@@ -588,14 +567,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     return mapDBActivityToDoc(activityResults);
   };
-
-  /*
-    Function to set the active activity in the DB context and the current activity view
-  */
-  /* const setActiveActivity = async (activeActivity: any) => {
-    setIsCloned(true);
-    await dataAccess.setAppState({ activeActivity: activeActivity }, databaseContext);
-  }; */
 
   /*
     Function to generate clone activity button component
@@ -665,112 +636,119 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
-    dialogActions: [],
-    dialogOpen: false,
-    dialogTitle: '',
-    dialogContentText: null
-  });
+  useEffect(() => {
+    if (geometry && geometry[0]) {
+      setClosestWells();
+    }
+  }, [geometry]);
 
   //sets well id and proximity if there are any
-  const setWellIdandProximity = async (wellIdandProximity: any) => {
-    const activityResult = await getActivityResultsFromDB(props.activityId || null);
-    //if nothing is received, don't do anything
-    if (!wellIdandProximity) {
+  const setClosestWells = async () => {
+    if (!doc) {
       return;
-    } else {
-      const newFormData = { ...doc };
-      //set well_id and well_proximity fields
-      newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] = wellIdandProximity.id
-        ? wellIdandProximity.id
-        : undefined;
-      newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] =
-        wellIdandProximity.proximity ? Number(wellIdandProximity.proximity.toFixed(0)) : undefined;
+    }
 
-      const newValuesAreSame: boolean =
-        newFormData['formData']['activity_subtype_data']['Well_Information']['well_id'] ===
-          activityResult['formData']['activity_subtype_data']['Well_Information']['well_id'] &&
-        newFormData['formData']['activity_subtype_data']['Well_Information']['well_proximity'] ===
-          activityResult['formData']['activity_subtype_data']['Well_Information']['well_proximity'];
+    let closestWells = await getClosestWells(geometry[0], databaseContext, invasivesApi, true, connected);
+    //if nothing is received, don't do anything
+    if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
+      return;
+    }
+    const { well_objects, areWellsInside } = closestWells;
+    const wellInformationArr = well_objects.map((well) => {
+      return { well_id: well.id, well_proximity: well.proximity.toString() };
+    });
 
-      //if it is a Chemical treatment and there are wells too close, display warning dialog
-      if (
-        doc.activitySubtype.includes('Treatment_ChemicalPlant') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
-          dialogActions: [
-            {
-              actionName: 'No',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-                setGeometry(null);
+    //if it is a Chemical treatment and there are wells too close, display warning dialog
+    if (doc.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
+      setWarningDialog({
+        dialogOpen: true,
+        dialogTitle: 'Warning!',
+        dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+        dialogActions: [
+          {
+            actionName: 'No',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              setGeometry(null);
 
-                await updateDoc({
-                  ...doc,
-                  formData: {
-                    ...doc.formData,
-                    activity_data: {
-                      ...doc.formData.activity_data,
-                      latitude: undefined,
-                      longitude: undefined,
-                      utm_zone: undefined,
-                      utm_northing: undefined,
-                      utm_easting: undefined,
-                      well_id: undefined,
-                      well_proximity: undefined,
-                      reported_area: undefined
-                    }
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_data: {
+                    ...doc.formData.activity_data,
+                    latitude: undefined,
+                    longitude: undefined,
+                    utm_zone: undefined,
+                    utm_northing: undefined,
+                    utm_easting: undefined,
+                    reported_area: undefined
+                  },
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [
+                      {
+                        well_id: 'No wells found',
+                        well_proximity: 'No wells found'
+                      }
+                    ]
                   }
-                });
-              }
+                }
+              });
+            }
+          },
+          {
+            actionName: 'Yes',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
             },
-            {
-              actionName: 'Yes',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-
-                await updateDoc({ formData: newFormData['formData'] });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      }
-      //if it is a Observation and there are wells too close, display warning dialog
-      else if (
-        doc.activitySubtype.includes('Observation') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it.',
-          dialogActions: [
-            {
-              actionName: 'Ok',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-                await updateDoc({ formData: newFormData['formData'] });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      }
-      //If not in Observation nor in Chemical Treatment, just make changes to fields
-      else {
-        await updateDoc({ formData: { ...newFormData['formData'] } });
-      }
+            autoFocus: true
+          }
+        ]
+      });
+    }
+    //if it is a Observation and there are wells too close, display warning dialog
+    else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+      setWarningDialog({
+        dialogOpen: true,
+        dialogTitle: 'Warning!',
+        dialogContentText: 'There are wells that either inside your area or too close to it.',
+        dialogActions: [
+          {
+            actionName: 'Ok',
+            actionOnClick: async () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              await updateDoc({
+                ...doc,
+                formData: {
+                  ...doc.formData,
+                  activity_subtype_data: {
+                    ...doc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
+            },
+            autoFocus: true
+          }
+        ]
+      });
+    }
+    //If not in Observation nor in Chemical Treatment
+    else {
+      console.log('not any case');
     }
   };
-
-  const invasivesApi = useInvasivesApi();
 
   useEffect(() => {
     const getActivityData = async () => {
@@ -878,120 +856,110 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setObservation && doc) {
       props.setObservation(doc);
     }
+
+    setActivityId(doc?._id);
   }, [doc]);
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
+  const [activityId, setActivityId] = useState(doc?._id);
 
   return (
     <Container className={props.classes.container}>
-      <MapRecordsContextProvider>
-        {/*
-      <Paper style={{ width: '100%' }} elevation={5}>
-        <Typography align="center" style={{ paddingTop: 50, paddingBottom: 30 }} variant="h3">
-          How to test this page:
-        </Typography>
-        <Box display="flex" width="80%" justifyContent="center">
-          <Typography
-            align="left"
-            style={{ whiteSpace: 'pre-line', paddingLeft: 100, paddingTop: 10, paddingBottom: 30 }}
-            variant="body1">
-            {`Make a geometry on the map near your current location. Add your form content and hit "Check Form For Errors". If there are none, hit "I'm done here." to return to My Records.
-            
-            Some tips:
-            
-            * The 'pin' button on the bottom right of the map jumps to your location.
-            * This new map is in beta.  Ignore the layer pickers for the time being.
-            * You can minimize the map, form, and photos boxes by clicking their titles (or anywhere on top of them).
-            * There is a big scrollbar on the right.`}
+      {!doc && (
+        <>
+          <Box mb={3}>
+            <Typography variant="h4">Current Activity </Typography>
+          </Box>
+          <Typography>
+            There is no current activity. When you start creating an activity, it will become your current activity and
+            show up in this tab.
           </Typography>
-        </Box>
-      </Paper>
-      */}
-        {!doc && (
-          <>
-            <Box mb={3}>
-              <Typography variant="h4">Current Activity </Typography>
-            </Box>
-            <Typography>
-              There is no current activity. When you start creating an activity, it will become your current activity
-              and show up in this tab.
+        </>
+      )}
+
+      {doc && (
+        <>
+          <Box marginTop="2rem" mb={3}>
+            <Typography align="center" variant="h4">
+              {doc.activitySubtype &&
+                doc.activitySubtype
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/_/g, '')
+                  .replace(/^./, function (str) {
+                    return str.toUpperCase();
+                  })}
             </Typography>
-          </>
-        )}
-        {doc && (
-          <>
-            <Box marginTop="2rem" mb={3}>
-              <Typography align="center" variant="h4">
-                {doc.activitySubtype &&
-                  doc.activitySubtype
-                    .replace(/([A-Z])/g, ' $1')
-                    .replace(/_/g, '')
-                    .replace(/^./, function (str) {
-                      return str.toUpperCase();
-                    })}
-              </Typography>
-            </Box>
-            <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-              <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
-              <Typography align="center">
-                Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
-              </Typography>
-            </Box>
-            <ActivityComponent
-              customValidation={getCustomValidator([
-                getAreaValidator(doc.activitySubtype),
-                getDateAndTimeValidator(doc.activitySubtype),
-                getWindValidator(doc.activitySubtype),
-                getSlopeAspectBothFlatValidator(),
-                getTemperatureValidator(doc.activitySubtype),
-                getPosAndNegObservationValidator(),
-                getTreatedAreaValidator(),
-                getTargetPhenologySumValidator(),
-                getTerrestrialAquaticPlantsValidator(),
-                getShorelineTypesPercentValidator(),
-                getPestManagementPlanValidator(),
-                getWeatherCondTemperatureValidator(),
-                transferErrorsFromChemDetails(),
-                getTransectOffsetDistanceValidator(),
-                getVegTransectPointsPercentCoverValidator(),
-                getJurisdictionPercentValidator(),
-                getInvasivePlantsValidator(linkedActivity),
-                getPlotIdentificatiomTreesValidator(doc.activitySubtype)
-              ])}
-              customErrorTransformer={getCustomErrorTransformer()}
-              classes={classes}
-              activity={doc}
-              suggestedJurisdictions={suggestedJurisdictions}
-              linkedActivity={linkedActivity}
-              onFormChange={onFormChange}
-              onFormSubmitSuccess={onFormSubmitSuccess}
-              onSubmitAsOfficial={onSubmitAsOfficial}
-              onNavBack={onNavBack}
-              onFormSubmitError={onFormSubmitError}
-              photoState={{ photos, setPhotos }}
-              mapId={doc._id}
-              geometryState={{ geometry, setGeometry }}
-              //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-              extentState={{ extent, setExtent }}
-              contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-              pasteFormData={() => pasteFormData()}
-              copyFormData={() => copyFormData()}
-              //cloneActivityButton={generateCloneActivityButton}
-              setParentFormRef={props.setParentFormRef}
-              showDrawControls={true}
-              setWellIdandProximity={setWellIdandProximity}
-            />
-          </>
-        )}
-        <WarningDialog
-          dialogOpen={warningDialog.dialogOpen}
-          dialogTitle={warningDialog.dialogTitle}
-          dialogActions={warningDialog.dialogActions}
-          dialogContentText={warningDialog.dialogContentText}
-        />
-      </MapRecordsContextProvider>
+          </Box>
+          <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
+            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
+            <Typography align="center">
+              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+            </Typography>
+          </Box>
+        </>
+      )}
+
+      {useMemo(
+        () => (
+          <ActivityMapComponent
+            classes={classes}
+            activityId={activityId}
+            mapId={activityId}
+            geometryState={{ geometry, setGeometry }}
+            showDrawControls={true}
+            extentState={{ extent, setExtent }}
+          />
+        ),
+        [classes, activityId, geometry, setGeometry, extent, setExtent]
+      )}
+
+      {doc && (
+        <>
+          <ActivityComponent
+            customValidation={getCustomValidator([
+              getAreaValidator(doc.activitySubtype),
+              getDateAndTimeValidator(doc.activitySubtype),
+              getWindValidator(doc.activitySubtype),
+              getSlopeAspectBothFlatValidator(),
+              getTemperatureValidator(doc.activitySubtype),
+              getPosAndNegObservationValidator(),
+              getTreatedAreaValidator(),
+              getTargetPhenologySumValidator(),
+              getTerrestrialAquaticPlantsValidator(),
+              getShorelineTypesPercentValidator(),
+              getPestManagementPlanValidator(),
+              getWeatherCondTemperatureValidator(),
+              transferErrorsFromChemDetails(),
+              getTransectOffsetDistanceValidator(),
+              getVegTransectPointsPercentCoverValidator(),
+              getJurisdictionPercentValidator(),
+              getInvasivePlantsValidator(linkedActivity),
+              getPlotIdentificatiomTreesValidator(doc.activitySubtype)
+            ])}
+            customErrorTransformer={getCustomErrorTransformer()}
+            classes={classes}
+            activity={doc}
+            suggestedJurisdictions={suggestedJurisdictions}
+            linkedActivity={linkedActivity}
+            onFormChange={onFormChange}
+            onFormSubmitSuccess={onFormSubmitSuccess}
+            onSubmitAsOfficial={onSubmitAsOfficial}
+            onNavBack={onNavBack}
+            onFormSubmitError={onFormSubmitError}
+            photoState={{ photos, setPhotos }}
+            pasteFormData={() => pasteFormData()}
+            copyFormData={() => copyFormData()}
+            //cloneActivityButton={generateCloneActivityButton}
+            setParentFormRef={props.setParentFormRef}
+          />
+        </>
+      )}
+      <WarningDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
+
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
         <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
           The form was saved with errors.
