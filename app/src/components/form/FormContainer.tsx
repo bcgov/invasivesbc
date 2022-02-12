@@ -74,8 +74,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [field, setField] = React.useState('');
 
   useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+    if (!props.activity?.formData) {
+      return;
+    }
+    setformData(props.activity?.formData);
+  }, [props.activity]);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -126,7 +129,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
-    console.log();
     let argumentFieldName = '';
     if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
       argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';

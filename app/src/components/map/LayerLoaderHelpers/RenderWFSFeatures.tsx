@@ -28,12 +28,10 @@ interface IRenderWFSFeatures {
   customOnEachFeature?: any;
   dataBCAcceptsGeometry?: boolean;
   simplifyPercentage: number;
-  setClosestWells?: (closestWells: any) => void;
 }
 
 export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const [wellFeatures, setWellFeatures] = useState(null);
-  const [closestWells, setClosestWells] = useState<any>(null);
   const [otherFeatures, setOtherFeatures] = useState(null);
   const databaseContext = useContext(DatabaseContext);
   const map = useMap();
@@ -41,13 +39,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const { layers } = mapRequestContext;
   const invasivesApi = useInvasivesApi();
   const [layerStyles, setlayerStyles] = useState(null);
-
-  //when there is new wellId and proximity, send info to ActivityPage
-  useEffect(() => {
-    if (props.setClosestWells) {
-      props.setClosestWells(closestWells);
-    }
-  }, [closestWells]);
 
   useMapEvent('moveend', () => {
     fetchLayer();
@@ -165,9 +156,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       } else {
         fiveClosest = outputWells;
       }
-
-      setClosestWells({ well_objects: fiveClosest, areWellsInside: areWellsInside });
-
       return outputWells;
     }
   };

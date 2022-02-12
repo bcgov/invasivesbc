@@ -1,39 +1,16 @@
-import { Geolocation } from '@capacitor/geolocation';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Switch,
-  Tooltip,
-  Typography
-} from '@mui/material';
+import { Accordion, AccordionDetails, CircularProgress, AccordionSummary, Box, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
-import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
-import distance from '@turf/distance';
-import * as turf from '@turf/helpers';
-import { lineString } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
-import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
-import { ActivitySyncStatus, FormValidationStatus, ReviewStatus } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import 'gridfix.css';
 import { useDataAccess } from 'hooks/useDataAccess';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { sanitizeRecord } from 'utils/addActivity';
 
-export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
+export interface IActivityComponentProps extends IFormContainerProps, IPhotoContainerProps {
   classes?: any;
   activity: any;
   linkedActivity?: any;
@@ -48,139 +25,28 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
-  const [currentPosition, setCurrentPosition] = useState(null);
-  const watchPosition = Geolocation.watchPosition;
-  const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const { keycloak } = useKeycloak();
-  const { userInfo } = useContext(AuthStateContext);
-
-  const getLocation = async () => {
-    const position = await Geolocation.getCurrentPosition();
-    setCurrentPosition(position);
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(!props.activity);
 
   useEffect(() => {
-    try {
-      // getPosition();
-    } catch (e) {
-      console.log('unable to get position');
+    if (!props.activity) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
     }
-  }, []);
-
-  const isGreaterDistanceThan = (from, to, distanceV) => {
-    let returnVal = null;
-    try {
-      var fromAsPoint = turf.point(from);
-      var toAsPoint = turf.point(to);
-
-      returnVal = distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distanceV;
-    } catch (e) {
-      console.dir(e);
-    }
-    return returnVal;
-  };
-
-  const startTrack = async () => {
-    try {
-      //  startWatch({ enableHighAccuracy: true });
-    } catch (e) {
-      console.log('unable to start watch');
-    }
-    console.log('Starting track.');
-  };
-
-  const manualUTMEntry = () => {
-    let validZone = false;
-    let zone;
-    let validNorthing = false;
-    let northing;
-    let validEasting = false;
-    let easting;
-
-    while (!validZone) {
-      zone = prompt('Enter a valid UTM Zone');
-      if (!isNaN(Number(zone))) {
-        validZone = true;
-        break;
-      }
-    }
-    if (!validZone) {
-      return; // allow for cancel
-    }
-    while (!validNorthing) {
-      northing = prompt('Enter a valid UTM Northing');
-      if (!isNaN(Number(northing))) {
-        validNorthing = true;
-        break;
-      }
-    }
-    if (!validNorthing) {
-      return; // allow for cancel
-    }
-    while (!validEasting) {
-      easting = prompt('Enter a valid UTM Easting');
-      if (!isNaN(Number(easting))) {
-        validEasting = true;
-        break;
-      }
-    }
-    if (!validEasting) {
-      //allow for cancel
-      return;
-    }
-
-    let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
-    const geo: any = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [result[0], result[1]]
-      },
-      properties: {}
-    };
-    // let the page validate the utm:
-    props.geometryState.setGeometry([geo]);
-  };
-
-  const endTrack = async () => {
-    try {
-      // convert poly to polygon
-      if (workingPolyline.length >= 4) {
-        var line = lineString(workingPolyline);
-        var polygon = lineToPolygon(line);
-        if (window.confirm('Convert track to polygon?')) {
-          props.geometryState.setGeometry([polygon as any]);
-          //          notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
-          // clearWatch();
-        } else {
-          //         notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
-          /// clearWatch();
-        }
-      } else {
-        if (window.confirm("Sure you're done walkin'?  Didn't collect 4 points.")) {
-          alert('Cancelled track.');
-          //  clearWatch();
-        }
-      }
-    } catch (e) {
-      console.log('error stopping track');
-    }
-  };
-
-  const activity = props.activity;
+  }, [props.activity]);
 
   const onSave = async () => {
     try {
       // NOTE: duplicate code from RecordTables.  Should be moved to a common Actions definitions file
       if (
-        activity.formStatus !== FormValidationStatus.VALID ||
-        activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
+        props.activity.formStatus !== FormValidationStatus.VALID ||
+        props.activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
       ) {
         return;
       }
-      const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
+      const dbActivity: any = await dataAccess.getActivityById(props.activity.activityId, databaseContext);
       console.dir('dbActivity', dbActivity);
       const result = await dataAccess.updateActivity(
         sanitizeRecord({
@@ -191,13 +57,16 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       );
       if (!result?.activity_id) console.log('');
       //notifyError(databaseContext, 'Count not save to database.');
-      else window.location.reload();
+      // else window.location.reload();
     } catch (error) {
       //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
   };
 
-  const history = useHistory();
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
   return (
     <>
       {props.cloneActivityButton && props.cloneActivityButton()}
@@ -224,44 +93,6 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           )}
         </>
       )}
-      <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={props.classes.heading}>Map</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid justifyContent={'space-around'} container>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
-              <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
-                Enter UTM Manually
-              </Button>
-            </Grid>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
-              <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
-                Record a Polygon!
-              </Button>
-            </Grid>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
-              <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
-                Record Buffered Line!
-              </Button>
-            </Grid>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
-              <Button disabled={true} variant="contained" color="secondary" onClick={endTrack}>
-                End Track Recording
-              </Button>
-            </Grid>
-            <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} activityId={props.activity.activityId} />
-            </Grid>
-            <Grid xs={12} item>
-              <Accordion>
-                <AccordionSummary>KML Upload</AccordionSummary>
-                <AccordionDetails>{/*<KMLUpload setGeo={props.geometryState.setGeometry />*/}</AccordionDetails>
-              </Accordion>
-            </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
       <Accordion defaultExpanded={false}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
           <Typography className={props.classes.heading}>Activity Photos</Typography>
@@ -270,23 +101,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <PhotoContainer {...props} />
         </AccordionDetails>
       </Accordion>
-      {
-        <>
-          {/*<Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-form-content" id="panel-form-header">
-          <Typography className={props.classes.heading}>Activity Form</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={props.classes.formContainer}>
-          */}
-        </>
-      }{' '}
       <FormContainer {...props} onSave={onSave} />
-      {
-        <>
-          {/*</></AccordionDetails>
-      </Accordion>*/}
-        </>
-      }
       <Box display="flex" paddingTop={5} justifyContent="center" width="100%"></Box>
     </>
   );
