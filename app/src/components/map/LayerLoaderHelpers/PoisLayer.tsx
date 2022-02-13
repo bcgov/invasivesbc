@@ -32,13 +32,21 @@ export const PoisLayer = (props) => {
     }
   };
 
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    fetchData();
+    setIsReady(true);
   }, []);
 
   useMapEvent('zoomend', () => {
     fetchData();
   });
+
+  useEffect(() => {
+    if (isReady) {
+      fetchData();
+    }
+  }, [isReady]);
 
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean(

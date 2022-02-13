@@ -175,7 +175,7 @@ export const layerPickerStyles = makeStyles((theme: Theme) => ({
  * @returns class
  */
 export const assignPointModeTheme = (mode: boolean, themeType: boolean) => {
-  return mode && (themeType ? toolStyles().popupModeSelectedDark : toolStyles().popupModeSelectedLight);
+  return mode && themeType ? toolStyles().popupModeSelectedDark : toolStyles().popupModeSelectedLight;
 };
 
 /**
