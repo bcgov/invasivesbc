@@ -222,9 +222,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onSubmitAsOfficial = () => {
     setWarningDialog({
       dialogOpen: true,
-      dialogTitle: 'Submit / Publish from Draft to Official Record',
+      dialogTitle: 'Submit to Database (Publish Draft)',
       dialogContentText:
-        'Are you sure you are ready to publish the record?  You will be unable to further edit the record.',
+        'Are you sure you are ready to publish the record?  Once submitted, it will be viewable by all users with access to this record type.',
       dialogActions: [
         {
           actionName: 'No',

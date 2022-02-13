@@ -54,7 +54,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
 
                   props.onSubmitAsOfficial();
                 }}>
-                Submit Record to InvasivesBC
+                Submit Record to Database
               </Button>
             )}
           </Grid>
