@@ -143,6 +143,10 @@ export const GeneratePopup = (props) => {
         dbContext
       );
 
+      if (!pointsofinterest.rows) {
+        return;
+      }
+
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
       pointsofinterest.rows.map((poi) => {
