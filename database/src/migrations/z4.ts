@@ -8,17 +8,17 @@ export async function up(knex: Knex): Promise<void> {
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
 
-  drop table biological_dispersal_extract cascade;
-  drop table biological_monitoring_extract;
-  drop table biological_treatment_extract;
-  drop table chemical_monitoring_extract;
-  drop table chemical_treatment_extract;
-  drop table invasive_plant_no_treatment_extract;
-  drop table mechanical_monitoring_extract;
-  drop table mechanical_treatment_extract;
-  drop table planning_extract;
-  drop table site_selection_extract;
-  drop table survey_extract;
+  drop table if exists biological_dispersal_extract cascade;
+  drop table if exists biological_monitoring_extract;
+  drop table if exists biological_treatment_extract;
+  drop table if exists chemical_monitoring_extract;
+  drop table if exists chemical_treatment_extract;
+  drop table if exists invasive_plant_no_treatment_extract;
+  drop table if exists mechanical_monitoring_extract;
+  drop table if exists mechanical_treatment_extract;
+  drop table if exists planning_extract;
+  drop table if exists site_selection_extract;
+  drop table if exists survey_extract;
   
   
   CREATE TABLE invasivesbc.Survey_Extract (
@@ -919,7 +919,6 @@ CREATE VIEW invasivesbc.common_summary as (
                                     deleted_timestamp is null 
                                     and activity_subtype = 'Activity_Observation_PlantTerrestrial'
                                 );
-
 
 
   `;
