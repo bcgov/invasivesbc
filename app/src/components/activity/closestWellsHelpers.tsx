@@ -1,4 +1,4 @@
-import { polygon } from '@turf/helpers';
+import { polygon, Position } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
@@ -37,10 +37,22 @@ export const getClosestWells = async (inputGeomtry, databaseContext, invasivesAp
 
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
 const getWellsArray = (arrayOfWells, inputGeometry) => {
+  if (!inputGeometry.geometry?.coordinates) {
+    return;
+  }
+  console.log(inputGeometry);
   const outputWells = [];
   let areWellsInside: boolean = false;
 
+  if (inputGeometry.geometry.type == 'Point') {
+    console.log('Grisha to make this work for points and circles');
+    return;
+  }
   const turfPolygon = polygon(inputGeometry.geometry.coordinates);
+
+  if (!arrayOfWells.length) {
+    return;
+  }
   arrayOfWells.forEach((well, index) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;
