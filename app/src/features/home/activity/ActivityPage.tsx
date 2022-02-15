@@ -124,7 +124,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} updates Updates as subsets of the doc/activity object
    */
-  const updateDoc = async (updates) => {
+  const updateDoc = async (updates, saveReason?) => {
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
@@ -179,7 +179,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         };
 
         // this has to be a bug? if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        await dataAccess.updateActivity(newActivity, databaseContext);
+        if (saveReason) {
+          await dataAccess.updateActivity(newActivity, databaseContext);
+        }
       });
       await dbUpdates(updatedDoc);
       return true;
@@ -236,9 +238,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionName: 'Yes',
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
+            console.log(doc);
             let newDoc = { ...doc };
             newDoc.form_status = ActivityStatus.SUBMITTED;
-            await updateDoc(newDoc);
+            await updateDoc(newDoc, 'Official Submit');
             setAlertSavedOpen(true);
           },
           autoFocus: true
@@ -435,14 +438,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
-  const onFormSubmitError = (error: any, formRef: any) => {
+  const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
-    updateDoc({
-      formData: formRef.current.state.formData,
+    console.log('newdoc');
+    const newDoc = {
+      formData: { ...doc.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT
-    });
+      formStatus: ActivityStatus.DRAFT,
+      geometry: [...geometry]
+    };
+
+    await updateDoc(newDoc, 'Manual Save');
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -475,13 +482,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       schemaValidationErrors: [],
       schemaValidationErrorSchema: {}
     });*/
-
-    await updateDoc({
-      formData: event.formData,
+    console.log('newdoc');
+    const newDoc = {
+      formData: { ...event.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT
-    });
+      formStatus: ActivityStatus.DRAFT,
+      geometry: [...geometry]
+    };
+
+    await updateDoc(newDoc, 'Manual Save');
     setAlertSavedOpen(true);
   };
 
