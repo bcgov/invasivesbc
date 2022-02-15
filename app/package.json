@@ -133,6 +133,7 @@
   "devDependencies": {
     "@capacitor/cli": "^3.4.1",
     "@capacitor/core": "^3.4.1",
+    "@faker-js/faker": "^6.0.0-alpha.6",
     "@ionic/cli": "^6.18.0",
     "@ionic/lab": "3.2.7",
     "@types/geojson": "^7946.0.3",
