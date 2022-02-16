@@ -45,23 +45,28 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (
-              <Button
-                disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  if (!props.onSubmitAsOfficial) {
-                    return;
-                  }
+              <Tooltip
+                title={
+                  props.isAlreadySubmitted()
+                    ? 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.'
+                    : !props.canBeSubmittedWithoutErrors()
+                    ? 'Save form without errors first, to be able to submit.'
+                    : 'Ready to submit, form is validated and has no issues.'
+                }>
+                <Button
+                  disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    if (!props.onSubmitAsOfficial) {
+                      return;
+                    }
 
-                  props.onSubmitAsOfficial();
-                }}>
-                {props.isAlreadySubmitted()
-                  ? 'Record Already Submitted'
-                  : props.canBeSubmittedWithoutErrors()
-                  ? 'Submit to Database'
-                  : 'Save Draft without Errors to be able to Submit'}
-              </Button>
+                    props.onSubmitAsOfficial();
+                  }}>
+                  {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
+                </Button>
+              </Tooltip>
             )}
           </Grid>
           <Grid item>
