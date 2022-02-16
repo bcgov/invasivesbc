@@ -6,12 +6,29 @@ const config: CapacitorConfig = {
   webDir: 'build',
   server: {
     hostname: 'localhost',
-    iosScheme: 'invasivesbc'
+    iosScheme: 'invasivesbc',
+    androidScheme: 'invasivesbc'
   },
   cordova: {
     accessOrigins: ['https://dev.oidc.gov.bc.ca/*']
   },
-  loggingBehavior: 'none',
+  android: {
+    allowMixedContent: true,
+    includePlugins: [
+      '@capacitor-community/http',
+      '@capacitor-community/sqlite',
+      '@capacitor/app',
+      '@capacitor/camera',
+      '@capacitor/device',
+      '@capacitor/geolocation',
+      '@capacitor/haptics',
+      '@capacitor/keyboard',
+      '@capacitor/network',
+      '@capacitor/status-bar',
+      'cordova-sqlite-storage'
+    ]
+  },
+  loggingBehavior: 'debug',
   plugins: {
     SplashScreen: {
       launchShowDuration: 0

@@ -15,10 +15,13 @@ dependencies {
     implementation project(':capacitor-camera')
     implementation project(':capacitor-device')
     implementation project(':capacitor-geolocation')
+    implementation project(':capacitor-haptics')
+    implementation project(':capacitor-keyboard')
     implementation project(':capacitor-network')
-    implementation "com.android.support:customtabs:23.3.0"
+    implementation project(':capacitor-status-bar')
+
 }
-apply from: "../../node_modules/cordova-plugin-browsertab/src/android/BrowserTab.gradle"
+
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()
