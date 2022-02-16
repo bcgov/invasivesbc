@@ -26,3 +26,110 @@ Cypress.Commands.add('clickChildCheckbox', clickChildCheckbox);
 Cypress.Commands.add('dragAccordion', dragAccordion);
 Cypress.Commands.add('themeTextCheck', themeTextCheck);
 Cypress.Commands.add('toggleParentAccordion', toggleParentAccordion);
+
+export const yesNo = ['Yes', 'No'];
+
+export const positiveNegative = ['positive{enter}', 'negative{enter}'];
+
+export const jurisdictions = [
+  'BC Hydro{enter}',
+  'BC Rail{enter}',
+  'British Columbia{enter}',
+  'CN Rail{enter}',
+  'CP Rail{enter}',
+  'Department of F{enter}',
+  'Department of N{enter}',
+  'Department of T{enter}',
+  'Enbridge{enter}',
+  'Federal{enter}'
+];
+export const soilTexture = ['coarse{enter}', 'fine{enter}', 'medium{enter}', 'organic{enter}', 'unknown{enter}'];
+
+export const slopeArray = [
+  'ext{enter}',
+  'flat 0{enter}',
+  'gent{enter}',
+  'mod{enter}',
+  'near{enter}',
+  'steep slope 3{enter}',
+  'strong slope 1{enter}',
+  'very stee{enter}',
+  'very strong{enter}',
+  'variable'
+];
+export const aspectArray = [
+  'east{enter}',
+  'north f{enter}',
+  'northea{enter}',
+  'northwe{enter}',
+  'south f{enter}',
+  'southe{enter}',
+  'southw{enter}',
+  'west f{enter}',
+  'vari{enter}'
+];
+
+export const invasivePlants = [
+  'african ru{enter}',
+  'american{enter}',
+  'annual ha{enter}',
+  'annual so{enter}',
+  'baby{enter}',
+  'bache{enter}',
+  'barn{enter}',
+  'bighe{enter}',
+  'garlic mustard{enter}',
+  "old man's beard{enter}"
+];
+
+export const densityArray = ['1|{enter}', '2{enter}', '3{enter}', '4{enter}', 'Not{enter}', 'unknown{enter}'];
+
+export const distributionArray = [
+  '1|{enter}',
+  '2{enter}',
+  '3{enter}',
+  '4{enter}',
+  '5{enter}',
+  '6{enter}',
+  '7{enter}',
+  '8{enter}',
+  '9{enter}',
+  'Not{enter}',
+  'unknown{enter}'
+];
+
+export const lifeStageArray = [
+  'de{enter}',
+  'ju{enter}',
+  'mature p{enter}',
+  'disp{enter}',
+  'fad{enter}',
+  'flo{enter}',
+  'im{enter}',
+  'in b{enter}',
+  'mature: m{enter}',
+  'veg{enter}',
+  'other{enter}',
+  'plants a{enter}',
+  'ros{enter}',
+  'see{enter}',
+  'sma{enter}',
+  'unknown{enter}'
+];
+
+export const dateFormatter = (date: Date) => {
+  const collectedYear = date.getFullYear().toString();
+  var collectedMonth = date.getMonth().toString();
+  var collectedDate = date.getDate().toString();
+  if (collectedMonth === '0') collectedMonth = '1';
+  if (collectedDate === '0') collectedDate = '1';
+  return (
+    collectedYear +
+    '-' +
+    (collectedMonth.length < 2 ? '0' : '') +
+    collectedMonth +
+    '-' +
+    (collectedDate.length < 2 ? '0' : '') +
+    collectedDate
+  );
+};
