@@ -14,6 +14,8 @@ export interface IFormControlsComponentProps {
   onSave?: Function;
   onSubmitAsOfficial?: Function;
   onNavBack?: Function;
+  isAlreadySubmitted?: () => boolean;
+  canBeSubmittedWithoutErrors?: () => boolean;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
@@ -44,7 +46,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
           <Grid item>
             {!props.hideCheckFormForErrors && (
               <Button
-                disabled={isDisabled}
+                disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
                 variant="contained"
                 color="primary"
                 onClick={() => {
@@ -54,7 +56,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
 
                   props.onSubmitAsOfficial();
                 }}>
-                Submit Record to Database
+                {props.isAlreadySubmitted()
+                  ? 'Record Already Submitted'
+                  : props.canBeSubmittedWithoutErrors()
+                  ? 'Submit to Database'
+                  : 'Save Draft without Errors to be able to Submit'}
               </Button>
             )}
           </Grid>

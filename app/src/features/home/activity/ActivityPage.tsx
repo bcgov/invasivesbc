@@ -118,6 +118,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return Capacitor.platform !== 'web';
   };
 
+  const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
   /**
    * Applies overriding updates to the current doc,
    * and queues an update to the corresponding DB state
@@ -241,13 +242,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             console.log(doc);
             let newDoc = { ...doc };
             newDoc.form_status = ActivityStatus.SUBMITTED;
-            await updateDoc(newDoc, 'Official Submit');
-            setAlertSavedOpen(true);
+            try {
+              await updateDoc(newDoc, 'Official Submit');
+              setAlertSavedOpen(true);
+              setTimeout(() => {
+                history.push('/home/activities');
+              }, 1000);
+            } catch (e) {
+              alert('Error submitting.  Please try again later.');
+              console.log(e);
+            }
           },
           autoFocus: true
         }
       ]
     });
+  };
+
+  const isAlreadySubmitted = () => {
+    return doc.form_status === ActivityStatus.SUBMITTED || doc.formStatus === ActivityStatus.SUBMITTED;
   };
 
   /**
@@ -440,14 +453,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
-    console.log('newdoc');
     const newDoc = {
       formData: { ...doc.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
-      geometry: [...geometry]
+      geometry: geometry?.length ? [...geometry] : []
     };
+    setCanSubmitWithoutErrors(false);
 
     await updateDoc(newDoc, 'Manual Save');
   };
@@ -477,18 +490,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       props.setFormHasErrors(false);
     }
 
+    setCanSubmitWithoutErrors(true);
+
     /*await formRef.setState({
       ...formRef.state,
       schemaValidationErrors: [],
       schemaValidationErrorSchema: {}
     });*/
-    console.log('newdoc');
     const newDoc = {
       formData: { ...event.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
-      geometry: [...geometry]
+      geometry: geometry?.length ? [...geometry] : []
     };
 
     await updateDoc(newDoc, 'Manual Save');
@@ -953,8 +967,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
             onSubmitAsOfficial={onSubmitAsOfficial}
+            canBeSubmittedWithoutErrors={() => {
+              return canSubmitWithoutErrors;
+            }}
             onNavBack={onNavBack}
             onFormSubmitError={onFormSubmitError}
+            isAlreadySubmitted={isAlreadySubmitted}
             photoState={{ photos, setPhotos }}
             pasteFormData={() => pasteFormData()}
             copyFormData={() => copyFormData()}

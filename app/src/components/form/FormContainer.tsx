@@ -60,6 +60,8 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
   onSave?: Function;
   onSubmitAsOfficial?: Function;
+  isAlreadySubmitted: () => boolean;
+  canBeSubmittedWithoutErrors: () => boolean;
   OnNavBack?: Function;
 }
 
