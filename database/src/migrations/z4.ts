@@ -3,8 +3,7 @@ import Knex from 'knex';
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 const NODE_ENV = process.env.NODE_ENV;
 
-export async function up(knex: Knex): Promise<void> {
-  const sql = `
+export const extract_sql_and_reports = `
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
 
@@ -919,11 +918,10 @@ CREATE VIEW invasivesbc.common_summary as (
                                     deleted_timestamp is null 
                                     and activity_subtype = 'Activity_Observation_PlantTerrestrial'
                                 );
+`;
 
-
-  `;
-
-  await knex.raw(sql);
+export async function up(knex: Knex): Promise<void> {
+  await knex.raw(extract_sql_and_reports);
 }
 
 /**
