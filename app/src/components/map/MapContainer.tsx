@@ -164,7 +164,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       // local_storage,
       {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
         subdomains: 'abc',
         maxZoom: mapMaxZoom,
         zIndex: 3000,
