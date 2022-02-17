@@ -398,7 +398,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let utm_zone = utm[0];
     let utm_easting = utm[1];
     let utm_northing = utm[2];
-    const wellArr = await setClosestWells();
     const activityDoc = {
       formData: {
         activity_data: {
@@ -408,16 +407,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           utm_easting,
           utm_northing,
           reported_area: calculateGeometryArea(geom)
-        },
-        activity_subtype_data: {
-          Well_Information: wellArr ? [...wellArr] : []
         }
       },
       geometry: geom,
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date()
     };
-    await updateDoc(activityDoc);
+    await setClosestWells(activityDoc);
     getJurSuggestions();
     return activityDoc;
   };
@@ -653,7 +649,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   //sets well id and proximity if there are any
-  const setClosestWells = async () => {
+  const setClosestWells = async (incomingActivityDoc) => {
     let closestWells = await getClosestWells(geometry, databaseContext, invasivesApi, true, connected);
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
@@ -666,7 +662,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         wellInformationArr.push({ well_id: well.id, well_proximity: well.proximity.toString() });
       }
     });
-    let returnVal = [];
+
     //if it is a Chemical treatment and there are wells too close, display warning dialog
     if (doc.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
       setWarningDialog({
@@ -676,18 +672,42 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dialogActions: [
           {
             actionName: 'No',
-            actionOnClick: async () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
+            actionOnClick: () => {
               setGeometry(null);
-
-              returnVal = [];
+              updateDoc({
+                ...incomingActivityDoc,
+                formData: {
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  activity_subtype_data: {
+                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    Well_Information: [
+                      {
+                        well_id: 'No wells found',
+                        well_proximity: 'No wells found'
+                      }
+                    ]
+                  }
+                }
+              });
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             }
           },
           {
             actionName: 'Yes',
-            actionOnClick: async () => {
+            actionOnClick: () => {
+              updateDoc({
+                ...incomingActivityDoc,
+                formData: {
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  activity_subtype_data: {
+                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
               setWarningDialog({ ...warningDialog, dialogOpen: false });
-              returnVal = [...wellInformationArr];
             },
             autoFocus: true
           }
@@ -703,9 +723,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dialogActions: [
           {
             actionName: 'Ok',
-            actionOnClick: async () => {
+            actionOnClick: () => {
+              updateDoc({
+                ...incomingActivityDoc,
+                formData: {
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  activity_subtype_data: {
+                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });
               setWarningDialog({ ...warningDialog, dialogOpen: false });
-              returnVal = [...wellInformationArr];
             },
             autoFocus: true
           }
@@ -714,9 +744,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     //Else just update doc
     else {
-      returnVal = [...wellInformationArr];
+      updateDoc({
+        ...incomingActivityDoc,
+        formData: {
+          ...incomingActivityDoc.formData,
+          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          activity_subtype_data: {
+            ...incomingActivityDoc.formData.activity_subtype_data,
+            Well_Information: [...wellInformationArr]
+          }
+        }
+      });
     }
-    return returnVal;
   };
   const getJurSuggestions = async () => {
     if (geometry[0]) {
