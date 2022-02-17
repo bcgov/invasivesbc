@@ -18,10 +18,7 @@ import {
 } from '../../support/index';
 const { faker } = require('@faker-js/faker');
 
-const dev = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
-const local = 'localhost:3000/home/landing';
-
-describe('GOING TO THE LOGIN PAGE', function () {
+describe('CREATING A NEW RECORD', function () {
   // Persons in Observation
   const observationName = faker.name.findName();
   const voucherName = faker.name.findName();
@@ -34,11 +31,24 @@ describe('GOING TO THE LOGIN PAGE', function () {
   let utmZone;
   let utmEasting;
   let utmNorthing;
+
   before(() => {
-    cy.visit(local);
+    cy.visit('http://localhost:3000');
   });
   it('It checks if onthe landing page', function () {
     cy.contains('Welcome');
+    cy.task('DATABASE', {
+      dbConfig: {
+        user: 'invasivebc',
+        host: 'localhost',
+        database: 'InvasivesBC',
+        password: 'postgres',
+        port: 5432
+      },
+      sql: `select * from invasivesbc.observation_terrestrialplant limit 3`
+    }).then((result) => {
+      console.log((result as any).rows);
+    });
   });
   it('It goes to My Records Page', function () {
     cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
@@ -204,5 +214,8 @@ describe('GOING TO THE LOGIN PAGE', function () {
       ).type(utmNorthing);
     });
   }
-  it('Save Record', function () {});
+  after(() => {
+    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click();
+    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click();
+  });
 });
