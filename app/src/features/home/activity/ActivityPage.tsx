@@ -231,7 +231,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionName: 'Yes',
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
-            console.log(doc);
             let newDoc = { ...doc };
             newDoc.form_status = ActivityStatus.SUBMITTED;
             try {
@@ -802,7 +801,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (geometry && geometry[0]) {
       //if geometry is withing british columbia boundries, save it
       if (booleanWithin(geometry[0] as any, bcArea as any)) {
-        console.log(geometry);
         saveGeometry(geometry);
       }
       //if geometry is NOT withing british columbia boundries, display err
