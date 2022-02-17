@@ -102,6 +102,11 @@ const ChemicalTreatmentDetailsForm = (props) => {
   });
   //used to render the list of errors
   const [localErrors, setLocalErrors] = useState([]);
+  const [reportedArea, setReportedArea] = useState(0);
+
+  useEffect(() => {
+    setReportedArea(props.formData.activity_data.reported_area);
+  }, [props.formData]);
 
   //when formDetails change, run validation and if it passes, perform calculations
   useEffect(() => {
@@ -117,7 +122,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
         let lerrors = [];
         //run validation
         const newErr = runValidation(
-          props.formData.activity_data.reported_area,
+          reportedArea,
           formDetails.formData,
           lerrors,
           businessCodes,
@@ -128,11 +133,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
         //if no errors, perform calculations
         if (newErr.length < 1) {
-          const results = performCalculation(
-            props.formData.activity_data.reported_area,
-            formDetails.formData,
-            businessCodes
-          );
+          const results = performCalculation(reportedArea, formDetails.formData, businessCodes);
           setCalculationResults(results as any);
           props.onChange(
             {
@@ -159,7 +160,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
         }
       }
     );
-  }, [formDetails]);
+  }, [formDetails, reportedArea]);
 
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {

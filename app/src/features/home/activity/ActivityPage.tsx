@@ -712,9 +712,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         ]
       });
-    }
-    //if it is a Observation and there are wells too close, display warning dialog
-    else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    } else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -740,9 +738,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         ]
       });
-    }
-    //Else just update doc
-    else {
+    } else {
       updateDoc({
         ...incomingActivityDoc,
         formData: {
