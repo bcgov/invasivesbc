@@ -1,4 +1,4 @@
-import { polygon, Position } from '@turf/helpers';
+import { polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
@@ -7,48 +7,55 @@ import { getDataFromDataBC } from 'components/map/WFSConsumer';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 
 //gets layer data based on the layer name
-export const getClosestWells = async (inputGeomtry, databaseContext, invasivesApi, dataBCAcceptsGeometry, online) => {
+export const getClosestWells = async (inputGeometry, databaseContext, invasivesApi, dataBCAcceptsGeometry, online) => {
+  const firstFeature = inputGeometry[0];
   //get the map extent as geoJson polygon feature
-  const mapExtent = buffer(inputGeomtry, 1, { units: 'kilometers' });
+  const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
   //if well layer is selected
   //if online, just get data from WFSonline consumer
   if (online) {
     let returnVal = await getDataFromDataBC(
       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-      mapExtent,
+      bufferedGeo,
       invasivesApi.getSimplifiedGeoJSON,
       dataBCAcceptsGeometry
     );
-    const wellsArr = getWellsArray(returnVal.features, inputGeomtry);
-    return wellsArr;
+    return getWellsArray(returnVal.features, firstFeature);
   }
   //if offline: try to get layer data from sqlite local storage
   else {
     const allFeatures = await fetchLayerDataFromLocal(
       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-      mapExtent,
+      bufferedGeo,
       databaseContext
     );
 
     //if there is a geometry drawn, get closest wells and wells inside and label them
-    return getWellsArray(allFeatures, inputGeomtry.geometry);
+    return getWellsArray(allFeatures, firstFeature);
   }
 };
 
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
 const getWellsArray = (arrayOfWells, inputGeometry) => {
-  if (!inputGeometry.geometry?.coordinates) {
+  let geoJSONFeature = inputGeometry;
+  if (!geoJSONFeature.geometry?.coordinates) {
     return;
   }
-  console.log(inputGeometry);
+
+  if (geoJSONFeature.geometry.type === 'Point') {
+    let radius = 100;
+    if (geoJSONFeature.properties?.radius) {
+      radius = geoJSONFeature.properties.radius;
+    }
+    geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
+  }
+
+  console.log(geoJSONFeature);
+
   const outputWells = [];
   let areWellsInside: boolean = false;
 
-  if (inputGeometry.geometry.type == 'Point') {
-    console.log('Grisha to make this work for points and circles');
-    return;
-  }
-  const turfPolygon = polygon(inputGeometry.geometry.coordinates);
+  const turfPolygon = polygon(geoJSONFeature.geometry.coordinates);
 
   if (!arrayOfWells.length) {
     return;

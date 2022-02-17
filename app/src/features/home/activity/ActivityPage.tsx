@@ -661,7 +661,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (geometry && geometry[0]) {
+    if (geometry) {
       setClosestWells();
     }
   }, [geometry]);
@@ -672,14 +672,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    let closestWells = await getClosestWells(geometry[0], databaseContext, invasivesApi, true, connected);
+    let closestWells = await getClosestWells(geometry, databaseContext, invasivesApi, true, connected);
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
       return;
     }
     const { well_objects, areWellsInside } = closestWells;
-    const wellInformationArr = well_objects.map((well) => {
-      return { well_id: well.id, well_proximity: well.proximity.toString() };
+    const wellInformationArr = [];
+    well_objects.forEach((well) => {
+      if (well.proximity) {
+        wellInformationArr.push({ well_id: well.id, well_proximity: well.proximity.toString() });
+      }
     });
 
     //if it is a Chemical treatment and there are wells too close, display warning dialog
@@ -768,9 +771,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ]
       });
     }
-    //If not in Observation nor in Chemical Treatment
+    //Else just update doc
     else {
-      console.log('not any case');
+      await updateDoc({
+        ...doc,
+        formData: {
+          ...doc.formData,
+          activity_subtype_data: {
+            ...doc.formData.activity_subtype_data,
+            Well_Information: [...wellInformationArr]
+          }
+        }
+      });
     }
   };
 
