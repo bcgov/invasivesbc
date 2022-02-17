@@ -36,7 +36,8 @@ const ActivitiesList2: React.FC = () => {
 
   const databaseContext = useContext(DatabaseContext);
   const { keycloak } = useKeycloak();
-  const [workflowFunction, setWorkflowFunction] = useState('Plant');
+  const [formType, setFormType] = useState('Plant');
+  const [subType, setSubType] = useState('Observations');
 
   useEffect(() => {
     const userId = async () => {
@@ -53,29 +54,38 @@ const ActivitiesList2: React.FC = () => {
     if (!userId) throw "Keycloak error: can not get current user's username";
   }, []);
 
-  const handleWorkflowFunctionChange = (event: any) => {
-    setWorkflowFunction(event.target.value);
+  const handleFormTypeChange = (event: any) => {
+    setFormType(event.target.value);
+    //setsub type to something appropriate here
+  };
+  const handleSubTypeChange = (event: any) => {
+    setSubType(event.target.value);
   };
 
   return (
     <>
       <Box>
-        <Box mb={3} display="flex" justifyContent="space-between">
+        <Box mb={4} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Workflow Functions</InputLabel>
-            <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
+            <InputLabel>Record Type</InputLabel>
+            <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="FREP">FREP</MenuItem>
-              <MenuItem value="Review">Review</MenuItem>
-              <MenuItem value="Past Activities">Past Activities</MenuItem>
+            </Select>
+            <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
+              <MenuItem value="Observations">Observations</MenuItem>
+              <MenuItem value="Treatments">Treatments</MenuItem>
+              <MenuItem value="BioControl">BioControl</MenuItem>
+              <MenuItem value="Monitoring">Monitoring</MenuItem>
+              <MenuItem value="Transects">Transects</MenuItem>
               <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
         </Box>
         <Box>
-          {workflowFunction === 'Plant' && (
+          {formType === 'Plant' && (
             <Box>
               <PlantObservationsTable />
               <PlantTreatmentsTable />
@@ -84,16 +94,16 @@ const ActivitiesList2: React.FC = () => {
               <PlantTransectsTable />
             </Box>
           )}
-          {workflowFunction === 'Animal' && <Box></Box>}
-          {workflowFunction === 'Review' && <Box></Box>}
-          {workflowFunction === 'FREP' && <Box></Box>}
-          {workflowFunction === 'Past Activities' && <Box></Box>}
-          {workflowFunction === 'Batch Upload' && (
+          {formType === 'Animal' && <Box></Box>}
+          {formType === 'Review' && <Box></Box>}
+          {formType === 'FREP' && <Box></Box>}
+          {formType === 'Past Activities' && <Box></Box>}
+          {formType === 'Batch Upload' && (
             <Box>
               <BatchUpload />
             </Box>
           )}
-          {workflowFunction === 'IAPP Data' && <Box></Box>}
+          {formType === 'IAPP Data' && <Box></Box>}
         </Box>
       </Box>
     </>
