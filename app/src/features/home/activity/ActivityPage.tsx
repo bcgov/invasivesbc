@@ -454,7 +454,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     const newDoc = {
-      formData: { ...doc.formData },
+      formData: { ...doc.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
