@@ -22,7 +22,7 @@ export const getClosestWells = async (inputGeometry, databaseContext, invasivesA
     );
 
     if (!returnVal?.features) {
-      return [];
+      return { well_objects: [], areWellsInside: undefined };
     } else {
       return getWellsArray(returnVal.features, firstFeature);
     }

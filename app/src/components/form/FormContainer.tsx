@@ -418,8 +418,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   activitySubType={props.activity.activitySubtype || props.activity.activity_subtype || null}
-                  onChange={props.onFormChange}
-                  formData={props.activity?.formData || null}
+                  onChange={(formData, callback) => {
+                    setformData(formData);
+                    if (callback !== null) {
+                      callback();
+                    }
+                  }}
+                  formData={formData}
                   schema={schemas.schema}
                 />
               )}

@@ -107,16 +107,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
   useEffect(() => {
     props.onChange(
       {
-        formData: {
-          ...props.formData,
-          activity_subtype_data: {
-            ...props.formData.activity_subtype_data,
-            chemical_treatment_details: { ...formDetails.formData }
-          }
+        ...props.formData,
+        activity_subtype_data: {
+          ...props.formData.activity_subtype_data,
+          chemical_treatment_details: { ...formDetails.formData }
         }
       },
-      null,
-      null,
       () => {
         let lerrors = [];
         //run validation
@@ -140,31 +136,23 @@ const ChemicalTreatmentDetailsForm = (props) => {
           setCalculationResults(results as any);
           props.onChange(
             {
-              formData: {
-                ...props.formData,
-                activity_subtype_data: {
-                  ...props.formData.activity_subtype_data,
-                  chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
-                }
+              ...props.formData,
+              activity_subtype_data: {
+                ...props.formData.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
               }
             },
-            null,
-            null,
             null
           );
         } else {
           props.onChange(
             {
-              formData: {
-                ...props.formData,
-                activity_subtype_data: {
-                  ...props.formData.activity_subtype_data,
-                  chemical_treatment_details: { ...formDetails.formData, errors: true, calculation_results: undefined }
-                }
+              ...props.formData,
+              activity_subtype_data: {
+                ...props.formData.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.formData, errors: true, calculation_results: undefined }
               }
             },
-            null,
-            null,
             null
           );
           setCalculationResults(null);
