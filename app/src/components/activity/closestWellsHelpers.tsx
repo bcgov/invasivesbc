@@ -20,7 +20,12 @@ export const getClosestWells = async (inputGeometry, databaseContext, invasivesA
       invasivesApi.getSimplifiedGeoJSON,
       dataBCAcceptsGeometry
     );
-    return getWellsArray(returnVal.features, firstFeature);
+
+    if (!returnVal?.features) {
+      return [];
+    } else {
+      return getWellsArray(returnVal.features, firstFeature);
+    }
   }
   //if offline: try to get layer data from sqlite local storage
   else {
@@ -49,8 +54,6 @@ const getWellsArray = (arrayOfWells, inputGeometry) => {
     }
     geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
   }
-
-  console.log(geoJSONFeature);
 
   const outputWells = [];
   let areWellsInside: boolean = false;

@@ -81,7 +81,6 @@ const EditTools = (props: any) => {
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
     var newLayer = e.layer;
-    console.log(newLayer);
 
     context.layerContainer.addLayer(newLayer);
 
