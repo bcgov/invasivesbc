@@ -17,6 +17,8 @@
 import { addBoard } from './commands/addBoard';
 import { changeTheme, themeTextCheck } from './commands/themeTestCmds';
 import { clickChildCheckbox, dragAccordion, toggleParentAccordion } from './commands/layerPickerTestCmds';
+import moment from 'moment';
+import { ActivityLetter } from 'constants/activities';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
@@ -26,6 +28,28 @@ Cypress.Commands.add('clickChildCheckbox', clickChildCheckbox);
 Cypress.Commands.add('dragAccordion', dragAccordion);
 Cypress.Commands.add('themeTextCheck', themeTextCheck);
 Cypress.Commands.add('toggleParentAccordion', toggleParentAccordion);
+
+const snakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+const mapKeys = (source, mappingFunction) => {
+  if (!source) return {};
+  return Object.keys(source).reduce(
+    (obj, key) => ({
+      ...obj,
+      [mappingFunction(key)]: source[key]
+    }),
+    {}
+  );
+};
+
+export const getShortActivityID = (activity) => {
+  const record: any = mapKeys(activity, snakeCase);
+  if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
+  const shortYear = moment(record.date_created || record.created_timestamp)
+    .format()
+    .substr(2, 2);
+  return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
+};
 
 export const yesNo = ['Yes', 'No'];
 
@@ -43,7 +67,7 @@ export const jurisdictions = [
   'Enbridge{enter}',
   'Federal{enter}'
 ];
-export const soilTexture = ['coarse{enter}', 'fine{enter}', 'medium{enter}', 'organic{enter}', 'unknown{enter}'];
+export const soilTextureArray = ['coarse{enter}', 'fine{enter}', 'medium{enter}', 'organic{enter}', 'unknown{enter}'];
 
 export const slopeArray = [
   'ext{enter}',
