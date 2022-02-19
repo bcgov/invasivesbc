@@ -650,8 +650,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //sets well id and proximity if there are any
   const setClosestWells = async (incomingActivityDoc) => {
     let closestWells = await getClosestWells(geometry, databaseContext, invasivesApi, true, connected);
+
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
+      updateDoc({
+        ...incomingActivityDoc,
+        formData: {
+          ...incomingActivityDoc.formData,
+          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          activity_subtype_data: {
+            ...incomingActivityDoc.formData.activity_subtype_data,
+            Well_Information: [
+              {
+                well_id: 'No wells found',
+                well_proximity: 'No wells found'
+              }
+            ]
+          }
+        }
+      });
       return;
     }
     const { well_objects, areWellsInside } = closestWells;

@@ -60,9 +60,6 @@ const getWellsArray = (arrayOfWells, inputGeometry) => {
 
   const turfPolygon = polygon(geoJSONFeature.geometry.coordinates);
 
-  if (!arrayOfWells.length) {
-    return;
-  }
   arrayOfWells.forEach((well, index) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;

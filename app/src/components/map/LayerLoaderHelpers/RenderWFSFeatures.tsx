@@ -131,7 +131,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
   const getClosestWellToPolygon = (arrayOfWells) => {
     const outputWells = [];
-
     let geoJSONFeature = props.inputGeo[0];
 
     if (geoJSONFeature.geometry.type === 'Point') {
@@ -144,6 +143,10 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
     if (booleanWithin(geoJSONFeature as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
       const turfPolygon = polygon((geoJSONFeature.geometry as any).coordinates);
+
+      if (arrayOfWells.length < 1) {
+        return arrayOfWells;
+      }
       arrayOfWells.forEach((well, index) => {
         if (inside(well, turfPolygon)) {
           outputWells.push({ ...well, inside: true });
@@ -193,7 +196,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
-        wellFeatures.map((feature) => {
+        wellFeatures.features &&
+        wellFeatures.features.length > 0 &&
+        wellFeatures.features.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {
