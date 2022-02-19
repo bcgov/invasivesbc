@@ -2,6 +2,14 @@ import { GridColDef } from '@mui/x-data-grid';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 
 export const mapActivitiesToDataGridRows = (activities) => {
+  console.log('activities');
+  console.dir(activities);
+  if (!activities) {
+    return [];
+  }
+  if (activities.code) {
+    return [];
+  }
   return activities.rows.map((activity, index) => {
     return {
       id: index,
@@ -43,45 +51,37 @@ export const mapActivitiesToDataGridRows = (activities) => {
 //   ...actions?.create_activity // allow prop overwrites by defaulto
 // });
 
-export const activites_default_headers: GridColDef[] = [
+export const activites_default_headers = [
   {
-    field: 'short_id',
-    headerName: 'Activity ID',
-    width: 150
+    key: 'short_id',
+    name: 'Activity ID'
   },
   {
-    field: 'activity_type',
-    headerName: 'Activity Type',
-    width: 150
+    key: 'activity_type',
+    name: 'Activity Type'
   },
   {
-    field: 'activity_subtype',
-    headerName: 'Activity Sub Type',
-    width: 300
+    key: 'activity_subtype',
+    name: 'Activity Sub Type'
   },
   {
-    field: 'date_created',
-    headerName: 'Date Created',
-    width: 400
+    key: 'date_created',
+    name: 'Date Created'
   },
   {
-    field: 'reported_area',
-    headerName: 'Area (m\u00B2)',
-    width: 150
+    key: 'reported_area',
+    name: 'Area (m\u00B2)'
   },
   {
-    field: 'latitude',
-    headerName: 'Latitude',
-    width: 150
+    key: 'latitude',
+    name: 'Latitude'
   },
   {
-    field: 'longitude',
-    headerName: 'Longitude',
-    width: 150
+    key: 'longitude',
+    name: 'Longitude'
   },
   {
-    field: 'activity_id',
-    headerName: 'Full ID',
-    width: 350
+    key: 'activity_id',
+    name: 'Full ID'
   }
 ];

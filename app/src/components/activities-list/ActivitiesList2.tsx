@@ -13,7 +13,11 @@ import PlantBiocontrolTable from './Tables/Plant/PlantBiocontrolTable';
 import PlantMonitoringsTable from './Tables/Plant/PlantMonitoringsTable';
 import PlantTransectsTable from './Tables/Plant/PlantTransectsTable';
 import PlantTreatmentsTable from './Tables/Plant/PlantTreatmentsTable';
-import PlantObservationsTable from './Tables/Plant/PlantObservationsTable';
+import PlantObservationsTable from './Tables/Plant/ActivityTable';
+import ActivityGrid from './Tables/Plant/ActivityTable';
+import { Button, Grid } from '@mui/material';
+import NewRecord from 'components/map/Tools/ToolTypes/Data/NewRecordMainMap';
+import NewRecordRecordPagae from 'components/map/Tools/ToolTypes/Data/NewRecordRecordPage';
 
 const useStyles = makeStyles((theme: any) => ({
   newActivityButtonsRow: {
@@ -65,7 +69,7 @@ const ActivitiesList2: React.FC = () => {
   return (
     <>
       <Box>
-        <Box mb={4} display="flex" justifyContent="space-between">
+        <Grid mb={4} display="flex" justifyContent="left">
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Record Type</InputLabel>
             <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
@@ -73,6 +77,9 @@ const ActivitiesList2: React.FC = () => {
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="FREP">FREP</MenuItem>
             </Select>
+          </FormControl>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel>Record Subtype</InputLabel>
             <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
               <MenuItem value="Observations">Observations</MenuItem>
@@ -83,27 +90,18 @@ const ActivitiesList2: React.FC = () => {
               <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
-        </Box>
+          <NewRecordRecordPagae type={formType} subType={subType} />
+          <Button variant="contained">Snap Map to this list</Button>
+        </Grid>
         <Box>
-          {formType === 'Plant' && (
-            <Box>
-              <PlantObservationsTable />
-              <PlantTreatmentsTable />
-              <PlantBiocontrolTable />
-              <PlantMonitoringsTable />
-              <PlantTransectsTable />
-            </Box>
-          )}
-          {formType === 'Animal' && <Box></Box>}
-          {formType === 'Review' && <Box></Box>}
-          {formType === 'FREP' && <Box></Box>}
-          {formType === 'Past Activities' && <Box></Box>}
+          <Box>
+            <ActivityGrid />
+          </Box>
           {formType === 'Batch Upload' && (
             <Box>
               <BatchUpload />
             </Box>
           )}
-          {formType === 'IAPP Data' && <Box></Box>}
         </Box>
       </Box>
     </>

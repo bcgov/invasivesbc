@@ -4,7 +4,7 @@ import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MultiSelectOrEdit from './Tools/ToolTypes/Data/MultiSelectOrEdit';
-import NewRecord from './Tools/ToolTypes/Data/NewRecord';
+import NewRecord from './Tools/ToolTypes/Data/NewRecordMainMap';
 import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
 import DrawButtonList from './Tools/ToolTypes/GeoEdit/EditTools';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
@@ -37,7 +37,7 @@ export const ToolbarContainer = (props) => {
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
           {/*
-          <NewRecord />
+          <NewRecordMainMap />
           <EditRecord />
           <MultiSelectOrEdit />
           <DrawButtonList />
