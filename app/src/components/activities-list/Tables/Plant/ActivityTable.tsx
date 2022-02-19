@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState, useEffect } from 'react';
-import DataGrid, { RowRendererProps, Row } from 'react-data-grid';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+import DataGrid, { RowRendererProps, Row, SortColumn } from 'react-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { ActivitySubtypeShortLabels } from '../../../../constants/activities';
@@ -16,7 +16,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import { PlayCircleFilledWhite } from '@mui/icons-material';
-
+import { ThemeContext } from 'utils/CustomThemeProvider';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -51,6 +51,8 @@ const ActivityGrid = () => {
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
 
+  const themeContext = useContext(ThemeContext);
+  const { themeType } = themeContext;
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
   };
@@ -81,9 +83,50 @@ const ActivityGrid = () => {
     setActivities(act_list);
   };
 
+  const [rows, setRows] = useState([]);
+
   useEffect(() => {
     getActivities();
   }, []);
+
+  useEffect(() => {
+    const newrows = mapActivitiesToDataGridRows(activities);
+    setRows(newrows);
+  }, [activities]);
+
+  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
+
+  useEffect(() => {
+    console.dir(sortColumns);
+  }, [sortColumns]);
+
+  type Comparator = (a, b) => number;
+
+  function getComparator(sortColumn: string): Comparator {
+    switch (sortColumn) {
+      default:
+        return (a, b) => {
+          return a[sortColumn].localeCompare(b[sortColumn]);
+        };
+      //default:
+      // throw new Error(`unsupported sortColumn: "${sortColumn}"`);
+    }
+  }
+
+  const sortedRows = useMemo(() => {
+    if (sortColumns.length === 0) return rows;
+
+    return [...rows].sort((a, b) => {
+      for (const sort of sortColumns) {
+        const comparator = getComparator(sort.columnKey);
+        const compResult = comparator(a, b);
+        if (compResult !== 0) {
+          return sort.direction === 'ASC' ? compResult : -compResult;
+        }
+      }
+      return 0;
+    });
+  }, [rows, sortColumns]);
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
@@ -97,10 +140,14 @@ const ActivityGrid = () => {
       ) : (
         <DataGrid
           //TODO THEME MODE
-          style={{ color: 'white', backgroundColor: 'white' }}
-          rows={mapActivitiesToDataGridRows(activities)}
+          //style={{ color: 'white', backgroundColor: 'white' }}
+          className={themeType ? 'rdg-dark' : 'rdg-light'}
+          rows={sortedRows}
+          defaultColumnOptions={{ sortable: true }}
           columns={activites_default_headers}
-          components={{ rowRenderer: RowRenderer }}
+          sortColumns={sortColumns}
+          onSortColumnsChange={setSortColumns}
+          //       components={{ rowRenderer: RowRenderer }}
         />
       )}
     </>
