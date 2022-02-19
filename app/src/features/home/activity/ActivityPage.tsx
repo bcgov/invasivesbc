@@ -357,6 +357,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       };
     }
 
+    const activity_persons = [...activity_type_data?.activity_persons] || [{}];
+
+    if (nameNeedsInsert) {
+      activity_persons[0]['person_name'] = userNameInject;
+    }
+    if (pacNeedsInsert) {
+      activity_persons[0]['applicator_license'] = applicatorLicenseInject;
+    }
+
     updatedActivity = {
       ...activity.formData,
       activity_data: {
@@ -375,10 +384,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       },
       activity_type_data: {
         ...activity_type_data,
-        activity_persons:
-          nameNeedsInsert || pacNeedsInsert
-            ? [{ person_name: userNameInject, applicator_license: applicatorLicenseInject }]
-            : activity_type_data?.activity_persons || [{}]
+        activity_persons: [...activity_persons]
       },
       activity_subtype_data: activitySubtypeData
     };
