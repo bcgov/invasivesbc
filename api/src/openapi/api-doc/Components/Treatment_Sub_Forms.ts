@@ -320,8 +320,7 @@ export const Treatment_MechanicalPlant_Information = {
             minimum: 0,
             'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
           }
-        },
-        required: ['disposed_material_input_format']
+        }
       }
     }
   }
@@ -431,8 +430,7 @@ export const Treatment_MechanicalPlant_Information_Aquiatic = {
             minimum: 0,
             'x-tooltip-text': 'Include the number of grams, kg, plants, of square meters disposed of'
           }
-        },
-        required: ['disposed_material_input_format']
+        }
       }
     }
   }
