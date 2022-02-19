@@ -31,6 +31,7 @@ export const NewRecordRecordPagae = (props) => {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const history = useHistory();
+  const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
 
   // Is this needed? Copied from DisplayPosition
 
@@ -39,7 +40,6 @@ export const NewRecordRecordPagae = (props) => {
     plant = 'plant',
     other = 'other'
   }
-  const { userInfo } = useContext(AuthStateContext);
   const mapRecordsContext = useContext(MapRecordsContext);
 
   const insert_record = async () => {
@@ -49,6 +49,9 @@ export const NewRecordRecordPagae = (props) => {
     const subtype = ActivitySubtype.Observation_PlantTerrestrial;
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
+    dbActivity.created_by = userInfo?.preferred_username;
+    dbActivity.user_role = userRoles?.map((role) => role.role_id);
+    await dataAccess.createActivity(dbActivity, databaseContext);
     dbActivity.created_by = (userInfo as any)?.preferred_username;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);

@@ -49,7 +49,7 @@ const ActivityGrid = () => {
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
-  const [console, setConsole] = useState('Click column headers to sort');
+  const [messageConsole, setConsole] = useState('Click column headers to sort');
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -61,13 +61,22 @@ const ActivityGrid = () => {
   ];
 
   const getActivities = async () => {
+    console.log(userInfo.preferred_username);
+    console.log(rolesUserHasAccessTo);
+    console.log(rolesUserHasAccessTo);
     const act_list = await dataAccess.getActivities({
       created_by: userInfo.preferred_username,
       user_roles: rolesUserHasAccessTo,
       activity_type: ['Observation']
     });
+    if (act_list && !act_list.count) {
+      setConsole('Unable to fetch activities.');
+    }
     if (act_list && act_list.code) {
-      setConsole('Unable to fetch activities');
+      setConsole('Unable to fetch activities.');
+    }
+    if (act_list && act_list.count === 0) {
+      setConsole('No data found.');
     }
     setActivities(act_list);
   };
@@ -82,7 +91,7 @@ const ActivityGrid = () => {
   };
   return (
     <>
-      <Typography>{console}</Typography>
+      <Typography>{messageConsole}</Typography>
       {!activities ? (
         <CircularProgress />
       ) : (
