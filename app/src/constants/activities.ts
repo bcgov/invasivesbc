@@ -127,7 +127,7 @@ export enum ActivityLetter {
   Activity_Treatment_ChemicalPlantTerrestrial = 'PTC',
   Activity_Treatment_ChemicalPlant_BulkEdit = 'PTC',
   Activity_Treatment_ChemicalPlantAquatic = 'PAC',
-  Activity_Treatment_MechanicalPlant = 'PTM',
+  Activity_Treatment_MechanicalPlantTerrestrial = 'PTM',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'PTM',
   Activity_Treatment_MechanicalPlantAquatic = 'PAM',
   Activity_Biocontrol_Release = 'PBR',

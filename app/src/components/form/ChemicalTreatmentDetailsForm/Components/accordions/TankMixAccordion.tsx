@@ -21,9 +21,6 @@ const TankMixAccordion = () => {
           variant="h5">
           Tank Mix
         </Typography>
-        {/* <Typography variant="body2" color={'error'}>
-              {herbicidesArrErrors?.length > 0 && herbicidesArrErrors[0]}
-            </Typography> */}
       </AccordionSummary>
       <AccordionDetails>
         <Box className={classes.accordionBody}>

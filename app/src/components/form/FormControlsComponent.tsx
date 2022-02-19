@@ -53,19 +53,21 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                     ? 'Save form without errors first, to be able to submit.'
                     : 'Ready to submit, form is validated and has no issues.'
                 }>
-                <Button
-                  disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    if (!props.onSubmitAsOfficial) {
-                      return;
-                    }
+                <span>
+                  <Button
+                    disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      if (!props.onSubmitAsOfficial) {
+                        return;
+                      }
 
-                    props.onSubmitAsOfficial();
-                  }}>
-                  {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
-                </Button>
+                      props.onSubmitAsOfficial();
+                    }}>
+                    {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
+                  </Button>
+                </span>
               </Tooltip>
             )}
           </Grid>
@@ -81,9 +83,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               <Tooltip
                 TransitionComponent={Zoom}
                 title="Copy the data from the fields, so that you can paste it when you create a new record.">
-                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
-                  Copy Form Data
-                </Button>
+                <span>
+                  <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
+                    Copy Form Data
+                  </Button>
+                </span>
               </Tooltip>
             </Grid>
           )}

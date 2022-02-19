@@ -29,6 +29,7 @@ const FieldTemplate = (props: FieldTemplateProps) => {
             {props.rawDescription}
           </Typography>
         ) : null}
+
         {props.rawErrors && props.rawErrors.length > 0 && (
           <List dense={true} disablePadding={true}>
             {props.rawErrors.map((error, i: number) => {
@@ -39,6 +40,11 @@ const FieldTemplate = (props: FieldTemplateProps) => {
               );
             })}
           </List>
+        )}
+        {(props['schema'] as any).warning && (
+          <Typography variant="body2" color={'secondary'}>
+            {(props['schema'] as any).warning}
+          </Typography>
         )}
         {props.rawHelp && <FormHelperText id={props.id}>{props.rawHelp}</FormHelperText>}
       </FormControl>

@@ -7,7 +7,6 @@ import inside from '@turf/inside';
 import { Feature, Geometry } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Layer } from 'leaflet';
-import { features } from 'process';
 import React, { useContext, useEffect, useState } from 'react';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
@@ -17,6 +16,7 @@ import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
 import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { WellMarker } from './WellMarker';
+import buffer from '@turf/buffer';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -131,12 +131,24 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
   const getClosestWellToPolygon = (arrayOfWells) => {
     const outputWells = [];
-    let areWellsInside: boolean = false;
-    if (booleanWithin(props.inputGeo[0].geometry as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
-      const turfPolygon = polygon((props.inputGeo[0].geometry as any).coordinates);
+    let geoJSONFeature = props.inputGeo[0];
+
+    if (geoJSONFeature.geometry.type === 'Point') {
+      let radius = 100;
+      if (geoJSONFeature.properties?.radius) {
+        radius = geoJSONFeature.properties.radius;
+      }
+      geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
+    }
+
+    if (booleanWithin(geoJSONFeature as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
+      const turfPolygon = polygon((geoJSONFeature.geometry as any).coordinates);
+
+      if (arrayOfWells.length < 1) {
+        return arrayOfWells;
+      }
       arrayOfWells.forEach((well, index) => {
         if (inside(well, turfPolygon)) {
-          areWellsInside = true;
           outputWells.push({ ...well, inside: true });
         } else {
           outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
@@ -149,13 +161,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
       outputWells[0] = { ...outputWells[0], closest: true };
 
-      let fiveClosest = [];
-
-      if (outputWells.length > 5) {
-        fiveClosest = outputWells.slice(0, 5);
-      } else {
-        fiveClosest = outputWells;
-      }
       return outputWells;
     }
   };
@@ -191,7 +196,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
-        wellFeatures.map((feature) => {
+        wellFeatures.features &&
+        wellFeatures.features.length > 0 &&
+        wellFeatures.features.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {

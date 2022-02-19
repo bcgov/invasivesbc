@@ -102,26 +102,27 @@ const ChemicalTreatmentDetailsForm = (props) => {
   });
   //used to render the list of errors
   const [localErrors, setLocalErrors] = useState([]);
+  const [reportedArea, setReportedArea] = useState(0);
+
+  useEffect(() => {
+    setReportedArea(props.formData.activity_data.reported_area);
+  }, [props.formData]);
 
   //when formDetails change, run validation and if it passes, perform calculations
   useEffect(() => {
     props.onChange(
       {
-        formData: {
-          ...props.formData,
-          activity_subtype_data: {
-            ...props.formData.activity_subtype_data,
-            chemical_treatment_details: { ...formDetails.formData }
-          }
+        ...props.formData,
+        activity_subtype_data: {
+          ...props.formData.activity_subtype_data,
+          chemical_treatment_details: { ...formDetails.formData }
         }
       },
-      null,
-      null,
       () => {
         let lerrors = [];
         //run validation
         const newErr = runValidation(
-          props.formData.activity_data.reported_area,
+          reportedArea,
           formDetails.formData,
           lerrors,
           businessCodes,
@@ -132,46 +133,34 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
         //if no errors, perform calculations
         if (newErr.length < 1) {
-          const results = performCalculation(
-            props.formData.activity_data.reported_area,
-            formDetails.formData,
-            businessCodes
-          );
+          const results = performCalculation(reportedArea, formDetails.formData, businessCodes);
           setCalculationResults(results as any);
           props.onChange(
             {
-              formData: {
-                ...props.formData,
-                activity_subtype_data: {
-                  ...props.formData.activity_subtype_data,
-                  chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
-                }
+              ...props.formData,
+              activity_subtype_data: {
+                ...props.formData.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
               }
             },
-            null,
-            null,
             null
           );
         } else {
           props.onChange(
             {
-              formData: {
-                ...props.formData,
-                activity_subtype_data: {
-                  ...props.formData.activity_subtype_data,
-                  chemical_treatment_details: { ...formDetails.formData, errors: true, calculation_results: undefined }
-                }
+              ...props.formData,
+              activity_subtype_data: {
+                ...props.formData.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.formData, errors: true, calculation_results: undefined }
               }
             },
-            null,
-            null,
             null
           );
           setCalculationResults(null);
         }
       }
     );
-  }, [formDetails]);
+  }, [formDetails, reportedArea]);
 
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
@@ -252,9 +241,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 title="Check if there is a mix of herbicides in the tank">
                 <HelpOutlineIcon />
               </Tooltip>
-              <FormLabel className={classes.formLabel} component="legend">
+              <FormLabel className={classes.formLabel} style={{ marginTop: '25px' }} component="legend">
                 Tank Mix
               </FormLabel>
+
               <RadioGroup
                 onChange={() => {
                   setTankMixOn((prevState) => !prevState);

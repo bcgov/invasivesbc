@@ -34,12 +34,12 @@ const WrapIfAdditional = (props: WrapIfAdditionalProps) => {
   }
 
   const handleBlur = ({ target }: React.FocusEvent<HTMLInputElement>) => props.onKeyChange(target.value);
-
+  console.log(props);
   return (
     <Grid container={true} key={`${props.id}-key`} alignItems="center" spacing={2}>
       <Grid item={true}>
         <FormControl fullWidth={true} required={props.required}>
-          <InputLabel>{keyLabel}</InputLabel>
+          {keyLabel !== 'invisible' && <InputLabel>{keyLabel}</InputLabel>}
           <Input
             defaultValue={props.label}
             disabled={props.disabled || props.readonly}

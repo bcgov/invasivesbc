@@ -167,15 +167,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     try {
       const appStateResults = await dataAccess.getAppState(databaseContext);
       const dbUpdates = debounced(1000, async (updated) => {
-        // TODO use an api endpoint to do this merge logic instead
-        // const oldActivity = await dataAccess.getActivityById(
-        //   updated._id,
-        //   databaseContext,
-        //   false,
-        //   appStateResults.referenceData
-        // );
         const newActivity = {
-          // ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
 
@@ -239,7 +231,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionName: 'Yes',
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
-            console.log(doc);
             let newDoc = { ...doc };
             newDoc.form_status = ActivityStatus.SUBMITTED;
             try {
@@ -366,6 +357,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       };
     }
 
+    const activity_persons = [...activity_type_data?.activity_persons] || [{}];
+
+    if (nameNeedsInsert) {
+      activity_persons[0]['person_name'] = userNameInject;
+    }
+    if (pacNeedsInsert) {
+      activity_persons[0]['applicator_license'] = applicatorLicenseInject;
+    }
+
     updatedActivity = {
       ...activity.formData,
       activity_data: {
@@ -384,10 +384,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       },
       activity_type_data: {
         ...activity_type_data,
-        activity_persons:
-          nameNeedsInsert || pacNeedsInsert
-            ? [{ person_name: userNameInject, applicator_license: applicatorLicenseInject }]
-            : activity_type_data?.activity_persons || [{}]
+        activity_persons: [...activity_persons]
       },
       activity_subtype_data: activitySubtypeData
     };
@@ -400,35 +397,31 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = useCallback((geom: Feature[]) => {
-    setDoc(async (activity: any) => {
-      const { latitude, longitude } = calculateLatLng(geom) || {};
-      var utm = calc_utm(longitude, latitude);
-      let utm_zone = utm[0];
-      let utm_easting = utm[1];
-      let utm_northing = utm[2];
-      const activityDoc = {
-        ...activity,
-        formData: {
-          ...activity.formData,
-          activity_data: {
-            ...activity.formData.activity_data,
-            latitude,
-            longitude,
-            utm_zone,
-            utm_easting,
-            utm_northing,
-            reported_area: calculateGeometryArea(geom)
-          }
-        },
-        geometry: geom,
-        status: ActivityStatus.DRAFT,
-        dateUpdated: new Date()
-      };
-      await updateDoc(activityDoc);
-      return activityDoc;
-    });
-  }, []);
+  const saveGeometry = async (geom) => {
+    const { latitude, longitude } = calculateLatLng(geom) || {};
+    var utm = calc_utm(longitude, latitude);
+    let utm_zone = utm[0];
+    let utm_easting = utm[1];
+    let utm_northing = utm[2];
+    const activityDoc = {
+      formData: {
+        activity_data: {
+          latitude,
+          longitude,
+          utm_zone,
+          utm_easting,
+          utm_northing,
+          reported_area: calculateGeometryArea(geom)
+        }
+      },
+      geometry: geom,
+      status: ActivityStatus.DRAFT,
+      dateUpdated: new Date()
+    };
+    await setClosestWells(activityDoc);
+    getJurSuggestions();
+    return activityDoc;
+  };
 
   /**
    * Save the map Extent within the database
@@ -660,26 +653,36 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
-  useEffect(() => {
-    if (geometry && geometry[0]) {
-      setClosestWells();
-    }
-  }, [geometry]);
-
   //sets well id and proximity if there are any
-  const setClosestWells = async () => {
-    if (!doc) {
-      return;
-    }
+  const setClosestWells = async (incomingActivityDoc) => {
+    let closestWells = await getClosestWells(geometry, databaseContext, invasivesApi, true, connected);
 
-    let closestWells = await getClosestWells(geometry[0], databaseContext, invasivesApi, true, connected);
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
+      updateDoc({
+        ...incomingActivityDoc,
+        formData: {
+          ...incomingActivityDoc.formData,
+          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          activity_subtype_data: {
+            ...incomingActivityDoc.formData.activity_subtype_data,
+            Well_Information: [
+              {
+                well_id: 'No wells found',
+                well_proximity: 'No wells found'
+              }
+            ]
+          }
+        }
+      });
       return;
     }
     const { well_objects, areWellsInside } = closestWells;
-    const wellInformationArr = well_objects.map((well) => {
-      return { well_id: well.id, well_proximity: well.proximity.toString() };
+    const wellInformationArr = [];
+    well_objects.forEach((well) => {
+      if (well.proximity) {
+        wellInformationArr.push({ well_id: well.id, well_proximity: well.proximity.toString() });
+      }
     });
 
     //if it is a Chemical treatment and there are wells too close, display warning dialog
@@ -691,25 +694,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dialogActions: [
           {
             actionName: 'No',
-            actionOnClick: async () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
+            actionOnClick: () => {
               setGeometry(null);
-
-              await updateDoc({
-                ...doc,
+              updateDoc({
+                ...incomingActivityDoc,
                 formData: {
-                  ...doc.formData,
-                  activity_data: {
-                    ...doc.formData.activity_data,
-                    latitude: undefined,
-                    longitude: undefined,
-                    utm_zone: undefined,
-                    utm_northing: undefined,
-                    utm_easting: undefined,
-                    reported_area: undefined
-                  },
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
                   activity_subtype_data: {
-                    ...doc.formData.activity_subtype_data,
+                    ...incomingActivityDoc.formData.activity_subtype_data,
                     Well_Information: [
                       {
                         well_id: 'No wells found',
@@ -719,30 +712,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                   }
                 }
               });
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             }
           },
           {
             actionName: 'Yes',
-            actionOnClick: async () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
-              await updateDoc({
-                ...doc,
+            actionOnClick: () => {
+              updateDoc({
+                ...incomingActivityDoc,
                 formData: {
-                  ...doc.formData,
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
                   activity_subtype_data: {
-                    ...doc.formData.activity_subtype_data,
+                    ...incomingActivityDoc.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
               });
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             },
             autoFocus: true
           }
         ]
       });
-    }
-    //if it is a Observation and there are wells too close, display warning dialog
-    else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    } else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -750,27 +743,43 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dialogActions: [
           {
             actionName: 'Ok',
-            actionOnClick: async () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
-              await updateDoc({
-                ...doc,
+            actionOnClick: () => {
+              updateDoc({
+                ...incomingActivityDoc,
                 formData: {
-                  ...doc.formData,
+                  ...incomingActivityDoc.formData,
+                  activity_data: { ...incomingActivityDoc.formData.activity_data },
                   activity_subtype_data: {
-                    ...doc.formData.activity_subtype_data,
+                    ...incomingActivityDoc.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
               });
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             },
             autoFocus: true
           }
         ]
       });
+    } else {
+      updateDoc({
+        ...incomingActivityDoc,
+        formData: {
+          ...incomingActivityDoc.formData,
+          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          activity_subtype_data: {
+            ...incomingActivityDoc.formData.activity_subtype_data,
+            Well_Information: [...wellInformationArr]
+          }
+        }
+      });
     }
-    //If not in Observation nor in Chemical Treatment
-    else {
-      console.log('not any case');
+  };
+  const getJurSuggestions = async () => {
+    console.log('hello?');
+    if (geometry[0]) {
+      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
+      setSuggestedJurisdictions(res.rows);
     }
   };
 
@@ -809,18 +818,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    const getJurSuggestions = async () => {
-      if (geometry[0]) {
-        const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
-        setSuggestedJurisdictions(res.rows);
-      }
-    };
-
     if (geometry && geometry[0]) {
+      //if geometry is withing british columbia boundries, save it
       if (booleanWithin(geometry[0] as any, bcArea as any)) {
         saveGeometry(geometry);
-        getJurSuggestions();
-      } else {
+      }
+      //if geometry is NOT withing british columbia boundries, display err
+      else {
         setWarningDialog({
           dialogOpen: true,
           dialogTitle: 'Error!',
@@ -835,10 +839,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             }
           ]
         });
-        //setGeometry(null);
+        setGeometry(null);
       }
     }
-  }, [geometry, isLoading, saveGeometry]);
+  }, [geometry, isLoading]);
 
   useEffect(() => {
     if (isLoading || !doc) {

@@ -2763,3 +2763,20 @@ export const BiocontrolEfficacyTransectLines = {
     ...BiocontrolEfficacyTransectLine
   }
 };
+export const Pest_Injury_Threshold_Determination = {
+  type: 'object',
+  title: 'Pest Injury Threshold Determination',
+  properties: {
+    completed_radio: {
+      title: 'Choose either option',
+      type: 'boolean',
+      enumNames: [
+        'A full survey was completed prior to herbicide application. The survey determined that injury thresholds had been met to fulfill IPM obligations.',
+        'No threshold determination was completed.'
+      ]
+    }
+  },
+  required: ['completed_radio'],
+  'x-tooltip-text':
+    'Required field under the BC Integrated Pest Management Regulation when working under a license or authorization'
+};

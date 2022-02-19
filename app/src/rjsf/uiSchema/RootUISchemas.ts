@@ -117,7 +117,10 @@ const Activity_Treatment_ChemicalPlantTerrestrial = {
     Treatment_ChemicalPlant_Information: {
       ...BaseUISchemaComponents.activity_subtype_data_information_objects.Treatment_ChemicalPlant_Information 
     },
-    'ui:order':['Well_Information','Treatment_ChemicalPlant_Information']
+    Pest_Injury_Threshold_Determination: {
+      ...BaseUISchemaComponents.general_objects.Pest_Injury_Threshold_Determination
+    },
+    'ui:order':['Well_Information','Treatment_ChemicalPlant_Information','Pest_Injury_Threshold_Determination']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -128,16 +131,16 @@ const Activity_Treatment_ChemicalPlantAquatic = {
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   'activity_subtype_data': {
-    ShorelineTypes: {
-      ...BaseUISchemaComponents.general_objects.ShorelineTypes
-    },
     Well_Information: {
       ...BaseUISchemaComponents.general_objects.Well_Information
     },
     Treatment_ChemicalPlant_Information: {
       ...BaseUISchemaComponents.activity_subtype_data_information_objects.Treatment_ChemicalPlant_Information
     },
-    'ui:order':['Well_Information','ShorelineTypes','Treatment_ChemicalPlant_Information']
+    Pest_Injury_Threshold_Determination: {
+      ...BaseUISchemaComponents.general_objects.Pest_Injury_Threshold_Determination
+    },
+    'ui:order':['Well_Information','Treatment_ChemicalPlant_Information','Pest_Injury_Threshold_Determination']
   },
   'ui:order':['activity_data','activity_subtype_data']
 };

@@ -357,6 +357,13 @@ const Microsite_Conditions = {
   'ui:order': ['mesoslope_position_code', 'site_surface_shape_code']
 };
 
+const Pest_Injury_Threshold_Determination = {
+  completed_radio: {
+    "ui:widget": "radio"
+  },
+  'ui:order':['completed_radio']
+}
+
 const Target_Plant_Phenology = {
   ...ThreeColumnStyle,
   phenology_details_recorded: {},
@@ -863,6 +870,10 @@ const Treatment_ChemicalPlant_Information = {
   wind_direction_code: { 'ui:widget': 'single-select-autocomplete' },
   humidity: {},
   signage_on_site: {},
+  ntz_reduction: {'ui:widget': 'radio' },
+  rationale_for_ntz_reduction: {},
+  precautionary_statement: {'ui:widget': 'single-select-autocomplete'},
+  unmapped_wells: { },
   application_start_time: { 'ui:widget': 'datetime' },
   'ui:order': [
     'pesticide_employer_code',
@@ -875,6 +886,10 @@ const Treatment_ChemicalPlant_Information = {
     'wind_direction_code',
     'humidity',
     'signage_on_site',
+    'precautionary_statement',
+    'ntz_reduction',
+    'rationale_for_ntz_reduction',
+    'unmapped_wells',
     'application_start_time'
   ]
 };
@@ -1134,6 +1149,7 @@ const BaseUISchemaComponents = {
     Biocontrol_Release_Information
   },
   general_objects: {
+    Pest_Injury_Threshold_Determination,
     Biological_Agent_Stage,
     Well_Information,
     WaterbodyData,
