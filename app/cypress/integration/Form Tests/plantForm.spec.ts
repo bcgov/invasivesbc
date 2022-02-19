@@ -234,6 +234,9 @@ describe('CREATING A NEW RECORD', function () {
     });
   }
   it('It can verify get the activity from the database', function () {
+    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(1)').click('center');
+    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
+    cy.wait(2000);
     cy.task('DATABASE', {
       dbConfig: {
         user: 'invasivebc',
@@ -242,13 +245,9 @@ describe('CREATING A NEW RECORD', function () {
         password: 'postgres',
         port: 5432
       },
-      sql: `select * from invasivesbc.observation_terrestrialplant limit 3`
+      sql: `select * from invasivesbc.activity_incoming_data order by activity_incoming_data_id desc limit 1`
     }).then((result) => {
       (result as any).rows.map((row) => {
-        const dbActivity = getShortActivityID(row);
-        if (dbActivity === myTestId) {
-          myTestRow = row;
-        }
         console.log('row', row);
       });
     });
