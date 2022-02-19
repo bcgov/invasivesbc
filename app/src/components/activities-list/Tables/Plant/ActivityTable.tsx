@@ -133,7 +133,7 @@ const ActivityGrid = () => {
     return <Row {...props} style={{ color: 'black', backgroundColor: 'white' }} />;
   };
   return (
-    <>
+    <Box maxHeight="100%">
       <Typography>{messageConsole}</Typography>
       {!activities ? (
         <CircularProgress />
@@ -141,6 +141,7 @@ const ActivityGrid = () => {
         <DataGrid
           //TODO THEME MODE
           //style={{ color: 'white', backgroundColor: 'white' }}
+          enableVirtualization
           className={themeType ? 'rdg-dark' : 'rdg-light'}
           rows={sortedRows}
           defaultColumnOptions={{ sortable: true }}
@@ -150,7 +151,7 @@ const ActivityGrid = () => {
           //       components={{ rowRenderer: RowRenderer }}
         />
       )}
-    </>
+    </Box>
   );
 };
 export default ActivityGrid;

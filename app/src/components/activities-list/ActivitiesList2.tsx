@@ -67,44 +67,36 @@ const ActivitiesList2: React.FC = () => {
   };
 
   return (
-    <>
-      <Box>
-        <Grid mb={4} display="flex" justifyContent="left">
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Record Type</InputLabel>
-            <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
-              <MenuItem value="Plant">Plant</MenuItem>
-              <MenuItem value="Animal">Animal</MenuItem>
-              <MenuItem value="FREP">FREP</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Record Subtype</InputLabel>
-            <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
-              <MenuItem value="Batch Upload">Batch Upload</MenuItem>
-              <MenuItem value="Observations">Observations</MenuItem>
-              <MenuItem value="Treatments">Treatments</MenuItem>
-              <MenuItem value="BioControl">BioControl</MenuItem>
-              <MenuItem value="Monitoring">Monitoring</MenuItem>
-              <MenuItem value="Transects">Transects</MenuItem>
-              <MenuItem value="IAPP Data">IAPP Data</MenuItem>
-            </Select>
-          </FormControl>
-          <NewRecordRecordPagae type={formType} subType={subType} />
-          <Button variant="contained">Snap Map to this list</Button>
-        </Grid>
-        <Box>
-          <Box>
-            <ActivityGrid />
-          </Box>
-          {formType === 'Batch Upload' && (
-            <Box>
-              <BatchUpload />
-            </Box>
-          )}
-        </Box>
-      </Box>
-    </>
+    <Grid height="100%" container>
+      <Grid height="50px" mb={4} display="flex" justifyContent="left">
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Record Type</InputLabel>
+          <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
+            <MenuItem value="Plant">Plant</MenuItem>
+            <MenuItem value="Animal">Animal</MenuItem>
+            <MenuItem value="FREP">FREP</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Record Subtype</InputLabel>
+          <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
+            <MenuItem value="Batch Upload">Batch Upload</MenuItem>
+            <MenuItem value="Observations">Observations</MenuItem>
+            <MenuItem value="Treatments">Treatments</MenuItem>
+            <MenuItem value="BioControl">BioControl</MenuItem>
+            <MenuItem value="Monitoring">Monitoring</MenuItem>
+            <MenuItem value="Transects">Transects</MenuItem>
+            <MenuItem value="IAPP Data">IAPP Data</MenuItem>
+          </Select>
+        </FormControl>
+        <NewRecordRecordPagae type={formType} subType={subType} />
+        <Button variant="contained">Snap Map to this list</Button>
+      </Grid>
+      <Grid height="100%" mb={4} display="flex" justifyContent="left">
+        <ActivityGrid />
+        {/*       <Box><BatchUpload</Box>*/}
+      </Grid>
+    </Grid>
   );
 };
 

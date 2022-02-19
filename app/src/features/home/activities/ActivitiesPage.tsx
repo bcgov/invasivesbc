@@ -9,7 +9,7 @@ interface IStatusPageProps {
 
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   return (
-    <Container maxWidth={false} className={props.classes.container}>
+    <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
       {/* <ActivitiesList /> */}
       <ActivitiesList2 />
     </Container>
