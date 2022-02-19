@@ -4,6 +4,7 @@ import {
   BiocontrolEfficacyTransectLines,
   FireMonitoringTransectLines,
   Microsite_Conditions,
+  Pest_Injury_Threshold_Determination,
   ShorelineTypes,
   Spread_Results,
   Target_Plant_Phenology,
@@ -41,7 +42,8 @@ export const Subtype_Data_Treatment_ChemicalPlantTerrestrial = {
   title: 'invisible',
   properties: {
     Well_Information: Well_Information,
-    Treatment_ChemicalPlant_Information: Treatment_ChemicalPlant_Information
+    Treatment_ChemicalPlant_Information: Treatment_ChemicalPlant_Information,
+    Pest_Injury_Threshold_Determination: Pest_Injury_Threshold_Determination
   }
 };
 export const Subtype_Data_Treatment_ChemicalPlantAquatic = {
@@ -49,8 +51,8 @@ export const Subtype_Data_Treatment_ChemicalPlantAquatic = {
   title: 'invisible',
   properties: {
     Well_Information: Well_Information,
-    ShorelineTypes: ShorelineTypes,
-    Treatment_ChemicalPlant_Information: Treatment_ChemicalPlant_Information
+    Treatment_ChemicalPlant_Information: Treatment_ChemicalPlant_Information,
+    Pest_Injury_Threshold_Determination: Pest_Injury_Threshold_Determination
   }
 };
 export const Subtype_Data_Treatment_MechanicalPlantTerrestrial = {

@@ -241,9 +241,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 title="Check if there is a mix of herbicides in the tank">
                 <HelpOutlineIcon />
               </Tooltip>
-              <FormLabel className={classes.formLabel} component="legend">
+              <FormLabel className={classes.formLabel} style={{ marginTop: '25px' }} component="legend">
                 Tank Mix
               </FormLabel>
+
               <RadioGroup
                 onChange={() => {
                   setTankMixOn((prevState) => !prevState);

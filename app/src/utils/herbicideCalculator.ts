@@ -55,7 +55,11 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
         }
       }
       //single herb multiple (>2) inv plants
-      else if (herbicides.length < 2 && invasive_plants.length >= 2) {
+      else if (herbicides.length < 2 && invasive_plants.length > 1) {
+        const percentages_of_treatment_on_species = [];
+        invasive_plants.forEach((plant) => {
+          percentages_of_treatment_on_species.push(plant.percent_area_covered);
+        });
         if (herbicides[0].herbicide_type_code === 'L') {
           if (herbicides[0].calculation_type === 'PAR') {
             const percentages_of_treatment_on_species = [];
@@ -70,17 +74,7 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
               herbicides[0].delivery_rate_of_mix,
               percentages_of_treatment_on_species
             );
-          }
-        }
-      }
-      //single herb multiple inv plants
-      else if (herbicides.length < 2 && invasive_plants.length > 1) {
-        const percentages_of_treatment_on_species = [];
-        invasive_plants.forEach((plant) => {
-          percentages_of_treatment_on_species.push(plant.percent_area_covered);
-        });
-        if (herbicides[0].herbicide_type_code === 'L') {
-          if (herbicides[0].calculation_type === 'D') {
+          } else if (herbicides[0].calculation_type === 'D') {
             calculationResults = mSpecie_sLHerb_spray_usingDilutionPercent(
               area,
               herbicides[0].amount_of_mix,

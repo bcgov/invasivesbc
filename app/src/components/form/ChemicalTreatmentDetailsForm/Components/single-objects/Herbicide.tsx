@@ -34,24 +34,23 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
     insideTankMix ? formDetails.formData.tank_mix_object.herbicides[index] : formDetails.formData.herbicides[index]
   );
 
-  const [herbicideTypeChoices, setHerbicideTypeChoices] = useState<any[]>(
+  const herbicideTypeChoices =
     chemicalApplicationMethodType === 'spray'
       ? businessCodes['herbicide_type_code']
       : chemicalApplicationMethodType === 'direct'
       ? businessCodes['herbicide_type_code'].filter((herb) => {
           return herb.value === 'L';
         })
-      : []
-  );
-  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
+      : [];
+  const calculationTypeChoices =
     chemicalApplicationMethodType === 'spray'
       ? businessCodes['calculation_type_code']
       : chemicalApplicationMethodType === 'direct'
-      ? businessCodes['calculation_type_code'].filter((herb) => {
-          return herb.value === 'D';
+      ? businessCodes['calculation_type_code'].filter((calcType) => {
+          return calcType.value === 'D';
         })
-      : []
-  );
+      : [];
+
   const [herbicideChoices, setHerbicideChoices] = useState<any[]>(
     herbicide.herbicide_type_code === 'G'
       ? businessCodes.granular_herbicide_code

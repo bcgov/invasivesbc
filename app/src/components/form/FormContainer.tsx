@@ -65,6 +65,24 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   OnNavBack?: Function;
 }
 
+// interface warningFieldPaths {
+//   argVal: string;
+//   formDataPath: string;
+//   errSchemaPath: string;
+//   uiSchemaPath: string;
+// }
+
+// export const BlurWarningFields: { [key: string]: warningFieldPaths } = {
+//   ntz_reduction_terrestrial: {
+//     argVal: 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_',
+//     formDataPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction',
+//     errSchemaPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction.__errors.0',
+//     uiSchemaPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction.validateOnBlur'
+//   }
+// };
+
+// export const ChangeWarningFields: { [key: string]: warningFieldPaths } = {};
+
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
   const [formData, setformData] = useState(props.activity?.formData);
@@ -132,8 +150,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
     let argumentFieldName = '';
-    if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
-      argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';
+    if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_')) {
+      argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_';
     } else if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_')) {
       argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_';
     } else if (
@@ -436,6 +454,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           <FormControlsComponent
             onSubmit={() => {
               //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
+
+              console.log(formRef.current.state.formData);
               (formRef.current as any).formElement.dispatchEvent(
                 new CustomEvent('submit', {
                   cancelable: true,

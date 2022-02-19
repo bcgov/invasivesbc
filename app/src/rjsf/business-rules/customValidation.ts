@@ -809,3 +809,33 @@ export function getTreatedAreaValidator(): rjsfValidator {
     return errors;
   };
 }
+
+/*
+  Function to validate NTZ reduction
+*/
+// export function getNtzReductionValidator(): rjsfValidator {
+//   return (formData: any, errors: FormValidation): FormValidation => {
+//     if (
+//       !formData.activity_subtype_data ||
+//       !formData.activity_subtype_data.Treatment_ChemicalPlant_Information ||
+//       formData.activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction === undefined
+//     ) {
+//       return errors;
+//     }
+
+//     const { ntz_reduction } = formData.activity_subtype_data.Treatment_ChemicalPlant_Information;
+
+//     if (ntz_reduction === true) {
+//       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['ntz_reduction'].addError(
+//         'Are you sure? Only the PMP or permit holder may approve an NTZ reduction on public lands'
+//       );
+//     }
+//     //if user clicked proceed in the warning dialog, remove the erro
+//     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('ntz_reduction')) {
+//       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['ntz_reduction'].__errors.pop();
+//       return errors;
+//     }
+
+//     return errors;
+//   };
+// }

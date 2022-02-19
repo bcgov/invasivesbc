@@ -770,6 +770,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
   const getJurSuggestions = async () => {
+    console.log('hello?');
     if (geometry[0]) {
       const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
       setSuggestedJurisdictions(res.rows);
