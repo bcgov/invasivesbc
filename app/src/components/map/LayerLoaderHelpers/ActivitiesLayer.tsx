@@ -1,5 +1,6 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
@@ -8,8 +9,8 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const ActivitiesLayer = (props) => {
   const map = useMap();
-  const mapRecordsContext = useContext(MapRecordsContext);
-  const { setRecords } = mapRecordsContext;
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setCurrentRecords } = mapRequestContext;
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
   const databaseContext = useContext(DatabaseContext);
@@ -31,16 +32,11 @@ export const ActivitiesLayer = (props) => {
   useMapEvents({
     moveend: () => {
       fetchData();
-    },
-    zoomend: () => {
-      fetchData();
-    },
-    dragend: () => {
-      fetchData();
     }
   });
 
   useEffect(() => {
+    console.log('fetching');
     fetchData();
   }, []);
 
@@ -49,11 +45,12 @@ export const ActivitiesLayer = (props) => {
       const actArr = activities.features.map((feature) => {
         return feature.properties;
       });
-      setRecords(actArr);
+      setCurrentRecords(actArr);
     }
   }, [activities]);
 
   const fetchData = async () => {
+    console.log('fetching');
     const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
     const activitiesFeatureArray = [];
     activitiesData?.rows.forEach((row) => {

@@ -1,16 +1,23 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { DomEvent } from 'leaflet';
-import { makeStyles, Theme, Button } from '@material-ui/core';
+import { Theme, Button } from '@mui/material';
+
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
+import makeStyles from '@mui/styles/makeStyles';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainDiv: {
     transition: 'transform 200ms ease',
     padding: 0,
     height: '40vh',
-    maxWidth: '500px',
+    [theme.breakpoints.down('md')]: {
+      height: '500px',
+      maxWidth: '100vw'
+    },
+    maxWidth: '700px',
     width: '100%'
   },
   dataGrid: {
@@ -24,14 +31,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     left: '50%',
     transform: 'translateX(-50%)',
     borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    backgroundColor: theme.palette.background.default
+    borderBottomRightRadius: 0
   }
 }));
 
 const MapRecordsDataGrid = (props) => {
-  const mapRecordsContext = useContext(MapRecordsContext);
-  const { records } = mapRecordsContext;
+  const mapRequestContext = useContext(MapRequestContext);
+  const { currentRecords } = mapRequestContext;
   const classes = useStyles();
   const mainDivRef = useRef(null);
   const [dataGridExpanded, setDataGridExpanded] = useState(false);
@@ -78,6 +84,7 @@ const MapRecordsDataGrid = (props) => {
       <Button
         onClick={toggleExpand}
         className={'leaflet-control ' + classes.expandGridToggleBTN}
+        color={'secondary'}
         style={{ margin: '0 auto', marginBottom: 0 }}
         variant="contained"
         endIcon={
@@ -93,7 +100,7 @@ const MapRecordsDataGrid = (props) => {
 
       <DataGrid
         className={classes.dataGrid + ' leaflet-control'}
-        rows={records}
+        rows={currentRecords}
         columns={columns}
         pageSize={10}
         rowsPerPageOptions={[10]}
