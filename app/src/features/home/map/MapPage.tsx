@@ -193,9 +193,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
                     pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                     geometryState={{ geometry, setGeometry }}
                     interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                    extentState={{ extent, setExtent }}
-                    contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-                  >
+                    extentState={{ extent, setExtent }}>
                     <MapUrlListener />
                   </MapContainer>
                 ) : (

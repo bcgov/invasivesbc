@@ -139,7 +139,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     jsonb_build_object (
       'type', 'Feature',
       'properties', json_build_object(
-        'id', activity_id,
+        'id', a.activity_id,
         'type', activity_type,
         'subtype', activity_subtype,
         'created', created_timestamp,
@@ -217,7 +217,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   }
 
   if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
-    sqlStatement.append(SQL` AND activity_id IN (`);
+    sqlStatement.append(SQL` AND a.activity_id IN (`);
     sqlStatement.append(SQL`${searchCriteria.activity_ids[0]}`);
     for (let idx = 1; idx < searchCriteria.activity_ids.length; idx++) {
       sqlStatement.append(SQL`, ${searchCriteria.activity_ids[idx]}`);

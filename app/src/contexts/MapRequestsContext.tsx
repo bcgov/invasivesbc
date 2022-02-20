@@ -15,6 +15,8 @@ interface IMapExtentLayersContext {
   setLayersActions: React.Dispatch<React.SetStateAction<any>>;
   mapZoom: number;
   setMapZoom: React.Dispatch<React.SetStateAction<number>>;
+  currentRecords: any[];
+  setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface IParentLayer {
@@ -61,7 +63,9 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   layersActions: [],
   setLayersActions: () => {},
   mapZoom: 5,
-  setMapZoom: () => {}
+  setMapZoom: () => {},
+  currentRecords: [],
+  setCurrentRecords: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
@@ -70,6 +74,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
+  const [currentRecords, setCurrentRecords] = React.useState<any>(null);
 
   React.useEffect(() => {
     if (layers) {
@@ -89,7 +94,9 @@ export const MapRequestContextProvider: React.FC = (props) => {
         layersActions,
         setLayersActions,
         mapZoom,
-        setMapZoom
+        setMapZoom,
+        currentRecords,
+        setCurrentRecords
       }}>
       {props.children}
     </MapRequestContext.Provider>
