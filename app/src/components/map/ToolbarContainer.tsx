@@ -38,7 +38,7 @@ export const ToolbarContainer = (props) => {
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', padding: 10, gap: 10 }}>
           <LayerPicker inputGeo={props.inputGeo} />
           <SetPointOnClick map={props.map} />
-          <DisplayPosition map={props.map} />
+          {/* <DisplayPosition map={props.map} /> */}
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}

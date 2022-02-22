@@ -86,18 +86,21 @@ export const MapRequestContextProvider: React.FC = (props) => {
 
   return (
     <MapRequestContext.Provider
-      value={{
-        mapRequest,
-        setMapRequest,
-        layers,
-        setLayers,
-        layersActions,
-        setLayersActions,
-        mapZoom,
-        setMapZoom,
-        currentRecords,
-        setCurrentRecords
-      }}>
+      value={React.useMemo(
+        () => ({
+          mapRequest,
+          setMapRequest,
+          layers,
+          setLayers,
+          layersActions,
+          setLayersActions,
+          mapZoom,
+          setMapZoom,
+          currentRecords,
+          setCurrentRecords
+        }),
+        [layers, layersActions, mapZoom, currentRecords, mapRequest]
+      )}>
       {props.children}
     </MapRequestContext.Provider>
   );

@@ -1,16 +1,16 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
+import MapRecordsDataGrid from '../MapRecordsDataGrid';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const ActivitiesLayer = (props) => {
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
-  const { setCurrentRecords } = mapRequestContext;
+  const { setCurrentRecords, layers } = mapRequestContext;
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
   const databaseContext = useContext(DatabaseContext);
@@ -29,16 +29,20 @@ export const ActivitiesLayer = (props) => {
     }
   };
 
+  const fetchData = useCallback(async () => {
+    const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
+    const activitiesFeatureArray = [];
+    activitiesData?.rows.forEach((row) => {
+      activitiesFeatureArray.push(row.geojson ? row.geojson : row);
+    });
+    setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
+  }, [dataAccess, mapBounds, databaseContext]);
+
   useMapEvents({
     moveend: () => {
       fetchData();
     }
   });
-
-  useEffect(() => {
-    console.log('fetching');
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (activities) {
@@ -47,17 +51,7 @@ export const ActivitiesLayer = (props) => {
       });
       setCurrentRecords(actArr);
     }
-  }, [activities]);
-
-  const fetchData = async () => {
-    console.log('fetching');
-    const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
-    const activitiesFeatureArray = [];
-    activitiesData?.rows.forEach((row) => {
-      activitiesFeatureArray.push(row.geojson ? row.geojson : row);
-    });
-    setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
-  };
+  }, [activities, setCurrentRecords]);
 
   return (
     <>
