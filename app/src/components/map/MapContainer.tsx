@@ -293,7 +293,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           bounceAtZoomLimits={true}
           maxZoom={mapMaxZoom}
           minZoom={6}
-          style={{ height: 'calc(100% - 20px)', width: '100%' }}
+          style={{ height: 'calc(100% - 30px)', width: '100%' }}
           zoomControl={false}
           whenCreated={setMap}
           preferCanvas={true}
