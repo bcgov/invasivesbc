@@ -29,6 +29,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -173,6 +174,17 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const navToAdmin = async () => {
     // Redirect to /admin
     history.push('/admin');
+    handleClose();
+  };
+
+  const navToUpdateRequest = async () => {
+    // Redirect to /access-request
+    history.push({
+      pathname: '/home/access-request',
+      state: {
+        updateInfo: true
+      }
+    });
     handleClose();
   };
 
@@ -433,6 +445,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     />
                     Theme
                   </MenuItem>
+                  {isAuthorized() && (
+                    <MenuItem onClick={navToUpdateRequest}>
+                      <ListItemIcon>
+                        <AssignmentIndIcon />
+                      </ListItemIcon>
+                      Update My Info
+                    </MenuItem>
+                  )}
                   {isAdmin() && (
                     <MenuItem onClick={navToAdmin}>
                       <ListItemIcon>
