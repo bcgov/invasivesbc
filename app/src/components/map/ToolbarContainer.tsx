@@ -94,7 +94,7 @@ export const ToolbarContainer = (props) => {
         ref={divRef}
         key={'toolbar2'}
         className={classes.innerToolBarContainer + ' leaflet-control'}
-        style={{ transform: expanded ? 'translateX(0)' : 'translateX(110%)' }}>
+        style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
         <LayerPicker inputGeo={props.inputGeo} />
         <Divider />
         <SetPointOnClick map={props.map} />

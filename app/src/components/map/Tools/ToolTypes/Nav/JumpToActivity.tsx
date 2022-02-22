@@ -1,9 +1,8 @@
 import { Capacitor } from '@capacitor/core';
-import { IconButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
