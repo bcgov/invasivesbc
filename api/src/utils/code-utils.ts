@@ -28,10 +28,10 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
   // Fetch user info from params
   if (user) {
     if (user.pac_service_number_1) {
-      pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+/, ''));
+      pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+(\d)/, ''));
     }
     if (user.pac_service_number_2) {
-      pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+/, ''));
+      pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+(\d)/, ''));
     }
     if (user.employer) {
       employers.push(user.employer);
@@ -89,13 +89,20 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
         return employers.includes(employerCode.code_name);
       });
       // From responses[4].rows, filter out any agency codes that are not in the user's list of agencies
+      // If they are a gov user, the only agency that should be available is 000000
       const filteredAgencyCodes = responses[4].rows.filter((agencyCode: any) => {
         return agencies.includes(agencyCode.code_name);
       });
+
       // From responses[5].rows, filter out any psn codes that are not in the user's list of psn numbers
       const filteredPSNCodes = responses[5].rows.filter((psnCode: any) => {
         return pesticideServiceNumbers.includes(psnCode.code_name);
       });
+
+      // If user.roles contains a role with a role that contains the name "bcgov", append 000000 to the filtered agency codes
+      if (user.roles && user.roles.some((role: any) => role.role_name.includes('bcgov'))) {
+        filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === '0'));
+      }
 
       const filteredCodes = responses[2].rows.filter((code: any) => {
         if (user) {
