@@ -18,7 +18,7 @@ export const NotFoundPage = () => {
   const history = useHistory();
 
   const navigateToHome = () => {
-    history.push('/home');
+    history.push('/home/landing');
   };
 
   return (
