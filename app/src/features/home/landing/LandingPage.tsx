@@ -317,18 +317,17 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                 'Create a local activity now',
                 '/home/activities'
               )}
+              {getCardData(
+                'Search',
+                'Cached Observations, Treatments and Monitorings',
+                'Need to view previously created and cached activity records?',
+                'Search cached activities now',
+                '/home/search'
+              )}
             </Grid>
           )}
 
           <Grid className={classes.cardListItemGrid}>
-            {getCardData(
-              'Search',
-              'Cached Observations, Treatments and Monitorings',
-              'Need to view previously created and cached activity records?',
-              'Search cached activities now',
-              '/home/search'
-            )}
-
             {getCardData(
               'View Fetched Records on Map',
               'IAPP Sites, Activities on Main Map',
@@ -336,9 +335,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
               'View the main map now',
               '/home/map'
             )}
-          </Grid>
-
-          <Grid className={classes.cardListItemGrid}>
             {getCardData(
               'Continue Creating an Activity',
               'Pause and Resume Activity Creation',
