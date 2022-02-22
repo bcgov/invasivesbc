@@ -167,13 +167,13 @@ const useToolbarStyles = makeStyles((theme: Theme) => ({
     whiteSpace: 'nowrap'
   },
   toolbar: {
-    justifyContent: 'space-between'
+    justifyContent: 'start'
   },
   button: {
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 20,
-    marginBottom: 20,
+    marginLeft: 5,
+    marginRight: 5,
+    marginTop: 10,
+    marginBottom: 10,
     whiteSpace: 'nowrap',
     minWidth: 'max-content'
   }
