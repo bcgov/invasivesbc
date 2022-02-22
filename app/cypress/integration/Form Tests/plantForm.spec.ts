@@ -61,6 +61,9 @@ describe('CREATING A NEW RECORD', function () {
   let utmZone;
   let utmEasting;
   let utmNorthing;
+  // Input Dates
+  const collectedDate = dateFormatter(new Date(faker.date.recent()));
+  const verifiedDate = dateFormatter(new Date(faker.date.between('2021-01-01', '2022-02-02')));
 
   before(() => {
     cy.visit('http://localhost:3000');
@@ -87,7 +90,9 @@ describe('CREATING A NEW RECORD', function () {
     //   ':nth-child(9) > :nth-child(2) > #custom-multi-select > .MuiFormControl-root > .css-oyful7-container > .css-165m9mz-control > .css-2y7ope-ValueContainer'
     // ).type('center');
     // Access Description
-    cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription);
+    cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').trigger('click');
+    cy.wait(200);
+    cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription, { force: true });
     cy.get('.MuiOutlinedInput-root > #root_activity_data_location_description').type(locationDescription);
   });
   it('It can get the UTM values and save them', function () {
@@ -180,9 +185,6 @@ describe('CREATING A NEW RECORD', function () {
     }
   });
   if (voucherPresent === 'Yes') {
-    // Input Dates
-    const collectedDate = dateFormatter(new Date(faker.date.recent()));
-    const verifiedDate = dateFormatter(new Date(faker.date.between('2021-01-01', '2022-02-02')));
     it('Voucher Specimen Collection', function () {
       // Voucher Sample ID
       cy.get(
@@ -229,8 +231,13 @@ describe('CREATING A NEW RECORD', function () {
   it('It can get the activity from the database', function () {
     cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click('center');
     cy.get('.MuiAlert-action > .MuiButtonBase-root > [data-testid=CloseIcon]').click('center');
-    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(2) > .MuiButton-root').click('center');
-    cy.get('.MuiDialogActions-root > :nth-child(2)').trigger('click', { force: true });
+    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click('center');
+    cy.get('[aria-label="Ready to submit, form is validated and has no issues."] > .MuiButton-root').trigger('click', {
+      force: true
+    });
+    cy.get('.MuiDialogActions-root > :nth-child(2)').trigger('click', {
+      force: true
+    });
     cy.task('DATABASE', {
       dbConfig: {
         user: 'invasivebc',
@@ -250,13 +257,12 @@ describe('CREATING A NEW RECORD', function () {
   it('It can verify the database values', function () {
     expect(myTestRow.access_description).to.eq(accessDescription);
     expect(myTestRow.location_description).to.eq(locationDescription);
-    // const jurSubstring = jurisdictionCode.substring(0, jurisdictionCode.indexOf('{'));
-    // expect(myTestRow.jurisdiction.substring(0, this.length - 5)).to.eq(jurSubstring);
+    // expect(myTestRow.jurisdiction.substring(0, jurisdictionCode.length - 7)).to.eq(
+    //   jurisdictionCode.substring(0, jurisdictionCode.length - 7)
+    // );
     expect(myTestRow.project_code).to.eq(description);
     expect(myTestRow.comment).to.eq(comment);
-    // expect(myTestRow.pre_treatment_observation.substring(0, preTreatmentObservation.length - 7).toLowerCase()).to.eq(
-    //   preTreatmentObservation.substring(0, soilTexture.length - 7)
-    // );
+    expect(myTestRow.pre_treatment_observation).to.eq(preTreatmentObservation);
     expect(myTestRow.observation_person.substring(0, observationPerson.length)).to.eq(observationPerson);
     expect(myTestRow.soil_texture.substring(0, soilTexture.length - 7).toLowerCase()).to.eq(
       soilTexture.substring(0, soilTexture.length - 7)
@@ -268,15 +274,12 @@ describe('CREATING A NEW RECORD', function () {
     expect(myTestRow.aspect.substring(0, aspect.length - 7).toLowerCase()).to.eq(
       aspect.substring(0, aspect.length - 7)
     );
-    // expect(myTestRow.research_observation.substring(0, researchObservation.length - 7))
-    // cant test visibleWellNearby
-    // cant test biocontrolAgents
+    expect(myTestRow.research_observation).to.eq(researchObservation);
+    expect(myTestRow.visible_well_nearby).to.eq(visibleWellNearby);
+    expect(myTestRow.suitable_for_biocontrol_agent).to.eq(suitableForBiocontrolAgents);
     expect(myTestRow.invasive_plant.substring(0, invasivePlant.length - 7).toLowerCase()).to.eq(
       invasivePlant.substring(0, invasivePlant.length - 7)
     );
-    // expect(myTestRow.occurance.substring(0, observationType.length - 7).toLowerCase()).to.eq(
-    //   observationType.substring(0, observationType.length - 7)
-    // );
     if (observationType === 'positive{enter}') {
       expect(myTestRow.density.substring(0, densityCode.length - 7).toLowerCase()).to.eq(
         densityCode.substring(0, densityCode.length - 7)
