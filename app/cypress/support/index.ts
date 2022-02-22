@@ -79,7 +79,7 @@ export const slopeArray = [
   'strong slope 1{enter}',
   'very stee{enter}',
   'very strong{enter}',
-  'variable'
+  'variable{enter}'
 ];
 export const aspectArray = [
   'east{enter}',

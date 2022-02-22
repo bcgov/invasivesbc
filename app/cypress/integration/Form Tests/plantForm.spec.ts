@@ -20,7 +20,6 @@ import {
 const { faker } = require('@faker-js/faker');
 
 describe('CREATING A NEW RECORD', function () {
-  let myTestId;
   let myTestRow;
   // INPUT VARIABLES
   // - Basic Information
@@ -46,17 +45,19 @@ describe('CREATING A NEW RECORD', function () {
   // - Terrestrial Invasive Plants
   const invasivePlant = faker.random.arrayElement(invasivePlants);
   const observationType = faker.random.arrayElement(positiveNegative);
+  // const observationType = 'positive{enter}';
   const densityCode = faker.random.arrayElement(densityArray);
   const distribution = faker.random.arrayElement(distributionArray);
   const lifeStage = faker.random.arrayElement(lifeStageArray);
   const voucherPresent = observationType === 'negative{enter}' ? 'No' : faker.random.arrayElement(yesNo);
+  // const voucherPresent = 'Yes';
 
   // - Voucher
   const voucherName = faker.name.findName();
   const voucherSampleId = faker.random.number({ min: 1000, max: 9999 });
-  const herbarium = 'The Cool Herbarium';
-  const accessionNumber = faker.random.number({ min: 100000, max: 999999 });
   const companyName = faker.company.companyName();
+  const accessionNumber = faker.random.number({ min: 100000, max: 999999 });
+  const herbarium = 'The Cool Herbarium';
   let utmZone;
   let utmEasting;
   let utmNorthing;
@@ -89,14 +90,6 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription);
     cy.get('.MuiOutlinedInput-root > #root_activity_data_location_description').type(locationDescription);
   });
-  it('It can get the Activity ID', function () {
-    cy.get('.css-ai165o > :nth-child(1)')
-      .invoke('text')
-      .then(($var) => {
-        myTestId = $var.substring(13);
-        console.log('myTestId', myTestId);
-      });
-  });
   it('It can get the UTM values and save them', function () {
     cy.get('#root_activity_data_utm_zone')
       .invoke('val')
@@ -122,9 +115,9 @@ describe('CREATING A NEW RECORD', function () {
   });
   it('It inputs the project code and comment', function () {
     // Project Code Description
-    cy.get('#root_activity_data_project_code_0_description').type('Cool Code');
+    cy.get('#root_activity_data_project_code_0_description').type(description);
     // Comment
-    cy.get('#root_activity_data_general_comment').type('The plants are not cool here');
+    cy.get('#root_activity_data_general_comment').type(comment);
   });
   it('It inputs observation information', function () {
     // Pre-treatment Observation
@@ -233,10 +226,11 @@ describe('CREATING A NEW RECORD', function () {
       ).type(utmNorthing);
     });
   }
-  it('It can verify get the activity from the database', function () {
-    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(1)').click('center');
-    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
-    cy.wait(2000);
+  it('It can get the activity from the database', function () {
+    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click('center');
+    cy.get('.MuiAlert-action > .MuiButtonBase-root > [data-testid=CloseIcon]').click('center');
+    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(2) > .MuiButton-root').click('center');
+    cy.get('.MuiDialogActions-root > :nth-child(2)').trigger('click', { force: true });
     cy.task('DATABASE', {
       dbConfig: {
         user: 'invasivebc',
@@ -245,16 +239,68 @@ describe('CREATING A NEW RECORD', function () {
         password: 'postgres',
         port: 5432
       },
-      sql: `select * from invasivesbc.activity_incoming_data order by activity_incoming_data_id desc limit 1`
+      sql: `select * from invasivesbc.observation_terrestrial_plant_summary order by activity_incoming_data_id desc limit 1`
     }).then((result) => {
       (result as any).rows.map((row) => {
-        console.log('row', row);
+        myTestRow = row;
+        console.log(row);
       });
     });
   });
-
-  after(() => {
-    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click();
-    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click();
+  it('It can verify the database values', function () {
+    expect(myTestRow.access_description).to.eq(accessDescription);
+    expect(myTestRow.location_description).to.eq(locationDescription);
+    // const jurSubstring = jurisdictionCode.substring(0, jurisdictionCode.indexOf('{'));
+    // expect(myTestRow.jurisdiction.substring(0, this.length - 5)).to.eq(jurSubstring);
+    expect(myTestRow.project_code).to.eq(description);
+    expect(myTestRow.comment).to.eq(comment);
+    // expect(myTestRow.pre_treatment_observation.substring(0, preTreatmentObservation.length - 7).toLowerCase()).to.eq(
+    //   preTreatmentObservation.substring(0, soilTexture.length - 7)
+    // );
+    expect(myTestRow.observation_person.substring(0, observationPerson.length)).to.eq(observationPerson);
+    expect(myTestRow.soil_texture.substring(0, soilTexture.length - 7).toLowerCase()).to.eq(
+      soilTexture.substring(0, soilTexture.length - 7)
+    );
+    // expect(myTestRow.specific_use.substring(0, specificUse.length - 7).toLowerCase()).to.eq(
+    //   specificUse.substring(0, specificUse.length - 7)
+    // );
+    expect(myTestRow.slope.substring(0, slope.length - 7).toLowerCase()).to.eq(slope.substring(0, slope.length - 7));
+    expect(myTestRow.aspect.substring(0, aspect.length - 7).toLowerCase()).to.eq(
+      aspect.substring(0, aspect.length - 7)
+    );
+    // expect(myTestRow.research_observation.substring(0, researchObservation.length - 7))
+    // cant test visibleWellNearby
+    // cant test biocontrolAgents
+    expect(myTestRow.invasive_plant.substring(0, invasivePlant.length - 7).toLowerCase()).to.eq(
+      invasivePlant.substring(0, invasivePlant.length - 7)
+    );
+    // expect(myTestRow.occurance.substring(0, observationType.length - 7).toLowerCase()).to.eq(
+    //   observationType.substring(0, observationType.length - 7)
+    // );
+    if (observationType === 'positive{enter}') {
+      expect(myTestRow.density.substring(0, densityCode.length - 7).toLowerCase()).to.eq(
+        densityCode.substring(0, densityCode.length - 7)
+      );
+      expect(myTestRow.distribution.substring(0, distribution.length - 7).toLowerCase()).to.eq(
+        distribution.substring(0, distribution.length - 7)
+      );
+      expect(myTestRow.life_stage.substring(0, lifeStage.length - 7).toLowerCase()).to.eq(
+        lifeStage.substring(0, lifeStage.length - 7)
+      );
+      if (voucherPresent === 'Yes') {
+        expect(myTestRow.voucher_sample_id).to.eq(voucherSampleId.toString());
+        // expect(myTestRow.date_voucher_collected).to.equal(collect)
+        // skip dates
+        // herbarium name
+        expect(myTestRow.accession_number).to.eq(accessionNumber.toString());
+        expect(myTestRow.voucher_person_name).to.eq(voucherName);
+        expect(myTestRow.voucher_organization).to.eq(companyName);
+        expect(myTestRow.voucher_utm_zone).to.eq(utmZone);
+        expect(myTestRow.voucher_utm_easting).to.eq(utmEasting);
+        expect(myTestRow.voucher_utm_northing).to.eq(utmNorthing);
+      }
+    }
   });
+
+  after('It can verify the database values', () => {});
 });
