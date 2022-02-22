@@ -55,24 +55,73 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const history = useHistory();
   const networkContext = useContext(NetworkContext);
   const api = useInvasivesApi();
-  const { userInfo, userInfoLoaded, loginUser, keycloak } = useContext(AuthStateContext);
+  const { userInfo, userInfoLoaded, loginUser, keycloak, userRoles } = useContext(AuthStateContext);
+  const [accessRequested, setAccessRequested] = React.useState(false);
+
+  useEffect(() => {
+    hasRequestedAccess();
+  }, [keycloak?.obj?.authenticated]);
 
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
 
   const isAuthenticated = () => {
-    return userInfoLoaded;
+    return userInfoLoaded || keycloak.obj?.authenticated;
   };
 
   const requestAccess = async () => {
+    console.log('Is authenticated? ', isAuthenticated());
     if (!isAuthenticated()) {
       // log in user
+      console.log('Loggin in user...');
       await loginUser().then(() => {
         history.push('/home/access-request');
       });
     } else {
+      console.log('Redirecting...');
       history.push('/home/access-request');
+    }
+  };
+
+  const isUserActivated = () => {
+    if (!userInfoLoaded) {
+      return false;
+    }
+    return userInfo.activation_status === 1;
+  };
+
+  useEffect(() => {
+    console.log('user info: ', userInfo);
+    hasRequestedAccess();
+  }, [keycloak?.obj?.authenticated, userInfoLoaded]);
+
+  const hasRequestedAccess = async () => {
+    // If no user is logged in, return false
+    if (!keycloak?.obj?.authenticated) {
+      console.log('User not authetnicated');
+      setAccessRequested(false);
+      return;
+    }
+    if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
+      console.log("Fetching user's access request...");
+      // If user is logged in, check if they have requested access
+      const accessRequest = await api.getAccessRequestData({
+        username: userInfo.preferred_username
+      });
+      if (accessRequest) {
+        console.log('Access request found: ', accessRequest);
+      }
+      if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
+        console.log("User hasn't requested access");
+        setAccessRequested(false);
+        return;
+      }
+      if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
+        console.log('User has requested access');
+        setAccessRequested(true);
+        return;
+      }
     }
   };
 
@@ -114,57 +163,106 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
       {userInfoLoaded && (
-        <Box mt={2}>
-          <Typography variant="h5">User Information</Typography>
-          <br />
-          <Grid className={classes.userInfoItemGrid} container spacing={2}>
-            {userInfo.displayName && (
-              <Grid item md={2}>
+        <>
+          <Box mt={2}>
+            <Typography variant="h5">User Information</Typography>
+            <br />
+            <Grid className={classes.userInfoItemGrid} container spacing={2}>
+              {userInfo.first_name && userInfo.last_name && (
+                <Grid item md={3}>
+                  <Box overflow="hidden" textOverflow="ellipsis">
+                    <Typography>
+                      <strong>Name</strong>
+                    </Typography>
+                    {userInfo?.first_name + ' ' + userInfo.last_name}
+                  </Box>
+                </Grid>
+              )}
+              <Divider flexItem={true} orientation="vertical" />
+              <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
-                  <Typography>Name</Typography>
-                  {userInfo?.displayName}
+                  <Typography>
+                    <strong>Email</strong>
+                  </Typography>
+                  {userInfo?.email}
                 </Box>
               </Grid>
-            )}
-            <Divider flexItem={true} orientation="vertical" />
-            <Grid item md={2}>
-              <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Email</Typography>
-                {userInfo?.email}
-              </Box>
+              <Divider flexItem={true} orientation="vertical" />
+              <Grid item md={3}>
+                <Box overflow="hidden" textOverflow="ellipsis">
+                  <Typography>
+                    <strong>Username</strong>
+                  </Typography>
+                  {userInfo?.preferred_username}
+                </Box>
+              </Grid>
             </Grid>
-            <Divider flexItem={true} orientation="vertical" />
-            <Grid item md={2}>
-              <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Username</Typography>
-                {userInfo?.preferred_username}
-              </Box>
+          </Box>
+          <Box mt={6}>
+            <Grid className={classes.userInfoItemGrid} container spacing={2}>
+              <Grid item md={3}>
+                <Box overflow="hidden" textOverflow="ellipsis">
+                  <Typography>
+                    <strong>Activation Status</strong>
+                  </Typography>
+                  {isUserActivated() ? 'Activated' : 'Not Activated'}
+                </Box>
+              </Grid>
+              <Divider flexItem={true} orientation="vertical" />
+              <Grid item md={3}>
+                <Box overflow="hidden" textOverflow="ellipsis">
+                  <Typography>
+                    <strong>Access Requested</strong>
+                  </Typography>
+                  {accessRequested ? 'Yes' : 'No'}
+                </Box>
+              </Grid>
+              <Divider flexItem={true} orientation="vertical" />
+              {userRoles.length > 0 && (
+                <Grid item md={3}>
+                  <Box overflow="hidden" textOverflow="ellipsis">
+                    <Typography>
+                      <strong>Roles</strong>
+                    </Typography>
+                    {userRoles.map((role: any) => {
+                      return <span key={role.role_id}>{role.role_description + '\n'}</span>;
+                    })}
+                  </Box>
+                </Grid>
+              )}
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+          <Box mt={6}></Box>
+        </>
       )}
       {!userInfoLoaded && keycloak?.obj?.authenticated && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
           <br />
           <Grid className={classes.userInfoItemGrid} container spacing={2}>
-            <Grid item md={2}>
+            <Grid item md={3}>
               <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Name</Typography>
+                <Typography>
+                  <strong>Name</strong>
+                </Typography>
                 {keycloak?.obj?.tokenParsed?.name}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
-            <Grid item md={2}>
+            <Grid item md={3}>
               <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Email</Typography>
+                <Typography>
+                  <strong>Email</strong>
+                </Typography>
                 {keycloak?.obj?.tokenParsed?.email}
               </Box>
             </Grid>
             <Divider flexItem={true} orientation="vertical" />
-            <Grid item md={2}>
+            <Grid item md={3}>
               <Box overflow="hidden" textOverflow="ellipsis">
-                <Typography>Username</Typography>
+                <Typography>
+                  <strong>Username</strong>
+                </Typography>
                 {keycloak?.obj?.tokenParsed?.preferred_username}
               </Box>
             </Grid>
@@ -179,79 +277,78 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       )}
       {networkContext.connected && (
         <>
-          {localStorage.getItem('accessRequested') !== 'true' ? (
+          {!accessRequested ? (
             <Box mt={2}>
               <Button variant="outlined" color="primary" onClick={requestAccess}>
                 Request Access
               </Button>
             </Box>
           ) : (
-            <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
+            !isUserActivated() &&
+            accessRequested && (
+              <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
+            )
           )}
         </>
       )}
-      {/*
-      <Box mt={4}>
-        <Typography variant="h5">What Would You Like To Do?</Typography>
-        <br />
-      </Box>
 
-      <Grid className={classes.cardListItemGrid}>
-        {getCardData(
-          'Plan a Trip/Fetch Cached Records',
-          'Points of Interest, Past Activity Records, Layers',
-          `Heading out into the field and wish to gather information regarding your
+      {userInfoLoaded && isUserActivated() && (
+        <>
+          <Box mt={12}>
+            <Typography variant="h5">What Would You Like To Do?</Typography>
+            <br />
+          </Box>
+
+          {isMobile() && (
+            <Grid className={classes.cardListItemGrid}>
+              {getCardData(
+                'Plan a Trip/Fetch Cached Records',
+                'Points of Interest, Past Activity Records, Layers',
+                `Heading out into the field and wish to gather information regarding your
            trip before going offline?`,
-          'Plan your trip now',
-          '/home/plan'
-        )}
+                'Plan your trip now',
+                '/home/plan'
+              )}
 
-        {getCardData(
-          'Create a Local Activity',
-          'Observations, Transects, Biological Dispersals',
-          'In the field and wish to record an observation record or create a transect?',
-          'Create a local activity now',
-          '/home/activities'
-        )}
-      </Grid>
+              {getCardData(
+                'Create a Local Activity',
+                'Observations, Transects, Biological Dispersals',
+                'In the field and wish to record an observation record or create a transect?',
+                'Create a local activity now',
+                '/home/activities'
+              )}
+            </Grid>
+          )}
 
-      <Grid className={classes.cardListItemGrid}>
-        {getCardData(
-          'Search',
-          'Cached Observations, Treatments and Monitorings',
-          'Need to view previously created and cached activity records?',
-          'Search cached activities now',
-          '/home/search'
-        )}
+          <Grid className={classes.cardListItemGrid}>
+            {getCardData(
+              'Search',
+              'Cached Observations, Treatments and Monitorings',
+              'Need to view previously created and cached activity records?',
+              'Search cached activities now',
+              '/home/search'
+            )}
 
-        {getCardData(
-          'Create Treatments and Monitorings',
-          'Treatments and Monitorings from Cached Activities',
-          `Need to create a treatment based off existing observation records,
-           or create a monitoring for an existing treatment?`,
-          'Create a treatment or monitoring now',
-          '/home/references'
-        )}
-      </Grid>
+            {getCardData(
+              'View Fetched Records on Map',
+              'IAPP Sites, Activities on Main Map',
+              'Want to see all the data you have fetched on a single map?',
+              'View the main map now',
+              '/home/map'
+            )}
+          </Grid>
 
-      <Grid className={classes.cardListItemGrid}>
-        {getCardData(
-          'View Fetched Records on Map',
-          'IAPP Sites, Activities on Main Map',
-          'Want to see all the data you have fetched on a single map?',
-          'View the main map now',
-          '/home/map'
-        )}
-
-        {getCardData(
-          'Continue Creating an Activity',
-          'Pause and Resume Activity Creation',
-          'Had to take a break and come back to creating an activity?',
-          'Resume current activity creation now',
-          '/home/activity'
-        )}
-      </Grid>
-        */}
+          <Grid className={classes.cardListItemGrid}>
+            {getCardData(
+              'Continue Creating an Activity',
+              'Pause and Resume Activity Creation',
+              'Had to take a break and come back to creating an activity?',
+              'Resume current activity creation now',
+              '/home/activity'
+            )}
+          </Grid>
+        </>
+      )}
     </Container>
   );
 };
