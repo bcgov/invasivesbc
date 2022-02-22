@@ -233,6 +233,16 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     return <Chip label={params.row.status} classes={{ root: style }} />;
   };
 
+  const renderType = (params: GridValueGetterParams) => {
+    let style = classes.gray;
+    if (params.row.requestType === 'ACCESS') {
+      style = classes.success;
+    } else if (params.row.requestType === 'UPDATE') {
+      style = classes.info;
+    }
+    return <Chip label={params.row.requestType} classes={{ root: style }} />;
+  };
+
   const handleRowClick = (param, event) => {
     event.stopPropagation();
   };
@@ -306,6 +316,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     for (let i = 0; i < requests.length; i++) {
       rows.push({
         id: requests[i].access_request_id,
+        requestType: requests[i].request_type || 'ACCESS',
         firstName: requests[i].first_name,
         lastName: requests[i].last_name,
         email: requests[i].primary_email,
@@ -325,6 +336,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         dateRequested: new Date(requests[i].created_at).toLocaleString()
       });
     }
+    console.log('ROWS: ', rows);
     setRequestRows(rows);
   };
 
@@ -369,12 +381,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const requestColumns: GridColDef[] = [
     //1185 max width
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'firstName', headerName: 'First Name', width: 150 },
-    { field: 'lastName', headerName: 'Last Name', width: 150 },
+    { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'requestType', headerName: 'Type', width: 100, renderCell: renderType },
+    { field: 'firstName', headerName: 'First Name', width: 120 },
+    { field: 'lastName', headerName: 'Last Name', width: 120 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'dateRequested', headerName: 'Date Requested', width: 200 },
-    { field: 'pacNumber', headerName: 'PAC Number', width: 158 },
+    { field: 'pacNumber', headerName: 'PAC Number', width: 120 },
     { field: 'status', headerName: 'Status', width: 159, renderCell: renderStatus },
     {
       field: 'actions',
@@ -568,6 +581,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const approveUsers = () => {
+    // TODO: Handle multiple types of requests
     api.approveAccessRequests(selectedRequestUsers).then(() => {
       closeApproveDeclineDialog();
       loadUsers();
@@ -575,10 +589,17 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const declineUser = () => {
-    api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
-      closeApproveDeclineDialog();
-      loadUsers();
-    });
+    if (selectedRequestUsers[0].request_type === 'UPDATE') {
+      api.declineUpdateRequest(selectedRequestUsers[0]).then(() => {
+        closeApproveDeclineDialog();
+        loadUsers();
+      });
+    } else {
+      api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
+        closeApproveDeclineDialog();
+        loadUsers();
+      });
+    }
   };
 
   const renewUser = () => {
@@ -670,7 +691,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
-            Approve or Decline Access Requests
+            Approve or Decline Requests
           </Typography>
         </Grid>
         {/* Approve or decline checked users */}
