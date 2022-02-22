@@ -71,7 +71,6 @@ export async function getUserByIDIR(idir) {
 }
 
 export async function getRolesForUser(userId) {
-  console.log('getRolesForUser Triggered. userId: ', userId);
   const connection = await getDBConnection();
   if (!connection) {
     throw {

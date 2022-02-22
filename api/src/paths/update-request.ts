@@ -184,9 +184,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
   try {
     const requests = approvedUpdateRequests;
     // for each request, approve it
-    console.log('Attempting to approve requests...', requests);
     for (const request of requests) {
-      console.log('Attempting to approve request...', request);
       // Create user record
       const sqlStatement: SQLStatement = approveUpdateRequestsSQL(request);
       if (!sqlStatement) {

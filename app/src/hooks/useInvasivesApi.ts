@@ -256,36 +256,29 @@ export const useInvasivesApi = () => {
     let id = '';
 
     if (userInfo.idir_userid) {
-      console.log('userInfo.idir_userid', userInfo.idir_userid);
       type = 'idir';
       id = userInfo.idir_userid;
     }
     if (userInfo.bceid_userid) {
-      console.log('userInfo.bceid_userid', userInfo.bceid_userid);
       type = 'bceid';
       id = userInfo.bceid_userid;
     }
-    console.log('DATA: ', userInfo, bearer);
-    console.log('Request: ', type, id, userInfo.preferred_username, userInfo.email);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/create-user`,
       data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
     });
-    console.log('DATA RETURNED: ', data);
     return data;
   };
 
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
-    console.log('Access request: ', accessRequest);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
-    console.log('Data returned: ', data);
     return data;
   };
 

@@ -336,7 +336,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         dateRequested: new Date(requests[i].created_at).toLocaleString()
       });
     }
-    console.log('ROWS: ', rows);
     setRequestRows(rows);
   };
 

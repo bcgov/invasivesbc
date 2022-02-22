@@ -107,7 +107,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
-    console.log('Response: ', response);
   };
 
   const submitUpdateRequest = async () => {
@@ -131,7 +130,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     };
     const response = await api.submitUpdateRequest(updateRequest);
     setSubmitted(true);
-    console.log('Response: ', response);
   };
 
   const declineAccess = async () => {
@@ -155,7 +153,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
-    console.log('Response: ', response);
   };
 
   if (props?.location?.state?.updateInfo && props?.location?.state?.updateInfo === true) {
@@ -167,7 +164,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
-    console.log('KEYCLOAK OBJ: ', authState.keycloak?.obj);
     if (userInfo !== undefined) {
       if (userInfo?.idir_account_name) {
         setAccountType('IDIR');

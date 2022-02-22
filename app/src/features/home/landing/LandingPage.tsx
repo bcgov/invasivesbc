@@ -71,15 +71,12 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   const requestAccess = async () => {
-    console.log('Is authenticated? ', isAuthenticated());
     if (!isAuthenticated()) {
       // log in user
-      console.log('Loggin in user...');
       await loginUser().then(() => {
         history.push('/home/access-request');
       });
     } else {
-      console.log('Redirecting...');
       history.push('/home/access-request');
     }
   };
@@ -92,33 +89,27 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
-    console.log('user info: ', userInfo);
     hasRequestedAccess();
   }, [keycloak?.obj?.authenticated, userInfoLoaded]);
 
   const hasRequestedAccess = async () => {
     // If no user is logged in, return false
     if (!keycloak?.obj?.authenticated) {
-      console.log('User not authetnicated');
       setAccessRequested(false);
       return;
     }
     if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
-      console.log("Fetching user's access request...");
       // If user is logged in, check if they have requested access
       const accessRequest = await api.getAccessRequestData({
         username: userInfo.preferred_username
       });
       if (accessRequest) {
-        console.log('Access request found: ', accessRequest);
       }
       if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
-        console.log("User hasn't requested access");
         setAccessRequested(false);
         return;
       }
       if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
-        console.log('User has requested access');
         setAccessRequested(true);
         return;
       }
