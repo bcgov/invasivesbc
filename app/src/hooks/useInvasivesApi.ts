@@ -256,29 +256,36 @@ export const useInvasivesApi = () => {
     let id = '';
 
     if (userInfo.idir_userid) {
+      console.log('userInfo.idir_userid', userInfo.idir_userid);
       type = 'idir';
       id = userInfo.idir_userid;
     }
     if (userInfo.bceid_userid) {
+      console.log('userInfo.bceid_userid', userInfo.bceid_userid);
       type = 'bceid';
       id = userInfo.bceid_userid;
     }
+    console.log('DATA: ', userInfo, bearer);
+    console.log('Request: ', type, id, userInfo.preferred_username, userInfo.email);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/create-user`,
       data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
     });
+    console.log('DATA RETURNED: ', data);
     return data;
   };
 
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
+    console.log('Access request: ', accessRequest);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
+    console.log('Data returned: ', data);
     return data;
   };
 
@@ -357,6 +364,44 @@ export const useInvasivesApi = () => {
     });
 
     return data;
+  };
+
+  const submitUpdateRequest = async (updateRequest: any): Promise<any> => {
+    const data = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/update-request`,
+      data: { newUpdateRequest: updateRequest }
+    });
+    return data;
+  };
+
+  const getUpdateRequests = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/update-request/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+    return data;
+  };
+
+  const declineUpdateRequest = async (updateRequest) => {
+    const { data } = await Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/update-request`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: { declinedUpdateRequest: updateRequest }
+    });
+    return data;
+  };
+
+  const approveUpdateRequests = async (updateRequest) => {
+    const { data } = await Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/update-request`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: { approvedUpdateRequests: updateRequest }
+    });
   };
 
   const getFundingAgencies = async (): Promise<any> => {
@@ -931,6 +976,10 @@ export const useInvasivesApi = () => {
     declineAccessRequest,
     renewUser,
     getAdminUploadGeoJSONLayer,
-    postAdminUploadShape
+    postAdminUploadShape,
+    submitUpdateRequest,
+    getUpdateRequests,
+    declineUpdateRequest,
+    approveUpdateRequests
   };
 };
