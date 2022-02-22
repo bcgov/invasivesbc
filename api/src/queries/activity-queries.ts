@@ -228,7 +228,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
-        geog,
+        a.geog,
         public.geography(
           public.ST_Force2D(
             public.ST_SetSRID(

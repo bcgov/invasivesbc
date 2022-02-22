@@ -5,12 +5,12 @@ import { Pool, PoolConfig, PoolClient } from 'pg';
 import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('db');
 
-const DB_HOST: string = process.env.DB_HOST || 'localhost';
-const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER || 'hello';
-const DB_PASSWORD: string = process.env.DB_PASS || 'world';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'lucy';
-const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_HOST = 'host.docker.internal';
+const DB_PORT = 5455;
+const DB_USERNAME = 'invasivebc';
+const DB_PASSWORD = 'postgres';
+const DB_DATABASE = 'InvasivesBC';
+const DB_SCHEMA = 'invasivesbc';
 
 const poolConfig: PoolConfig = {
   user: DB_USERNAME,
