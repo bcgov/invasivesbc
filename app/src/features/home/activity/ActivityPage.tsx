@@ -348,7 +348,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ...activity_subtype_data,
         Treatment_ChemicalPlant_Information: {
           // if government user, auto fill as 000000
-          pesticide_employer_code: isGovernmentWorker ? '0' : psnInject.replace(/^0+/, '')
+          pesticide_employer_code: isGovernmentWorker ? '0' : psnInject.replace(/^0+(\d)/, '')
         }
       };
     } else {

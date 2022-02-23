@@ -30,12 +30,12 @@ export const getAccessRequestForUserSQL = (username: string, email?: string): SQ
 
   if (email) {
     return isIdir
-      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email};`
-      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND primary_email = ${email};`;
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email} AND request_type != 'UPDATE';`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND primary_email = ${email} AND request_type != 'UPDATE';`;
   } else {
     return isIdir
-      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username};`
-      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username};`;
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND request_type != 'UPDATE';`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND request_type != 'UPDATE';`;
   }
 };
 
@@ -62,7 +62,8 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         comments,
         status,
         idir_userid,
-        bceid_userid
+        bceid_userid,
+        request_type
     )
     values(
         ${accessRequest.idir ? accessRequest.idir : null},
@@ -80,7 +81,8 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.comments ? accessRequest.comments : ''},
         ${accessRequest.status},
         ${accessRequest.idirUserId ? accessRequest.idirUserId : null},
-        ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null}
+        ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null},
+        'ACCESS'
     )
     on conflict (idir_userid, bceid_userid) do nothing;
   `;
@@ -95,7 +97,8 @@ export const updateAccessRequestStatusSQL = (email, status): SQLStatement => {
         set
         status=${status},
         updated_at=CURRENT_TIMESTAMP
-        where primary_email=${email};
+        where primary_email=${email}
+        AND request_type != 'UPDATE';
     `;
 };
 
@@ -105,7 +108,8 @@ export const declineAccessRequestSQL = (email): SQLStatement => {
         set
         status='DECLINED',
         updated_at=CURRENT_TIMESTAMP
-        where primary_email=${email};
+        where primary_email=${email}
+        AND request_type != 'UPDATE';
     `;
 };
 

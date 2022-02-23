@@ -359,6 +359,44 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  const submitUpdateRequest = async (updateRequest: any): Promise<any> => {
+    const data = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/update-request`,
+      data: { newUpdateRequest: updateRequest }
+    });
+    return data;
+  };
+
+  const getUpdateRequests = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      url: options.baseUrl + `/api/update-request/`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
+    });
+    return data;
+  };
+
+  const declineUpdateRequest = async (updateRequest) => {
+    const { data } = await Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/update-request`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: { declinedUpdateRequest: updateRequest }
+    });
+    return data;
+  };
+
+  const approveUpdateRequests = async (updateRequest) => {
+    const { data } = await Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/update-request`,
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: { approvedUpdateRequests: updateRequest }
+    });
+  };
+
   const getFundingAgencies = async (): Promise<any> => {
     const { data } = await Http.request({
       method: 'GET',
@@ -931,6 +969,10 @@ export const useInvasivesApi = () => {
     declineAccessRequest,
     renewUser,
     getAdminUploadGeoJSONLayer,
-    postAdminUploadShape
+    postAdminUploadShape,
+    submitUpdateRequest,
+    getUpdateRequests,
+    declineUpdateRequest,
+    approveUpdateRequests
   };
 };

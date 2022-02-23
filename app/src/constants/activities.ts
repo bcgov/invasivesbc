@@ -50,8 +50,8 @@ export enum ActivitySubtype {
 
 export enum ActivitySubtypeShortLabels {
   // Observations:
-  Activity_Observation_PlantTerrestrial = 'Terrestrial Plant Observation',
-  Activity_Observation_PlantAquatic = 'Aquatic Plant Observation',
+  Activity_Observation_PlantTerrestrial = 'Terrestrial Invasive Plant Observation',
+  Activity_Observation_PlantAquatic = 'Aquatic Invasive Plant Observation',
   Activity_AnimalActivity_AnimalTerrestrial = 'Terrestrial Animal Observation',
   Activity_AnimalActivity_AnimalAquatic = 'Aquatic Animal Observation',
 
@@ -65,8 +65,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_MechanicalAnimalTerrestrial = 'Terrestrial Animal Mechanical Treatment',
 
   // Monitoring:
-  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
-  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical Treatment Monitoring',
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical Treatment Monitoring',
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = 'Biocontrol Dispersal Monitoring',
   Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical animal',

@@ -84,6 +84,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [comments, setComments] = React.useState('');
   const [roles, setRoles] = React.useState<any[]>([]);
 
+  let isUpdating = false;
+
   const submitAccessRequest = async () => {
     const accessRequest = {
       idir: idir,
@@ -105,8 +107,29 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
-    console.log('Response: ', response);
-    localStorage.setItem('accessRequested', 'true');
+  };
+
+  const submitUpdateRequest = async () => {
+    const updateRequest = {
+      idir: idir,
+      bceid: bceid,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      pacNumber: pacNumber,
+      psn1: psn1,
+      psn2: psn2,
+      employer: employer?.toString(),
+      fundingAgencies: fundingAgencies?.toString(),
+      requestedRoles: requestedRoles?.toString(),
+      comments: comments,
+      status: 'NOT_APPROVED',
+      idirUserId: idir_userid,
+      bceidUserId: bceid_userid
+    };
+    const response = await api.submitUpdateRequest(updateRequest);
+    setSubmitted(true);
   };
 
   const declineAccess = async () => {
@@ -130,13 +153,17 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     };
     const response = await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
-    console.log('Response: ', response);
   };
+
+  if (props?.location?.state?.updateInfo && props?.location?.state?.updateInfo === true) {
+    isUpdating = true;
+  } else {
+    isUpdating = false;
+  }
 
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
-    console.log('KEYCLOAK OBJ: ', authState.keycloak?.obj);
     if (userInfo !== undefined) {
       if (userInfo?.idir_account_name) {
         setAccountType('IDIR');
@@ -174,7 +201,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       setEmployersList(response);
     };
     const fetchAccessRequestData = async () => {
-      const response = await api.getAccessRequestData({ username: userName, email: email });
+      const response = await api.getAccessRequestData({ username: userName });
       setUserInfo(response);
     };
     fetchAccessRequestData();
@@ -231,87 +258,101 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
           <Card elevation={8}>
             {!submitted && (
               <CardContent>
-                <FormControl component="fieldset">
-                  <FormLabel component="legend">
-                    Do you wish to transfer your IAPP access to InvasivesBC when it replaces IAPP?
-                  </FormLabel>
-                  <RadioGroup
-                    row
-                    aria-label="transfer-access"
-                    name="row-radio-buttons-group"
-                    value={transferAccess}
-                    onChange={handleRadioChange}>
-                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup>
-                </FormControl>
+                {!isUpdating && (
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend">
+                      Do you wish to transfer your IAPP access to InvasivesBC when it replaces IAPP?
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      aria-label="transfer-access"
+                      name="row-radio-buttons-group"
+                      value={transferAccess}
+                      onChange={handleRadioChange}>
+                      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                      <FormControlLabel value="no" control={<Radio />} label="No" />
+                    </RadioGroup>
+                  </FormControl>
+                )}
                 {transferAccess === 'no' && (
                   <Typography variant="body1" align="center">
                     You will be removed from the InvasivesBC lists moving forward. You may, of course, rejoin us at any
                     time.
                   </Typography>
                 )}
-                {transferAccess === 'yes' && (
+                {(transferAccess === 'yes' || isUpdating) && (
                   <Grid container direction="column" spacing={3}>
-                    <Grid item>
-                      {' '}
-                      <Typography variant="body1" align="center">
-                        The following information is required to properly establish your access to the new InvasivesBC
-                        applications. This information will not be shared with any other organization within government
-                        or externally with other agencies.
-                        <br />
-                        <br />
-                        If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a separate
-                        form for each account.
-                        <br />
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          <FormControl component="fieldset">
-                            <FormLabel component="legend">Account type</FormLabel>
-                            <RadioGroup
-                              row
-                              aria-label="account-type"
-                              name="row-radio-buttons-group"
-                              value={accountType}
-                              onChange={handleAccountRadioChange}>
-                              <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
-                              <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
-                            </RadioGroup>
-                          </FormControl>
-                        </Grid>
-                        {accountType === 'IDIR' && (
-                          <Grid item>
-                            {' '}
-                            <TextField
-                              value={idir}
-                              style={{ width: 320 }}
-                              onChange={(e) => setIdir(e.target.value)}
-                              required
-                              variant="outlined"
-                              id="outlined-required"
-                              label="IDIR Account Name"
-                            />
-                          </Grid>
-                        )}
-                        {accountType === 'BCeID' && (
-                          <Grid item>
-                            {' '}
-                            <TextField
-                              required
-                              value={bceid}
-                              onChange={(e) => setBceid(e.target.value)}
-                              style={{ width: 320 }}
-                              variant="outlined"
-                              id="outlined-required"
-                              label="BCeID Account Name"
-                            />
-                          </Grid>
-                        )}
+                    {!isUpdating && (
+                      <Grid item>
+                        {' '}
+                        <Typography variant="body1" align="center">
+                          The following information is required to properly establish your access to the new InvasivesBC
+                          applications. This information will not be shared with any other organization within
+                          government or externally with other agencies.
+                          <br />
+                          <br />
+                          If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a
+                          separate form for each account.
+                          <br />
+                        </Typography>
                       </Grid>
-                    </Grid>
+                    )}
+                    {isUpdating && (
+                      <Grid item>
+                        <Typography variant="body1" align="center">
+                          Please update any necessary fields if they have changed since you submitted your access
+                          request. Your information will be updated upon review.
+                        </Typography>
+                      </Grid>
+                    )}
+                    {!isUpdating && (
+                      <Grid item>
+                        <Grid container direction="row" spacing={5}>
+                          <Grid item>
+                            <FormControl component="fieldset">
+                              <FormLabel component="legend">Account type</FormLabel>
+                              <RadioGroup
+                                row
+                                aria-label="account-type"
+                                name="row-radio-buttons-group"
+                                value={accountType}
+                                onChange={handleAccountRadioChange}>
+                                <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
+                                <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
+                              </RadioGroup>
+                            </FormControl>
+                          </Grid>
+                          {accountType === 'IDIR' && (
+                            <Grid item>
+                              {' '}
+                              <TextField
+                                value={idir}
+                                style={{ width: 320 }}
+                                onChange={(e) => setIdir(e.target.value)}
+                                required
+                                variant="outlined"
+                                id="outlined-required"
+                                label="IDIR Account Name"
+                              />
+                            </Grid>
+                          )}
+                          {accountType === 'BCeID' && (
+                            <Grid item>
+                              {' '}
+                              <TextField
+                                required
+                                value={bceid}
+                                onChange={(e) => setBceid(e.target.value)}
+                                style={{ width: 320 }}
+                                variant="outlined"
+                                id="outlined-required"
+                                label="BCeID Account Name"
+                              />
+                            </Grid>
+                          )}
+                        </Grid>
+                      </Grid>
+                    )}
                     <Grid item>
                       <Grid container direction="row" spacing={5}>
                         <Grid item>
@@ -508,10 +549,17 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                       </Grid>
                       <Grid container direction="row" spacing={5}>
                         <Grid item>
-                          <Typography variant="body1" align="center">
-                            We will inform you when the training materials are ready and again when your access is
-                            approved
-                          </Typography>
+                          {!isUpdating && (
+                            <Typography variant="body1" align="center">
+                              We will inform you when the training materials are ready and again when your access is
+                              approved
+                            </Typography>
+                          )}
+                          {isUpdating && (
+                            <Typography variant="body1" align="center">
+                              We will inform you when your information has been updated.
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>
@@ -523,9 +571,17 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
               <CardContent>
                 <Grid container direction="row" spacing={7}>
                   <Grid item>
-                    <Typography variant="body1" align="center">
-                      Thank you for submitting your request.
-                    </Typography>
+                    {!isUpdating && (
+                      <Typography variant="body1" align="center">
+                        Thank you for submitting your request.
+                      </Typography>
+                    )}
+                    {isUpdating && (
+                      <Typography variant="body1" align="center">
+                        Your request to update your information has been received. We will inform you when your
+                        information has been updated.
+                      </Typography>
+                    )}
                   </Grid>
                 </Grid>
               </CardContent>
@@ -545,13 +601,22 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                 </Grid>
               </Grid>
               <Grid item>
-                {!submitted && (
+                {!submitted && !isUpdating && (
                   <Button
                     style={{ maxWidth: '300px', minWidth: '225px' }}
                     variant="contained"
                     color="primary"
                     onClick={transferAccess === 'yes' ? submitAccessRequest : declineAccess}>
                     {transferAccess === 'yes' ? 'Submit Access Request' : 'Remove me from the list'}
+                  </Button>
+                )}
+                {!submitted && isUpdating && (
+                  <Button
+                    style={{ maxWidth: '300px', minWidth: '225px' }}
+                    variant="contained"
+                    color="primary"
+                    onClick={submitUpdateRequest}>
+                    Submit Update Request
                   </Button>
                 )}
               </Grid>

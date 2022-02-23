@@ -1,3 +1,4 @@
+import { getRolesForUserSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
@@ -63,6 +64,33 @@ export async function getUserByIDIR(idir) {
     }
   } catch (error) {
     defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
+export async function getRolesForUser(userId) {
+  const connection = await getDBConnection();
+  if (!connection) {
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
+  }
+  try {
+    const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+    return result;
+  } catch (error) {
+    defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     throw error;
   } finally {
     connection.release();

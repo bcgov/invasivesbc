@@ -78,7 +78,11 @@ function getAccessRequestData(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      return res.status(200).json(response.rows[0]);
+      if (response.rows.length > 0) {
+        return res.status(200).json(response.rows[0]);
+      } else {
+        return res.status(200).json({});
+      }
     } catch (error) {
       defaultLog.debug({ label: 'create', message: 'error', error });
       throw error;

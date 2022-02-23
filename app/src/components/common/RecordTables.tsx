@@ -764,7 +764,8 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           ActivitySubtype.Treatment_ChemicalPlant,
           ActivitySubtype.Treatment_ChemicalPlantAquatic,
           ActivitySubtype.Treatment_MechanicalPlant,
-          ActivitySubtype.Treatment_MechanicalPlantAquatic
+          ActivitySubtype.Treatment_MechanicalPlantAquatic,
+          ActivitySubtype.Treatment_BiologicalPlant
         ]}
         tableSchemaType={[
           'Treatment',
@@ -772,6 +773,7 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           'Treatment_ChemicalPlantAquatic',
           'Treatment_MechanicalPlant',
           'Treatment_MechanicalPlantAquatic',
+          'Treatment_BiologicalPlant',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -1023,8 +1025,7 @@ export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
         activitySubtypes={[
           ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
           ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
-          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
-          ActivitySubtype.Monitoring_BiologicalDispersal
+          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
         ]}
         tableSchemaType={[
           'Monitoring',
@@ -1172,7 +1173,6 @@ export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props)
       <ActivitiesTable
         tableName="Biological Control"
         activitySubtypes={[
-          ActivitySubtype.Treatment_BiologicalPlant,
           ActivitySubtype.Transect_BiocontrolEfficacy,
           ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
           ActivitySubtype.Monitoring_BiologicalDispersal
@@ -1223,8 +1223,8 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <ActivitiesTable
-        tableName="Biocontrol"
-        activitySubtypes={[ActivitySubtype.Collection_Biocontrol, ActivitySubtype.Treatment_BiologicalPlant]}
+        tableName="Biological Control"
+        activitySubtypes={[ActivitySubtype.Collection_Biocontrol, ActivitySubtype.Monitoring_BiologicalDispersal]}
         tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
         headers={[
           ...headers,

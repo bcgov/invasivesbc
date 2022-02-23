@@ -352,7 +352,7 @@ const ActivitiesList: React.FC = () => {
               <MyPlantTreatmentsTable />
               <MyBiocontrolTable />
               <MyPlantMonitoringTable />
-              <MyTransectsTable />
+              {/* <MyTransectsTable /> TODO: Re-enable when transects back online */}
             </Box>
           )}
           {workflowFunction === 'Animal' && (

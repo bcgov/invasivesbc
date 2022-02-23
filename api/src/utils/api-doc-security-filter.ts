@@ -6,7 +6,7 @@ import { getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from './logger';
 import { authenticate } from './auth-utils';
 import { cached } from './utils';
-import { getUserByBCEID, getUserByIDIR } from './user-utils';
+import { getUserByBCEID, getUserByIDIR, getRolesForUser } from './user-utils';
 
 const defaultLog = getLogger('api-doc-security-filter');
 
@@ -21,21 +21,26 @@ export async function applyApiDocSecurityFilters(req: any) {
   try {
     await authenticate(req, []);
     const token = req['keycloak_token'];
-    let user = {};
+    let user: any = {};
+    let roles: any = [];
     if (token) {
       // User is authenticated
       if (token.payload.idir_userid) {
         user = await getUserByIDIR(token.payload.idir_userid);
+        roles = await getRolesForUser(user.user_id);
         // user = await getUserByIDIR(token.payload.idir_userid);
       }
       if (token.payload.bceid_userid) {
         user = await getUserByBCEID(token.payload.bceid_userid);
+        roles = await getRolesForUser(user.user_id);
       }
     }
 
     let allCodeEntities: IAllCodeEntities;
-
     if (user) {
+      if (roles.length > 0) {
+        user = { ...user, roles };
+      }
       allCodeEntities = await getAllCodeEntities(user);
     } else {
       allCodeEntities = await getAllCodeEntities();
