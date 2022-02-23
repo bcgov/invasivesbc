@@ -84,12 +84,12 @@ export const slopeArray = [
 export const aspectArray = [
   'east{enter}',
   'north f{enter}',
-  'northea{enter}',
-  'northwe{enter}',
+  'northeast f{enter}',
+  'northwest f{enter}',
   'south f{enter}',
-  'southe{enter}',
-  'southw{enter}',
-  'west f{enter}',
+  'southeast f{enter}',
+  'southwest f{enter}',
+  'West f{enter}',
   'vari{enter}'
 ];
 
@@ -106,18 +106,18 @@ export const invasivePlants = [
   "old man's beard{enter}"
 ];
 
-export const densityArray = ['1|{enter}', '2{enter}', '3{enter}', '4{enter}', 'Not{enter}', 'unknown{enter}'];
+export const densityArray = ['1|{enter}', '2|{enter}', '3|{enter}', '4|{enter}', 'Not{enter}', 'unknown{enter}'];
 
 export const distributionArray = [
   '1|{enter}',
-  '2{enter}',
-  '3{enter}',
-  '4{enter}',
-  '5{enter}',
-  '6{enter}',
-  '7{enter}',
-  '8{enter}',
-  '9{enter}',
+  '2|{enter}',
+  '3|{enter}',
+  '4|{enter}',
+  '5|{enter}',
+  '6|{enter}',
+  '7|{enter}',
+  '8|{enter}',
+  '9|{enter}',
   'Not{enter}',
   'unknown{enter}'
 ];

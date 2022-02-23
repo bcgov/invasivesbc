@@ -13,13 +13,21 @@
 // the project's config changing)
 
 const pg = require('pg');
+const fs = require('fs-extra');
+const path = require('path');
+
+function getConfigurationByFile(file) {
+  const pathToConfigFile = path.resolve('..', 'app', 'cypress', 'config', `${file}.json`);
+
+  return fs.readJson(pathToConfigFile);
+}
 
 /**
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+  const file = config.env.configFile || 'local';
 
   on('task', {
     DATABASE({ dbConfig, sql, values }) {
@@ -31,4 +39,8 @@ module.exports = (on, config) => {
       }
     }
   });
+
+  return getConfigurationByFile(file);
 };
+
+export {};
