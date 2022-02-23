@@ -584,7 +584,7 @@ export const Jurisdiction = {
 };
 export const Authorization_Infotmation = {
   type: 'object',
-  title: 'Authorization Infotmation',
+  title: 'Authorization Information',
   properties: {
     additional_auth_information: {
       type: 'string',
