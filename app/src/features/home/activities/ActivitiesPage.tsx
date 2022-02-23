@@ -1,6 +1,7 @@
 import { Container } from '@mui/material';
 import React from 'react';
 import ActivitiesList from '../../../components/activities-list/ActivitiesList';
+import ActivitiesList2 from '../../../components/activities-list/ActivitiesList2';
 
 interface IStatusPageProps {
   classes?: any;
@@ -8,8 +9,9 @@ interface IStatusPageProps {
 
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   return (
-    <Container className={props.classes.container}>
-      <ActivitiesList />
+    <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
+      {/* <ActivitiesList /> */}
+      <ActivitiesList2 />
     </Container>
   );
 };

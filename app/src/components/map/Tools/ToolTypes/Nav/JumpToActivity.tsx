@@ -23,6 +23,8 @@ export const JumpToActivity = (props) => {
 
   const flyToContext = useFlyToAndFadeContext();
 
+  const [readyActivityNavJump, setReadyActivityNavJump] = useState(false);
+
   // initial setup & events to block:
   useEffect(() => {
     if (!props.id) {
@@ -30,8 +32,10 @@ export const JumpToActivity = (props) => {
     }
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
+    console.log('******initial hook');
+    console.log(props.id);
     getTripGeosAndInitialPosition();
-  }, []);
+  }, [props.id]);
 
   // What the button cycles through.
 
@@ -62,35 +66,47 @@ export const JumpToActivity = (props) => {
 
   // can be replaced with a menu (later):
   const getTripGeosAndInitialPosition = async () => {
-    //mobile only
-    const activityObject = await dataAccess.getActivityById(props.id, databaseContext, true);
-    let items = new Array<IFlyToAndFadeItem>();
+    if (props.id !== null) {
+      //mobile only
+      const activityObject = await dataAccess.getActivityById(props.id, databaseContext, true);
+      let items = new Array<IFlyToAndFadeItem>();
 
-    //then add activitys as geometries to show
-    if (Capacitor.getPlatform() == 'web') {
-      if (activityObject.activity_payload.geometry?.length > 0) {
-        items.push({
-          //          name: 'Activity : ' + activity.name,
-          geometries: activityObject.activity_payload.geometry,
-          colour: 'red',
-          transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
-        });
+      //then add activitys as geometries to show
+      if (Capacitor.getPlatform() == 'web') {
+        console.log('got to web ');
+        if (activityObject.activity_payload.geometry?.length > 0) {
+          items.push({
+            //          name: 'Activity : ' + activity.name,
+            geometries: activityObject.activity_payload.geometry,
+            colour: 'red',
+            transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
+          });
+        }
+      } else {
+        if (activityObject.geometry?.length > 0) {
+          items.push({
+            //          name: 'Activity : ' + activity.name,
+            geometries: activityObject?.geometry,
+            colour: 'red',
+            transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
+          });
+        }
       }
-    } else {
-      if (activityObject.geometry?.length > 0) {
-        items.push({
-          //          name: 'Activity : ' + activity.name,
-          geometries: activityObject?.geometry,
-          colour: 'red',
-          transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
-        });
+
+      if (items.length > 0) {
+        console.log('setting');
+        setIFlyToAndFadeItems([...items]);
       }
     }
-
-    if (items.length > 0) {
-      setIFlyToAndFadeItems([...items]);
-    }
+    setReadyActivityNavJump(true);
   };
+
+  useEffect(() => {
+    if (readyActivityNavJump) {
+      jump();
+      dataAccess.setAppState({ activeActivity: null });
+    }
+  }, [readyActivityNavJump]);
 
   return (
     <>
