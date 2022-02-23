@@ -7,7 +7,7 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   properties: {
     invasive_plant_code: {
       type: 'string',
-      title: 'Terrastrial Invasive Plant',
+      title: 'Terrestrial Invasive Plant',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'invasive_plant_code',
@@ -59,7 +59,7 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   properties: {
     invasive_plant_code: {
       type: 'string',
-      title: 'Terrastrial Invasive Plant',
+      title: 'Terrestrial Invasive Plant',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'invasive_plant_code',

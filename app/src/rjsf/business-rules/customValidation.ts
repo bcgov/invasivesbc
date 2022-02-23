@@ -714,7 +714,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
         isChemical
           ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
           : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-      ].addError('Either Aquatic or Terrastrial plant has to be specified.');
+      ].addError('Either Aquatic or Terrestrial plant has to be specified.');
     }
 
     if (informationObject.aquatic_invasive_plant_code && informationObject.invasive_plant_code) {
