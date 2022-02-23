@@ -3,10 +3,12 @@ import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { MapRequestContextProvider } from '../../../contexts/MapRequestsContext';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useEffect, useState } from 'react';
+import { useDataAccess } from 'hooks/useDataAccess';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
@@ -107,7 +109,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-
+  const [navToActivityID, setNavToActivityID] = useState(null);
+  const dba = useContext(DatabaseContext);
+  const dataAccess = useDataAccess();
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
@@ -132,7 +136,13 @@ const MapPage: React.FC<IMapProps> = (props) => {
     // console.log(url);
     // doesn't work:  history.replace(url);
     window.history.pushState('', 'New Page Title', url);
-  }, [url]);
+
+    const oldAppState = dataAccess.getAppState(dba).then((v) => {
+      console.log('getting id');
+      console.log(v.activeActivity);
+      setNavToActivityID(v.activeActivity);
+    });
+  }, []);
 
   const MapUrlListener = (props) => {
     const map = useMap();
@@ -191,6 +201,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
                     center={initalCenter()}
                     zoom={initialZoom()}
                     mapId={'mainMap'}
+                    activityId={navToActivityID}
                     pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                     geometryState={{ geometry, setGeometry }}
                     interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
