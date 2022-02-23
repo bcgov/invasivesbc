@@ -1,16 +1,15 @@
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton, Typography } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { ThemeContext } from 'utils/CustomThemeProvider';
+import { CircularProgress, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import L from 'leaflet';
 import proj4 from 'proj4';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GeoJSON, Marker, Tooltip } from 'react-leaflet';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
 import marker from '../../../Icons/POImarker.png';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import { ListItemButton } from '@mui/material';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -46,7 +45,6 @@ export const calc_utm = (longitude: number, latitude: number) => {
 
 export default function DisplayPosition({ map }) {
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [activityGeo, setActivityGeo] = useState(null);
@@ -104,7 +102,7 @@ export default function DisplayPosition({ map }) {
   };
 
   return (
-    <>
+    <ListItem disableGutters className={toolClass.listItem}>
       {
         activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
       }
@@ -133,9 +131,8 @@ export default function DisplayPosition({ map }) {
           />
         </GeoJSON>
       )}
-      <IconButton
+      <ListItemButton
         ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         disabled={startTimer}
         aria-label="my position"
         onClick={() => {
@@ -143,9 +140,11 @@ export default function DisplayPosition({ map }) {
             map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
           }
         }}>
-        {initialTime > 0 ? <CircularProgress size={24} /> : <GpsFixedIcon />}
-        <Typography className={toolClass.Font}>Where am I?</Typography>{' '}
-      </IconButton>
-    </>
+        <ListItemIcon>{initialTime > 0 ? <CircularProgress size={24} /> : <GpsFixedIcon />}</ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>Where am I?</Typography>{' '}
+        </ListItemText>
+      </ListItemButton>
+    </ListItem>
   );
 }

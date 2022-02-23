@@ -1,16 +1,14 @@
-import { IconButton, Typography } from '@mui/material';
+import { ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const ZoomControl = (props) => {
   const LOW_RES = 17;
   const HIGH_RES = 21;
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
   const divRef = useRef(null);
 
   //block click propogation
@@ -34,18 +32,19 @@ export const ZoomControl = (props) => {
     });
   };
   return (
-    <>
-      <IconButton
+    <ListItem disableGutters className={toolClass.listItem}>
+      <ListItemButton
         //todo add this attribution:
         //<div>Icons made by <a href="https://www.flaticon.com/authors/wahya" title="wahya">wahya</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
         ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="toggle max zoom resolution"
         onClick={toggle}>
-        {isHighRes ? <HdIcon fontSize={'large'} /> : <SdIcon fontSize={'large'} />}
-        <Typography className={toolClass.Font}>{isHighRes ? 'High Def' : 'Low Def'}</Typography>
-      </IconButton>
-    </>
+        <ListItemIcon>{isHighRes ? <HdIcon fontSize={'large'} /> : <SdIcon fontSize={'large'} />}</ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>{isHighRes ? 'High Def' : 'Low Def'}</Typography>
+        </ListItemText>
+      </ListItemButton>
+    </ListItem>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Popover, Typography } from '@mui/material';
+import { Button, Grid, ListItem, ListItemIcon, ListItemText, ListItemButton, Popover, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -188,7 +188,7 @@ const MeasureTool = (props: any) => {
     setIsMeasuringArea(!isMeasuringArea);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -196,14 +196,15 @@ const MeasureTool = (props: any) => {
   };
 
   return (
-    <>
-      <IconButton
-        ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        onClick={handleClick}>
-        <img className={toolClass.toolImg} src={ruler} />
-        <Typography className={toolClass.Font}>Measure</Typography>
-      </IconButton>
+    <ListItem disableGutters className={toolClass.listItem}>
+      <ListItemButton ref={divRef} onClick={handleClick}>
+        <ListItemIcon>
+          <img alt={Math.random().toString()} className={toolClass.toolImg} src={ruler} />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>Measure</Typography>
+        </ListItemText>
+      </ListItemButton>
       <Popover
         id={id}
         open={open}
@@ -274,7 +275,7 @@ const MeasureTool = (props: any) => {
             ))}
         </>
       )}
-    </>
+    </ListItem>
   );
 };
 

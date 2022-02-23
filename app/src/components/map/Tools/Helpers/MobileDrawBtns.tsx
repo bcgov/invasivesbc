@@ -47,7 +47,7 @@ export const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry,
 
   useEffect(() => {
     if (divRef?.current) L.DomEvent.disableClickPropagation(divRef?.current);
-  });
+  }, []);
 
   useMapEvent('click', (e) => {
     const loc = e.latlng;

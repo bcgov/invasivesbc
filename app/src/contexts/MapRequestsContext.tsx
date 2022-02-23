@@ -2,7 +2,6 @@ import * as React from 'react';
 import { layersJSON } from 'components/map/LayerPicker/JSON/layers';
 import { actions } from 'components/map/LayerPicker/JSON/actions';
 import { NetworkContext } from './NetworkContext';
-import { useMap, useMapEvent } from 'react-leaflet';
 
 interface IMapExtentLayersContext {
   mapRequest: {
@@ -16,6 +15,8 @@ interface IMapExtentLayersContext {
   setLayersActions: React.Dispatch<React.SetStateAction<any>>;
   mapZoom: number;
   setMapZoom: React.Dispatch<React.SetStateAction<number>>;
+  currentRecords: any[];
+  setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface IParentLayer {
@@ -35,6 +36,8 @@ interface IChildLayer {
   simplifyPercentage?: number;
   id?: string;
   name?: string;
+  activity_subtype?: string;
+  poi_type?: string;
   source?: string;
   layer_mode?: string;
   layer_code?: string;
@@ -62,7 +65,9 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   layersActions: [],
   setLayersActions: () => {},
   mapZoom: 5,
-  setMapZoom: () => {}
+  setMapZoom: () => {},
+  currentRecords: [],
+  setCurrentRecords: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
@@ -71,11 +76,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
-
-  const mapObj = useMap();
-  useMapEvent('zoomend' as any, () => {
-    setMapZoom(mapObj.getZoom());
-  });
+  const [currentRecords, setCurrentRecords] = React.useState<any>(null);
 
   React.useEffect(() => {
     if (layers) {
@@ -87,16 +88,21 @@ export const MapRequestContextProvider: React.FC = (props) => {
 
   return (
     <MapRequestContext.Provider
-      value={{
-        mapRequest,
-        setMapRequest,
-        layers,
-        setLayers,
-        layersActions,
-        setLayersActions,
-        mapZoom,
-        setMapZoom
-      }}>
+      value={React.useMemo(
+        () => ({
+          mapRequest,
+          setMapRequest,
+          layers,
+          setLayers,
+          layersActions,
+          setLayersActions,
+          mapZoom,
+          setMapZoom,
+          currentRecords,
+          setCurrentRecords
+        }),
+        [layers, layersActions, mapZoom, currentRecords, mapRequest]
+      )}>
       {props.children}
     </MapRequestContext.Provider>
   );

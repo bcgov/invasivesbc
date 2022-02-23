@@ -1,27 +1,30 @@
 import {
-  Box,
+  Collapse,
   FormControl,
-  Grid,
-  IconButton,
   InputLabel,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
   MenuItem,
-  Paper,
   Select,
   TextField,
-  Typography
+  Typography,
+  ListSubheader
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, ListItemButton } from '@mui/material';
 import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { generateDBActivityPayload, sanitizeRecord } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
 
@@ -29,8 +32,6 @@ export const NewRecord = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
-  const history = useHistory();
 
   // Is this needed? Copied from DisplayPosition
 
@@ -42,7 +43,6 @@ export const NewRecord = (props) => {
   const [recordCategory, setRecordCategory] = useState(recordCategoryTypes.plant);
   const [recordType, setRecordType] = useState(ActivitySubtypeShortLabels.Activity_Observation_PlantTerrestrial);
   const { userInfo } = useContext(AuthStateContext);
-  const [isDroppingMarker, setIsDroppingMarker] = useState(false);
   const mapRecordsContext = useContext(MapRecordsContext);
 
   const createActivityOnClick = async () => {
@@ -88,7 +88,7 @@ export const NewRecord = (props) => {
 
   const RecordCategorySelector = (props) => {
     return (
-      <Paper>
+      <ListItem>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Record Category</InputLabel>
           <Select
@@ -98,14 +98,13 @@ export const NewRecord = (props) => {
             label="Record Category"
             onChange={(e) => {
               setRecordCategory(e.target.value as recordCategoryTypes);
-              console.log('setting type');
             }}>
             <MenuItem value={recordCategoryTypes.plant}>Plant</MenuItem>
             <MenuItem value={recordCategoryTypes.animal}>Animal</MenuItem>
             <MenuItem value={recordCategoryTypes.other}>Other</MenuItem>
           </Select>
         </FormControl>
-      </Paper>
+      </ListItem>
     );
   };
 
@@ -121,30 +120,25 @@ export const NewRecord = (props) => {
       return { label: v, value: v };
     });
     return (
-      <Box width={'100%'} height={'200%'}>
-        <div>
-          <Paper>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Record Category</InputLabel>
-              <Autocomplete
-                ref={divRef}
-                id="combo-box-demo"
-                options={options}
-                renderInput={(params) => <TextField {...params} />}
-                isOptionEqualToValue={(option, value) => {
-                  return option === value ? true : false;
-                }}
-                onChange={(e, v) => {
-                  //        console.log(e);
-                  //       console.log(v);
-                  setRecordType(v as ActivitySubtypeShortLabels);
-                }}
-                value={recordType}
-              />
-            </FormControl>
-          </Paper>
-        </div>
-      </Box>
+      <ListItem style={{ paddingTop: '10px' }}>
+        <FormControl fullWidth>
+          <Autocomplete
+            ref={divRef}
+            id="combo-box-demo"
+            options={options}
+            renderInput={(params) => <TextField label="Record Type" {...params} />}
+            isOptionEqualToValue={(option, value) => {
+              return option === value ? true : false;
+            }}
+            onChange={(e, v) => {
+              //        console.log(e);
+              //       console.log(v);
+              setRecordType(v as ActivitySubtypeShortLabels);
+            }}
+            value={recordType}
+          />
+        </FormControl>
+      </ListItem>
     );
   };
 
@@ -204,72 +198,76 @@ export const NewRecord = (props) => {
 
   const [mode, setMode] = useState('NOT_PRESSED');
 
-  const MainButton = (props) => {
-    return (
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+  return (
+    <>
+      <ListItemButton
         aria-label="Create Record"
-        disabled={mode !== 'NOT_PRESSED'}
-        onClick={props.onClick}>
-        <AddIcon />
-        <Typography className={toolClass.Font}>New Record</Typography>
-      </IconButton>
-    );
-  };
-
-  const RenderWhenMode_NotPressed = (props) => {
-    const onClick = async () => {
-      setMode('PRESSED');
-    };
-    return <MainButton onClick={onClick}></MainButton>;
-  };
-
-  const RenderWhenMode_Pressed = (props) => {
-    return (
+        onClick={() => {
+          setMode((prev) => {
+            if (prev !== 'PRESSED') {
+              return 'PRESSED';
+            } else {
+              return 'NOT_PRESSED';
+            }
+          });
+        }}>
+        <ListItemIcon>
+          <AddIcon />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>New Record</Typography>
+        </ListItemText>
+        {mode === 'PRESSED' ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
       <>
-        <Grid xs={12} container className={toolClass.toolBtnMultiStageMenu}>
-          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+        {mode !== 'NOT_PRESSED' && <Divider />}
+        <Collapse
+          in={mode !== 'NOT_PRESSED'}
+          style={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+          classes={{ root: `{ entered: { innerHeight: 10 } }` }}
+          timeout="auto">
+          <List
+            component="div"
+            disablePadding
+            subheader={
+              <ListSubheader disableSticky component="div" id="nested-list-subheader">
+                New Record Options
+              </ListSubheader>
+            }>
             <RecordCategorySelector />
-          </Grid>
-          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+
             <RecordTypeSelector />
-          </Grid>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Create"
-            onClick={() => {
-              createActivityOnClick();
-            }}>
-            <Typography className={toolClass.Font}>Create Record</Typography>
-          </IconButton>
-          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
-            <IconButton
-              className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+
+            <ListItemButton
+              aria-label="Create"
+              onClick={() => {
+                createActivityOnClick();
+              }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography className={toolClass.Font}>Create Record</Typography>
+              </ListItemText>
+            </ListItemButton>
+
+            <ListItemButton
               aria-label="Cancel"
               onClick={() => {
                 setMode('NOT_PRESSED');
               }}>
-              <CancelPresentationIcon />
-              <Typography className={toolClass.Font}>Cancel</Typography>
-            </IconButton>
-          </Grid>
-          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
-            <MainButton onClick={() => {}} />
-          </Grid>
-        </Grid>
+              <ListItemIcon>
+                <CancelPresentationIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography className={toolClass.Font}>Cancel</Typography>
+              </ListItemText>
+            </ListItemButton>
+          </List>
+        </Collapse>
+        {mode !== 'NOT_PRESSED' && <Divider />}
       </>
-    );
-  };
-
-  return (
-    <div>
-      {
-        {
-          NOT_PRESSED: <RenderWhenMode_NotPressed />,
-          PRESSED: <RenderWhenMode_Pressed />
-        }[mode]
-      }
-    </div>
+    </>
   );
 };
 

@@ -50,7 +50,7 @@ export const PoisLayer = (props) => {
 
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean(
-      { search_feature: mapBounds, isIAPP: true },
+      { search_feature: mapBounds, isIAPP: true, point_of_interest_type: props.poi_type },
       databaseContext
     );
 

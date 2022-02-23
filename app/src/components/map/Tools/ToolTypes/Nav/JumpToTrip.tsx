@@ -1,8 +1,8 @@
 import { Capacitor } from '@capacitor/core';
-import { IconButton, Typography } from '@mui/material';
+import { ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
+import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -13,7 +13,6 @@ import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeConte
 export const JumpToTrip = (props) => {
   // style
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);
@@ -99,17 +98,20 @@ export const JumpToTrip = (props) => {
   };
 
   return (
-    <>
-      <IconButton
+    <ListItem disableGutters>
+      <ListItemButton
         ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Jump To Location"
         onClick={jump}
         style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
-        <ExploreIcon />
-        <Typography className={toolClass.Font}>Cached Trips</Typography>
-      </IconButton>
-    </>
+        <ListItemIcon>
+          <ExploreIcon />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography className={toolClass.Font}>Cached Trips</Typography>
+        </ListItemText>
+      </ListItemButton>
+    </ListItem>
   );
 };
 

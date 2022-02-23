@@ -3,15 +3,18 @@ import { Theme } from '@mui/material';
 
 export const toolStyles = makeStyles((theme: Theme) => ({
   toolBtn: {
-    height: 43,
     width: 43,
     zIndex: 1500,
+    padding: 0,
     borderRadius: 4,
     marginRight: 10,
     marginBottom: 5
   },
+  listItem: {
+    paddingTop: 0,
+    paddingBottom: 0
+  },
   toolBtnCircle: {
-    height: 43,
     width: 43,
     zIndex: 1500,
     marginRight: 10,
@@ -21,36 +24,9 @@ export const toolStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    flexFlow: 'column wrap',
-    height: '40vh'
-  },
-  toolBtnLight: {
-    height: 44,
-    width: 100,
-    zIndex: 1500,
-    text: 100,
-    marginLeft: 9,
-    borderRadius: 5,
-    spacing: 'space-around',
-    background: 'white',
-    backgroundColor: 'white !important',
-    '&:hover': {
-      background: 'white'
-    }
-  },
-  toolBtnDark: {
-    height: 44,
-    width: 100,
-    zIndex: 1500,
-    marginLeft: 9,
-    borderRadius: 5,
-    background: '#424242',
-    '&:hover': {
-      background: '#424242'
-    }
+    flexFlow: 'column wrap'
   },
   toolBtnLightDisabled: {
-    height: 44,
     width: 100,
     zIndex: 1500,
     text: 100,
@@ -80,7 +56,6 @@ export const toolStyles = makeStyles((theme: Theme) => ({
     alight: 'left'
   },
   toolBtnMultiStageMenu: {
-    height: '43px',
     minWidth: '650px',
     flexWrap: 'nowrap',
     //width: 43,
@@ -95,15 +70,7 @@ export const toolStyles = makeStyles((theme: Theme) => ({
     // }
   },
   toolBtnMultiStageMenuItem: {
-    height: '43px',
-    //width: 43,
     zIndex: 1500
-    //borderRadius: 4,
-    // marginRight: 10,
-    // background: 'white',
-    // '&:hover': {
-    //   background: 'white'
-    // }
   },
   toolImg: {
     height: 24,

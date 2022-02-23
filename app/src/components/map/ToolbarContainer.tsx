@@ -1,17 +1,22 @@
 import { Capacitor } from '@capacitor/core';
-import React from 'react';
-import { LayersControlProvider } from './LayerPicker/layerControlContext';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useMap, useMapEvent } from 'react-leaflet';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
-import MultiSelectOrEdit from './Tools/ToolTypes/Data/MultiSelectOrEdit';
-import NewRecord from './Tools/ToolTypes/Data/NewRecord';
-import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
-import DrawButtonList from './Tools/ToolTypes/GeoEdit/EditTools';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import L from 'leaflet';
+import List from '@mui/material/List';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -20,31 +25,90 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
+const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
+  innerToolBarContainer: {
+    maxWidth: 300,
+    minWidth: 150,
+    width: '100%',
+    borderRadius: 8,
+    boxShadow: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+    transition: 'all 200ms ease',
+    overflowY: 'scroll',
+    maxHeight: '78vh',
+    backgroundColor: theme.palette.background.default,
+    '&:hover': {
+      background: theme.palette.background.default
+    }
+  },
+  toggleMenuBTN: {
+    padding: 5,
+    marginTop: 10,
+    marginRight: 10,
+    zIndex: 1500,
+    width: 40,
+    transition: 'transform 200ms ease-in-out',
+    height: 40,
+    spacing: 'space-around',
+    backgroundColor: theme.palette.background.default,
+    '&:hover': {
+      background: theme.palette.background.default
+    }
+  }
+}));
+
 export const ToolbarContainer = (props) => {
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setMapZoom } = mapRequestContext;
+
+  const mapObj = useMap();
+  useMapEvent('zoomend' as any, () => {
+    setMapZoom(mapObj.getZoom());
+  });
+
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
+  const classes = useToolbarContainerStyles();
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const divRef = useRef();
+
+  const handleExpand = () => {
+    setExpanded((prev) => {
+      return !prev;
+    });
+  };
+
+  useEffect(() => {
+    L.DomEvent.disableScrollPropagation(divRef?.current);
+  });
 
   return (
-    <LayersControlProvider value={null}>
-      <div key={'toolbar1'} className={positionClass}>
-        <div
-          key={'toolbar2'}
-          className="leaflet-control"
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', padding: 10, gap: 10 }}>
-          <LayerPicker inputGeo={props.inputGeo} />
-          <SetPointOnClick map={props.map} />
-          <DisplayPosition map={props.map} />
-          <MeasureTool />
-          <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
-          {/*
-          <NewRecord />
-          <EditRecord />
-          <MultiSelectOrEdit />
-          <DrawButtonList />
-          */}
-          <JumpToActivity id={props.id} />
-        </div>
-      </div>
-    </LayersControlProvider>
+    <div key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+      <IconButton
+        onClick={() => {
+          handleExpand();
+        }}
+        className={classes.toggleMenuBTN + ' leaflet-control'}
+        style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+        <KeyboardArrowLeftIcon />
+      </IconButton>
+      <List
+        ref={divRef}
+        key={'toolbar2'}
+        className={classes.innerToolBarContainer + ' leaflet-control'}
+        style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
+        <LayerPicker inputGeo={props.inputGeo} />
+        <Divider />
+        <SetPointOnClick map={props.map} />
+        {/* <DisplayPosition map={props.map} /> */}
+        <MeasureTool />
+        <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
+        {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+        {/* <NewRecord />
+        <EditRecord />
+        <MultiSelectOrEdit />
+        <DrawButtonList /> */}
+
+        <JumpToActivity id={props.id} />
+      </List>
+    </div>
   );
 };

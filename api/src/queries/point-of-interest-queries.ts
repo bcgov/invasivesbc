@@ -306,8 +306,51 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
   }
 
+  enum PoiType {
+    Sites = 'Sites',
+    Surveys = 'Surveys',
+    ChemTreatment = 'Chemical Treatment',
+    MechTreatment = 'Mechanical Treatment',
+    MonitoringRecords = 'Monitoring Records',
+    BioRelease = 'Biocontrol Release',
+    BioDispersal = 'Biocontrol Dispersal',
+    BioMonitoring = 'Biocontrol Monitoring'
+  }
+
   if (searchCriteria.pointOfInterest_type) {
-    sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);
+    // sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);
+
+    switch (searchCriteria.pointOfInterest_type) {
+      case PoiType.Sites:
+        sqlStatement.append(SQL` AND 1 = 1`);
+        break;
+      case PoiType.Surveys:
+        sqlStatement.append(SQL` AND has_surveys is TRUE`);
+        break;
+      case PoiType.ChemTreatment:
+        sqlStatement.append(SQL` AND has_chemical_treatments IS TRUE`);
+        break;
+      case PoiType.MechTreatment:
+        sqlStatement.append(SQL` AND has_mechanical_treatments IS TRUE`);
+        break;
+      case PoiType.MonitoringRecords:
+        sqlStatement.append(
+          SQL` AND has_chemical_treatment_monitorings IS TRUE OR has_mechanical_treatment_monitorings IS TRUE`
+        );
+        break;
+      case PoiType.BioRelease:
+        sqlStatement.append(SQL` AND has_biological_treatments IS TRUE`);
+        break;
+      case PoiType.BioDispersal:
+        sqlStatement.append(SQL` AND has_biological_dispersals IS TRUE`);
+        break;
+      case PoiType.BioMonitoring:
+        sqlStatement.append(SQL` AND has_biological_treatment_monitorings IS TRUE`);
+        break;
+      default:
+        sqlStatement.append(SQL` AND 1=1`);
+        break;
+    }
   }
 
   if (searchCriteria.pointOfInterest_subtype) {
