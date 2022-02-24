@@ -69,7 +69,6 @@ export const aspectArray = [
   'south f{enter}',
   'southeast f{enter}',
   'southwest f{enter}',
-  'West f{enter}',
   'vari{enter}'
 ];
 
