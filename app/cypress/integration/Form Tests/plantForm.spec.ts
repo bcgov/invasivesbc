@@ -4,15 +4,19 @@ import { min, values } from 'cypress/types/lodash';
 import React from 'react';
 import '../../support/index';
 import {
+  accessDescriptionArray,
   aspectArray,
+  commentArray,
   dateFormatter,
   densityArray,
   distributionArray,
-  getShortActivityID,
   invasivePlants,
   jurisdictions,
   lifeStageArray,
+  locationDescriptionArray,
+  nameArray,
   positiveNegative,
+  projectCodeDescription,
   slopeArray,
   soilTextureArray,
   yesNo
@@ -23,17 +27,17 @@ describe('CREATING A NEW RECORD', function () {
   let myTestRow;
   // INPUT VARIABLES
   // - Basic Information
-  const accessDescription = 'Only cool people allowed';
-  const locationDescription = 'The coolest location';
+  const accessDescription = faker.random.arrayElement(accessDescriptionArray);
+  const locationDescription = faker.random.arrayElement(locationDescriptionArray);
   // - Jurisdictions
   const jurisdictionCode = faker.random.arrayElement(jurisdictions);
   const percentCovered = '100';
   // - Project Code
-  const description = 'Cool Code';
-  const comment = 'The plants are not cool here';
+  const description = faker.random.arrayElement(projectCodeDescription);
+  const comment = faker.random.arrayElement(commentArray);
   // - Observation Information
   const preTreatmentObservation = faker.random.arrayElement(yesNo);
-  const observationPerson = faker.name.findName();
+  const observationPerson = faker.random.arrayElement(nameArray);
   // - Observation Plant Terrestrial Information
   const soilTexture = faker.random.arrayElement(soilTextureArray);
   const specificUse = faker.datatype.number({ max: 24 });
@@ -54,7 +58,7 @@ describe('CREATING A NEW RECORD', function () {
   // const voucherPresent = 'Yes';
 
   // - Voucher
-  const voucherName = faker.name.findName();
+  const voucherName = faker.random.arrayElement(nameArray);
   const voucherSampleId = faker.random.number({ min: 1000, max: 9999 });
   const companyName = faker.company.companyName();
   const accessionNumber = faker.random.number({ min: 100000, max: 999999 });

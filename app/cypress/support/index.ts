@@ -19,6 +19,7 @@ import { changeTheme, themeTextCheck } from './commands/themeTestCmds';
 import { clickChildCheckbox, dragAccordion, toggleParentAccordion } from './commands/layerPickerTestCmds';
 import moment from 'moment';
 import { ActivityLetter } from 'constants/activities';
+const { faker } = require('@faker-js/faker');
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
@@ -28,28 +29,6 @@ Cypress.Commands.add('clickChildCheckbox', clickChildCheckbox);
 Cypress.Commands.add('dragAccordion', dragAccordion);
 Cypress.Commands.add('themeTextCheck', themeTextCheck);
 Cypress.Commands.add('toggleParentAccordion', toggleParentAccordion);
-
-const snakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-
-const mapKeys = (source, mappingFunction) => {
-  if (!source) return {};
-  return Object.keys(source).reduce(
-    (obj, key) => ({
-      ...obj,
-      [mappingFunction(key)]: source[key]
-    }),
-    {}
-  );
-};
-
-export const getShortActivityID = (activity) => {
-  const record: any = mapKeys(activity, snakeCase);
-  if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
-  const shortYear = moment(record.date_created || record.created_timestamp)
-    .format()
-    .substr(2, 2);
-  return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
-};
 
 export const yesNo = ['Yes', 'No'];
 
@@ -67,6 +46,7 @@ export const jurisdictions = [
   'Enbridge{enter}',
   'Federal{enter}'
 ];
+
 export const soilTextureArray = ['coarse{enter}', 'fine{enter}', 'medium{enter}', 'organic{enter}', 'unknown{enter}'];
 
 export const slopeArray = [
@@ -122,6 +102,16 @@ export const distributionArray = [
   'unknown{enter}'
 ];
 
+export const projectCodeDescription = [
+  'Cool Code',
+  'Crab Code',
+  'WVDRIVE2',
+  'CLEAN',
+  'RM214',
+  'MOT_PREASPATOU',
+  'PRRD_SWS'
+];
+
 export const lifeStageArray = [
   'de{enter}',
   'ju{enter}',
@@ -140,6 +130,36 @@ export const lifeStageArray = [
   'sma{enter}',
   'unknown{enter}'
 ];
+
+export const commentArray = [
+  'The plants are not cool here',
+  'Brian was here',
+  'Could not find the Crab Game',
+  'Entire area was treaated due to a complaint',
+  'Pit location and parcel boundaries can be found online',
+  'Soil and gravel has been moved around to a great extent in this area',
+  'East side of highway',
+  'North side of highway',
+  'Someone keeps moving the ketchup bottle'
+];
+
+export const accessDescriptionArray = [
+  'Only cool people allowed',
+  'Jeff only zone',
+  'Privately accessed zone',
+  'Publicly accessed zone'
+];
+
+export const locationDescriptionArray = [
+  'Downtown New Mombasa',
+  'On top of Hasty Hill',
+  'Mostly flat area',
+  'The floor is lava',
+  'Near a watershed on a hill',
+  'Urban area with high traffic'
+];
+
+export const nameArray = ['Hat King', faker.name.findName()];
 
 export const dateFormatter = (date: Date) => {
   const collectedYear = date.getFullYear().toString();
