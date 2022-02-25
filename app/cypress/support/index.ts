@@ -160,6 +160,63 @@ export const locationDescriptionArray = [
 
 export const nameArray = ['Hat King', faker.name.findName()];
 
+export const pestManagementPlans = [
+  'FLNR PMP 402-0680-20/25 [Central and Northern BC]{enter}',
+  'FLNR-PMP 402-0677-19/24 [South Coastal Region of BC]{enter}',
+  'FLNR-PMP 402-0678-19/24 [Southern Interior of BC]{enter}',
+  'MOTI PMP 102-0671-21-26 [South Coastal Mainland of BC]{enter}'
+];
+
+export const windDirectionArray = [
+  'N {enter}',
+  'NE {enter}',
+  ' E{enter}',
+  'SE {enter}',
+  'S {enter}',
+  'SW {enter}',
+  'NW {enter}'
+];
+
+export const humidityArray = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+export const chemApplicationMethods = [
+  'ATX{enter}',
+  'Back Pack{enter}',
+  'Boomless Nozzle{enter}',
+  'Fixed Boom{enter}',
+  'Hand Gun{enter}',
+  'Basal Bark{enter}',
+  'Cut Stump / Cut and Paint{enter}',
+  'Cut and Insert{enter}',
+  'Stem Injection{enter}',
+  'Wick{enter}'
+];
+
+export const herbicideTypes = ['granular{enter}', 'liquid{enter}'];
+
+export const herbicideLiquids = [
+  'AM500a [2,4-D 2,4-D Amine 500] 14725{enter}',
+  'AM500b [2,4-D 2,4-D Amine 500] 9528{enter}',
+  'AM600a [2,4-D 2,4-D Amine 600] 5931{enter}',
+  'AM600b [2,4-D 2,4-D Amine 600] 14726{enter}',
+  'Arsenal Powerline [imazapyr] 30203{enter}',
+  'Arsenal [imazapyr] 23713{enter}',
+  'Aspect [picloram/2,4-D] 31641{enter}',
+  'Banvel II [dicamba] 23957{enter}'
+];
+
+export const herbicideGranulars = [
+  'Clearview [aminopyralid/metsulfuron-methyl] 29752{enter}',
+  'Escort [metsulfuron methyl] 23005{enter}',
+  'LongRun [flazasulfuron] 33128{enter}',
+  'Method50SG [aminocyclopyrachlor] 30917{enter}',
+  'Navius Flex [metsulfuron-methyl/aminocyclopyrachlor] 30922{enter}',
+  'NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor] 31382{enter}',
+  'Overdrive [diflufenzopyr] 30065{enter}'
+];
+
+export const herbicideCalculationTypes = ['Dilution{enter}', 'Product Application Rate{enter}'];
+
 export const dateFormatter = (date: Date) => {
   const collectedYear = date.getFullYear().toString();
   var collectedMonth = date.getMonth().toString();
