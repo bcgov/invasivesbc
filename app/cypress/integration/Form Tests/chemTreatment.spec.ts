@@ -53,6 +53,7 @@ describe('CREATING A NEW RECORD', function () {
   const chemApplicationMethod = faker.random.arrayElement(chemApplicationMethods);
   // - Herbicide Application
   let herbicideType;
+  let herbicideCalculationType;
   console.log(chemApplicationMethod);
   switch (chemApplicationMethod) {
     case 'Basal Bark{enter}':
@@ -60,10 +61,12 @@ describe('CREATING A NEW RECORD', function () {
     case 'Cut and Insert{enter}':
     case 'Stem Injection{enter}':
     case 'Wick{enter}':
-      herbicideType = 'liquid{enter}{enter}';
+      herbicideType = 'liquid{enter}';
+      herbicideCalculationType = 'Dilution{enter}';
       break;
     default:
       herbicideType = faker.random.arrayElement(herbicideTypes);
+      herbicideCalculationType = faker.random.arrayElement(herbicideCalculationTypes);
   }
   console.log(herbicideType);
   let herbicide =
@@ -71,25 +74,33 @@ describe('CREATING A NEW RECORD', function () {
       ? faker.random.arrayElement(herbicideLiquids)
       : faker.random.arrayElement(herbicideGranulars);
   console.log(herbicide);
-  const herbicideCalculationType = faker.random.arrayElement(herbicideCalculationTypes);
-  const herbicideLitres = faker.datatype.number({ min: 1, max: 10 });
-  const herbicideDilution = faker.datatype.float({ min: 0.0, max: 0.5 });
-  const herbicideArea = faker.datatype.float({ min: 0.0, max: 0.5 });
+  const herbicideLitres = faker.datatype.number({ min: 1, max: 4 });
+  const herbicideDilution = faker.datatype.number({ min: 1, max: 4 });
+  const herbicideArea = 1;
 
   before(() => {
     cy.log('CHECK IF configFile HAS CORRECT dbConfig IN ORDER TO TEST DATABASE');
     cy.log('LOG IN PRIOR TO RUNNING TEST');
     cy.wait(5000);
     cy.visit(Cypress.env('redirectUri'));
+    if (Cypress.env().configFile === 'development') {
+      cy.wait(35000);
+    }
   });
   it('It goes to My Records Page', function () {
     cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
     cy.contains('Observations');
   });
   it('It creates a Chemical Terrestrial Treatment record', function () {
-    cy.get(
-      ':nth-child(2) > :nth-child(1) > #panel-map-header > .makeStyles-toolbar-62 > :nth-child(2) > :nth-child(1)'
-    ).click('center');
+    if (Cypress.env().configFile === 'development') {
+      cy.get(':nth-child(2) > .MuiPaper-root > #panel-map-header > .jss62 > :nth-child(2) > :nth-child(1)').click(
+        'center'
+      );
+    } else {
+      cy.get(
+        ':nth-child(2) > :nth-child(1) > #panel-map-header > .makeStyles-toolbar-62 > :nth-child(2) > :nth-child(1)'
+      ).click('center');
+    }
     cy.contains('Activity Treatment Chemical Plant Terrestrial');
   });
   it('It places a marker', function () {
@@ -106,7 +117,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.wait(1000);
     // Access Description
     cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription, {
-      delay: 100
+      delay: 50
     });
     cy.get('.MuiOutlinedInput-root > #root_activity_data_location_description').type(locationDescription);
   });
@@ -200,5 +211,8 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('#mui-90').type(herbicideDilution);
     // Area Treated (sqm)
     cy.get('#mui-92').type(herbicideArea);
+    // if (herbicideCalculationType === 'Product Application Rate{enter}') {
+    //   cy.get('#mui-92').type(herbicideArea)
+    // }
   });
 });
