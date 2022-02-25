@@ -1,17 +1,9 @@
 # bcgov/invasivesbc/app
 
-
-
-
-
-
 ## Documenation
 
 Ionic React: https://ionicframework.com/docs/react  
-Ionic React API: https://ionicframework.com/docs/api/route
-React: https://reactjs.org/docs/getting-started.html
-
-
+Ionic React API: https://ionicframework.com/docs/api/route React: https://reactjs.org/docs/getting-started.html
 
 ## Run the app locally (web)
 
@@ -129,3 +121,26 @@ Before doing the following steps you have to build the app to iOS:
 10. Then click the Trust "Your AppleId"
 
 If you still have trouble use this link https://ionicframework.com/blog/deploying-to-a-device-without-an-apple-developer-account/
+
+## Run Cypress Tests
+
+By default the environment is set to local. Before running any Cypress test you have to do the following:
+
+- `npx cypress open`
+- `npx cypress open --env configFile=development`
+- `npx cypress open --env configFile=myCustomConfigFile`
+
+1. Check if your configFile matches the environment you want to run in.
+
+- Your config file should be located invasivesbc/app/cypress/config
+
+2. Within the configFile you should see two json files:
+
+- local.json
+- development.json
+
+3. Make sure your information about your container/database matches the dbconfig.
+4. After when you run the cypress command above and select one of the tests in the GUI.
+5. Once a test is selected you should be prompted with a browser and the Cypress testing tab.
+6. In that browser open the app in another tab and login as you usually would when testing.
+7. Go back to the previous tab and re-run the test.
