@@ -80,7 +80,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
             props.inputGeo && props.inputGeo[0]
               ? setWellFeatures(getClosestWellToPolygon(returnVal.features))
-              : setWellFeatures(returnVal);
+              : setWellFeatures(returnVal.features);
           } else {
             setOtherFeatures(returnVal);
           }
@@ -115,7 +115,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       }
 
       const allFeatures = await fetchLayerDataFromLocal(props.dataBCLayerName, mapExtent, databaseContext);
-
       //set useState var to display features
       if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
         //if there is a geometry drawn, get closest wells and wells inside and label them
@@ -141,28 +140,31 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
     }
 
-    if (booleanWithin(geoJSONFeature as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
-      const turfPolygon = polygon((geoJSONFeature.geometry as any).coordinates);
+    // if (booleanWithin(geoJSONFeature as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
+    const turfPolygon = polygon((geoJSONFeature.geometry as any).coordinates);
 
-      if (arrayOfWells.length < 1) {
-        return arrayOfWells;
-      }
-      arrayOfWells.forEach((well, index) => {
-        if (inside(well, turfPolygon)) {
-          outputWells.push({ ...well, inside: true });
-        } else {
-          outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
-        }
-      });
-      //sort by proximity ASC
-      outputWells.sort((wellA, wellB) => {
-        return wellA.proximity - wellB.proximity;
-      });
-
-      outputWells[0] = { ...outputWells[0], closest: true };
-
-      return outputWells;
+    if (arrayOfWells.length < 1) {
+      return arrayOfWells;
     }
+    arrayOfWells.forEach((well, index) => {
+      if (inside(well, turfPolygon)) {
+        outputWells.push({ ...well, inside: true });
+      } else {
+        outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
+      }
+    });
+    //sort by proximity ASC
+    outputWells.sort((wellA, wellB) => {
+      return wellA.proximity - wellB.proximity;
+    });
+
+    outputWells[0] = { ...outputWells[0], closest: true };
+
+    return outputWells;
+    // }
+    // else{
+
+    // }
   };
 
   //this is used to display all geoJSON data except for wells
@@ -196,9 +198,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
-        wellFeatures.features &&
-        wellFeatures.features.length > 0 &&
-        wellFeatures.features.map((feature) => {
+        wellFeatures &&
+        wellFeatures.length > 0 &&
+        wellFeatures.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {
