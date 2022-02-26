@@ -70,10 +70,7 @@ export const Treatment_ChemicalPlant_Information = {
   type: 'object',
   title: 'Chemical Treatment Information',
   required: [
-    'applicator1_name',
-    'applicator1_license',
     'pesticide_employer_code',
-    'chemical_method_code',
     'temperature',
     'wind_speed',
     'wind_direction_code',
