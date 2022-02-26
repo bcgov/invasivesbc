@@ -151,7 +151,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                 Record a Polygon!
               </Button>
             </Grid>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+            {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record Buffered Line!
               </Button>
@@ -160,7 +160,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               <Button disabled={true} variant="contained" color="secondary" onClick={endTrack}>
                 End Track Recording
               </Button>
-            </Grid>
+            </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
               <MapContainer {...props} activityId={props.activityId} />
             </Grid>
