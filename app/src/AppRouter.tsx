@@ -46,6 +46,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   return (
     <Switch>
+      <Redirect exact from="//localhost/" to="/home/landing" /> {/* Android workaround */}
       <Redirect exact from="/" to="/home/landing" />
       <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
       <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout} />
