@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef, useMemo } from 'react';
+import React, { useEffect, useContext, useRef, useMemo, useState } from 'react';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
@@ -25,6 +25,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Box,
   Grid,
   IconButton,
   List,
@@ -44,7 +45,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import SettingsIcon from '@mui/icons-material/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ColorPicker } from 'mui-color';
-import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+// import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { LayersSelector } from './LayerModeSelector';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
@@ -242,6 +243,18 @@ export const LayerPicker = React.memo(
       setLayers(returnVal);
     };
 
+    const [popoverAnchorEl, setPopoverAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+    const handlePopoverClick = (event: any) => {
+      setPopoverAnchorEl(event.currentTarget);
+    };
+    const handlePopoverClose = () => {
+      setPopoverAnchorEl(null);
+    };
+
+    const popoverOpen = Boolean(popoverAnchorEl);
+    const popoverId = popoverOpen ? 'simple-popover' : undefined;
+
     return (
       <>
         {layers.map((parent) => (
@@ -280,63 +293,56 @@ export const LayerPicker = React.memo(
             )}
           </div>
         ))}
-        <PopupState variant="popover" popupId="layer-picker-popup-state">
-          {(popupState) => (
-            <>
-              <ListItem disableGutters>
-                <ListItemButton id="layer-picker-btn" {...bindTrigger(popupState)}>
-                  <ListItemIcon>
-                    <LayersIcon />
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Typography className={toolClass.Font}>Layer Picker</Typography>
-                  </ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <Popover
-                id="layer-picker-popover"
-                style={{ maxHeight: 500 }}
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}>
-                <SortableListContainer
-                  items={sortArray(layers)}
-                  onSortEnd={onSortEnd}
-                  useDragHandle={true}
-                  lockAxis="y"
-                />
-                <Button
-                  id="layer-picker-save-btn"
-                  onClick={() => {
-                    localStorage.setItem('mySave', JSON.stringify(layers));
-                  }}>
-                  Save
-                </Button>
-                <Button
-                  id="layer-picker-load-btn"
-                  onClick={() => {
-                    setLayers(JSON.parse(localStorage.getItem('mySave')));
-                  }}>
-                  Load
-                </Button>
-                <Accordion id="admin-shape-upload-accordion">
-                  <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
-                  <KMLShapesUpload />
-                </Accordion>
-                <Accordion id="layer-picker-kml-accordion">
-                  <AccordionSummary>KML upload</AccordionSummary>
-                  <KMLUpload />
-                </Accordion>
-              </Popover>
-            </>
-          )}
-        </PopupState>
+        <Box id="el">
+          <Popover
+            id={popoverId}
+            style={{ maxHeight: 500 }}
+            open={popoverOpen}
+            onClose={handlePopoverClose}
+            anchorEl={popoverAnchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}>
+            <SortableListContainer items={sortArray(layers)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+            <Button
+              id="layer-picker-save-btn"
+              onClick={() => {
+                localStorage.setItem('mySave', JSON.stringify(layers));
+              }}>
+              Save
+            </Button>
+            <Button
+              id="layer-picker-load-btn"
+              onClick={() => {
+                setLayers(JSON.parse(localStorage.getItem('mySave')));
+              }}>
+              Load
+            </Button>
+            <Accordion id="admin-shape-upload-accordion">
+              <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
+              <KMLShapesUpload />
+            </Accordion>
+            <Accordion id="layer-picker-kml-accordion">
+              <AccordionSummary>KML upload</AccordionSummary>
+              <KMLUpload />
+            </Accordion>
+          </Popover>
+          <ListItem disableGutters>
+            <ListItemButton id="layer-picker-btn" onClick={handlePopoverClick}>
+              <ListItemIcon>
+                <LayersIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography className={toolClass.Font}>Layer Picker</Typography>
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
+        </Box>
       </>
     );
   },
