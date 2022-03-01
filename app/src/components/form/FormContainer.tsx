@@ -14,7 +14,7 @@ import {
   Typography
 } from '@mui/material';
 import { ISubmitEvent } from '@rjsf/core';
-import { MuiForm5 as Form } from '@kerematam/rjsf-mui';
+import { MuiForm5 as Form } from '@rjsf/material-ui';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
