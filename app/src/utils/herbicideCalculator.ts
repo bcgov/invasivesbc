@@ -35,6 +35,14 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
     if (chemical_application_method_type === 'spray') {
       //single herb single inv plant
       if (herbicides.length < 2 && invasive_plants.length < 2) {
+        const percentages_of_treatment_on_species = [];
+        invasive_plants.forEach((plant) => {
+          if (invasive_plants.length < 2) {
+            percentages_of_treatment_on_species.push(100);
+          } else {
+            percentages_of_treatment_on_species.push(plant.percent_area_covered);
+          }
+        });
         if (herbicides[0].herbicide_type_code === 'L') {
           if (herbicides[0].calculation_type === 'PAR') {
             calculationResults = sSpecie_sLHerb_spray_usingProdAppRate(
@@ -50,6 +58,25 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
               herbicides[0].amount_of_mix,
               herbicides[0].dilution,
               herbicides[0].area_treated_sqm
+            );
+          }
+        } else if (herbicides[0].herbicide_type_code === 'G') {
+          if (herbicides[0].calculation_type === 'PAR') {
+            calculationResults = mSpecie_sGHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix,
+              percentages_of_treatment_on_species
+            );
+            console.log(calculationResults);
+          } else if (herbicides[0].calculation_type === 'D') {
+            calculationResults = mSpecie_sGHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm,
+              percentages_of_treatment_on_species
             );
           }
         }
@@ -375,7 +402,7 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
     !amount_of_mix ||
     !delivery_rate_of_mix ||
     !percentages_of_treatment_on_species ||
-    percentages_of_treatment_on_species.length < 2
+    percentages_of_treatment_on_species.length < 1
   ) {
     return resultObj;
   }
@@ -440,7 +467,7 @@ export const mSpecie_sGHerb_spray_usingDilutionPercent = (
     !dilution ||
     !area_treated_sqm ||
     !percentages_of_treatment_on_species ||
-    percentages_of_treatment_on_species.length < 2
+    percentages_of_treatment_on_species.length < 1
   ) {
     return resultObj;
   }
