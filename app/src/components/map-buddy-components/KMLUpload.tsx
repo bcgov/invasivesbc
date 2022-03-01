@@ -4,7 +4,7 @@ import { DocType } from 'constants/database';
 import { DatabaseContext, upsert, UpsertType } from 'contexts/DatabaseContext';
 // node doesn't have xml parsing or a dom. use xmldom
 import JSZip from 'jszip';
-import { DropzoneArea } from 'material-ui-dropzone';
+import { DropzoneArea } from 'mui-file-dropzone';
 import React, { useContext, useEffect, useState } from 'react';
 const DOMParser = require('xmldom').DOMParser;
 
