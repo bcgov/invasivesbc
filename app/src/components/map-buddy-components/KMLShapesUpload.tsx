@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import { DropzoneArea } from 'material-ui-dropzone';
+import { DropzoneArea } from 'mui-file-dropzone';
 import { setMatchers } from 'expect/build/jestMatchersObject';
 
 export interface IShapeUploadRequest {
