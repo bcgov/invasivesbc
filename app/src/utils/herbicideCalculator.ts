@@ -69,7 +69,6 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
               herbicides[0].delivery_rate_of_mix,
               percentages_of_treatment_on_species
             );
-            console.log(calculationResults);
           } else if (herbicides[0].calculation_type === 'D') {
             calculationResults = mSpecie_sGHerb_spray_usingDilutionPercent(
               area,
