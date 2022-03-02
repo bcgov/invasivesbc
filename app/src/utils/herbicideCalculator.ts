@@ -362,7 +362,7 @@ export const mSpecie_sLHerb_spray_usingDilutionPercent = (
 
   resultObj = {
     area_treated_hectares: parseToRightFormat(area_treated_hectares),
-    species: species
+    invasive_plants: species
   };
 
   return resultObj;
@@ -431,7 +431,7 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
   dilution = parseToRightFormat(dilution);
   resultObj = {
     dilution: dilution,
-    species: species
+    invasive_plants: species
   };
 
   return resultObj;
@@ -489,7 +489,7 @@ export const mSpecie_sGHerb_spray_usingDilutionPercent = (
 
   resultObj = {
     area_treated_hectares: parseToRightFormat(area_treated_hectares),
-    species: species
+    invasive_plants: species
   };
 
   return resultObj;
