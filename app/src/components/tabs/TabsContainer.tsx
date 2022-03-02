@@ -276,14 +276,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map fontSize={'small'} />
         });
 
-        if (isAuthorized()) {
-          tabsUserHasAccessTo.push({
-            label: 'Search',
-            path: '/home/search',
-            icon: <Search fontSize={'small'} />
-          });
-        }
-
         if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'My Records',
