@@ -11,16 +11,18 @@ export async function getUserByBCEID(bceid) {
   const connection = await getDBConnection();
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'user-utils'
     };
   }
   try {
     const sqlStatement: SQLStatement = getUserByBCEIDSQL(bceid);
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'user-utils'
       };
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -32,7 +34,11 @@ export async function getUserByBCEID(bceid) {
     }
   } catch (error) {
     defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get user by BCEID',
+      namespace: 'user-utils'
+    };
   } finally {
     connection.release();
   }
@@ -43,16 +49,18 @@ export async function getUserByIDIR(idir) {
   const connection = await getDBConnection();
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'user-utils'
     };
   }
   try {
     const sqlStatement: SQLStatement = getUserByIDIRSQL(idir);
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'user-utils'
       };
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -64,7 +72,11 @@ export async function getUserByIDIR(idir) {
     }
   } catch (error) {
     defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get user by IDIR',
+      namespace: 'user-utils'
+    };
   } finally {
     connection.release();
   }
@@ -74,16 +86,18 @@ export async function getRolesForUser(userId) {
   const connection = await getDBConnection();
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'user-utils'
     };
   }
   try {
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'user-utils'
       };
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -91,7 +105,11 @@ export async function getRolesForUser(userId) {
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get roles for user',
+      namespace: 'user-utils'
+    };
   } finally {
     connection.release();
   }

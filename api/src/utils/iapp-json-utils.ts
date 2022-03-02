@@ -71,14 +71,18 @@ export const getSpeciesRef = async () => {
   try {
     connection = await getDBConnection();
   } catch (e) {
-    console.log('error getting database connection');
-    console.log(JSON.stringify(e));
+    throw {
+      message: 'Error connecting to database',
+      code: 500,
+      namespace: 'iapp-json-utils'
+    };
   }
 
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'iapp-json-utils'
     };
   }
 
@@ -87,8 +91,9 @@ export const getSpeciesRef = async () => {
 
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'iapp-json-utils'
       };
     }
 
@@ -97,7 +102,11 @@ export const getSpeciesRef = async () => {
     return response.rows;
   } catch (error) {
     defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get species ref',
+      namespace: 'iapp-json-utils'
+    };
   } finally {
     connection.release();
   }
@@ -288,14 +297,18 @@ export const getIAPPsites = async (searchCriteria: any) => {
   try {
     connection = await getDBConnection();
   } catch (e) {
-    console.log('error getting database connection');
-    console.log(JSON.stringify(e));
+    throw {
+      message: 'Error connecting to database',
+      code: 500,
+      namespace: 'iapp-json-utils'
+    };
   }
 
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'iapp-json-utils'
     };
   }
 
@@ -304,8 +317,9 @@ export const getIAPPsites = async (searchCriteria: any) => {
 
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'iapp-json-utils'
       };
     }
 
@@ -319,7 +333,11 @@ export const getIAPPsites = async (searchCriteria: any) => {
     };
   } catch (error) {
     defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get IAPP sites',
+      namespace: 'iapp-json-utils'
+    };
   } finally {
     connection.release();
   }

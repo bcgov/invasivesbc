@@ -15,7 +15,13 @@ export const getCodeCategoriesSQL = (): SQLStatement =>
  *
  */
 export const getEmployerCodesSQL = (): SQLStatement =>
-  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=76;`;
+  SQL`select
+      code.code_id, 
+      code.code_name, 
+      code.code_description
+      from code_header 
+      inner join code on code_header.code_header_id=code.code_header_id
+      where code_header.code_header_name='employer_code';`;
 
 /**
  * SQL query to fetch funding agency codes.
@@ -24,7 +30,13 @@ export const getEmployerCodesSQL = (): SQLStatement =>
  *
  */
 export const getFundingAgencyCodesSQL = (): SQLStatement =>
-  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=41;`;
+  SQL`select
+      code.code_id, 
+      code.code_name, 
+      code.code_description
+      from code_header 
+      inner join code on code_header.code_header_id=code.code_header_id
+      where code_header.code_header_name='invasive_species_agency_code';`;
 
 /**
  * SQL query to fetch service license codes.
@@ -33,7 +45,13 @@ export const getFundingAgencyCodesSQL = (): SQLStatement =>
  *
  */
 export const getServiceLicenseCodesSQL = (): SQLStatement =>
-  SQL`SELECT code_name, code_description, code_id FROM code WHERE valid_to IS NULL and code_header_id=43;`;
+  SQL`select
+      code.code_id, 
+      code.code_name, 
+      code.code_description
+      from code_header 
+      inner join code on code_header.code_header_id=code.code_header_id
+      where code_header.code_header_name='service_license_code';`;
 
 /**
  * SQL query to fetch code headers.

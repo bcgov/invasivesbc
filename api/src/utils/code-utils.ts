@@ -46,8 +46,9 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
 
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'code-utils'
     };
   }
 
@@ -61,8 +62,9 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
 
     if (!codeCategoriesSQL || !codeHeadersSQL || !codesSQL) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'code-utils'
       };
     }
 
@@ -104,17 +106,27 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
         filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === '0'));
       }
 
+      const employerCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'employer_code')
+        .code_header_id;
+
+      const agencyCodeHeaderId = responses[1].rows.find(
+        (code: any) => code.code_header_name === 'invasive_species_agency_code'
+      ).code_header_id;
+
+      const psnCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'service_license_code')
+        .code_header_id;
+
       const filteredCodes = responses[2].rows.filter((code: any) => {
         if (user) {
-          if (code.code_header_id === 76) {
+          if (code.code_header_id === employerCodeHeaderId) {
             return filteredEmployerCodes.some((employerCode: any) => {
               return employerCode.code_id === code.code_id;
             });
-          } else if (code.code_header_id === 41) {
+          } else if (code.code_header_id === agencyCodeHeaderId) {
             return filteredAgencyCodes.some((agencyCode: any) => {
               return agencyCode.code_id === code.code_id;
             });
-          } else if (code.code_header_id === 43) {
+          } else if (code.code_header_id === psnCodeHeaderId) {
             return filteredPSNCodes.some((psnCode: any) => {
               return psnCode.code_id === code.code_id;
             });
@@ -136,7 +148,11 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
     }
   } catch (error) {
     defaultLog.debug({ label: 'getAllCodeEntities', message: 'error', error });
-    throw error;
+    throw {
+      code: 500,
+      message: 'Failed to get all code entities',
+      namespace: 'code-utils'
+    };
   } finally {
     connection.release();
   }
