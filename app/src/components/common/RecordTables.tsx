@@ -160,10 +160,10 @@ export const defaultActivitiesFetch =
       review_status: review_status,
       linked_id: linked_id
     };
-    const result = await dataAccess.getActivities(criteria, databaseContext, true);
+    const response = await dataAccess.getActivities(criteria, databaseContext, true);
     return {
-      rows: result?.rows?.map(activityStandardMapping) || [],
-      count: result?.count || 0
+      rows: response?.result?.map(activityStandardMapping) || [],
+      count: response?.count || 0
     };
   };
 
@@ -281,7 +281,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       }
     };
   });
-
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined') {
@@ -421,10 +420,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                             activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
                           )
                             return;
-                          const dbActivity: any = await dataAccess.getActivityById(
-                            activity.activity_id,
-                            databaseContext
-                          );
+                          const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                          const dbActivity = response.result;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -470,10 +467,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                             activity.review_status === ReviewStatus.UNDER_REVIEW
                           )
                             return;
-                          const dbActivity: any = await dataAccess.getActivityById(
-                            activity.activity_id,
-                            databaseContext
-                          );
+                          const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                          const dbActivity = response.result;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -521,10 +516,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                             activity.review_status !== ReviewStatus.UNDER_REVIEW
                           )
                             return;
-                          const dbActivity: any = await dataAccess.getActivityById(
-                            activity.activity_id,
-                            databaseContext
-                          );
+                          const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                          const dbActivity = response.result;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -574,10 +567,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                             activity.review_status !== ReviewStatus.UNDER_REVIEW
                           )
                             return;
-                          const dbActivity: any = await dataAccess.getActivityById(
-                            activity.activity_id,
-                            databaseContext
-                          );
+                          const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                          const dbActivity = response.result;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -1356,7 +1347,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
             // if page is right near the db page limit
             dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-          const result = await dataAccess.getPointsOfInterest(
+          const response = await dataAccess.getPointsOfInterest(
             {
               page: Math.floor((page * rowsPerPage) / dbPageSize),
               limit: dbPageSize,
@@ -1365,8 +1356,8 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             databaseContext
           );
           return {
-            rows: result.rows.map(poiStandardDBMapping) || [],
-            count: result.count || 0
+            rows: response.result.rows.map(poiStandardDBMapping) || [],
+            count: response.result.count || 0
           };
         }}
         actions={
