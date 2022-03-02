@@ -100,18 +100,19 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     }
     if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
       // If user is logged in, check if they have requested access
-      const accessRequest = await api.getAccessRequestData({
+      const response = await api.getAccessRequestData({
         username: userInfo.preferred_username
       });
+      const accessRequest = response.result;
       if (accessRequest) {
-      }
-      if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
-        setAccessRequested(false);
-        return;
-      }
-      if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
-        setAccessRequested(true);
-        return;
+        if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
+          setAccessRequested(false);
+          return;
+        }
+        if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
+          setAccessRequested(true);
+          return;
+        }
       }
     }
   };
