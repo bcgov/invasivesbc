@@ -245,6 +245,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              id="amount-of-mix-used"
               className={classes.inputField}
               type="number"
               label="Amount of Mix Used (L)"
@@ -273,6 +274,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              id="dilution"
               className={classes.inputField}
               type="number"
               label="Dilution (%)"
@@ -297,6 +299,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              id="area-treated"
               className={classes.inputField}
               type="number"
               label="Area Treated (sqm)"
