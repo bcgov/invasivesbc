@@ -36,7 +36,8 @@ import {
   Popover,
   Slider,
   Tooltip,
-  Typography
+  Typography,
+  ClickAwayListener
 } from '@mui/material';
 import ColorLens from '@mui/icons-material/ColorLens';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -152,17 +153,7 @@ export const LayerPicker = React.memo(
                     }}
                   />
                 </Grid>
-                <Grid item xs={6}>
-                  <Tooltip
-                    disableFocusListener
-                    placement="right"
-                    title={child.bcgw_code ? child.bcgw_code : child.layer_code}>
-                    <IconButton sx={{ marginLeft: -10, padding: 3 }}>
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Typography variant="caption">{child.name}</Typography>
-                </Grid>
+                <InfoTooltip child={child} />
                 {/* Settings Dialog Box */}
                 {process.env.REACT_APP_REAL_NODE_ENV === 'development' && (
                   <LayerModeDialog parent={parent} child={child} />
@@ -394,6 +385,36 @@ const LayerModeDialog = (props) => {
           />
         </DialogActions>
       </Dialog>
+    </Grid>
+  );
+};
+
+const InfoTooltip = (props: any) => {
+  const { child } = props;
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <Grid item xs={6}>
+      <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <div>
+          <Tooltip
+            sx={{ marginLeft: -7, zIndex: 9999 }}
+            PopperProps={{
+              disablePortal: true
+            }}
+            disableFocusListener
+            disableHoverListener
+            open={open}
+            onClose={() => setOpen(false)}
+            placement="right"
+            title={child.bcgw_code ? child.bcgw_code : child.layer_code}>
+            <IconButton onClick={() => setOpen(!open)}>
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="caption">{child.name}</Typography>
+        </div>
+      </ClickAwayListener>
     </Grid>
   );
 };
