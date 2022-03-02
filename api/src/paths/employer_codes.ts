@@ -50,20 +50,36 @@ function getEmployerCodes(): RequestHandler {
   return async (req, res) => {
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'employer_codes',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getEmployerCodesSQL();
 
+      if (!sqlStatement) {
+        return res.status(500).json({
+          error: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'employer_codes',
+          code: 500
+        });
+      }
+
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows) || null;
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Successfully fetched employer codes',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'employer_codes',
+        code: 200
+      });
     } finally {
       connection.release();
     }

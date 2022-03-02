@@ -34,10 +34,12 @@ function getSpeciesDetails(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'species',
+        code: 503
+      });
     }
 
     let species: any;
@@ -57,13 +59,26 @@ function getSpeciesDetails(): RequestHandler {
       species = allCodeEntities.codes.filter(
         (item) => (item['code_header_id'] === 28 || item['code_header_id'] === 29) && keys.includes(item['code_name'])
       );
+
+      return res.status(200).json({
+        message: 'Successfully retrieved species.',
+        request: req.body,
+        result: species,
+        count: species.length,
+        namespace: 'species',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getSpecies', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Unable to fetch species.',
+        request: req.body,
+        error: error,
+        namespace: 'species',
+        code: 500
+      });
     } finally {
       connection.release();
     }
-
-    return res.status(200).json(species);
   };
 }

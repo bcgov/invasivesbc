@@ -70,10 +70,12 @@ function getElevation(): RequestHandler {
 
     // Error if no coordinates
     if (!lon || !lat) {
-      throw {
-        status: 400,
-        message: 'Did not supply valid coordinates'
-      };
+      return res.status(400).json({
+        message: 'Bad request - missing coordinates',
+        request: req.query,
+        namespace: 'context/elevation',
+        code: 400
+      });
     }
 
     defaultLog.debug({ label: 'elevation', message: 'getElevation', body: req.body });
@@ -83,10 +85,23 @@ function getElevation(): RequestHandler {
     axios
       .get(url)
       .then((response) => {
-        return res.status(200).json({ elevation: response.data?.altitude });
+        return res.status(200).json({
+          message: 'Got elevation',
+          request: req.query,
+          result: response.data?.altitude,
+          namespace: 'context/elevation',
+          code: 200
+        });
       })
       .catch((error) => {
-        return defaultLog.debug({ label: 'getElevation', message: 'error', error });
+        defaultLog.debug({ label: 'getElevation', message: 'error', error, namespace: 'context/elevation' });
+        return res.status(500).json({
+          message: 'Error getting elevation',
+          request: req.query,
+          error,
+          namespace: 'context/elevation',
+          code: 500
+        });
       });
   };
 }

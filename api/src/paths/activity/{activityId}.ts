@@ -71,20 +71,24 @@ function getActivity(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'activity/{activityId}',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Unable to generate SQL statement.',
+          request: req.body,
+          namespace: 'activity/{activityId}',
+          code: 500
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -94,7 +98,13 @@ function getActivity(): RequestHandler {
       req['activity'] = result;
     } catch (error) {
       defaultLog.debug({ label: 'getActivity', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Unable to fetch activity.',
+        request: req.body,
+        error: error,
+        namespace: 'activity/{activityId}',
+        code: 500
+      });
     } finally {
       connection.release();
     }

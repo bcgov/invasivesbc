@@ -77,10 +77,12 @@ function getContext(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.query,
+        namespace: 'context/transform',
+        code: 503
+      });
     }
 
     // Grab coordinates and epsg from the query string
@@ -88,10 +90,12 @@ function getContext(): RequestHandler {
 
     // Error if no coordinates
     if (!lon || !lat || !epsg) {
-      throw {
-        status: 400,
-        message: 'Did not supply valid coordinates or epsg code'
-      };
+      return res.status(400).json({
+        message: 'Did not supply valid coordinates or epsg code',
+        request: req.query,
+        namespace: 'context/transform',
+        code: 400
+      });
     }
 
     const sql = `
@@ -115,10 +119,15 @@ function getContext(): RequestHandler {
     try {
       const response = await connection.query(sql);
       const payload = { target: response.rows[0] };
-      res.status(200).json(payload);
+      res.status(200).json({ message: 'Got context', request: req.query, result: payload, code: 200 });
     } catch (error) {
       defaultLog.debug({ label: 'getContext', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error fetching context',
+        error: error,
+        namespace: 'context/transform',
+        code: 500
+      });
     } finally {
       connection.release();
     }
