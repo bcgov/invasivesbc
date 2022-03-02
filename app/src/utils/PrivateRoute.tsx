@@ -1,9 +1,10 @@
 import { Capacitor } from '@capacitor/core';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 import AccessDenied from '../pages/misc/AccessDenied';
+import { ErrorContext } from 'contexts/ErrorContext';
+import { ErrorBanner } from '../components/error/ErrorBanner';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -20,7 +21,8 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const networkContext = useContext(NetworkContext);
+  const errorContext = useContext(ErrorContext);
+  const [hasErrors, setHasErrors] = React.useState(false);
 
   const [isAuthorized, setIsAuthorized] = React.useState(false);
 
@@ -47,6 +49,14 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     }
   }, [userInfoLoaded, keycloak.obj?.authenticated]);
 
+  useEffect(() => {
+    if (errorContext.hasErrors) {
+      setHasErrors(true);
+    } else {
+      setHasErrors(false);
+    }
+  }, [errorContext.hasErrors, errorContext.errorArray]);
+
   return (
     <Route
       {...rest}
@@ -55,6 +65,17 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
           <>
             {isAuthorized && (
               <Layout>
+                {hasErrors &&
+                  errorContext.errorArray.map((error: any) => {
+                    return (
+                      <ErrorBanner
+                        key={error.code.toString() + error.message + error.namespace}
+                        code={error.code}
+                        message={error.message}
+                        namespace={error.namespace}
+                      />
+                    );
+                  })}
                 <Component {...renderProps} {...props.componentProps} />
               </Layout>
             )}
