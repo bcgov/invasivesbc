@@ -48,7 +48,8 @@ export const useDataAccess = () => {
     forceCache = false
   ): Promise<any> => {
     if (platform === 'web') {
-      return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      return response;
     } else {
       if (forceCache === true || !networkContext.connected) {
         const dbcontext = context;
@@ -66,7 +67,8 @@ export const useDataAccess = () => {
           }
         });
       } else {
-        return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+        const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+        return response;
       }
     }
   };
@@ -85,7 +87,8 @@ export const useDataAccess = () => {
     }
   ): Promise<any> => {
     if (platform === 'web') {
-      return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
+      const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      return response;
     } else {
       if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
@@ -98,7 +101,8 @@ export const useDataAccess = () => {
           count: featuresArray.length
         };
       } else {
-        return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
+        const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+        return response;
       }
     }
   };
@@ -117,7 +121,8 @@ export const useDataAccess = () => {
     }
   ): Promise<any> => {
     if (platform === 'web') {
-      return api.getJurisdictions(jurisdictionSearchCriteria);
+      const response = await api.getJurisdictions(jurisdictionSearchCriteria);
+      return response;
     } else {
       if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
@@ -131,7 +136,8 @@ export const useDataAccess = () => {
           count: featuresArray.length
         };
       } else {
-        return api.getJurisdictions(jurisdictionSearchCriteria);
+        const response = await api.getJurisdictions(jurisdictionSearchCriteria);
+        return response;
       }
     }
   };
@@ -150,7 +156,8 @@ export const useDataAccess = () => {
     }
   ): Promise<any> => {
     if (platform === 'web') {
-      return api.getRISOs(risoSearchCriteria);
+      const response = await api.getRISOs(risoSearchCriteria);
+      return response;
     } else {
       if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal('RISOS', risoSearchCriteria.search_feature, context);
@@ -160,7 +167,8 @@ export const useDataAccess = () => {
           count: featuresArray.length
         };
       } else {
-        return api.getRISOs(risoSearchCriteria);
+        const response = await api.getRISOs(risoSearchCriteria);
+        return response;
       }
     }
   };
@@ -182,7 +190,8 @@ export const useDataAccess = () => {
   ): Promise<any> => {
     try {
       if (Capacitor.getPlatform() === 'web') {
-        return api.getActivityById(activityId);
+        const response = await api.getActivityById(activityId);
+        return response;
       } else {
         if (forceCache === true || !networkContext.connected) {
           const dbcontext = context;
@@ -203,7 +212,8 @@ export const useDataAccess = () => {
           });
           return res;
         } else {
-          return api.getActivityById(activityId);
+          const response = await api.getActivityById(activityId);
+          return response;
         }
       }
     } catch (e) {
@@ -231,7 +241,7 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       //TODO: implement getting old version from server and making new with overwritten props
       // IN USEINVASIVES API
-      return api.updateActivity(activity);
+      return await api.updateActivity(activity);
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -306,7 +316,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETAPPLICATIONUSERS: ', res);
         return res;
       }
     });
@@ -317,7 +326,6 @@ export const useDataAccess = () => {
     ready: boolean;
   }) => {
     if (networkContext.connected && isMobile()) {
-      console.log('Got here');
       const users = await api.getApplicationUsers();
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -421,7 +429,7 @@ export const useDataAccess = () => {
       return dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
-            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles }],
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles.result }],
             dbcontext
           );
         }
@@ -490,7 +498,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETEMPLOYERS: ', res);
         return res;
       }
     });
@@ -512,7 +519,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETFUNDINGAGENCIES: ', res);
         return res;
       }
     });
@@ -534,7 +540,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETROLESFORUSER: ', res);
         return res;
       }
     });
@@ -556,7 +561,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETROLES: ', res);
         return res;
       }
     });
@@ -578,7 +582,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM getCurrentUser: ', res);
         return res;
       }
     });
@@ -597,7 +600,8 @@ export const useDataAccess = () => {
     referenceCache = false
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return api.getActivities(activitiesSearchCriteria);
+      const response = await api.getActivities(activitiesSearchCriteria);
+      return response;
     } else {
       if (forceCache === true || !networkContext.connected) {
         const dbcontext = context;
@@ -631,7 +635,8 @@ export const useDataAccess = () => {
           count: asyncReturnVal.length
         };
       } else {
-        return api.getActivities(activitiesSearchCriteria);
+        const response = await api.getActivities(activitiesSearchCriteria);
+        return response;
       }
     }
   };
@@ -647,7 +652,8 @@ export const useDataAccess = () => {
     context: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return api.getActivitiesLean(activitiesSearchCriteria);
+      const response = await api.getActivitiesLean(activitiesSearchCriteria);
+      return response;
     } else {
       if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
@@ -661,7 +667,8 @@ export const useDataAccess = () => {
           count: featuresArray.length
         };
       } else {
-        return api.getActivitiesLean(activitiesSearchCriteria);
+        const response = await api.getActivitiesLean(activitiesSearchCriteria);
+        return response;
       }
     }
   };
@@ -677,7 +684,7 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return api.createActivity(activity);
+      return await api.createActivity(activity);
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -710,7 +717,7 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return api.deleteActivities(activityIds);
+      return await api.deleteActivities(activityIds);
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -747,7 +754,6 @@ export const useDataAccess = () => {
           dbcontext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        console.log('RES FROM GETROLESFORUSER: ', res);
         return res;
       }
     });
@@ -804,7 +810,7 @@ export const useDataAccess = () => {
         if (res.count > 0) {
           res.rows.forEach(async (row: ICreateOrUpdateActivity) => {
             try {
-              api.createActivity(row);
+              await api.createActivity(row);
             } catch (err) {
               console.log('Error saving activity to api');
             }
