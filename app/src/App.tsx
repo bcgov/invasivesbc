@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import { KeycloakProvider } from '@react-keycloak/web';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
+import { ErrorContextProvider } from 'contexts/ErrorContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -156,25 +157,27 @@ const App: React.FC<IAppProps> = (props) => {
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       {deviceInfo !== null ? (
-        <NetworkContextProvider>
-          <KeycloakProvider
-            keycloak={keycloak}
-            LoadingComponent={loadingComponent}
-            initConfig={keycloakConfig}
-            onEvent={getKeycloakEventHandler(keycloak)}>
-            <DatabaseContextProvider>
-              <AuthStateContextProvider>
-                <CustomThemeProvider>
-                  <IonReactRouter>
-                    <DebugRouter>
-                      <AppRouter {...appRouterProps} />
-                    </DebugRouter>
-                  </IonReactRouter>
-                </CustomThemeProvider>
-              </AuthStateContextProvider>
-            </DatabaseContextProvider>
-          </KeycloakProvider>
-        </NetworkContextProvider>
+        <ErrorContextProvider>
+          <NetworkContextProvider>
+            <KeycloakProvider
+              keycloak={keycloak}
+              LoadingComponent={loadingComponent}
+              initConfig={keycloakConfig}
+              onEvent={getKeycloakEventHandler(keycloak)}>
+              <DatabaseContextProvider>
+                <AuthStateContextProvider>
+                  <CustomThemeProvider>
+                    <IonReactRouter>
+                      <DebugRouter>
+                        <AppRouter {...appRouterProps} />
+                      </DebugRouter>
+                    </IonReactRouter>
+                  </CustomThemeProvider>
+                </AuthStateContextProvider>
+              </DatabaseContextProvider>
+            </KeycloakProvider>
+          </NetworkContextProvider>
+        </ErrorContextProvider>
       ) : (
         <></>
       )}
