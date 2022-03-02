@@ -19,7 +19,15 @@ const TankMix: React.FC = (props) => {
   useEffect(() => {
     setFormDetails((prevDetails) => ({
       ...prevDetails,
-      formData: { ...prevDetails.formData, tank_mix_object: { ...currentTankMix } }
+      formData: {
+        ...prevDetails.formData,
+        tank_mix_object: {
+          ...formDetails.formData.tank_mix_object,
+          delivery_rate_of_mix: currentTankMix.delivery_rate_of_mix,
+          amount_of_mix: currentTankMix.amount_of_mix,
+          calculation_type: currentTankMix.calculation_type
+        }
+      }
     }));
   }, [currentTankMix]);
 
