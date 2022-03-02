@@ -3,6 +3,9 @@ pest_management_plan,MOTI PMP 102-0671-21-26,MOTI PMP 102-0671-21-26 [South Coas
 pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],2
 pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
 pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
+pest_management_plan,BC HYDRO 105-0985-21/26,BC HYDRO PMP 105-0985-21/26 [Facilities/Adjacent],5
+pest_management_plan,BC HYDRO 105-0982-16/21,BC HYDRO PMP 105-0982-16/21 [ROWs/Corridors],6
+pest_management_plan,N/A,PMP Not Required,7
 plant_life_stage_code,U,unknown,1
 plant_life_stage_code,SG,Small germinating plants,2
 plant_life_stage_code,RO,Rosettes,3
@@ -99,6 +102,26 @@ proposed_treatment_code,BT,Biological treatment,6
 proposed_treatment_code,BC,Biological collection,7
 proposed_treatment_code,BM,Biological monitoring,8
 proposed_treatment_code,BD,Biological dispersal survey,9
+precautionary_statement_code,2W,No entry for 2 weeks,1
+precautionary_statement_code,DRY,No entry until herbicide is dry,2
+precautionary_statement_code,IRR,Irrigation restrictions,3  
+precautionary_statement_code,COM,More information in comments,4
+management_efficacy_code,1M,1 0%-19%,1
+management_efficacy_code,2M,2 20%-29%,2  
+management_efficacy_code,3M,3 30%-39%,3  
+management_efficacy_code,4M,4 40%-49%,4  
+management_efficacy_code,5M,5 50%-59%,5  
+management_efficacy_code,6M,6 60%-69%,6 
+management_efficacy_code,7M,7 70%-79%,7  
+management_efficacy_code,8M,8 80%-89%,8  
+management_efficacy_code,9M,9 90%-99%,9  
+management_efficacy_code,10M,10 100%,10  
+monitoring_evidence_code,ROP,Regrowth,1
+monitoring_evidence_code,NSR,New Seedlings/Rosettes,2
+monitoring_evidence_code,SWS,Skeletons with seeds,3
+monitoring_evidence_code,SWOS,Skeletons without seed,4
+monitoring_evidence_code,LAU,Large Areas Untreated,5
+monitoring_evidence_code,FSUP,Few Scattered Untreated Plants,6
 observation_type_code,CU,Cursory,1
 observation_type_code,OP,Operational,2
 observation_type_code,PR,Precise,3
@@ -191,7 +214,8 @@ mechanical_disposal_code,IC,Industrial Compost,3
 mechanical_disposal_code,B,Burned,4
 mechanical_disposal_code,II,Industrial Incineration,5
 mechanical_disposal_code,LR,Landfill Regular,6
-mechanical_disposal_code,LDB,Landfill deep Burial,7
+mechanical_disposal_code,LDB,Landfill Deep Burial,7
+mechanical_disposal_code,NA,N/A,8
 survey_or_research_observation_code,Y,Yes,1
 survey_or_research_observation_code,N,No,2
 mechanical_method_code,DIG,Digging,1
@@ -211,7 +235,8 @@ mechanical_method_code,TG,Targeted grazing,14
 mechanical_method_code,TR,Tarping,15
 mechanical_method_code,SED,Seeding,16
 mechanical_method_code,PLT,Planting,17
-mechanical_method_code,CNV,Mechanical Method not recorded,18
+mechanical_method_code,CUT,Cutting,18
+mechanical_method_code,CNV,Mechanical Method not recorded,19
 root_removal_code,X,unknown,1
 root_removal_code,H,fully removed,2
 root_removal_code,M,moderate > 50% remaining,3
@@ -1340,15 +1365,15 @@ vegetation_transect_data_code,ST,Shrubs / trees,6
 vegetation_transect_data_code,BY,Byrophytes,7
 vegetation_transect_data_code,LF,Litter / Feces,8
 cloud_cover_code,0,Clear Sky,2
-cloud_cover_code,1,Few 10% clouds,3
-cloud_cover_code,2,Few 20-30% clouds,4
-cloud_cover_code,3,Scattered 40% clouds,5
-cloud_cover_code,4,Scattered 50% clouds,6
-cloud_cover_code,5,Broken 50% clouds,7
-cloud_cover_code,6,Broken 60-70% clouds,8
-cloud_cover_code,7,Broken 90% clouds,9
-cloud_cover_code,8,Overcast 100% clouds,10
-cloud_cover_code,9,Obscured,11
+cloud_cover_code,1,1 Okta (Few 10% clouds),2
+cloud_cover_code,2,2 Oktas (Few 20-30% clouds),3
+cloud_cover_code,3,3 Oktas (Scattered 40% clouds),4
+cloud_cover_code,4,4 Oktas (Scattered 50% clouds),5
+cloud_cover_code,5,5 Oktas (Broken 50% clouds),6
+cloud_cover_code,6,6 Oktas (Broken 60-70% clouds),7
+cloud_cover_code,7,7 Oktas (Broken 90% clouds),8
+cloud_cover_code,8,8 Oktas (Overcast 100% clouds),9
+cloud_cover_code,9,9 Obscured (eg. smoke),10
 beaufort_wind_code,0,Calm < 1 km/h,2
 beaufort_wind_code,1,Light air 1-5 km/h,3
 beaufort_wind_code,2,Light breeze 6-11 km/h,4
