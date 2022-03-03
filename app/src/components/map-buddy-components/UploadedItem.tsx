@@ -13,7 +13,11 @@ const useStyles = makeStyles((theme: any) => ({
     padding: 5
   },
   icon: { width: '100%', height: 100 },
-  textField: { marginTop: 10 }
+  textField: { marginTop: 10 },
+  statusRepresentationBox: {
+    display: 'flex',
+    justifyContent: 'space-around'
+  }
 }));
 
 const UploadedItem = (props) => {
@@ -28,6 +32,7 @@ const UploadedItem = (props) => {
   return (
     <Card style={{ backgroundColor: valid ? 'warning' : 'error' }} className={classes.container}>
       <AttachFileIcon className={classes.icon} />
+
       <TextField
         className={classes.textField}
         id="uploaded-file-title"

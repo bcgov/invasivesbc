@@ -35,7 +35,8 @@ export const AdminUploadsLayer = (props) => {
 
   useEffect(() => {
     api.getAdminUploadGeoJSONLayer(user_id).then((data) => {
-      setGeoJSON(data);
+      console.log(data);
+      // setGeoJSON(data);
     });
   }, []);
 
