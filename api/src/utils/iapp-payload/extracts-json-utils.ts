@@ -43,7 +43,7 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
     general_comment: treatment.treatment_comments,
     pmra_reg_number: null, // Could not find: Primary Aplicator??????
     application_rate: treatment.application_rate,
-    herbicide_amount: treatment.amount_of_undiluted_herbicide_used, // find herbicide amount
+    herbicide_amount: treatment.amount_of_undiluted_herbicide_used_liters, // find herbicide amount
     mix_delivery_rate: treatment.delivery_rate,
     chemical_method_code: treatment.method, // convert to code
     herbicide_description: treatment.treatment_comments, // I believe this is what it should be???? COuld be wrong

@@ -188,14 +188,14 @@ export const sSpecie_sLHerb_spray_usingProdAppRate = (
   const area_treated_hectares: number = amount_of_mix / delivery_rate_of_mix;
   const area_treated_sqm: number = area_treated_hectares * 10000;
   const percent_area_covered: number = (area_treated_sqm / area) * 100;
-  const amount_of_undiluted_herbicide_used: number = (dilution / 100) * amount_of_mix;
+  const amount_of_undiluted_herbicide_used_liters: number = (dilution / 100) * amount_of_mix;
 
   resultObj = {
     dilution: parseToRightFormat(dilution),
     area_treated_hectares: parseToRightFormat(area_treated_hectares),
     area_treated_sqm: parseToRightFormat(area_treated_sqm),
     percent_area_covered: parseToRightFormat(percent_area_covered),
-    amount_of_undiluted_herbicide_used: parseToRightFormat(amount_of_undiluted_herbicide_used)
+    amount_of_undiluted_herbicide_used_liters: parseToRightFormat(amount_of_undiluted_herbicide_used_liters)
   };
   return resultObj;
 };
@@ -250,14 +250,16 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
       ((amount_of_mix / delivery_rate_of_mix) * percentages_of_treatment_on_species[i]) / 100;
     species[i].area_treated_sqm = species[i].area_treated_hectares * 10000;
     species[i].percentage_area_covered = (species[i].area_treated_sqm / area) * 100;
-    species[i].amount_of_undiluted_herbicide_used =
+    species[i].amount_of_undiluted_herbicide_used_liters =
       (dilution / 100) * amount_of_mix * (percentages_of_treatment_on_species[i] / 100);
 
     species[i].percentage_area_covered = parseToRightFormat(species[i].percentage_area_covered);
     species[i].amount_of_mix_used = parseToRightFormat(species[i].amount_of_mix_used);
     species[i].area_treated_hectares = parseToRightFormat(species[i].area_treated_hectares);
     species[i].area_treated_sqm = parseToRightFormat(species[i].area_treated_sqm);
-    species[i].amount_of_undiluted_herbicide_used = parseToRightFormat(species[i].amount_of_undiluted_herbicide_used);
+    species[i].amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
+      species[i].amount_of_undiluted_herbicide_used_liters
+    );
   }
 
   dilution = parseToRightFormat(dilution);
@@ -297,12 +299,12 @@ export const sSpecie_sLHerb_spray_usingDilutionPercent = (
 
   const area_treated_hectares: number = area_treated_sqm / 10000;
   const percent_area_covered: number = (area_treated_sqm / area) * 100;
-  const amount_of_undiluted_herbicide_used = (dilution / 100) * amount_of_mix;
+  const amount_of_undiluted_herbicide_used_liters = (dilution / 100) * amount_of_mix;
 
   resultObj = {
     area_treated_hectares: parseToRightFormat(area_treated_hectares),
     percent_area_covered: parseToRightFormat(percent_area_covered),
-    amount_of_undiluted_herbicide_used: parseToRightFormat(amount_of_undiluted_herbicide_used)
+    amount_of_undiluted_herbicide_used_liters: parseToRightFormat(amount_of_undiluted_herbicide_used_liters)
   };
 
   return resultObj;
@@ -352,12 +354,14 @@ export const mSpecie_sLHerb_spray_usingDilutionPercent = (
     species[i] = {};
     species[i].area_treated_sqm = area_treated_sqm * (percentages_of_treatment_on_species[i] / 100);
     species[i].percentage_area_covered = (species[i].area_treated_sqm / area) * 100;
-    species[i].amount_of_undiluted_herbicide_used =
+    species[i].amount_of_undiluted_herbicide_used_liters =
       (dilution / 100) * amount_of_mix * (percentages_of_treatment_on_species[i] / 100);
 
     species[i].area_treated_sqm = parseToRightFormat(species[i].area_treated_sqm);
     species[i].percentage_area_covered = parseToRightFormat(species[i].percentage_area_covered);
-    species[i].amount_of_undiluted_herbicide_used = parseToRightFormat(species[i].amount_of_undiluted_herbicide_used);
+    species[i].amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
+      species[i].amount_of_undiluted_herbicide_used_liters
+    );
   }
 
   resultObj = {
@@ -418,14 +422,16 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
       ((amount_of_mix / delivery_rate_of_mix) * percentages_of_treatment_on_species[i]) / 100;
     species[i].area_treated_sqm = species[i].area_treated_hectares * 10000;
     species[i].percentage_area_covered = (species[i].area_treated_sqm / area) * 100;
-    species[i].amount_of_undiluted_herbicide_used =
+    species[i].amount_of_undiluted_herbicide_used_liters =
       (dilution / 100) * amount_of_mix * (percentages_of_treatment_on_species[i] / 100);
 
     species[i].percentage_area_covered = parseToRightFormat(species[i].percentage_area_covered);
     species[i].amount_of_mix_used = parseToRightFormat(species[i].amount_of_mix_used);
     species[i].area_treated_hectares = parseToRightFormat(species[i].area_treated_hectares);
     species[i].area_treated_sqm = parseToRightFormat(species[i].area_treated_sqm);
-    species[i].amount_of_undiluted_herbicide_used = parseToRightFormat(species[i].amount_of_undiluted_herbicide_used);
+    species[i].amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
+      species[i].amount_of_undiluted_herbicide_used_liters
+    );
   }
 
   dilution = parseToRightFormat(dilution);
@@ -479,12 +485,14 @@ export const mSpecie_sGHerb_spray_usingDilutionPercent = (
     species[i] = {};
     species[i].area_treated_sqm = area_treated_sqm * (percentages_of_treatment_on_species[i] / 100);
     species[i].percentage_area_covered = (species[i].area_treated_sqm / area) * 100;
-    species[i].amount_of_undiluted_herbicide_used =
+    species[i].amount_of_undiluted_herbicide_used_liters =
       (dilution / 100) * amount_of_mix * (percentages_of_treatment_on_species[i] / 100);
 
     species[i].area_treated_sqm = parseToRightFormat(species[i].area_treated_sqm);
     species[i].percentage_area_covered = parseToRightFormat(species[i].percentage_area_covered);
-    species[i].amount_of_undiluted_herbicide_used = parseToRightFormat(species[i].amount_of_undiluted_herbicide_used);
+    species[i].amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
+      species[i].amount_of_undiluted_herbicide_used_liters
+    );
   }
 
   resultObj = {
@@ -525,12 +533,12 @@ export const sSpecie_sLHerb_direct_usingDilutionPercent = (
 
   const area_treated_hectares = area_treated_sqm / 10000;
   const percent_area_covered = (area_treated_sqm / area) * 100;
-  const amount_of_undiluted_herbicide_used = (dilution / 100) * amount_of_mix;
+  const amount_of_undiluted_herbicide_used_liters = (dilution / 100) * amount_of_mix;
 
   resultObj = {
     area_treated_hectares: parseToRightFormat(area_treated_hectares),
     percent_area_covered: parseToRightFormat(percent_area_covered),
-    amount_of_undiluted_herbicide_used: parseToRightFormat(amount_of_undiluted_herbicide_used)
+    amount_of_undiluted_herbicide_used_liters: parseToRightFormat(amount_of_undiluted_herbicide_used_liters)
   };
 
   return resultObj;
@@ -578,11 +586,13 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
       let outputHerb: any = {};
 
       outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
-      outputHerb.amount_of_undiluted_herbicide_used =
+      outputHerb.amount_of_undiluted_herbicide_used_liters =
         ((outputHerb.dilution / 100) * amount_of_mix * percent_area_covered) / 100;
 
       outputHerb.dilution = parseToRightFormat(outputHerb.dilution);
-      outputHerb.amount_of_undiluted_herbicide_used = parseToRightFormat(outputHerb.amount_of_undiluted_herbicide_used);
+      outputHerb.amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
+        outputHerb.amount_of_undiluted_herbicide_used_liters
+      );
 
       outputSpecie.herbicides.push(outputHerb);
     });

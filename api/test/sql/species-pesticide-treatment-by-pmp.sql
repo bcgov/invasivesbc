@@ -3,7 +3,7 @@
   1. Product Name           - herbicide_code (herbicide_type_code)
   2. Active Ingredient      - herbicide_code (herbicide_type_code)
   3. PCP Registration #     - herbicide_code (herbicide_type_code)
-  4. Quantity Used Kg.      - amount_of_undiluted_herbicide_used
+  4. Quantity Used Kg.      - amount_of_undiluted_herbicide_used_liters
   5. Area Treated Ha        - area_treated_hectares
   6. Method of Application  - chemical_application_method_type (chemical_method_code)
   7. Service license        - applicator1_license

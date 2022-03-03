@@ -295,7 +295,7 @@ CREATE TABLE if not exists invasivesbc.chemical_treatment_extract (
 	application_rate numeric(6, 2) NULL,
 	delivery_rate int4 NULL,
 	dilution_percent numeric(8, 4) NULL,
-	amount_of_undiluted_herbicide_used numeric(8, 4) NULL,
+	amount_of_undiluted_herbicide_used_liters numeric(8, 4) NULL,
 	tank_mix varchar(3) NULL,
 	employer varchar(120) NULL,
 	primary_applicator varchar(120) NOT NULL,
