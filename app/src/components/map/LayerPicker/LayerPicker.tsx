@@ -1,5 +1,5 @@
-import React, { useEffect, useContext, useRef, useMemo, useState } from 'react';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import React, { useEffect, useContext, useRef } from 'react';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 /* HelperFiles Parent Layers */
@@ -13,7 +13,6 @@ import {
   AccordionSummary,
   Button,
   Box,
-  Grid,
   List,
   ListItem,
   ListItemButton,
@@ -27,7 +26,6 @@ import LayersIcon from '@mui/icons-material/Layers';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 // import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
-import { ChildLayer } from './Components/ChildLayer';
 import { ParentLayer } from './Components/ParentLayer';
 
 export const LayerPicker = React.memo(

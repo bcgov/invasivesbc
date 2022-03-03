@@ -3,7 +3,6 @@ import ActivitiesPage from 'features/home/activities/ActivitiesPage';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
 import HomeLayout from 'features/home/HomeLayout';
-import LandingPage2 from 'features/home/landing/LandingPage2';
 import MapPage from 'features/home/map/MapPage';
 import PlanPage from 'features/home/plan/PlanPage';
 import ReferencesPage from 'features/home/references/ReferencesPage';
@@ -16,6 +15,7 @@ import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import { AuthStateContext } from '../../contexts/authStateContext';
+import LandingPage from './landing/LandingPage';
 
 interface IHomeRouterProps {
   classes: any;
@@ -43,7 +43,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/landing"
         title={getTitle('Welcome')}
-        component={LandingPage2}
+        component={LandingPage}
         componentProps={props}
       />
       <PublicRoute
