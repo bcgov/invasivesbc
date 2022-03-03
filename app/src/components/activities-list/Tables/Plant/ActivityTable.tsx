@@ -17,10 +17,11 @@ import './filter-cell.css';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
-import { PlayCircleFilledWhite } from '@mui/icons-material';
+import { CheckBox, PlayCircleFilledWhite } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -319,20 +320,49 @@ const ActivityGrid = (props) => {
     });
   }, [rows, sortColumns]);
 
+  const [customLists, setCustomLists] = useState();
+  const [currentTab, setCurrentTab] = useState();
   //TODO THEME MODE
   const RowRenderer = (props) => {
     return <Row className="xRow" {...props} />;
   };
   return (
     <Box maxHeight="100%" paddingBottom="20px">
-      <Typography>{messageConsole}</Typography>
       {!activities ? (
         <CircularProgress />
       ) : (
         <FilterContext.Provider value={filters}>
-          <Button variant="contained" onClick={toggleFilters}>
-            Toggle Sort or Filter
+          <FormControl sx={{ pl: 25 }} variant="outlined">
+            <InputLabel>Toggle Sort or Filter</InputLabel>
+            <CheckBox onClick={toggleFilters} />
+          </FormControl>
+          <FormControl sx={{ pl: 25 }} variant="outlined">
+            <InputLabel>List View:</InputLabel>
+            <Select value="Observation" onClick={toggleFilters}>
+              <MenuItem value={'Observation'}>Observation</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Button color="secondary" variant="contained">
+            Colour
           </Button>
+          <Button disabled> </Button>
+          <Button variant="contained">Drafts</Button>
+          <Button variant="contained">My Submitted</Button>
+          <Button variant="contained">Favourites</Button>
+          {customLists ? (
+            customLists.map((l) => {
+              return (
+                <Button onClick={() => setCurrentTab(l)} variant="contained">
+                  {l.description}
+                </Button>
+              );
+            })
+          ) : (
+            <></>
+          )}
           <Button
             disabled={activitiesSelected === null}
             onClick={async () => {
@@ -374,7 +404,7 @@ const ActivityGrid = (props) => {
 
               enableVirtualization
               headerRowHeight={filters.enabled ? 70 : undefined}
-              style={{ height: '75vh' }}
+              style={{ height: '100%' }}
               className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
               // rows={filteredRows}
               rows={filters.enabled ? filteredRowsDynamic : sortedRows}
