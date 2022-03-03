@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'build',
   server: {
     //hostname: 'localhost',
-    hostname: 'dev-invasivesbc.apps.silver.devops.gov.bc.ca',
+    hostname: 'invasivesbc_app.apps.silver.devops.gov.bc.ca',
     iosScheme: 'invasivesbc',
     androidScheme: 'https'
   },

@@ -3,7 +3,7 @@
 	"appName": "InvasivesBC",
 	"webDir": "build",
 	"server": {
-		"hostname": "dev-invasivesbc.apps.silver.devops.gov.bc.ca",
+		"hostname": "invasivesbc_app.apps.silver.devops.gov.bc.ca",
 		"iosScheme": "invasivesbc",
 		"androidScheme": "https"
 	},
