@@ -88,52 +88,40 @@ const ActivitiesList2: React.FC = () => {
     );
   }, [formType, subType, filters]);
 
-  return (
-    <Box>
-      <Grid container xs={12} height="50px" display="flex" justifyContent="left">
-        <Grid item>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Record Type</InputLabel>
-            <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
-              {Object.keys(ActivityType)
-                .sort()
-                .map((a) => {
-                  return <MenuItem value={ActivityType[a]}>{ActivityType[a]}</MenuItem>;
-                })}
-            </Select>
-          </FormControl>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Record Subtype</InputLabel>
-            <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
-              {Object.keys(ActivitySubtype)
-                .sort()
-                .map((a) => {
-                  return (
-                    <MenuItem value={ActivitySubtype[a]}>{ActivitySubtypeShortLabels[ActivitySubtype[a]]}</MenuItem>
-                  );
-                })}
-            </Select>
-          </FormControl>
-          <NewRecordRecordPagae type={formType} subType={subType} />
-        </Grid>
-        <Grid item>
-          <Button disabled variant="contained">
-            Snap Map to this list
-          </Button>
-        </Grid>
-        <Grid sx={{ pt: 2 }} item>
-          <Typography>Quick Filters</Typography>
-          <Button variant="contained">My Recently Edited</Button>
-          <Button variant="contained">My Drafts Only</Button>
-          <Button variant="contained">My Submitted Only</Button>
-          <Button variant="contained">Favourites</Button>
-        </Grid>
-        <Grid sx={{ pt: 2 }} xs={12} item>
-          <ActivityGrid formType={formType} subType={subType} filtersCallBack={setFilters} initialFilters={filters} />
-        </Grid>{' '}
+  const NewRecordStuff = (props) => {
+    return (
+      <Grid item>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Record Type</InputLabel>
+          <Select value={formType} onChange={handleFormTypeChange} label="Select Form Type">
+            {Object.keys(ActivityType)
+              .sort()
+              .map((a) => {
+                return <MenuItem value={ActivityType[a]}>{ActivityType[a]}</MenuItem>;
+              })}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Record Subtype</InputLabel>
+          <Select value={subType} onChange={handleSubTypeChange} label="Select Form Type">
+            {Object.keys(ActivitySubtype)
+              .sort()
+              .map((a) => {
+                return <MenuItem value={ActivitySubtype[a]}>{ActivitySubtypeShortLabels[ActivitySubtype[a]]}</MenuItem>;
+              })}
+          </Select>
+        </FormControl>
+        <NewRecordRecordPagae type={formType} subType={subType} />
       </Grid>
-      {/*       <Box><BatchUpload</Box>*/}
-    </Box>
+    );
+  };
+
+  return (
+    <>
+      <Grid sx={{ pt: 2 }} xs={12} item>
+        <ActivityGrid formType={formType} subType={subType} filtersCallBack={setFilters} initialFilters={filters} />
+      </Grid>
+    </>
   );
 };
 
