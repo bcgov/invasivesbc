@@ -12,10 +12,10 @@ log {
 
 try_files {path} /index.html
 
-templates /.well_known/* {
+templates /.well-known/* {
   mime application/json
 }
 
-header /.well_known/* {
+header /.well-known/* {
   Cache-Control max-age=3600
 }
