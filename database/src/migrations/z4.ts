@@ -134,7 +134,7 @@ export const extract_sql_and_reports = `
     application_rate_litres_per_hectare numeric(6, 2) NULL,
     delivery_rate_litres_per_hectare int4 NULL,
     dilution_percent numeric(8, 4) NULL,
-    amount_of_undiluted_herbicide_used_litres numeric(8, 4) NULL,
+    amount_of_undiluted_herbicide_used_liters_litres numeric(8, 4) NULL,
     tank_mix varchar(3) NULL,
     employer varchar(120) NULL,
     primary_applicator varchar(120) NOT NULL,
