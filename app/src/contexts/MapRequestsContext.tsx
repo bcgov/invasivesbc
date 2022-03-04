@@ -4,11 +4,6 @@ import { actions } from 'components/map/LayerPicker/JSON/actions';
 import { NetworkContext } from './NetworkContext';
 
 interface IMapExtentLayersContext {
-  mapRequest: {
-    layer: any;
-    extent: any;
-  };
-  setMapRequest: React.Dispatch<React.SetStateAction<any>>;
   layers: IParentLayer[];
   setLayers: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
   layersActions: any[];
@@ -55,11 +50,6 @@ interface IChildLayer {
 }
 
 export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
-  mapRequest: {
-    layer: null,
-    extent: null
-  },
-  setMapRequest: () => {},
   layers: [],
   setLayers: () => {},
   layersActions: [],
@@ -90,8 +80,6 @@ export const MapRequestContextProvider: React.FC = (props) => {
     <MapRequestContext.Provider
       value={React.useMemo(
         () => ({
-          mapRequest,
-          setMapRequest,
           layers,
           setLayers,
           layersActions,

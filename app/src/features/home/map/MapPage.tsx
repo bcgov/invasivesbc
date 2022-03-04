@@ -179,36 +179,34 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   return (
     <Box height="inherit" width="inherit">
-      <MapRequestContextProvider>
-        <MapRecordsContextProvider>
-          <Grid className={classes.mainGrid} container>
-            <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
-              <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-                {isReadyToLoadMap ? (
-                  <MapContainer
-                    classes={classes}
-                    showDrawControls={false}
-                    center={initalCenter()}
-                    zoom={initialZoom()}
-                    mapId={'mainMap'}
-                    pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                    geometryState={{ geometry, setGeometry }}
-                    interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                    extentState={{ extent, setExtent }}>
-                    <MapUrlListener />
-                  </MapContainer>
-                ) : (
-                  <CircularProgress />
-                )}
-              </Container>
-            </Grid>
+      <MapRecordsContextProvider>
+        <Grid className={classes.mainGrid} container>
+          <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
+            <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
+              {isReadyToLoadMap ? (
+                <MapContainer
+                  classes={classes}
+                  showDrawControls={false}
+                  center={initalCenter()}
+                  zoom={initialZoom()}
+                  mapId={'mainMap'}
+                  pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
+                  geometryState={{ geometry, setGeometry }}
+                  interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+                  extentState={{ extent, setExtent }}>
+                  <MapUrlListener />
+                </MapContainer>
+              ) : (
+                <CircularProgress />
+              )}
+            </Container>
           </Grid>
-          <MapContextMenu
-            contextMenuState={{ state: contextMenuState, setContextMenuState }}
-            handleClose={handleContextMenuClose}
-          />
-        </MapRecordsContextProvider>
-      </MapRequestContextProvider>
+        </Grid>
+        <MapContextMenu
+          contextMenuState={{ state: contextMenuState, setContextMenuState }}
+          handleClose={handleContextMenuClose}
+        />
+      </MapRecordsContextProvider>
     </Box>
   );
 };
