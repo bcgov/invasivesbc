@@ -29,3 +29,6 @@ yarn-error.log*
 ios/DerivedData
 ***/.vscode/*
 ../.vscode
+
+capacitor.config.ts
+capacitor.config.json

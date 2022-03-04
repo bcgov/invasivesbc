@@ -1,0 +1,21 @@
+{
+    auto_https off
+}
+:2015
+
+root * /srv
+file_server
+
+log {
+  level INFO
+}
+
+try_files {path} /index.html
+
+templates /.well_known/* {
+  mime application/json
+}
+
+header /.well_known/* {
+  Cache-Control max-age=3600
+}

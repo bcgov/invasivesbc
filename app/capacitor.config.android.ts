@@ -5,9 +5,7 @@ const config: CapacitorConfig = {
   appName: 'InvasivesBC',
   webDir: 'build',
   server: {
-    //hostname: 'localhost',
     hostname: 'invasivesbc_app.apps.silver.devops.gov.bc.ca',
-    iosScheme: 'invasivesbc',
     androidScheme: 'https'
   },
   cordova: {
