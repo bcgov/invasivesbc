@@ -23,8 +23,6 @@ import {
 } from '@mui/material';
 // MUI Icons
 import LayersIcon from '@mui/icons-material/Layers';
-import KMLUpload from 'components/map-buddy-components/KMLUpload';
-// import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 import SortableListContainer from './Sorting/SortableListContainer';
 
@@ -32,7 +30,6 @@ export const LayerPicker = React.memo(
   (props: any) => {
     const mapLayersContext = useContext(MapRequestContext);
     const { layers, setLayers } = mapLayersContext;
-    const { layersActions, setLayersActions } = mapLayersContext;
     const toolClass = toolStyles();
     const divref = useRef();
 
@@ -115,10 +112,6 @@ export const LayerPicker = React.memo(
             <Accordion id="admin-shape-upload-accordion">
               <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
               <KMLShapesUpload />
-            </Accordion>
-            <Accordion id="layer-picker-kml-accordion">
-              <AccordionSummary>KML upload</AccordionSummary>
-              <KMLUpload />
             </Accordion>
           </Popover>
           <ListItem disableGutters>

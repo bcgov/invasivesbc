@@ -6,7 +6,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.offline';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FeatureGroup,
   MapContainer as ReactLeafletMapContainer,
@@ -220,18 +220,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} />
 
               {/* List of functions is located in this component */}
-              <ToolbarContainer
-                position="topright"
-                id={props.activityId}
-                map={map}
-                inputGeo={props.geometryState.geometry}
-                mapMaxNativeZoom={mapMaxNativeZoom}
-                setMapMaxNativeZoom={setMapMaxNativeZoom}
-              />
+              {useMemo(() => {
+                return (
+                  <ToolbarContainer
+                    position="topright"
+                    id={props.activityId}
+                    map={map}
+                    inputGeo={props.geometryState.geometry}
+                    mapMaxNativeZoom={mapMaxNativeZoom}
+                    setMapMaxNativeZoom={setMapMaxNativeZoom}
+                  />
+                );
+              }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
               {props.children}
               <MapResizer />
-              <MapRecordsDataGrid />
               <MapRecordsDataGrid />
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
