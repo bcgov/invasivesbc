@@ -146,11 +146,11 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                 Enter UTM Manually
               </Button>
             </Grid>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+            {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
               </Button>
-            </Grid>
+            </Grid> */}
             {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record Buffered Line!
@@ -163,12 +163,6 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
               <MapContainer {...props} activityId={props.activityId} />
-            </Grid>
-            <Grid xs={12} item>
-              <Accordion>
-                <AccordionSummary>KML Upload</AccordionSummary>
-                <AccordionDetails>{/*<KMLUpload setGeo={props.geometryState.setGeometry />*/}</AccordionDetails>
-              </Accordion>
             </Grid>
           </Grid>
         </AccordionDetails>

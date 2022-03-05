@@ -16,8 +16,6 @@ import {
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
 import booleanOverlap from '@turf/boolean-overlap';
-import Spinner from '../../components/spinner/Spinner';
-import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
 import './MapContainer.css';
@@ -27,11 +25,11 @@ import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
 
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
-import { Capacitor } from '@capacitor/core';
+import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import MapRecordsDataGrid from './MapRecordsDataGrid';
-import { MapRequestContext, MapRequestContextProvider } from 'contexts/MapRequestsContext';
-
+import OfflineMap from './OfflineMap';
+import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
+import Layers from './Layers/Layers';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -42,32 +40,6 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export type MapControl = (map: any, ...args: any) => void;
-
-// Style the image inside the download button
-const iconStyle = {
-  transform: 'scale(0.7)',
-  opacity: '0.7',
-  width: 32,
-  height: 32
-};
-
-const storeLayersStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  position: 'absolute',
-  backgroundColor: 'white',
-  color: '#464646',
-  width: '2.7rem',
-  height: '2.7rem',
-  border: '2px solid rgba(0,0,0,0.2)',
-  backgroundClip: 'padding-box',
-  top: '10px',
-  left: '10px',
-  zIndex: 1000,
-  borderRadius: '4px',
-  cursor: 'pointer'
-} as React.CSSProperties;
 
 export const getZIndex = (doc) => {
   if (!doc.geometry) {
@@ -153,78 +125,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
-
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
-
-  const recordsContext = useContext(MapRecordsContext);
-
-  const Offline = (props) => {
-    const mapOffline = useMap();
-    const offlineLayer = (L.tileLayer as any).offline(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      // local_storage,
-      {
-        attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
-        subdomains: 'abc',
-        maxZoom: mapMaxZoom,
-        zIndex: 3000,
-        maxNativeZoom: props.maxNativeZoom,
-        crossOrigin: true
-      }
-    );
-    offlineLayer.addTo(mapOffline);
-
-    useEffect(() => {
-      const cacheMapTiles = async () => {
-        //  await storeLayers();
-        console.log('removed caching map tiles for now');
-      };
-
-      if (props.cacheMapTilesFlag?.flag && props.cacheMapTilesFlag?.flag !== 0) {
-        cacheMapTiles();
-      }
-    }, [props.cacheMapTilesFlag]);
-
-    const [offlineing, setOfflineing] = useState(false);
-
-    const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
-      zoomlevels: [13, 14, 15, 16, 17],
-      confirm(_: any, successCallback: any) {
-        successCallback(true);
-      }
-    });
-
-    saveBasemapControl._map = mapOffline;
-
-    // pass this to save button on layer picker?
-    const storeLayers = async () => {
-      setOfflineing(true);
-      await saveBasemapControl._saveTiles();
-      // XXX: This is firing to quickly
-      setOfflineing(false);
-    };
-
-    return (
-      <>
-        {/* TODO:
-          1. Toggle between spinner and image depending on 'offlineing' status
-          2. Swap image style based on zoom level
-        */}
-        {Capacitor.getPlatform() !== 'web' ? (
-          <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
-            {offlineing ? (
-              <Spinner></Spinner>
-            ) : (
-              <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
-            )}
-          </div>
-        ) : (
-          <></>
-        )}
-      </>
-    );
-  };
 
   // hack to deal with leaflet getting handed the wrong window size before it calls invalidateSize on load
   const MapResizer = () => {
@@ -298,10 +200,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           whenCreated={setMap}
           preferCanvas={true}
           tap={true}>
-          {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-
           <FlyToAndFadeContextProvider>
             <MapRequestContextProvider>
+              {useMemo(
+                () => (
+                  <Layers inputGeo={props.geometryState.geometry} />
+                ),
+                [props.geometryState.geometry]
+              )}
+
               <ZoomButtons position="bottomleft" />
               <ScaleControl position="bottomleft" imperial={false} />
 
@@ -311,22 +218,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 </FeatureGroup>
               )}
 
-              {/* Here is the offline component */}
-              <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
+              {/* Offline component */}
+              <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-              {/* All Buttons are located in this file */}
-              <ToolbarContainer
-                position="topright"
-                id={props.activityId}
-                map={map}
-                inputGeo={props.geometryState.geometry}
-                mapMaxNativeZoom={mapMaxNativeZoom}
-                setMapMaxNativeZoom={setMapMaxNativeZoom}
-              />
+              {/* List of functions is located in this component */}
+              {useMemo(() => {
+                return (
+                  <ToolbarContainer
+                    position="topright"
+                    id={props.activityId}
+                    map={map}
+                    inputGeo={props.geometryState.geometry}
+                    mapMaxNativeZoom={mapMaxNativeZoom}
+                    setMapMaxNativeZoom={setMapMaxNativeZoom}
+                  />
+                );
+              }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
               {props.children}
               <MapResizer />
-              <MapRecordsDataGrid />
               <MapRecordsDataGrid />
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>

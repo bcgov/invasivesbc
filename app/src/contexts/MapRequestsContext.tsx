@@ -4,11 +4,6 @@ import { actions } from 'components/map/LayerPicker/JSON/actions';
 import { NetworkContext } from './NetworkContext';
 
 interface IMapExtentLayersContext {
-  mapRequest: {
-    layer: any;
-    extent: any;
-  };
-  setMapRequest: React.Dispatch<React.SetStateAction<any>>;
   layers: IParentLayer[];
   setLayers: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
   layersActions: any[];
@@ -19,7 +14,7 @@ interface IMapExtentLayersContext {
   setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
 }
 
-interface IParentLayer {
+export interface IParentLayer {
   id?: string;
   name?: string;
   order?: number;
@@ -31,7 +26,7 @@ interface IParentLayer {
   children?: IChildLayer[];
 }
 
-interface IChildLayer {
+export interface IChildLayer {
   dataBCAcceptsGeometry?: boolean;
   simplifyPercentage?: number;
   id?: string;
@@ -55,11 +50,6 @@ interface IChildLayer {
 }
 
 export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
-  mapRequest: {
-    layer: null,
-    extent: null
-  },
-  setMapRequest: () => {},
   layers: [],
   setLayers: () => {},
   layersActions: [],
@@ -72,11 +62,10 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 
 export const MapRequestContextProvider: React.FC = (props) => {
   const networkContext = React.useContext(NetworkContext);
-  const [mapRequest, setMapRequest] = React.useState(null);
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
-  const [currentRecords, setCurrentRecords] = React.useState<any>(null);
+  const [currentRecords, setCurrentRecords] = React.useState<any>([]);
 
   React.useEffect(() => {
     if (layers) {
@@ -90,8 +79,6 @@ export const MapRequestContextProvider: React.FC = (props) => {
     <MapRequestContext.Provider
       value={React.useMemo(
         () => ({
-          mapRequest,
-          setMapRequest,
           layers,
           setLayers,
           layersActions,
@@ -101,7 +88,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
           currentRecords,
           setCurrentRecords
         }),
-        [layers, layersActions, mapZoom, currentRecords, mapRequest]
+        [layers, layersActions, mapZoom, setCurrentRecords]
       )}>
       {props.children}
     </MapRequestContext.Provider>

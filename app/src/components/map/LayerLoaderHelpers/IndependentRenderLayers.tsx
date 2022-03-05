@@ -18,6 +18,10 @@ export enum IndependentLayers {
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
 
+  if (!props.enabled) {
+    return <></>;
+  }
+
   if (Object.values(IndependentLayers).includes(props.layer_code)) {
     switch (props.layer_code) {
       case 'LEAN_ACTIVITIES':

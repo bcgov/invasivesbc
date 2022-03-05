@@ -10,7 +10,6 @@ import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import L from 'leaflet';

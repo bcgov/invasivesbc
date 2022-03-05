@@ -5,7 +5,6 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
     {
       id: 'invasivesbc_records',
       name: 'INVASIVESBC Records',
-      order: 0,
       source: 'INVASIVESBC',
       zIndex: 6000,
       loaded: 70,
@@ -19,7 +18,6 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           layer_mode: networkContext ? 'wfs_online' : 'wfs_offline',
           activity_subtype: 'Activity_Observation_PlantTerrestrial',
           color_code: '#000',
-          order: 0,
           opacity: 1,
           zIndex: 50,
           loaded: 70,

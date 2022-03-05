@@ -3,13 +3,10 @@ import ActivitiesPage from 'features/home/activities/ActivitiesPage';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
 import HomeLayout from 'features/home/HomeLayout';
-import LandingPage from 'features/home/landing/LandingPage';
 import MapPage from 'features/home/map/MapPage';
 import PlanPage from 'features/home/plan/PlanPage';
 import ReferencesPage from 'features/home/references/ReferencesPage';
 import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
-import SearchActivityPage from 'features/home/search/SearchActivityPage';
-import SearchPage from 'features/home/search/SearchPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
@@ -18,6 +15,7 @@ import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import { AuthStateContext } from '../../contexts/authStateContext';
+import LandingPage from './landing/LandingPage';
 
 interface IHomeRouterProps {
   classes: any;
@@ -54,23 +52,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         path="/home/access-request"
         title={getTitle('Access Request')}
         component={AccessRequestPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={HomeLayout}
-        path="/home/search"
-        title={getTitle('Search')}
-        roles={authContext.userRoles}
-        component={SearchPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        layout={HomeLayout}
-        path="/home/search/activity/:id?"
-        title={getTitle('Edit')}
-        roles={authContext.userRoles}
-        component={SearchActivityPage}
         componentProps={props}
       />
       <PrivateRoute

@@ -75,29 +75,22 @@ export const LayersSelector = ({ parent, child }) => {
   const mapLayersContext = useContext(MapRequestContext);
   const { layers, setLayers } = mapLayersContext;
   const { layersActions, setLayersActions } = mapLayersContext;
+  const [serverExpanded, setServerExpanded] = React.useState(false);
+  const [localExpanded, setLocalExpanded] = React.useState(false);
 
   const onServerAccordionChange = (event: any, expanded: any) => {
-    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
-      accordion_local_expanded: false,
-      accordion_server_expanded: expanded
-    });
+    setServerExpanded(!serverExpanded);
   };
 
   const onLocalAccordionChange = (event: any, expanded: any) => {
-    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
-      accordion_local_expanded: expanded,
-      accordion_server_expanded: false
-    });
+    setLocalExpanded(!localExpanded);
   };
 
   return (
     <>
       {/* Server Accordion */}
       {networkContext.connected && (
-        <Accordion
-          id="server-accordion"
-          expanded={getChildAction(layersActions, parent.id, child.id).accordion_server_expanded}
-          onChange={onServerAccordionChange}>
+        <Accordion id="server-accordion" expanded={serverExpanded} onChange={onServerAccordionChange}>
           <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
@@ -122,10 +115,7 @@ export const LayersSelector = ({ parent, child }) => {
 
       {/* Local Accordion */}
 
-      <Accordion
-        id="local-accordion"
-        expanded={getChildAction(layersActions, parent.id, child.id).accordion_local_expanded}
-        onChange={onLocalAccordionChange}>
+      <Accordion id="local-accordion" expanded={localExpanded} onChange={onLocalAccordionChange}>
         <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
