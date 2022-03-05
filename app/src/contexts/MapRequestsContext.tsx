@@ -62,7 +62,6 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 
 export const MapRequestContextProvider: React.FC = (props) => {
   const networkContext = React.useContext(NetworkContext);
-  const [mapRequest, setMapRequest] = React.useState(null);
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
@@ -89,7 +88,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
           currentRecords,
           setCurrentRecords
         }),
-        [layers, layersActions, mapZoom, currentRecords, mapRequest]
+        [layers, layersActions, mapZoom, currentRecords]
       )}>
       {props.children}
     </MapRequestContext.Provider>
