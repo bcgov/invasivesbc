@@ -22,6 +22,7 @@ import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { DocType } from 'constants/database';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -161,6 +162,18 @@ const ActivityGrid = (props) => {
   };
 
   const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
+      console.dir(activitiesSelected);
+      console.log();
+      props.setSelectedRecord({
+        type: DocType.ACTIVITY,
+        description: activitiesSelected.short_id,
+        id: activitiesSelected.activity_id
+      });
+    }
+  }, [activitiesSelected]);
 
   useEffect(() => {
     getActivities();
@@ -320,8 +333,6 @@ const ActivityGrid = (props) => {
     });
   }, [rows, sortColumns]);
 
-  const [customLists, setCustomLists] = useState();
-  const [currentTab, setCurrentTab] = useState();
   //TODO THEME MODE
   const RowRenderer = (props) => {
     return <Row className="xRow" {...props} />;
@@ -345,58 +356,7 @@ const ActivityGrid = (props) => {
             </Select>
           </FormControl>
 
-          <Button color="secondary" variant="contained">
-            Colour
-          </Button>
           <Button disabled> </Button>
-          <Button variant="contained">Drafts</Button>
-          <Button variant="contained">My Submitted</Button>
-          <Button variant="contained">Favourites</Button>
-          {customLists ? (
-            customLists.map((l) => {
-              return (
-                <Button onClick={() => setCurrentTab(l)} variant="contained">
-                  {l.description}
-                </Button>
-              );
-            })
-          ) : (
-            <></>
-          )}
-          <Button
-            disabled={activitiesSelected === null}
-            onClick={async () => {
-              try {
-                await dataAccess.setAppState({ activeActivity: activitiesSelected.activity_id }, databaseContext);
-              } catch (e) {
-                console.log('unable to http ');
-                console.log(e);
-              }
-              //return dbActivity.activity_id;
-              setTimeout(() => {
-                history.push({ pathname: `/home/activity` });
-              }, 1000);
-            }}
-            variant="contained">
-            View/Edit Selected Form: {activitiesSelected ? activitiesSelected.short_id : ''}
-          </Button>
-          <Button
-            disabled={activitiesSelected === null}
-            onClick={async () => {
-              try {
-                await dataAccess.setAppState({ activeActivity: activitiesSelected.activity_id }, databaseContext);
-              } catch (e) {
-                console.log('unable to http ');
-                console.log(e);
-              }
-              //return dbActivity.activity_id;
-              setTimeout(() => {
-                history.push({ pathname: `/home/map` });
-              }, 1000);
-            }}
-            variant="contained">
-            View/Edit Selected On Main Map: {activitiesSelected ? activitiesSelected.short_id : ''}
-          </Button>
           <div id="xDataGrid">
             <DataGrid
               //TODO THEME MODE
