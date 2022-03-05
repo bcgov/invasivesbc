@@ -26,7 +26,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 // import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
-import { ParentLayer } from './Components/ParentLayer';
+import SortableListContainer from './Sorting/SortableListContainer';
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -57,31 +57,6 @@ export const LayerPicker = React.memo(
         DomEvent.disableScrollPropagation(divref?.current);
       }
     }, []);
-
-    const SortableParentLayer = SortableElement(({ parent }) => {
-      const onParentLayerAccordionChange = (event: any, expanded: any) => {
-        updateParentAction(layersActions, setLayersActions, parent.id, { expanded: expanded });
-      };
-
-      return (
-        <ListItem
-          key={Math.random()}
-          id={parent.id}
-          dense={true}
-          ContainerComponent="div"
-          style={{ width: '100%', maxWidth: 440 }}>
-          <ParentLayer parent={parent} onParentLayerAccordionChange={onParentLayerAccordionChange} />
-        </ListItem>
-      );
-    });
-
-    const SortableListContainer = SortableContainer(({ items }: any) => (
-      <List>
-        {items.map((parent: { id: string; order: number }) => (
-          <SortableParentLayer key={'parent' + parent.id + Math.random()} index={parent.order} parent={parent} />
-        ))}
-      </List>
-    ));
 
     const onSortEnd = ({ oldIndex, newIndex }: any) => {
       const returnVal = sortObject(layers, oldIndex, newIndex);

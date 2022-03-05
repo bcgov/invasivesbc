@@ -6,7 +6,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.offline';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   FeatureGroup,
   MapContainer as ReactLeafletMapContainer,
@@ -16,8 +16,6 @@ import {
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
 import booleanOverlap from '@turf/boolean-overlap';
-import Spinner from '../../components/spinner/Spinner';
-import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
 import './MapContainer.css';
@@ -27,12 +25,12 @@ import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
 
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { MapRecordsContext, MapRecordsContextProvider } from 'contexts/MapRecordsContext';
-import { Capacitor } from '@capacitor/core';
+import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import MapRecordsDataGrid from './MapRecordsDataGrid';
-import { MapRequestContext, MapRequestContextProvider } from 'contexts/MapRequestsContext';
-import { DataBCLayer } from './LayerLoaderHelpers/DataBCRenderLayer';
-import { IndependentLayer } from './LayerLoaderHelpers/IndependentRenderLayers';
+import MapStore from './MapStore';
+import OfflineMap from './OfflineMap';
+import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
+import Layers from './Layers';
 
 //Added comment
 
@@ -44,32 +42,6 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export type MapControl = (map: any, ...args: any) => void;
-
-// Style the image inside the download button
-const iconStyle = {
-  transform: 'scale(0.7)',
-  opacity: '0.7',
-  width: 32,
-  height: 32
-};
-
-const storeLayersStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  position: 'absolute',
-  backgroundColor: 'white',
-  color: '#464646',
-  width: '2.7rem',
-  height: '2.7rem',
-  border: '2px solid rgba(0,0,0,0.2)',
-  backgroundClip: 'padding-box',
-  top: '10px',
-  left: '10px',
-  zIndex: 1000,
-  borderRadius: '4px',
-  cursor: 'pointer'
-} as React.CSSProperties;
 
 export const getZIndex = (doc) => {
   if (!doc.geometry) {
@@ -159,75 +131,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
 
-  const recordsContext = useContext(MapRecordsContext);
-
-  const Offline = (props) => {
-    const mapOffline = useMap();
-    const offlineLayer = (L.tileLayer as any).offline(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      // local_storage,
-      {
-        attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
-        subdomains: 'abc',
-        maxZoom: mapMaxZoom,
-        zIndex: 3000,
-        maxNativeZoom: props.maxNativeZoom,
-        crossOrigin: true
-      }
-    );
-    offlineLayer.addTo(mapOffline);
-
-    useEffect(() => {
-      const cacheMapTiles = async () => {
-        //  await storeLayers();
-        console.log('removed caching map tiles for now');
-      };
-
-      if (props.cacheMapTilesFlag?.flag && props.cacheMapTilesFlag?.flag !== 0) {
-        cacheMapTiles();
-      }
-    }, [props.cacheMapTilesFlag]);
-
-    const [offlineing, setOfflineing] = useState(false);
-
-    const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
-      zoomlevels: [13, 14, 15, 16, 17],
-      confirm(_: any, successCallback: any) {
-        successCallback(true);
-      }
-    });
-
-    saveBasemapControl._map = mapOffline;
-
-    // pass this to save button on layer picker?
-    const storeLayers = async () => {
-      setOfflineing(true);
-      await saveBasemapControl._saveTiles();
-      // XXX: This is firing to quickly
-      setOfflineing(false);
-    };
-
-    return (
-      <>
-        {/* TODO:
-          1. Toggle between spinner and image depending on 'offlineing' status
-          2. Swap image style based on zoom level
-        */}
-        {Capacitor.getPlatform() !== 'web' ? (
-          <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
-            {offlineing ? (
-              <Spinner></Spinner>
-            ) : (
-              <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
-            )}
-          </div>
-        ) : (
-          <></>
-        )}
-      </>
-    );
-  };
-
   // hack to deal with leaflet getting handed the wrong window size before it calls invalidateSize on load
   const MapResizer = () => {
     const mapResizer = useMap();
@@ -300,8 +203,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           whenCreated={setMap}
           preferCanvas={true}
           tap={true}>
-          {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-
+          {/* <MapStore> */}
           <FlyToAndFadeContextProvider>
             <MapRequestContextProvider>
               <Layers inputGeo={props.geometryState.geometry} />
@@ -314,10 +216,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 </FeatureGroup>
               )}
 
-              {/* Here is the offline component */}
-              <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
+              {/* Offline component */}
+              <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-              {/* All Buttons are located in this file */}
+              {/* List of functions is located in this component */}
               <ToolbarContainer
                 position="topright"
                 id={props.activityId}
@@ -333,53 +235,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <MapRecordsDataGrid />
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
+          {/* </MapStore> */}
         </ReactLeafletMapContainer>
       </ReactLeafletEditable>
-    </>
-  );
-};
-
-const Layers = (props: any) => {
-  const { layers } = useContext(MapRequestContext);
-
-  return (
-    <>
-      {layers.map((parent) => (
-        <div key={Math.random()}>
-          {parent.children.map(
-            (child) =>
-              child.enabled &&
-              (child.bcgw_code ? (
-                <div key={Math.random()}>
-                  <DataBCLayer
-                    opacity={child.opacity}
-                    bcgw_code={child.bcgw_code}
-                    layer_mode={child.layer_mode}
-                    dataBCAcceptsGeometry={child.dataBCAcceptsGeometry}
-                    simplifyPercentage={child.simplifyPercentage}
-                    inputGeo={props.inputGeo}
-                    color_code={child.color_code}
-                    zIndex={parent.zIndex + child.zIndex}
-                  />
-                </div>
-              ) : (
-                <div key={Math.random()}>
-                  <IndependentLayer
-                    opacity={child.opacity}
-                    layer_code={child.layer_code}
-                    bcgw_code={child.bcgw_code}
-                    activity_subtype={child.activity_subtype}
-                    poi_type={child.poi_type}
-                    layer_mode={child.layer_mode}
-                    inputGeo={props.inputGeo}
-                    color_code={child.color_code}
-                    zIndex={parent.zIndex + child.zIndex}
-                  />
-                </div>
-              ))
-          )}
-        </div>
-      ))}
     </>
   );
 };

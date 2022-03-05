@@ -65,7 +65,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
-  const [currentRecords, setCurrentRecords] = React.useState<any>(null);
+  const [currentRecords, setCurrentRecords] = React.useState<any>([]);
 
   React.useEffect(() => {
     if (layers) {
