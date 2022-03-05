@@ -47,6 +47,11 @@ export const ActivitiesLayer = (props) => {
     }
   });
 
+  // useEffect(() => {
+  //   console.log('fetching');
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     if (activities) {
       const actArr = activities.features.map((feature) => {

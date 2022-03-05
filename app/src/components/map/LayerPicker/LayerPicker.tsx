@@ -1,11 +1,9 @@
 import React, { useEffect, useContext, useRef } from 'react';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 /* HelperFiles Parent Layers */
 import { sortArray, sortObject } from './Sorting/SortLayerOrder';
 /* Helper Files Parent Actions */
-import { updateParentAction } from './LayersActionsHelper/LayersActionsFunctions';
 import { toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
@@ -13,7 +11,6 @@ import {
   AccordionSummary,
   Button,
   Box,
-  List,
   ListItem,
   ListItemButton,
   ListItemIcon,
