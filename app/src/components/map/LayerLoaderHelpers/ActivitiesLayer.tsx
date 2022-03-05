@@ -1,7 +1,7 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useMap, useMapEvents } from 'react-leaflet';
+import { useMap, useMapEvent } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -41,16 +41,13 @@ export const ActivitiesLayer = (props) => {
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
   }, [dataAccess, mapBounds, databaseContext]);
 
-  useMapEvents({
-    moveend: () => {
-      fetchData();
-    }
+  useMapEvent('moveend', () => {
+    fetchData();
   });
 
-  // useEffect(() => {
-  //   console.log('fetching');
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (activities) {

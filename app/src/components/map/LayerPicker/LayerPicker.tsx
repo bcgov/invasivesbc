@@ -75,54 +75,52 @@ export const LayerPicker = React.memo(
     const popoverId = popoverOpen ? 'simple-popover' : undefined;
 
     return (
-      <>
-        <Box id="el">
-          <Popover
-            id={popoverId}
-            style={{ maxHeight: 500 }}
-            open={popoverOpen}
-            onClose={handlePopoverClose}
-            anchorEl={popoverAnchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'left'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
+      <Box id="el">
+        <Popover
+          id={popoverId}
+          style={{ maxHeight: 500 }}
+          open={popoverOpen}
+          onClose={handlePopoverClose}
+          anchorEl={popoverAnchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}>
+          <SortableListContainer items={sortArray(layers)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+          <Button
+            id="layer-picker-save-btn"
+            onClick={() => {
+              localStorage.setItem('mySave', JSON.stringify(layers));
             }}>
-            <SortableListContainer items={sortArray(layers)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
-            <Button
-              id="layer-picker-save-btn"
-              onClick={() => {
-                localStorage.setItem('mySave', JSON.stringify(layers));
-              }}>
-              Save
-            </Button>
-            <Button
-              id="layer-picker-load-btn"
-              onClick={() => {
-                setLayers(JSON.parse(localStorage.getItem('mySave')));
-              }}>
-              Load
-            </Button>
-            <Accordion id="admin-shape-upload-accordion">
-              <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
-              <KMLShapesUpload />
-            </Accordion>
-          </Popover>
-          <ListItem disableGutters>
-            <ListItemButton id="layer-picker-btn" onClick={handlePopoverClick}>
-              <ListItemIcon>
-                <LayersIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography className={toolClass.Font}>Layer Picker</Typography>
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </Box>
-      </>
+            Save
+          </Button>
+          <Button
+            id="layer-picker-load-btn"
+            onClick={() => {
+              setLayers(JSON.parse(localStorage.getItem('mySave')));
+            }}>
+            Load
+          </Button>
+          <Accordion id="admin-shape-upload-accordion">
+            <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
+            <KMLShapesUpload />
+          </Accordion>
+        </Popover>
+        <ListItem disableGutters>
+          <ListItemButton id="layer-picker-btn" onClick={handlePopoverClick}>
+            <ListItemIcon>
+              <LayersIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography className={toolClass.Font}>Layer Picker</Typography>
+            </ListItemText>
+          </ListItemButton>
+        </ListItem>
+      </Box>
     );
   },
   (prevProps, nextProps) => {

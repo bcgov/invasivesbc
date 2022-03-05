@@ -88,7 +88,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
           currentRecords,
           setCurrentRecords
         }),
-        [layers, layersActions, mapZoom, currentRecords]
+        [layers, layersActions, mapZoom, setCurrentRecords]
       )}>
       {props.children}
     </MapRequestContext.Provider>
