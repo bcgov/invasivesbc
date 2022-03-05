@@ -85,9 +85,7 @@ POST.apiDoc = {
  */
 function getAdministrativelyDefinedShapes(): RequestHandler {
   return async (req, res) => {
-    const data = { ...req.body };
-    const user_id = data.user_id;
-    console.log(data);
+    const user_id = req.query.user_id.toString();
 
     const connection = await getDBConnection();
 

@@ -896,7 +896,7 @@ export const useInvasivesApi = () => {
    * @param {string[]} species
    * @return {*}  {Promise<any>}
    */
-  const getAdminUploadGeoJSONLayer = async (user_id: string): Promise<any> => {
+  const getAdminUploadGeoJSONLayers = async (user_id: string): Promise<any> => {
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -968,7 +968,7 @@ export const useInvasivesApi = () => {
     approveAccessRequests,
     declineAccessRequest,
     renewUser,
-    getAdminUploadGeoJSONLayer,
+    getAdminUploadGeoJSONLayers,
     postAdminUploadShape,
     submitUpdateRequest,
     getUpdateRequests,

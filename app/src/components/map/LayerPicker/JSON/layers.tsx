@@ -639,22 +639,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       zIndex: 1000,
       loaded: 70,
       enabled: false,
-      children: [
-        {
-          id: 'admin_uploads',
-          name: 'Administratively Defined Shapes',
-          source: 'INVASIVESBC',
-          layer_code: 'ADMIN_UPLOADS',
-          layer_mode: networkContext ? 'wfs_online' : 'wfs_offline',
-          activity_subtype: 'Activity_Biocontrol_Collection',
-          color_code: '#000',
-          order: 1,
-          opacity: 0.3,
-          zIndex: 50,
-          loaded: 70,
-          enabled: false
-        }
-      ]
+      children: []
     }
   ];
 

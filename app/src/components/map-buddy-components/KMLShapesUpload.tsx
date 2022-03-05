@@ -5,6 +5,7 @@ import { DropzoneDialog } from 'mui-file-dropzone';
 import makeStyles from '@mui/styles/makeStyles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import UploadedItem from './UploadedItem';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -31,6 +32,8 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const { userInfo } = useContext(AuthStateContext);
   const { user_id } = userInfo;
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setUploadLayersFlag } = mapRequestContext;
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
 
@@ -53,6 +56,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         });
       }
       setResultMessage('Files uploaded successfully');
+      setUploadLayersFlag(Math.random());
       setTimeout(() => {
         setResultMessage('');
       }, 2000);

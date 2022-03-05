@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef, useCallback } from 'react';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 /* HelperFiles Parent Layers */
@@ -22,13 +22,55 @@ import {
 import LayersIcon from '@mui/icons-material/Layers';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 import SortableListContainer from './Sorting/SortableListContainer';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 export const LayerPicker = React.memo(
   (props: any) => {
     const mapLayersContext = useContext(MapRequestContext);
-    const { layers, setLayers } = mapLayersContext;
+    const { layers, setLayers, uploadLayersFlag } = mapLayersContext;
     const toolClass = toolStyles();
     const divref = useRef();
+
+    const { userInfo } = useContext(AuthStateContext);
+    const networkContext = useContext(NetworkContext);
+    const { user_id } = userInfo;
+    const invasivesApi = useInvasivesApi();
+
+    useEffect(() => {
+      if (!layers || !user_id) {
+        return;
+      }
+      const fetchUploadedLayers = () => {
+        invasivesApi.getAdminUploadGeoJSONLayers(user_id).then((data) => {
+          if (data && data.length > 0) {
+            setLayers((prev: any) => {
+              let newLayers = [...prev];
+              newLayers[5].children = [];
+              data.forEach((layer, index) => {
+                newLayers[5].children.push({
+                  id: index.toString(),
+                  name: data[index].title.toString(),
+                  geoJSON: data[index].geojson,
+                  source: 'INVASIVESBC',
+                  layer_code: 'ADMIN_UPLOADS',
+                  layer_mode: networkContext ? 'wfs_online' : 'wfs_offline',
+                  color_code: '#000',
+                  order: index,
+                  opacity: 0.3,
+                  zIndex: 50 * index,
+                  loaded: 70,
+                  enabled: false
+                });
+              });
+              return newLayers;
+            });
+          }
+        });
+      };
+      fetchUploadedLayers();
+    }, [setLayers, uploadLayersFlag]);
 
     /* Removed for now:
   function getErrorIcon(time: any) {

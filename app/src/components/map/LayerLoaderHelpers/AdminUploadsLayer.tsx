@@ -24,21 +24,7 @@ const updateAdminLayerComponent = (instance, props, previousProps) => {};
 const AdminLayerComponent = createLayerComponent(createAdminLayerComponent, updateAdminLayerComponent);
 
 export const AdminUploadsLayer = (props) => {
-  const [geoJSON, setGeoJSON] = useState(null);
-  const api = useInvasivesApi();
-  const { userInfo } = useContext(AuthStateContext);
-  const { user_id } = userInfo;
-
-  useEffect(() => {
-    console.log(geoJSON);
-  }, [geoJSON]);
-
-  useEffect(() => {
-    api.getAdminUploadGeoJSONLayer(user_id).then((data) => {
-      console.log(data);
-      // setGeoJSON(data);
-    });
-  }, []);
+  const [geoJSON, setGeoJSON] = useState(props.geoJSON);
 
   return <>{geoJSON && <AdminLayerComponent geoJSON={geoJSON} />}</>;
 };

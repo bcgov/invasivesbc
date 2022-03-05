@@ -12,6 +12,8 @@ interface IMapExtentLayersContext {
   setMapZoom: React.Dispatch<React.SetStateAction<number>>;
   currentRecords: any[];
   setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
+  uploadLayersFlag: number;
+  setUploadLayersFlag: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface IParentLayer {
@@ -31,6 +33,7 @@ export interface IChildLayer {
   simplifyPercentage?: number;
   id?: string;
   name?: string;
+  geoJSON?: any;
   activity_subtype?: string;
   poi_type?: string;
   source?: string;
@@ -57,7 +60,9 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   mapZoom: 5,
   setMapZoom: () => {},
   currentRecords: [],
-  setCurrentRecords: () => {}
+  setCurrentRecords: () => {},
+  uploadLayersFlag: 0,
+  setUploadLayersFlag: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
@@ -66,6 +71,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
   const [currentRecords, setCurrentRecords] = React.useState<any>([]);
+  const [uploadLayersFlag, setUploadLayersFlag] = React.useState<number>(0);
 
   React.useEffect(() => {
     if (layers) {
@@ -86,9 +92,11 @@ export const MapRequestContextProvider: React.FC = (props) => {
           mapZoom,
           setMapZoom,
           currentRecords,
-          setCurrentRecords
+          setCurrentRecords,
+          uploadLayersFlag,
+          setUploadLayersFlag
         }),
-        [layers, layersActions, mapZoom, setCurrentRecords]
+        [layers, layersActions, mapZoom, setCurrentRecords, uploadLayersFlag, setUploadLayersFlag]
       )}>
       {props.children}
     </MapRequestContext.Provider>
