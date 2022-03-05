@@ -74,9 +74,9 @@ describe('CREATING A NEW RECORD', function () {
       ? faker.random.arrayElement(herbicideLiquids)
       : faker.random.arrayElement(herbicideGranulars);
   console.log(herbicide);
-  const herbicideLitres = faker.datatype.number({ min: 1, max: 4 });
-  const herbicideDilution = faker.datatype.number({ min: 1, max: 4 });
-  const herbicideArea = 1;
+  // const herbicideLitres = faker.datatype.number({ min: 1, max: 4 });
+  // const herbicideDilution = faker.datatype.number({ min: 1, max: 4 });
+  // const herbicideArea = 1;
 
   before(() => {
     cy.log('CHECK IF configFile HAS CORRECT dbConfig IN ORDER TO TEST DATABASE');
@@ -192,7 +192,9 @@ describe('CREATING A NEW RECORD', function () {
   })*/
   it('It can add a Chemical Application Method', function () {
     // Chemical Application Method
-    cy.get('#chemical-application-method').type(chemApplicationMethod);
+    cy.get(':nth-child(2) > .MuiAutocomplete-root > .MuiFormControl-root > .MuiOutlinedInput-root').type(
+      chemApplicationMethod
+    );
   });
   it('It can add a herbicide mix', function () {
     // Add Herbicide button
@@ -206,13 +208,30 @@ describe('CREATING A NEW RECORD', function () {
       herbicideCalculationType
     );
     // Amount of Mix Used (L)
-    cy.get('#mui-88').type(herbicideLitres);
+    cy.get('#amount-of-mix-used').type('1');
     // Dilution (%)
-    cy.get('#mui-90').type(herbicideDilution);
+    cy.get('#dilution').type('1');
     // Area Treated (sqm)
-    cy.get('#mui-92').type(herbicideArea);
+    cy.get('#area-treated').type('1');
     // if (herbicideCalculationType === 'Product Application Rate{enter}') {
     //   cy.get('#mui-92').type(herbicideArea)
     // }
   });
+  it('It can save and submit the record', function () {
+    cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click('center');
+    cy.get('.MuiAlert-action > .MuiButtonBase-root > [data-testid=CloseIcon]').click('center');
+    cy.get('[aria-label="Ready to submit, form is validated and has no issues."] > .MuiButton-root').click('center');
+    cy.get('.MuiDialogActions-root > :nth-child(2)').click('center');
+  });
+  // it('It can verify the record is on the database', function () {
+  //   cy.task('DATABASE', {
+  //     dbConfig: Cypress.env('dbConfig'),
+  //     sql: `select * from invasivesbc.observation_terrestrial_plant_summary order by activity_incoming_data_id desc limit 1`
+  //   }).then((result) => {
+  //     (result as any).rows.map((row) => {
+  //       myTestRow = row;
+  //       console.log(row);
+  //     });
+  //   });
+  // })
 });

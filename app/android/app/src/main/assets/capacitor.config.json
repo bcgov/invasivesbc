@@ -1,11 +1,11 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "bc.gov.invasivesbc",
 	"appName": "InvasivesBC",
 	"webDir": "build",
 	"server": {
-		"hostname": "localhost",
+		"hostname": "invasivesbc_app.apps.silver.devops.gov.bc.ca",
 		"iosScheme": "invasivesbc",
-		"androidScheme": "invasivesbc"
+		"androidScheme": "https"
 	},
 	"cordova": {
 		"accessOrigins": [

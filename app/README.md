@@ -22,9 +22,10 @@ ionic serve
 On MacOS, Windows or Linux, in the app directory:
 
 1. `npm install`
-2. `ionic build`
-3. `ionic cap add android` (Only the first time, does not need to be repeated after)
-4. `ionic cap sync android`
+2. `npm run build:android` to set correct capacitor config
+3. `ionic build`
+4. `ionic cap add android` (Only the first time, does not need to be repeated after)
+5. `ionic cap sync android`
 
 # to open it in android studio
 
@@ -43,6 +44,7 @@ On MacOS, in the app directory:
 First time setup: Install Ionic CLI 6.16.1
 
 1. npm install
+2. npm run build:ios to set correct capacitor config
 
 # edit: this should already be done:
 

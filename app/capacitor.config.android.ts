@@ -1,13 +1,12 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'bc.gov.invasivesbc',
   appName: 'InvasivesBC',
   webDir: 'build',
   server: {
-    hostname: 'localhost',
-    iosScheme: 'invasivesbc',
-    androidScheme: 'invasivesbc'
+    hostname: 'invasivesbc-app.apps.silver.devops.gov.bc.ca',
+    androidScheme: 'https'
   },
   cordova: {
     accessOrigins: ['https://dev.oidc.gov.bc.ca/*']

@@ -168,6 +168,10 @@
   "scripts": {
     "start": "react-scripts start max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
     "build": "react-scripts build",
+    "prebuild:android": "node capacitor_config_prebuild.js android",
+    "build:android": "react-scripts build",
+    "prebuild:ios": "node capacitor_config_prebuild.js ios",
+    "build:ios": "react-scripts build",
     "test": "react-scripts test",
     "start:ionic": "ionic serve --port 3000",
     "start:ionic:reload": "ionic serve",
