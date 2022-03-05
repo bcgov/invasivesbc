@@ -65,24 +65,6 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   OnNavBack?: Function;
 }
 
-// interface warningFieldPaths {
-//   argVal: string;
-//   formDataPath: string;
-//   errSchemaPath: string;
-//   uiSchemaPath: string;
-// }
-
-// export const BlurWarningFields: { [key: string]: warningFieldPaths } = {
-//   ntz_reduction_terrestrial: {
-//     argVal: 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_',
-//     formDataPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction',
-//     errSchemaPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction.__errors.0',
-//     uiSchemaPath: 'activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction.validateOnBlur'
-//   }
-// };
-
-// export const ChangeWarningFields: { [key: string]: warningFieldPaths } = {};
-
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
   const [formData, setformData] = useState(props.activity?.formData);

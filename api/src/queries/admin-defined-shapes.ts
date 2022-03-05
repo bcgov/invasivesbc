@@ -1,20 +1,19 @@
-import {SQL, SQLStatement} from 'sql-template-strings';
-import {PointOfInterestPostRequestBody, PointOfInterestSearchCriteria} from '../models/point-of-interest';
+import { SQL, SQLStatement } from 'sql-template-strings';
 
 /**
  * SQL query to fetch administratively-defined shapes (from uploaded KML) for display
  *
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativelyDefinedShapesSQL = (username: string) => {
+export const getAdministrativelyDefinedShapesSQL = (user_id: string) => {
   const sqlStatement: SQLStatement = SQL`
-    SELECT json_build_object(
+SELECT title, json_build_object(
              'type', 'FeatureCollection',
-             'features', json_agg(ST_AsGeoJSON(t.*)::json)
+             'features', json_agg(ST_asGeoJSON(t.geog)::json)
              ) as geojson
-    FROM (select id, geog from admin_defined_shapes where visible is true and created_by = $1) as t;
+    FROM (select id, title, geog from invasivesbc.admin_defined_shapes where visible is true and created_by = $1) as t group by title;
   `;
 
-  sqlStatement.values = [username];
+  sqlStatement.values = [user_id];
   return sqlStatement;
 };

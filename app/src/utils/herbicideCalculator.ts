@@ -265,7 +265,7 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
   dilution = parseToRightFormat(dilution);
   resultObj = {
     dilution: dilution,
-    invasive_plants: species
+    species: species
   };
 
   return resultObj;
@@ -605,7 +605,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     outputInvPlantsArr.push(outputSpecie);
   });
 
-  return { invasive_plants: [...outputInvPlantsArr] };
+  return { species: [...outputInvPlantsArr] };
 };
 
 /**

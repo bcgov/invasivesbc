@@ -84,10 +84,8 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 function getAdministrativelyDefinedShapes(): RequestHandler {
-
   return async (req, res) => {
-    // @ts-ignore
-    const username = req?.auth_payload?.preferred_username || 'none';
+    const user_id = req.query.user_id.toString();
 
     const connection = await getDBConnection();
 
@@ -99,7 +97,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getAdministrativelyDefinedShapesSQL(username);
+      const sqlStatement: SQLStatement = getAdministrativelyDefinedShapesSQL(user_id);
 
       if (!sqlStatement) {
         throw {
@@ -121,7 +119,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         });
       }
 
-      return res.status(200).json(rows[0].geojson);
+      return res.status(200).json(rows);
     } catch (error) {
       defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
       throw error;
@@ -138,10 +136,9 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
  */
 function uploadShape(): RequestHandler {
   return async (req, res) => {
-    // @ts-ignore
-    const username = req?.auth_payload?.preferred_username || 'none';
-
     const data = { ...req.body };
+    const user_id = data.user_id;
+    const title = data.title;
     let geoJSON: FeatureCollection;
 
     try {
@@ -182,9 +179,9 @@ function uploadShape(): RequestHandler {
 
         for (const feature of geoJSON.features) {
           const response: QueryResult = await connection.query(
-            `insert into admin_defined_shapes (geog, created_by)
-             values (ST_Force2D(ST_GeomFromGeoJSON($1)), $2) returning id`,
-            [JSON.stringify(feature.geometry), username]
+            `insert into admin_defined_shapes (geog, created_by, title)
+             values (ST_Force2D(ST_GeomFromGeoJSON($1)), $2, $3) returning id`,
+            [JSON.stringify(feature.geometry), user_id, title]
           );
         }
 
@@ -198,6 +195,6 @@ function uploadShape(): RequestHandler {
       connection.release();
     }
 
-    return res.status(201).send();
+    return res.status(201).json({ status: 200 });
   };
 }

@@ -21,7 +21,6 @@ export const IndependentLayer = (props) => {
   if (!props.enabled) {
     return <></>;
   }
-
   if (Object.values(IndependentLayers).includes(props.layer_code)) {
     switch (props.layer_code) {
       case 'LEAN_ACTIVITIES':
@@ -66,6 +65,7 @@ export const IndependentLayer = (props) => {
         return (
           <AdminUploadsLayer
             color_code={props.color_code}
+            geoJSON={props.geoJSON}
             online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}

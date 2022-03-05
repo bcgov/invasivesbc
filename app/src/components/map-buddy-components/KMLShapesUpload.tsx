@@ -1,86 +1,169 @@
-import React, { useState } from 'react';
-import { Button } from '@mui/material';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { Box, Button, Theme, Typography } from '@mui/material';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import { DropzoneArea } from 'mui-file-dropzone';
-import { setMatchers } from 'expect/build/jestMatchersObject';
+import { DropzoneDialog } from 'mui-file-dropzone';
+import makeStyles from '@mui/styles/makeStyles';
+import { AuthStateContext } from 'contexts/authStateContext';
+import UploadedItem from './UploadedItem';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 export interface IShapeUploadRequest {
   data: string;
   type: 'kml' | 'kmz';
+  user_id: string;
+  title: string;
 }
+
+const useStyles = makeStyles((theme: Theme) => ({
+  itemsContainer: { display: 'flex', justifyContent: 'start', alignItems: 'center', width: '100%', flexWrap: 'wrap' },
+  buttonsContainer: { display: 'flex', justifyContent: 'stretch' },
+  button: { flexGrow: 1, marginLeft: 10, marginRight: 10 },
+  componentContainer: { maxWidth: '500px', padding: 7 },
+  messageContainer: {
+    padding: 7,
+    width: '100%'
+  }
+}));
 
 //   var extension = input?.name?.split('.').pop();
 export const KMLShapesUpload: React.FC<any> = (props) => {
-  const [uploadRequest, setUploadRequest] = useState({
-    type: null,
-    data: null
-  });
-
-  const [valid, setValid] = useState(false);
-  const [message, setMessage] = useState(null);
-
+  const classes = useStyles();
+  const [uploadRequests, setUploadRequests] = useState([]);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const { userInfo } = useContext(AuthStateContext);
+  const { user_id } = userInfo;
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setUploadLayersFlag } = mapRequestContext;
   const api = useInvasivesApi();
+  const [resultMessage, setResultMessage] = useState('');
 
   const doUpload = async () => {
-    if (!valid) {
-      return;
-    }
-
+    let response;
     try {
-      await api.postAdminUploadShape(uploadRequest);
-      setUploadRequest(null);
-      setMessage('Upload complete');
+      for (let i = 0; i < uploadRequests.length; i++) {
+        console.log();
+        response = await api.postAdminUploadShape(uploadRequests[i]);
+        console.log(response);
+        if (response.status !== 200) {
+          throw new Error(response.message);
+        }
+        setUploadRequests((prev) => {
+          if (prev.length < 2) {
+            return [];
+          } else {
+            return [...prev].splice(i, 1);
+          }
+        });
+      }
+      setResultMessage('Files uploaded successfully');
+      setUploadLayersFlag(Math.random());
+      setTimeout(() => {
+        setResultMessage('');
+      }, 2000);
     } catch (err) {
-      setMessage('Error occurred');
+      setUploadRequests([]);
+      setResultMessage('There was an error: ' + err);
+      setTimeout(() => {
+        setResultMessage('');
+      }, 2000);
     }
   };
 
-  const acceptFile = (files: File[]) => {
-    if (files.length !== 1) {
+  const acceptFiles = (files: File[]) => {
+    setUploadRequests([]);
+    if (files.length < 1) {
       return;
     }
 
-    const extension = files[0].name.split('.').pop();
-    let fileType: string;
+    files.forEach((file) => {
+      let status: string;
+      const defaultTitle = file.name.split('.')[0];
 
-    if (extension.match(/kml/i)) {
-      fileType = 'kml';
-    } else if (extension.match(/kmz/i)) {
-      fileType = 'kmz';
-    } else {
-      setValid(false);
-      setMessage('Unrecognized extension ' + extension);
-      return;
-    }
+      let fileType: string;
+      fileType = file.name.split('.').pop();
 
-    const reader = new FileReader();
+      const reader = new FileReader();
 
-    reader.onabort = () => console.log('file reading was aborted');
-    reader.onerror = () => console.log('file reading has failed');
-    reader.onload = () => {
-      const encodedString = btoa(reader.result as string);
+      reader.onabort = () => (status = 'file reading was aborted');
+      reader.onerror = () => (status = 'file reading has failed');
+      reader.onload = () => {
+        const encodedString = btoa(reader.result as string);
 
-      setUploadRequest({
-        type: fileType,
-        data: encodedString
-      });
-      setMessage('Ready to upload');
-      setValid(true);
-    };
+        setUploadRequests((prev) => {
+          const newRequest = [...prev];
+          newRequest.push({
+            type: fileType,
+            data: encodedString,
+            user_id: user_id,
+            title: defaultTitle,
+            status: status
+          });
+          return newRequest;
+        });
+      };
 
-    setMessage(null);
-    reader.readAsBinaryString(files[0]);
+      reader.readAsBinaryString(file);
+    });
   };
 
+  const handleTitleChange = (title, index) => {
+    setUploadRequests((prev) => {
+      let reqChanged = prev[index];
+      reqChanged['title'] = title;
+      const newRequests = [...prev];
+      newRequests[index] = reqChanged;
+      return newRequests;
+    });
+  };
+
+  if (!user_id) {
+    return (
+      <Box className={classes.componentContainer}>
+        <Typography color="error" style={{ textAlign: 'center' }}>
+          You have to be logged in to access this feature
+        </Typography>
+      </Box>
+    );
+  }
   return (
-    <>
-      <DropzoneArea dropzoneText="Upload KML/KMZ here" onChange={acceptFile} />
+    <Box className={classes.componentContainer}>
+      <DropzoneDialog
+        acceptedFiles={['.kml,.kmz']}
+        cancelButtonText={'cancel'}
+        filesLimit={50}
+        submitButtonText={'add'}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSave={(files) => {
+          acceptFiles(files);
+          setDialogOpen(false);
+        }}
+        showPreviews={true}
+        useChipsForPreview={true}
+        showFileNamesInPreview={true}
+      />
 
-      {message && <p>{message}</p>}
-      <Button variant={'contained'} disabled={!valid} onClick={() => doUpload()}>
-        Upload
-      </Button>
-    </>
+      <Box className={classes.buttonsContainer}>
+        <Button className={classes.button} variant="contained" color="primary" onClick={() => setDialogOpen(true)}>
+          Add KML/KMZ
+        </Button>
+        <Button
+          className={classes.button}
+          variant={'contained'}
+          disabled={uploadRequests.length < 1}
+          onClick={() => doUpload()}>
+          Upload
+        </Button>
+      </Box>
+
+      {resultMessage && <Box className={classes.messageContainer}>{resultMessage}</Box>}
+
+      <Box className={classes.itemsContainer}>
+        {uploadRequests.map((req, index) => {
+          return <UploadedItem data={req} index={index} setTitle={handleTitleChange} />;
+        })}
+      </Box>
+    </Box>
   );
 };
 
