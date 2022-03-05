@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: any) => ({
   }
 }));
 
-const ActivitiesList2: React.FC = () => {
+const ActivitiesList2 = (props: any) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
@@ -119,7 +119,13 @@ const ActivitiesList2: React.FC = () => {
   return (
     <>
       <Grid sx={{ pt: 2 }} xs={12} item>
-        <ActivityGrid formType={formType} subType={subType} filtersCallBack={setFilters} initialFilters={filters} />
+        <ActivityGrid
+          formType={formType}
+          subType={subType}
+          setSelectedRecord={props.setSelectedRecord}
+          filtersCallBack={setFilters}
+          initialFilters={filters}
+        />
       </Grid>
     </>
   );
