@@ -27,11 +27,9 @@ import ReactLeafletEditable from 'react-leaflet-editable';
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import MapRecordsDataGrid from './MapRecordsDataGrid';
-import MapStore from './MapStore';
 import OfflineMap from './OfflineMap';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
-import Layers from './Layers';
-
+import Layers from './Layers/Layers';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -127,7 +125,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
-
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
 
@@ -203,10 +200,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           whenCreated={setMap}
           preferCanvas={true}
           tap={true}>
-          {/* <MapStore> */}
           <FlyToAndFadeContextProvider>
             <MapRequestContextProvider>
-              <Layers inputGeo={props.geometryState.geometry} />
+              {useMemo(
+                () => (
+                  <Layers inputGeo={props.geometryState.geometry} />
+                ),
+                [props.geometryState.geometry]
+              )}
+
               <ZoomButtons position="bottomleft" />
               <ScaleControl position="bottomleft" imperial={false} />
 
@@ -238,7 +240,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <MapRecordsDataGrid />
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
-          {/* </MapStore> */}
         </ReactLeafletMapContainer>
       </ReactLeafletEditable>
     </>

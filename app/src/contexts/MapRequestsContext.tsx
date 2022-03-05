@@ -14,7 +14,7 @@ interface IMapExtentLayersContext {
   setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
 }
 
-interface IParentLayer {
+export interface IParentLayer {
   id?: string;
   name?: string;
   order?: number;
@@ -26,7 +26,7 @@ interface IParentLayer {
   children?: IChildLayer[];
 }
 
-interface IChildLayer {
+export interface IChildLayer {
   dataBCAcceptsGeometry?: boolean;
   simplifyPercentage?: number;
   id?: string;
