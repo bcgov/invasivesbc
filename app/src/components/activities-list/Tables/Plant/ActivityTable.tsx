@@ -1,4 +1,7 @@
 import Accordion from '@mui/material/Accordion';
+import EditIcon from '@mui/icons-material/Edit';
+
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -22,7 +25,7 @@ import { CheckBox, FilterAltOff, PlayCircleFilledWhite } from '@mui/icons-materi
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, InputLabel, List, ListItem, MenuItem, Select } from '@mui/material';
 import { DocType } from 'constants/database';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -347,12 +350,43 @@ const ActivityGrid = (props) => {
     );
   };
 
+  const FilterRow = (props) => {
+    return (
+      <ListItem key={props.key} sx={{ width: 'auto' }}>
+        <Button variant="outlined">Includes: Jurisdiction</Button>
+        <EditIcon sx={{ fontSize: '10' }} />
+      </ListItem>
+    );
+  };
+
+  const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>();
+
   return (
     <Box maxHeight="100%" paddingBottom="20px">
       {!activities ? (
         <CircularProgress />
       ) : (
         <FilterContext.Provider value={filters}>
+          {advancedFilterRows && advancedFilterRows.length > 0 ? <Typography>Advanced Filters</Typography> : <></>}
+          <List
+            sx={{
+              pb: 7,
+              display: 'flex',
+              flexWrap: 'wrap',
+              width: '100%',
+              height: 'auto',
+              flexDirection: 'row',
+              justifyContent: 'start',
+              alignItems: 'center'
+            }}>
+            {advancedFilterRows && advancedFilterRows.length > 0 ? (
+              advancedFilterRows.map((r, i) => {
+                return <FilterRow key={i} />;
+              })
+            ) : (
+              <></>
+            )}
+          </List>
           <Box
             sx={{
               pb: 7,
@@ -362,7 +396,17 @@ const ActivityGrid = (props) => {
               justifyContent: 'start',
               alignItems: 'center'
             }}>
-            <Button variant="contained">test</Button>
+            <Button
+              onClick={() => {
+                alert(JSON.stringify(advancedFilterRows));
+                setAdvancedFilterRows(
+                  advancedFilterRows && advancedFilterRows.length ? [...advancedFilterRows, {}] : [{}]
+                );
+              }}
+              size={'small'}
+              variant="contained">
+              <AddBoxIcon></AddBoxIcon>Advanced Filter
+            </Button>
             <FilterToggle style={{ marginLeft: 'auto' }} />
           </Box>
           <div id="xDataGrid">
