@@ -1,5 +1,7 @@
 import { CheckBox, ClassSharp, DirtyLens, StickyNote2 } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import {
   Accordion,
@@ -28,6 +30,9 @@ import appTheme from 'themes/appTheme';
 import { setOptions } from 'leaflet';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { ClassNames } from '@emotion/react';
+import { RecordSet } from './activityRecordset/RecordSet';
+import MenuOptions from './MenuOptions';
 interface IStatusPageProps {
   classes?: any;
 }
@@ -37,111 +42,16 @@ const flexContainer = {
   padding: 0
 };
 
-enum optionType {
-  button = 'button',
-  toggle = 'toggle'
-}
-
-const TabOptions = (props) => {
-  if (props.options == undefined) return <></>;
-  const TabOption = (props) => {
-    console.log('option props');
-    console.log(props.name);
-    const IconFromProps = props.icon;
-    switch (props.type) {
-      case optionType.toggle:
-        return (
-          <ToggleButton value={true} color="info">
-            {props.name}
-          </ToggleButton>
-        );
-      default:
-        return (
-          <Button
-            size="small"
-            color="secondary"
-            variant="contained"
-            //aria-label="open drawer"
-            disabled={props.disabled}
-            onClick={props.onClick}
-            //  edge="start"
-            /*className={clsx(classes.menuButton, {
-          [classes.hide]: open
-        })}>*/
-          >
-            <>{props.icon ? <IconFromProps /> : ''} </>
-            {props.name}
-          </Button>
-        );
-    }
-  };
-  console.log('options');
-  console.dir(props.options);
-  if (props.options !== undefined) {
-    return (
-      <List sx={flexContainer}>
-        {props.options.map((option) => {
-          if (!option.hidden) {
-            return (
-              <ListItem>
-                <TabOption {...option} />
-              </ListItem>
-            );
-          }
-        })}
-      </List>
-    );
-  }
-};
-
-const useStyles = makeStyles((theme: any) => ({
-  newActivityButtonsRow: {
-    '& Button': {
-      marginRight: '0.5rem',
-      marginBottom: '0.5rem'
-    }
-  },
-  syncSuccessful: {
-    color: theme.palette.success.main
-  },
-  formControl: {},
-  mainHeader: {
-    backGroundColor: theme.palette.success.main
-  }
-}));
-
-const RecordSet = (props) => {
-  return (
-    <>
-      <Accordion>
-        <AccordionSummary>
-          {props.name}
-          <AccordionActions>
-            <Button variant="contained">Remove X</Button>
-            <Button style={{ backgroundColor: alpha('#FFF', 0) }} variant="contained">
-              Map Colour
-            </Button>
-            Snap to map<CheckBox>Snap to map</CheckBox>
-          </AccordionActions>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ActivitiesList2 setSelectedRecord={props.setSelectedRecord} />
-        </AccordionDetails>
-      </Accordion>
-    </>
-  );
-};
-
 //Style:  I tried to use className: mainHeader and put css in that class but never coloured the box
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const [recordSets, setRecordSets] = useState<any[]>();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const classes = useStyles();
   const [selectedRecord, setSelectedRecord] = useState<any>({});
   const [options, setOptions] = useState<any>();
   const history = useHistory();
 
+  /* set up main menu bar options: */
   useEffect(() => {
     setOptions([
       {
@@ -178,13 +88,16 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         }
       },
       {
-        name: '+ Record List/Layer',
+        name: 'New Record List/Layer',
         hidden: false,
         disabled: false,
+        icon: PlaylistAddIcon,
         onClick: () => {
-          if (recordSets) {
+          if (recordSets && recordSets.length > 0) {
+            console.log(recordSets.length);
             setRecordSets([...recordSets, { name: 'another one' }]);
           } else {
+            console.log('doesnt chamge');
             setRecordSets([{ name: 'another one' }]);
           }
         }
@@ -193,6 +106,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         name: 'New Record',
         hidden: false,
         disabled: false,
+        icon: AddIcon,
         onClick: () => {
           alert('no');
         }
@@ -216,7 +130,12 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
       }
     ]);
     console.log('selected');
-  }, [selectedRecord]);
+  }, [selectedRecord, recordSets]);
+
+  /* grab existing record sets from localstorage or something: */
+  useEffect(() => {
+    console.log('TODO grab old record sets');
+  }, []);
 
   return (
     <>
@@ -226,11 +145,23 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           zIndex: 9999,
           backgroundColor: '#223f75',
           width: '100%',
-          height: '80px'
+          padding: 8,
+          bottom: 30
+          //  height: '80px'
         }}>
-        <TabOptions options={options} />
+        <MenuOptions
+          sx={{
+            flexWrap: 'wrap',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'start'
+          }}
+          listSX={{ width: 'auto' }}
+          options={options}
+        />
       </Box>
-      <Box style={{ position: 'relative', backgroundColor: '#223f75', width: '100%', height: '80px' }}></Box>
+
       <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
         <Grid container xs={12} height="50px" display="flex" justifyContent="left">
           <Grid sx={{ pb: 15 }} xs={12} item>
@@ -238,7 +169,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
             <RecordSet canRemove={false} setSelectedRecord={setSelectedRecord} name={'All Data'} />
             {recordSets && recordSets.length > 0 ? (
               recordSets.map((r, i) => {
-                return <RecordSet key={i} setSelectedRecord={setSelectedRecord} name={r.name} />;
+                return <RecordSet key={i} canRemove={true} setSelectedRecord={setSelectedRecord} name={r.name} />;
               })
             ) : (
               <></>
