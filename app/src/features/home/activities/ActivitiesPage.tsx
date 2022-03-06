@@ -134,6 +134,7 @@ const RecordSet = (props) => {
 
 //Style:  I tried to use className: mainHeader and put css in that class but never coloured the box
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
+  const [recordSets, setRecordSets] = useState<any[]>();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const classes = useStyles();
@@ -174,6 +175,18 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         },
         onClick: () => {
           alert('no');
+        }
+      },
+      {
+        name: '+ Record List/Layer',
+        hidden: false,
+        disabled: false,
+        onClick: () => {
+          if (recordSets) {
+            setRecordSets([...recordSets, { name: 'another one' }]);
+          } else {
+            setRecordSets([{ name: 'another one' }]);
+          }
         }
       },
       {
@@ -223,12 +236,15 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           <Grid sx={{ pb: 15 }} xs={12} item>
             <RecordSet canRemove={false} setSelectedRecord={setSelectedRecord} name={'My Drafts'} />
             <RecordSet canRemove={false} setSelectedRecord={setSelectedRecord} name={'All Data'} />
+            {recordSets && recordSets.length > 0 ? (
+              recordSets.map((r, i) => {
+                return <RecordSet key={i} setSelectedRecord={setSelectedRecord} name={r.name} />;
+              })
+            ) : (
+              <></>
+            )}
           </Grid>
-          <Grid sx={{ pb: 15 }} xs={12} item>
-            <Button style={{ width: '100%' }} variant="contained">
-              New Record Set
-            </Button>
-          </Grid>
+          <Grid sx={{ pb: 15 }} xs={12} item></Grid>
         </Grid>
       </Container>
     </>
