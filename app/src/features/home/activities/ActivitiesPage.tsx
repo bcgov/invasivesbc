@@ -1,5 +1,6 @@
 import { CheckBox, ClassSharp, DirtyLens, StickyNote2 } from '@mui/icons-material';
 import { useHistory } from 'react-router';
+import CropFreeIcon from '@mui/icons-material/CropFree';
 import {
   Accordion,
   AccordionActions,
@@ -143,7 +144,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   useEffect(() => {
     setOptions([
       {
-        name: 'Apply Filters to Map',
+        name: 'Toggle Filters on Map',
         hidden: false,
         disabled: false,
         //type: optionType.toggle,
@@ -160,9 +161,17 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         }
       },
       {
-        name: 'Apply Map Extent to Filters',
+        name: 'Current window only',
         hidden: false,
         disabled: false,
+        icon: (props) => {
+          return (
+            <>
+              <FilterListIcon />
+              <CropFreeIcon />
+            </>
+          );
+        },
         onClick: () => {
           alert('no');
         }
@@ -204,11 +213,11 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           zIndex: 9999,
           backgroundColor: '#223f75',
           width: '100%',
-          height: '50px'
+          height: '80px'
         }}>
         <TabOptions options={options} />
       </Box>
-      <Box style={{ position: 'relative', backgroundColor: '#223f75', width: '100%', height: '50px' }}></Box>
+      <Box style={{ position: 'relative', backgroundColor: '#223f75', width: '100%', height: '80px' }}></Box>
       <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
         <Grid container xs={12} height="50px" display="flex" justifyContent="left">
           <Grid sx={{ pb: 15 }} xs={12} item>
