@@ -1,4 +1,5 @@
 import Accordion from '@mui/material/Accordion';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
@@ -17,7 +18,7 @@ import './filter-cell.css';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
-import { CheckBox, PlayCircleFilledWhite } from '@mui/icons-material';
+import { CheckBox, FilterAltOff, PlayCircleFilledWhite } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -337,26 +338,33 @@ const ActivityGrid = (props) => {
   const RowRenderer = (props) => {
     return <Row className="xRow" {...props} />;
   };
+
+  const FilterToggle = (props) => {
+    return filters.enabled ? (
+      <FilterAltIcon style={props.style} onClick={toggleFilters} />
+    ) : (
+      <FilterAltOff style={props.style} onClick={toggleFilters} />
+    );
+  };
+
   return (
     <Box maxHeight="100%" paddingBottom="20px">
       {!activities ? (
         <CircularProgress />
       ) : (
         <FilterContext.Provider value={filters}>
-          <FormControl sx={{ pl: 25 }} variant="outlined">
-            <InputLabel>Toggle Sort or Filter</InputLabel>
-            <CheckBox onClick={toggleFilters} />
-          </FormControl>
-          <FormControl sx={{ pl: 25 }} variant="outlined">
-            <InputLabel>List View:</InputLabel>
-            <Select value="Observation" onClick={toggleFilters}>
-              <MenuItem value={'Observation'}>Observation</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Button disabled> </Button>
+          <Box
+            sx={{
+              pb: 7,
+              display: 'flex',
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'start',
+              alignItems: 'center'
+            }}>
+            <Button variant="contained">test</Button>
+            <FilterToggle style={{ marginLeft: 'auto' }} />
+          </Box>
           <div id="xDataGrid">
             <DataGrid
               //TODO THEME MODE
