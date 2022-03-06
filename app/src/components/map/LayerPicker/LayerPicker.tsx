@@ -44,7 +44,7 @@ export const LayerPicker = React.memo(
       }
       const fetchUploadedLayers = () => {
         invasivesApi.getAdminUploadGeoJSONLayers(user_id).then((data) => {
-          if (data && data.length > 0) {
+          if (data && data.name !== 'error' && data.length > 0) {
             setLayers((prev: any) => {
               let newLayers = [...prev];
               newLayers[5].children = [];

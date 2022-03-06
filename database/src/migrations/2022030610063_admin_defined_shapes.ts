@@ -13,6 +13,7 @@ export async function up(knex: Knex): Promise<void> {
       visible boolean not null default true,
       created_at timestamp without time zone not null default current_timestamp,
       created_by varchar(100) null,
+      title varchar(100),
       geog geography(polygon, 4326)
     );
 
