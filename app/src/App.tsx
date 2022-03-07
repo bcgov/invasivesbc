@@ -1,19 +1,19 @@
-import {Capacitor} from '@capacitor/core';
-import {Device} from '@capacitor/device';
+import { Capacitor } from '@capacitor/core';
+import { Device } from '@capacitor/device';
 
-import {DeviceInfo} from '@capacitor/device';
-import {IonReactRouter} from '@ionic/react-router';
+import { DeviceInfo } from '@capacitor/device';
+import { IonReactRouter } from '@ionic/react-router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
-import {KeycloakProvider} from '@react-keycloak/web';
-import {AuthStateContextProvider} from 'contexts/authStateContext';
-import {NetworkContextProvider} from 'contexts/NetworkContext';
-import React, {useEffect, useState} from 'react';
-import {useHistory} from 'react-router-dom';
+import { KeycloakProvider } from '@react-keycloak/web';
+import { AuthStateContextProvider } from 'contexts/authStateContext';
+import { NetworkContextProvider } from 'contexts/NetworkContext';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
-import {DatabaseContextProvider} from './contexts/DatabaseContext';
+import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 
 //Neither worked in both cases with standard sso realm.
@@ -60,7 +60,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 let redirect_uri = 'http://127.0.0.1:3000/home/landing';
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
-    redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
+    redirect_uri = 'http://localhost:3000/home/landing';
     break;
   case 'test':
     redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
@@ -78,7 +78,6 @@ if (Capacitor.isNativePlatform()) {
 
 // console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
-
   const keycloakInstanceConfig: Keycloak.KeycloakConfig = {
     realm: 'onestopauth-business',
     //    adapter: 'capacitor-native',
@@ -120,7 +119,7 @@ const App: React.FC<IAppProps> = (props) => {
   const [deviceInfo, setDeviceInfo] = useState(null);
   const getDeviceInfo = async () => {
     const dev = await Device.getInfo();
-    setDeviceInfo({...dev});
+    setDeviceInfo({ ...dev });
   };
 
   useEffect(() => {
@@ -133,8 +132,8 @@ const App: React.FC<IAppProps> = (props) => {
     keycloakConfig
   };
 
-  const DebugRouter = ({children}: { children: any }) => {
-    const {location} = useHistory();
+  const DebugRouter = ({ children }: { children: any }) => {
+    const { location } = useHistory();
     if (['development', 'local'].includes(process.env.REACT_APP_REAL_NODE_ENV)) {
       console.log(`Route: ${location.pathname}${location.search}, State: ${JSON.stringify(location.state)}`);
     }

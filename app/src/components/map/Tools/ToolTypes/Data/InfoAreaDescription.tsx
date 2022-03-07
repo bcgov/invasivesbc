@@ -47,11 +47,6 @@ import {
 } from '../../Helpers/ToolStyles';
 // App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
-import {
-  getJurisdictions,
-  getLatestReportedArea,
-  getReportedAreaOutput
-} from 'components/points-of-interest/IAPP/IAPP-Functions';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -66,19 +61,13 @@ export const GeneratePopup = (props) => {
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [bufferedGeo, setBufferedGeo] = useState(null);
-  const [rowsPoi, setRowsPoi] = useState([]);
   const [section, setSection] = useState('position');
   const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   const [databc, setDataBC] = useState(null); // NOSONAR
   const [radius, setRadius] = useState(3);
-  const [rowsActivity, setRowsActivity] = useState([]);
-  const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
-  const dbContext = useContext(DatabaseContext);
-  var activities;
-  const invasivesApi = useInvasivesApi();
 
   useEffect(() => {
     if (popupElRef?.current) {
@@ -110,71 +99,6 @@ export const GeneratePopup = (props) => {
   //   }
   // }, [bufferedGeo]);
 
-  useEffect(() => {
-    updateActivityRecords();
-    updatePOIRecords();
-  }, [bufferedGeo]);
-
-  const updateActivityRecords = useCallback(async () => {
-    if (bufferedGeo) {
-      activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
-      if (activities) {
-        var tempArr = [];
-        for (let i in activities.rows) {
-          if (activities.rows[i]) {
-            var obj = activities.rows[i];
-            tempArr.push({
-              obj,
-              open: false
-            });
-          }
-        }
-        setRowsActivity(tempArr);
-      } else setRowsActivity(null);
-    }
-  }, [bufferedGeo]);
-
-  const updatePOIRecords = useCallback(async () => {
-    if (bufferedGeo) {
-      var pointsofinterest = await dataAccess.getPointsOfInterest(
-        {
-          search_feature: bufferedGeo,
-          isIAPP: true,
-          limit: 500,
-          page: 0
-        },
-        dbContext
-      );
-
-      if (!pointsofinterest.rows) {
-        return;
-      }
-
-      // Removed for now: setPoisObj(pointsofinterest);
-      const tempArr = [];
-      pointsofinterest.rows.map((poi) => {
-        const surveys = poi.point_of_interest_payload.form_data.surveys;
-        const tempSurveyArea = getLatestReportedArea(surveys);
-        const newArr = getJurisdictions(surveys);
-        const arrJurisdictions = [];
-        newArr.forEach((item) => {
-          arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
-        });
-
-        var row = {
-          id: poi.point_of_interest_id,
-          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
-          jurisdiction_code: arrJurisdictions,
-          species_code: poi.species_on_site,
-          geometry: poi.point_of_interest_payload.geometry,
-          reported_area: getReportedAreaOutput(tempSurveyArea)
-        };
-        tempArr.push(row);
-      });
-      setRowsPoi(tempArr);
-    }
-  }, [bufferedGeo]);
-
   const hideElement = () => {
     if (!popupElRef?.current || !props.map) return;
     props.map.closePopup();
@@ -199,15 +123,12 @@ export const GeneratePopup = (props) => {
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={props.utmRows} />}
             {section == 'activity' && (
-              <RenderTableActivity
-                setActivityGeo={props.setActivityGeo}
-                map={props.map}
-                rows={rowsActivity}
-                setRows={setRowsActivity}
-              />
+              <RenderTableActivity setActivityGeo={props.setActivityGeo} map={props.map} bufferedGeo={bufferedGeo} />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && <RenderTablePOI map={props.map} rows={rowsPoi} setPoiMarker={props.setPoiMarker} />}
+            {section == 'poi' && (
+              <RenderTablePOI map={props.map} setPoiMarker={props.setPoiMarker} bufferedGeo={bufferedGeo} />
+            )}
           </TableContainer>
           <Grid container>
             <BottomNavigation
