@@ -27,6 +27,8 @@ import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { FormControl, InputLabel, List, ListItem, MenuItem, Select } from '@mui/material';
 import { DocType } from 'constants/database';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -122,6 +124,12 @@ function FilterRenderer<R, SR, T extends HTMLOrSVGElement>({
 }
 
 const ActivityGrid = (props) => {
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
   const history = useHistory();
   const classes = useStyles();
   const dataAccess = useDataAccess();
@@ -353,13 +361,145 @@ const ActivityGrid = (props) => {
   const FilterRow = (props) => {
     return (
       <ListItem key={props.key} sx={{ width: 'auto' }}>
-        <Button variant="outlined">Includes: Jurisdiction</Button>
-        <EditIcon sx={{ fontSize: '10' }} />
+        <Button variant="outlined">
+          {props.filterField} = {props.filterValue}
+        </Button>
+        <EditIcon
+          onClick={(e) => {
+            e.stopPropagation();
+            newFilter(props.filterKey);
+          }}
+          sx={{ fontSize: '10' }}
+        />
       </ListItem>
     );
   };
 
+  const FilterWizard = (props) => {
+    const choices = ['Jurisdiction', 'Species Positive', 'Species Negative', 'Metabase Report ID'];
+
+    const jusridictionOptions = ['BC Hydro', 'FLNR'];
+    const speciesPOptions = ['Blueweed', 'Cheatgrass'];
+    const speciesNOptions = ['Blueweed', 'Cheatgrass'];
+
+    const [choice, setChoice] = useState('Jurisdiction');
+    const [subChoices, setSubChoices] = useState([...jusridictionOptions]);
+    const [subChoice, setSubChoice] = useState('BC Hydro');
+
+    useEffect(() => {
+      if (props.filterKey !== undefined) {
+        const prevChoices = props.allFiltersBefore.filter((f) => {
+          return f.filterKey === props.filterKey;
+        })[0];
+        setChoice(prevChoices.filterField);
+        setSubChoice(prevChoices.filterValue);
+      }
+    }, []);
+
+    useEffect(() => {
+      switch (choice) {
+        case 'Jurisdiction':
+          setSubChoices([...jusridictionOptions]);
+          setSubChoice('BC Hydro');
+          break;
+        case 'Species Positive':
+          setSubChoices([...speciesPOptions]);
+          setSubChoice('Blueweed');
+          break;
+        case 'Species Negative':
+          setSubChoices([...speciesNOptions]);
+          setSubChoice('Cheatgrass');
+          break;
+        case 'Metabase Report ID':
+          setSubChoices([...speciesNOptions]);
+          setSubChoice('Cheatgrass');
+          break;
+      }
+    }, [choice]);
+
+    const DropDown = (props) => {
+      return (
+        <>
+          <Select
+            onChange={(e) => {
+              props.setChoice(e.target.value);
+            }}
+            value={props.choice}>
+            {props.choices && props.choices.length > 0 ? (
+              props.choices.map((c) => {
+                return <MenuItem value={c}>{c}</MenuItem>;
+              })
+            ) : (
+              <></>
+            )}
+          </Select>
+        </>
+      );
+    };
+
+    return (
+      <>
+        <DropDown choice={choice} choices={choices} setChoice={setChoice} />
+        <DropDown choice={subChoice} choices={subChoices} setChoice={setSubChoice} />
+        <Button
+          onClick={() => {
+            if (props.allFiltersBefore && props.allFiltersBefore.length > 0 && !props.filterKey) {
+              props.setAllFilters([
+                ...props.allFiltersBefore.filter((f) => {
+                  return f.filterKey !== choice + subChoice;
+                }),
+                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
+              ]);
+            } else if (props.allFiltersBefore && props.allFiltersBefore.length > 0 && props.filterKey) {
+              props.setAllFilters([
+                ...props.allFiltersBefore.filter((f) => {
+                  return f.filterKey !== props.filterKey;
+                }),
+                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
+              ]);
+            } else
+              props.setAllFilters([{ filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }]);
+
+            props.closeActionDialog();
+          }}>
+          Save
+        </Button>
+      </>
+    );
+  };
   const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>();
+
+  const newFilter = (filterKey) => {
+    setWarningDialog({
+      dialogOpen: true,
+      dialogTitle: 'Edit custom filter',
+      dialogContentText: 'Choose an inclusive filter:',
+      dialogActions: [
+        {
+          actionName: 'Cancel',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+          }
+        },
+        {
+          actionName: 'Select and Create',
+          usesChildren: true,
+          children: (
+            <FilterWizard
+              filterKey={filterKey}
+              setAllFilters={setAdvancedFilterRows}
+              allFiltersBefore={advancedFilterRows}
+              closeActionDialog={() => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              }}
+            />
+          ),
+          actionOnClick: async () => {},
+          autoFocus: true
+        }
+      ]
+    });
+  };
 
   return (
     <Box maxHeight="100%" paddingBottom="20px">
@@ -381,7 +521,9 @@ const ActivityGrid = (props) => {
             }}>
             {advancedFilterRows && advancedFilterRows.length > 0 ? (
               advancedFilterRows.map((r, i) => {
-                return <FilterRow key={i} />;
+                return (
+                  <FilterRow filterField={r.filterField} filterValue={r.filterValue} filterKey={r.filterKey} key={i} />
+                );
               })
             ) : (
               <></>
@@ -396,15 +538,7 @@ const ActivityGrid = (props) => {
               justifyContent: 'start',
               alignItems: 'center'
             }}>
-            <Button
-              onClick={() => {
-                alert(JSON.stringify(advancedFilterRows));
-                setAdvancedFilterRows(
-                  advancedFilterRows && advancedFilterRows.length ? [...advancedFilterRows, {}] : [{}]
-                );
-              }}
-              size={'small'}
-              variant="contained">
+            <Button onClick={() => newFilter()} size={'small'} variant="contained">
               <AddBoxIcon></AddBoxIcon>Advanced Filter
             </Button>
             <FilterToggle style={{ marginLeft: 'auto' }} />
@@ -433,6 +567,12 @@ const ActivityGrid = (props) => {
           </div>
         </FilterContext.Provider>
       )}
+      <WarningDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
     </Box>
   );
 };

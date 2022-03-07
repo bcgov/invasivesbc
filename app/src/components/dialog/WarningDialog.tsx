@@ -10,6 +10,8 @@ export interface IWarningDialog {
 
 interface IDialogAction {
   actionName: String;
+  children?: any;
+  usesChildren?: boolean;
   actionOnClick: () => void;
   autoFocus?: boolean;
 }
@@ -31,14 +33,18 @@ export const WarningDialog = (props: IWarningDialog) => {
       )}
       <DialogActions>
         {props.dialogActions.map((action) => {
-          return (
-            <Button
-              onClick={action.actionOnClick}
-              color="primary"
-              autoFocus={action.autoFocus ? action.autoFocus : false}>
-              {action.actionName}
-            </Button>
-          );
+          {
+            return action.usesChildren ? (
+              action.children
+            ) : (
+              <Button
+                onClick={action.actionOnClick}
+                color="primary"
+                autoFocus={action.autoFocus ? action.autoFocus : false}>
+                {action.actionName}
+              </Button>
+            );
+          }
         })}
       </DialogActions>
     </Dialog>
