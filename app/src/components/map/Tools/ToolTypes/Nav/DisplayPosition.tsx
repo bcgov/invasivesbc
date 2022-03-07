@@ -3,7 +3,7 @@ import { CircularProgress, ListItem, ListItemIcon, ListItemText, Typography } fr
 import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useEffect, useRef, useState } from 'react';
-import { GeoJSON, Marker, Tooltip, useMapEvent } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';

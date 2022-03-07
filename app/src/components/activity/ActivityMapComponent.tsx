@@ -16,10 +16,24 @@ import { lineString } from '@turf/helpers';
 import lineToPolygon from '@turf/line-to-polygon';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
+import { Geolocation } from '@capacitor/geolocation';
+
+const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
+  if (initialTime > 0) {
+    setTimeout(() => {
+      setInitialTime(initialTime - 1);
+    }, 1000);
+  }
+  if (initialTime === 0 && startTimer) {
+    setStartTimer(false);
+  }
+};
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
+  const [initialTime, setInitialTime] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
 
   useEffect(() => {
     if (!props.activityId) {
@@ -104,6 +118,14 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     props.geometryState.setGeometry([geo]);
   };
 
+  const getLocationEntry = async () => {
+    setInitialTime(3);
+    setStartTimer(true);
+    const position = await Geolocation.getCurrentPosition();
+    timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
+    props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
+  };
+
   const endTrack = async () => {
     try {
       // convert poly to polygon
@@ -144,6 +166,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
             <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
+              </Button>
+              <Button disabled={false} variant="contained" color="primary" onClick={getLocationEntry}>
+                Drop Pin On My Position
               </Button>
             </Grid>
             {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
