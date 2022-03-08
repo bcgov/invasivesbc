@@ -538,7 +538,7 @@ const ActivityGrid = (props) => {
               justifyContent: 'start',
               alignItems: 'center'
             }}>
-            <Button onClick={() => newFilter()} size={'small'} variant="contained">
+            <Button onClick={() => newFilter(undefined)} size={'small'} variant="contained">
               <AddBoxIcon></AddBoxIcon>Advanced Filter
             </Button>
             <FilterToggle style={{ marginLeft: 'auto' }} />
