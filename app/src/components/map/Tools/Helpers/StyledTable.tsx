@@ -9,7 +9,6 @@ import {
   TableFooter,
   TableHead,
   TablePagination,
-  TablePaginationProps,
   TableRow,
   Theme,
   Tooltip
@@ -27,6 +26,11 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
+import {
+  getJurisdictions,
+  getLatestReportedArea,
+  getReportedAreaOutput
+} from 'components/points-of-interest/IAPP/IAPP-Functions';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -272,18 +276,23 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
-  // invasivesApi
+export const RenderTableActivity = (props: any) => {
+  const { map, setActivityGeo, bufferedGeo } = props;
+  const dbContext = useContext(DatabaseContext);
+  const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
+  const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
-  const databaseContext = useContext(DatabaseContext);
-  const dataAccess = useDataAccess();
   const history = useHistory();
 
   const labels = ['ID', 'Species'];
+
+  useEffect(() => {
+    updateActivityRecords();
+  }, [bufferedGeo]);
 
   useEffect(() => {
     if (rows) {
@@ -300,7 +309,7 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
 
   const activityPage = async (row) => {
     var id = row.obj.activity_id;
-    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
+    await dataAccess.setAppState({ activeActivity: id }, dbContext);
     history.push({ pathname: `/home/activity` });
   };
 
@@ -330,6 +339,26 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const updateActivityRecords = React.useCallback(async () => {
+    try {
+      const activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
+      var tempArr = [];
+      for (let i in activities.rows) {
+        if (activities.rows[i]) {
+          var obj = activities.rows[i];
+          tempArr.push({
+            obj,
+            open: false
+          });
+        }
+      }
+      setRows(tempArr);
+    } catch (e) {
+      console.log('Activities error', e);
+      setRows([]);
+    }
+  }, [bufferedGeo]);
 
   return (
     <Table padding="none" size="small">
@@ -424,7 +453,11 @@ export const RenderTableDataBC = ({ rows }) => {
   );
 };
 
-export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
+export const RenderTablePOI = (props: any) => {
+  const { map, setPoiMarker, bufferedGeo } = props;
+  const dbContext = useContext(DatabaseContext);
+  const dataAccess = useDataAccess();
+  const [rows, setRows] = useState([]);
   const history = useHistory();
 
   const columns = [
@@ -459,6 +492,53 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
       hide: true
     }
   ];
+
+  useEffect(() => {
+    updatePOIRecords();
+  }, [bufferedGeo]);
+
+  const updatePOIRecords = React.useCallback(async () => {
+    try {
+      var pointsofinterest = await dataAccess.getPointsOfInterest(
+        {
+          search_feature: bufferedGeo,
+          isIAPP: true,
+          limit: 500,
+          page: 0
+        },
+        dbContext
+      );
+
+      if (!pointsofinterest.rows) {
+        return;
+      }
+
+      // Removed for now: setPoisObj(pointsofinterest);
+      const tempArr = [];
+      pointsofinterest.rows.map((poi) => {
+        const surveys = poi.point_of_interest_payload.form_data.surveys;
+        const tempSurveyArea = getLatestReportedArea(surveys);
+        const newArr = getJurisdictions(surveys);
+        const arrJurisdictions = [];
+        newArr.forEach((item) => {
+          arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+        });
+
+        var row = {
+          id: poi.point_of_interest_id,
+          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
+          jurisdiction_code: arrJurisdictions,
+          species_code: poi.species_on_site,
+          geometry: poi.point_of_interest_payload.geometry,
+          reported_area: getReportedAreaOutput(tempSurveyArea)
+        };
+        tempArr.push(row);
+      });
+      setRows(tempArr);
+    } catch (e) {
+      console.log('Point of Interest error', e);
+    }
+  }, [bufferedGeo]);
 
   return (
     <div style={{ height: 300, minWidth: '100%' }}>

@@ -3,7 +3,7 @@ import { CircularProgress, ListItem, ListItemIcon, ListItemText, Typography } fr
 import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useEffect, useRef, useState } from 'react';
-import { GeoJSON, Marker, Tooltip } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
@@ -106,7 +106,7 @@ export default function DisplayPosition({ map }) {
       {
         activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
       }
-      {poiMarker && (
+      {/*poiMarker && (
         <Marker
           position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
           icon={markerIcon}>
@@ -118,8 +118,8 @@ export default function DisplayPosition({ map }) {
             </div>
           </Tooltip>
         </Marker>
-      )}
-      {geoPoint && (
+              )*/}
+      {/*geoPoint && (
         <GeoJSON data={geoPoint} key={key}>
           <GeneratePopup
             utmRows={rows}
@@ -130,14 +130,16 @@ export default function DisplayPosition({ map }) {
             setActivityGeo={setActivityGeo}
           />
         </GeoJSON>
-      )}
+      )*/}
       <ListItemButton
         ref={divRef}
         disabled={startTimer}
         aria-label="my position"
         onClick={() => {
-          if (newPosition) {
-            map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+          try {
+            map.setView([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+          } catch (e) {
+            console.log('Map SetView error', e);
           }
         }}>
         <ListItemIcon>{initialTime > 0 ? <CircularProgress size={24} /> : <GpsFixedIcon />}</ListItemIcon>

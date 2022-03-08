@@ -80,6 +80,7 @@ const EditTools = (props: any) => {
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
+    (context.layerContainer as any).clearLayers();
     var newLayer = e.layer;
 
     context.layerContainer.addLayer(newLayer);
@@ -131,9 +132,9 @@ const EditTools = (props: any) => {
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
   useMapEvent('draw:drawstart' as any, (e) => {
-    if (!multiMode) {
-      (context.layerContainer as any).clearLayers();
-    }
+    // if (!multiMode) {
+    (context.layerContainer as any).clearLayers();
+    // }
     setOpenCancel(true);
   });
   useMapEvent('draw:deleted' as any, () => {
