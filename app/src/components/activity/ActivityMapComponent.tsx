@@ -5,7 +5,10 @@ import {
   AccordionSummary,
   Button,
   Grid,
-  Typography
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogActions
 } from '@mui/material';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import React, { useEffect, useState } from 'react';
@@ -17,6 +20,7 @@ import lineToPolygon from '@turf/line-to-polygon';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Geolocation } from '@capacitor/geolocation';
+import L from 'leaflet';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -34,6 +38,8 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
+  const [mapForButton, setMapForButton] = useState(null);
+  const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
     if (!props.activityId) {
@@ -118,7 +124,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     props.geometryState.setGeometry([geo]);
   };
 
-  const getLocationEntry = async () => {
+  const getGPSLocationEntry = async () => {
     setInitialTime(3);
     setStartTimer(true);
     const position = await Geolocation.getCurrentPosition();
@@ -167,9 +173,31 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
-              <Button disabled={false} variant="contained" color="primary" onClick={getLocationEntry}>
-                Drop Pin On My Position
+              <Button disabled={false} variant="contained" color="primary" onClick={() => setDialog(true)}>
+                Drop Pin
               </Button>
+              <Dialog open={dialog} onClose={() => setDialog(false)}>
+                <DialogTitle>Use current GPS position?</DialogTitle>
+                <DialogActions>
+                  <Button
+                    onClick={async () => {
+                      getGPSLocationEntry();
+                      setDialog(false);
+                    }}>
+                    Yes
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      new (L as any).Draw.Marker(mapForButton, {}).enable();
+                      setDialog(false);
+                    }}>
+                    No
+                  </Button>
+                </DialogActions>
+                <DialogActions>
+                  <Button onClick={() => setDialog(false)}>Cancel</Button>
+                </DialogActions>
+              </Dialog>
             </Grid>
             {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
@@ -187,7 +215,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} activityId={props.activityId} />
+              <MapContainer {...props} activityId={props.activityId} setMapForButton={setMapForButton} />
             </Grid>
           </Grid>
         </AccordionDetails>

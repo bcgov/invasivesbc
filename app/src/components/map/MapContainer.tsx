@@ -128,6 +128,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
 
+  useEffect(() => {
+    try {
+      props.setMapForButton(map);
+    } catch (e) {
+      console.log('setMapForButton error', e);
+    }
+  }, [map]);
+
   // hack to deal with leaflet getting handed the wrong window size before it calls invalidateSize on load
   const MapResizer = () => {
     const mapResizer = useMap();
