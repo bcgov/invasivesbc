@@ -60,7 +60,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 let redirect_uri = 'http://127.0.0.1:3000/home/landing';
 switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
-    redirect_uri = 'http://localhost:3000/home/landing';
+    redirect_uri = 'https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
     break;
   case 'test':
     redirect_uri = 'https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing';
