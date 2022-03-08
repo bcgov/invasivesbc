@@ -301,6 +301,29 @@ jobs:
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=$BRANCH --type=static
 
+  purgeTags:
+    name: Clean stale Openshift ImageStream tags
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.pull_request.merged == true }}
+    needs:
+      - deployAPP
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Deploy the app image
+      - name: Deploy App Image
+        working-directory: './.github'
+        run: |
+          ./purge-old-tags.sh
+
   # Clean any artifacts created by the deploy-pr workflow (if it ran, see comments at the top of `deploy-pr.yml`)
   clean:
     name: Clean Merged PR Build and Deploy Artifacts
