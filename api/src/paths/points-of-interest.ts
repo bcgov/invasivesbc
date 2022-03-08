@@ -150,25 +150,29 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'points-of-interest',
+        code: 503
+      });
     }
 
     try {
       if (isIAPPrelated(sanitizedSearchCriteria)) {
         const responseSurveyExtract = await getIAPPsites(sanitizedSearchCriteria);
 
-        return res.status(200).json(responseSurveyExtract);
+        return res.status(200).json({ message: 'Got IAPP sites', result: responseSurveyExtract, code: 200 });
       } else {
         const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 
         if (!sqlStatement) {
-          throw {
-            status: 400,
-            message: 'Failed to build SQL statement'
-          };
+          return res.status(500).json({
+            message: 'Failed to build SQL statement',
+            request: req.body,
+            namespace: 'points-of-interest',
+            code: 500
+          });
         }
 
         const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -179,11 +183,24 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         // parse the count from the response
         const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
 
-        return res.status(200).json({ ...rows, ...count });
+        return res.status(200).json({
+          message: 'Got points of interest by search filter criteria',
+          request: req.body,
+          result: rows,
+          count: count,
+          namespace: 'points-of-interest',
+          code: 200
+        });
       }
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to get points of interest by search filter criteria',
+        request: req.body,
+        error: error,
+        namespace: 'points-of-interest',
+        code: 500
+      });
     } finally {
       connection.release();
     }

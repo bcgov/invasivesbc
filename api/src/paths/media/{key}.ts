@@ -49,14 +49,22 @@ GET.apiDoc = {
 function getSignedURL(): RequestHandler {
   return async (req, res) => {
     if (!req.params.key) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `key`'
-      };
+      return res.status(400).json({
+        message: 'Missing key',
+        request: req.body,
+        namespace: 'media/{key}',
+        code: 400
+      });
     }
 
     const result = await getS3SignedURL(req.params.key);
 
-    return res.status(200).json(result);
+    return res.status(200).json({
+      message: 'Signed url',
+      request: req.body,
+      result: result,
+      namespace: 'media/{key}',
+      code: 200
+    });
   };
 }

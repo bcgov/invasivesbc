@@ -105,10 +105,12 @@ function createPointOfInterest(): RequestHandler {
     defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'point-of-interest',
+        code: 503
+      });
     }
 
     try {
@@ -118,17 +120,25 @@ function createPointOfInterest(): RequestHandler {
           )
         : postPointOfInterestSQL(new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] }));
 
-      if (!sqlStatement)
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+      if (!sqlStatement) {
+        return res.status(400).json({
+          message: 'Failed to build SQL statement',
+          request: req.body,
+          namespace: 'point-of-interest',
+          code: 400
+        });
+      }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = response?.rows?.[0] || null;
-
-      return res.status(200).json(result);
+      return res.status(201).json({
+        message: 'Point of interest created',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'point-of-interest',
+        code: 201
+      });
     } catch (error) {
       defaultLog.debug({ label: 'createPointOfInterest', message: 'error', error });
       throw error;

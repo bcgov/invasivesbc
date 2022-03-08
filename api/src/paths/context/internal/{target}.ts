@@ -76,10 +76,11 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
   const connection = await getDBConnection();
 
   if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
+    return res.status(503).json({
+      message: 'Database connection unavailable',
+      namespace: 'context/internal/{target}',
+      code: 503
+    });
   }
 
   const sql = `
@@ -100,7 +101,12 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
     res.status(200).json({ target });
   } catch (error) {
     defaultLog.debug({ label: 'getContext', message: 'error', error });
-    throw error;
+    return res.status(500).json({
+      message: 'Error fetching context',
+      error: error,
+      namespace: 'context/internal/{target}',
+      code: 500
+    });
   } finally {
     connection.release();
   }
@@ -118,10 +124,12 @@ function getContext(): RequestHandler {
 
     // Error if no coordinates
     if (!lon || !lat || lon === 'undefined' || lat === 'undefined') {
-      throw {
-        status: 400,
-        message: 'Did not supply valid coordinates'
-      };
+      return res.status(400).json({
+        message: 'Invalid coordinates provided',
+        request: req.query,
+        namespace: 'context/internal/{target}',
+        code: 400
+      });
     }
 
     const target = req.params.target;
@@ -137,7 +145,12 @@ function getContext(): RequestHandler {
         getPlanningArea(lon, lat, res, 'utm_zone', 'utm_zones');
         break;
       default:
-        res.status(401).send('Please specify a target dataset');
+        res.status(401).json({
+          message: 'Please specify a target dataset',
+          request: req.params,
+          namespace: 'context/internal/{target}',
+          code: 401
+        });
     }
 
     defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });

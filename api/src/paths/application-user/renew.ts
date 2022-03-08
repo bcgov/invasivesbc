@@ -53,25 +53,37 @@ function renewUser(): RequestHandler {
     defaultLog.debug({ label: 'application-user', message: 'renewUser', body: req.query });
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Database connection failed.'
-      };
+      return res.status(503).json({ message: 'Database connection unavailable', request: req.body, code: 503 });
     }
     try {
       const userId = req.query.userId.toString();
       const sqlStatement: SQLStatement = renewUserSQL(userId);
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'application-user/renew',
+          code: 500
+        });
       }
       const result = await connection.query(sqlStatement.text, sqlStatement.values);
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'User renewed',
+        request: req.body,
+        result: result.rows,
+        count: result.rowCount,
+        namespace: 'application-user/renew',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'create', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to renew user',
+        request: req.body,
+        error: error,
+        namespace: 'application-user/renew',
+        code: 500
+      });
     } finally {
       connection.release();
     }

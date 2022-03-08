@@ -87,44 +87,53 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
     defaultLog.debug({
       label: 'jurisdictions',
       message: 'getJurisdictionsBySearchFilterCriteria',
-      body: req.body
+      body: req.body,
+      namespace: 'jurisdictions'
     });
 
     const sanitizedSearchCriteria = new JurisdictionSearchCriteria(req.body);
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'jurisdictions',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getJurisdictionsSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          error: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'jurisdictions',
+          code: 500
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      // build the return object
-      const result = { ...rows, ...count };
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Got jurisdictions by search filter criteria',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'jurisdictions',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getJurisdictionsBySearchFilterCriteria', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to get jurisdictions by search filter criteria',
+        request: req.body,
+        error: error,
+        namespace: 'jurisdictions',
+        code: 500
+      });
     } finally {
       connection.release();
     }

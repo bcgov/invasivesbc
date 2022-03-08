@@ -52,10 +52,13 @@ function getHandler() {
   return async (req, res, next) => {
     const bceid = req.query.bceid;
     const idir = req.query.idir;
-    console.log('bceid', bceid);
-    console.log('idir', idir);
     if (idir && bceid) {
-      return res.status(400).send('Cannot specify both BCEID ID and IDIR IDs');
+      return res.status(400).json({
+        message: 'Cannot specify both BCEID ID and IDIR IDs',
+        request: req.query,
+        namespace: 'application-user',
+        code: 400
+      });
     } else if (bceid) {
       return await getUserByBCEID(req, res, next, bceid);
     } else if (idir) {
@@ -75,25 +78,34 @@ function getHandler() {
 async function getUsers(req, res, next) {
   const connection = await getDBConnection();
   if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
+    return res.status(503).json({
+      message: 'Failed to establish database connection',
+      request: req.query,
+      namespace: 'application-user',
+      code: 503
+    });
   }
   try {
     const sqlStatement: SQLStatement = getUsersSQL();
     if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      return res
+        .status(500)
+        .json({ message: 'Failed to build SQL statement', request: req.query, namespace: 'application-user' });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-    return res.status(200).json(result);
+    return res.status(200).json({
+      message: 'Successfully got users',
+      request: req.query,
+      result: response.rows,
+      count: response.rowCount,
+      namespace: 'application-user',
+      code: 200
+    });
   } catch (error) {
     defaultLog.debug({ label: 'getUsers', message: 'error', error });
-    throw error;
+    return res
+      .status(500)
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
   } finally {
     connection.release();
   }
@@ -103,26 +115,37 @@ async function getUserByBCEID(req, res, next, bceid) {
   defaultLog.debug({ label: '{bceid}', message: 'getUserByBCEID', body: req.query });
   const connection = await getDBConnection();
   if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
+    return res.status(503).json({
+      message: 'Failed to establish database connection',
+      request: req.query,
+      namespace: 'application-user',
+      code: 503
+    });
   }
   try {
     const sqlStatement: SQLStatement = getUserByBCEIDSQL(bceid);
     if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      return res.status(500).json({
+        message: 'Failed to build SQL statement',
+        request: req.query,
+        namespace: 'application-user',
+        code: 500
+      });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-    console.log('result', result);
-    return res.status(200).json(result);
+    return res.status(200).json({
+      message: 'Successfully got user',
+      request: req.query,
+      result: response.rows,
+      count: response.rowCount,
+      namespace: 'application-user',
+      code: 200
+    });
   } catch (error) {
     defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
-    throw error;
+    return res
+      .status(500)
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
   } finally {
     connection.release();
   }
@@ -132,26 +155,37 @@ async function getUserByIDIR(req, res, next, idir) {
   defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
   const connection = await getDBConnection();
   if (!connection) {
-    throw {
-      status: 503,
-      message: 'Failed to establish database connection'
-    };
+    return res.status(503).json({
+      message: 'Failed to establish database connection',
+      request: req.query,
+      namespace: 'application-user',
+      code: 503
+    });
   }
   try {
     const sqlStatement: SQLStatement = getUserByIDIRSQL(idir);
     if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      return res.status(500).json({
+        message: 'Failed to build SQL statement',
+        request: req.query,
+        namespace: 'application-user',
+        code: 500
+      });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-    console.log('result', result);
-    return res.status(200).json(result);
+    return res.status(200).json({
+      message: 'Successfully got user',
+      request: req.query,
+      result: response.rows,
+      count: response.rowCount,
+      namespace: 'application-user',
+      code: 200
+    });
   } catch (error) {
     defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
-    throw error;
+    return res
+      .status(500)
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
   } finally {
     connection.release();
   }

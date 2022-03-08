@@ -40,7 +40,13 @@ function getSimplifiedGeoJSON(): RequestHandler {
     const percentage = req.query.percentage;
 
     if (!url) {
-      return res.status(200).json('no url provided');
+      return res.status(400).json({ message: 'Bad request - no url provided', namespace: 'map-shaper', code: 400 });
+    }
+
+    if (!percentage) {
+      return res
+        .status(400)
+        .json({ message: 'Bad request - no percentage provided', namespace: 'map-shaper', code: 400 });
     }
 
     const decodedUrl = decode(url);
@@ -57,15 +63,33 @@ function getSimplifiedGeoJSON(): RequestHandler {
           function (err, output) {
             if (output) {
               const json = JSON.parse(output['out.json']);
-              return res.status(200).json(json);
+              return res.status(200).json({
+                message: 'Got simplified GeoJSON',
+                request: req.query,
+                result: json,
+                namespace: 'map-shaper',
+                code: 200
+              });
             } else {
-              return res.status(200).json(err);
+              return res.status(500).json({
+                message: 'Failed to get simplified GeoJSON',
+                request: req.query,
+                error: err,
+                namespace: 'map-shaper',
+                code: 500
+              });
             }
           }
         );
       } catch (e) {
         console.log(e);
-        return e;
+        return res.status(500).json({
+          message: 'Failed to get simplified GeoJSON',
+          request: req.query,
+          error: e,
+          namespace: 'map-shaper',
+          code: 500
+        });
       }
     });
   };

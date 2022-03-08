@@ -89,32 +89,45 @@ export function getOverlapingBCGridCells(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'bc-grid/bcGrid',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getOverlappingBCGridCellsSQL(geometry, largeGrid, largeGrid_item_ids);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'SQL statement could not be generated.',
+          request: req.body,
+          namespace: 'bc-grid/bcGrid',
+          code: 500
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      if (response.rows) {
-        return res.status(200).json(response.rows);
-      } else {
-        return res.status(500).json({});
-      }
+      return res.status(200).json({
+        message: 'Successfully fetched overlapping grid cells.',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'bc-grid/bcGrid',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getOverlappingBCGridCells', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Unable to fetch overlapping grid cells.',
+        request: req.body,
+        error: error,
+        namespace: 'bc-grid/bcGrid',
+        code: 500
+      });
     } finally {
       connection.release();
     }

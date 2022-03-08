@@ -90,20 +90,24 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Failed to establish database connection',
+        request: req.body,
+        namespace: 'admin-defined-shapes',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getAdministrativelyDefinedShapesSQL(user_id);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          error: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'admin-defined-shapes',
+          code: 500
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -117,12 +121,35 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
           message: 'error',
           error: `Unexpected row count ${rows.length} for aggregate query`
         });
+        return res.status(500).json({
+          message: `Unexpected row count ${rows.length} for aggregate query`,
+          request: req.body,
+          namespace: 'admin-defined-shapes',
+          code: 500
+        });
       }
 
+<<<<<<< HEAD
       return res.status(200).json(rows);
+=======
+      return res.status(200).json({
+        message: 'Got administratively defined shapes',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'admin-defined-shapes',
+        code: 200
+      });
+>>>>>>> 00329587 (Add codes, namespaces, and messages JSON to request results)
     } catch (error) {
       defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to get administratively defined shapes',
+        request: req.body,
+        error: error,
+        namespace: 'admin-defined-shapes',
+        code: 500
+      });
     } finally {
       connection.release();
     }
@@ -150,26 +177,32 @@ function uploadShape(): RequestHandler {
           geoJSON = sanitizeGeoJSON(GeoJSONFromKML(Buffer.from(data['data'], 'base64')));
           break;
         default:
-          throw {
-            status: 400,
-            message: `Unrecognized type ${data.type}`
-          };
+          return res.status(400).json({
+            message: `Unrecognized type ${data.type}`,
+            request: req.body,
+            namespace: 'admin-defined-shapes',
+            code: 400
+          });
       }
     } catch (err) {
       defaultLog.error(err);
-      throw {
-        status: 400,
-        message: 'Error parsing KML/KMZ data'
-      };
+      return res.status(500).json({
+        message: 'Error parsing KML/KMZ data',
+        request: req.body,
+        namespace: 'admin-defined-shapes',
+        code: 500
+      });
     }
 
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(500).json({
+        message: 'Failed to establish database connection',
+        request: req.body,
+        namespace: 'admin-defined-shapes',
+        code: 500
+      });
     }
 
     try {
@@ -186,15 +219,26 @@ function uploadShape(): RequestHandler {
         }
 
         await connection.query('COMMIT');
+
+        return res.status(201).json({
+          message: 'Created administratively defined shape',
+          request: req.body,
+          namespace: 'admin-defined-shapes',
+          code: 201
+        });
       } catch (error) {
         await connection.query('ROLLBACK');
         defaultLog.error(error);
-        throw error;
+        return res.status(500).json({
+          message: 'Failed to create administratively defined shape',
+          request: req.body,
+          error: error,
+          namespace: 'admin-defined-shapes',
+          code: 500
+        });
       }
     } finally {
       connection.release();
     }
-
-    return res.status(201).json({ status: 200 });
   };
 }

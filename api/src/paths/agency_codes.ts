@@ -50,10 +50,12 @@ function getAgencyCodes(): RequestHandler {
   return async (req, res) => {
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'agency-codes',
+        code: '503'
+      });
     }
 
     try {
@@ -61,9 +63,14 @@ function getAgencyCodes(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows) || null;
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Successfully fetched agency codes',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'agency-codes',
+        code: '200'
+      });
     } finally {
       connection.release();
     }

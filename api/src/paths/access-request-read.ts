@@ -62,30 +62,50 @@ function getAccessRequestData(): RequestHandler {
 
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'access-request-read',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getAccessRequestForUserSQL(req.body.username, req.body.email);
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(400).json({
+          message: 'Invalid request',
+          request: req.body,
+          namespace: 'access-request-read',
+          code: 400
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       if (response.rows.length > 0) {
-        return res.status(200).json(response.rows[0]);
+        return res.status(200).json({
+          message: 'Got access request for user',
+          code: 200,
+          namespace: 'access-request-read',
+          result: response.rows[0]
+        });
       } else {
-        return res.status(200).json({});
+        return res.status(200).json({
+          message: 'No access request for user',
+          code: 200,
+          namespace: 'access-request-read',
+          result: {}
+        });
       }
     } catch (error) {
       defaultLog.debug({ label: 'create', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Database encountered an error',
+        request: req.body,
+        error: error,
+        namespace: 'access-request-read',
+        code: 500
+      });
     } finally {
       connection.release();
     }

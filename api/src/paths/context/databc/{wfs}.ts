@@ -74,10 +74,12 @@ function getDataBC(): RequestHandler {
 
     // Error if no coordinates
     if (!lon || !lat) {
-      throw {
-        status: 400,
-        message: 'Did not supply valid coordinates'
-      };
+      return res.status(400).json({
+        message: 'Bad request - missing coordinates',
+        request: req.query,
+        namespace: 'context/databc/{wfs}',
+        code: 400
+      });
     }
 
     defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
@@ -91,7 +93,13 @@ function getDataBC(): RequestHandler {
     axios
       .get(url)
       .then((response) => {
-        return res.status(200).json({ target: response.data?.features?.[0]?.properties });
+        return res.status(200).json({
+          message: 'Got DataBC Layer',
+          request: req.body,
+          result: response.data?.features?.[0]?.properties,
+          namespace: 'context/databc/{wfs}',
+          code: 200
+        });
       })
       .catch((error) => {
         return defaultLog.debug({ label: 'getDataBC', message: 'error', error });

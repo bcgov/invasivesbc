@@ -69,10 +69,12 @@ function getActivity(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'activity-lean/{activityId}',
+        code: 503
+      });
     }
 
     try {
@@ -101,7 +103,12 @@ function getActivity(): RequestHandler {
       req['activity'] = result;
     } catch (error) {
       defaultLog.debug({ label: 'getActivity', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error fetching activity',
+        request: req.body,
+        namespace: 'activity-lean/{activityId}',
+        code: 500
+      });
     } finally {
       connection.release();
     }

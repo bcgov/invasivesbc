@@ -38,7 +38,13 @@ function getMedia(): RequestHandler {
 
     const response = await Promise.all(s3GetPromises);
 
-    return res.status(200).json(getMediaItemsList(response));
+    return res.status(200).json({
+      message: 'Successfully got media',
+      request: req.query,
+      result: getMediaItemsList(response),
+      namespace: 'media',
+      code: 200
+    });
   };
 }
 
@@ -74,10 +80,13 @@ export function uploadMedia(): RequestHandler {
         media = new MediaBase64(rawMedia);
       } catch (error) {
         defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
-        throw {
-          status: 400,
-          message: 'Included media was invalid/encoded incorrectly'
-        };
+        return res.status(400).json({
+          message: 'Included media was invalid/encoded incorrectly',
+          request: req.query,
+          error: error,
+          namespace: 'media',
+          code: 400
+        });
       }
 
       const metadata = {

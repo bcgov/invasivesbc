@@ -94,37 +94,45 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'riso',
+        code: 503
+      });
     }
 
     try {
       const sqlStatement: SQLStatement = getRISOsSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Unable to generate SQL statement.',
+          request: req.body,
+          namespace: 'riso',
+          code: 500
+        });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      // build the return object
-      const result = { ...rows, ...count };
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Got RISOs',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'riso',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getRISOsBySearchFilterCriteria', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error fetching RISOs',
+        request: req.body,
+        error: error,
+        namespace: 'riso',
+        code: 500
+      });
     } finally {
       connection.release();
     }

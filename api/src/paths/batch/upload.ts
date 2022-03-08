@@ -31,10 +31,12 @@ function listBatches(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'batch/upload',
+        code: 503
+      });
     }
 
     try {
@@ -49,14 +51,33 @@ function listBatches(): RequestHandler {
 
         await connection.query('COMMIT');
 
-        return res.status(200).json(response.rows);
+        return res.status(200).json({
+          message: 'Batches listed',
+          request: req.body,
+          result: response.rows,
+          count: response.rowCount,
+          namespace: 'batch/upload',
+          code: 200
+        });
       } catch (error) {
         await connection.query('ROLLBACK');
-        throw error;
+        return res.status(500).json({
+          message: 'Error creating batch upload',
+          request: req.body,
+          error: error,
+          namespace: 'batch/upload',
+          code: 500
+        });
       }
     } catch (error) {
       defaultLog.error({ label: 'batchUpload', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error creating batch upload',
+        request: req.body,
+        error: error,
+        namespace: 'batch/upload',
+        code: 500
+      });
     } finally {
       connection.release();
     }

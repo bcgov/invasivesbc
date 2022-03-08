@@ -207,13 +207,13 @@ function createActivities(): RequestHandler {
       const getSQL = getActivitySQL(sanitized.activity_id);
       const createSQL = postActivitySQL(sanitized);
 
-      console.log(createSQL);
-
       if (!getSQL || !createSQL) {
-        throw {
-          status: 400,
-          message: `Failed to build SQL statement for activity ${sanitized.activity_id}`
-        };
+        return res.status(500).json({
+          message: 'Failed to generate SQL for activity creation.',
+          request: req.body,
+          namespace: 'activity/batch',
+          code: 500
+        });
       }
 
       sanitizedActions.push({
@@ -226,10 +226,12 @@ function createActivities(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Failed to get database connection.',
+        request: req.body,
+        namespace: 'activity/batch',
+        code: 503
+      });
     }
 
     const creationResults = [];
@@ -244,11 +246,12 @@ function createActivities(): RequestHandler {
 
           if (getResponse && getResponse.rowCount) {
             // Found 1 or more rows with matching activity_id (which are not marked as deleted), expecting 0
-
-            throw {
-              status: 409,
-              message: `Resource with matching activity_id ${item.sanitized.activity_id} already exists.`
-            };
+            return res.status(409).json({
+              message: `Resource with matching activity_id ${item.sanitized.activity_id} already exists.`,
+              request: req.body,
+              namespace: 'activity/batch',
+              code: 409
+            });
           }
 
           const createResponse = await connection.query(item.createSQL.text, item.createSQL.values);
@@ -258,15 +261,34 @@ function createActivities(): RequestHandler {
         await connection.query('COMMIT');
       } catch (error) {
         await connection.query('ROLLBACK');
-        throw error;
+        return res.status(500).json({
+          message: 'Failed to create activity.',
+          request: req.body,
+          error: error,
+          namespace: 'activity/batch',
+          code: 500
+        });
       }
     } catch (error) {
       defaultLog.debug({ label: 'createActivities', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to create activity.',
+        request: req.body,
+        error: error,
+        namespace: 'activity/batch',
+        code: 500
+      });
     } finally {
       connection.release();
     }
 
-    return res.status(200).json(creationResults);
+    return res.status(200).json({
+      message: 'Activity created.',
+      request: req.body,
+      result: creationResults,
+      count: creationResults.length,
+      namespace: 'activity/batch',
+      code: 200
+    });
   };
 }
