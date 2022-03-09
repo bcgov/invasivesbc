@@ -12,6 +12,7 @@ export interface IGeneralFields {
 export interface IInvasivePlant {
   invasive_plant_code: string | null;
   percent_area_covered?: number;
+  index: number;
 }
 
 export interface ITankMix {
@@ -32,4 +33,5 @@ export interface IHerbicide {
   area_treated_sqm?: number;
   delivery_rate_of_mix?: number;
   product_application_rate?: number;
+  index: number;
 }

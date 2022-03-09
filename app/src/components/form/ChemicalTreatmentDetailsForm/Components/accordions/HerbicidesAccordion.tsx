@@ -29,7 +29,7 @@ const HerbicidesAccordion = (props) => {
                 if (props.insideTankMix) {
                   setFormDetails((prevDetails) => {
                     const newHerbicidesArr = [...prevDetails.formData.tank_mix_object.herbicides];
-                    newHerbicidesArr.push({});
+                    newHerbicidesArr.push({ index: newHerbicidesArr.length });
                     return {
                       ...prevDetails,
                       formData: {
@@ -45,7 +45,7 @@ const HerbicidesAccordion = (props) => {
                 } else {
                   setFormDetails((prevDetails) => {
                     const newHerbicidesArr = [...prevDetails.formData.herbicides];
-                    newHerbicidesArr.push({});
+                    newHerbicidesArr.push({ index: newHerbicidesArr.length });
                     return {
                       ...prevDetails,
                       formData: {
