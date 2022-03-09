@@ -89,16 +89,6 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     if (!validZone) {
       return; // allow for cancel
     }
-    while (!validNorthing) {
-      northing = prompt('Enter a valid UTM Northing');
-      if (!isNaN(Number(northing))) {
-        validNorthing = true;
-        break;
-      }
-    }
-    if (!validNorthing) {
-      return; // allow for cancel
-    }
     while (!validEasting) {
       easting = prompt('Enter a valid UTM Easting');
       if (!isNaN(Number(easting))) {
@@ -109,6 +99,16 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     if (!validEasting) {
       //allow for cancel
       return;
+    }
+    while (!validNorthing) {
+      northing = prompt('Enter a valid UTM Northing');
+      if (!isNaN(Number(northing))) {
+        validNorthing = true;
+        break;
+      }
+    }
+    if (!validNorthing) {
+      return; // allow for cancel
     }
 
     let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
@@ -172,7 +172,15 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
         </AccordionSummary>
         <AccordionDetails>
           <Grid justifyContent={'space-around'} container>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+            <Grid
+              sx={{ flexWrap: 'nowrap' }}
+              container
+              justifyContent={'center'}
+              alignItems={'stretch'}
+              paddingBottom={'10px'}
+              spacing={'space-evenly'}
+              xs={3}
+              item>
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
