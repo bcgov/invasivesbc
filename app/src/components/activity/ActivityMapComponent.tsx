@@ -38,7 +38,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
-  const [mapForButton, setMapForButton] = useState(null);
+  const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
@@ -89,16 +89,6 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     if (!validZone) {
       return; // allow for cancel
     }
-    while (!validNorthing) {
-      northing = prompt('Enter a valid UTM Northing');
-      if (!isNaN(Number(northing))) {
-        validNorthing = true;
-        break;
-      }
-    }
-    if (!validNorthing) {
-      return; // allow for cancel
-    }
     while (!validEasting) {
       easting = prompt('Enter a valid UTM Easting');
       if (!isNaN(Number(easting))) {
@@ -109,6 +99,16 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     if (!validEasting) {
       //allow for cancel
       return;
+    }
+    while (!validNorthing) {
+      northing = prompt('Enter a valid UTM Northing');
+      if (!isNaN(Number(northing))) {
+        validNorthing = true;
+        break;
+      }
+    }
+    if (!validNorthing) {
+      return; // allow for cancel
     }
 
     let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
@@ -122,10 +122,11 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     };
     // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
+    map.setView([result[1], result[0]], 17);
   };
 
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(mapForButton, {});
+    const draw = new (L as any).Draw.Marker(map, {});
     draw.enable();
     setInitialTime(3);
     setStartTimer(true);
@@ -133,6 +134,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
     props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
     draw.disable();
+    map.setView([position.coords.latitude, position.coords.longitude], 17);
   };
 
   const endTrack = async () => {
@@ -172,7 +174,15 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
         </AccordionSummary>
         <AccordionDetails>
           <Grid justifyContent={'space-around'} container>
-            <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+            <Grid
+              sx={{ flexWrap: 'nowrap' }}
+              container
+              justifyContent={'center'}
+              alignItems={'stretch'}
+              paddingBottom={'10px'}
+              spacing={'space-evenly'}
+              xs={3}
+              item>
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
@@ -191,7 +201,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                   </Button>
                   <Button
                     onClick={() => {
-                      new (L as any).Draw.Marker(mapForButton, {}).enable();
+                      new (L as any).Draw.Marker(map, {}).enable();
                       setDialog(false);
                     }}>
                     No
@@ -218,7 +228,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} activityId={props.activityId} setMapForButton={setMapForButton} />
+              <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap} />
             </Grid>
           </Grid>
         </AccordionDetails>

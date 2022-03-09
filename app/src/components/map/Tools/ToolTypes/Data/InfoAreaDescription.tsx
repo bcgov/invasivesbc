@@ -231,7 +231,7 @@ function SetPointOnClick({ map }: any) {
 
   useEffect(() => {
     if (utm) {
-      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Easting', utm[1]), createDataUTM('Northing', utm[2])]);
     }
   }, [utm]);
 
