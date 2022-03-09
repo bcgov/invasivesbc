@@ -51,17 +51,7 @@ services:
       # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
       - api_dependency
 
-  ## Build the api npm dependencies docker image
-  api_dependency:
-    image: ${PROJECT_NAME}-${TAG}-api-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-dep
-    build:
-      context: ./api
-      dockerfile: ./.docker/api/Dockerfile.npm
-    volumes:
-      - npmcache_api:/opt/app-root/src/node_modules
-
-  ## Build the api docker image
+    ## Build the api docker image
   api:
     image: ${PROJECT_NAME}-${TAG}-api-img
     container_name: ${PROJECT_NAME}-${TAG}-api
@@ -98,16 +88,6 @@ services:
       - db_setup
       - api_dependency
 
-  ## Build the app npm dependencies docker image
-  app_dependency:
-    image: ${PROJECT_NAME}-${TAG}-app-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-app-dep
-    build:
-      context: ./app
-      dockerfile: ./.docker/app/Dockerfile.npm
-    volumes:
-      - npmcache_app:/opt/app-root/src/node_modules
-
   # https://blog.knoldus.com/deployment-with-docker-in-ionic/
 
   ## Build the app docker image
@@ -132,22 +112,6 @@ services:
       - LOCAL_API_HOST=app_api:${API_PORT}
       - ENVIRONMENT=local
       - VERSION=${VERSION}
-
-  # Build the nginx web-server docker image
-  nginx:
-    image: ${PROJECT_NAME}-${TAG}-nginx-img
-    container_name: ${PROJECT_NAME}-${TAG}-nginx
-    build:
-      context: ./.docker/nginx
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - 80:80
-    depends_on:
-      - db
-      - api
-    networks:
-      - local-network
 
 networks:
   local-network:
