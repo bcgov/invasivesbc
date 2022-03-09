@@ -122,7 +122,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     };
     // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
-    map.setView([result[1], result[0]], 16);
+    map.setView([result[1], result[0]], 17);
   };
 
   const getGPSLocationEntry = async () => {
@@ -134,7 +134,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
     props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
     draw.disable();
-    map.setView([position.coords.latitude, position.coords.longitude], 16);
+    map.setView([position.coords.latitude, position.coords.longitude], 17);
   };
 
   const endTrack = async () => {
