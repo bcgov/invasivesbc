@@ -160,9 +160,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
         }
       }
     );
-
-    console.log(formDetails.formData);
-    console.log(calculationResults);
   }, [formDetails, reportedArea]);
 
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
