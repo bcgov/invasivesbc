@@ -38,7 +38,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
-  const [mapForButton, setMapForButton] = useState(null);
+  const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
@@ -122,10 +122,11 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     };
     // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
+    map.setView([result[1], result[0]], 16);
   };
 
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(mapForButton, {});
+    const draw = new (L as any).Draw.Marker(map, {});
     draw.enable();
     setInitialTime(3);
     setStartTimer(true);
@@ -133,6 +134,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
     props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
     draw.disable();
+    map.setView([position.coords.latitude, position.coords.longitude], 16);
   };
 
   const endTrack = async () => {
@@ -199,7 +201,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                   </Button>
                   <Button
                     onClick={() => {
-                      new (L as any).Draw.Marker(mapForButton, {}).enable();
+                      new (L as any).Draw.Marker(map, {}).enable();
                       setDialog(false);
                     }}>
                     No
@@ -226,7 +228,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} activityId={props.activityId} setMapForButton={setMapForButton} />
+              <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap} />
             </Grid>
           </Grid>
         </AccordionDetails>

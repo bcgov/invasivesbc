@@ -130,7 +130,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   useEffect(() => {
     try {
-      props.setMapForButton(map);
+      props.setMapForActivityPage(map);
     } catch (e) {
       console.log('setMapForButton error', e);
     }
