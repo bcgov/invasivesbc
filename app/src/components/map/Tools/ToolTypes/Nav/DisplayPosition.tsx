@@ -47,12 +47,9 @@ export default function DisplayPosition({ map }) {
   const toolClass = toolStyles();
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
-  const [activityGeo, setActivityGeo] = useState(null);
-  const [poiMarker, setPoiMarker] = useState(null);
+  const [recordGeo, setRecordGeo] = useState(null);
   const [startTimer, setStartTimer] = useState(false);
-  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState([]);
-  const [rows, setRows] = useState(null);
   const [key] = useState(Math.random()); // NOSONAR
   const divRef = useRef(null);
 
@@ -62,11 +59,11 @@ export default function DisplayPosition({ map }) {
     }
   }, [map]);
 
-  useEffect(() => {
-    if (newPosition) {
-      generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
-    }
-  }, [newPosition]);
+  // useEffect(() => {
+  //   if (newPosition) {
+  //     generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setRecordGeo });
+  //   }
+  // }, [newPosition]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -74,18 +71,17 @@ export default function DisplayPosition({ map }) {
   });
 
   useEffect(() => {
-    if (utm) {
-      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
-    }
-  }, [utm]);
-
-  useEffect(() => {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
   }, [initialTime, startTimer]);
 
   useEffect(() => {
     if (newPosition) {
-      setUTM(calc_utm(newPosition.coords.longitude, newPosition.coords.latitude));
+      const result = calc_utm(newPosition.coords.longitude, newPosition.coords.latitude);
+      setUTM([
+        createDataUTM('Zone', result[0]),
+        createDataUTM('Easting', result[1]),
+        createDataUTM('Northing', result[2])
+      ]);
     }
   }, [newPosition]);
 
@@ -103,22 +99,9 @@ export default function DisplayPosition({ map }) {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {
-        activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
+      {/*
+        recordGeo && <GeoJSON data={recordGeo} key={Math.random()} /> //NOSONAR
       }
-      {/*poiMarker && (
-        <Marker
-          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
-          <Tooltip direction="top" opacity={0.5} permanent>
-            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-              {poiMarker.species.map((s) => (
-                <>{s} </>
-              ))}
-            </div>
-          </Tooltip>
-        </Marker>
-              )*/}
       {/*geoPoint && (
         <GeoJSON data={geoPoint} key={key}>
           <GeneratePopup
@@ -137,7 +120,7 @@ export default function DisplayPosition({ map }) {
         aria-label="my position"
         onClick={() => {
           try {
-            map.setView([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+            map.setView([newPosition.coords.latitude, newPosition.coords.longitude], 16);
           } catch (e) {
             console.log('Map SetView error', e);
           }

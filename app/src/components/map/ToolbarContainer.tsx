@@ -76,12 +76,14 @@ export const ToolbarContainer = (props) => {
   };
 
   useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
 
   return (
     <div key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
       <IconButton
+        ref={divRef}
         onClick={() => {
           handleExpand();
         }}
