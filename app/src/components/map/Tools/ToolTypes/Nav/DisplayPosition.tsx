@@ -3,11 +3,8 @@ import { CircularProgress, ListItem, ListItemIcon, ListItemText, Typography } fr
 import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useEffect, useRef, useState } from 'react';
-import { GeoJSON } from 'react-leaflet';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
-import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
-import marker from '../../../Icons/POImarker.png';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { ListItemButton } from '@mui/material';
 
@@ -47,10 +44,10 @@ export default function DisplayPosition({ map }) {
   const toolClass = toolStyles();
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
-  const [recordGeo, setRecordGeo] = useState(null);
+  // const [recordGeo, setRecordGeo] = useState(null); // NOSONAR
   const [startTimer, setStartTimer] = useState(false);
-  const [utm, setUTM] = useState([]);
-  const [key] = useState(Math.random()); // NOSONAR
+  // const [utm, setUTM] = useState([]); // NOSONAR
+  // const [key] = useState(Math.random()); // NOSONAR
   const divRef = useRef(null);
 
   useEffect(() => {
@@ -58,12 +55,6 @@ export default function DisplayPosition({ map }) {
       getLocation();
     }
   }, [map]);
-
-  // useEffect(() => {
-  //   if (newPosition) {
-  //     generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setRecordGeo });
-  //   }
-  // }, [newPosition]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -74,21 +65,17 @@ export default function DisplayPosition({ map }) {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
   }, [initialTime, startTimer]);
 
-  useEffect(() => {
-    if (newPosition) {
-      const result = calc_utm(newPosition.coords.longitude, newPosition.coords.latitude);
-      setUTM([
-        createDataUTM('Zone', result[0]),
-        createDataUTM('Easting', result[1]),
-        createDataUTM('Northing', result[2])
-      ]);
-    }
-  }, [newPosition]);
-
-  const markerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [24, 24]
-  });
+  // Removed for now:
+  // useEffect(() => {
+  //   if (newPosition) {
+  //     const result = calc_utm(newPosition.coords.longitude, newPosition.coords.latitude);
+  //     setUTM([
+  //       createDataUTM('Zone', result[0]),
+  //       createDataUTM('Easting', result[1]),
+  //       createDataUTM('Northing', result[2])
+  //     ]);
+  //   }
+  // }, [newPosition]);
 
   const getLocation = async () => {
     setInitialTime(3);
@@ -99,21 +86,6 @@ export default function DisplayPosition({ map }) {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {/*
-        recordGeo && <GeoJSON data={recordGeo} key={Math.random()} /> //NOSONAR
-      }
-      {/*geoPoint && (
-        <GeoJSON data={geoPoint} key={key}>
-          <GeneratePopup
-            utmRows={rows}
-            map={map}
-            lat={newPosition.coords.latitude}
-            lng={newPosition.coords.longitude}
-            setPoiMarker={setPoiMarker}
-            setActivityGeo={setActivityGeo}
-          />
-        </GeoJSON>
-      )*/}
       <ListItemButton
         ref={divRef}
         disabled={startTimer}
