@@ -259,6 +259,7 @@ const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
   },
   'activity_type_data': {
     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.activity_type_data_objects.Monitoring,
   },
   'activity_subtype_data': {
     Weather_Conditions:BaseUISchemaComponents.general_objects.Weather_Conditions,

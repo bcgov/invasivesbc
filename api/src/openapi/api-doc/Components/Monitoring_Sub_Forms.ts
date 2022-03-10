@@ -3,7 +3,7 @@ import { Biological_Agent_Stage } from './General_Sub_Forms';
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   title: 'Chemical Treatment Monitoring Information',
   type: 'object',
-  required: ['monitoring_details', 'efficacy_code'],
+  required: ['efficacy_code', 'management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -31,18 +31,58 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     },
     monitoring_details: {
       type: 'string',
-      title: 'Monitoring details'
+      title: 'Efficacy comments',
+      'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
     },
     efficacy_code: {
       type: 'string',
-      title: 'Efficacy Rating',
+      title: 'Treatment Efficacy Rating',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'efficacy_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
-      }
+      },
+      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+    },
+    management_efficacy_rating: {
+      type: 'string',
+      title: 'Management Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'management_efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Choose the efficacy rating indicating the mortality of all the target species found on the site, including those that were not treated. Eg: 50% of plants on the site have evidence of treatment = Efficacy of 5.'
+    },
+    evidence_of_treatment: {
+      type: 'string',
+      title: 'Evidence of treatment?',
+      enum: ['Yes', 'No']
+    },
+    invasive_plants_on_site: {
+      type: 'string',
+      title: 'Invasive Plants on site',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'monitoring_evidence_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Choose one or more option to indicate whether target invasive plants are still found on site following the treatment.'
+    },
+    treatment_pass: {
+      type: 'string',
+      title: 'Treatment Pass',
+      enum: ['First', 'Second', 'Unknown'],
+      'x-tooltip-text':
+        'Indicate whether you are monitoring the first or second treatment pass of the calendar year, if known'
     },
     comment: {
       type: 'string',
@@ -55,7 +95,7 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
 export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   title: 'Mechanical Terrestrial Aquatic Monitoring Information',
   type: 'object',
-  required: ['monitoring_details', 'efficacy_code'],
+  required: ['efficacy_code', 'management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -83,24 +123,64 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     },
     monitoring_details: {
       type: 'string',
-      title: 'Monitoring details'
+      title: 'Efficacy comments',
+      'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
     },
     efficacy_code: {
       type: 'string',
-      title: 'Efficacy Rating',
+      title: 'Treatment Efficacy Rating',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
         'x-enum-code-header-name': 'efficacy_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
-      }
+      },
+      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+    },
+    management_efficacy_rating: {
+      type: 'string',
+      title: 'Management Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'management_efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Choose the efficacy rating indicating the mortality of all the target species found on the site, including those that were not treated. Eg: 50% of plants on the site have evidence of treatment = Efficacy of 5.'
+    },
+    evidence_of_treatment: {
+      type: 'string',
+      title: 'Evidence of treatment?',
+      enum: ['Yes', 'No']
+    },
+    invasive_plants_on_site: {
+      type: 'string',
+      title: 'Invasive Plants on site',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'monitoring_evidence_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text':
+        'Choose one or more option to indicate whether target invasive plants are still found on site following the treatment.'
+    },
+    treatment_pass: {
+      type: 'string',
+      title: 'Treatment Pass',
+      enum: ['First', 'Second', 'Unknown'],
+      'x-tooltip-text':
+        'Indicate whether you are monitoring the first or second treatment pass of the calendar year, if known'
     },
     comment: {
       type: 'string',
       title: 'Comment',
       'x-tooltip-text':
-        'Note whether chlorosis, necrosis, curling, browning, yellow, epicormic growth etc. is observed, or any additional relevant information'
+        'Add any additional relevant information about the efficacy of the treatment including missed plants, seeds left on site, etc.'
     }
   }
 };
