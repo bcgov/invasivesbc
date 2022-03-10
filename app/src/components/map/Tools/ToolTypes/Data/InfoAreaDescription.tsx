@@ -21,16 +21,12 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/helpers';
 import buffer from '@turf/buffer';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 // Leaflet and React-Leaflet
 import { GeoJSON, Marker, Popup, Tooltip, useMapEvent } from 'react-leaflet';
-import { useDataAccess } from '../../../../../hooks/useDataAccess';
 import binoculars from '../../../Icons/binoculars.png';
-import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
@@ -57,6 +53,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
+  const { utmRows, map, lat, lng, setRecordGeo, setClickMode } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -77,8 +74,8 @@ export const GeneratePopup = (props) => {
   }, []);
 
   useEffect(() => {
-    if (props.lat && props.lng) {
-      var point = turf.point([props.lng, props.lat]);
+    if (lat && lng) {
+      var point = turf.point([lng, lat]);
       if (pointMode) {
         setBufferedGeo(point);
       } else {
@@ -100,11 +97,11 @@ export const GeneratePopup = (props) => {
   // }, [bufferedGeo]);
 
   const hideElement = () => {
-    if (!popupElRef?.current || !props.map) return;
-    props.map.closePopup();
-    props.setActivityGeo(null);
-    if (props.setClickMode) {
-      props.setClickMode(false);
+    if (!popupElRef?.current || !map) return;
+    map.closePopup();
+    setRecordGeo(null);
+    if (setClickMode) {
+      setClickMode(false);
     }
   };
 
@@ -121,14 +118,12 @@ export const GeneratePopup = (props) => {
       <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
         <div>
           <TableContainer>
-            {section == 'position' && <RenderTablePosition rows={props.utmRows} />}
+            {section == 'position' && <RenderTablePosition rows={utmRows} />}
             {section == 'activity' && (
-              <RenderTableActivity setActivityGeo={props.setActivityGeo} map={props.map} bufferedGeo={bufferedGeo} />
+              <RenderTableActivity setActivityGeo={setRecordGeo} map={map} bufferedGeo={bufferedGeo} />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && (
-              <RenderTablePOI map={props.map} setPoiMarker={props.setPoiMarker} bufferedGeo={bufferedGeo} />
-            )}
+            {section == 'poi' && <RenderTablePOI map={map} setPoiMarker={setRecordGeo} bufferedGeo={bufferedGeo} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -203,10 +198,8 @@ function SetPointOnClick({ map }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
-  const [activityGeo, setActivityGeo] = useState(null);
-  const [poiMarker, setPoiMarker] = useState(null);
+  const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
-  const [rows, setRows] = useState(null);
   const divRef = useRef();
   const toolClass = toolStyles();
 
@@ -224,16 +217,15 @@ function SetPointOnClick({ map }: any) {
 
   useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
-      setUTM(calc_utm(position?.lng as number, position?.lat as number));
+      const result = calc_utm(position?.lng as number, position?.lat as number);
+      setUTM([
+        createDataUTM('UTM', result[0]),
+        createDataUTM('Easting', result[1]),
+        createDataUTM('Northing', result[2])
+      ]);
       generateGeo(position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
-
-  useEffect(() => {
-    if (utm) {
-      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Easting', utm[1]), createDataUTM('Northing', utm[2])]);
-    }
-  }, [utm]);
 
   const markerIcon = L.icon({
     iconUrl: binoculars,
@@ -242,7 +234,7 @@ function SetPointOnClick({ map }: any) {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {
+      {/*
         activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
       }
       {poiMarker && (
@@ -258,7 +250,8 @@ function SetPointOnClick({ map }: any) {
             </div>
           </Tooltip>
         </Marker>
-      )}
+      )*/}
+      {recordGeo && <GeoJSON data={recordGeo} key={Math.random()} />}
 
       <ListItemButton
         ref={divRef}
@@ -284,12 +277,11 @@ function SetPointOnClick({ map }: any) {
       {geoPoint && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
-            utmRows={rows}
+            utmRows={utm}
             map={map}
             lat={position.lat}
             lng={position.lng}
-            setPoiMarker={setPoiMarker}
-            setActivityGeo={setActivityGeo}
+            setRecordGeo={setRecordGeo}
             setClickMode={setClickMode}
           />
         </GeoJSON>
