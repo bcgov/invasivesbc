@@ -16,7 +16,7 @@ import {
 import { ISubmitEvent } from '@rjsf/core';
 import { MuiForm5 as Form } from '@rjsf/material-ui';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
+import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from '../../hooks/useDataAccess';
@@ -27,9 +27,9 @@ import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from '../../themes/rjsfTheme';
-import { getShortActivityID } from '../../utils/addActivity';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
+import { AuthStateContext } from 'contexts/authStateContext';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -74,6 +74,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
+  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
 
   useEffect(() => {
     if (!props.activity?.formData) {
@@ -260,6 +261,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       if (!subtype) throw new Error('Activity has no Subtype specified');
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
+      let modifiedSchema;
       let uiSchema = RootUISchemas[subtype];
       const subtypeSchema = components?.schemas?.[subtype];
       // Handle activity_id linking fetches
@@ -277,34 +279,58 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               }
             };
           } else {
+            let linkedActivitySubtypes = [];
+
+            switch (subtype) {
+              case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+                linkedActivitySubtypes = [
+                  'Activity_Treatment_MechanicalPlantTerrestrial',
+                  'Activity_Treatment_MechanicalPlantAquatic'
+                ];
+                break;
+              case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+                linkedActivitySubtypes = [
+                  'Activity_Treatment_ChemicalPlantTerrestrial',
+                  'Activity_Treatment_ChemicalPlantAquatic'
+                ];
+                break;
+              case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+                linkedActivitySubtypes = ['Activity_Biocontrol_Release'];
+                break;
+              default:
+                break;
+            }
+
             const treatments_response = await dataAccess.getActivities({
               column_names: ['activity_id', 'created_timestamp'],
-              activity_type: ['Treatment'],
-              activity_subtype: [ActivityMonitoringLinks[subtype]],
-              order: ['created_timestamp']
+              activity_type: ['Treatment', 'Biocontrol'],
+              activity_subtype: linkedActivitySubtypes,
+              order: ['created_timestamp'],
+              user_roles: rolesUserHasAccessTo
             });
             const treatments = treatments_response.rows.map((treatment, i) => {
-              const short_id = getShortActivityID({
-                ...treatment,
-                activity_subtype: ActivityMonitoringLinks[subtype]
-              });
               return {
-                enum: [treatment.activity_id],
-                title: short_id + ' : ' + treatment.activity_id,
-                type: 'string',
+                label: treatment.activity_id,
+                title: treatment.activity_id,
+                value: treatment.activity_id,
                 'x-code_sort_order': i + 1
               };
             });
-
             if (treatments?.length) {
-              let modifiedSchema = components.schemas['Monitoring'];
+              modifiedSchema = subtypeSchema;
               modifiedSchema = {
                 ...modifiedSchema,
                 properties: {
                   ...modifiedSchema?.properties,
-                  linked_id: {
-                    ...modifiedSchema?.properties?.linked_id
-                    // anyOf: treatments
+                  activity_type_data: {
+                    ...modifiedSchema?.properties.activity_type_data,
+                    properties: {
+                      ...modifiedSchema?.properties.activity_type_data.properties,
+                      linked_id: {
+                        ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
+                        options: treatments
+                      }
+                    }
                   }
                 }
               };
@@ -312,19 +338,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 ...components,
                 schemas: {
                   ...components.schemas,
-                  Monitoring: modifiedSchema
+                  [props.activity.activitySubtype]: modifiedSchema
                 }
               };
             }
           }
         }
-
-        // put Treatments => Observations linking here
       } catch (error) {
         console.log('Could not load Activity IDs of linkable records');
       }
       setSchemas({
-        schema: { ...subtypeSchema, components: components },
+        schema: { ...modifiedSchema, components: components },
         uiSchema: uiSchema
       });
     };
@@ -361,7 +385,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   blurHandler(args);
                 }}
                 uiSchema={schemas.uiSchema}
-                formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
+                formContext={{
+                  suggestedJurisdictions: props.suggestedJurisdictions || []
+                }}
                 liveValidate={true}
                 validate={props.customValidation}
                 showErrorList={true}
@@ -436,8 +462,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           <FormControlsComponent
             onSubmit={() => {
               //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
-
-              console.log(formRef.current.state.formData);
               (formRef.current as any).formElement.dispatchEvent(
                 new CustomEvent('submit', {
                   cancelable: true,

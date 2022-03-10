@@ -97,7 +97,7 @@ export enum ActivityMonitoringLinks {
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Treatment_ChemicalPlant',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Treatment_MechanicalPlant',
-  Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+  Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
   Activity_Monitoring_ChemicalAnmialTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
   Activity_Monitoring_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
 
