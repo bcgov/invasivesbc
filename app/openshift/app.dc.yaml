@@ -28,7 +28,7 @@ parameters:
     value: '8100-tcp'
   - name: CPU_REQUEST
     description: CPU REQUEST for deployment config
-    value: '500m'
+    value: '100m'
   - name: CPU_LIMIT
     description: CPU LIMIT for dc
     value: '1000m'
@@ -136,7 +136,7 @@ objects:
                   path: /
                   port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 65
+                initialDelaySeconds: 200
                 periodSeconds: 20
                 successThreshold: 1
                 timeoutSeconds: 20

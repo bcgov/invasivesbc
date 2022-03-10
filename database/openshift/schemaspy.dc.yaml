@@ -66,11 +66,11 @@ objects:
         timeoutSeconds: 600
       resources:
         limits:
-          cpu: 750m
-          memory: 2Gi
-        requests:
-          cpu: 500m
+          cpu: 600m
           memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 0.5Gi
       type: Recreate
     triggers:
     - type: ConfigChange

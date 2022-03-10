@@ -74,7 +74,7 @@ parameters:
   - name: MEMORY_LIMIT
     value: '3Gi'
   - name: CPU_REQUEST
-    value: '1000m'
+    value: '500m'
   - name: MEMORY_REQUEST
     value: '2.0Gi'
 objects:
@@ -199,7 +199,7 @@ objects:
                     - '-i'
                     - '-c'
                     - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
-                initialDelaySeconds: 5
+                initialDelaySeconds: 100
                 timeoutSeconds: 1
               resources:
                 requests:
