@@ -87,12 +87,6 @@ objects:
           name: '${NAME}:${VERSION}'
       postCommit: {}
       resources:
-        limits:
-          cpu: 1250m
-          memory: 3Gi
-        requests:
-          cpu: 750m
-          memory: 2Gi
       runPolicy: SerialLatestOnly
       source:
         contextDir: '${SOURCE_CONTEXT_DIR}'

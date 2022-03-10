@@ -31,7 +31,7 @@ parameters:
     value: '100m'
   - name: CPU_LIMIT
     description: CPU LIMIT for dc
-    value: '1000m'
+    value: '500m'
   - name: MEMORY_REQUEST
     description: MEMORY REQUEST for dc
     value: '1Gi'
