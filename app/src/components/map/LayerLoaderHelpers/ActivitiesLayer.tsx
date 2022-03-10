@@ -54,7 +54,9 @@ export const ActivitiesLayer = (props) => {
       const actArr = activities.features.map((feature) => {
         return feature.properties;
       });
-      setCurrentRecords(actArr);
+      setCurrentRecords((prev) => {
+        return prev.concat(actArr);
+      });
     }
   }, [activities, setCurrentRecords]);
 
