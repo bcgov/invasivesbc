@@ -98,10 +98,10 @@ export const GeneratePopup = (props) => {
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
             {section == 'activity' && (
-              <RenderTableActivity setActivityGeo={setRecordGeo} map={map} bufferedGeo={bufferedGeo} />
+              <RenderTableActivity bufferedGeo={bufferedGeo} map={map} setActivityGeo={setRecordGeo} />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && <RenderTablePOI map={map} setPoiMarker={setRecordGeo} bufferedGeo={bufferedGeo} />}
+            {section == 'poi' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} setPoiMarker={setRecordGeo} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -149,6 +149,7 @@ function SetPointOnClick({ map }: any) {
   const [clickMode, setClickMode] = useState(false);
   const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
+  const drawnGeoKey = Math.random();
   const divRef = useRef();
   const toolClass = toolStyles();
 
@@ -249,7 +250,7 @@ function SetPointOnClick({ map }: any) {
           //   }
           // }
           data={drawnGeo}
-          key={Math.random()}>
+          key={drawnGeoKey}>
           {!clickMode && (
             <GeneratePopup
               utmRows={utm}

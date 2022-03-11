@@ -277,7 +277,7 @@ export const RenderTablePosition = ({ rows }) => {
 };
 
 export const RenderTableActivity = (props: any) => {
-  const { map, setActivityGeo, bufferedGeo } = props;
+  const { bufferedGeo, map, setActivityGeo } = props;
   const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
@@ -454,7 +454,7 @@ export const RenderTableDataBC = ({ rows }) => {
 };
 
 export const RenderTablePOI = (props: any) => {
-  const { map, setPoiMarker, bufferedGeo } = props;
+  const { bufferedGeo, map, setPoiMarker } = props;
   const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
