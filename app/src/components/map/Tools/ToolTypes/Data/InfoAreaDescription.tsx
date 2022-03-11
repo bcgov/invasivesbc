@@ -149,7 +149,7 @@ function SetPointOnClick({ map }: any) {
   const [clickMode, setClickMode] = useState(false);
   const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
-  const drawnGeoKey = Math.random();
+  const drawnGeoKey = Math.random(); // NOSONAR
   const divRef = useRef();
   const toolClass = toolStyles();
 
