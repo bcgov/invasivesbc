@@ -8,8 +8,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Slider,
-  Switch,
   TableContainer,
   Typography
 } from '@mui/material';
@@ -18,19 +16,14 @@ import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
-import { Stack } from '@mui/material';
 import * as turf from '@turf/helpers';
 import buffer from '@turf/buffer';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import L, { DomEvent } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 // Leaflet and React-Leaflet
-import { GeoJSON, Marker, Popup, Tooltip, useMapEvent } from 'react-leaflet';
-import { useDataAccess } from '../../../../../hooks/useDataAccess';
+import { GeoJSON, Popup, useMapEvent } from 'react-leaflet';
 import binoculars from '../../../Icons/binoculars.png';
-import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
@@ -39,14 +32,11 @@ import {
   RenderTablePOI,
   RenderTablePosition
 } from '../../Helpers/StyledTable';
-import {
-  assignPointModeTheme,
-  assignPtDefaultTheme,
-  assignTextDefaultTheme,
-  toolStyles
-} from '../../Helpers/ToolStyles';
+import { toolStyles } from '../../Helpers/ToolStyles';
 // App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
+import { polygon } from '@turf/helpers';
+import center from '@turf/center';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -57,16 +47,15 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
+  const { utmRows, map, bufferedGeo, setRecordGeo, setClickMode } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
-  const [bufferedGeo, setBufferedGeo] = useState(null);
   const [section, setSection] = useState('position');
-  const [pointMode, setPointMode] = useState(true);
-  const [showRadius, setShowRadius] = useState(false);
+  // const [showRadius, setShowRadius] = useState(false); // NOSONAR
   // (NOSONAR)'d Temporarily until we figure out databc Table:
-  const [databc, setDataBC] = useState(null); // NOSONAR
-  const [radius, setRadius] = useState(3);
+  // const [databc, setDataBC] = useState(null); // NOSONAR
+  // const [radius, setRadius] = useState(3);
   const popupElRef = useRef(null);
 
   useEffect(() => {
@@ -76,16 +65,6 @@ export const GeneratePopup = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (props.lat && props.lng) {
-      var point = turf.point([props.lng, props.lat]);
-      if (pointMode) {
-        setBufferedGeo(point);
-      } else {
-        setBufferedGeo(buffer(point, radius, { units: 'kilometers' }));
-      }
-    }
-  }, [radius, pointMode]);
   // Removed for now:
   // useEffect(() => {
   //   if (bufferedGeo) {
@@ -100,11 +79,11 @@ export const GeneratePopup = (props) => {
   // }, [bufferedGeo]);
 
   const hideElement = () => {
-    if (!popupElRef?.current || !props.map) return;
-    props.map.closePopup();
-    props.setActivityGeo(null);
-    if (props.setClickMode) {
-      props.setClickMode(false);
+    if (!popupElRef?.current || !map) return;
+    map.closePopup();
+    setRecordGeo(null);
+    if (setClickMode) {
+      setClickMode(false);
     }
   };
 
@@ -112,23 +91,17 @@ export const GeneratePopup = (props) => {
     setSection(newSection);
   };
 
-  function valueText(value: number) {
-    return `${value}km`;
-  }
-
   return (
     <>
       <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
         <div>
           <TableContainer>
-            {section == 'position' && <RenderTablePosition rows={props.utmRows} />}
+            {section == 'position' && <RenderTablePosition rows={utmRows} />}
             {section == 'activity' && (
-              <RenderTableActivity setActivityGeo={props.setActivityGeo} map={props.map} bufferedGeo={bufferedGeo} />
+              <RenderTableActivity bufferedGeo={bufferedGeo} map={map} setActivityGeo={setRecordGeo} />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && (
-              <RenderTablePOI map={props.map} setPoiMarker={props.setPoiMarker} bufferedGeo={bufferedGeo} />
-            )}
+            {section == 'poi' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} setPoiMarker={setRecordGeo} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -142,7 +115,7 @@ export const GeneratePopup = (props) => {
             </BottomNavigation>
           </Grid>
           <Grid container>
-            <Stack direction="row" spacing={1} style={{ width: 500 }} alignItems="center">
+            {/* <Stack direction="row" spacing={1} style={{ width: 500 }} alignItems="center">
               <Typography
                 className={assignPointModeTheme(!pointMode, themeType)}
                 style={assignPtDefaultTheme(pointMode, themeType)}>
@@ -158,55 +131,26 @@ export const GeneratePopup = (props) => {
                 style={assignPtDefaultTheme(!pointMode, themeType)}>
                 Just This Point
               </Typography>
-            </Stack>
-            {!pointMode && (
-              <Grid container>
-                <Grid item style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -30 }}>
-                  <Typography style={assignTextDefaultTheme(themeType)}>{radius} km</Typography>
-                  <Slider
-                    style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
-                    aria-label="Kilometers"
-                    defaultValue={radius}
-                    onChange={(event: any, newRadius: number) => {
-                      setRadius(newRadius);
-                    }}
-                    getAriaValueText={valueText}
-                    step={1}
-                    marks
-                    min={1}
-                    max={10}
-                  />
-                </Grid>
-                <Grid item style={{ marginTop: -30 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography style={assignTextDefaultTheme(themeType)}>Show Area</Typography>
-                    <Switch onChange={(event: any) => setShowRadius(event.target.checked)} color="primary" />
-                  </Stack>
-                </Grid>
-              </Grid>
-            )}
+            </Stack> */}
             <Grid item>
               <Button onClick={hideElement}>Close</Button>
             </Grid>
           </Grid>
         </div>
       </Popup>
-      {
-        bufferedGeo && showRadius && <GeoJSON data={bufferedGeo} key={Math.random()} /> //NOSONAR
-      }
     </>
   );
 };
 
 function SetPointOnClick({ map }: any) {
   const themeContext = useContext(ThemeContext);
-  const [position, setPosition] = useState(map?.getCenter());
-  const [geoPoint, setGeoPoint] = useState(null);
+  const [positionOne, setPositionOne] = useState(null);
+  const [drawnGeo, setDrawnGeo] = useState(null);
   const [clickMode, setClickMode] = useState(false);
-  const [activityGeo, setActivityGeo] = useState(null);
-  const [poiMarker, setPoiMarker] = useState(null);
+  const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
-  const [rows, setRows] = useState(null);
+  const drawnGeoKey = Math.random(); // NOSONAR
+  const recordGeoKey = Math.random(); // NOSONAR
   const divRef = useRef();
   const toolClass = toolStyles();
 
@@ -215,54 +159,71 @@ function SetPointOnClick({ map }: any) {
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
 
+  // useEffect(() => {
+  //   if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
+  //     const result = calc_utm(position?.lng as number, position?.lat as number);
+  //     setUTM([
+  //       createDataUTM('UTM', result[0]),
+  //       createDataUTM('Easting', result[1]),
+  //       createDataUTM('Northing', result[2])
+  //     ]);
+  //     generateGeo(position.lat, position.lng, { setGeoPoint });
+  //   }
+  // }, [position]);
+
   useMapEvent('click', (e) => {
     if (clickMode) {
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, 15);
-    }
+      console.log('mousedown ding');
+      if (positionOne === null) {
+        setPositionOne(e.latlng);
+      } else {
+        const coords = center(drawnGeo).geometry.coordinates;
+        const result = calc_utm(coords[0], coords[1]);
+        setClickMode(false);
+        setPositionOne(null);
+        setUTM([
+          createDataUTM('Zone', result[0]),
+          createDataUTM('Easting', result[1]),
+          createDataUTM('Northing', result[2])
+        ]);
+      }
+    } // else {
+    //   const temp = e.latlng;
+    //   const val = 0.003;
+    //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
+    //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
+    //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
+    //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
+    //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+    // }
   });
 
-  useEffect(() => {
-    if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
-      setUTM(calc_utm(position?.lng as number, position?.lat as number));
-      generateGeo(position.lat, position.lng, { setGeoPoint });
+  //get mouse location on map
+  useMapEvent('mousemove', (e) => {
+    if (positionOne && clickMode) {
+      const temp = e.latlng;
+      const latlng1 = [positionOne.lng, positionOne.lat];
+      const latlng3 = [temp.lng, temp.lat];
+      const latDiff = positionOne.lat - temp.lat;
+      const lngDiff = positionOne.lng - temp.lng;
+      const latlng2 = [positionOne.lng, positionOne.lat - latDiff];
+      const latlng4 = [positionOne.lng - lngDiff, positionOne.lat];
+      setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
     }
-  }, [position]);
-
-  useEffect(() => {
-    if (utm) {
-      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Easting', utm[1]), createDataUTM('Northing', utm[2])]);
-    }
-  }, [utm]);
-
-  const markerIcon = L.icon({
-    iconUrl: binoculars,
-    iconSize: [24, 24]
   });
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {
-        activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
-      }
-      {poiMarker && (
-        <Marker
-          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          //  icon={markerIcon}>
-        >
-          <Tooltip direction="top" opacity={0.5} permanent>
-            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-              {poiMarker.species.map((s) => (
-                <>{s} </>
-              ))}
-            </div>
-          </Tooltip>
-        </Marker>
-      )}
+      {recordGeo && <GeoJSON data={recordGeo} key={recordGeoKey} />}
 
       <ListItemButton
         ref={divRef}
-        onClick={() => setClickMode(!clickMode)}
+        onClick={() => {
+          if (!clickMode) {
+            setDrawnGeo(null);
+          }
+          setClickMode(!clickMode);
+        }}
         style={{
           backgroundColor: clickMode ? '#006ee6' : null,
           borderTopLeftRadius: 5,
@@ -281,17 +242,25 @@ function SetPointOnClick({ map }: any) {
           <Typography className={toolClass.Font}>What's here?</Typography>
         </ListItemText>
       </ListItemButton>
-      {geoPoint && clickMode && (
-        <GeoJSON data={geoPoint} key={Math.random()}>
-          <GeneratePopup
-            utmRows={rows}
-            map={map}
-            lat={position.lat}
-            lng={position.lng}
-            setPoiMarker={setPoiMarker}
-            setActivityGeo={setActivityGeo}
-            setClickMode={setClickMode}
-          />
+      {drawnGeo && (
+        <GeoJSON
+          // style={() =>
+          //   !clickMode && {
+          //     opacity: 0,
+          //     fillOpacity: 0
+          //   }
+          // }
+          data={drawnGeo}
+          key={drawnGeoKey}>
+          {!clickMode && (
+            <GeneratePopup
+              utmRows={utm}
+              map={map}
+              bufferedGeo={drawnGeo}
+              setRecordGeo={setRecordGeo}
+              setClickMode={setClickMode}
+            />
+          )}
         </GeoJSON>
       )}
     </ListItem>

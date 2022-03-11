@@ -1,8 +1,9 @@
 import React from 'react';
-import { Checkbox, Grid, Typography } from '@mui/material';
+import { Checkbox, ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { getChild, updateChild } from '../Sorting/SortLayerOrder';
 import { LayerModeDialog, ColourDialog } from './DialogBoxes';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
+import InfoIcon from '@mui/icons-material/Info';
 
 export const ChildLayer = (props) => {
   const { child, parent } = props;
@@ -29,9 +30,7 @@ export const ChildLayer = (props) => {
           }}
         />
       </Grid>
-      <Grid item xs={6}>
-        <Typography variant="caption">{child.name}</Typography>
-      </Grid>
+      <InfoTooltip child={child} />
       {/* Settings Dialog Box */}
       {process.env.REACT_APP_REAL_NODE_ENV === 'development' && <LayerModeDialog parent={parent} child={child} />}
       {process.env.REACT_APP_REAL_NODE_ENV === 'local' && <LayerModeDialog parent={parent} child={child} />}
@@ -39,6 +38,36 @@ export const ChildLayer = (props) => {
       {/* <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
                         </Grid> */}
+    </Grid>
+  );
+};
+
+const InfoTooltip = (props: any) => {
+  const { child } = props;
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <Grid item xs={6}>
+      <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <div>
+          <Tooltip
+            sx={{ marginLeft: -7, zIndex: 9999 }}
+            PopperProps={{
+              disablePortal: true
+            }}
+            disableFocusListener
+            disableHoverListener
+            open={open}
+            onClose={() => setOpen(false)}
+            placement="right"
+            title={child.bcgw_code ? child.bcgw_code : child.layer_code}>
+            <IconButton onClick={() => setOpen(!open)}>
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="caption">{child.name}</Typography>
+        </div>
+      </ClickAwayListener>
     </Grid>
   );
 };

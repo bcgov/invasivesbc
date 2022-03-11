@@ -1,17 +1,25 @@
-import { Button, Grid, ListItem, ListItemIcon, ListItemText, ListItemButton, Popover, Typography } from '@mui/material';
+import {
+  Button,
+  Grid,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+  Popover,
+  Theme,
+  Typography
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import area from '@turf/area';
 import { polygon } from '@turf/helpers';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet';
 import dotMarker from '../../../Icons/dotMarker.png';
 import ruler from '../../../Icons/ruler.png';
 import { toolStyles } from '../../Helpers/ToolStyles';
-import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   typography: {
@@ -49,10 +57,16 @@ const calc_distance = (lat1: number, lat2: number, lng1: number, lng2: number) =
   return R * c;
 };
 
-const geoJSON_checkDistance = (geometryObj: any, distanceObj: any, locArray: any, isMeasuringDistance: boolean) => {
-  if (geometryObj.aGeoJSON == null && locArray[0]) {
-    geometryObj.setGeoJSON([
-      ...geometryObj.aGeoJSON,
+const geoJSON_checkDistance = (
+  aGeoJSON: any,
+  setGeoJSON: any,
+  distanceObj: any,
+  locArray: any,
+  isMeasuringDistance: boolean
+) => {
+  if (aGeoJSON == null && locArray[0]) {
+    setGeoJSON([
+      ...aGeoJSON,
       {
         type: 'Feature',
         geometry: {
@@ -67,8 +81,8 @@ const geoJSON_checkDistance = (geometryObj: any, distanceObj: any, locArray: any
   } else if (locArray.length > 1) {
     for (var i = 0; i < locArray.length - 1; i++) {
       if (isMeasuringDistance) {
-        geometryObj.setGeoJSON([
-          ...geometryObj.aGeoJSON,
+        setGeoJSON([
+          ...aGeoJSON,
           {
             type: 'Feature',
             geometry: {
@@ -89,14 +103,13 @@ const geoJSON_checkDistance = (geometryObj: any, distanceObj: any, locArray: any
           locArray[i].lng,
           locArray[i + 1].lng
         ) as any;
-        console.log('distance between points: ', distance);
         distanceObj.setTotalDistance(distanceObj.totalDistance + distance);
       }
     }
   }
 };
 
-const finishPolygon = (geometryObj: any, polyObj: any, locArray: any) => {
+const finishPolygon = (aGeoJSON: any, setGeoJSON: any, setPolyArea: any, locArray: any) => {
   const tempArr = [];
   for (var i = 0; i < locArray.length; i++) {
     tempArr[i] = [locArray[i].lng, locArray[i].lat];
@@ -114,28 +127,25 @@ const finishPolygon = (geometryObj: any, polyObj: any, locArray: any) => {
       name: 'Dinagat Islands'
     }
   };
-  geometryObj.setGeoJSON([...geometryObj.aGeoJSON, obj]);
-  var tempPolygon = polygon([tempArr]);
-  polyObj.setPolyArea(area(tempPolygon));
+  setGeoJSON([...aGeoJSON, obj]);
+  const tempPolygon = polygon([tempArr]);
+  setPolyArea(area(tempPolygon));
 };
 
 const MeasureTool = (props: any) => {
   const classes = useStyles();
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
   const [isMeasuringArea, setIsMeasuringArea] = useState(false);
-  const [polyArea, setPolyArea] = useState(0);
-  const [aGeoJSON, setGeoJSON] = useState([]);
-  const [aKey, setKey] = useState(1);
-  const [totalDistance, setTotalDistance] = useState(0);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [locArray, setLocArray] = useState([]);
   const [finishDraw, setFinishDraw] = useState(false);
-  const divRef = useRef(null);
-  const geometry = { aGeoJSON, setGeoJSON };
-  const polyObj = { polyArea, setPolyArea };
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [aKey, setKey] = useState(1);
+  const [polyArea, setPolyArea] = useState(0);
+  const [locArray, setLocArray] = useState([]);
+  const [aGeoJSON, setGeoJSON] = useState([]);
   const distance = { totalDistance, setTotalDistance };
+  const divRef = useRef(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -169,7 +179,7 @@ const MeasureTool = (props: any) => {
   // used for measuring distance
   useEffect(() => {
     // we are dropping first point
-    geoJSON_checkDistance(geometry, distance, locArray, isMeasuringDistance);
+    geoJSON_checkDistance(aGeoJSON, setGeoJSON, distance, locArray, isMeasuringDistance);
   }, [locArray]);
 
   function clearMeasure() {
@@ -180,10 +190,12 @@ const MeasureTool = (props: any) => {
     setFinishDraw(false);
   }
   const toggleMeasureDistance = () => {
+    clearMeasure();
     setIsMeasuringArea(false);
     setIsMeasuringDistance(!isMeasuringDistance);
   };
   const toggleMeasureArea = () => {
+    clearMeasure();
     setIsMeasuringDistance(false);
     setIsMeasuringArea(!isMeasuringArea);
   };
@@ -248,7 +260,7 @@ const MeasureTool = (props: any) => {
               <Button
                 className={classes.button}
                 onClick={() => {
-                  finishPolygon(geometry, polyObj, locArray);
+                  finishPolygon(aGeoJSON, setGeoJSON, setPolyArea, locArray);
                   setFinishDraw(true);
                 }}>
                 Finish Draw
