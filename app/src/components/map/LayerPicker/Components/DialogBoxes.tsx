@@ -52,9 +52,9 @@ export const ColourDialog = (props) => {
         {child.layer_mode !== 'wms_online' && (
           <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
             <ColorPicker
-              defaultValue={child.color_code}
-              onChange={(color: any) => {
-                setNewColour(color);
+              value={newColour !== null ? newColour : child.color_code}
+              onChange={(e: any) => {
+                setNewColour('#' + e.hex);
               }}
             />
           </DialogContent>
