@@ -1,12 +1,10 @@
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { CircularProgress, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useEffect, useRef, useState } from 'react';
-import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { ListItemButton } from '@mui/material';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -24,8 +22,8 @@ export const calc_lat_long_from_utm = (zone: number, easting: number, northing: 
     ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
     ['EPSG:AUTO', `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`]
   ]);
-  const en_m = proj4('EPSG:AUTO', 'EPSG:4326', [easting, northing, zone]); // conversion from (long/lat) to UTM (E/N)
-  return en_m;
+
+  return proj4('EPSG:AUTO', 'EPSG:4326', [easting, northing, zone]); // conversion from (long/lat) to UTM (E/N)
 };
 
 export const calc_utm = (longitude: number, latitude: number) => {
@@ -44,10 +42,7 @@ export default function DisplayPosition({ map }) {
   const toolClass = toolStyles();
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
-  // const [recordGeo, setRecordGeo] = useState(null); // NOSONAR
   const [startTimer, setStartTimer] = useState(false);
-  // const [utm, setUTM] = useState([]); // NOSONAR
-  // const [key] = useState(Math.random()); // NOSONAR
   const divRef = useRef(null);
 
   useEffect(() => {
@@ -64,18 +59,6 @@ export default function DisplayPosition({ map }) {
   useEffect(() => {
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
   }, [initialTime, startTimer]);
-
-  // Removed for now:
-  // useEffect(() => {
-  //   if (newPosition) {
-  //     const result = calc_utm(newPosition.coords.longitude, newPosition.coords.latitude);
-  //     setUTM([
-  //       createDataUTM('Zone', result[0]),
-  //       createDataUTM('Easting', result[1]),
-  //       createDataUTM('Northing', result[2])
-  //     ]);
-  //   }
-  // }, [newPosition]);
 
   const getLocation = async () => {
     setInitialTime(3);
