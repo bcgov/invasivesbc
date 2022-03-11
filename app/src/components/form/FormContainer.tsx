@@ -261,9 +261,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       if (!subtype) throw new Error('Activity has no Subtype specified');
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
-      let modifiedSchema;
+
       let uiSchema = RootUISchemas[subtype];
       const subtypeSchema = components?.schemas?.[subtype];
+      let modifiedSchema = subtypeSchema;
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
@@ -317,7 +318,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               };
             });
             if (treatments?.length) {
-              modifiedSchema = subtypeSchema;
               modifiedSchema = {
                 ...modifiedSchema,
                 properties: {
@@ -374,6 +374,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   'multi-select-autocomplete': MultiSelectAutoComplete,
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
+                readonly={props.isDisabled}
                 key={props.activity?._id}
                 disabled={isDisabled}
                 formData={formData || null}

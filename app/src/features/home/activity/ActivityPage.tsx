@@ -526,6 +526,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
+      handleRecordLinking(updatedFormData);
+
       if (callbackFun) {
         callbackFun(updatedFormData);
       }
@@ -612,23 +614,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     and then set the linkedActivity in state for reference within
     the form as an accordion and for population of certain fields later/validation
   */
-  const handleRecordLinking = async (updatedDoc: any) => {
+  const handleRecordLinking = async (formData: any) => {
     let linkedRecordId: string = null;
 
-    if (updatedDoc?.activitySubtype?.includes('ChemicalPlant')) {
-      linkedRecordId = updatedDoc.formData?.activity_subtype_data?.activity_id;
-    } else if (
-      ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
-      updatedDoc.activitySubtype.includes('Plant')
-    ) {
-      linkedRecordId = updatedDoc.formData?.activity_type_data?.activity_id;
+    if (doc.activityType.includes('Monitoring') && formData.activity_type_data?.linked_id) {
+      linkedRecordId = formData.activity_type_data.linked_id;
     }
+
+    await updateDoc({
+      formData: {
+        activity_type_data: {
+          linked_id: formData.activity_type_data.linked_id
+        }
+      }
+    });
 
     if (linkedRecordId) {
       const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
-      setLinkedActivity(linkedRecordActivityResult);
+      if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
     }
   };
+
+  useEffect(() => {
+    if (linkedActivity) setGeometry(linkedActivity?.geometry);
+  }, [linkedActivity]);
 
   //this sets up initial values for some of the fields in activity.
   const setUpInitialValues = (activity: any, formData: any): Object => {
@@ -883,7 +892,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setObservation && doc) {
       props.setObservation(doc);
     }
-
     setActivityId(doc?._id);
   }, [doc]);
 
