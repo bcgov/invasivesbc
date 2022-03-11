@@ -150,6 +150,7 @@ function SetPointOnClick({ map }: any) {
   const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
   const drawnGeoKey = Math.random(); // NOSONAR
+  const recordGeoKey = Math.random(); // NOSONAR
   const divRef = useRef();
   const toolClass = toolStyles();
 
@@ -213,7 +214,7 @@ function SetPointOnClick({ map }: any) {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {recordGeo && <GeoJSON data={recordGeo} key={Math.random()} />}
+      {recordGeo && <GeoJSON data={recordGeo} key={recordGeoKey} />}
 
       <ListItemButton
         ref={divRef}
