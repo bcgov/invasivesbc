@@ -550,11 +550,11 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-          console.log('params', params);
-        }}
-        onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
           history.push(`/home/iapp/${params.id}`);
         }}
+        // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+        //   console.log('params', params);
+        // }}
       />
     </div>
   );
