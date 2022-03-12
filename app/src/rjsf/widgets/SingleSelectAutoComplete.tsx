@@ -129,11 +129,11 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     ) {
       setValue('FL');
     }
-  }, [lastFieldChanged]);
+  }, [lastFieldChanged, props.id]);
 
   useEffect(() => {
     setLastFieldChanged({ id: props.id, option: value });
-  }, [event]);
+  }, [event, props.id, value, setLastFieldChanged]);
 
   return (
     <div>

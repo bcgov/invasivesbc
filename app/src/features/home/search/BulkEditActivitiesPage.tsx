@@ -5,14 +5,14 @@ import { ActivityStatus, ActivitySubtype, ActivityType, FormValidationStatus } f
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useQuery } from 'hooks/useQuery';
 import { IActivity } from 'interfaces/activity-interfaces';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getCustomValidator, getJurisdictionPercentValidator } from 'rjsf/business-rules/customValidation';
 import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { generateActivityPayload } from 'utils/addActivity';
-import { debounced } from 'utils/FunctionUtils';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
 interface IBulkEditActivitiesPage {
+  isAlreadySubmitted?: boolean;
   classes?: any;
 }
 
@@ -42,7 +42,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     };
 
     setupActivityDataToEdit();
-  }, []);
+  }, [activityIdsToEdit, invasivesApi]);
 
   /*
     Function that runs if the form submit fails and has errors
@@ -81,21 +81,18 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = useCallback(
-    debounced(100, (event: any) => {
-      let updatedActivitySubtypeData = { ...event.formData.activity_subtype_data };
-      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
+  const onFormChange = (event: any) => {
+    let updatedActivitySubtypeData = { ...event.formData.activity_subtype_data };
+    updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
-      return setActivity({
-        ...activity,
-        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.NOT_VALIDATED
-      });
-    }),
-    [activity]
-  );
+    return setActivity({
+      ...activity,
+      formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
+      status: ActivityStatus.DRAFT,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.NOT_VALIDATED
+    });
+  };
 
   if (isLoading) {
     return <CircularProgress />;
@@ -112,6 +109,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
       <Accordion>
         <AccordionDetails className={props.classes.formContainer}>
           <FormContainer
+            canBeSubmittedWithoutErrors={() => false}
+            isAlreadySubmitted={() => false}
             activity={activity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}

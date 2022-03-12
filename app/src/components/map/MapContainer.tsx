@@ -118,12 +118,13 @@ export interface IMapContainerProps {
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
   extentState: { extent: any; setExtent: (extent: any) => void };
+  setMapForActivityPage?: (map: any) => void;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   //to support the zoom control component controlling the parent map container:
   // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
-  const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
+  const mapMaxZoom: number = 30;
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();

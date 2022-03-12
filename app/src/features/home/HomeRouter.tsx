@@ -1,4 +1,3 @@
-import { ALL_ROLES } from 'constants/roles';
 import ActivitiesPage from 'features/home/activities/ActivitiesPage';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';

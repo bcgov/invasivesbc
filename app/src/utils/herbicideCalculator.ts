@@ -20,14 +20,7 @@ import { IGeneralFields, IHerbicide, IInvasivePlant } from 'components/form/Chem
 
 //chooses the scenario based on the values in the form
 export const performCalculation = (area: number, formData: IGeneralFields, businessCodes: any): IGeneralFields => {
-  const {
-    tank_mix,
-    herbicides,
-    tank_mix_object,
-    invasive_plants,
-    chemical_application_method,
-    chemical_application_method_type
-  } = formData;
+  const { tank_mix, herbicides, tank_mix_object, invasive_plants, chemical_application_method_type } = formData;
 
   let calculationResults = {};
 

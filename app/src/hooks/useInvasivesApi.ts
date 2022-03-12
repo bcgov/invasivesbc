@@ -2,7 +2,7 @@ import { Http } from '@capacitor-community/http';
 import { Capacitor } from '@capacitor/core';
 import { AuthStateContext } from 'contexts/authStateContext';
 import qs from 'qs';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 import { DocType } from '../constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
@@ -395,6 +395,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: { approvedUpdateRequests: updateRequest }
     });
+    return data;
   };
 
   const getFundingAgencies = async (): Promise<any> => {

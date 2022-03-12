@@ -1,7 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { useContext, useState } from 'react';
-import { useInvasivesApi } from './useInvasivesApi';
+import { useState } from 'react';
 /**
  * Represents the userinfo provided by keycloak.
  *
@@ -49,10 +47,7 @@ export interface IKeycloak {
  * Provides extension methods to interact with the `keycloak` object.
  */
 function useKeycloakWrapper(): IKeycloak {
-  const api = useInvasivesApi();
-  const network = useContext(NetworkContext);
   const { keycloak } = useKeycloak();
-  const authenticated = keycloak?.authenticated;
   const [userInfo, setUserInfo] = useState<any>(null);
 
   /**

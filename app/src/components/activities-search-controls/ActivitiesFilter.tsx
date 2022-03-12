@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: any) => ({
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [activityChoices, setActivityChoices] = useState([]);
+  const classes = useStyles();
 
   const getActivityChoicesFromTrip = useCallback(async () => {
     let queryResults = await databaseContext.asyncQueue({
@@ -64,7 +65,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const saveChoices = async (newActivityChoices) => {
     console.log('updating trip ' + props.trip_ID + ' activity filters');
     const tripID: string = props.trip_ID;
-    let result = await databaseContext.asyncQueue({
+    await databaseContext.asyncQueue({
       asyncTask: async () => {
         return upsert(
           [
@@ -97,9 +98,6 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
     copy.splice(index, 1);
     saveChoices(copy);
   };
-
-  const classes = useStyles();
-  const [memoHash, setMemoHash] = useState();
 
   return (
     <>

@@ -19,9 +19,8 @@ import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import SearchIcon from '@mui/icons-material/Search';
-import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
-import React, { useContext } from 'react';
+import React from 'react';
 
 const Transition = React.forwardRef<React.FC, SlideProps>((TransitionProps, ref) => {
   return <Slide direction="up" ref={ref} {...TransitionProps} />;
@@ -157,10 +156,7 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
             and isn't representative of a field activity"
             onSelectFunction={() => {
               props.contextMenuState.setContextMenuState({ ...props.contextMenuState.state, isOpen: false });
-              const newPointAsGeo = coordinatesToGeo(
-                props.contextMenuState.state.lng,
-                props.contextMenuState.state.lat
-              );
+              coordinatesToGeo(props.contextMenuState.state.lng, props.contextMenuState.state.lat);
             }}
           />
           <Divider />

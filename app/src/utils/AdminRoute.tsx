@@ -1,7 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
-import { AuthStateContext } from '../contexts/authStateContext';
-import { Redirect } from 'react-router';
 import { Capacitor } from '@capacitor/core';
 import AccessDenied from '../pages/misc/AccessDenied';
 interface IAdminRouteProps extends RouteProps {
@@ -30,11 +28,11 @@ const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
     return Capacitor.getPlatform() !== 'web';
   };
 
-  const isAuthenticated = () => {
-    return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
-  };
-
   useEffect(() => {
+    const isAuthenticated = () => {
+      return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
+    };
+
     if (userInfoLoaded) {
       if (userRoles.length > 0 && isAuthenticated()) {
         setIsAuthorized(true);
@@ -42,7 +40,7 @@ const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
         setIsAuthorized(false);
       }
     }
-  }, [userInfoLoaded]);
+  }, [userInfoLoaded, userRoles.length, keycloak?.obj?.authenticated]);
 
   return (
     <Route
