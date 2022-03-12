@@ -126,12 +126,12 @@ const getPlantName = (subtype, invasivePlantCode, response) => {
 const getPlantCodes = (obj) => {
   var plantCodeList = [];
   if (obj.species_positive) {
-    obj.species_positive.map((code) => {
+    obj.species_positive.forEach((code) => {
       plantCodeList.push(code);
     });
   }
   if (obj.species_negative) {
-    obj.species_negative.map((code) => {
+    obj.species_negative.forEach((code) => {
       plantCodeList.push(code);
     });
   }
@@ -209,7 +209,7 @@ const CreateAccordionTable = ({ map, row, response, setActivityGeo }) => {
                   disableHoverListener
                   disableTouchListener
                   title={getPlantName(subtype, code, response)}>
-                  <a onClick={handleTooltipOpen}>{code}</a>
+                  <span onClick={handleTooltipOpen}>{code}</span>
                 </Tooltip>
               </ClickAwayListener>
             ))}
@@ -220,13 +220,13 @@ const CreateAccordionTable = ({ map, row, response, setActivityGeo }) => {
         <StyledTableCell>Area</StyledTableCell>
         <StyledTableCell>
           {area || area > 0 ? (
-            <a
+            <span
               onClick={() => {
                 setActivityGeo(shape);
                 map.flyTo([center[1], center[0]], 17);
               }}>
               {area.toFixed(2)}
-            </a>
+            </span>
           ) : (
             <>NWF</>
           )}
@@ -358,7 +358,7 @@ export const RenderTableActivity = (props: any) => {
       console.log('Activities error', e);
       setRows([]);
     }
-  }, [bufferedGeo]);
+  }, [bufferedGeo, dataAccess, dbContext]);
 
   return (
     <Table padding="none" size="small">
@@ -454,7 +454,7 @@ export const RenderTableDataBC = ({ rows }) => {
 };
 
 export const RenderTablePOI = (props: any) => {
-  const { bufferedGeo, map, setPoiMarker } = props;
+  const { bufferedGeo } = props;
   const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
@@ -515,7 +515,7 @@ export const RenderTablePOI = (props: any) => {
 
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
-      pointsofinterest.rows.map((poi) => {
+      pointsofinterest.rows.forEach((poi) => {
         const surveys = poi.point_of_interest_payload.form_data.surveys;
         const tempSurveyArea = getLatestReportedArea(surveys);
         const newArr = getJurisdictions(surveys);

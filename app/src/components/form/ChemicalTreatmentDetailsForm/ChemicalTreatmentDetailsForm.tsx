@@ -75,7 +75,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
     ...(businessCodes as any).liquid_herbicide_code,
     ...(businessCodes as any).granular_herbicide_code
   ];
-  allHerbCodes.map((row) => {
+  allHerbCodes.forEach((row) => {
     herbicideDictionary[row.value] = row.label;
   });
 

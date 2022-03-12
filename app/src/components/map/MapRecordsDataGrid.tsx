@@ -4,7 +4,6 @@ import { DomEvent } from 'leaflet';
 import { Theme, Button } from '@mui/material';
 
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 

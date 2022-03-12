@@ -90,7 +90,6 @@ export const getDataFromDataBC: any = async (
   startIndex?: number
 ) => {
   let totalInBox = 0;
-  let index = startIndex ? startIndex : 0;
 
   if (Object.values(IndependentLayers).includes(layerName as any)) {
     return [];
@@ -116,7 +115,6 @@ export const getDataFromDataBC: any = async (
       while (returnVal.length < totalInBox) {
         const moreRecords = await subsequentFetches(startIndex);
         returnVal.push(...moreRecords);
-        index += pageSize;
       }
       return returnVal;
     } catch (e) {

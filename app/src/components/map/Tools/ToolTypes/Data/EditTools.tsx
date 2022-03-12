@@ -4,10 +4,9 @@ import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
 import L from 'leaflet';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
+import React, { useEffect, useRef, useState } from 'react';
+import { useMapEvent } from 'react-leaflet';
 import { MobileDrawCancel, MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {

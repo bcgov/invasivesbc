@@ -21,7 +21,7 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({ serial }) => {
       setBatchUploads(data);
       setExpandedRow(null);
     });
-  }, [serial]);
+  }, [serial, api]);
 
   return (
     <Paper>
@@ -43,7 +43,7 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({ serial }) => {
                 <tr
                   key={`row-${i}`}
                   onClick={() => {
-                    if (expandedRow == i) {
+                    if (expandedRow === i) {
                       setExpandedRow(null);
                     } else {
                       setExpandedRow(i);
@@ -54,7 +54,7 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({ serial }) => {
                   <td>{d.validation_status}</td>
                   <td>{d.created_at}</td>
                 </tr>
-                {expandedRow == i && (
+                {expandedRow === i && (
                   <tr key={`validation-${i}`}>
                     <td colSpan={5}>
                       <pre>{JSON.stringify(d.validation_messages, null, 2)}</pre>

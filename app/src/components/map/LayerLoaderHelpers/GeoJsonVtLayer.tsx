@@ -28,8 +28,8 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
     sColor = sColorNew;
   }
   var sColorChange = [];
-  for (var i = 1; i < 7; i += 2) {
-    sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)));
+  for (var i1 = 1; i1 < 7; i1 += 2) {
+    sColorChange.push(parseInt('0x' + sColor.slice(i1, i + 2)));
   }
   return sColorChange as number[];
 };
@@ -104,9 +104,9 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
         }
       }
     } else if (type === 1) {
-      for (var j = 0; j < feature.geometry.length; j++) {
-        var p = feature.geometry[j];
-        ctx.arc(p[0] / 16.0, p[1] / 16.0, 2, 0, Math.PI * 2, true);
+      for (var j1 = 0; j1 < feature.geometry.length; j1++) {
+        var p1 = feature.geometry[j1];
+        ctx.arc(p1[0] / 16.0, p1[1] / 16.0, 2, 0, Math.PI * 2, true);
       }
     }
     if (type === 3) {
@@ -129,8 +129,8 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
     var fill = style.fill || true;
     if (fill) {
       ctx.fillStyle = style.fillColor || '#03f';
-      var color = this.setOpacity(style.fillColor, style.fillOpacity);
-      ctx.fillStyle = color;
+      var color1 = this.setOpacity(style.fillColor, style.fillOpacity);
+      ctx.fillStyle = color1;
     } else {
       ctx.fillStyle = {};
     }
@@ -138,15 +138,15 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
 
   setOpacity: function (color, opacity) {
     if (opacity) {
-      var color = color || '#03f';
-      if (color.iscolorHex()) {
-        var colorRgb = color.colorRgb();
+      var colorO = color || '#03f';
+      if (colorO.iscolorHex()) {
+        var colorRgb = colorO.colorRgb();
         return 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + opacity + ')';
       } else {
-        return color;
+        return colorO;
       }
     } else {
-      return color;
+      return colorO;
     }
   }
 });

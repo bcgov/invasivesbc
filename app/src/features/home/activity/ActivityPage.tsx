@@ -1,14 +1,13 @@
 import { Capacitor } from '@capacitor/core';
-import { Alert, Box, Button, Container, Snackbar, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { FileCopy } from '@mui/icons-material';
 import booleanWithin from '@turf/boolean-within';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
@@ -49,10 +48,8 @@ import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '.
 import { debounced } from '../../../utils/FunctionUtils';
 import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
-import { MapContextMenuData } from '../map/MapContextMenu';
 import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
-import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { useHistory } from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
 import { NetworkContext } from 'contexts/NetworkContext';
@@ -165,7 +162,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     setDoc(updatedDoc);
     try {
-      const appStateResults = await dataAccess.getAppState(databaseContext);
       const dbUpdates = debounced(1000, async (updated) => {
         const newActivity = {
           ...mapDocToDBActivity(updated)
@@ -585,28 +581,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
     }
     return mapDBActivityToDoc(activityResults);
-  };
-
-  /*
-    Function to generate clone activity button component
-  */
-  const generateCloneActivityButton = () => {
-    return (
-      <Box mb={3} display="flex" flexDirection="row-reverse">
-        <Tooltip TransitionComponent={Zoom} title="Create a new record with the same content.">
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<FileCopy />}
-            onClick={async () => {
-              // const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
-              //setActiveActivity(addedActivity);
-            }}>
-            Clone Activity
-          </Button>
-        </Tooltip>
-      </Box>
-    );
   };
 
   /*

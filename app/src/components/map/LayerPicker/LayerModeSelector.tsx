@@ -10,7 +10,7 @@ import {
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { getChildAction, updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
+import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 import { updateChild } from './Sorting/SortLayerOrder';
 
 const getIndex = (childId, layers) => {
@@ -74,7 +74,7 @@ export const LayersSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
   const mapLayersContext = useContext(MapRequestContext);
   const { layers, setLayers } = mapLayersContext;
-  const { layersActions, setLayersActions } = mapLayersContext;
+  const { layersActions } = mapLayersContext;
   const [serverExpanded, setServerExpanded] = React.useState(false);
   const [localExpanded, setLocalExpanded] = React.useState(false);
 

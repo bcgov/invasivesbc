@@ -25,7 +25,7 @@ export const SingleTrip: React.FC<any> = (props) => {
     });
 
     setStepState(JSON.parse(results[0].json).stepState);
-  }, [databaseContext]);
+  }, [databaseContext, props.trip_ID]);
 
   const saveState = async (newState) => {
     await databaseContext.asyncQueue({

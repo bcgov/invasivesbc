@@ -109,7 +109,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const startingValue = props.value || '';
   const [value, setValue] = useState(startingValue);
   const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
-  const [event, setEvent] = useState(null);
 
   useEffect(() => {
     if (!lastFieldChanged['id']) {
@@ -129,11 +128,11 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     ) {
       setValue('FL');
     }
-  }, [lastFieldChanged]);
+  }, [lastFieldChanged, props.id]);
 
   useEffect(() => {
     setLastFieldChanged({ id: props.id, option: value });
-  }, [event]);
+  }, []);
 
   return (
     <div>
@@ -183,7 +182,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             props.onChange('');
           } else {
             setValue(option);
-            setEvent(event);
+
             // NOTE: passing string value to onChange, which might be expecting format
             // object: { value, label }
             // this will likely result in future compatibility errors with custom onChange functions

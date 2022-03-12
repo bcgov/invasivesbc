@@ -73,7 +73,7 @@ const geoColors = {
 
 const CachedRecordsList: React.FC = (props) => {
   const classes = useStyles();
-  const databaseContext2 = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext);
   // data access WIP
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
@@ -82,7 +82,7 @@ const CachedRecordsList: React.FC = (props) => {
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
   const [stateDocs, setDocs] = useState<any[]>([]);
-  const docs = useMemo(() => stateDocs, [stateDocs?.length]);
+  const docs = useMemo(() => stateDocs, [stateDocs]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
   const [metabaseQuerySubmitted, setMetabaseQuerySubmitted] = useState(false);
@@ -131,11 +131,15 @@ const CachedRecordsList: React.FC = (props) => {
     Also, call a helper function to save map geometries
   */
   const updateRecordList = useCallback(async () => {
+    const getPointsOfInterest = async () => {
+      return dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
+    };
+
     setLoading(true);
     try {
       const records = await dataAccess.getActivities(
         { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
-        databaseContext2,
+        databaseContext,
         true, //force cache
         true //read reference_activity table instead of activity
       );
@@ -183,7 +187,7 @@ const CachedRecordsList: React.FC = (props) => {
       console.log('error getting data');
     }
     setLoading(false);
-  }, [toggleDocSelected]);
+  }, [toggleDocSelected, dataAccess, databaseContext]);
 
   /*
     On geometry change (user drawn), find out which activities are
@@ -205,7 +209,7 @@ const CachedRecordsList: React.FC = (props) => {
     } else {
       updateRecordList();
     }
-  }, [geometry?.length]);
+  }, [docs, geometry, interactiveGeometry, updateRecordList]);
 
   const observations = useMemo(
     () => docs.filter((doc: any) => doc.activityType === 'Observation' || doc.activity_type === 'Observation'),
@@ -224,10 +228,6 @@ const CachedRecordsList: React.FC = (props) => {
     [docs]
   );
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
-
-  const getPointsOfInterest = async () => {
-    return dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
-  };
 
   const [pointsOfInterest, setPointsOfInterest] = useState([]);
   const [selectedPOIs, setSelectedPOIs] = useState([]);

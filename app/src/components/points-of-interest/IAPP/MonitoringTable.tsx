@@ -22,14 +22,14 @@ export const MonitoringRow = (props) => {
   const { row } = props;
   const [shortComment, setShortComment] = React.useState(true);
 
-  const getValue = (value: any) => {
-    if (value.length > 10) {
-      if (shortComment) {
-        return <>{value.substring(0, 10)}...</>;
-      }
-    }
-    return <>{value}</>;
-  };
+  // const getValue = (value: any) => {
+  //   if (value.length > 10) {
+  //     if (shortComment) {
+  //       return <>{value.substring(0, 10)}...</>;
+  //     }
+  //   }
+  //   return <>{value}</>;
+  // };
 
   return (
     <React.Fragment>

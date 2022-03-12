@@ -14,7 +14,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
 import React, { useContext, useEffect, useState } from 'react';
-import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
 import {
   MyAnimalActivitiesTable,
@@ -26,11 +25,9 @@ import {
   MyPastActivitiesTable,
   MyPlantMonitoringTable,
   MyPlantTreatmentsTable,
-  MyTransectsTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
-import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
 import Sync from '@mui/icons-material/Sync';
 import { IonAlert } from '@ionic/react';
 import { Capacitor } from '@capacitor/core';
@@ -92,36 +89,37 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const [species, setSpecies] = useState(null);
 
   useEffect(() => {
-    getSpeciesFromActivity();
-  }, []);
-
-  /*
+    /*
     Function to get the species for a given activity and set it in state
     for usage and display in the activities grid
   */
-  const getSpeciesFromActivity = async () => {
-    /*
+    const getSpeciesFromActivity = async () => {
+      /*
       Temporarily only enabled for plant terrestrial observation subtype
     */
-    if (props.activity.activitySubtype !== 'Activity_Observation_PlantTerrestrial') {
-      return;
-    }
+      if (props.activity.activitySubtype !== 'Activity_Observation_PlantTerrestrial') {
+        return;
+      }
 
-    const speciesCode = props.activity.formData?.activity_subtype_data?.invasive_plant_code;
+      const speciesCode = props.activity.formData?.activity_subtype_data?.invasive_plant_code;
 
-    if (speciesCode) {
-      const codeResults = await invasivesApi.getSpeciesDetails([speciesCode]);
+      if (speciesCode) {
+        const codeResults = await invasivesApi.getSpeciesDetails([speciesCode]);
 
-      setSpecies(codeResults[0].code_description);
-    }
-  };
+        setSpecies(codeResults[0].code_description);
+      }
+    };
+
+    getSpeciesFromActivity();
+  }, [
+    invasivesApi,
+    props.activity.activitySubtype,
+    props.activity.formData?.activity_subtype_data?.invasive_plant_code
+  ]);
 
   const toggleActivitySyncReadyStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
-
-    // Must save the value because the database call is async, and the event object will be destroyed before it runs.
-    const isChecked = event.target.checked;
   };
 
   const isDisabled = props.isDisabled || props.activity.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
@@ -180,22 +178,22 @@ interface IActivityList {
   workflowFunction: string;
 }
 
-const ActivitiesList: React.FC = () => {
+const ActivitiesList: React.FC<IActivityList> = () => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
 
-  let hasPlantAccess = false;
-  let hasAnimalAccess = false;
+  // let hasPlantAccess = false;
+  // let hasAnimalAccess = false;
 
   const databaseContext = useContext(DatabaseContext);
   const { keycloak } = useKeycloak();
-  let accessLevel = GetUserAccessLevel();
-  if (accessLevel.hasPlantAccess) {
-    hasPlantAccess = true;
-  }
-  if (accessLevel.hasAnimalAccess) {
-    hasAnimalAccess = true;
-  }
+  // let accessLevel = GetUserAccessLevel();
+  // if (accessLevel.hasPlantAccess) {
+  //   hasPlantAccess = true;
+  // }
+  // if (accessLevel.hasAnimalAccess) {
+  //   hasAnimalAccess = true;
+  // }
   useEffect(() => {
     const userId = async () => {
       const userInfo: any = keycloak
@@ -208,11 +206,9 @@ const ActivitiesList: React.FC = () => {
 
       return userInfo?.preferred_username;
     };
-    if (!userId) throw "Keycloak error: can not get current user's username";
-  }, []);
+    if (!userId) throw new Error("Keycloak error: can not get current user's username");
+  }, [databaseContext, keycloak]);
 
-  const [syncing, setSyncing] = useState(false);
-  const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
   const [showAlert, setShowAlert] = useState(false);
   const networkContext = useContext(NetworkContext);

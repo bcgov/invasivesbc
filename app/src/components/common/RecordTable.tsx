@@ -26,9 +26,7 @@ import { ExpandMore, FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@mui
 import clsx from 'clsx';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import Spinner from '../../components/spinner/Spinner';
-import { useDataAccess } from '../../hooks/useDataAccess';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
 
@@ -255,7 +253,6 @@ export interface IRecordTable {
 
 const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
-  const history = useHistory();
   const invasivesApi = useInvasivesApi();
 
   const {
@@ -267,7 +264,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     onToggleExpandRow, // callback fired when row is expanded (or contracted, for now)
     overflowDropdown = true, // overflow into a dropdown when a cell is very verbose
     overflowLimit = 50, // char limit
-    expandable = true,
+    // expandable = true,
     startExpanded = true,
     startingRowsPerPage = 10,
     rowsPerPageOptions = false, // disable ability to change rows per page by default
@@ -299,7 +296,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   useEffect(() => {
     setRows(Array.isArray(props.rows) ? props.rows : []);
     setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
-  }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length]);
+  }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length, props.rows]);
 
   const fetchRows = async () => {
     // console.log('fetchRows start: ', tableName);
@@ -397,7 +394,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
-  const dataAccess = useDataAccess();
   const selectedHash = JSON.stringify(selected);
 
   const getApiSpec = useCallback(
@@ -767,7 +763,7 @@ const RecordTableToolbar = (props) => {
     .filter((action: any) => action.enabled && action.bulkAction)
     .map((action: any) => {
       const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return null;
       return (
         <Button
           key={action.key}
@@ -805,7 +801,7 @@ const RecordTableToolbar = (props) => {
     .filter((action: any) => action.enabled && action.globalAction)
     .map((action: any) => {
       const isValid = action.globalCondition ? action.globalCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return null;
       return (
         <Button
           key={action.key}
@@ -926,7 +922,7 @@ const RecordTableRow = (props) => {
   const rowActions = actions
     .map((action: any) => {
       const isValid = action.rowCondition ? action.rowCondition(row) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return null;
       return (
         <Button
           key={action.key}

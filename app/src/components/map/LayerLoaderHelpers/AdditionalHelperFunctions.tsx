@@ -84,7 +84,6 @@ export const fetchLayerDataFromLocal = async (layerName: string, mapExtent: any,
   //add it to the array of grid items
   let allFeatures = [];
   smallGridRes.forEach((row) => {
-    const featureArea = JSON.parse(row.featureArea).geometry;
     const featuresInArea = JSON.parse(row.featuresInArea);
 
     featuresInArea.forEach((feature) => {

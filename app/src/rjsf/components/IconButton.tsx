@@ -12,10 +12,6 @@ const mappings: any = {
   'arrow-down': <ArrowDownward />
 };
 
-type IconButtonProps = {
-  icon: string;
-};
-
 const IconButton = (props: any) => {
   const { icon, className, ...otherProps } = props;
   return (

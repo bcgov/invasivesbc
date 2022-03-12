@@ -10,15 +10,15 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   const [poi, setPOI] = useState(null);
 
   useEffect(() => {
+    const fetchPOI = async () => {
+      const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: urlParams.id, isIAPP: true });
+      setPOI(poiData.rows[0]);
+    };
+
     if (!poi) {
       fetchPOI();
     }
-  }, [poi]);
-
-  const fetchPOI = async () => {
-    const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: urlParams.id, isIAPP: true });
-    setPOI(poiData.rows[0]);
-  };
+  }, [poi, dataAccess, urlParams.id]);
 
   return (
     <div id="iapp_site" style={{ marginTop: 30, marginBottom: 30 }}>

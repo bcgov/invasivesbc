@@ -4,7 +4,6 @@ import {
   ActivitySubtype,
   ActivitySyncStatus,
   ActivityType,
-  FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
 import { DocType } from 'constants/database';

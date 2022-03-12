@@ -34,7 +34,7 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
 };
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
-  const [workingPolyline, setWorkingPolyline] = useState([]);
+  const workingPolyline = [];
   const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);

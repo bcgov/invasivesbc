@@ -1,8 +1,6 @@
 import { Capacitor } from '@capacitor/core';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { NetworkContext } from 'contexts/NetworkContext';
-import React, { useContext, useEffect } from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, RouteProps } from 'react-router-dom';
 import AccessDenied from '../pages/misc/AccessDenied';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -20,8 +18,6 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const networkContext = useContext(NetworkContext);
-
   const [isAuthorized, setIsAuthorized] = React.useState(false);
 
   let { component: Component, layout: Layout, ...rest } = props;
@@ -33,11 +29,11 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     return Capacitor.getPlatform() !== 'web';
   };
 
-  const isAuthenticated = () => {
-    return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
-  };
-
   useEffect(() => {
+    const isAuthenticated = () => {
+      return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
+    };
+
     if (userInfoLoaded) {
       if (userRoles.length > 0 && isAuthenticated()) {
         setIsAuthorized(true);
@@ -45,7 +41,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
         setIsAuthorized(false);
       }
     }
-  }, [userInfoLoaded, keycloak.obj?.authenticated]);
+  }, [userInfoLoaded, keycloak.obj?.authenticated, userRoles.length]);
 
   return (
     <Route

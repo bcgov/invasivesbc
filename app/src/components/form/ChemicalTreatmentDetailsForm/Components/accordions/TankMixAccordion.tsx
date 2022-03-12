@@ -7,7 +7,7 @@ import { useFormStyles } from '../../formStyles';
 
 const TankMixAccordion = () => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
-  const { formDetails, setFormDetails } = formDataContext;
+  const { formDetails } = formDataContext;
 
   const classes = useFormStyles();
   const tankMixOn = formDetails.formData.tank_mix;

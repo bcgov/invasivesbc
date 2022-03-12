@@ -243,7 +243,7 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
       await invasivesApi.getCachedApiSpec();
     };
     getApiSpec();
-  }, []);
+  }, [invasivesApi]);
 
   React.useEffect(() => {
     if (keycloak?.obj?.authenticated) {

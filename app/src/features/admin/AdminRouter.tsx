@@ -1,5 +1,5 @@
 import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AdminRoute from 'utils/AdminRoute';
 import AppRoute from 'utils/AppRoute';

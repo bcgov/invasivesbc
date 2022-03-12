@@ -107,35 +107,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }, 250);
   }
 
-  const getTrips = async () => {
-    const newTrips = [];
-    //todo:  try to wrap this all in db context so we don't need to reference both dbs here
-    let results: any; //sqlite db response
-
-    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-      results = await dataAccess.getTrips(databaseContext);
-    } else {
-      return;
-    }
-
-    if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
-      results.map((adoc) => {
-        try {
-          const doc = JSON.parse(adoc.json);
-          newTrips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
-        } catch (e) {
-          console.log('error pushign to trips');
-          console.log(e);
-          console.log(adoc);
-        }
-        return null;
-      });
-    }
-
-    setTrips([...newTrips]);
-    console.log('set trips to ' + newTrips.length);
-  };
-
   const withAsyncQueue = async (request: any) => {
     return databaseContext.asyncQueue({
       asyncTask: () => {
@@ -156,7 +127,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         )
       );
       const geoFromQuery = JSON.parse(res[0].json).geometry;
-      const idFromQuery = JSON.parse(res[0].json).trip_ID;
       if (!_.isEqual(geoFromQuery, geometry)) {
         withAsyncQueue(
           upsert(
@@ -177,7 +147,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (currentTripId) {
       upsertCurrentTripGeo();
     }
-  }, [geometry]);
+  }, [geometry, databaseContext, currentTripId]);
 
   useEffect(() => {
     const queryForCurrentTripGeo = async () => {
@@ -196,7 +166,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       }
     };
     queryForCurrentTripGeo();
-  }, [currentTripId]);
+  }, [currentTripId, databaseContext]);
 
   useEffect(() => {
     if (trips != null) {
@@ -220,11 +190,40 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   // initial fetch
   useEffect(() => {
+    const getTrips = async () => {
+      const newTrips = [];
+      //todo:  try to wrap this all in db context so we don't need to reference both dbs here
+      let results: any; //sqlite db response
+
+      if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+        results = await dataAccess.getTrips(databaseContext);
+      } else {
+        return;
+      }
+
+      if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
+        results.map((adoc) => {
+          try {
+            const doc = JSON.parse(adoc.json);
+            newTrips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+          } catch (e) {
+            console.log('error pushign to trips');
+            console.log(e);
+            console.log(adoc);
+          }
+          return null;
+        });
+      }
+
+      setTrips([...newTrips]);
+      console.log('set trips to ' + newTrips.length);
+    };
+
     const initialLoad = async () => {
       await getTrips();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded, tripDeleted]);
+  }, [newTripID, tripsLoaded, tripDeleted, dataAccess, databaseContext]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -274,7 +273,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         />
       </Paper>
     );
-  }, [geometry, interactiveGeometry, tripsLoaded, cacheMapTilesFlag]);
+  }, [geometry, interactiveGeometry, cacheMapTilesFlag, classes.map, classes.paper, contextMenuState, extent, props]);
 
   return (
     <MapRecordsContextProvider>

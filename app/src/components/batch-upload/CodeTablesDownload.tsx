@@ -12,7 +12,7 @@ const CodeTablesDownload: React.FC = () => {
     api.listCodeTables().then((result) => {
       setCodeTablesList(result);
     });
-  }, []);
+  }, [api]);
 
   const downloadCodeTable = async (codeHeaderId, codeTableName) => {
     const data = await api.fetchCodeTable(codeHeaderId, true);

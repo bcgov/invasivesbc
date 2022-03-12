@@ -1,14 +1,11 @@
-import { Box, Button, CircularProgress, Container, Grid, Theme } from '@mui/material';
+import { Box, Button, Container, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
-import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
-import { MapRequestContextProvider } from '../../../contexts/MapRequestsContext';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
-import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -94,15 +91,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
   //TODO:  check if used
   const [extent, setExtent] = useState(null);
-
   //TODO: consolidate with new context
   const [geometry, setGeometry] = useState<Feature[]>([]);
-
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
-  const [selectedInteractiveGeometry, setSelectedInteractiveGeometry] = useState<interactiveGeoInputData>(null);
-
-  //TODO: clean up legacy pop up code
-  const [isReadyToLoadMap, setIsReadyToLoadMap] = useState(true);
   const [showPopOut, setShowPopOut] = useState(false);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -112,25 +103,13 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
-  const handleGeoClick = async (geo: any) => {
-    setShowPopOut(true);
-    // fetch all data for the given geo
-  };
+  // const handleGeoClick = async (geo: any) => {
+  //   setShowPopOut(true);
+  // };
 
   const [url, setUrl] = useState(null);
-  const history = useHistory();
-
-  //on first load:
-  useEffect(() => {
-    //if (history.location.pathname !== '/home/map') {
-    //setUrl(history.location.pathname);
-    // }
-  }, []);
 
   useEffect(() => {
-    // console.log('url');
-    // console.log(url);
-    // doesn't work:  history.replace(url);
     window.history.pushState('', 'New Page Title', url);
   }, [url]);
 
@@ -146,7 +125,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       const urlEncoded = encodeURI(JSON.stringify(urlObj));
       setUrl('/home/map/' + urlEncoded);
     };
-    const mapEventHook = useMapEvents({
+    useMapEvents({
       zoomend: (eventData) => {
         buildAndSetURL();
       },
@@ -183,22 +162,18 @@ const MapPage: React.FC<IMapProps> = (props) => {
         <Grid className={classes.mainGrid} container>
           <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
             <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-              {isReadyToLoadMap ? (
-                <MapContainer
-                  classes={classes}
-                  showDrawControls={false}
-                  center={initalCenter()}
-                  zoom={initialZoom()}
-                  mapId={'mainMap'}
-                  pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                  geometryState={{ geometry, setGeometry }}
-                  interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                  extentState={{ extent, setExtent }}>
-                  <MapUrlListener />
-                </MapContainer>
-              ) : (
-                <CircularProgress />
-              )}
+              <MapContainer
+                classes={classes}
+                showDrawControls={false}
+                center={initalCenter()}
+                zoom={initialZoom()}
+                mapId={'mainMap'}
+                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
+                geometryState={{ geometry, setGeometry }}
+                interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+                extentState={{ extent, setExtent }}>
+                <MapUrlListener />
+              </MapContainer>
             </Container>
           </Grid>
         </Grid>

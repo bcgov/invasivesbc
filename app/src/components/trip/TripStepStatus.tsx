@@ -21,13 +21,13 @@ export enum TripStatusCode {
 export const TripStepStatus: React.FC<ITripStepStatus> = (props) => {
   useStyles();
 
-  if (props.statusCode == TripStatusCode.initial) {
+  if (props.statusCode === TripStatusCode.initial) {
     return (
       <>
         <CheckCircleTwoToneIcon color="disabled" fontSize="large" />
       </>
     );
-  } else if (props.statusCode == TripStatusCode.ready) {
+  } else if (props.statusCode === TripStatusCode.ready) {
     return (
       <>
         <CheckCircleTwoToneIcon color="primary" fontSize="large" />
