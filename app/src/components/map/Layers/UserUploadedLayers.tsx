@@ -8,8 +8,9 @@ const UserUploadedLayers = (props) => {
   const userUploadedLayers: IParentLayer = layers[5];
   return (
     <>
-      {userUploadedLayers.children.map((layer) => (
+      {userUploadedLayers.children.map((layer, index) => (
         <IndependentLayer
+          key={index}
           enabled={layer.enabled}
           opacity={layer.opacity}
           geoJSON={layer.geoJSON}

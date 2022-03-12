@@ -94,7 +94,8 @@ const App: React.FC<IAppProps> = (props) => {
       keycloakConfig = {
         adapter: 'capacitor-native',
         pkceMethod: 'S256',
-        checkLoginIframe: false
+        checkLoginIframe: false,
+        redirectUri: 'invasivesbc://'
       };
       break;
     case 'android':

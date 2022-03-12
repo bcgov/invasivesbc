@@ -81,6 +81,10 @@ export const MapRequestContextProvider: React.FC = (props) => {
     }
   }, [networkContext, mapZoom]);
 
+  React.useEffect(() => {
+    setCurrentRecords([]);
+  }, [layers]);
+
   return (
     <MapRequestContext.Provider
       value={React.useMemo(

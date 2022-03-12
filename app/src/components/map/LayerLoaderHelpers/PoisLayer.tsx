@@ -1,4 +1,5 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L, { LatLngBoundsExpression } from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
@@ -10,6 +11,8 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 export const PoisLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+  const mapRequestContext = useContext(MapRequestContext);
+  const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
@@ -61,6 +64,17 @@ export const PoisLayer = (props) => {
 
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
+
+  useEffect(() => {
+    if (pois) {
+      const actArr = pois.features.map((feature) => {
+        return feature.properties;
+      });
+      setCurrentRecords((prev) => {
+        return prev.concat(actArr);
+      });
+    }
+  }, [pois, setCurrentRecords]);
 
   if (!pois) {
     return null;

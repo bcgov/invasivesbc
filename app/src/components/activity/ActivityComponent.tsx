@@ -1,6 +1,5 @@
 import { Accordion, AccordionDetails, CircularProgress, AccordionSummary, Box, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
-//import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
@@ -78,10 +77,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               <Typography className={props.classes.heading}>Linked Activity Form</Typography>
             </AccordionSummary>
             <AccordionDetails className={props.classes.formContainer}>
-              <>{/*  <FormContainer {...{ ...props, activity: props.linkedActivity, isDisabled: true }} /> */}</>
+              <FormContainer {...{ ...props, activity: props.linkedActivity, isDisabled: true }} />{' '}
             </AccordionDetails>
           </Accordion>
-          {props.linkedActivity.photos.length > 0 && (
+          {props.linkedActivity.photos?.length > 0 && (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
                 <Typography className={props.classes.heading}>Linked Activity Photos</Typography>

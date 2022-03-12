@@ -196,7 +196,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           // limit: 500, // NOTE: removed for now, but might want with very long lists
           stringify: (option) => option + ' ' + optionValueLabels[option]
         })}
-        getOptionLabel={(option) => (option ? optionValueLabels[option] : '')}
+        getOptionLabel={(option) => {
+          return optionValueLabels[option] ? optionValueLabels[option] : '';
+        }}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
         renderInput={(params) => (

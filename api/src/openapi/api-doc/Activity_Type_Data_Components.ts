@@ -52,6 +52,11 @@ export const Monitoring_Biocontrol = {
   type: 'object',
   required: ['linked_id', 'activity_persons'],
   properties: {
+    linked_id: {
+      type: 'string',
+      title: 'Linked Biocontrol release ID',
+      'x-tooltip-text': 'Identifier of linked biocontrol release record'
+    },
     activity_persons: {
       type: 'array',
       default: [{}],
