@@ -1,6 +1,5 @@
 import { Accordion, AccordionDetails, CircularProgress, AccordionSummary, Box, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
-//import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';

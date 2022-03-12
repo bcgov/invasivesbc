@@ -92,7 +92,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                     <TableCell style={{ fontWeight: 'bold' }}>#</TableCell>
                     {Object.keys(row[0]).map((key) => {
                       return (
-                        <TableCell style={{ fontWeight: 'bold' }}>
+                        <TableCell key={key} style={{ fontWeight: 'bold' }}>
                           {key
                             .toString()
                             .replace(/_/g, ' ')
@@ -112,7 +112,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                           <TableCell>{index + 1}</TableCell>
                           {Object.keys(plant).map((key) => {
                             return (
-                              <TableCell>
+                              <TableCell key={key}>
                                 {Array.isArray(plant[key]) ? (
                                   <>
                                     {plant[key].map((herb, index) => {
@@ -128,7 +128,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                                             <Typography>
                                               {Object.keys(herb).map((key) => {
                                                 return (
-                                                  <p>
+                                                  <p key={key}>
                                                     <span style={{ fontWeight: 'bold' }}>
                                                       {key
                                                         .toString()
