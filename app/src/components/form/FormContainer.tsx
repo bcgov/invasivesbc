@@ -354,13 +354,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     };
 
     getApiSpec();
-  }, [
-    props.activity.activitySubtype,
-    props.activity.activity_subtype,
-    dataAccess,
-    props.activity?.activityType,
-    rolesUserHasAccessTo
-  ]);
+  }, [props.activity.activitySubtype, props.activity.activity_subtype]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 

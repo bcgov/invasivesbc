@@ -118,7 +118,8 @@ export interface IMapContainerProps {
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
   extentState: { extent: any; setExtent: (extent: any) => void };
-  setMapForActivityPage?: (map: any) => void;
+  setMapForActivityPage?: React.Dispatch<any>;
+  contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -150,7 +151,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // to support filtering and geo editing
   useEffect(() => {
     mapRecordsContext.setEditRef(editRef);
-  }, []);
+  }, [mapRecordsContext]);
 
   return (
     <>

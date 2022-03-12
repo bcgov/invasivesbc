@@ -1,4 +1,3 @@
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
@@ -136,7 +135,7 @@ export const DatabaseContextProvider = (props) => {
     const isitopen = await db.isDBOpen();
     console.log('db open on create table? : ' + JSON.stringify(isitopen));
 
-    const name = await db.getConnectionDBName();
+    await db.getConnectionDBName();
 
     let ret;
 
@@ -252,7 +251,6 @@ export const DatabaseContextProvider = (props) => {
     return <>{props.children}</>;
   } catch (e) {
     alert('provider crashed');
-    const error = JSON.stringify(e);
   }
   return null;
 };
@@ -286,7 +284,6 @@ export interface IUpsert {
 
 const getConnection = async (databaseName?: string) => {
   const dbname = 'localInvasivesBC';
-  let db: SQLiteDBConnection;
   let oldConnection;
   let newConnection;
 
@@ -312,7 +309,7 @@ const getConnection = async (databaseName?: string) => {
     console.log('error making new connection');
   }
 
-  throw 'unable to get connection';
+  throw new Error('unable to get connection');
 };
 
 // v1: assumes all upsertconfigs are the same, will allow for multiple in v2
@@ -326,14 +323,14 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
 
   // workaround until we get json1 extension working:
   //TODO: change to return a count and share db like the other ones:
-  const patchSlowUpserts = upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
+  const patchSlowUpserts = upsertConfigs.filter((e) => e.type === UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
   processSlowUpserts(patchSlowUpserts, databaseContext);
 
-  const docTypeAndIDUpserts = upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
+  const docTypeAndIDUpserts = upsertConfigs.filter((e) => e.type === UpsertType.DOC_TYPE_AND_ID);
   if (docTypeAndIDUpserts.length >= 1) {
     batchUpdate = buildSQLStringDOC_TYPE_AND_ID(docTypeAndIDUpserts);
     ret = await handleExecute(batchUpdate, db);
-    if (ret != false) {
+    if (ret !== false) {
       totalRecordsChanged += ret;
     } else {
       console.log('problem executing DOC_TYPE_AND_ID upserts:');
@@ -342,9 +339,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   }
 
   batchUpdate = '';
-  const everythingElse = upsertConfigs.filter((e) => e.type != UpsertType.DOC_TYPE_AND_ID);
+  const everythingElse = upsertConfigs.filter((e) => e.type !== UpsertType.DOC_TYPE_AND_ID);
   for (const upsertConfig of everythingElse) {
-    if (Capacitor.getPlatform() != 'web') {
+    if (Capacitor.getPlatform() !== 'web') {
       // initialize the connection
       // ret = db.execute(`select load_extension('json1');`); // not yet working
 
@@ -460,7 +457,7 @@ const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
     let rowCounter = 0;
     for (const upsertConfig of upsertConfigs) {
       batchUpdate += `('` + upsertConfig.ID + `','` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')`;
-      if (rowCounter != upsertConfigs.length - 1) {
+      if (rowCounter !== upsertConfigs.length - 1) {
         batchUpdate += ',';
       }
       rowCounter += 1;
@@ -479,7 +476,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     let slowPatchDocType;
 
     for (const upsertConfig of upsertConfigs.filter((e) => {
-      return e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH;
+      return e.type === UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH;
     })) {
       slowPatchOldIDS.push(upsertConfig.ID);
       slowPatchDocType = upsertConfig.docType;
@@ -544,7 +541,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     }
 
     //finally update them all:
-    if (batchUpdate != '') {
+    if (batchUpdate !== '') {
       ret = db.execute(batchUpdate);
     }
   }
@@ -584,7 +581,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     alert(JSON.stringify(e));
   }
   //alert(JSON.stringify(databaseContext));
-  if (Capacitor.getPlatform() != 'web') {
+  if (Capacitor.getPlatform() !== 'web') {
     let ret;
     let db = await getConnection();
 

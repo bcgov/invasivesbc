@@ -58,10 +58,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const { userInfo, userInfoLoaded, loginUser, keycloak, userRoles } = useContext(AuthStateContext);
   const [accessRequested, setAccessRequested] = React.useState(false);
 
-  useEffect(() => {
-    hasRequestedAccess();
-  }, [keycloak?.obj?.authenticated]);
-
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
@@ -89,32 +85,32 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
-    hasRequestedAccess();
-  }, [keycloak?.obj?.authenticated, userInfoLoaded]);
-
-  const hasRequestedAccess = async () => {
-    // If no user is logged in, return false
-    if (!keycloak?.obj?.authenticated) {
-      setAccessRequested(false);
-      return;
-    }
-    if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
-      // If user is logged in, check if they have requested access
-      const accessRequest = await api.getAccessRequestData({
-        username: userInfo.preferred_username
-      });
-      if (accessRequest) {
-      }
-      if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
+    const hasRequestedAccess = async () => {
+      // If no user is logged in, return false
+      if (!keycloak?.obj?.authenticated) {
         setAccessRequested(false);
         return;
       }
-      if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
-        setAccessRequested(true);
-        return;
+      if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
+        // If user is logged in, check if they have requested access
+        const accessRequest = await api.getAccessRequestData({
+          username: userInfo.preferred_username
+        });
+        if (accessRequest) {
+        }
+        if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
+          setAccessRequested(false);
+          return;
+        }
+        if (accessRequest !== {} && accessRequest.status !== 'DECLINED') {
+          setAccessRequested(true);
+          return;
+        }
       }
-    }
-  };
+    };
+
+    hasRequestedAccess();
+  }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo.email, userInfo.preferred_username]);
 
   /*
     Generate reusable card component with info to guide users through the app

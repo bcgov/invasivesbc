@@ -1,5 +1,4 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { useState } from 'react';
 /**
  * Represents the userinfo provided by keycloak.
  *
@@ -48,7 +47,7 @@ export interface IKeycloak {
  */
 function useKeycloakWrapper(): IKeycloak {
   const { keycloak } = useKeycloak();
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const userInfo = null;
 
   /**
    * Determine if the user belongs to the specified role(s).

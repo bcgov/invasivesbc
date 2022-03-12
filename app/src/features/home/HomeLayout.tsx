@@ -1,7 +1,7 @@
-import { Box, Collapse } from '@mui/material';
+import { Box } from '@mui/material';
 import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
-import React, { useState } from 'react';
+import React from 'react';
 
 export interface IHomeLayoutProps {
   children: any;

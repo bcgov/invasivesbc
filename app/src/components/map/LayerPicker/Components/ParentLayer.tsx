@@ -22,7 +22,13 @@ export const ParentLayer = (props: any) => {
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
       style={{ width: '100%' }}>
-      <Grid id="accordion-grid" container style={{ marginTop: -10, marginBottom: -10 }} alignItems="center" xs={12}>
+      <Grid
+        container
+        item
+        id="accordion-grid"
+        style={{ marginTop: -10, marginBottom: -10 }}
+        alignItems="center"
+        xs={12}>
         <Grid id="accordion-summary" item xs={10}>
           <AccordionSummary>
             <Typography variant="subtitle1">{parent.name}</Typography>
@@ -34,8 +40,8 @@ export const ParentLayer = (props: any) => {
           <DragHandle />
         </Grid>
       </Grid>
-      {parent?.children.map((child: any) => (
-        <ChildLayer parent={parent} child={child} />
+      {parent?.children.map((child: any, index) => (
+        <ChildLayer key={index} parent={parent} child={child} />
       ))}
     </Accordion>
   );

@@ -623,7 +623,7 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
               errors.activity_subtype_data['form_b'][form_b_index].form_a[
                 form_a_index
               ].plot_identification_trees.__errors = [];
-              if (form.trees_exist == 'Yes' && !form.baf && !form.fixed_area && !form.full_count_area) {
+              if (form.trees_exist === 'Yes' && !form.baf && !form.fixed_area && !form.full_count_area) {
                 errors.activity_subtype_data['form_b'][form_b_index].form_a[
                   form_a_index
                 ].plot_identification_trees.addError(

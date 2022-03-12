@@ -1,5 +1,5 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -20,16 +20,12 @@ import {
   Box,
   Theme,
   IconButton,
-  CircularProgress,
   Chip
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { GridOverlay } from '@mui/x-data-grid';
-import { styled } from '@mui/material/styles';
 import {
   DataGrid,
   GridColDef,
-  GridToolbarDensitySelector,
   GridToolbarFilterButton,
   GridValueGetterParams,
   GridToolbarExport,
@@ -38,7 +34,6 @@ import {
 import { CustomNoRowsOverlay } from '../../../components/data-grid/CustomNoRowsOverlay';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
-import { ThemeContext } from '@emotion/react';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -118,7 +113,7 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
             </IconButton>
           )
         }}
-        style={{
+        sx={{
           width: {
             xs: 1,
             sm: 'auto'
@@ -144,8 +139,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     APPROVE,
     DECLINE
   }
-
-  const themes = useContext(ThemeContext);
 
   const classes = useStyles();
   const api = useInvasivesApi();

@@ -29,29 +29,32 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
     data: null
   });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      // Do something with the files
 
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
+      acceptedFiles.forEach((file) => {
+        const reader = new FileReader();
 
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading has failed');
+        reader.onabort = () => console.log('file reading was aborted');
+        reader.onerror = () => console.log('file reading has failed');
 
-      reader.onload = () => {
-        const encodedString = btoa(reader.result as string);
+        reader.onload = () => {
+          const encodedString = btoa(reader.result as string);
 
-        setUploadRequest({
-          ...uploadRequest,
-          data: encodedString
-        });
-      };
+          setUploadRequest({
+            ...uploadRequest,
+            data: encodedString
+          });
+        };
 
-      setStatusMessage(null);
-      setFilename(file.name);
-      reader.readAsText(file, 'utf-8');
-    });
-  }, []);
+        setStatusMessage(null);
+        setFilename(file.name);
+        reader.readAsText(file, 'utf-8');
+      });
+    },
+    [uploadRequest]
+  );
 
   const fileValidator = (file) => {
     if (file.name.toLowerCase().endsWith('csv')) {
@@ -92,7 +95,7 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
         <Typography variant={'h4'}>Batch Upload</Typography>
         {uploadRequest.data != null && <span>{filename} ready to upload</span>}
         {uploadRequest.data == null && (
-          <div style={dropzoneStyle} {...getRootProps()}>
+          <div style={dropzoneStyle}>
             <input {...getInputProps()} />
             {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
           </div>

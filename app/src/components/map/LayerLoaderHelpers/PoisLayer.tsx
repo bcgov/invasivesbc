@@ -1,9 +1,9 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import L, { LatLngBoundsExpression } from 'leaflet';
+import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
-import { Marker, SVGOverlay, Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';

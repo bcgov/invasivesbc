@@ -1,8 +1,5 @@
 import { Button, Grid, Tooltip, Zoom } from '@mui/material';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { ActivitySyncStatus, ReviewActionDescriptions } from '../../constants/activities';
-
 export interface IFormControlsComponentProps {
   classes?: any;
   isDisabled?: boolean;
@@ -20,7 +17,6 @@ export interface IFormControlsComponentProps {
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
   const isDisabled = props.isDisabled || false;
-  const history = useHistory();
 
   return (
     <>

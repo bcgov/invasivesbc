@@ -1,9 +1,6 @@
-import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import L from 'leaflet';
 import { createLayerComponent } from '@react-leaflet/core';
-import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
-import { AuthStateContext } from 'contexts/authStateContext';
 
 const createAdminLayerComponent = (props, context) => {
   const { geoJSON } = props;
@@ -24,7 +21,7 @@ const updateAdminLayerComponent = (instance, props, previousProps) => {};
 const AdminLayerComponent = createLayerComponent(createAdminLayerComponent, updateAdminLayerComponent);
 
 export const AdminUploadsLayer = (props) => {
-  const [geoJSON, setGeoJSON] = useState(props.geoJSON);
+  const geoJSON = props.geoJSON;
 
   return <>{geoJSON && <AdminLayerComponent geoJSON={geoJSON} />}</>;
 };

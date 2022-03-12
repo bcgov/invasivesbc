@@ -97,30 +97,6 @@ export const poiStandardDBMapping = (doc) => ({
   geometry: [...doc.point_of_interest_payload.geometry]
 });
 
-/**
- *
- * @param {ActivitySubtype} treatmentSubtype The treatment subtype for which to get the associated monitoring subtype
- */
-const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: ActivitySubtype): ActivitySubtype => {
-  /*
-    Note: There is no explicit subtype for biological dispersal plant monitoring
-    If this needs to be present, it needs to be created and defined in API spec
-  */
-  let monitoringSubtype: ActivitySubtype;
-
-  if (treatmentSubtype.includes('ChemicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant;
-  } else if (treatmentSubtype.includes('MechanicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant;
-  } else if (treatmentSubtype.includes('BiologicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_BiologicalTerrestrialPlant;
-  } else {
-    monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
-  }
-
-  return monitoringSubtype;
-};
-
 const arrayWrap = (value) => {
   if (!value) return [];
   return Array.isArray(value) ? value : [value];
@@ -631,7 +607,6 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const FREPActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const history = useHistory();
   const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable
@@ -870,7 +845,6 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
   const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {

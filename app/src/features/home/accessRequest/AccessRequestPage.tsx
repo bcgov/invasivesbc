@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface IAccessRequestPage {
   classes?: any;
+  location?: any;
 }
 
 const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
@@ -51,11 +52,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       ? authState.keycloak?.obj?.tokenParsed?.preferred_username
       : ''
   );
-  const [bussinessName, setBusinessName] = useState(
-    authState.keycloak?.obj?.tokenParsed?.bceid_bussiness_name
-      ? authState.keycloak?.obj?.tokenParsed?.bceid_bussiness_name
-      : ''
-  );
   const [firstName, setFirstName] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.given_name ? authState.keycloak?.obj?.tokenParsed?.given_name : ''
   );
@@ -65,12 +61,12 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [email, setEmail] = React.useState(
     authState.keycloak?.obj?.tokenParsed?.email ? authState.keycloak?.obj?.tokenParsed?.email : ''
   );
-  const [idir_userid, setIdirUserid] = React.useState(
-    authState.keycloak?.obj?.tokenParsed?.idir_userid ? authState.keycloak?.obj?.tokenParsed?.idir_userid : ''
-  );
-  const [bceid_userid, setBceidUserid] = React.useState(
-    authState.keycloak?.obj?.tokenParsed?.bceid_userid ? authState.keycloak?.obj?.tokenParsed?.bceid_userid : ''
-  );
+  const idir_userid = authState.keycloak?.obj?.tokenParsed?.idir_userid
+    ? authState.keycloak?.obj?.tokenParsed?.idir_userid
+    : '';
+  const bceid_userid = authState.keycloak?.obj?.tokenParsed?.bceid_userid
+    ? authState.keycloak?.obj?.tokenParsed?.bceid_userid
+    : '';
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -105,7 +101,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       idirUserId: idir_userid,
       bceidUserId: bceid_userid
     };
-    const response = await api.submitAccessRequest(accessRequest);
+    await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
   };
 
@@ -128,7 +124,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       idirUserId: idir_userid,
       bceidUserId: bceid_userid
     };
-    const response = await api.submitUpdateRequest(updateRequest);
+    await api.submitUpdateRequest(updateRequest);
     setSubmitted(true);
   };
 
@@ -151,7 +147,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       idir_userid: null,
       bceid_userid: null
     };
-    const response = await api.submitAccessRequest(accessRequest);
+    await api.submitAccessRequest(accessRequest);
     setSubmitted(true);
   };
 
@@ -191,7 +187,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
 
   useEffect(() => {
     const userName = authState.keycloak?.obj?.userInfo?.preferred_username;
-    const email = authState.keycloak?.obj?.userInfo?.email;
     const fetchFundingAgencies = async () => {
       const response = await api.getFundingAgencies();
       setFundingAgenciesList(response);
@@ -218,7 +213,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       }
       setRoles(roles);
     });
-  }, []);
+  }, [api, authState.keycloak?.obj?.userInfo?.preferred_username]);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTransferAccess(event.target.value);
@@ -457,7 +452,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                       </Grid>
                     </Grid>
                     <Grid item>
-                      <Grid container direction="row" spacing={5} style={{ 'margin-bottom': '10px' }}>
+                      <Grid container direction="row" spacing={5} style={{ marginBottom: '10px' }}>
                         <Grid item>
                           <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
@@ -503,7 +498,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container direction="row" spacing={5}>
-                        <Grid item style={{ 'margin-bottom': '10px' }}>
+                        <Grid item style={{ marginBottom: '10px' }}>
                           <Tooltip placement="left" title="Select one or more roles to request.">
                             <TextField
                               style={{ width: 320 }}
@@ -528,7 +523,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         </Grid>
                       </Grid>
                       <Grid container direction="row" spacing={5}>
-                        <Grid item style={{ 'margin-bottom': '10px' }}>
+                        <Grid item style={{ marginBottom: '10px' }}>
                           <Tooltip
                             placement="left"
                             title="If your employer or agency were not on our lists, please enter it here.">

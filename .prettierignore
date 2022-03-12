@@ -15,7 +15,3 @@ uploads
 **/vendor
 
 *.html
-
-app/src/rjsf/uiSchema/UISchemaComponents.ts
-app/src/rjsf/uiSchema/RootUISchemas.ts
-app/src/rjsf/uiSchema/BaseUISchemaComponents.ts

@@ -21,7 +21,7 @@ const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({ codeTableId }) =>
         setLoading(false);
       });
     }
-  }, [codeTableId, showPreview]);
+  }, [codeTableId, showPreview, api]);
 
   if (loading) {
     return <span>Preview loading...</span>;

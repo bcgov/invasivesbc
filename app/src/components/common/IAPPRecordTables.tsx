@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { DataGrid, GridCellParams, GridColDef, MuiEvent } from '@mui/x-data-grid';
@@ -65,53 +64,53 @@ export const PointsOfInterestTable = () => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
 
-  const fetchData = async () => {
-    const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
-    const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
-    setPOIs(IAPPRecords.rows);
-  };
-
-  const convertToTableRows = () => {
-    const tempArr = [];
-    for (const poi of pois) {
-      // shortcut for point of interest payload
-      const payload = poi?.point_of_interest_payload;
-      // shortcut for data in payload
-      const form_data = payload?.form_data;
-      // shortcut for type_data and data in form_data obj
-      const type_data = form_data?.point_of_interest_type_data;
-      const data = form_data?.point_of_interest_data;
-      const surveys = form_data.surveys;
-      const newArr = getJurisdictions(surveys);
-      const jurisdictionArr = [];
-      newArr.forEach((item) => {
-        jurisdictionArr.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
-      });
-
-      var row = {
-        id: poi?.point_of_interest_id,
-        site_id: type_data?.site_id,
-        date_created: data?.date_created,
-        jurisdiction_code: jurisdictionArr,
-        site_elevation: type_data?.site_elevation,
-        slope_code: type_data?.slope_code,
-        aspect_code: type_data?.aspect_code,
-        soil_texture_code: type_data?.soil_texture_code,
-        latitude: poi.geom.geometry.coordinates[1],
-        longitude: poi.geom.geometry.coordinates[0]
-      };
-      tempArr.push(row);
-    }
-    setRows(tempArr);
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
+      const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
+      setPOIs(IAPPRecords.rows);
+    };
+
+    const convertToTableRows = () => {
+      const tempArr = [];
+      for (const poi of pois) {
+        // shortcut for point of interest payload
+        const payload = poi?.point_of_interest_payload;
+        // shortcut for data in payload
+        const form_data = payload?.form_data;
+        // shortcut for type_data and data in form_data obj
+        const type_data = form_data?.point_of_interest_type_data;
+        const data = form_data?.point_of_interest_data;
+        const surveys = form_data.surveys;
+        const newArr = getJurisdictions(surveys);
+        const jurisdictionArr = [];
+        newArr.forEach((item) => {
+          jurisdictionArr.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+        });
+
+        var row = {
+          id: poi?.point_of_interest_id,
+          site_id: type_data?.site_id,
+          date_created: data?.date_created,
+          jurisdiction_code: jurisdictionArr,
+          site_elevation: type_data?.site_elevation,
+          slope_code: type_data?.slope_code,
+          aspect_code: type_data?.aspect_code,
+          soil_texture_code: type_data?.soil_texture_code,
+          latitude: poi.geom.geometry.coordinates[1],
+          longitude: poi.geom.geometry.coordinates[0]
+        };
+        tempArr.push(row);
+      }
+      setRows(tempArr);
+    };
+
     if (pois?.length < 1) {
       fetchData();
     } else {
       convertToTableRows();
     }
-  }, [pois]);
+  }, [pois, dataAccess, databaseContext]);
 
   return (
     <>

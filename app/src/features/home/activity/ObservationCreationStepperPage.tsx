@@ -5,7 +5,6 @@ import StepperComponent from 'components/activity/StepperComponent';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { useQuery } from 'hooks/useQuery';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
@@ -44,7 +43,6 @@ const getStepContent = (step: number) => {
 
 const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> = (props) => {
   const classes = useStyles();
-  const queryParams = useQuery();
   const history = useHistory();
   const dataAccess = useDataAccess();
 
@@ -61,27 +59,24 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   // Define the steps of the workflow
   const steps = ['Create Observation', 'Create Optional Treatment'];
 
-  // Extract the selected observation id
-  const selectedObservationId = queryParams.observation;
-
   /*
     On intial render, get the observation record we are dealing with and store it in state
   */
-  useEffect(() => {
-    const getObservation = async () => {
-      //const activity = await databaseContext.database.get(selectedObservationId);
-      //   setObservationSubtype(activity.activitySubtype);
-      //   setObservation(activity);
-    };
+  // useEffect(() => {
+  //   const getObservation = async () => {
+  //     //const activity = await databaseContext.database.get(selectedObservationId);
+  //     //   setObservationSubtype(activity.activitySubtype);
+  //     //   setObservation(activity);
+  //   };
 
-    if (!observation) {
-      getObservation();
-    }
-  }, []);
+  //   if (!observation) {
+  //     getObservation();
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (!formHasErrors) {
-      setActiveStep(activeStep + 1);
+      setActiveStep((prev) => prev + 1);
     }
   }, [formHasErrors]);
 

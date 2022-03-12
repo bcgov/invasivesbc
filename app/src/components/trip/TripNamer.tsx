@@ -31,7 +31,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   const saveInput = async (newName) => {
     const tripID: string = props.trip_ID;
-    let result = await databaseContext.asyncQueue({
+    await databaseContext.asyncQueue({
       asyncTask: () => {
         return upsert(
           [

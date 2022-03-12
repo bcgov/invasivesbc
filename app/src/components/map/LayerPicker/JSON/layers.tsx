@@ -6,6 +6,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'invasivesbc_records',
       name: 'INVASIVESBC Records',
       source: 'INVASIVESBC',
+      order: 0,
       zIndex: 6000,
       loaded: 70,
       enabled: false,
