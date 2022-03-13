@@ -207,7 +207,7 @@ export const RecordSet = (props) => {
         {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
         <RecordSetAccordionSummary canRemove={props.canRemove} />
         <AccordionDetails>
-          {/*}          <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
+          <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />
         </AccordionDetails>
       </Accordion>
     </>
