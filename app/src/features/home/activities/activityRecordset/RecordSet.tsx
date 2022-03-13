@@ -44,6 +44,7 @@ export const RecordSet = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [mapToggle, setMapToggle] = useState(false);
   const [colour, setColour] = useState('blue');
+  const [recordSetName, setRecordSetName] = useState('New RecordSet');
   const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
 
   const recordSetContext = useContext(RecordSetContext);
@@ -65,35 +66,15 @@ export const RecordSet = (props) => {
         case 'mapToggle':
           setMapToggle(initial);
           break;
+        case 'colour':
+          setColour(initial);
+          break;
+        case 'recordSetName':
+          setRecordSetName(initial);
+          break;
         default:
           break;
       }
-    }
-  };
-  const updatePropertyState = (propertyName) => {
-    let initial = null;
-    if (
-      recordSetContext.recordSetState &&
-      recordSetContext.recordSetState[props.setName] &&
-      recordSetContext.recordSetState[props.setName][propertyName]
-    ) {
-      initial = recordSetContext.recordSetState[props.setName][propertyName];
-    }
-    const initialStateAll = recordSetContext.recordSetState;
-    const initialState = recordSetContext.recordSetState[props.setName];
-    switch (propertyName) {
-      case 'expanded':
-        recordSetContext.setRecordSetState({
-          ...initialStateAll,
-          [props.setName]: { ...initialState, expanded: expanded }
-        });
-        break;
-      case 'mapToggle':
-        recordSetContext.setRecordSetState({
-          ...initialStateAll,
-          [props.setName]: { ...initialState, mapToggle: mapToggle }
-        });
-        break;
     }
   };
 
@@ -109,12 +90,16 @@ export const RecordSet = (props) => {
         }
         switch (propertyName) {
           case 'expanded':
-            console.log('expanded');
-            console.log(expanded);
             newState['expanded'] = expanded;
             break;
           case 'mapToggle':
             newState['mapToggle'] = mapToggle;
+            break;
+          case 'colour':
+            newState['colour'] = colour;
+            break;
+          case 'recordSetName':
+            newState['recordSetName'] = recordSetName;
             break;
         }
       });
@@ -126,38 +111,16 @@ export const RecordSet = (props) => {
     }
   };
 
-  const updateExpandedState = () => {
-    let initialExpanded = false;
-    if (recordSetContext.recordSetState && recordSetContext?.recordSetState[props.setName]?.expanded) {
-      initialExpanded = recordSetContext.recordSetState[props.setName].expanded;
-    }
-    if (expanded !== initialExpanded) {
-      const initialStateAll = recordSetContext.recordSetState;
-      const initialState = recordSetContext.recordSetState[props.setName];
-      recordSetContext.setRecordSetState({
-        ...initialStateAll,
-        [props.setName]: { ...initialState, expanded: expanded }
-      });
-    }
-  };
-
   useEffect(() => {
-    //getInitialExpandedState();
     getInitialPropertyState('expanded');
     getInitialPropertyState('mapToggle');
-    /* setTimeout(() => {
-      getInitialPropertyState('mapToggle');
-    }, 1000);*/
+    getInitialPropertyState('colour');
+    getInitialPropertyState('recordSetName');
   }, []);
 
   useEffect(() => {
-    //    updateExpandedState();
-    //updatePropertyState('expanded');
-    updatePropertyStates(['expanded', 'mapToggle']);
-    /*setTimeout(() => {
-      updatePropertyState('mapToggle');
-    }, 2000);*/
-  }, [expanded, mapToggle]);
+    updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName']);
+  }, [expanded, mapToggle, colour, recordSetName]);
 
   const RecordSetAccordionSummary = (props) => {
     return useMemo(() => {
@@ -165,7 +128,7 @@ export const RecordSet = (props) => {
         <AccordionSummary>
           <Box />
           {expanded ? <ExpandLess /> : <ExpandMoreIcon />}
-          <Typography sx={{ pl: 5, flexGrow: 1 }}>{props.name}</Typography>
+          <Typography sx={{ pl: 5, flexGrow: 1 }}>{recordSetName}</Typography>
           <Box />
           <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
             {props.canRemove ? (
@@ -230,7 +193,8 @@ export const RecordSet = (props) => {
           </AccordionActions>
         </AccordionSummary>
       );
-    }, [expanded, mapToggle]);
+      //}, [JSON.stringify({ expanded: expanded, mapToggle: mapToggle, colour: colour, recordSetName: recordSetName })]);
+    }, []);
   };
 
   return (
@@ -241,7 +205,7 @@ export const RecordSet = (props) => {
         }}
         expanded={expanded}>
         {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
-        <RecordSetAccordionSummary />
+        <RecordSetAccordionSummary canRemove={props.canRemove} />
         <AccordionDetails>
           {/*}          <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
         </AccordionDetails>
