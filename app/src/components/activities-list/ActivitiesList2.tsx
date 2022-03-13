@@ -15,6 +15,7 @@ import NewRecord from 'components/map/Tools/ToolTypes/Data/NewRecordMainMap';
 import NewRecordRecordPagae from 'components/map/Tools/ToolTypes/Data/NewRecordRecordPage';
 import { ActivitySubtype, ActivitySubtypeShortLabels, ActivityType } from 'constants/activities';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { CustomNoRowsOverlay } from 'components/data-grid/CustomNoRowsOverlay';
 
 const useStyles = makeStyles((theme: any) => ({
   newActivityButtonsRow: {
@@ -81,12 +82,30 @@ const ActivitiesList2 = (props: any) => {
     setSubType(event.target.value);
   };
 
+  const getOldFilters = async () => {
+    const appState = await da.getAppState(databaseContext);
+    console.log('getting old filters');
+
+    console.dir(appState);
+    console.log(props.setName);
+    if (props.setName && appState && appState[props.setName + '_filters']) {
+      const oldFilters = appState[props.setName + '_filters'];
+      console.log('oldFilters');
+      console.dir(oldFilters);
+      setFilters({ ...oldFilters });
+    }
+  };
+
   useEffect(() => {
-    da.setAppState(
-      { activitiesPageFormType: formType, activitiesPageSubType: subType, filters: filters },
-      databaseContext
-    );
-  }, [formType, subType, filters]);
+    getOldFilters();
+  }, []);
+
+  useEffect(() => {
+    if (filters !== null) {
+      const newState = { [props.setName + '_filters']: filters };
+      da.setAppState({ ...newState }, databaseContext);
+    }
+  }, [filters]);
 
   const NewRecordStuff = (props) => {
     return (

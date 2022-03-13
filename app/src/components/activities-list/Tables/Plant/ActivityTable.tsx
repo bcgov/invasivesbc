@@ -111,9 +111,6 @@ function FilterRenderer<R, SR, T extends HTMLOrSVGElement>({
 }) {
   const filters = useContext(FilterContext)!;
   const { ref, tabIndex } = useFocusRef<T>(isCellSelected);
-  console.log('got here');
-  console.log('filters');
-  console.log(filters);
 
   return (
     <div>
@@ -190,7 +187,7 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     getActivities();
     console.dir(props);
-  }, [props.formType, props.subType]);
+  }, [props.formType, props.subType, props.initialFilters]);
 
   // HEADER FILTER STUFF:
 
@@ -211,13 +208,6 @@ const ActivityGrid = (props) => {
       event.stopPropagation();
     }
   }
-
-  const [filters, setFilters] = useState<Filter>({
-    enabled: true,
-    activity_id: '',
-    short_id: ''
-  });
-
   const developerOptions = useMemo(
     () =>
       Array.from(new Set(rows.map((r) => r.developer))).map((d) => ({
@@ -244,9 +234,9 @@ const ActivityGrid = (props) => {
                   <input
                     {...rest}
                     className={classes.filterClassname}
-                    value={filters[x.key]}
+                    value={props.initialfilters[x.key]}
                     onChange={(e) =>
-                      setFilters({
+                      props.filtersCallBack({
                         ...filters,
                         [x.key]: e.target.value
                       })
@@ -261,7 +251,7 @@ const ActivityGrid = (props) => {
           return { ...x };
         }
       });
-    }, [filters]);
+    }, [filters, props.initialFilters]);
 
   const columnsDynamic = useColumns(activites_default_headers);
 
@@ -285,7 +275,7 @@ const ActivityGrid = (props) => {
         return t === true;
       });
     });
-  }, [rows, filters]);
+  }, [rows, filters, props.initialFilters]);
 
   function clearFilters() {
     setFilters({

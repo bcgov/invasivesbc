@@ -42,6 +42,47 @@ const flexContainer = {
   padding: 0
 };
 
+export const RecordSetContext = React.createContext(null);
+
+export const RecordSetProvider = (props) => {
+  const [recordSetState, setRecordSetState] = useState(null);
+
+  const dataAccess = useDataAccess();
+  const getInitialState = async () => {
+    const oldState = await dataAccess.getAppState();
+    if (oldState?.recordSets) {
+      setRecordSetState({ ...oldState.recordSets });
+    } else {
+      dataAccess.setAppState({ recordSets: { ['my_drafts']: {}, ['all_data']: {} } }); // set defaults here
+      setRecordSetState({ ['my_drafts']: {}, ['all_data']: {} });
+    }
+  };
+
+  useEffect(() => {
+    getInitialState();
+  }, []);
+
+  const updateState = async () => {
+    const oldState = await dataAccess.getAppState();
+    const oldRecordSets = oldState?.recordSets;
+    if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
+      dataAccess.setAppState({ recordSets: { ...recordSetState } });
+    }
+  };
+
+  useEffect(() => {
+    updateState();
+  }, [recordSetState]);
+
+  if (recordSetState !== null) {
+    return (
+      <RecordSetContext.Provider value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState }}>
+        {props.children}
+      </RecordSetContext.Provider>
+    );
+  } else return <></>;
+};
+
 //Style:  I tried to use className: mainHeader and put css in that class but never coloured the box
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const [recordSets, setRecordSets] = useState<any[]>();
@@ -139,45 +180,65 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
 
   return (
     <>
-      <Box
-        style={{
-          position: 'absolute',
-          zIndex: 9999,
-          backgroundColor: '#223f75',
-          width: '100%',
-          padding: 8,
-          bottom: 30
-          //  height: '80px'
-        }}>
-        <MenuOptions
-          sx={{
-            flexWrap: 'wrap',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'start'
-          }}
-          listSX={{ width: 'auto' }}
-          options={options}
-        />
-      </Box>
+      <RecordSetProvider>
+        <Box
+          style={{
+            position: 'absolute',
+            zIndex: 9999,
+            backgroundColor: '#223f75',
+            width: '100%',
+            padding: 8,
+            bottom: 30
+            //  height: '80px'
+          }}>
+          <MenuOptions
+            sx={{
+              flexWrap: 'wrap',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'start'
+            }}
+            listSX={{ width: 'auto' }}
+            options={options}
+          />
+        </Box>
 
-      <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
-        <Grid container xs={12} height="50px" display="flex" justifyContent="left">
-          <Grid sx={{ pb: 15 }} xs={12} item>
-            <RecordSet canRemove={false} setSelectedRecord={setSelectedRecord} name={'My Drafts'} />
-            <RecordSet canRemove={false} setSelectedRecord={setSelectedRecord} name={'All Data'} />
-            {recordSets && recordSets.length > 0 ? (
-              recordSets.map((r, i) => {
-                return <RecordSet key={i} canRemove={true} setSelectedRecord={setSelectedRecord} name={r.name} />;
-              })
-            ) : (
-              <></>
-            )}
+        <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.classes.container}>
+          <Grid container xs={12} height="50px" display="flex" justifyContent="left">
+            <Grid sx={{ pb: 15 }} xs={12} item>
+              <RecordSet
+                canRemove={false}
+                setSelectedRecord={setSelectedRecord}
+                setName={'my_drafts'}
+                name={'My Drafts'}
+              />
+              <RecordSet
+                canRemove={false}
+                setSelectedRecord={setSelectedRecord}
+                setName={'all_data'}
+                name={'All Data'}
+              />
+              {recordSets && recordSets.length > 0 ? (
+                recordSets.map((r, i) => {
+                  return (
+                    <RecordSet
+                      key={i}
+                      canRemove={true}
+                      setName={r.name}
+                      setSelectedRecord={setSelectedRecord}
+                      name={r.name}
+                    />
+                  );
+                })
+              ) : (
+                <></>
+              )}
+            </Grid>
+            <Grid sx={{ pb: 15 }} xs={12} item></Grid>
           </Grid>
-          <Grid sx={{ pb: 15 }} xs={12} item></Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </RecordSetProvider>
     </>
   );
 };
