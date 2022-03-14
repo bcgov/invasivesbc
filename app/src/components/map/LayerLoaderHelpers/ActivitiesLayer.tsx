@@ -34,8 +34,9 @@ export const ActivitiesLayer = (props) => {
       { search_feature: mapBounds, activity_subtype: [props.activity_subtype] },
       databaseContext
     );
+    console.log('ActivitiesData: ', activitiesData);
     const activitiesFeatureArray = [];
-    activitiesData?.rows.forEach((row) => {
+    activitiesData?.result?.rows.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
     });
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
