@@ -113,7 +113,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     });
 
     setTrip(JSON.parse(queryResults[0].json));
-  }, [databaseContext, props.trip_ID]);
+  }, [databaseContext]);
 
   useEffect(() => {
     const updateComponent = async () => {
