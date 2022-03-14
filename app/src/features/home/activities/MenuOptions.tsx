@@ -21,7 +21,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useEffect, useState } from 'react';
-import ActivitiesList2 from '../../../components/activities-list/ActivitiesList2';
+import ActivitiesList2 from '../../../components/activities-list/NewRecordWizard';
 
 import { alpha } from '@mui/material';
 import appTheme from 'themes/appTheme';
