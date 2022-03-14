@@ -143,7 +143,6 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
     const oldRecordSetState = parentStateCollection[props.setName];
-    console.dir(oldRecordSetState);
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
       setFilters(oldRecordSetState.gridFilters);
     } else {
@@ -156,13 +155,20 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
     const oldRecordSetState = parentStateCollection[props.setName];
-    if (parentStateCollection && oldRecordSetState !== null) {
+    if (oldRecordSetState !== null) {
       const oldFilters = parentStateCollection[props.setName].gridFilters;
       if (oldFilters && filters !== null && JSON.stringify(oldFilters) !== JSON.stringify(filters)) {
         recordSetContext.setRecordSetState({
           ...parentStateCollection,
           [props.setName]: { ...oldRecordSetState, gridFilters: { ...filters } }
         });
+      } else {
+        if (parentStateCollection && oldRecordSetState !== null && filters !== null) {
+          recordSetContext.setRecordSetState({
+            ...parentStateCollection,
+            [props.setName]: { ...oldRecordSetState, gridFilters: { ...filters } }
+          });
+        }
       }
     }
   }, [filters]);
@@ -264,9 +270,9 @@ const ActivityGrid = (props) => {
                   <input
                     {...rest}
                     className={classes.filterClassname}
-                    value={props.initialfilters[x.key]}
+                    value={filters[x.key]}
                     onChange={(e) =>
-                      props.filtersCallBack({
+                      setFilters({
                         ...filters,
                         [x.key]: e.target.value
                       })
@@ -281,7 +287,7 @@ const ActivityGrid = (props) => {
           return { ...x };
         }
       });
-    }, [filters, props.initialFilters]);
+    }, [filters]);
 
   const columnsDynamic = useColumns(activites_default_headers);
 
@@ -305,7 +311,7 @@ const ActivityGrid = (props) => {
         return t === true;
       });
     });
-  }, [rows, filters, props.initialFilters]);
+  }, [rows, filters]);
 
   function clearFilters() {
     setFilters({

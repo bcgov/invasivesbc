@@ -14,7 +14,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import makeStyles from '@mui/styles/makeStyles';
-import ActivitiesList2 from 'components/activities-list/ActivitiesList2';
+import ActivitiesList2 from 'components/activities-list/NewRecordWizard';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
 import MapIcon from '@mui/icons-material/Map';
