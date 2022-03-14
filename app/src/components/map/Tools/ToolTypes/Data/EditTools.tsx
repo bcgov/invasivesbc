@@ -7,7 +7,7 @@ import * as turf from '@turf/helpers';
 import L from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
-import { MobileDrawCancel, MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
+import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -317,19 +317,8 @@ const EditTools = (props: any) => {
             setGeometry={props.geometryState.setGeometry}
             context={context.layerContainer}
           />
-          {openCancel && <MobileDrawCancel setOpenCancel={setOpenCancel} />}
         </>
       )}
-      {/*<IconButton
-        //ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        onClick={toggleMode}>
-        {multiMode ? (
-          <img src={multi} style={{ width: 32, height: 32 }} />
-        ) : (
-          <img src={single} style={{ width: 32, height: 32 }} />
-        )}
-        </IconButton>*/}
     </div>
   );
 };

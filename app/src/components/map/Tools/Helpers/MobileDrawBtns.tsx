@@ -134,21 +134,3 @@ export const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry,
     </LayersControlProvider>
   );
 };
-
-export const MobileDrawCancel = ({ setOpenCancel }) => {
-  const positionClass = POSITION_CLASSES.topleft;
-  const esc = useRef();
-
-  return (
-    <div className={positionClass}>
-      <Button
-        className="leaflet-control leaflet-bar"
-        style={{ backgroundColor: 'red' }}
-        onClick={() => {
-          dispatchEvent(new KeyboardEvent('keydown', { key: 'Esc' }));
-          dispatchEvent(new KeyboardEvent('keyup', { key: 'Esc' }));
-          setOpenCancel(false);
-        }}></Button>
-    </div>
-  );
-};
