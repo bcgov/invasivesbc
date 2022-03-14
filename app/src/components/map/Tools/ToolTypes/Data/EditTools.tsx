@@ -53,7 +53,6 @@ const formulateTable = (feature) => {
 const EditTools = (props: any) => {
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
-  const [openCancel, setOpenCancel] = useState(false);
   /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
@@ -134,7 +133,6 @@ const EditTools = (props: any) => {
     // if (!multiMode) {
     (context.layerContainer as any).clearLayers();
     // }
-    setOpenCancel(true);
   });
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
@@ -319,6 +317,16 @@ const EditTools = (props: any) => {
           />
         </>
       )}
+      {/*<IconButton
+        //ref={divRef}
+        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        onClick={toggleMode}>
+        {multiMode ? (
+          <img src={multi} style={{ width: 32, height: 32 }} />
+        ) : (
+          <img src={single} style={{ width: 32, height: 32 }} />
+        )}
+        </IconButton>*/}
     </div>
   );
 };
