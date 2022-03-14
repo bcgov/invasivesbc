@@ -92,7 +92,7 @@ const App: React.FC<IAppProps> = (props) => {
   switch (Capacitor.getPlatform()) {
     case 'ios':
       keycloakConfig = {
-        adapter: 'capacitor-native',
+        adapter: 'web',
         pkceMethod: 'S256',
         checkLoginIframe: false,
         redirectUri: 'invasivesbc://'
