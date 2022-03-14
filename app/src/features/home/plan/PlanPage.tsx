@@ -147,7 +147,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (currentTripId) {
       upsertCurrentTripGeo();
     }
-  }, [geometry, databaseContext, currentTripId]);
+  }, [geometry]);
 
   useEffect(() => {
     const queryForCurrentTripGeo = async () => {
