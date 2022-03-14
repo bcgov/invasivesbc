@@ -7,7 +7,7 @@ import * as turf from '@turf/helpers';
 import L from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
-import { MobileDrawCancel, MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
+import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -53,7 +53,6 @@ const formulateTable = (feature) => {
 const EditTools = (props: any) => {
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
-  const [openCancel, setOpenCancel] = useState(false);
   /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
@@ -134,7 +133,6 @@ const EditTools = (props: any) => {
     // if (!multiMode) {
     (context.layerContainer as any).clearLayers();
     // }
-    setOpenCancel(true);
   });
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
@@ -317,7 +315,6 @@ const EditTools = (props: any) => {
             setGeometry={props.geometryState.setGeometry}
             context={context.layerContainer}
           />
-          {openCancel && <MobileDrawCancel setOpenCancel={setOpenCancel} />}
         </>
       )}
       {/*<IconButton
