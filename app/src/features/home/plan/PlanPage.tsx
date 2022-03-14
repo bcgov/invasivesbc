@@ -166,7 +166,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       }
     };
     queryForCurrentTripGeo();
-  }, [currentTripId, databaseContext]);
+  }, [currentTripId]);
 
   useEffect(() => {
     if (trips != null) {
@@ -223,7 +223,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       await getTrips();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded, tripDeleted, dataAccess, databaseContext]);
+  }, [newTripID, tripsLoaded, tripDeleted]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -273,7 +273,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         />
       </Paper>
     );
-  }, [geometry, interactiveGeometry, cacheMapTilesFlag, classes.map, classes.paper, contextMenuState, extent, props]);
+  }, [geometry, interactiveGeometry]);
 
   return (
     <MapRecordsContextProvider>
