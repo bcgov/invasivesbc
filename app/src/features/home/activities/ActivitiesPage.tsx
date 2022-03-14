@@ -5,14 +5,13 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { Box, Container, Grid, InputLabel, ListItem } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
-import makeStyles from '@mui/styles/makeStyles';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import ActivitiesList2 from '../../../components/activities-list/ActivitiesList2';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { RecordSet } from './activityRecordset/RecordSet';
 import MenuOptions from './MenuOptions';
+
+// not sure what we're using this for?
 interface IStatusPageProps {
   classes?: any;
 }
@@ -22,12 +21,14 @@ const flexContainer = {
   padding: 0
 };
 
+// Where state is managed for all the sets of records, updates localstorage as it happens.
+// Everything that uses this context needs a memo that adequately checks dependencies, and none of them
+// should call useState setters in their parents. Thats where the render loops are coming from in the Layer Picker etc.
 export const RecordSetContext = React.createContext(null);
-
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
-
   const dataAccess = useDataAccess();
+
   const getInitialState = async () => {
     const oldState = await dataAccess.getAppState();
     if (oldState?.recordSets) {
@@ -54,8 +55,6 @@ export const RecordSetProvider = (props) => {
 
   const updateState = async () => {
     const oldState = await dataAccess.getAppState();
-    console.log('****');
-    console.dir(oldState);
     const oldRecordSets = oldState?.recordSets;
     if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
       dataAccess.setAppState({ recordSets: { ...recordSetState } });
@@ -65,7 +64,6 @@ export const RecordSetProvider = (props) => {
   useEffect(() => {
     updateState();
   }, [JSON.stringify(recordSetState)]);
-  //  }, []);
 
   if (recordSetState !== null) {
     return (
@@ -81,8 +79,6 @@ const RecordSetRenderer = (props) => {
   const cntxt = useContext(RecordSetContext);
 
   return useMemo(() => {
-    console.log('RECORDSETRENDERERj');
-    console.log(cntxt.recordSetState);
     return (
       <>
         {Object.keys(cntxt.recordSetState).map((recordSetName, index) => {
@@ -101,16 +97,18 @@ const RecordSetRenderer = (props) => {
   }, []);
 };
 
-//Style:  I tried to use className: mainHeader and put css in that class but never coloured the box
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
 
+  // main page component - moved everything in here so it could be wrapped in a context local to this page.
   const PageContainer = (props) => {
+    // record to act on and context for all children dealing with record sets, types, and filters
     const [selectedRecord, setSelectedRecord] = useState<any>({});
     const recordStateContext = useContext(RecordSetContext);
-    const [options, setOptions] = useState<any>();
 
+    // the menu at the bottom:
+    const [options, setOptions] = useState<any>();
     useEffect(() => {
       setOptions([
         {
@@ -153,12 +151,6 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           icon: PlaylistAddIcon,
           onClick: () => {
             recordStateContext.add();
-            /*if (recordSets && recordSets.length > 0) {
-            console.log(recordSets.length);
-            setRecordSets([...recordSets, { [JSON.stringify(recordSets.length + 1)]: 'another one' }]);
-          } else {
-            console.log('doesnt chamge');
-            setRecordSets([{ name: 'another one' }]);*/
           }
         },
         {
@@ -181,7 +173,6 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
               console.log('unable to http ');
               console.log(e);
             }
-            //return dbActivity.activity_id;
             setTimeout(() => {
               history.push({ pathname: `/home/activity` });
             }, 1000);
@@ -189,6 +180,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         }
       ]);
     }, []);
+
     return useMemo(() => {
       /* set up main menu bar options: */
       return (
@@ -216,6 +208,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
             />
           </Box>
 
+          {/*the main list of record sets:*/}
           <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.originalActivityPageClassName}>
             <Grid container xs={12} height="50px" display="flex" justifyContent="left">
               <Grid sx={{ pb: 15 }} xs={12} item>
@@ -227,10 +220,8 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         </>
       );
     }, [JSON.stringify(options)]);
-    //    }, []);
   };
 
-  console.log('*****main activiies page rerendering');
   return (
     <Box sx={{ height: '100%' }}>
       <RecordSetProvider>

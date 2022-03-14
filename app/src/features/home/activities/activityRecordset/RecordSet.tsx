@@ -8,6 +8,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Grid,
   Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,6 +22,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { RecordSetContext } from '../ActivitiesPage';
 import { setUncaughtExceptionCaptureCallback } from 'process';
+import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -194,7 +196,7 @@ export const RecordSet = (props) => {
         </AccordionSummary>
       );
       //}, [JSON.stringify({ expanded: expanded, mapToggle: mapToggle, colour: colour, recordSetName: recordSetName })]);
-    }, []);
+    }, []); // todo - only check if number of record sets, or one of their header button or properties needs to re render
   };
 
   return (
@@ -207,7 +209,17 @@ export const RecordSet = (props) => {
         {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
         <RecordSetAccordionSummary canRemove={props.canRemove} />
         <AccordionDetails>
-          <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />
+          <Grid sx={{ pt: 2 }} xs={12} item>
+            <ActivityGrid
+              setName={props.setName}
+              //  formType={formType}
+              // subType={subType}
+              //    setSelectedRecord={props.setSelectedRecord}
+              //   filtersCallBack={setFilters}
+              //   initialFilters={filters}
+            />
+          </Grid>
+          {/*} <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
         </AccordionDetails>
       </Accordion>
     </>
