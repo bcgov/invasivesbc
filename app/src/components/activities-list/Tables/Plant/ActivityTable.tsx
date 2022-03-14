@@ -1,12 +1,8 @@
-import Accordion from '@mui/material/Accordion';
 import EditIcon from '@mui/icons-material/Edit';
 
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect, useMemo, createContext, useRef } from 'react';
@@ -29,6 +25,7 @@ import { FormControl, InputLabel, List, ListItem, MenuItem, Select } from '@mui/
 import { DocType } from 'constants/database';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
+import { RecordSetContext } from 'features/home/activities/ActivitiesPage';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -136,9 +133,40 @@ const ActivityGrid = (props) => {
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
+  const [filters, setFilters] = useState(null);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
+
+  //Grab filter state from main context
+  const recordSetContext = useContext(RecordSetContext);
+  useEffect(() => {
+    const parentStateCollection = recordSetContext.recordSetState;
+    const oldRecordSetState = parentStateCollection[props.setName];
+    console.dir(oldRecordSetState);
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
+      setFilters(oldRecordSetState.gridFilters);
+    } else {
+      setFilters({ enabled: false });
+    }
+  }, []);
+
+  //update state in main context and localstorage:
+  // can probably move some of the 'get old stuff from parent first' logic up to the context
+  useEffect(() => {
+    const parentStateCollection = recordSetContext.recordSetState;
+    const oldRecordSetState = parentStateCollection[props.setName];
+    if (parentStateCollection && oldRecordSetState !== null) {
+      const oldFilters = parentStateCollection[props.setName].gridFilters;
+      if (oldFilters && filters !== null && JSON.stringify(oldFilters) !== JSON.stringify(filters)) {
+        recordSetContext.setRecordSetState({
+          ...parentStateCollection,
+          [props.setName]: { ...oldRecordSetState, gridFilters: { ...filters } }
+        });
+      }
+    }
+  }, [filters]);
+
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
   };
@@ -217,14 +245,16 @@ const ActivityGrid = (props) => {
     [rows]
   );
 
+  /*
   useEffect(() => {
     props.filtersCallBack(filters);
   }, [filters]);
+  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
       return keyAndNameArray.map((x) => {
-        if (filters.enabled) {
+        if (filters && filters.enabled) {
           return {
             ...x,
             headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
