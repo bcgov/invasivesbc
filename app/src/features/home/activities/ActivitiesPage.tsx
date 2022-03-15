@@ -45,10 +45,10 @@ export const RecordSetProvider = (props) => {
   };
 
   const add = () => {
-    setRecordSetState({
-      ...recordSetState,
-      [JSON.stringify(Object.keys(recordSetState).length + 1)]: { recordSetName: 'New Record Set' }
-    });
+    setRecordSetState((prev) => ({
+      ...prev,
+      [JSON.stringify(Object.keys(prev).length + 1)]: { recordSetName: 'New Record Set' }
+    }));
   };
 
   useEffect(() => {
