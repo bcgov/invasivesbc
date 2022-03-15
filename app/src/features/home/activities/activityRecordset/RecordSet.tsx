@@ -1,6 +1,6 @@
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
+import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityGrid';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
 import { Accordion, AccordionDetails, Grid } from '@mui/material';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
@@ -28,6 +28,7 @@ export const RecordSet = (props) => {
   const [mapToggle, setMapToggle] = useState(false);
   const [colour, setColour] = useState('blue');
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
+  const [advancedFilters, setAdvancedFilters] = useState([]);
   const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
 
   const recordSetContext = useContext(RecordSetContext);
@@ -55,6 +56,9 @@ export const RecordSet = (props) => {
           break;
         case 'recordSetName':
           setRecordSetName(initial);
+          break;
+        case 'advancedFilters':
+          setAdvancedFilters(initial);
           break;
         default:
           break;
@@ -85,6 +89,9 @@ export const RecordSet = (props) => {
           case 'recordSetName':
             newState['recordSetName'] = recordSetName;
             break;
+          case 'advancedFilters':
+            newState['advancedFilters'] = advancedFilters;
+            break;
         }
       });
 
@@ -100,11 +107,12 @@ export const RecordSet = (props) => {
     getInitialPropertyState('mapToggle');
     getInitialPropertyState('colour');
     getInitialPropertyState('recordSetName');
+    getInitialPropertyState('advancedFilters');
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName']);
-  }, [expanded, mapToggle, colour, recordSetName]);
+    updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName', 'advancedFilters']);
+  }, [expanded, mapToggle, colour, recordSetName, advancedFilters]);
 
   return useMemo(
     () => (
@@ -132,6 +140,8 @@ export const RecordSet = (props) => {
             <Grid sx={{ pt: 2 }} xs={12} item>
               <ActivityGrid
                 setName={props.setName}
+                advancedFilters={advancedFilters}
+                setAdvancedFilters={setAdvancedFilters}
                 //  formType={formType}
                 // subType={subType}
                 //    setSelectedRecord={props.setSelectedRecord}

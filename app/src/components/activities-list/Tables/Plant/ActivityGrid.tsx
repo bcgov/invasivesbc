@@ -5,7 +5,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Typography from '@mui/material/Typography';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState, useEffect, useMemo, createContext, useRef } from 'react';
+import React, { useContext, useState, useEffect, useMemo, createContext } from 'react';
 import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -17,12 +17,11 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { List, ListItem, MenuItem, Select } from '@mui/material';
+import { IconButton, List, ListItem } from '@mui/material';
+import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 import SaveIcon from '@mui/icons-material/Save';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -115,11 +114,8 @@ function FilterRenderer<R, SR, T extends HTMLOrSVGElement>({
 }
 
 const ActivityGrid = (props) => {
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
-    dialogActions: [],
-    dialogOpen: false,
-    dialogTitle: '',
-    dialogContentText: null
+  const [filterDialog, setFilterDialog] = useState<IFilterDialog>({
+    dialogOpen: false
   });
   const classes = useStyles();
   const dataAccess = useDataAccess();
@@ -127,6 +123,7 @@ const ActivityGrid = (props) => {
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
+  const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>(props.advancedFilters);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState(null);
   const [save, setSave] = useState(0);
@@ -238,6 +235,7 @@ const ActivityGrid = (props) => {
       event.stopPropagation();
     }
   }
+
   const developerOptions = useMemo(
     () =>
       Array.from(new Set(rows.map((r) => r.developer))).map((d) => ({
@@ -246,12 +244,6 @@ const ActivityGrid = (props) => {
       })),
     [rows]
   );
-
-  /*
-  useEffect(() => {
-    props.filtersCallBack(filters);
-  }, [filters]);
-  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
@@ -347,8 +339,6 @@ const ActivityGrid = (props) => {
         return (a, b) => {
           return a[sortColumn].localeCompare(b[sortColumn]);
         };
-      //default:
-      // throw new Error(`unsupported sortColumn: "${sortColumn}"`);
     }
   }
 
@@ -383,161 +373,32 @@ const ActivityGrid = (props) => {
   const FilterRow = (props) => {
     return (
       <ListItem key={props.key} sx={{ width: 'auto' }}>
-        <Button variant="outlined">
-          {props.filterField} = {props.filterValue}
-        </Button>
-        <EditIcon
+        <Button
+          variant="outlined"
           onClick={(e) => {
             e.stopPropagation();
             newFilter(props.filterKey);
           }}
-          sx={{ color: themeType ? 'black' : 'white', fontSize: '10' }}
-        />
+          endIcon={<EditIcon sx={{ fontSize: '10' }} />}>
+          {props.filterField} = {props.filterValue}
+        </Button>
       </ListItem>
     );
   };
 
-  const FilterWizard = (props) => {
-    const choices = ['Jurisdiction', 'Species Positive', 'Species Negative', 'Metabase Report ID'];
-
-    const [jurisdictionOptions, setJurisdictionOptions] = useState([]);
-
-    const speciesPOptions = ['Blueweed', 'Cheatgrass'];
-    const speciesNOptions = ['Blueweed', 'Cheatgrass'];
-    const invasivesApi = useInvasivesApi();
-    const { fetchCodeTable } = invasivesApi;
-
-    const [choice, setChoice] = useState('Jurisdiction');
-    const [subChoices, setSubChoices] = useState([...jurisdictionOptions]);
-    const [subChoice, setSubChoice] = useState(
-      'Ministry of Forests, Lands, Natural Resource Operations & Rural Development'
-    );
-
-    useEffect(() => {
-      if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
-        const prevChoices = props.allFiltersBefore.filter((f) => {
-          return f.filterKey === props.filterKey;
-        })[0];
-        setChoice(prevChoices.filterField);
-        setSubChoice(prevChoices.filterValue);
-      }
-
-      const getJurisdictionOptions = async () => {
-        console.log('running');
-        const data = await fetchCodeTable('42');
-        setJurisdictionOptions(data);
-      };
-
-      getJurisdictionOptions();
-    }, []);
-
-    useEffect(() => {
-      switch (choice) {
-        case 'Jurisdiction':
-          setSubChoices(
-            jurisdictionOptions.map((jur) => {
-              console.log(jur);
-              return jur.description;
-            })
-          );
-          setSubChoice('BC Hydro');
-          break;
-        case 'Species Positive':
-          setSubChoices([...speciesPOptions]);
-          setSubChoice('Blueweed');
-          break;
-        case 'Species Negative':
-          setSubChoices([...speciesNOptions]);
-          setSubChoice('Cheatgrass');
-          break;
-        case 'Metabase Report ID':
-          setSubChoices([...speciesNOptions]);
-          setSubChoice('Cheatgrass');
-          break;
-      }
-    }, [choice, jurisdictionOptions]);
-
-    const DropDown = (props) => {
-      return (
-        <>
-          <Select
-            onChange={(e) => {
-              props.setChoice(e.target.value);
-            }}
-            value={props.choice}>
-            {props.choices && props.choices.length > 0 ? (
-              props.choices.map((c) => {
-                return <MenuItem value={c}>{c}</MenuItem>;
-              })
-            ) : (
-              <></>
-            )}
-          </Select>
-        </>
-      );
-    };
-
-    return (
-      <>
-        <DropDown choice={choice} choices={choices} setChoice={setChoice} />
-        <DropDown choice={subChoice} choices={subChoices} setChoice={setSubChoice} />
-        <Button
-          onClick={() => {
-            if (props.allFiltersBefore && props.allFiltersBefore.length > 0 && !props.filterKey) {
-              props.setAllFilters([
-                ...props.allFiltersBefore.filter((f) => {
-                  return f.filterKey !== choice + subChoice;
-                }),
-                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
-              ]);
-            } else if (props.allFiltersBefore && props.allFiltersBefore.length > 0 && props.filterKey) {
-              props.setAllFilters([
-                ...props.allFiltersBefore.filter((f) => {
-                  return f.filterKey !== props.filterKey;
-                }),
-                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
-              ]);
-            } else
-              props.setAllFilters([{ filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }]);
-
-            props.closeActionDialog();
-          }}>
-          Save
-        </Button>
-      </>
-    );
-  };
-  const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>();
+  // useEffect(() => {
+  //   props.setAdvancedFilters(advancedFilterRows);
+  // }, [setAdvancedFilterRows]);
 
   const newFilter = (filterKey) => {
-    setWarningDialog({
+    setFilterDialog({
       dialogOpen: true,
-      dialogTitle: 'Edit custom filter',
-      dialogContentText: 'Choose an inclusive filter:',
-      dialogActions: [
-        {
-          actionName: 'Cancel',
-          actionOnClick: async () => {
-            setWarningDialog({ ...warningDialog, dialogOpen: false });
-          }
-        },
-        {
-          actionName: 'Select and Create',
-          usesChildren: true,
-          children: (
-            <FilterWizard
-              filterKey={filterKey}
-              setAllFilters={setAdvancedFilterRows}
-              allFiltersBefore={advancedFilterRows}
-              closeActionDialog={() => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              }}
-            />
-          ),
-          actionOnClick: async () => {},
-          autoFocus: true
-        }
-      ]
+      filterKey: filterKey,
+      setAllFilters: setAdvancedFilterRows,
+      allFiltersBefore: advancedFilterRows,
+      closeActionDialog: () => {
+        setFilterDialog({ ...filterDialog, dialogOpen: false });
+      }
     });
   };
 
@@ -584,10 +445,10 @@ const ActivityGrid = (props) => {
                 justifyContent: 'start',
                 alignItems: 'center'
               }}>
-              <Button onClick={() => newFilter(undefined)} size={'small'} variant="contained">
+              <Button onClick={() => newFilter(undefined)} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <AddBoxIcon></AddBoxIcon>Advanced Filter
               </Button>
-              <Button onClick={() => setSave(Math.random())} size={'small'} variant="contained">
+              <Button onClick={() => setSave(Math.random())} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <FilterAltIcon />
                 <SaveIcon />
                 Apply Filters
@@ -618,17 +479,19 @@ const ActivityGrid = (props) => {
             </div>
           </FilterContext.Provider>
         )}
-        <WarningDialog
-          dialogOpen={warningDialog.dialogOpen}
-          dialogTitle={warningDialog.dialogTitle}
-          dialogActions={warningDialog.dialogActions}
-          dialogContentText={warningDialog.dialogContentText}
+
+        <FilterDialog
+          filterKey={filterDialog.filterKey}
+          setAllFilters={filterDialog.setAllFilters}
+          allFiltersBefore={filterDialog.allFiltersBefore}
+          dialogOpen={filterDialog.dialogOpen}
+          closeActionDialog={filterDialog.closeActionDialog}
         />
       </Box>
     ),
     [
       recordSetContext.recordSetState[props.setName],
-      warningDialog,
+      filterDialog,
       advancedFilterRows,
       filters,
       activities,
