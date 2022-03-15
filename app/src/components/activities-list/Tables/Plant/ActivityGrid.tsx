@@ -123,7 +123,7 @@ const ActivityGrid = (props) => {
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
-  const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>(props.advancedFilters);
+  const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>([]);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState(null);
   const [save, setSave] = useState(0);
@@ -141,30 +141,41 @@ const ActivityGrid = (props) => {
     } else {
       setFilters({ enabled: false });
     }
+
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
+      setAdvancedFilterRows(oldRecordSetState.advancedFilters);
+    } else {
+      setAdvancedFilterRows([]);
+    }
   }, []);
 
   //update state in main context and localstorage:
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
-    const parentStateCollection = recordSetContext.recordSetState;
-    const oldRecordSetState = parentStateCollection[props.setName];
-    if (oldRecordSetState !== null && save !== 0) {
-      const oldFilters = parentStateCollection[props.setName].gridFilters;
-      if (oldFilters && filters !== null && JSON.stringify(oldFilters) !== JSON.stringify(filters)) {
-        recordSetContext.setRecordSetState({
-          ...parentStateCollection,
-          [props.setName]: { ...oldRecordSetState, gridFilters: { ...filters } }
-        });
+    recordSetContext.setRecordSetState((prev) => {
+      if (
+        (save !== 0 &&
+          filters !== null &&
+          prev[props.setName] !== null &&
+          JSON.stringify(prev[props.setName].gridFilters) !== JSON.stringify(filters)) ||
+        JSON.stringify(prev[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+      ) {
+        return {
+          ...prev,
+          [props.setName]: { ...prev[props.setName], gridFilters: { ...filters }, advancedFilters: advancedFilterRows }
+        };
       } else {
-        if (parentStateCollection && oldRecordSetState !== null && filters !== null) {
-          recordSetContext.setRecordSetState({
-            ...parentStateCollection,
-            [props.setName]: { ...oldRecordSetState, gridFilters: { ...filters } }
-          });
-        }
+        return prev;
       }
-    }
+    });
   }, [save]);
+
+  useEffect(() => {
+    getActivities();
+  }, [
+    recordSetContext.recordSetState[props.setName].gridFilters,
+    recordSetContext.recordSetState[props.setName].advancedFilters
+  ]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -174,6 +185,7 @@ const ActivityGrid = (props) => {
     console.log(userInfo.preferred_username);
     console.log(rolesUserHasAccessTo);
     console.log(rolesUserHasAccessTo);
+
     let filter: any = {
       created_by: userInfo.preferred_username,
       user_roles: rolesUserHasAccessTo
@@ -182,6 +194,10 @@ const ActivityGrid = (props) => {
       filter.activity_subtype = [props.subType];
     } else if (props.formType) {
       filter.activity_type = [props.formType];
+    }
+    if (recordSetContext.recordSetState[props.setName].gridFilters) {
+    }
+    if (recordSetContext.recordSetState[props.setName].advancedFilters) {
     }
 
     const act_list = await dataAccess.getActivities(filter);
@@ -210,11 +226,6 @@ const ActivityGrid = (props) => {
       });
     }
   }, [activitiesSelected]);
-
-  useEffect(() => {
-    getActivities();
-    console.dir(props);
-  }, [props.formType, props.subType, props.initialFilters]);
 
   // HEADER FILTER STUFF:
 
