@@ -75,26 +75,47 @@ export const RecordSetProvider = (props) => {
   } else return <></>;
 };
 
+// https://stackoverflow.com/a/60325899
 const RecordSetRenderer = (props) => {
   const cntxt = useContext(RecordSetContext);
+
+  const RecordSetMemo = React.memo((props: any) => (
+    <RecordSet key={props.key} canRemove={props.canRemove} setName={props.setName} />
+  ));
+  // do database fetching here, before RecordSetContext.value.map, & useCallback
+
+  const [sets, setSets] = useState(null);
+
+  useEffect(() => {
+    if (cntxt.recordSetState) {
+      console.log('TRUE');
+      setSets(Object.keys(cntxt.recordSetState).sort());
+    }
+    console.dir(sets);
+  }, [cntxt.recordSetState]);
 
   return useMemo(() => {
     return (
       <>
-        {Object.keys(cntxt.recordSetState).map((recordSetName, index) => {
-          console.log(['1', '2'].includes(recordSetName));
-          return (
-            <RecordSet
-              key={index}
-              canRemove={['1', '2'].includes(recordSetName) ? false : true}
-              setName={recordSetName}
-            />
-          );
-        })}
+        {sets ? (
+          //Object.keys(sets).map((recordSetName, index) => {
+          sets.map((recordSetName, index) => {
+            console.log(['1', '2'].includes(recordSetName));
+            return (
+              <RecordSet
+                key={index}
+                canRemove={['1', '2'].includes(recordSetName) ? false : true}
+                setName={recordSetName}
+              />
+            );
+          })
+        ) : (
+          <></>
+        )}
       </>
     );
     //}, [JSON.stringify(cntxt.recordSetState)]);
-  }, []);
+  }, [sets]);
 };
 
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
@@ -212,20 +233,25 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.originalActivityPageClassName}>
             <Grid container xs={12} height="50px" display="flex" justifyContent="left">
               <Grid sx={{ pb: 15 }} xs={12} item>
-                <RecordSetRenderer />
+                {props.children}
               </Grid>
               <Grid sx={{ pb: 15 }} xs={12} item></Grid>
             </Grid>
           </Container>
         </>
       );
-    }, [JSON.stringify(options)]);
+      //  }, [JSON.stringify(options)]);
+    }, [options]);
   };
+
+  const MemoPageContainer = React.memo(PageContainer);
 
   return (
     <Box sx={{ height: '100%' }}>
       <RecordSetProvider>
-        <PageContainer originalActivityPageClassName={props.classes.container} />;
+        <MemoPageContainer originalActivityPageClassName={props.classes.container}>
+          <RecordSetRenderer />
+        </MemoPageContainer>
       </RecordSetProvider>
     </Box>
   );
