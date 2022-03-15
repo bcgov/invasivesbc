@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
 import { Accordion, AccordionDetails, Grid } from '@mui/material';
-import { RecordSetContext } from 'contexts/recordSetContext';
+import { RecordSetContext } from '../../../../contexts/recordSetContext';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -31,6 +31,7 @@ export const RecordSet = (props) => {
   const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
 
   const recordSetContext = useContext(RecordSetContext);
+  const { remove } = recordSetContext;
 
   const getInitialPropertyState = (propertyName) => {
     let initial = null;
@@ -115,6 +116,7 @@ export const RecordSet = (props) => {
         {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
         <RecordSetAccordionSummary
           recordSetName={recordSetName}
+          setName={props.setName}
           setRecordSetName={setRecordSetName}
           colours={colours}
           colour={colour}
@@ -122,6 +124,7 @@ export const RecordSet = (props) => {
           mapToggle={mapToggle}
           setMapToggle={setMapToggle}
           expanded={expanded}
+          remove={remove}
           canRemove={props.canRemove}
         />
         <AccordionDetails>

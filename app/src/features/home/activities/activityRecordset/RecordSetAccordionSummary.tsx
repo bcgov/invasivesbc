@@ -101,7 +101,6 @@ const RecordSetAccordionSummary = (props) => {
             checked={props.mapToggle}
             onChange={(e) => {
               e.stopPropagation();
-              alert(!props.mapToggle);
               props.setMapToggle((prev) => !prev);
             }}
           />
@@ -115,9 +114,9 @@ const RecordSetAccordionSummary = (props) => {
                 confirm(
                   'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
                 )
-                /*eslint-enable*/
-              )
-                alert('TODO, remove');
+              ) {
+                props.remove(props.setName);
+              }
             }}
             style={{ justifySelf: 'end', alignSelf: 'right' }}
             variant="outlined">
