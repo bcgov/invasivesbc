@@ -1,5 +1,5 @@
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
 import { Accordion, AccordionDetails, Grid } from '@mui/material';
@@ -31,7 +31,7 @@ export const RecordSet = (props) => {
   const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
 
   const recordSetContext = useContext(RecordSetContext);
-  const { remove } = recordSetContext;
+  const { remove, recordSetState } = recordSetContext;
 
   const getInitialPropertyState = (propertyName) => {
     let initial = null;
@@ -106,42 +106,45 @@ export const RecordSet = (props) => {
     updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName']);
   }, [expanded, mapToggle, colour, recordSetName]);
 
-  return (
-    <>
-      <Accordion
-        onChange={(e) => {
-          setExpanded((prev) => !prev);
-        }}
-        expanded={expanded}>
-        {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
-        <RecordSetAccordionSummary
-          recordSetName={recordSetName}
-          setName={props.setName}
-          setRecordSetName={setRecordSetName}
-          colours={colours}
-          colour={colour}
-          setColour={setColour}
-          mapToggle={mapToggle}
-          setMapToggle={setMapToggle}
-          expanded={expanded}
-          remove={remove}
-          canRemove={props.canRemove}
-        />
-        <AccordionDetails>
-          <Grid sx={{ pt: 2 }} xs={12} item>
-            <ActivityGrid
-              setName={props.setName}
-              //  formType={formType}
-              // subType={subType}
-              //    setSelectedRecord={props.setSelectedRecord}
-              //   filtersCallBack={setFilters}
-              //   initialFilters={filters}
-            />
-          </Grid>
-          {/*} <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
-        </AccordionDetails>
-      </Accordion>
-    </>
+  return useMemo(
+    () => (
+      <>
+        <Accordion
+          onChange={(e) => {
+            setExpanded((prev) => !prev);
+          }}
+          expanded={expanded}>
+          {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
+          <RecordSetAccordionSummary
+            recordSetName={recordSetName}
+            setName={props.setName}
+            setRecordSetName={setRecordSetName}
+            colours={colours}
+            colour={colour}
+            setColour={setColour}
+            mapToggle={mapToggle}
+            setMapToggle={setMapToggle}
+            expanded={expanded}
+            remove={remove}
+            canRemove={props.canRemove}
+          />
+          <AccordionDetails>
+            <Grid sx={{ pt: 2 }} xs={12} item>
+              <ActivityGrid
+                setName={props.setName}
+                //  formType={formType}
+                // subType={subType}
+                //    setSelectedRecord={props.setSelectedRecord}
+                //   filtersCallBack={setFilters}
+                //   initialFilters={filters}
+              />
+            </Grid>
+            {/*} <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
+          </AccordionDetails>
+        </Accordion>
+      </>
+    ),
+    [recordSetState[props.setName]]
   );
 };
 export default RecordSet;

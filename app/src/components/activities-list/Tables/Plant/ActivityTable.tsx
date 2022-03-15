@@ -17,15 +17,13 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useHistory } from 'react-router';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { List, ListItem, MenuItem, Select } from '@mui/material';
 import { DocType } from 'constants/database';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 import SaveIcon from '@mui/icons-material/Save';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { RecordSetContext } from 'contexts/recordSetContext';
+import { RecordSetContext } from '../../../../contexts/recordSetContext';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -544,84 +542,92 @@ const ActivityGrid = (props) => {
     });
   };
 
-  return (
-    <Box maxHeight="100%" paddingBottom="20px">
-      {!activities ? (
-        <CircularProgress />
-      ) : (
-        <FilterContext.Provider value={filters}>
-          {advancedFilterRows && advancedFilterRows.length > 0 ? <Typography>Advanced Filters</Typography> : <></>}
-          <List
-            sx={{
-              pb: 7,
-              display: 'flex',
-              flexWrap: 'wrap',
-              width: '100%',
-              height: 'auto',
-              flexDirection: 'row',
-              justifyContent: 'start',
-              alignItems: 'center'
-            }}>
-            {advancedFilterRows && advancedFilterRows.length > 0 ? (
-              advancedFilterRows.map((r, i) => {
-                return (
-                  <FilterRow filterField={r.filterField} filterValue={r.filterValue} filterKey={r.filterKey} key={i} />
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </List>
-          <Box
-            sx={{
-              pb: 7,
-              display: 'flex',
-              width: '100%',
-              flexDirection: 'row',
-              justifyContent: 'start',
-              alignItems: 'center'
-            }}>
-            <Button onClick={() => newFilter(undefined)} size={'small'} variant="contained">
-              <AddBoxIcon></AddBoxIcon>Advanced Filter
-            </Button>
-            <Button onClick={() => setSave(Math.random())} size={'small'} variant="contained">
-              <FilterAltIcon />
-              <SaveIcon />
-              Apply Filters
-            </Button>
-            <FilterToggle style={{ marginLeft: 'auto' }} />
-          </Box>
-          <div id="xDataGrid">
-            <DataGrid
-              //TODO THEME MODE
-              //style={{ color: 'white', backgroundColor: 'white' }}
+  return useMemo(
+    () => (
+      <Box maxHeight="100%" paddingBottom="20px">
+        {!activities ? (
+          <CircularProgress />
+        ) : (
+          <FilterContext.Provider value={filters}>
+            {advancedFilterRows && advancedFilterRows.length > 0 ? <Typography>Advanced Filters</Typography> : <></>}
+            <List
+              sx={{
+                pb: 7,
+                display: 'flex',
+                flexWrap: 'wrap',
+                width: '100%',
+                height: 'auto',
+                flexDirection: 'row',
+                justifyContent: 'start',
+                alignItems: 'center'
+              }}>
+              {advancedFilterRows && advancedFilterRows.length > 0 ? (
+                advancedFilterRows.map((r, i) => {
+                  return (
+                    <FilterRow
+                      filterField={r.filterField}
+                      filterValue={r.filterValue}
+                      filterKey={r.filterKey}
+                      key={i}
+                    />
+                  );
+                })
+              ) : (
+                <></>
+              )}
+            </List>
+            <Box
+              sx={{
+                pb: 7,
+                display: 'flex',
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'start',
+                alignItems: 'center'
+              }}>
+              <Button onClick={() => newFilter(undefined)} size={'small'} variant="contained">
+                <AddBoxIcon></AddBoxIcon>Advanced Filter
+              </Button>
+              <Button onClick={() => setSave(Math.random())} size={'small'} variant="contained">
+                <FilterAltIcon />
+                <SaveIcon />
+                Apply Filters
+              </Button>
+              <FilterToggle style={{ marginLeft: 'auto' }} />
+            </Box>
+            <div id="xDataGrid">
+              <DataGrid
+                //TODO THEME MODE
+                //style={{ color: 'white', backgroundColor: 'white' }}
 
-              enableVirtualization
-              headerRowHeight={filters.enabled ? 70 : undefined}
-              style={{ height: '100%' }}
-              className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
-              // rows={filteredRows}
-              rows={filters.enabled ? filteredRowsDynamic : sortedRows}
-              defaultColumnOptions={{ sortable: true }}
-              //columns={columns}
-              onRowClick={(r) => {
-                setActivitiesSelected(r);
-              }}
-              columns={columnsDynamic}
-              sortColumns={sortColumns}
-              onSortColumnsChange={setSortColumns}
-              components={{ rowRenderer: RowRenderer }}
-            />
-          </div>
-        </FilterContext.Provider>
-      )}
-      <WarningDialog
-        dialogOpen={warningDialog.dialogOpen}
-        dialogTitle={warningDialog.dialogTitle}
-        dialogActions={warningDialog.dialogActions}
-        dialogContentText={warningDialog.dialogContentText}
-      />
-    </Box>
+                enableVirtualization
+                headerRowHeight={filters.enabled ? 70 : undefined}
+                style={{ height: '100%' }}
+                className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
+                // rows={filteredRows}
+                rows={filters.enabled ? filteredRowsDynamic : sortedRows}
+                defaultColumnOptions={{ sortable: true }}
+                //columns={columns}
+                onRowClick={(r) => {
+                  setActivitiesSelected(r);
+                }}
+                columns={columnsDynamic}
+                sortColumns={sortColumns}
+                onSortColumnsChange={setSortColumns}
+                components={{ rowRenderer: RowRenderer }}
+              />
+            </div>
+          </FilterContext.Provider>
+        )}
+        <WarningDialog
+          dialogOpen={warningDialog.dialogOpen}
+          dialogTitle={warningDialog.dialogTitle}
+          dialogActions={warningDialog.dialogActions}
+          dialogContentText={warningDialog.dialogContentText}
+        />
+      </Box>
+    ),
+    [recordSetContext.recordSetState[props.setName]]
   );
 };
 export default ActivityGrid;

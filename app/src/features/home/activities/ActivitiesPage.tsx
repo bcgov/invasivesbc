@@ -11,7 +11,7 @@ import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
-import { RecordSetContext, RecordSetProvider } from 'contexts/recordSetContext';
+import { RecordSetContext, RecordSetProvider } from '../../../contexts/recordSetContext';
 import NewRecordWizard from 'components/activities-list/NewRecordWizard';
 
 // not sure what we're using this for?
@@ -177,20 +177,11 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           />
         </>
       );
-      //nfg: }, [JSON.stringify(options)]);
-      //nfg: }, [options, warningDialog, recordStateContext.length]);
-      //nfg: }, [options, warningDialog, recordStateContext.recordSetState.length]);
     }, [options, warningDialog, recordStateContext.recordSetState.length]);
   };
-
-  const MemoPageContainer = React.memo(PageContainer);
-
   return (
     <Box sx={{ height: '100%' }}>
       <RecordSetProvider>
-        {/*}        <MemoPageContainer originalActivityPageClassName={props.classes.container}>
-          <RecordSetRenderer />
-            </MemoPageContainer>*/}
         <PageContainer originalActivityPageClassName={props.classes.container}>
           <RecordSetRenderer />
         </PageContainer>
