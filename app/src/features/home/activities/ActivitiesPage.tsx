@@ -40,7 +40,7 @@ export const RecordSetProvider = (props) => {
         recordSets: { ['1']: { recordSetName: 'My Drafts' }, ['2']: { recordSetName: 'All Data' } }
       };
       dataAccess.setAppState({ ...defaults });
-      setRecordSetState({ ...defaults });
+      setRecordSetState({ ...defaults.recordSets });
     }
   };
 
@@ -105,7 +105,7 @@ const RecordSetRenderer = (props) => {
             console.log(['1', '2'].includes(recordSetName));
             return (
               <RecordSet
-                key={index}
+                key={recordSetName}
                 canRemove={['1', '2'].includes(recordSetName) ? false : true}
                 setName={recordSetName}
               />
@@ -227,7 +227,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           }
         }
       ]);
-    }, []);
+    }, [recordStateContext.recordSetState.length]);
 
     return useMemo(() => {
       /* set up main menu bar options: */
@@ -273,8 +273,10 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           />
         </>
       );
-      //  }, [JSON.stringify(options)]);
-    }, [options, warningDialog]);
+      //nfg: }, [JSON.stringify(options)]);
+      //nfg: }, [options, warningDialog, recordStateContext.length]);
+      //nfg: }, [options, warningDialog, recordStateContext.recordSetState.length]);
+    }, [options, warningDialog, recordStateContext.recordSetState.length]);
   };
 
   const MemoPageContainer = React.memo(PageContainer);
@@ -282,9 +284,12 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   return (
     <Box sx={{ height: '100%' }}>
       <RecordSetProvider>
-        <MemoPageContainer originalActivityPageClassName={props.classes.container}>
+        {/*}        <MemoPageContainer originalActivityPageClassName={props.classes.container}>
           <RecordSetRenderer />
-        </MemoPageContainer>
+            </MemoPageContainer>*/}
+        <PageContainer originalActivityPageClassName={props.classes.container}>
+          <RecordSetRenderer />
+        </PageContainer>
       </RecordSetProvider>
     </Box>
   );

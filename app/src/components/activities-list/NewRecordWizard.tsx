@@ -41,8 +41,6 @@ const NewRecordWizard = (props: any) => {
   const { keycloak } = useKeycloak();
   const [formType, setFormType] = useState('Plant');
   const [subType, setSubType] = useState('Observations');
-  const [oldAppState, setOldAppState] = useState(null);
-  const [filters, setFilters] = useState(null);
 
   useEffect(() => {
     const userId = async () => {
@@ -59,8 +57,6 @@ const NewRecordWizard = (props: any) => {
     if (!userId) throw "Keycloak error: can not get current user's username";
 
     //get users last choice
-
-    da.getAppState(databaseContext).then((v) => setOldAppState(v));
   }, []);
 
   /*
