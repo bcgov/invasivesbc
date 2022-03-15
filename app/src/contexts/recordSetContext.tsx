@@ -29,6 +29,20 @@ export const RecordSetProvider = (props) => {
     }));
   };
 
+  const remove = (recordSetName: string) => {
+    setRecordSetState((prev) => {
+      let newRecordSetState = {};
+
+      Object.keys(prev).forEach((key) => {
+        if (key !== recordSetName) {
+          newRecordSetState[key] = prev[key];
+        }
+      });
+
+      return newRecordSetState;
+    });
+  };
+
   useEffect(() => {
     getInitialState();
   }, []);
@@ -48,7 +62,7 @@ export const RecordSetProvider = (props) => {
   if (recordSetState !== null) {
     return (
       <RecordSetContext.Provider
-        value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState, add: add }}>
+        value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState, add: add, remove: remove }}>
         {props.children}
       </RecordSetContext.Provider>
     );
