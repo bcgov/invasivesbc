@@ -9,7 +9,7 @@ import { DocType } from 'constants/database';
 import React, { useContext, useEffect, useState } from 'react';
 import BatchUpload from '../batch-upload/BatchUpload';
 import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
-import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
+import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { Button, Grid, Typography } from '@mui/material';
 import NewRecord from 'components/map/Tools/ToolTypes/Data/NewRecordMainMap';
 import NewRecordRecordPagae from 'components/map/Tools/ToolTypes/Data/NewRecordRecordPage';
