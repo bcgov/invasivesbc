@@ -301,7 +301,7 @@ const ActivityGrid = (props) => {
       let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
       // build a check for each
       let tests = rowKeys.map((k) => {
-        if (filters[k]) {
+        if (filters[k] && r[k]) {
           // this only works for strings
           if (r[k].includes(filters[k])) {
             return true;
@@ -416,7 +416,7 @@ const ActivityGrid = (props) => {
     const [subChoice, setSubChoice] = useState('BC Hydro');
 
     useEffect(() => {
-      if (props.filterKey !== undefined) {
+      if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
         const prevChoices = props.allFiltersBefore.filter((f) => {
           return f.filterKey === props.filterKey;
         })[0];
