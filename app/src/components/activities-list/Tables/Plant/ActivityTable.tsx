@@ -28,6 +28,7 @@ import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functi
 import { RecordSetContext } from 'features/home/activities/ActivitiesPage';
 import { GridSaveAltIcon } from '@mui/x-data-grid';
 import SaveIcon from '@mui/icons-material/Save';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -407,13 +408,18 @@ const ActivityGrid = (props) => {
   const FilterWizard = (props) => {
     const choices = ['Jurisdiction', 'Species Positive', 'Species Negative', 'Metabase Report ID'];
 
-    const jusridictionOptions = ['BC Hydro', 'FLNR'];
+    const [jurisdictionOptions, setJurisdictionOptions] = useState([]);
+
     const speciesPOptions = ['Blueweed', 'Cheatgrass'];
     const speciesNOptions = ['Blueweed', 'Cheatgrass'];
+    const invasivesApi = useInvasivesApi();
+    const { fetchCodeTable } = invasivesApi;
 
     const [choice, setChoice] = useState('Jurisdiction');
-    const [subChoices, setSubChoices] = useState([...jusridictionOptions]);
-    const [subChoice, setSubChoice] = useState('BC Hydro');
+    const [subChoices, setSubChoices] = useState([...jurisdictionOptions]);
+    const [subChoice, setSubChoice] = useState(
+      'Ministry of Forests, Lands, Natural Resource Operations & Rural Development'
+    );
 
     useEffect(() => {
       if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
@@ -423,12 +429,25 @@ const ActivityGrid = (props) => {
         setChoice(prevChoices.filterField);
         setSubChoice(prevChoices.filterValue);
       }
+
+      const getJurisdictionOptions = async () => {
+        console.log('running');
+        const data = await fetchCodeTable('42');
+        setJurisdictionOptions(data);
+      };
+
+      getJurisdictionOptions();
     }, []);
 
     useEffect(() => {
       switch (choice) {
         case 'Jurisdiction':
-          setSubChoices([...jusridictionOptions]);
+          setSubChoices(
+            jurisdictionOptions.map((jur) => {
+              console.log(jur);
+              return jur.description;
+            })
+          );
           setSubChoice('BC Hydro');
           break;
         case 'Species Positive':
@@ -444,7 +463,7 @@ const ActivityGrid = (props) => {
           setSubChoice('Cheatgrass');
           break;
       }
-    }, [choice]);
+    }, [choice, jurisdictionOptions]);
 
     const DropDown = (props) => {
       return (

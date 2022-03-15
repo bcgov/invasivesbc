@@ -1,136 +1,136 @@
 import { Delete, ExpandLess } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-  Accordion,
   AccordionActions,
-  AccordionDetails,
   AccordionSummary,
   Box,
   Button,
   Checkbox,
+  IconButton,
+  TextField,
   Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
-import makeStyles from '@mui/styles/makeStyles';
-import ActivitiesList2 from 'components/activities-list/NewRecordWizard';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
-import MapIcon from '@mui/icons-material/Map';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { useDataAccess } from 'hooks/useDataAccess';
 
-export const RecordSet = (props) => {
-  const useStyles = makeStyles((theme: any) => ({
-    newActivityButtonsRow: {
-      '& Button': {
-        marginRight: '0.5rem',
-        marginBottom: '0.5rem'
-      }
-    },
-    syncSuccessful: {
-      color: theme.palette.success.main
-    },
-    formControl: {},
-    mainHeader: {
-      backGroundColor: theme.palette.success.main,
-      color: 'black',
-      borderStyle: 'solid'
-    }
-  }));
-  const classes = useStyles();
-  const [expanded, setExpanded] = useState(false);
-  const [mapToggle, setMapToggle] = useState(false);
-  const [colour, setColour] = useState('blue');
-  const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
+const RecordSetAccordionSummary = (props) => {
+  const [newName, setNewName] = useState(props.recordSetName);
+  const [nameEdit, setNameEdit] = useState(false);
 
-  export const RecordSetAccordionSummary = (props) => {
-    return useMemo(() => {
-      return (
-        <AccordionSummary>
-          <Box />
-          {expanded ? <ExpandLess /> : <ExpandMoreIcon />}
-          <Typography sx={{ pl: 5, flexGrow: 1 }}>{props.name}</Typography>
-          <Box />
-          <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
-            {props.canRemove ? (
-              <Button onClick={(e) => e.stopPropagation()} variant="outlined">
-                Rename
-                <EditIcon
+  // return useMemo(() => {
+  return (
+    <AccordionSummary>
+      <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+        {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+        {!nameEdit && (
+          <>
+            <Typography>{props.recordSetName}</Typography>
+            {props.canRemove && (
+              <>
+                <IconButton
                   onClick={(e) => {
                     e.stopPropagation();
-                    alert('edit name dialogue');
+                    setNameEdit(true);
                   }}
-                  style={{ paddingLeft: 5, fontSize: 20 }}
-                />
-              </Button>
-            ) : (
-              <></>
+                  aria-label="delete">
+                  <EditIcon style={{ paddingLeft: 5, fontSize: 20 }} />
+                </IconButton>
+              </>
             )}
-            <Button
-              //className={classes.mainHeader}
+          </>
+        )}
+        {nameEdit && (
+          <>
+            <TextField
+              value={newName}
               onClick={(e) => {
                 e.stopPropagation();
-                const currentIndex = colours.indexOf(colour);
-                const nextIndex = (currentIndex + 1) % colours.length;
-                setColour(colours[nextIndex]);
               }}
-              style={{ backgroundColor: colour }}
+              onChange={(e) => {
+                e.stopPropagation();
+                setNewName(e.target.value);
+              }}
+              id="outlined-basic"
+              label="New Record Set Name"
+              variant="outlined"
+            />
+            <Button
+              sx={{ ml: 7 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                props.setRecordSetName(newName);
+                setNewName(props.recordSetName);
+                setNameEdit(false);
+              }}
               variant="contained">
-              <ColorLensIcon />
+              Submit
             </Button>
-
-            <Button onClick={(e) => e.stopPropagation()} variant="outlined">
-              <LayersIcon />
-              <Checkbox
-                style={{ height: 15 }}
-                value={mapToggle}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  setMapToggle((prev) => !prev);
-                }}
-              />
+            <Button
+              sx={{ ml: 7 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setNewName(props.recordSetName);
+                setNameEdit(false);
+              }}
+              variant="text">
+              Cancel
             </Button>
-            {props.canRemove ? (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    /*eslint-disable*/
-                    confirm(
-                      'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
-                    )
-                    /*eslint-enable*/
-                  )
-                    alert('TODO, remove');
-                }}
-                style={{ justifySelf: 'end', alignSelf: 'right' }}
-                variant="outlined">
-                <Delete />
-              </Button>
-            ) : (
-              <></>
-            )}
-          </AccordionActions>
-        </AccordionSummary>
-      );
-    }, []);
-  };
+          </>
+        )}
+      </Box>
+      <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
+        <Button
+          //className={classes.mainHeader}
+          onClick={(e) => {
+            e.stopPropagation();
+            const currentIndex = props.colours.indexOf(props.colour);
+            const nextIndex = (currentIndex + 1) % props.colours.length;
+            props.setColour(props.colours[nextIndex]);
+          }}
+          style={{ backgroundColor: props.colour }}
+          variant="contained">
+          <ColorLensIcon />
+        </Button>
 
-  return (
-    <>
-      <Accordion
-        onChange={(e) => {
-          setExpanded((prev) => !prev);
-        }}
-        expanded={expanded}>
-        {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
-        <RecordSetAccordionSummary />
-        <AccordionDetails>
-          <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />
-        </AccordionDetails>
-      </Accordion>
-    </>
+        <Button onClick={(e) => e.stopPropagation()} variant="outlined">
+          <LayersIcon />
+          <Checkbox
+            style={{ height: 15 }}
+            checked={props.mapToggle}
+            onChange={(e) => {
+              e.stopPropagation();
+              alert(!props.mapToggle);
+              props.setMapToggle((prev) => !prev);
+            }}
+          />
+        </Button>
+        {props.canRemove ? (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (
+                /*eslint-disable*/
+                confirm(
+                  'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+                )
+                /*eslint-enable*/
+              )
+                alert('TODO, remove');
+            }}
+            style={{ justifySelf: 'end', alignSelf: 'right' }}
+            variant="outlined">
+            <Delete />
+          </Button>
+        ) : (
+          <></>
+        )}
+      </AccordionActions>
+    </AccordionSummary>
   );
+  // }, [JSON.stringify({ expanded: expanded, mapToggle: mapToggle, colour: colour, recordSetName: recordSetName })]);
+  // }, [newName, setNewName, nameEdit, setNameEdit]); // todo - only check if number of record sets, or one of their header button or properties needs to re render
 };
-export default RecordSet;
+
+export default RecordSetAccordionSummary;
