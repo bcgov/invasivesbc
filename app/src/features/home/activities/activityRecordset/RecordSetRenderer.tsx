@@ -12,10 +12,14 @@ export const RecordSetRenderer = (props) => {
 
   useEffect(() => {
     if (cntxt.recordSetState) {
-      console.log('TRUE');
-      setSets(Object.keys(cntxt.recordSetState).sort());
+      setSets((prev) => {
+        let keys = Object.keys(cntxt.recordSetState);
+        keys = keys.sort((a, b) => {
+          return Number(a) - Number(b);
+        });
+        return keys;
+      });
     }
-    console.dir(sets);
   }, [cntxt.recordSetState]);
 
   return useMemo(() => {

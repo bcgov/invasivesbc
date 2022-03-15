@@ -144,7 +144,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [recordSetState[props.setName]]
+    [recordSetState[props.setName], recordSetName]
   );
 };
 export default RecordSet;
