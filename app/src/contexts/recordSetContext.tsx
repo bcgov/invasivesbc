@@ -1,0 +1,56 @@
+import { useDataAccess } from 'hooks/useDataAccess';
+import React, { useState, useEffect } from 'react';
+
+// Where state is managed for all the sets of records, updates localstorage as it happens.
+// Everything that uses this context needs a memo that adequately checks dependencies, and none of them
+// should call useState setters in their parents. Thats where the render loops are coming from in the Layer Picker etc.
+export const RecordSetContext = React.createContext(null);
+export const RecordSetProvider = (props) => {
+  const [recordSetState, setRecordSetState] = useState(null);
+  const dataAccess = useDataAccess();
+
+  const getInitialState = async () => {
+    const oldState = await dataAccess.getAppState();
+    if (oldState?.recordSets) {
+      setRecordSetState({ ...oldState.recordSets });
+    } else {
+      const defaults = {
+        recordSets: { ['1']: { recordSetName: 'My Drafts' }, ['2']: { recordSetName: 'All Data' } }
+      };
+      dataAccess.setAppState({ ...defaults });
+      setRecordSetState({ ...defaults.recordSets });
+    }
+  };
+
+  const add = () => {
+    setRecordSetState((prev) => ({
+      ...prev,
+      [JSON.stringify(Object.keys(prev).length + 1)]: { recordSetName: 'New Record Set' }
+    }));
+  };
+
+  useEffect(() => {
+    getInitialState();
+  }, []);
+
+  const updateState = async () => {
+    const oldState = await dataAccess.getAppState();
+    const oldRecordSets = oldState?.recordSets;
+    if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
+      dataAccess.setAppState({ recordSets: { ...recordSetState } });
+    }
+  };
+
+  useEffect(() => {
+    updateState();
+  }, [JSON.stringify(recordSetState)]);
+
+  if (recordSetState !== null) {
+    return (
+      <RecordSetContext.Provider
+        value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState, add: add }}>
+        {props.children}
+      </RecordSetContext.Provider>
+    );
+  } else return <></>;
+};

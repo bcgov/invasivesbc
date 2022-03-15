@@ -2,15 +2,16 @@ import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Container, Grid, InputLabel, ListItem } from '@mui/material';
+import { Box, Container, Grid } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 import { useDataAccess } from 'hooks/useDataAccess';
-import { RecordSet } from './activityRecordset/RecordSet';
 import MenuOptions from './MenuOptions';
+import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
+import { RecordSetContext, RecordSetProvider } from 'contexts/recordSetContext';
 import NewRecordWizard from 'components/activities-list/NewRecordWizard';
 
 // not sure what we're using this for?
@@ -21,103 +22,6 @@ const flexContainer = {
   display: 'flex',
   flexDirection: 'row',
   padding: 0
-};
-
-// Where state is managed for all the sets of records, updates localstorage as it happens.
-// Everything that uses this context needs a memo that adequately checks dependencies, and none of them
-// should call useState setters in their parents. Thats where the render loops are coming from in the Layer Picker etc.
-export const RecordSetContext = React.createContext(null);
-export const RecordSetProvider = (props) => {
-  const [recordSetState, setRecordSetState] = useState(null);
-  const dataAccess = useDataAccess();
-
-  const getInitialState = async () => {
-    const oldState = await dataAccess.getAppState();
-    if (oldState?.recordSets) {
-      setRecordSetState({ ...oldState.recordSets });
-    } else {
-      const defaults = {
-        recordSets: { ['1']: { recordSetName: 'My Drafts' }, ['2']: { recordSetName: 'All Data' } }
-      };
-      dataAccess.setAppState({ ...defaults });
-      setRecordSetState({ ...defaults.recordSets });
-    }
-  };
-
-  const add = () => {
-    setRecordSetState((prev) => ({
-      ...prev,
-      [JSON.stringify(Object.keys(prev).length + 1)]: { recordSetName: 'New Record Set' }
-    }));
-  };
-
-  useEffect(() => {
-    getInitialState();
-  }, []);
-
-  const updateState = async () => {
-    const oldState = await dataAccess.getAppState();
-    const oldRecordSets = oldState?.recordSets;
-    if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
-      dataAccess.setAppState({ recordSets: { ...recordSetState } });
-    }
-  };
-
-  useEffect(() => {
-    updateState();
-  }, [JSON.stringify(recordSetState)]);
-
-  if (recordSetState !== null) {
-    return (
-      <RecordSetContext.Provider
-        value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState, add: add }}>
-        {props.children}
-      </RecordSetContext.Provider>
-    );
-  } else return <></>;
-};
-
-// https://stackoverflow.com/a/60325899
-const RecordSetRenderer = (props) => {
-  const cntxt = useContext(RecordSetContext);
-
-  const RecordSetMemo = React.memo((props: any) => (
-    <RecordSet key={props.key} canRemove={props.canRemove} setName={props.setName} />
-  ));
-  // do database fetching here, before RecordSetContext.value.map, & useCallback
-
-  const [sets, setSets] = useState(null);
-
-  useEffect(() => {
-    if (cntxt.recordSetState) {
-      console.log('TRUE');
-      setSets(Object.keys(cntxt.recordSetState).sort());
-    }
-    console.dir(sets);
-  }, [cntxt.recordSetState]);
-
-  return useMemo(() => {
-    return (
-      <>
-        {sets ? (
-          //Object.keys(sets).map((recordSetName, index) => {
-          sets.map((recordSetName, index) => {
-            console.log(['1', '2'].includes(recordSetName));
-            return (
-              <RecordSet
-                key={recordSetName}
-                canRemove={['1', '2'].includes(recordSetName) ? false : true}
-                setName={recordSetName}
-              />
-            );
-          })
-        ) : (
-          <></>
-        )}
-      </>
-    );
-    //}, [JSON.stringify(cntxt.recordSetState)]);
-  }, [sets]);
 };
 
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
