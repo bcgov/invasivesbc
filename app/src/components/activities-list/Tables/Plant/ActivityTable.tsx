@@ -26,6 +26,8 @@ import { DocType } from 'constants/database';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { RecordSetContext } from 'features/home/activities/ActivitiesPage';
+import { GridSaveAltIcon } from '@mui/x-data-grid';
+import SaveIcon from '@mui/icons-material/Save';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -134,6 +136,7 @@ const ActivityGrid = (props) => {
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState(null);
+  const [save, setSave] = useState(0);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -155,7 +158,7 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
     const oldRecordSetState = parentStateCollection[props.setName];
-    if (oldRecordSetState !== null) {
+    if (oldRecordSetState !== null && save !== 0) {
       const oldFilters = parentStateCollection[props.setName].gridFilters;
       if (oldFilters && filters !== null && JSON.stringify(oldFilters) !== JSON.stringify(filters)) {
         recordSetContext.setRecordSetState({
@@ -171,7 +174,7 @@ const ActivityGrid = (props) => {
         }
       }
     }
-  }, [filters]);
+  }, [save]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -395,7 +398,7 @@ const ActivityGrid = (props) => {
             e.stopPropagation();
             newFilter(props.filterKey);
           }}
-          sx={{ fontSize: '10' }}
+          sx={{ color: themeType ? 'black' : 'white', fontSize: '10' }}
         />
       </ListItem>
     );
@@ -566,6 +569,11 @@ const ActivityGrid = (props) => {
             }}>
             <Button onClick={() => newFilter(undefined)} size={'small'} variant="contained">
               <AddBoxIcon></AddBoxIcon>Advanced Filter
+            </Button>
+            <Button onClick={() => setSave(Math.random())} size={'small'} variant="contained">
+              <FilterAltIcon />
+              <SaveIcon />
+              Apply Filters
             </Button>
             <FilterToggle style={{ marginLeft: 'auto' }} />
           </Box>
