@@ -6,10 +6,12 @@ import { Box, Container, Grid, InputLabel, ListItem } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 import { useDataAccess } from 'hooks/useDataAccess';
 import { RecordSet } from './activityRecordset/RecordSet';
 import MenuOptions from './MenuOptions';
+import NewRecordWizard from 'components/activities-list/NewRecordWizard';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -127,6 +129,12 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
     // record to act on and context for all children dealing with record sets, types, and filters
     const [selectedRecord, setSelectedRecord] = useState<any>({});
     const recordStateContext = useContext(RecordSetContext);
+    const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+      dialogActions: [],
+      dialogOpen: false,
+      dialogTitle: '',
+      dialogContentText: null
+    });
 
     // the menu at the bottom:
     const [options, setOptions] = useState<any>();
@@ -180,7 +188,26 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           disabled: false,
           icon: AddIcon,
           onClick: () => {
-            alert('no');
+            setWarningDialog({
+              dialogOpen: true,
+              dialogTitle: 'New Record',
+              dialogContentText: 'Choose a record type',
+              dialogActions: [
+                {
+                  actionName: 'Cancel',
+                  actionOnClick: async () => {
+                    setWarningDialog({ ...warningDialog, dialogOpen: false });
+                  }
+                },
+                {
+                  actionName: 'Select and Create',
+                  usesChildren: true,
+                  children: <NewRecordWizard />,
+                  actionOnClick: async () => {},
+                  autoFocus: true
+                }
+              ]
+            });
           }
         },
         {
@@ -238,10 +265,16 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
               <Grid sx={{ pb: 15 }} xs={12} item></Grid>
             </Grid>
           </Container>
+          <WarningDialog
+            dialogOpen={warningDialog.dialogOpen}
+            dialogTitle={warningDialog.dialogTitle}
+            dialogActions={warningDialog.dialogActions}
+            dialogContentText={warningDialog.dialogContentText}
+          />
         </>
       );
       //  }, [JSON.stringify(options)]);
-    }, [options]);
+    }, [options, warningDialog]);
   };
 
   const MemoPageContainer = React.memo(PageContainer);

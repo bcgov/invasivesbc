@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: any) => ({
   }
 }));
 
-const ActivitiesList2 = (props: any) => {
+const NewRecordWizard = (props: any) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
@@ -84,31 +84,6 @@ const ActivitiesList2 = (props: any) => {
     setSubType(event.target.value);
   };
 
-  const getOldFilters = async () => {
-    const appState = await da.getAppState(databaseContext);
-    console.log('getting old filters');
-
-    console.dir(appState);
-    console.log(props.setName);
-    if (props.setName && appState && appState[props.setName + '_filters']) {
-      const oldFilters = appState[props.setName + '_filters'];
-      console.log('oldFilters');
-      console.dir(oldFilters);
-      setFilters({ ...oldFilters });
-    }
-  };
-
-  useEffect(() => {
-    getOldFilters();
-  }, []);
-
-  useEffect(() => {
-    if (filters !== null) {
-      const newState = { [props.setName + '_filters']: filters };
-      da.setAppState({ ...newState }, databaseContext);
-    }
-  }, [filters]);
-
   const NewRecordStuff = (props) => {
     return (
       <Grid item>
@@ -139,17 +114,9 @@ const ActivitiesList2 = (props: any) => {
 
   return (
     <>
-      <Grid sx={{ pt: 2 }} xs={12} item>
-        <ActivityGrid
-          formType={formType}
-          subType={subType}
-          setSelectedRecord={props.setSelectedRecord}
-          filtersCallBack={setFilters}
-          initialFilters={filters}
-        />
-      </Grid>
+      <NewRecordStuff />
     </>
   );
 };
 
-export default ActivitiesList2;
+export default NewRecordWizard;
