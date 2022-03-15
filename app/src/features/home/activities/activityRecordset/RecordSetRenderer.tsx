@@ -6,12 +6,9 @@ import RecordSet from './RecordSet';
 export const RecordSetRenderer = (props) => {
   const cntxt = useContext(RecordSetContext);
 
-  const RecordSetMemo = React.memo((props: any) => (
-    <RecordSet key={props.key} canRemove={props.canRemove} setName={props.setName} />
-  ));
   // do database fetching here, before RecordSetContext.value.map, & useCallback
 
-  const [sets, setSets] = useState(null);
+  const [sets, setSets] = useState([]);
 
   useEffect(() => {
     if (cntxt.recordSetState) {
@@ -24,23 +21,16 @@ export const RecordSetRenderer = (props) => {
   return useMemo(() => {
     return (
       <>
-        {sets ? (
-          //Object.keys(sets).map((recordSetName, index) => {
-          sets.map((recordSetName, index) => {
-            console.log(['1', '2'].includes(recordSetName));
-            return (
-              <RecordSet
-                key={recordSetName}
-                canRemove={['1', '2'].includes(recordSetName) ? false : true}
-                setName={recordSetName}
-              />
-            );
-          })
-        ) : (
-          <></>
-        )}
+        {sets.map((recordSetName, index) => {
+          return (
+            <RecordSet
+              key={recordSetName}
+              canRemove={['1', '2'].includes(recordSetName) ? false : true}
+              setName={recordSetName}
+            />
+          );
+        })}
       </>
     );
-    //}, [JSON.stringify(cntxt.recordSetState)]);
   }, [sets]);
 };
