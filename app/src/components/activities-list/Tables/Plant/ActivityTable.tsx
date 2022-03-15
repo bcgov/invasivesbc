@@ -62,8 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   filterClassname: {
     inlineSize: '100%',
     padding: '4px',
-    fontSize: '14px',
-    color: 'white'
+    fontSize: '14px'
   }
 }));
 
@@ -627,7 +626,14 @@ const ActivityGrid = (props) => {
         />
       </Box>
     ),
-    [recordSetContext.recordSetState[props.setName]]
+    [
+      recordSetContext.recordSetState[props.setName],
+      warningDialog,
+      advancedFilterRows,
+      filters,
+      activities,
+      filteredRowsDynamic
+    ]
   );
 };
 export default ActivityGrid;
