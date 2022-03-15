@@ -6,29 +6,26 @@ import Typography from '@mui/material/Typography';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect, useMemo, createContext, useRef } from 'react';
-import DataGrid, { RowRendererProps, Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
+import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
 import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
-import { ActivitySubtypeShortLabels } from '../../../../constants/activities';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import AddIcon from '@mui/icons-material/Add';
-import { CheckBox, FilterAltOff, PlayCircleFilledWhite } from '@mui/icons-material';
+import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useHistory } from 'react-router';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { FormControl, InputLabel, List, ListItem, MenuItem, Select } from '@mui/material';
+import { List, ListItem, MenuItem, Select } from '@mui/material';
 import { DocType } from 'constants/database';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
-import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
-import { RecordSetContext } from 'features/home/activities/ActivitiesPage';
-import { GridSaveAltIcon } from '@mui/x-data-grid';
+
 import SaveIcon from '@mui/icons-material/Save';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { RecordSetContext } from 'contexts/recordSetContext';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -127,11 +124,9 @@ const ActivityGrid = (props) => {
     dialogTitle: '',
     dialogContentText: null
   });
-  const history = useHistory();
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
-  const databaseContext = useContext(DatabaseContext);
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
