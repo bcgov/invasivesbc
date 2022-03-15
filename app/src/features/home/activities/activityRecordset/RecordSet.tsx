@@ -1,9 +1,9 @@
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useEffect, useState } from 'react';
-import { RecordSetContext } from '../ActivitiesPage';
 import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityTable';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
 import { Accordion, AccordionDetails, Grid } from '@mui/material';
+import { RecordSetContext } from 'contexts/recordSetContext';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
