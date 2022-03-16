@@ -44,15 +44,15 @@ export const LayerPicker = React.memo(
       }
       const fetchUploadedLayers = () => {
         invasivesApi.getAdminUploadGeoJSONLayers(user_id).then((data) => {
-          if (data && data.name !== 'error' && data.length > 0) {
+          if (data.code === 200 && data.result.length > 0) {
             setLayers((prev: any) => {
               let newLayers = [...prev];
               newLayers[5].children = [];
-              data.forEach((layer, index) => {
+              data.result.forEach((layer, index) => {
                 newLayers[5].children.push({
                   id: index.toString(),
-                  name: data[index].title.toString(),
-                  geoJSON: data[index].geojson,
+                  name: layer.title.toString(),
+                  geoJSON: layer.geojson,
                   source: 'INVASIVESBC',
                   layer_code: 'ADMIN_UPLOADS',
                   layer_mode: networkContext ? 'wfs_online' : 'wfs_offline',

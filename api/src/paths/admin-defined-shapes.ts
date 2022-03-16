@@ -115,23 +115,6 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
       // parse the rows from the response
       const rows: any[] = (response && response.rows) || [];
 
-      if (rows.length !== 1) {
-        defaultLog.debug({
-          label: 'getAdministrativelyDefinedShapes',
-          message: 'error',
-          error: `Unexpected row count ${rows.length} for aggregate query`
-        });
-        return res.status(500).json({
-          message: `Unexpected row count ${rows.length} for aggregate query`,
-          request: req.body,
-          namespace: 'admin-defined-shapes',
-          code: 500
-        });
-      }
-
-<<<<<<< HEAD
-      return res.status(200).json(rows);
-=======
       return res.status(200).json({
         message: 'Got administratively defined shapes',
         request: req.body,
@@ -140,7 +123,6 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         namespace: 'admin-defined-shapes',
         code: 200
       });
->>>>>>> 00329587 (Add codes, namespaces, and messages JSON to request results)
     } catch (error) {
       defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
