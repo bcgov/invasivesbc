@@ -550,7 +550,7 @@ export function populateSpeciesArrays(record) {
     default:
       break;
   }
-  return {
+  const returnVal = {
     ...record,
     species_positive:
       Array.from(new Set(species_positive || []))
@@ -561,4 +561,8 @@ export function populateSpeciesArrays(record) {
         ?.filter((code) => typeof code === 'string')
         .sort() || []
   };
+
+  console.dir(returnVal);
+
+  return returnVal;
 }
