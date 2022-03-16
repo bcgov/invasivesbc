@@ -482,20 +482,20 @@ export function populateSpeciesArrays(record) {
 
   switch (record.activitySubtype) {
     case ActivitySubtype.Observation_PlantTerrestrial:
-      species_positive = subtypeData?.invasive_plants
-        ?.filter((plant) => plant.occurrence?.includes('Positive'))
-        .map((plant) => plant.invasive_plant_code);
-      species_negative = subtypeData?.invasive_plants
-        ?.filter((plant) => plant.occurrence?.includes('Negative'))
-        .map((plant) => plant.invasive_plant_code);
+      species_positive = subtypeData?.TerrestrialPlants?.filter((plant) => plant.occurrence?.includes('Positive')).map(
+        (plant) => plant.invasive_plant_code
+      );
+      species_negative = subtypeData?.TerrestrialPlants?.filter((plant) => plant.occurrence?.includes('Negative')).map(
+        (plant) => plant.invasive_plant_code
+      );
       break;
     case ActivitySubtype.Observation_PlantAquatic:
-      species_positive = subtypeData?.invasive_plants
-        ?.filter((plant) => plant.observation_type?.includes('Positive'))
-        .map((plant) => plant.invasive_plant_code);
-      species_negative = subtypeData?.invasive_plants
-        ?.filter((plant) => plant.observation_type?.includes('Negative'))
-        .map((plant) => plant.invasive_plant_code);
+      species_positive = subtypeData?.AquaticPlants?.filter((plant) =>
+        plant.observation_type?.includes('Positive')
+      ).map((plant) => plant.invasive_plant_code);
+      species_negative = subtypeData?.AquaticPlants?.filter((plant) =>
+        plant.observation_type?.includes('Negative')
+      ).map((plant) => plant.invasive_plant_code);
       break;
 
     case ActivitySubtype.Activity_AnimalTerrestrial:
@@ -506,7 +506,7 @@ export function populateSpeciesArrays(record) {
       break;
 
     case ActivitySubtype.Treatment_ChemicalPlant:
-      species_positive = subtypeData?.treatment_information?.invasive_plants_information?.map(
+      species_positive = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
         (plant) => plant.invasive_plant_code
       );
       break;
