@@ -67,7 +67,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
 
   if (activity.mediaKeys) {
     sqlStatement.append(SQL`
-      ,${activity.mediaKeys}
+      ${activity.mediaKeys},
     `);
   } else {
     sqlStatement.append(SQL`
@@ -77,21 +77,21 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
 
   if (activity.species_positive?.length) {
     sqlStatement.append(SQL`
-      ,${activity.species_positive}
+      ,replace(replace(${activity.species_positive}::text, '{', '['), '}', ']')::jsonb
     `);
   } else {
     sqlStatement.append(SQL`
-      ,'{}'
+      ,'[]'
     `);
   }
 
   if (activity.species_negative?.length) {
     sqlStatement.append(SQL`
-      ,${activity.species_negative}
+      ,replace(replace(${activity.species_negative}::text, '{', '['), '}', ']')::jsonb
     `);
   } else {
     sqlStatement.append(SQL`
-      ,'{}'
+      ,'[]'
     `);
   }
 
