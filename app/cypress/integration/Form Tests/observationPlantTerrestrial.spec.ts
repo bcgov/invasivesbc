@@ -77,7 +77,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.visit(Cypress.env('redirectUri'));
   });
   it('It goes to My Records Page', function () {
-    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
+    cy.get('[data-testid=HomeWorkIcon]').click('center');
     cy.contains('Observations');
   });
   it('It creates a Terrestrial Plant Observation record', function () {
@@ -87,7 +87,8 @@ describe('CREATING A NEW RECORD', function () {
     cy.contains('Activity Observation Plant Terrestrial');
   });
   it('It places a marker', function () {
-    cy.get('.leaflet-draw-draw-marker').click('center');
+    cy.get('.leaflet-container').click('center');
+    cy.get('.leaflet-draw-draw-marker').dblclick('center');
     cy.get('.leaflet-container').click('center');
   });
   it('It inputs basic information', function () {
@@ -138,6 +139,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('#root_activity_type_data_pre_treatment_observation').click('center');
     cy.get(`[data-value="${preTreatmentObservation}"]`).click();
     // Observation Person
+    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name').clear();
     cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name').type(observationPerson);
   });
   it('It inputs Observation Plant Terrestrial Information', function () {
