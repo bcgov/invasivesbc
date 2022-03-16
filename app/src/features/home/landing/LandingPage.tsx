@@ -85,19 +85,22 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   useEffect(() => {
-    const hasRequestedAccess = async () => {
-      // If no user is logged in, return false
-      if (!keycloak?.obj?.authenticated) {
-        setAccessRequested(false);
-        return;
-      }
-      if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
-        // If user is logged in, check if they have requested access
-        const accessRequest = await api.getAccessRequestData({
-          username: userInfo.preferred_username
-        });
-        if (accessRequest) {
-        }
+    hasRequestedAccess();
+  }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo.email, userInfo.preferred_username]);
+
+  const hasRequestedAccess = async () => {
+    // If no user is logged in, return false
+    if (!keycloak?.obj?.authenticated) {
+      setAccessRequested(false);
+      return;
+    }
+    if (keycloak.obj?.authenticated && userInfo.preferred_username && userInfo.email) {
+      // If user is logged in, check if they have requested access
+      const response = await api.getAccessRequestData({
+        username: userInfo.preferred_username
+      });
+      const accessRequest = response.result;
+      if (accessRequest) {
         if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
           setAccessRequested(false);
           return;
@@ -107,10 +110,8 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           return;
         }
       }
-    };
-
-    hasRequestedAccess();
-  }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo.email, userInfo.preferred_username]);
+    }
+  };
 
   /*
     Generate reusable card component with info to guide users through the app
