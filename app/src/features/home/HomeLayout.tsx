@@ -10,7 +10,7 @@ export interface IHomeLayoutProps {
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
-      <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
+      <TabsContainer isMobileNoNetwork={props?.children?.props?.isMobileNoNetwork} />
 
       {/* <Collapse timeout={50} in={isOpen}></Collapse> */}
       <Box height="100%" width="inherit" overflow="auto">

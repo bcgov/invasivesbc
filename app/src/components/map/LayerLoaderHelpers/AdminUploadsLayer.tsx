@@ -1,6 +1,6 @@
-import React from 'react';
 import L from 'leaflet';
 import { createLayerComponent } from '@react-leaflet/core';
+import React from 'react';
 
 const createAdminLayerComponent = (props, context) => {
   const { geoJSON } = props;
