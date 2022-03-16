@@ -322,7 +322,7 @@ jobs:
       - name: Deploy App Image
         working-directory: './.github'
         run: |
-          ./purge-old-tags.sh
+          echo "disabled for testing" # ./purge-old-tags.sh
 
   # Clean any artifacts created by the deploy-pr workflow (if it ran, see comments at the top of `deploy-pr.yml`)
   clean:
