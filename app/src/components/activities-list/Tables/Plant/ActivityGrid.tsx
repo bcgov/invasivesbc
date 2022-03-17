@@ -182,10 +182,6 @@ const ActivityGrid = (props) => {
   };
 
   const getActivities = async () => {
-    console.log(userInfo.preferred_username);
-    console.log(rolesUserHasAccessTo);
-    console.log(rolesUserHasAccessTo);
-
     let filter: any = {
       created_by: userInfo.preferred_username,
       user_roles: rolesUserHasAccessTo
@@ -217,8 +213,6 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
-      console.dir(activitiesSelected);
-      console.log();
       props.setSelectedRecord({
         type: DocType.ACTIVITY,
         description: activitiesSelected.short_id,
@@ -321,7 +315,6 @@ const ActivityGrid = (props) => {
   }
 
   function toggleFilters() {
-    console.log('toggling');
     setFilters((filters) => ({
       ...filters,
       enabled: !filters.enabled
@@ -336,11 +329,6 @@ const ActivityGrid = (props) => {
   }, [activities]);
 
   const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-
-  useEffect(() => {
-    console.log('sort coluns');
-    console.dir(sortColumns);
-  }, [sortColumns]);
 
   type Comparator = (a, b) => number;
 
