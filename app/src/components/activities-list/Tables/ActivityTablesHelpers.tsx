@@ -1,6 +1,4 @@
 export const mapActivitiesToDataGridRows = (activities) => {
-  console.log('activities');
-  console.dir(activities);
   if (!activities) {
     return [];
   }

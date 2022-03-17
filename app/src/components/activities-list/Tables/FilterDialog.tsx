@@ -53,7 +53,6 @@ export const FilterDialog = (props: IFilterDialog) => {
     }
 
     const getJurisdictionOptions = async () => {
-      console.log('running');
       const data = await fetchCodeTable('42');
       setJurisdictionOptions(data);
     };
@@ -66,7 +65,6 @@ export const FilterDialog = (props: IFilterDialog) => {
       case 'Jurisdiction':
         setSubChoices(
           jurisdictionOptions.map((jur) => {
-            console.log(jur);
             return jur.description;
           })
         );

@@ -6,13 +6,12 @@ import { Box, Container, Grid } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
 import { RecordSetContext, RecordSetProvider } from '../../../contexts/recordSetContext';
-import NewRecordWizard from 'components/activities-list/NewRecordWizard';
+import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -33,11 +32,14 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
     // record to act on and context for all children dealing with record sets, types, and filters
     const [selectedRecord, setSelectedRecord] = useState<any>({});
     const recordStateContext = useContext(RecordSetContext);
-    const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
-      dialogActions: [],
+
+    const handleNewRecordDialogClose = () => {
+      setNewRecordDialog((prev) => ({ ...prev, dialogOpen: false }));
+    };
+
+    const [newRecordDialog, setNewRecordDialog] = useState<INewRecordDialog>({
       dialogOpen: false,
-      dialogTitle: '',
-      dialogContentText: null
+      handleDialogClose: handleNewRecordDialogClose
     });
 
     // the menu at the bottom:
@@ -92,26 +94,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           disabled: false,
           icon: AddIcon,
           onClick: () => {
-            setWarningDialog({
-              dialogOpen: true,
-              dialogTitle: 'New Record',
-              dialogContentText: 'Choose a record type',
-              dialogActions: [
-                {
-                  actionName: 'Cancel',
-                  actionOnClick: async () => {
-                    setWarningDialog({ ...warningDialog, dialogOpen: false });
-                  }
-                },
-                {
-                  actionName: 'Select and Create',
-                  usesChildren: true,
-                  children: <NewRecordWizard />,
-                  actionOnClick: async () => {},
-                  autoFocus: true
-                }
-              ]
-            });
+            setNewRecordDialog((prev) => ({ ...prev, dialogOpen: true }));
           }
         },
         {
@@ -169,15 +152,13 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
               <Grid sx={{ pb: 15 }} xs={12} item></Grid>
             </Grid>
           </Container>
-          <WarningDialog
-            dialogOpen={warningDialog.dialogOpen}
-            dialogTitle={warningDialog.dialogTitle}
-            dialogActions={warningDialog.dialogActions}
-            dialogContentText={warningDialog.dialogContentText}
+          <NewRecordDialog
+            dialogOpen={newRecordDialog.dialogOpen}
+            handleDialogClose={newRecordDialog.handleDialogClose}
           />
         </>
       );
-    }, [options, warningDialog, recordStateContext.recordSetState.length]);
+    }, [options, newRecordDialog, recordStateContext.recordSetState.length]);
   };
   return (
     <Box sx={{ height: '100%' }}>
