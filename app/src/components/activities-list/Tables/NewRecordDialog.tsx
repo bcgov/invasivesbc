@@ -1,10 +1,12 @@
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DocType } from 'constants/database';
+import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
 import { useHistory } from 'react-router-dom';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState, useContext } from 'react';
@@ -12,6 +14,7 @@ import { ActivitySubtypeShortLabels, ActivityCategory, ActivitySubtypeRelations 
 import { generateDBActivityPayload } from 'utils/addActivity';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { useKeycloak } from '@react-keycloak/web';
 import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
 import { UserRolesAccess } from 'constants/roles';
 
@@ -48,6 +51,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const history = useHistory();
+  const { keycloak } = useKeycloak();
 
   const databaseContext = useContext(DatabaseContext);
   const authStateContext = useContext(AuthStateContext);
@@ -91,13 +95,20 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       });
     }
     setActivityCategorySelectOptions(categories);
+
+    const cachedCategory = dataAccess.getAppState()?.newActivityChoices?.category || undefined;
+
+    if (!cachedCategory) {
+      setActivityCategory('');
+    } else {
+      setActivityCategory(cachedCategory);
+    }
   }, []);
 
   useEffect(() => {
     if (!activityCategory) {
       setActivityTypeSelectOptions([]);
       setActivityType('');
-      setActivitySubType('');
     } else {
       const types = [];
       console.log(activityCategory);
@@ -105,8 +116,12 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         types.push(key);
       });
       setActivityTypeSelectOptions(types);
-      setActivityType('');
-      setActivitySubType('');
+      const cachedType = dataAccess.getAppState()?.newActivityChoices?.type || undefined;
+      if (!cachedType) {
+        setActivityType('');
+      } else {
+        setActivityType(cachedType);
+      }
     }
   }, [activityCategory]);
 
@@ -118,7 +133,14 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       const subTypes = ActivitySubtypeRelations[activityCategory][activityType];
       console.log(subTypes);
       setActivitySubTypeSelectOptions(subTypes);
-      setActivitySubType('');
+
+      const cachedSubType = dataAccess.getAppState()?.newActivityChoices?.subType || undefined;
+
+      if (!cachedSubType) {
+        setActivitySubType('');
+      } else {
+        setActivitySubType(cachedSubType);
+      }
     }
   }, [activityType]);
 
@@ -133,7 +155,17 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     dbActivity.created_by = (userInfo as any)?.preferred_username;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
-      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
+      await dataAccess.setAppState(
+        {
+          activeActivity: dbActivity.activity_id,
+          newActivityChoices: {
+            category: activityCategory,
+            type: activityType,
+            subType: activitySubType
+          }
+        },
+        databaseContext
+      );
     } catch (e) {
       console.log('unable to http ');
       console.log(e);
