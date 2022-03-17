@@ -17,7 +17,6 @@ export async function up(knex: Knex): Promise<void> {
   `;
 
   // need to redo last migration afer deleting dependent tables
-  sql += extract_sql_and_reports;
 
   await knex.raw(sql);
 }
