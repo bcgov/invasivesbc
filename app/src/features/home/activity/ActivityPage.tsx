@@ -589,25 +589,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     the form as an accordion and for population of certain fields later/validation
   */
   const handleRecordLinking = async (formData: any) => {
-    let linkedRecordId: string = null;
-
     if (doc.activityType.includes('Monitoring') && formData.activity_type_data?.linked_id) {
-      linkedRecordId = formData.activity_type_data.linked_id;
-    }
-
-    await updateDoc({
-      formData: {
-        activity_type_data: {
-          linked_id: formData.activity_type_data.linked_id
+      await updateDoc({
+        formData: {
+          activity_type_data: {
+            linked_id: formData.activity_type_data.linked_id
+          }
         }
-      }
-    });
-
-    if (linkedRecordId) {
-      const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
-      if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
+      });
     }
   };
+
+  useEffect(() => {
+    const getLinked = async () => {
+      let linkedRecordId: string = null;
+      if (doc.activityType.includes('Monitoring') && doc.formData.activity_type_data?.linked_id) {
+        linkedRecordId = doc.formData.activity_type_data.linked_id;
+      }
+      if (linkedRecordId) {
+        const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
+        if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
+      }
+    };
+    getLinked();
+  }, [doc]);
 
   useEffect(() => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);

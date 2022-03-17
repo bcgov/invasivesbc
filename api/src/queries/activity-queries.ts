@@ -81,7 +81,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   } else {
     sqlStatement.append(SQL`
-      ,'[]'
+      ,'null'
     `);
   }
 
@@ -91,7 +91,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   } else {
     sqlStatement.append(SQL`
-      ,'[]'
+      ,'null'
     `);
   }
 
