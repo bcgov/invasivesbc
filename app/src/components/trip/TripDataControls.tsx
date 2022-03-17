@@ -93,7 +93,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     if (row.media_keys && row.media_keys.length) {
       try {
         const mediaResults = await invasivesApi.getMedia(row.media_keys);
-        mediaResults.forEach((media) => {
+        mediaResults.result.forEach((media) => {
           photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
         });
       } catch {
@@ -651,7 +651,7 @@ export const TripDataControls: React.FC<any> = (props) => {
               break;
             case 'JURISDICTIONS':
               const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
-              if (jurRes && jurRes.name !== 'error') {
+              if (jurRes.result) {
                 const filteredArr = jurRes.result.map((res) => {
                   return res.geojson;
                 });
