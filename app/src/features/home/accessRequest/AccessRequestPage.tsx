@@ -213,7 +213,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       }
       setRoles(roles);
     });
-  }, [api, authState.keycloak?.obj?.userInfo?.preferred_username]);
+  }, []);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTransferAccess(event.target.value);
