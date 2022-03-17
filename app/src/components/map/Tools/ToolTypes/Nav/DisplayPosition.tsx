@@ -72,6 +72,7 @@ export default function DisplayPosition({ map }) {
       <ListItemButton
         ref={divRef}
         disabled={startTimer}
+        id="my-position-button"
         aria-label="my position"
         onClick={() => {
           try {

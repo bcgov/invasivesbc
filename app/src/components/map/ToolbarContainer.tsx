@@ -84,6 +84,7 @@ export const ToolbarContainer = (props) => {
     <div key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
       <IconButton
         ref={divRef}
+        id="toolbar-drawer-button"
         onClick={() => {
           handleExpand();
         }}
