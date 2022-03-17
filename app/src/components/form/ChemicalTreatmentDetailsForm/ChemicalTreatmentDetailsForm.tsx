@@ -81,7 +81,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   //main usestate that holds all form data
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    formData: !props.formData.activity_subtype_data.chemical_treatment_details
+    formData: !props.formData?.activity_subtype_data?.chemical_treatment_details
       ? {
           invasive_plants: [],
           herbicides: [],
