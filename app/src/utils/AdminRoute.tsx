@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import AccessDenied from '../pages/misc/AccessDenied';
