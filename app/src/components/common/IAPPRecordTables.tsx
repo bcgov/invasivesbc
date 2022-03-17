@@ -68,7 +68,7 @@ export const PointsOfInterestTable = () => {
     const fetchData = async () => {
       const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
       const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
-      setPOIs(IAPPRecords.result);
+      setPOIs(IAPPRecords.result.rows);
     };
 
     const convertToTableRows = () => {
@@ -110,7 +110,7 @@ export const PointsOfInterestTable = () => {
     } else {
       convertToTableRows();
     }
-  }, [pois, dataAccess, databaseContext]);
+  }, []);
 
   return (
     <>
