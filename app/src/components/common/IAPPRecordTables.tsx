@@ -82,9 +82,9 @@ export const PointsOfInterestTable = () => {
         const type_data = form_data?.point_of_interest_type_data;
         const data = form_data?.point_of_interest_data;
         const surveys = form_data.surveys;
-        const newArr = getJurisdictions(surveys);
+        const newArr: any = getJurisdictions(surveys);
         const jurisdictionArr = [];
-        newArr.forEach((item) => {
+        newArr?.result?.forEach((item) => {
           jurisdictionArr.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 
