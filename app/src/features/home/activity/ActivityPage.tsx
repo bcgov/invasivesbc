@@ -556,7 +556,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    const appStateResults = await dataAccess.getAppState(databaseContext);
+    const appStateResults = dataAccess.getAppState();
     if (!appStateResults) {
       return;
     }

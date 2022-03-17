@@ -10,7 +10,7 @@ export const RecordSetProvider = (props) => {
   const dataAccess = useDataAccess();
 
   const getInitialState = async () => {
-    const oldState = await dataAccess.getAppState();
+    const oldState = dataAccess.getAppState();
     if (oldState?.recordSets) {
       setRecordSetState({ ...oldState.recordSets });
     } else {
@@ -48,7 +48,7 @@ export const RecordSetProvider = (props) => {
   }, []);
 
   const updateState = async () => {
-    const oldState = await dataAccess.getAppState();
+    const oldState = dataAccess.getAppState();
     const oldRecordSets = oldState?.recordSets;
     if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
       dataAccess.setAppState({ recordSets: { ...recordSetState } });
