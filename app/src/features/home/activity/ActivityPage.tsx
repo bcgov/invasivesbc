@@ -766,7 +766,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const getJurSuggestions = async () => {
     if (geometry[0]) {
       const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
-      setSuggestedJurisdictions(res.rows);
+      setSuggestedJurisdictions(res.result);
     }
   };
 
@@ -791,7 +791,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       if (updatedDoc.geometry) {
         const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
-        setSuggestedJurisdictions(res.rows);
+        setSuggestedJurisdictions(res.result);
       }
 
       setIsLoading(false);
