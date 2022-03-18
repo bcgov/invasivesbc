@@ -309,7 +309,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               order: ['created_timestamp'],
               user_roles: rolesUserHasAccessTo
             });
-            const treatments = treatments_response.rows.map((treatment, i) => {
+            const treatments = treatments_response.result.map((treatment, i) => {
               return {
                 label: treatment.activity_id,
                 title: treatment.activity_id,

@@ -58,7 +58,7 @@ export const PoisLayer = (props) => {
     );
 
     const poisFeatureArray = [];
-    poisData?.rows?.forEach((row) => {
+    poisData?.result?.rows?.forEach((row) => {
       poisFeatureArray.push(row.geojson ? row.geojson : row);
     });
 
