@@ -812,27 +812,29 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     if (geometry && geometry[0]) {
       //if geometry is withing british columbia boundries, save it
-      if (booleanWithin(geometry[0] as any, bcArea as any)) {
-        saveGeometry(geometry);
-      }
-      //if geometry is NOT withing british columbia boundries, display err
-      else {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Error!',
-          dialogContentText: 'The geometry drawn is outside the British Columbia.',
-          dialogActions: [
-            {
-              actionName: 'OK',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-        setGeometry(null);
-      }
+      setTimeout(() => {
+        if (booleanWithin(geometry[0] as any, bcArea as any)) {
+          saveGeometry(geometry);
+        }
+        //if geometry is NOT withing british columbia boundries, display err
+        else {
+          setWarningDialog({
+            dialogOpen: true,
+            dialogTitle: 'Error!',
+            dialogContentText: 'The geometry drawn is outside the British Columbia.',
+            dialogActions: [
+              {
+                actionName: 'OK',
+                actionOnClick: async () => {
+                  setWarningDialog({ ...warningDialog, dialogOpen: false });
+                },
+                autoFocus: true
+              }
+            ]
+          });
+          setGeometry(null);
+        }
+      }, 500);
     }
   }, [geometry, isLoading]);
 
