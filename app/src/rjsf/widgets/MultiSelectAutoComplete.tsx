@@ -49,7 +49,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       boxSizing: 'border-box',
       borderRadius: '4px',
 
-      borderColor: props.rawErrors?.length > 0 ? 'red' : '#C4C4C4',
+      borderColor: props.rawErrors?.length > 0 ? 'red' : props.disabled ? '#575757' : '#C4C4C4',
       marginTop: '0px',
       ':hover': {
         ...styles[':hover'],
@@ -98,12 +98,12 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     multiValue: (styles, { data }) => {
       return {
         ...styles,
-        backgroundColor: themeType ? '#424242' : '#FFF'
+        backgroundColor: themeType ? '#1C1C1C' : '#FFF'
       };
     },
     multiValueLabel: (styles, { data }) => ({
       ...styles,
-      color: themeType ? '#FFF' : '#000'
+      color: props.disabled ? '#A1A1A1' : themeType ? '#FFF' : '#000'
     }),
     multiValueRemove: (styles, { data }) => {
       return {
@@ -133,6 +133,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
         }}
         onChange={handleOnChange}
         values={props.value ? props.value?.split(',') : undefined}
+        disabled={props.disabled}
         label={props.label}
         onFocus={() => {
           setFocused(true);

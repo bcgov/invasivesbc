@@ -13,6 +13,7 @@ const AddButton: React.FC<AddButtonProps> = (props) => {
       <Button
         variant="contained"
         className={props.className}
+        disabled={props.disabled}
         onClick={props.onClick}
         color={themeType ? 'secondary' : 'primary'}>
         <AddIcon /> Add Item
