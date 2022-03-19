@@ -597,22 +597,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         }
       });
+
+      const getLinked = async () => {
+        let linkedRecordId: string = null;
+        if (doc?.activityType?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
+          linkedRecordId = doc.formData.activity_type_data.linked_id;
+        }
+        if (linkedRecordId) {
+          const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
+          if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
+        }
+      };
+      getLinked();
     }
   };
-
-  useEffect(() => {
-    const getLinked = async () => {
-      let linkedRecordId: string = null;
-      if (doc?.activityType?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
-        linkedRecordId = doc.formData.activity_type_data.linked_id;
-      }
-      if (linkedRecordId) {
-        const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
-        if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
-      }
-    };
-    getLinked();
-  }, [doc]);
 
   useEffect(() => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);
