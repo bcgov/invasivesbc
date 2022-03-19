@@ -429,6 +429,9 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
   }
 
   dilution = parseToRightFormat(dilution);
+
+  console.log(JSON.stringify(resultObj));
+
   resultObj = {
     dilution: dilution,
     invasive_plants: species
