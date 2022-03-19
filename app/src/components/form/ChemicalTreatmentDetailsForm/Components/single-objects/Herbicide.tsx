@@ -131,6 +131,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           <HelpOutlineIcon />
         </Tooltip>
         <CustomAutoComplete
+          disabled={formDetails.disabled}
           choices={herbicideTypeChoices}
           className={'inputField'}
           classes={classes}
@@ -157,6 +158,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           <HelpOutlineIcon />
         </Tooltip>
         <CustomAutoComplete
+          disabled={formDetails.disabled}
           choices={herbicideChoices}
           className={'inputField'}
           classes={classes}
@@ -183,6 +185,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <CustomAutoComplete
+              disabled={formDetails.disabled}
               choices={calculationTypeChoices}
               className={'inputField'}
               classes={classes}
@@ -211,6 +214,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               className={classes.inputField}
               type="number"
               // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
@@ -245,6 +249,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               id="amount-of-mix-used"
               className={classes.inputField}
               type="number"
@@ -274,6 +279,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               id="dilution"
               className={classes.inputField}
               type="number"
@@ -299,6 +305,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               id="area-treated"
               className={classes.inputField}
               type="number"
@@ -326,6 +333,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               className={classes.inputField}
               type="number"
               label="Delivery Rate of Mix (L/ha)"
@@ -350,6 +358,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
+              disabled={formDetails.disabled}
               className={classes.inputField}
               type="number"
               // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0}
@@ -372,6 +381,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         ) : null}
 
         <Button
+          disabled={formDetails.disabled}
           onClick={() => {
             if (insideTankMix) {
               setFormDetails((prevDetails) => {

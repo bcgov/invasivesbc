@@ -97,6 +97,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
     businessCodes: businessCodes,
     herbicideDictionary: herbicideDictionary,
     activitySubType: props.activitySubType,
+    disabled: props.disabled,
     classes: classes,
     errors: []
   });
@@ -253,8 +254,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 aria-label="tank_mix"
                 className={classes.tankMixRadioGroup}
                 name="tank_mix">
-                <FormControlLabel value={true} control={<Radio />} label="On" />
-                <FormControlLabel value={false} control={<Radio />} label="Off" />
+                <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
+                <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
               </RadioGroup>
             </Box>
             <Box className={classes.generalFieldColumn}>
@@ -267,6 +268,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <CustomAutoComplete
                 choices={chemicalApplicationMethodChoices}
                 className={null}
+                disabled={props.disabled}
                 actualValue={chemicalApplicationMethod}
                 classes={classes}
                 key={'chemical-application-method'}
