@@ -33,6 +33,7 @@ const InvasivePlantsAccordion = () => {
           <Box component="div" className={classes.centerBox}>
             <Button
               id="btn_add_invasive_plant"
+              disabled={formDetails.disabled}
               onClick={() => {
                 setFormDetails((prevDetails) => {
                   const newSpeciesArr = [...prevDetails.formData.invasive_plants];

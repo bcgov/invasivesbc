@@ -46,6 +46,7 @@ const TankMix: React.FC = (props) => {
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete
+        disabled={formDetails.disabled}
         choices={calculationTypeChoices}
         className={'inputField'}
         classes={classes}
@@ -73,6 +74,7 @@ const TankMix: React.FC = (props) => {
         <HelpOutlineIcon />
       </Tooltip>
       <TextField
+        disabled={formDetails.disabled}
         className={classes.inputField}
         type="number"
         label="Amount of Mix Used (L)"
@@ -97,6 +99,7 @@ const TankMix: React.FC = (props) => {
         <HelpOutlineIcon />
       </Tooltip>
       <TextField
+        disabled={formDetails.disabled}
         className={classes.inputField}
         type="number"
         label="Delivery Rate of Mix (L/ha)"

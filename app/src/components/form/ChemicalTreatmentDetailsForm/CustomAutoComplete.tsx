@@ -8,6 +8,7 @@ export interface ICustomAutoComplete {
   classes: any;
   choices: any[];
   actualValue: string;
+  disabled: boolean;
   parentState: {
     state: any;
     setState: React.Dispatch<React.SetStateAction<any>>;
@@ -15,7 +16,17 @@ export interface ICustomAutoComplete {
   onChange: (event, value) => void;
 }
 
-const CustomAutoComplete = ({ classes, className, id, label, onChange, actualValue, parentState, choices }) => {
+const CustomAutoComplete = ({
+  classes,
+  className,
+  disabled,
+  id,
+  label,
+  onChange,
+  actualValue,
+  parentState,
+  choices
+}) => {
   let optionValueLabels = {};
   const [labelValuePair, setLabelValuePair] = useState({
     value: null,
@@ -53,6 +64,7 @@ const CustomAutoComplete = ({ classes, className, id, label, onChange, actualVal
       id={id}
       options={choices}
       value={labelValuePair}
+      disabled={disabled}
       isOptionEqualToValue={(option, value) => {
         if (id === 'herbicide-type') {
           // console.log(option);

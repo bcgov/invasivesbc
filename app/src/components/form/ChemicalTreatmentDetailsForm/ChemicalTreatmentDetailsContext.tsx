@@ -8,6 +8,7 @@ export interface IChemicalDetailsContextformDetails {
   herbicideDictionary?: any;
   businessCodes?: any;
   activitySubType?: any;
+  disabled?: boolean;
   classes?: ClassNameMap;
 }
 

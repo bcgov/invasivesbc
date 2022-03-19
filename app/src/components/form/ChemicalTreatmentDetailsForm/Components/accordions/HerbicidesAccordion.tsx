@@ -24,6 +24,7 @@ const HerbicidesAccordion = (props) => {
         <Box className={classes.accordionBody}>
           <Box component="div" className={classes.centerBox}>
             <Button
+              disabled={formDetails.disabled}
               id="btn_add_herbicide"
               onClick={() => {
                 if (props.insideTankMix) {

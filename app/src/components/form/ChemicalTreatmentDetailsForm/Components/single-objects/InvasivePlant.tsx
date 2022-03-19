@@ -74,6 +74,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
             ? businessCodes['invasive_plant_aquatic_code']
             : businessCodes['invasive_plant_code']
         }
+        disabled={formDetails.disabled}
         className={'inputField'}
         classes={classes}
         actualValue={species.invasive_plant_code}
@@ -103,6 +104,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
       </Tooltip>
       <TextField
         fullWidth
+        disabled={formDetails.disabled}
         className={classes.inputField}
         style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
@@ -121,6 +123,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
       />
 
       <Button
+        disabled={formDetails.disabled}
         onClick={() => {
           setFormDetails((prevDetails) => {
             const newSpeciesArr = [...prevDetails.formData.invasive_plants];
