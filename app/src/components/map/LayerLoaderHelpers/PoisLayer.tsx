@@ -67,14 +67,17 @@ export const PoisLayer = (props) => {
 
   useEffect(() => {
     if (pois) {
-      const actArr = pois.features.map((feature) => {
-        return feature.properties;
+      const poiArr = pois.features.map((feature) => {
+        return {
+          id: 'IAPP: ' + feature.properties.site_id,
+          species_positive: feature.properties.species_on_site
+        };
       });
       setCurrentRecords((prev) => {
-        return prev.concat(actArr);
+        return { ...prev, pois: [...poiArr] };
       });
     }
-  }, [pois, setCurrentRecords]);
+  }, [pois]);
 
   if (!pois) {
     return null;

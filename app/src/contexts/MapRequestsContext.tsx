@@ -10,7 +10,7 @@ interface IMapExtentLayersContext {
   setLayersActions: React.Dispatch<React.SetStateAction<any>>;
   mapZoom: number;
   setMapZoom: React.Dispatch<React.SetStateAction<number>>;
-  currentRecords: any[];
+  currentRecords: any;
   setCurrentRecords: React.Dispatch<React.SetStateAction<any>>;
   uploadLayersFlag: number;
   setUploadLayersFlag: React.Dispatch<React.SetStateAction<number>>;
@@ -59,7 +59,7 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   setLayersActions: () => {},
   mapZoom: 5,
   setMapZoom: () => {},
-  currentRecords: [],
+  currentRecords: {},
   setCurrentRecords: () => {},
   uploadLayersFlag: 0,
   setUploadLayersFlag: () => {}
@@ -70,7 +70,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapZoom, setMapZoom] = React.useState<number>(5);
   const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
-  const [currentRecords, setCurrentRecords] = React.useState<any>([]);
+  const [currentRecords, setCurrentRecords] = React.useState<any>({ activities: [], pois: [] });
   const [uploadLayersFlag, setUploadLayersFlag] = React.useState<number>(0);
 
   React.useEffect(() => {
@@ -80,10 +80,6 @@ export const MapRequestContextProvider: React.FC = (props) => {
       setLayers(layersJSON(networkContext.connected, mapZoom));
     }
   }, [networkContext, mapZoom]);
-
-  React.useEffect(() => {
-    setCurrentRecords([]);
-  }, [layers]);
 
   return (
     <MapRequestContext.Provider
@@ -100,7 +96,7 @@ export const MapRequestContextProvider: React.FC = (props) => {
           uploadLayersFlag,
           setUploadLayersFlag
         }),
-        [layers, layersActions, mapZoom, setCurrentRecords, uploadLayersFlag, setUploadLayersFlag]
+        [layers, layersActions, mapZoom, setCurrentRecords, currentRecords, uploadLayersFlag, setUploadLayersFlag]
       )}>
       {props.children}
     </MapRequestContext.Provider>

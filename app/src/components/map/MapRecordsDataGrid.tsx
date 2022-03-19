@@ -39,6 +39,7 @@ const MapRecordsDataGrid = (props) => {
   const { currentRecords } = mapRequestContext;
   const classes = useStyles();
   const mainDivRef = useRef(null);
+  const [renderRows, setRenderRows] = useState([]);
   const [dataGridExpanded, setDataGridExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -73,6 +74,11 @@ const MapRecordsDataGrid = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    const { activities, pois } = currentRecords;
+    setRenderRows([...activities, ...pois]);
+  }, [currentRecords]);
+
   return (
     <div
       style={{
@@ -99,11 +105,10 @@ const MapRecordsDataGrid = (props) => {
 
       <DataGrid
         className={classes.dataGrid + ' leaflet-control'}
-        rows={currentRecords}
+        rows={renderRows}
         columns={columns}
         pageSize={10}
         rowsPerPageOptions={[10]}
-        checkboxSelection
         disableSelectionOnClick
       />
     </div>
