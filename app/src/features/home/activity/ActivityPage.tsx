@@ -806,7 +806,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (geometry && geometry[0]) {
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
-        if (booleanWithin(geometry[0] as any, bcArea as any)) {
+        if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
           saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
