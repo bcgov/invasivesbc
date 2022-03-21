@@ -27,7 +27,7 @@ describe('CREATING A NEW RECORD', function () {
   // INPUT VARIABLES
   // - Basic Information
   const accessDescription = faker.random.arrayElement(accessDescriptionArray);
-  const locationDescription = faker.random.arrayElement(locationDescriptionArray);
+  const locationDescription = faker.random.arrayElement(locationDescriptionArray) + '{enter}';
   // - Jurisdictions
   const jurisdictionCode = faker.random.arrayElement(jurisdictions);
   const percentCovered = '100';
@@ -88,7 +88,7 @@ describe('CREATING A NEW RECORD', function () {
     }
   });
   it('It goes to My Records Page', function () {
-    cy.get('.css-1m5ei80 > .MuiTabs-root > .MuiTabs-scroller > .MuiTabs-flexContainer > :nth-child(4)').click('center');
+    cy.get('[data-testid=HomeWorkIcon]').click('center');
     cy.contains('Observations');
   });
   it('It creates a Chemical Terrestrial Treatment record', function () {
@@ -103,8 +103,12 @@ describe('CREATING A NEW RECORD', function () {
     }
     cy.contains('Activity Treatment Chemical Plant Terrestrial');
   });
+  it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
+    cy.wait(5000);
+  });
   it('It places a marker', function () {
-    cy.get('.leaflet-draw-draw-marker').click('center');
+    cy.get('.leaflet-container').click('center');
+    cy.get('.leaflet-draw-draw-marker').dblclick('center');
     cy.get('.leaflet-container').click('center');
   });
   it('It inputs basic information', function () {
@@ -117,7 +121,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.wait(1000);
     // Access Description
     cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription, {
-      delay: 50
+      delay: 5
     });
     cy.get('.MuiOutlinedInput-root > #root_activity_data_location_description').type(locationDescription);
   });
@@ -135,7 +139,9 @@ describe('CREATING A NEW RECORD', function () {
   });
   it('It inputs observation information', function () {
     // Treatment Person
-    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name').type(treatmentPerson);
+    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name')
+      .clear()
+      .type(treatmentPerson);
     // Pesticide Applicator Certificate Number
     cy.get('#root_activity_type_data_activity_persons_0_applicator_license').type(pesticideApplicator);
   });
@@ -209,13 +215,17 @@ describe('CREATING A NEW RECORD', function () {
     );
     // Amount of Mix Used (L)
     cy.get('#amount-of-mix-used').type('1');
-    // Dilution (%)
-    cy.get('#dilution').type('1');
-    // Area Treated (sqm)
-    cy.get('#area-treated').type('1');
-    // if (herbicideCalculationType === 'Product Application Rate{enter}') {
-    //   cy.get('#mui-92').type(herbicideArea)
-    // }
+    if (herbicideCalculationType === 'Dilution{enter}') {
+      // Dilution (%)
+      cy.get('#dilution').type('1');
+      // Area Treated (sqm)
+      cy.get('#area-treated').type('1');
+    } else {
+      // Delivery Rate of Mix
+      cy.get('#delivery-rate-of-mix').type('1');
+      // Product Application Rate
+      cy.get('#product-application-rate').type('1');
+    }
   });
   it('It can save and submit the record', function () {
     cy.get('.css-acctgf-MuiGrid-root > .MuiGrid-container > :nth-child(1) > .MuiButton-root').click('center');

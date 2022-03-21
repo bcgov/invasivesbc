@@ -1,5 +1,11 @@
 {
-  "ignoreTestFiles": ["**/1-getting-started/*", "**/2-advanced-examples/*"],
+  "ignoreTestFiles": [
+    "**/1-getting-started/*",
+    "**/2-advanced-examples/*",
+    "**/unfinished/*",
+    "**/Chemical Treatments/*",
+    "**/Map Tests/*"
+  ],
   "viewportWidth": 1280,
   "viewportHeight": 720,
   "env": {

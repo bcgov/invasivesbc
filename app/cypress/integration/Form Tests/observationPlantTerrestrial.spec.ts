@@ -86,6 +86,9 @@ describe('CREATING A NEW RECORD', function () {
     ).click('center');
     cy.contains('Activity Observation Plant Terrestrial');
   });
+  it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
+    cy.wait(5000);
+  });
   it('It places a marker', function () {
     cy.get('.leaflet-container').click('center');
     cy.get('.leaflet-draw-draw-marker').dblclick('center');
@@ -101,7 +104,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.wait(1000);
     // Access Description
     cy.get('.MuiOutlinedInput-root > #root_activity_data_access_description').type(accessDescription, {
-      delay: 100
+      delay: 5
     });
     cy.get('.MuiOutlinedInput-root > #root_activity_data_location_description').type(locationDescription);
   });

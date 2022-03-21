@@ -328,6 +328,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               className={classes.inputField}
               type="number"
+              id="delivery-rate-of-mix"
               label="Delivery Rate of Mix (L/ha)"
               value={herbicide.delivery_rate_of_mix || ''}
               variant="outlined"
@@ -352,6 +353,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               className={classes.inputField}
               type="number"
+              id="product-application-rate"
               // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0}
               label="Product Application Rate (L/ha)"
               // helperText={currentHerbicideErrorSchema?.application_rate?.__errors[0] || ''}

@@ -62,7 +62,6 @@ export const slopeArray = [
   'variable{enter}'
 ];
 export const aspectArray = [
-  'east{enter}',
   'north f{enter}',
   'northeast f{enter}',
   'northwest f{enter}',

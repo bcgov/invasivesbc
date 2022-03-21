@@ -186,7 +186,12 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
-              <Button disabled={false} variant="contained" color="primary" onClick={() => setDialog(true)}>
+              <Button
+                id="drop-pin-button"
+                disabled={false}
+                variant="contained"
+                color="primary"
+                onClick={() => setDialog(true)}>
                 Drop Pin
               </Button>
               <Dialog open={dialog} onClose={() => setDialog(false)}>
