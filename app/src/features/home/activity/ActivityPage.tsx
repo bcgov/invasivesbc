@@ -603,7 +603,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   useEffect(() => {
     const getLinked = async () => {
       let linkedRecordId: string = null;
-      if (doc.activityType.includes('Monitoring') && doc.formData.activity_type_data?.linked_id) {
+      if (
+        doc &&
+        doc.activityType &&
+        doc.activityType.includes('Monitoring') &&
+        doc.formData.activity_type_data?.linked_id
+      ) {
         linkedRecordId = doc.formData.activity_type_data.linked_id;
       }
       if (linkedRecordId) {
