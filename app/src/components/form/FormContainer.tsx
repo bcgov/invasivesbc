@@ -74,7 +74,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  const { rolesUserHasAccessTo, keycloak } = useContext(AuthStateContext);
 
   useEffect(() => {
     if (!props.activity?.formData) {
@@ -352,9 +352,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         uiSchema: uiSchema
       });
     };
-
-    getApiSpec();
-  }, [props.activity.activitySubtype, props.activity.activity_subtype]);
+    if (keycloak?.obj?.authenticated) {
+      getApiSpec();
+    }
+  }, [props.activity.activitySubtype, keycloak?.obj?.authenticated, props.activity.activity_subtype]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 

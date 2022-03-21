@@ -22,6 +22,7 @@ import * as turf from '@turf/helpers';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -287,6 +288,7 @@ export const RenderTableActivity = (props: any) => {
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const history = useHistory();
+  const { keycloak } = useContext(AuthStateContext);
 
   const labels = ['ID', 'Species'];
 
@@ -304,8 +306,10 @@ export const RenderTableActivity = (props: any) => {
     const getApiSpec = async () => {
       setResponse(await invasivesAccess.getCachedApiSpec());
     };
-    getApiSpec();
-  }, [rows]);
+    if (keycloak?.obj?.authenticated) {
+      getApiSpec();
+    }
+  }, [rows, keycloak?.obj?.authenticated]);
 
   const activityPage = async (row) => {
     var id = row.obj.activity_id;
