@@ -7,7 +7,13 @@ export const GET: Operation = [
       environment: process.env.environment || process.env.NODE_ENV || 'localhost'
     };
 
-    res.status(200).json(versionInfo);
+    res.status(200).json({
+      message: 'Got version info',
+      request: req.body,
+      result: versionInfo,
+      namespace: 'misc/version',
+      code: 200
+    });
   }
 ];
 

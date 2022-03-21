@@ -603,7 +603,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   useEffect(() => {
     const getLinked = async () => {
       let linkedRecordId: string = null;
-      if (doc.activityType.includes('Monitoring') && doc.formData.activity_type_data?.linked_id) {
+      if (
+        doc &&
+        doc.activityType &&
+        doc.activityType.includes('Monitoring') &&
+        doc.formData.activity_type_data?.linked_id
+      ) {
         linkedRecordId = doc.formData.activity_type_data.linked_id;
       }
       if (linkedRecordId) {
@@ -766,7 +771,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const getJurSuggestions = async () => {
     if (geometry[0]) {
       const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
-      setSuggestedJurisdictions(res.rows);
+      setSuggestedJurisdictions(res.result);
     }
   };
 
@@ -791,7 +796,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       if (updatedDoc.geometry) {
         const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
-        setSuggestedJurisdictions(res.rows);
+        setSuggestedJurisdictions(res.result);
       }
 
       setIsLoading(false);

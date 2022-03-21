@@ -174,8 +174,9 @@ export async function getMetabaseSession(): Promise<any> {
 
   if (!response.data.id) {
     throw {
-      status: 503,
-      message: 'Failed to establish metabase session'
+      code: 503,
+      message: 'Failed to establish metabase session',
+      namespace: 'metabase-query'
     };
   }
 
@@ -211,10 +212,11 @@ function createMetabaseQuery(): RequestHandler {
       let activitesResponse, poiResponse;
 
       if (!activity_ids && !point_of_interest_ids) {
-        throw {
-          status: 400,
-          message: 'A list of activity ids or point of interest ids required'
-        };
+        return res.status(400).json({
+          message: 'Missing activity_ids and point_of_interest_ids',
+          namespace: 'metabase-query',
+          code: 400
+        });
       }
 
       // sanitize and remove duplicates from the lists, just in case:
@@ -293,10 +295,11 @@ function createMetabaseQuery(): RequestHandler {
         activitesResponse = await axios(activitiesRequest);
 
         if (!activitesResponse || !activitesResponse.data) {
-          throw {
-            status: 400,
-            message: 'Metabase Error.  Failed to create query for custom list of Activities'
-          };
+          return res.status(500).json({
+            message: 'Failed to create activities query',
+            namespace: 'metabase-query',
+            code: 500
+          });
         }
       }
 
@@ -328,14 +331,18 @@ function createMetabaseQuery(): RequestHandler {
         poiResponse = await axios(poiRequest);
 
         if (!poiResponse || !poiResponse.data) {
-          throw {
-            status: 400,
-            message: 'Metabase Error.  Failed to create query for custom list of Points of Interest'
-          };
+          return res.status(500).json({
+            message: 'Failed to create points of interest query',
+            namespace: 'metabase-query',
+            code: 500
+          });
         }
       }
 
       return res.status(200).json({
+        message: 'Successfully created query',
+        namespace: 'metabase-query',
+        code: 200,
         activity_query_id: activitesResponse?.data?.id,
         activity_query_name: activitesResponse?.data?.name,
         point_of_interest_query_id: poiResponse?.data?.id,
@@ -345,7 +352,12 @@ function createMetabaseQuery(): RequestHandler {
       // reset session on error (just in case):
       closeMetabaseSession();
       defaultLog.debug({ label: 'createMetabaseQuery', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to create query',
+        error: error,
+        namespace: 'metabase-query',
+        code: 500
+      });
     }
   };
 }
@@ -375,10 +387,11 @@ function getMetabaseQueryOptions(): RequestHandler {
       });
 
       if (!response || !response.data) {
-        throw {
-          status: 400,
-          message: 'Failed to find metabase query options'
-        };
+        return res.status(500).json({
+          message: 'Failed to get query options',
+          namespace: 'metabase-query',
+          code: 500
+        });
       }
 
       // extract just the ids from results, so we can re-fetch from the db using our own security layers
@@ -395,7 +408,12 @@ function getMetabaseQueryOptions(): RequestHandler {
       // reset session on error (just in case):
       closeMetabaseSession();
       defaultLog.debug({ label: 'getMetabaseQueryOptions', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Failed to get query options',
+        error: error,
+        namespace: 'metabase-query',
+        code: 500
+      });
     }
   };
 }

@@ -1,18 +1,18 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {ALL_ROLES} from '../../constants/misc';
-import {getLogger} from '../../utils/logger';
-import {PlantFormSubmissionFromData} from '../../utils/batch/plant_form_submit_template';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { ALL_ROLES } from '../../constants/misc';
+import { getLogger } from '../../utils/logger';
+import { PlantFormSubmissionFromData } from '../../utils/batch/plant_form_submit_template';
 import fetch from 'node-fetch';
-import {v4 as uuidv4} from 'uuid';
-import {HOST, PORT} from '../../app';
+import { v4 as uuidv4 } from 'uuid';
+import { HOST, PORT } from '../../app';
 import csvParser from 'csv-parser';
-import {Readable} from 'stream';
-import {atob} from 'js-base64';
-import {getDBConnection} from "../../database/db";
-import {QueryResult} from "pg";
+import { Readable } from 'stream';
+import { atob } from 'js-base64';
+import { getDBConnection } from '../../database/db';
+import { QueryResult } from 'pg';
 
 const defaultLog = getLogger('batch');
 
@@ -155,10 +155,12 @@ function upload(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'batch/new_upload',
+        code: 503
+      });
     }
 
     let createdId;
@@ -178,11 +180,16 @@ function upload(): RequestHandler {
         await connection.query('COMMIT');
 
         createdId = response.rows[0]['id'];
-
       } catch (error) {
         await connection.query('ROLLBACK');
-        defaultLog.error({label: 'batchUpload', message: 'error', error});
-        throw error;
+        defaultLog.error({ label: 'batchUpload', message: 'error', error });
+        return res.status(500).json({
+          message: 'Error creating batch upload',
+          request: req.body,
+          error: error,
+          namespace: 'batch/new_upload',
+          code: 500
+        });
       }
     } finally {
       connection.release();
@@ -220,6 +227,12 @@ function upload(): RequestHandler {
       body: JSON.stringify(batch)
     });
 
-    return res.status(201).send({ batchId: createdId });
+    return res.status(201).json({
+      message: 'Upload successful',
+      request: req.body,
+      batchId: createdId,
+      namespace: 'batch/new_upload',
+      code: 201
+    });
   };
 }

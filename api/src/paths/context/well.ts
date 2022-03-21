@@ -86,10 +86,11 @@ function getWell(req, res, next) {
 
   // Error if no coordinates
   if (!lon || !lat) {
-    throw {
-      status: 400,
-      message: 'Did not supply valid coordinates'
-    };
+    return res.status(400).json({
+      message: 'Bad request - missing coordinates',
+      request: req.query,
+      code: 400
+    });
   }
 
   defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
@@ -139,7 +140,13 @@ function getWell(req, res, next) {
 
     if (res) {
       // If an ajax reqest
-      return res.status(201).json(bundle);
+      return res.status(201).json({
+        message: 'Got closest well',
+        result: bundle,
+        request: req.query,
+        namespace: 'context/well',
+        code: 201
+      });
     } else {
       // Otherwise just a module request
       return bundle;
@@ -155,7 +162,13 @@ function getWell(req, res, next) {
     defaultLog.debug({ label: 'getWell', message: 'error', error });
     const err = { error };
     if (res) {
-      return res.status(501).json(err);
+      return res.status(501).json({
+        message: 'Failed to get well',
+        request: req.query,
+        error: err,
+        namespace: 'context/well',
+        code: 501
+      });
     } else {
       return err;
     }

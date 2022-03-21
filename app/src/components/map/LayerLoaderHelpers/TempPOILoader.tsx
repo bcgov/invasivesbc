@@ -46,7 +46,7 @@ const TempPOILoader: React.FC<any> = (props) => {
     let data = await da.getPointsOfInterest(filter);
     let poiGeoJSON = {
       type: 'FeatureCollection',
-      features: data.rows.map((row) => {
+      features: data.result.map((row) => {
         return {
           type: 'Feature',
           //TODO do this part server side to speed it up:
@@ -80,7 +80,7 @@ const TempPOILoader: React.FC<any> = (props) => {
       poiGeoJSON = {
         type: 'FeatureCollection',
         features: [
-          ...data.rows.map((row) => {
+          ...data.result.map((row) => {
             return {
               type: 'Feature',
               geometry: {

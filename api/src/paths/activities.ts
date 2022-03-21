@@ -217,46 +217,41 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
 
-    let connection;
-    try {
-      connection = await getDBConnection();
-    } catch (e) {
-      console.log('error getting database connetion');
-      console.log(JSON.stringify(e));
-    }
-
+    const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
+      return res
+        .status(503)
+        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
     }
 
     try {
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res
+          .status(500)
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      // build the return object
-      const result = { ...rows, ...count };
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Got activities by search filter criteria',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'activities',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error getting activities by search filter criteria',
+        error,
+        namespace: 'activities',
+        code: 500
+      });
     } finally {
       connection.release();
     }
@@ -275,38 +270,42 @@ function deleteActivitiesByIds(): RequestHandler {
     const ids = Object.values(req.query.id) as string[];
 
     if (!ids || !ids.length) {
-      throw {
-        status: 400,
-        message: 'Activity ids must be supplied'
-      };
+      return res
+        .status(400)
+        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
     }
 
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res
+        .status(503)
+        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
     }
 
     try {
       const sqlStatement: SQLStatement = deleteActivitiesSQL(ids);
 
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res
+          .status(500)
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = { count: (response && response.rowCount) || 0 };
-
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Deleted activities by ids',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'activities',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
-      throw error;
+      return res
+        .status(500)
+        .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
     } finally {
       connection.release();
     }

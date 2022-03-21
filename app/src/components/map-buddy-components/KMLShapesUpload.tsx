@@ -44,7 +44,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         console.log();
         response = await api.postAdminUploadShape(uploadRequests[i]);
         console.log(response);
-        if (response.status !== 200) {
+        if (response.code !== 201) {
           throw new Error(response.message);
         }
         setUploadRequests((prev) => {

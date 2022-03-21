@@ -154,17 +154,17 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
 
   const getUserByIDIR = async (idir_userid) => {
     const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
-    return user;
+    return user.result;
   };
 
   const getUserByBCEID = async (bceid_userid) => {
     const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
-    return user;
+    return user.result;
   };
 
   const getRolesForUser = async (user_id) => {
     const roles = await invasivesApi.getRolesForUser(user_id, keycloak?.obj?.token);
-    return roles;
+    return roles.result;
   };
 
   const handleUserResponse = async (userResponse) => {
@@ -173,7 +173,7 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
       const roles = await getRolesForUser(user.user_id);
       const accessibleRoles = await getRolesUserHasAccessTo(user.user_id);
       setRolesUserHasAccessTo(accessibleRoles);
-      setUserRoles(roles.data);
+      setUserRoles(roles);
       const mergedInfo = { ...info, ...user };
       if (isMobile()) {
         await cacheRolesForUser(user.user_id);
@@ -185,10 +185,11 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
   };
 
   const getRolesUserHasAccessTo = async (user_id) => {
-    const all_roles = await invasivesApi.getRoles(keycloak?.obj?.token);
+    const all_roles_response = await invasivesApi.getRoles(keycloak?.obj?.token);
+    const all_roles = all_roles_response.result;
     const roles = await getRolesForUser(user_id);
     const accessRoles = [];
-    for (const role of roles.data) {
+    for (const role of roles) {
       accessRoles.push(role);
       if (role.role_name === 'master_administrator') {
         accessRoles.push(...all_roles);
@@ -237,13 +238,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
       return false;
     }
   };
-
-  React.useEffect(() => {
-    const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec();
-    };
-    getApiSpec();
-  }, [invasivesApi]);
 
   React.useEffect(() => {
     if (keycloak?.obj?.authenticated) {

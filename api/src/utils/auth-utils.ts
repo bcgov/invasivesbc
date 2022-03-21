@@ -37,8 +37,9 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     if (!req.headers || !req.headers.authorization) {
       defaultLog.warn({ label: 'authenticate', message: 'token was null' });
       throw {
-        status: 401,
-        message: 'Access Denied'
+        code: 401,
+        message: 'When trying to authenticate, the token was null',
+        namespace: 'auth-utils'
       };
     }
 
@@ -49,8 +50,9 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     if (token.indexOf('Bearer ') !== 0) {
       defaultLog.warn({ label: 'authenticate', message: 'token did not have a bearer' });
       throw {
-        status: 401,
-        message: 'Access Denied'
+        code: 401,
+        message: 'When trying to authenticate, the token did not have a bearer',
+        namespace: 'auth-utils'
       };
     }
 
@@ -61,19 +63,19 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     if (!tokenString) {
       defaultLog.warn({ label: 'authenticate', message: 'token string was null' });
       throw {
-        status: 401,
-        message: 'Access Denied'
+        code: 401,
+        message: 'When trying to authenticate, the token string was null',
+        namespace: 'auth-utils'
       };
     }
-
     // Decode token without verifying signature
     const decodedToken = decode(tokenString, { complete: true, json: true });
-
     if (!decodedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token was null' });
       throw {
-        status: 401,
-        message: 'Access Denied'
+        code: 401,
+        message: 'When trying to authenticate, the decoded token was null',
+        namespace: 'auth-utils'
       };
     }
 
@@ -83,19 +85,20 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     if (!decodedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token header kid was null' });
       throw {
-        status: 401,
-        message: 'Access Denied'
+        code: 401,
+        message: 'When trying to authenticate, the decoded token header kid was null',
+        namespace: 'auth-utils'
       };
     }
 
     req['keycloak_token'] = decodedToken;
-
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });
     throw {
-      status: 401,
-      message: 'Access Denied'
+      code: 401,
+      message: 'Encountered an unexpected error while trying to authenticate: ' + error.message,
+      namespace: 'auth-utils'
     };
   }
 };

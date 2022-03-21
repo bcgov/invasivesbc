@@ -82,10 +82,12 @@ function getMetabaseQueryResults(): RequestHandler {
       const queryId = req?.params?.queryId;
 
       if (!queryId) {
-        throw {
-          status: 400,
-          message: 'Metabase query id required'
-        };
+        return res.status(400).json({
+          message: 'Bad request - missing queryId',
+          request: req.params,
+          namespace: 'metabase-query/{queryId}',
+          code: 400
+        });
       }
 
       const session = await getMetabaseSession();
@@ -101,14 +103,19 @@ function getMetabaseQueryResults(): RequestHandler {
       });
 
       if (!response || !response.data || !response.data.length) {
-        throw {
-          status: 400,
-          message: 'Failed to fetch metabase query with id ' + queryId
-        };
+        return res.status(404).json({
+          message: 'No results',
+          namespace: 'metabase-query/{queryId}',
+          code: 404
+        });
       }
 
       // extract just the ids from results, so we can re-fetch from the db using our own security layers
       return res.status(200).json({
+        message: 'Got results',
+        request: req.params,
+        namespace: 'metabase-query/{queryId}',
+        code: 200,
         activity_ids: response.data
           .map((row) => row['Activity ID'])
           .filter((row) => row)
@@ -123,7 +130,12 @@ function getMetabaseQueryResults(): RequestHandler {
       // reset session on error (just in case):
       closeMetabaseSession();
       defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error getting metabase query results',
+        error: error,
+        namespace: 'metabase-query/{queryId}',
+        code: 500
+      });
     }
   };
 }

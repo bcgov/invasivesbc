@@ -68,7 +68,7 @@ export const JurisdictionsLayer = (props) => {
   const fetchData = async () => {
     const jurisdictionsData = await dataAccess.getJurisdictions({ search_feature: mapBounds }, databaseContext);
     let jurisdictionsFeatureArray = [];
-    jurisdictionsData?.rows.forEach((row) => {
+    jurisdictionsData?.result?.forEach((row) => {
       jurisdictionsFeatureArray.push(row.geojson ? row.geojson : row);
     });
     setJurisdictions({ type: 'FeatureCollection', features: jurisdictionsFeatureArray });

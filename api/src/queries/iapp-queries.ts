@@ -161,8 +161,9 @@ export const getIappExtractFromDB = async (site_ids: number[], extractName: stri
 
   if (!connection) {
     throw {
-      status: 503,
-      message: 'Failed to establish database connection'
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'iapp-queries'
     };
   }
 
@@ -171,8 +172,9 @@ export const getIappExtractFromDB = async (site_ids: number[], extractName: stri
 
     if (!sqlStatement) {
       throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'iapp-queries'
       };
     }
 

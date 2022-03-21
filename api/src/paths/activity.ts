@@ -1,6 +1,6 @@
 'use strict';
 
-import { RequestHandler } from 'express';
+import { request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
@@ -275,10 +275,12 @@ function createActivity(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'activity',
+        code: 503
+      });
     }
 
     try {
@@ -286,10 +288,12 @@ function createActivity(): RequestHandler {
       const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 
       if (!getActivitySQLStatement || !createActivitySQLStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Failed to build SQL statement.',
+          request: req.body,
+          namespace: 'activity',
+          code: 500
+        });
       }
 
       let createResponse: QueryResult = null;
@@ -307,17 +311,25 @@ function createActivity(): RequestHandler {
           // Found 1 or more rows with matching activity_id (which are not marked as deleted), expecting 0
           await connection.query('COMMIT');
 
-          throw {
-            status: 409,
-            message: 'Resource with matching activity_id already exists.'
-          };
+          return res.status(409).json({
+            message: 'Resource with matching activity_id already exists.',
+            request: req.body,
+            namespace: 'activity',
+            code: 409
+          });
         }
         createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
 
         await connection.query('COMMIT');
       } catch (error) {
         await connection.query('ROLLBACK');
-        throw error;
+        return res.status(500).json({
+          message: 'Failed to create activity.',
+          error: error,
+          request: req.body,
+          namespace: 'activity',
+          code: 500
+        });
       }
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
@@ -325,10 +337,24 @@ function createActivity(): RequestHandler {
       // kick off asynchronous context collection activities
       if (req.body.form_data.activity_data.latitude) commitContext(result, req);
 
-      return res.status(200).json(result);
+      return res.status(201).json({
+        message: 'Activity created.',
+        request: req.body,
+        activity_id: result.activity_id,
+        count: createResponse.rowCount,
+        result: createResponse.rows,
+        namespace: 'activity',
+        code: 201
+      });
     } catch (error) {
       defaultLog.debug({ label: 'createActivity', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error creating activity.',
+        request: req.body,
+        error: error,
+        namespace: 'activity',
+        code: 500
+      });
     } finally {
       connection.release();
     }
@@ -353,20 +379,24 @@ function updateActivity(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        message: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'activity',
+        code: 503
+      });
     }
 
     try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 
       if (!sqlStatements || !sqlStatements.createSQL) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statements'
-        };
+        return res.status(500).json({
+          message: 'Failed to build SQL statement.',
+          request: req.body,
+          namespace: 'activity',
+          code: 500
+        });
       }
 
       let createResponse = null;
@@ -380,7 +410,13 @@ function updateActivity(): RequestHandler {
         await connection.query('COMMIT');
       } catch (error) {
         await connection.query('ROLLBACK');
-        throw error;
+        return res.status(500).json({
+          message: 'Error updating activity.',
+          request: req.body,
+          error: error,
+          namespace: 'activity',
+          code: 500
+        });
       }
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
@@ -391,7 +427,13 @@ function updateActivity(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'updateActivity', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error updating activity.',
+        request: req.body,
+        error: error,
+        namespace: 'activity',
+        code: 500
+      });
     } finally {
       connection.release();
     }

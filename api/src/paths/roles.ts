@@ -5,13 +5,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
-import {
-  getAllRolesSQL,
-  getRolesForUserSQL,
-  getUsersForRoleSQL,
-  grantRoleToUserSQL,
-  revokeRoleFromUserSQL
-} from '../queries/role-queries';
+import { getAllRolesSQL } from '../queries/role-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('roles');
@@ -61,25 +55,41 @@ function getRoles(): RequestHandler {
   return async (req, res, next) => {
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
+      return res.status(503).json({
+        error: 'Database connection unavailable.',
+        request: req.body,
+        namespace: 'roles',
+        code: 503
+      });
     }
     try {
       const sqlStatement: SQLStatement = getAllRolesSQL();
       if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Unable to generate SQL statement.',
+          request: req.body,
+          namespace: 'roles',
+          code: 500
+        });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      const result = (response && response.rows) || null;
-      return res.status(200).json(result);
+      return res.status(200).json({
+        message: 'Successfully retrieved roles.',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'roles',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getRoles', message: 'error', error });
-      throw error;
+      return res.status(500).json({
+        message: 'Error fetching roles.',
+        request: req.body,
+        error: error,
+        namespace: 'roles',
+        code: 500
+      });
     } finally {
       connection.release();
     }

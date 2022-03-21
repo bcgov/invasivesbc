@@ -82,27 +82,39 @@ POST.apiDoc = {
 function createUser(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'create-user', message: 'sql step', body: req.body });
-    console.log('req', JSON.stringify(req.body));
     const connection = await getDBConnection();
     if (!connection) {
-      throw {
-        status: 503,
-        message: 'Database connection failed.'
-      };
+      return res.status(503).json({
+        message: 'Failed to establish database connection',
+        request: req.body,
+        namespace: 'create-user',
+        code: 503
+      });
     }
     try {
       const sqlStatement: SQLStatement = createUserSQL(req.body.type, req.body.id, req.body.username, req.body.email);
       if (!sqlStatement) {
-        throw {
-          status: 500,
-          message: 'Failed to build SQL statement'
-        };
+        return res.status(500).json({
+          message: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'create-user',
+          code: 500
+        });
       }
-      await connection.query(sqlStatement.text, sqlStatement.values);
-      return res.status(200).json({ resp: 'user created ' });
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      return res.status(200).json({
+        message: 'User created',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'create-user',
+        code: '200'
+      });
     } catch (error) {
       defaultLog.debug({ label: 'create', message: 'error', error });
-      throw error;
+      return res
+        .status(500)
+        .json({ message: 'Failed to create user', request: req.body, error, namespace: 'create-user', code: 500 });
     } finally {
       connection.release();
     }

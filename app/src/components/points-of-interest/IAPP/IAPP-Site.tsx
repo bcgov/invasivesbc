@@ -38,7 +38,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
-  const jurisdictions = getJurisdictions(surveys);
+  const jurisdictions: any = getJurisdictions(surveys);
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -120,7 +120,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={9}>
-              {jurisdictions.map((jurisdiction) => {
+              {jurisdictions.result.map((jurisdiction) => {
                 return (
                   <>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)

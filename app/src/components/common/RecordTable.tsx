@@ -25,10 +25,11 @@ import { lighten } from '@mui/material';
 import { ExpandMore, FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import clsx from 'clsx';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Spinner from '../../components/spinner/Spinner';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s
@@ -293,6 +294,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
   const loadBuffer = 2;
 
+  const { keycloak } = useContext(AuthStateContext);
+
   useEffect(() => {
     setRows(Array.isArray(props.rows) ? props.rows : []);
     setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
@@ -426,8 +429,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   );
 
   useEffect(() => {
-    getApiSpec(tableSchemaType);
-  }, [tableSchemaType]);
+    if (keycloak?.obj?.authenticated) {
+      getApiSpec(tableSchemaType);
+    }
+  }, [tableSchemaType, keycloak?.obj?.authenticated]);
 
   useEffect(() => {
     setSelected(props.selected || []);

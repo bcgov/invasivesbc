@@ -18,7 +18,7 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({ serial }) => {
 
   useEffect(() => {
     api.getBatchUploads().then((data) => {
-      setBatchUploads(data);
+      setBatchUploads(data.result);
       setExpandedRow(null);
     });
   }, [serial, api]);

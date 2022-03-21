@@ -105,8 +105,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
       if (speciesCode) {
         const codeResults = await invasivesApi.getSpeciesDetails([speciesCode]);
-
-        setSpecies(codeResults[0].code_description);
+        setSpecies(codeResults.result[0].code_description);
       }
     };
 

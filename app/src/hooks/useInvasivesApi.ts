@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 import { DocType } from '../constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
+import { ErrorContext } from 'contexts/ErrorContext';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
@@ -22,6 +23,9 @@ const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
 
 const API_HOST = REACT_APP_API_HOST;
 const API_PORT = REACT_APP_API_PORT;
+
+// Set this variable to true to enable debugging of the API calls
+const LOGVERBOSE = false;
 
 // If NODE_ENV is set, it will take precedence.
 // If no node env is set, you get react env vars.
@@ -42,7 +46,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://api-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
+    API_URL = 'http://localhost:7080';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
@@ -74,6 +78,20 @@ const useRequestOptions = () => {
 export const useInvasivesApi = () => {
   const options = useRequestOptions();
   const databaseContext = useContext(DatabaseContext);
+  const errorContext = useContext(ErrorContext);
+
+  const checkForErrors = (response: any) => {
+    if (response.status && response.status > 201) {
+      errorContext.pushError({
+        message: response.message
+          ? response.message
+          : "We're not sure what happened there. Try again in a few minutes.",
+        code: response.code ? response.code : 500,
+        namespace: response.namespace ? response.namespace : 'Something went wrong...'
+      });
+    }
+  };
+
   /**
    * Fetch*
    activities by search criteria.
@@ -87,6 +105,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activities/`,
       data: activitiesSearchCriteria
     });
+
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getActivities', data);
+    }
 
     /****************Begining of GeoJSON*****************/
     /**
@@ -125,7 +148,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activities-lean/`,
       data: activitiesSearchCriteria
     });
-
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getActivitiesLean', data);
+    }
     return data;
   };
 
@@ -142,7 +168,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/jurisdictions/`,
       data: jurisdictionsSearchCriteria
     });
-
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getJurisdictions', data);
+    }
     return data;
   };
 
@@ -159,6 +188,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/riso/`,
       data: risoSearchCriteria
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getRISOs', data);
+    }
 
     return data;
   };
@@ -175,6 +208,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('deleteActivities', data);
+    }
+
     return data;
   };
 
@@ -190,6 +228,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/deleted/activities?` + qs.stringify({ id: activityIds }),
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('undeleteActivities', data);
+    }
 
     return data;
   };
@@ -207,6 +249,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/roles/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getRoles', data);
+    }
+
     return data;
   };
 
@@ -223,6 +270,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/points-of-interest/`,
       data: pointsOfInterestSearchCriteria
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getPointsOfInterest', data);
+    }
 
     /****************Begining of GeoJSON*****************/
     /**
@@ -269,6 +320,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/create-user`,
       data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('createUser', data);
+    }
+
     return data;
   };
 
@@ -279,6 +335,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getAccessRequestData', data);
+    }
+
     return data;
   };
 
@@ -288,6 +349,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getAccessRequests', data);
+    }
+
     return data;
   };
 
@@ -298,6 +364,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request`,
       data: { approvedAccessRequests: accessRequests }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('approveAccessRequests', data);
+    }
+
     return data;
   };
 
@@ -308,44 +379,73 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request`,
       data: { declinedAccessRequest: accessRequest }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('declineAccessRequest', data);
+    }
+
     return data;
   };
 
   const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
-    return Http.request({
+    const { data } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/user-access`,
       data: { userId: userId, roleId: roleId },
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('revokeRoleFromUser', data);
+    }
+
+    return data;
   };
 
   const getRolesForUser = async (userId: string, bearer?: string): Promise<any> => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    return Http.request({
+    const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?userId=${userId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getRolesForUser', data);
+    }
+
+    return data;
   };
 
   const getUsersForRole = async (roleId: string): Promise<any> => {
-    return Http.request({
+    const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?roleId=${roleId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getUsersForRole', data);
+    }
+
+    return data;
   };
 
   const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
-    return Http.request({
+    const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/user-access`,
       data: { userIds: userIds, roleId: roleId },
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('batchGrantRoleToUser', data);
+    }
+
+    return data;
   };
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
@@ -355,6 +455,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/access-request`,
       data: { newAccessRequest: accessRequest }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('submitAccessRequest', data);
+    }
 
     return data;
   };
@@ -366,6 +470,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/update-request`,
       data: { newUpdateRequest: updateRequest }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('submitUpdateRequest', data);
+    }
+
     return data;
   };
 
@@ -375,6 +484,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/update-request/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getUpdateRequests', data);
+    }
+
     return data;
   };
 
@@ -385,6 +499,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: { declinedUpdateRequest: updateRequest }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('declineUpdateRequest', data);
+    }
+
     return data;
   };
 
@@ -395,6 +514,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: { approvedUpdateRequests: updateRequest }
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('approveUpdateRequests', data);
+    }
+
     return data;
   };
 
@@ -404,6 +528,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: options.baseUrl + `/api/agency_codes`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getFundingAgencies', data);
+    }
+
     return data;
   };
 
@@ -413,6 +542,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: options.baseUrl + `/api/employer_codes`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getEmployers', data);
+    }
+
     return data;
   };
 
@@ -431,6 +565,10 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getPointsOfInterestLean', data);
+    }
 
     return data;
   };
@@ -487,6 +625,11 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/metabase-query`,
       data: metabaseQueriesCreateCriteria
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('createMetabaseQuery', data);
+    }
+
     return data;
   };
 
@@ -501,6 +644,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/metabase-query`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getMetabaseQueryOptions', data);
+    }
+
     return data.options;
   };
 
@@ -519,6 +667,10 @@ export const useInvasivesApi = () => {
       },
       url: options.baseUrl + `/api/bc-grid/bcGrid`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getGridItemsThatOverlapPolygon', data);
+    }
 
     return data;
   };
@@ -535,6 +687,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/activity/${activityId}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getActivityById', data);
+    }
+
     return data;
   };
 
@@ -550,6 +707,10 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getMedia', data);
+    }
 
     return data;
   };
@@ -565,6 +726,10 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/application-user`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getApplicationUsers', data);
+    }
 
     return data;
   };
@@ -575,6 +740,11 @@ export const useInvasivesApi = () => {
       method: 'POST',
       url: options.baseUrl + `/api/application-user/renew?userId=${id}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('renewUser', data);
+    }
+
     return data;
   };
 
@@ -587,6 +757,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/application-user?idir=${idir_userid}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getUserByIDIR', data);
+    }
+
     return data;
   };
 
@@ -599,6 +774,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getUserByBCEID', data);
+    }
+
     return data;
   };
 
@@ -619,6 +799,11 @@ export const useInvasivesApi = () => {
       console.log('Error creating activity');
       console.dir(data.errors);
     }
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('createActivity', data);
+    }
+
     return data;
   };
 
@@ -638,6 +823,11 @@ export const useInvasivesApi = () => {
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('updateActivity', data);
+    }
+
     return data;
   };
 
@@ -652,6 +842,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/api-docs/`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getApiSpec', data);
+    }
+
     return data;
   };
 
@@ -666,6 +861,11 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/map-shaper?url=${url}&percentage=${percentage}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getSimplifiedGeoJSON', data);
+    }
+
     return data;
   };
 
@@ -834,6 +1034,10 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/species?` + qs.stringify({ key: species })
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getSpeciesDetails', data);
+    }
 
     return data;
   };
@@ -851,6 +1055,11 @@ export const useInvasivesApi = () => {
       data: uploadRequest,
       url: `${options.baseUrl}/api/batch/new_upload`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('postBatchUpload', data);
+    }
+
     return data;
   };
 
@@ -861,6 +1070,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: `${options.baseUrl}/api/batch/upload`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getBatchUploads', data);
+    }
+
     return data;
   };
 
@@ -870,6 +1084,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: options.baseUrl + '/api/batch/new_template'
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('downloadTemplate', data);
+    }
+
     return data;
   };
 
@@ -879,6 +1098,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: options.baseUrl + '/api/code_tables'
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('listCodeTables', data);
+    }
+
     return data;
   };
 
@@ -888,6 +1112,11 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
       url: `${options.baseUrl}/api/code_tables/${codeHeaderId}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('fetchCodeTable', data);
+    }
+
     return data;
   };
 
@@ -903,6 +1132,10 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/admin-defined-shapes?user_id=${user_id}`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('getAdminUploadGeoJSONLayer', data);
+    }
 
     return data;
   };
@@ -920,6 +1153,11 @@ export const useInvasivesApi = () => {
       data: uploadRequest,
       url: `${options.baseUrl}/api/admin-defined-shapes`
     });
+    checkForErrors(data);
+    if (LOGVERBOSE) {
+      console.log('postAdminUploadShape', data);
+    }
+
     return data;
   };
 

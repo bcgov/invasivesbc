@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import AccessDenied from '../pages/misc/AccessDenied';
+import { ErrorContext } from 'contexts/ErrorContext';
+import { ErrorBanner } from '../components/error/ErrorBanner';
 interface IAdminRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
@@ -17,10 +19,20 @@ interface IAdminRouteProps extends RouteProps {
  * @return {*}
  */
 const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
+  const errorContext = useContext(ErrorContext);
+  const [hasErrors, setHasErrors] = React.useState(false);
   const [isAuthorized, setIsAuthorized] = React.useState(false);
 
   let { component: Component, layout: Layout, ...rest } = props;
   const { userInfoLoaded, keycloak, userRoles } = props.componentProps;
+
+  useEffect(() => {
+    if (errorContext.hasErrors) {
+      setHasErrors(true);
+    } else {
+      setHasErrors(false);
+    }
+  }, [errorContext.hasErrors, errorContext.errorArray]);
 
   document.title = props.title;
 
@@ -50,6 +62,17 @@ const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
           <>
             {isAuthorized && (
               <Layout>
+                {hasErrors &&
+                  errorContext.errorArray.map((error: any) => {
+                    return (
+                      <ErrorBanner
+                        key={error.code.toString() + error.message + error.namespace}
+                        code={error.code}
+                        message={error.message}
+                        namespace={error.namespace}
+                      />
+                    );
+                  })}
                 <Component {...renderProps} {...props.componentProps} />
               </Layout>
             )}
