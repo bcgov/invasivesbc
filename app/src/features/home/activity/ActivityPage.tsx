@@ -112,7 +112,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     dialogContentText: null
   });
   const isMobile = () => {
-    return Capacitor.platform !== 'web';
+    return Capacitor.getPlatform() !== 'web';
   };
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
