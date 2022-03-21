@@ -240,13 +240,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
   };
 
   React.useEffect(() => {
-    const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec();
-    };
-    getApiSpec();
-  }, [invasivesApi]);
-
-  React.useEffect(() => {
     if (keycloak?.obj?.authenticated) {
       keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
