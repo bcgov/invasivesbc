@@ -240,7 +240,9 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
   };
 
   React.useEffect(() => {
-    if (keycloak?.obj?.authenticated) {
+    if (!networkContext.connected && isMobile() && !userInfoLoaded) {
+      loadUserFromCache();
+    } else if (keycloak?.obj?.authenticated) {
       keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
           await invasivesApi.createUser(info, keycloak?.obj?.token);
@@ -267,9 +269,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
           }
         }
       });
-    }
-    if (!networkContext.connected && isMobile() && !userInfoLoaded) {
-      loadUserFromCache();
     }
   }, [keycloak?.obj?.authenticated]);
 
