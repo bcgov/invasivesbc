@@ -68,10 +68,8 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
         namespace: 'auth-utils'
       };
     }
-
     // Decode token without verifying signature
     const decodedToken = decode(tokenString, { complete: true, json: true });
-
     if (!decodedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token was null' });
       throw {
@@ -94,7 +92,6 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     }
 
     req['keycloak_token'] = decodedToken;
-
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });
