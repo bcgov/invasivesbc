@@ -562,7 +562,7 @@ export function populateSpeciesArrays(record) {
         .sort() || []
   };
 
-  console.dir(returnVal);
+  // console.dir(returnVal);
 
   return returnVal;
 }
