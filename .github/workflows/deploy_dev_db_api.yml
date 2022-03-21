@@ -256,7 +256,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     needs:
-      - deployAPP
+      - deployAPI
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -287,7 +287,6 @@ jobs:
       - deployDatabase
       - deployDatabaseSetup
       - deployAPI
-      - deployAPP
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}

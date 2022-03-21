@@ -135,9 +135,6 @@ jobs:
         ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') ||
           contains(github.event.pull_request.title, 'PR-DEPLOY') ) }}
     needs:
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
       - deployAPP
     env:
       BUILD_ID: ${{ github.event.number }}
