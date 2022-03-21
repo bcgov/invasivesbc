@@ -20,6 +20,7 @@ import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from '../../hooks/useDataAccess';
+import { getShortActivityID } from 'utils/addActivity';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from '../../rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from '../../rjsf/templates/ObjectFieldTemplate';
@@ -303,16 +304,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             }
 
             const treatments_response = await dataAccess.getActivities({
-              column_names: ['activity_id', 'created_timestamp'],
+              column_names: ['activity_id', 'created_timestamp', 'activity_subtype'],
               activity_type: ['Treatment', 'Biocontrol'],
               activity_subtype: linkedActivitySubtypes,
               order: ['created_timestamp'],
               user_roles: rolesUserHasAccessTo
             });
-            const treatments = treatments_response.result.map((treatment, i) => {
+            const treatments = treatments_response.rows.map((treatment, i) => {
+              const shortActID = getShortActivityID(treatment);
               return {
-                label: treatment.activity_id,
-                title: treatment.activity_id,
+                label: shortActID,
+                title: shortActID,
                 value: treatment.activity_id,
                 'x-code_sort_order': i + 1
               };
@@ -445,6 +447,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
+                  disabled={props.isDisabled}
                   activitySubType={props.activity.activitySubtype || props.activity.activity_subtype || null}
                   onChange={(formData, callback) => {
                     setformData(formData);

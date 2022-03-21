@@ -29,7 +29,7 @@ export const ActivitiesLayer = (props) => {
     }
   };
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean(
       { search_feature: mapBounds, activity_subtype: [props.activity_subtype] },
       databaseContext
@@ -40,7 +40,7 @@ export const ActivitiesLayer = (props) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
     });
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
-  }, [dataAccess, mapBounds, databaseContext]);
+  };
 
   useMapEvent('moveend', () => {
     fetchData();
@@ -56,10 +56,10 @@ export const ActivitiesLayer = (props) => {
         return feature.properties;
       });
       setCurrentRecords((prev) => {
-        return prev.concat(actArr);
+        return { ...prev, activities: [...actArr] };
       });
     }
-  }, [activities, setCurrentRecords]);
+  }, [activities]);
 
   return (
     <>

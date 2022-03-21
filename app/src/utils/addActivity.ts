@@ -107,7 +107,6 @@ export const sanitizeRecord = (input: any) => {
         flattened.activity_id = uuidv4();
         flattened.date_created = flattened.date_created || moment(new Date()).format();
         flattened.short_id = flattened.short_id || getShortActivityID(flattened);
-        // console.log('Generating a new id for activity', flattened);
       }
     }
 
@@ -561,8 +560,5 @@ export function populateSpeciesArrays(record) {
         ?.filter((code) => typeof code === 'string')
         .sort() || []
   };
-
-  // console.dir(returnVal);
-
   return returnVal;
 }
