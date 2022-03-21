@@ -15,7 +15,7 @@ export const getRISOsSQL = (searchCriteria: RISOSearchCriteria): SQLStatement =>
           )
         )
     )
-    SELECT json_build_object (
+    SELECT jsonb_build_object (
       'type', 'Feature',
       'properties', json_build_object(
         'code_name', agency_cd,
@@ -23,10 +23,10 @@ export const getRISOsSQL = (searchCriteria: RISOSearchCriteria): SQLStatement =>
         'name', layer,
         'layer', 'regional_invasive_species_organization_areas'
       ),
-      'geometry', public.st_asGeoJSON(r.geom)::jsonb
-    ) as "geojson", COUNT(*) OVER() AS "total_rows_count"
-      FROM regional_invasive_species_organization_areas r, inputData i
-      where public.ST_Intersects2(r.geom, i.geom)
+      'geometry', public.st_asGeoJSON(r.geog)::jsonb
+    ) as "geojson", COUNT(*) OVER() AS "total_rows_count" 
+      FROM public.regional_invasive_species_organization_areas r , inputData i
+      where public.ST_Intersects2(r.geog :: geometry, i.geom);
     `);
   }
 
