@@ -280,7 +280,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         </>
       )}
 
-      {userInfoLoaded && isUserActivated() && (
+      {/* {userInfoLoaded && isUserActivated() && (
         <>
           <Box mt={12}>
             <Typography variant="h5">What Would You Like To Do?</Typography>
@@ -332,7 +332,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             )}
           </Grid>
         </>
-      )}
+      )} */}
     </Container>
   );
 };
