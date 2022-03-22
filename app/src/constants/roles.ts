@@ -29,6 +29,30 @@ export enum User_Access {
   NONE = 'none'
 }
 
+export const UserRolesAccess = {
+  [Role.ADMIN]: User_Access.BOTH,
+  [Role.MANAGER]: User_Access.BOTH,
+  [Role.DATA_EDITOR]: User_Access.BOTH,
+  [Role.ADMIN_PLANTS]: User_Access.PLANTS,
+  [Role.ADMIN_ANIMALS]: User_Access.ANIMALS,
+  [Role.BCGOV_STAFF_ANIMALS]: User_Access.ANIMALS,
+  [Role.BCGOV_STAFF_PLANTS]: User_Access.PLANTS,
+  [Role.BCGOV_STAFF_BOTH]: User_Access.BOTH,
+  [Role.CONTRACTOR_MANAGER_ANIMALS]: User_Access.ANIMALS,
+  [Role.CONTRACTOR_MANAGER_PLANTS]: User_Access.PLANTS,
+  [Role.CONTRACTOR_MANAGER_BOTH]: User_Access.BOTH,
+  [Role.CONTRACTOR_STAFF_PLANTS]: User_Access.PLANTS,
+  [Role.CONTRACTOR_STAFF_ANIMALS]: User_Access.ANIMALS,
+  [Role.CONTRACTOR_STAFF_BOTH]: User_Access.BOTH,
+  [Role.INDIGENOUS_RISO_MANAGER_ANIMALS]: User_Access.ANIMALS,
+  [Role.INDIGENOUS_RISO_MANAGER_PLANTS]: User_Access.PLANTS,
+  [Role.INDIGENOUS_RISO_MANAGER_BOTH]: User_Access.BOTH,
+  [Role.INDIGENOUS_RISO_STAFF_ANIMALS]: User_Access.ANIMALS,
+  [Role.INDIGENOUS_RISO_STAFF_PLANTS]: User_Access.PLANTS,
+  [Role.INDIGENOUS_RISO_STAFF_BOTH]: User_Access.BOTH,
+  [Role.MASTER_ADMINISTRATOR]: User_Access.BOTH
+};
+
 export const ALL_ROLES = [
   Role.ADMIN,
   Role.MANAGER,

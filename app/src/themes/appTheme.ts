@@ -1,7 +1,7 @@
 import 'styles/fonts.scss';
 import { ThemeOptions } from '@mui/material';
 
-const appTheme: ThemeOptions = {
+export const appTheme: ThemeOptions = {
   palette: {
     // https://material-ui.com/customization/palette/
     mode: 'light',

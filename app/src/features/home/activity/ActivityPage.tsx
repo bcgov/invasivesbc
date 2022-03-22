@@ -315,6 +315,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       employerInject = authStateContext.userInfo.employer;
     }
 
+    console.log('employerNeedsInsert', employerNeedsInsert);
+    console.log('employerInject', employerInject);
+    console.log(authStateContext.userInfo);
+
     if (!activity_data?.invasive_species_agency_code || activity_data?.invasive_species_agency_code === '') {
       agenciesNeedInsert = true;
       agenciesInject = authStateContext.userInfo.funding_agencies;
@@ -556,7 +560,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    const appStateResults = await dataAccess.getAppState(databaseContext);
+    const appStateResults = dataAccess.getAppState();
     if (!appStateResults) {
       return;
     }

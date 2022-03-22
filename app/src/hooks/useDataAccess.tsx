@@ -764,31 +764,10 @@ export const useDataAccess = () => {
    * @param {any} selector
    * @return {*}  {Promise<any>}
    */
-  const getAppState = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    if (Capacitor.getPlatform() === 'web') {
-      const raw_old = localStorage.getItem('appstate-invasivesbc');
-      if (raw_old) {
-        return JSON.parse(raw_old);
-      }
-    } else {
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
-        asyncTask: async () => {
-          let res = await query(
-            {
-              type: QueryType.DOC_TYPE_AND_ID,
-              docType: DocType.APPSTATE,
-              ID: '1'
-            },
-            dbcontext
-          );
-          res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-          return res;
-        }
-      });
+  const getAppState = (): any => {
+    const raw_old = localStorage.getItem('appstate-invasivesbc');
+    if (raw_old) {
+      return JSON.parse(raw_old);
     }
   };
 
@@ -834,7 +813,7 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      const old = await getAppState();
+      const old = getAppState();
       if (old) {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
       } else {
@@ -843,7 +822,7 @@ export const useDataAccess = () => {
     } else {
       const dbcontext = context;
 
-      const appStateDoc = await getAppState(dbcontext);
+      const appStateDoc = getAppState();
 
       return dbcontext.asyncQueue({
         asyncTask: () => {
