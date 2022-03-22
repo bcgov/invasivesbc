@@ -68,7 +68,7 @@ export const PointsOfInterestTable = () => {
     const fetchData = async () => {
       const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
       const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
-      setPOIs(IAPPRecords.result.rows);
+      setPOIs(IAPPRecords.rows);
     };
 
     const convertToTableRows = () => {
@@ -84,7 +84,7 @@ export const PointsOfInterestTable = () => {
         const surveys = form_data.surveys;
         const newArr: any = getJurisdictions(surveys);
         const jurisdictionArr = [];
-        newArr?.result?.forEach((item) => {
+        newArr?.forEach((item) => {
           jurisdictionArr.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 

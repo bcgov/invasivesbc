@@ -429,7 +429,7 @@ export const useDataAccess = () => {
       return dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
-            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles.result }],
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles }],
             dbcontext
           );
         }
@@ -600,8 +600,7 @@ export const useDataAccess = () => {
     referenceCache = false
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      const response = await api.getActivities(activitiesSearchCriteria);
-      return response;
+      return await api.getActivities(activitiesSearchCriteria);
     } else {
       if (forceCache === true || !networkContext.connected) {
         const dbcontext = context;

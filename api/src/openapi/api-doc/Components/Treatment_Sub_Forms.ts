@@ -308,7 +308,7 @@ export const Treatment_MechanicalPlant_Information = {
           disposed_material_input_format: {
             type: 'string',
             title: 'Disposed Material Format',
-            enum: ['number of plants', 'weight'],
+            enum: ['number of plants', 'weight', 'volume (m3)'],
             'x-tooltip-text': 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
           },
           disposed_material_input_number: {
@@ -418,7 +418,7 @@ export const Treatment_MechanicalPlant_Information_Aquiatic = {
           disposed_material_input_format: {
             type: 'string',
             title: 'Disposed Material Format',
-            enum: ['number of plants', 'weight'],
+            enum: ['number of plants', 'weight', 'volume (m3)'],
             'x-tooltip-text': 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
           },
           disposed_material_input_number: {

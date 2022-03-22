@@ -17,7 +17,7 @@ const CodeTablesPreview: React.FC<CodeTablesPreviewProps> = ({ codeTableId }) =>
     if (showPreview) {
       setLoading(true);
       api.fetchCodeTable(codeTableId).then((response) => {
-        setCodeValues(response.result);
+        setCodeValues(response);
         setLoading(false);
       });
     }

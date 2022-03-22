@@ -154,17 +154,17 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
 
   const getUserByIDIR = async (idir_userid) => {
     const user = await invasivesApi.getUserByIDIR(idir_userid, keycloak?.obj?.token);
-    return user.result;
+    return user;
   };
 
   const getUserByBCEID = async (bceid_userid) => {
     const user = await invasivesApi.getUserByBCEID(bceid_userid, keycloak?.obj?.token);
-    return user.result;
+    return user;
   };
 
   const getRolesForUser = async (user_id) => {
     const roles = await invasivesApi.getRolesForUser(user_id, keycloak?.obj?.token);
-    return roles.result;
+    return roles;
   };
 
   const handleUserResponse = async (userResponse) => {
@@ -186,7 +186,7 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
 
   const getRolesUserHasAccessTo = async (user_id) => {
     const all_roles_response = await invasivesApi.getRoles(keycloak?.obj?.token);
-    const all_roles = all_roles_response.result;
+    const all_roles = all_roles_response;
     const roles = await getRolesForUser(user_id);
     const accessRoles = [];
     for (const role of roles) {

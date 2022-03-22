@@ -348,9 +348,9 @@ export const RenderTableActivity = (props: any) => {
     try {
       const activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
       var tempArr = [];
-      for (let i in activities.result) {
-        if (activities.result[i]) {
-          var obj = activities.result[i];
+      for (let i in activities) {
+        if (activities[i]) {
+          var obj = activities[i];
           tempArr.push({
             obj,
             open: false
@@ -513,18 +513,18 @@ export const RenderTablePOI = (props: any) => {
         dbContext
       );
 
-      if (!pointsofinterest.result) {
+      if (!pointsofinterest) {
         return;
       }
 
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
-      pointsofinterest.result.forEach((poi) => {
+      pointsofinterest.forEach((poi) => {
         const surveys = poi.point_of_interest_payload.form_data.surveys;
         const tempSurveyArea = getLatestReportedArea(surveys);
         const newArr: any = getJurisdictions(surveys);
         const arrJurisdictions = [];
-        newArr.result.forEach((item) => {
+        newArr.forEach((item) => {
           arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 

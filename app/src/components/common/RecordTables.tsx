@@ -138,8 +138,8 @@ export const defaultActivitiesFetch =
     };
     const response = await dataAccess.getActivities(criteria, databaseContext, true);
     return {
-      rows: response?.result?.map(activityStandardMapping) || [],
-      count: response?.count || 0
+      rows: response?.map(activityStandardMapping) || [],
+      count: response?.length || 0
     };
   };
 
@@ -397,7 +397,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           )
                             return;
                           const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-                          const dbActivity = response.result;
+                          const dbActivity = response;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -444,7 +444,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           )
                             return;
                           const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-                          const dbActivity = response.result;
+                          const dbActivity = response;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -493,7 +493,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           )
                             return;
                           const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-                          const dbActivity = response.result;
+                          const dbActivity = response;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -544,7 +544,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           )
                             return;
                           const response: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-                          const dbActivity = response.result;
+                          const dbActivity = response;
                           await dataAccess.updateActivity(
                             sanitizeRecord({
                               ...dbActivity,
@@ -1329,9 +1329,10 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             },
             databaseContext
           );
+          console.log('RES: ', response);
           return {
-            rows: response.result.map(poiStandardDBMapping) || [],
-            count: response.result.count || 0
+            rows: response.rows.map(poiStandardDBMapping) || [],
+            count: response.count || 0
           };
         }}
         actions={
