@@ -187,15 +187,22 @@ function SetPointOnClick({ map }: any) {
           createDataUTM('Northing', result[2])
         ]);
       }
-    } // else {
-    //   const temp = e.latlng;
-    //   const val = 0.003;
-    //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
-    //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
-    //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
-    //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
-    //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-    // }
+    } else {
+      const temp = e.latlng;
+      const val = 0.003;
+      const latlng1 = [temp.lng + val, temp.lat - val / 2];
+      const latlng3 = [temp.lng - val, temp.lat + val / 2];
+      const latlng2 = [temp.lng + val, temp.lat + val / 2];
+      const latlng4 = [temp.lng - val, temp.lat - val / 2];
+      setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+      const coords = center(drawnGeo).geometry.coordinates;
+      const result = calc_utm(coords[0], coords[1]);
+      setUTM([
+        createDataUTM('Zone', result[0]),
+        createDataUTM('Easting', result[1]),
+        createDataUTM('Northing', result[2])
+      ]);
+    }
   });
 
   //get mouse location on map
