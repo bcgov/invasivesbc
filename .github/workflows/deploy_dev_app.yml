@@ -8,7 +8,7 @@ on:
     branches:
       - dev
     paths:
-      - 'app/*'
+      - 'app/**'
 
 concurrency:
   group: db_app-${{ github.ref }}
