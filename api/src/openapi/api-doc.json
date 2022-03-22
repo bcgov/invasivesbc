@@ -3599,7 +3599,7 @@
               "disposed_material_input_format": {
                 "type": "string",
                 "title": "Disposed Material Format",
-                "enum": ["number of plants", "weight"]
+                "enum": ["number of plants", "weight", "volume (m3)"]
               },
               "disposed_material_input_number": {
                 "type": "number",
