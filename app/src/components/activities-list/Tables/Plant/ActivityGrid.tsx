@@ -172,10 +172,7 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     getActivities();
-  }, [
-    recordSetContext.recordSetState[props.setName].gridFilters,
-    recordSetContext.recordSetState[props.setName].advancedFilters
-  ]);
+  }, [recordSetContext.recordSetState[props.setName]]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -191,10 +188,10 @@ const ActivityGrid = (props) => {
     } else if (props.formType) {
       filter.activity_type = [props.formType];
     }
-    if (recordSetContext.recordSetState[props.setName].gridFilters) {
-    }
-    if (recordSetContext.recordSetState[props.setName].advancedFilters) {
-    }
+    // if (recordSetContext.recordSetState[props.setName].gridFilters) {
+    // }
+    // if (recordSetContext.recordSetState[props.setName].advancedFilters) {
+    // }
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {

@@ -96,23 +96,23 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           onClick: () => {
             setNewRecordDialog((prev) => ({ ...prev, dialogOpen: true }));
           }
-        },
-        {
-          name: 'Open' + (selectedRecord?.description !== undefined ? selectedRecord?.description : ''),
-          disabled: !(selectedRecord?.description !== undefined),
-          hidden: !selectedRecord,
-          onClick: async () => {
-            try {
-              await dataAccess.setAppState({ activeActivity: selectedRecord.id });
-            } catch (e) {
-              console.log('unable to http ');
-              console.log(e);
-            }
-            setTimeout(() => {
-              history.push({ pathname: `/home/activity` });
-            }, 1000);
-          }
         }
+        // {
+        //   name: 'Open' + (selectedRecord?.description !== undefined ? selectedRecord?.description : ''),
+        //   disabled: !(selectedRecord?.description !== undefined),
+        //   hidden: !selectedRecord,
+        //   onClick: async () => {
+        //     try {
+        //       await dataAccess.setAppState({ activeActivity: selectedRecord.id });
+        //     } catch (e) {
+        //       console.log('unable to http ');
+        //       console.log(e);
+        //     }
+        //     setTimeout(() => {
+        //       history.push({ pathname: `/home/activity` });
+        //     }, 1000);
+        //   }
+        // }
       ]);
     }, [recordStateContext.recordSetState.length]);
 

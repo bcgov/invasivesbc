@@ -315,6 +315,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       employerInject = authStateContext.userInfo.employer;
     }
 
+    console.log('employerNeedsInsert', employerNeedsInsert);
+    console.log('employerInject', employerInject);
+    console.log(authStateContext.userInfo);
+
     if (!activity_data?.invasive_species_agency_code || activity_data?.invasive_species_agency_code === '') {
       agenciesNeedInsert = true;
       agenciesInject = authStateContext.userInfo.funding_agencies;
