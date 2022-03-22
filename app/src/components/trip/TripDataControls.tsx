@@ -93,7 +93,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     if (row.media_keys && row.media_keys.length) {
       try {
         const mediaResults = await invasivesApi.getMedia(row.media_keys);
-        mediaResults.result.forEach((media) => {
+        mediaResults.forEach((media) => {
           photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
         });
       } catch {
@@ -163,7 +163,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       const response = await invasivesApi.getActivities(activitySearchCriteria);
       const upserts = [];
 
-      for (const row of response.result) {
+      for (const row of response) {
         let photos = [];
         if (setOfChoices.includePhotos) {
           photos = await getPhotos(row);
@@ -272,7 +272,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         console.log('*** fetching points of interest ***');
         try {
           const data = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
-          response = data.result;
+          response = data;
         } catch (e) {
           console.log('crashed on fetching points of interest');
           console.log(e);
@@ -291,7 +291,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           if (pointOfInterestSearchCriteria.page !== 0) {
             try {
               const data = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
-              response = data.result;
+              response = data;
             } catch (e) {
               console.log('crashed on fetching points of interest');
               console.log(e);
@@ -548,7 +548,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
       //get all the ids of large grid items
       const idArr = [];
-      largeGridResult.result.forEach((row) => {
+      largeGridResult.forEach((row) => {
         idArr.push(row.id);
       });
 
@@ -589,7 +589,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
         //for each large grid item, do...
         for (let largeGridResultIndex = 0; largeGridResultIndex < largeGridResult.length; largeGridResultIndex++) {
-          const row = largeGridResult.result[largeGridResultIndex];
+          const row = largeGridResult[largeGridResultIndex];
           //insert large grid item into sqllite table
           await databaseContext.asyncQueue({
             asyncTask: () => {
@@ -611,12 +611,8 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
         let gridItemsArr = [];
         //for each small grid item, do...
-        for (
-          let smallGridResultIndex = 0;
-          smallGridResultIndex < smallGridResult.result.length;
-          smallGridResultIndex++
-        ) {
-          const gridResult = smallGridResult.result[smallGridResultIndex];
+        for (let smallGridResultIndex = 0; smallGridResultIndex < smallGridResult.length; smallGridResultIndex++) {
+          const gridResult = smallGridResult[smallGridResultIndex];
           const feature = JSON.parse(gridResult.geo);
           const gridId = gridResult.id;
           const bufferedGeo = buffer(feature, 0);
@@ -629,8 +625,8 @@ export const TripDataControls: React.FC<any> = (props) => {
           switch (layerName) {
             case 'LEAN_POI':
               const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
-              if (poiRes.result) {
-                const filteredArr = poiRes.result.map((res) => {
+              if (poiRes) {
+                const filteredArr = poiRes.map((res) => {
                   return res.geojson;
                 });
                 featuresInArea = filteredArr;
@@ -640,8 +636,8 @@ export const TripDataControls: React.FC<any> = (props) => {
               break;
             case 'LEAN_ACTIVITIES':
               const actRes = await invasivesApi.getActivitiesLean({ search_feature: bufferedGeo });
-              if (actRes.result) {
-                const filteredArr = actRes.result.map((res) => {
+              if (actRes) {
+                const filteredArr = actRes.map((res) => {
                   return res.geojson;
                 });
                 featuresInArea = filteredArr;
@@ -651,8 +647,8 @@ export const TripDataControls: React.FC<any> = (props) => {
               break;
             case 'JURISDICTIONS':
               const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
-              if (jurRes.result) {
-                const filteredArr = jurRes.result.map((res) => {
+              if (jurRes) {
+                const filteredArr = jurRes.map((res) => {
                   return res.geojson;
                 });
                 featuresInArea = filteredArr;
@@ -666,20 +662,20 @@ export const TripDataControls: React.FC<any> = (props) => {
           }
 
           //pushing complete grid item with features inside to the array
-          if (featuresInArea?.result?.length > 0) {
+          if (featuresInArea?.length > 0) {
             gridItemsArr.push({
               id: gridId,
               bufferedGeo: bufferedGeo,
               featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
               layerName: layerName,
-              featuresInArea: JSON.stringify(featuresInArea.result).split(`'`).join(`''`),
+              featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
               largeGridID: gridResult.large_grid_item_id
             });
             itemsPushedForLayer++;
           }
           if (
             gridItemsArr.length > 0 &&
-            (gridItemsArr.length > 49 || smallGridResultIndex === smallGridResult.result.length - 1)
+            (gridItemsArr.length > 49 || smallGridResultIndex === smallGridResult.length - 1)
           ) {
             let insertValuesString = '';
             //constructing insert string (values)
@@ -690,14 +686,14 @@ export const TripDataControls: React.FC<any> = (props) => {
                 insertValuesString += `(
                           ${gridItem.id},
                           '${gridItem.featureArea}',
-                          '${gridItem.featuresInArea.result}',
+                          '${gridItem.featuresInArea}',
                           '${gridItem.layerName}',
                           ${gridItem.largeGridID})`;
               } else {
                 insertValuesString += `(
                           ${gridItem.id},
                           '${gridItem.featureArea}',
-                          '${gridItem.featuresInArea.result}',
+                          '${gridItem.featuresInArea}',
                           '${gridItem.layerName}',
                           ${gridItem.largeGridID}), `;
               }

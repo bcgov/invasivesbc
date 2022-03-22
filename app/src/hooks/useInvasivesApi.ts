@@ -25,7 +25,7 @@ const API_HOST = REACT_APP_API_HOST;
 const API_PORT = REACT_APP_API_PORT;
 
 // Set this variable to true to enable debugging of the API calls
-const LOGVERBOSE = false;
+const LOGVERBOSE = true;
 
 // If NODE_ENV is set, it will take precedence.
 // If no node env is set, you get react env vars.
@@ -132,7 +132,7 @@ export const useInvasivesApi = () => {
     console.log('Activities as geojson', geojson);
     /******************End of GeoJSON*******************/
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -152,7 +152,7 @@ export const useInvasivesApi = () => {
     if (LOGVERBOSE) {
       console.log('getActivitiesLean', data);
     }
-    return data;
+    return data.result;
   };
 
   /**
@@ -172,7 +172,7 @@ export const useInvasivesApi = () => {
     if (LOGVERBOSE) {
       console.log('getJurisdictions', data);
     }
-    return data;
+    return data.result;
   };
 
   /**
@@ -193,7 +193,7 @@ export const useInvasivesApi = () => {
       console.log('getRISOs', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -213,7 +213,7 @@ export const useInvasivesApi = () => {
       console.log('deleteActivities', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -233,7 +233,7 @@ export const useInvasivesApi = () => {
       console.log('undeleteActivities', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -254,7 +254,7 @@ export const useInvasivesApi = () => {
       console.log('getRoles', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -296,7 +296,7 @@ export const useInvasivesApi = () => {
     console.log('Observations as geojson', geojson);
     /******************End of GeoJSON*******************/
 
-    return data;
+    return data.result;
   };
 
   const createUser = async (userInfo: any, bearer?: string): Promise<any> => {
@@ -325,7 +325,7 @@ export const useInvasivesApi = () => {
       console.log('createUser', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
@@ -340,7 +340,7 @@ export const useInvasivesApi = () => {
       console.log('getAccessRequestData', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getAccessRequests = async (): Promise<any> => {
@@ -354,7 +354,7 @@ export const useInvasivesApi = () => {
       console.log('getAccessRequests', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
@@ -369,7 +369,7 @@ export const useInvasivesApi = () => {
       console.log('approveAccessRequests', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
@@ -384,7 +384,7 @@ export const useInvasivesApi = () => {
       console.log('declineAccessRequest', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
@@ -399,7 +399,7 @@ export const useInvasivesApi = () => {
       console.log('revokeRoleFromUser', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getRolesForUser = async (userId: string, bearer?: string): Promise<any> => {
@@ -416,7 +416,7 @@ export const useInvasivesApi = () => {
       console.log('getRolesForUser', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getUsersForRole = async (roleId: string): Promise<any> => {
@@ -430,7 +430,7 @@ export const useInvasivesApi = () => {
       console.log('getUsersForRole', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
@@ -445,7 +445,7 @@ export const useInvasivesApi = () => {
       console.log('batchGrantRoleToUser', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
@@ -460,11 +460,11 @@ export const useInvasivesApi = () => {
       console.log('submitAccessRequest', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const submitUpdateRequest = async (updateRequest: any): Promise<any> => {
-    const data = await Http.request({
+    const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/update-request`,
@@ -475,7 +475,7 @@ export const useInvasivesApi = () => {
       console.log('submitUpdateRequest', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getUpdateRequests = async (): Promise<any> => {
@@ -489,7 +489,7 @@ export const useInvasivesApi = () => {
       console.log('getUpdateRequests', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const declineUpdateRequest = async (updateRequest) => {
@@ -504,7 +504,7 @@ export const useInvasivesApi = () => {
       console.log('declineUpdateRequest', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const approveUpdateRequests = async (updateRequest) => {
@@ -519,7 +519,7 @@ export const useInvasivesApi = () => {
       console.log('approveUpdateRequests', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getFundingAgencies = async (): Promise<any> => {
@@ -533,7 +533,7 @@ export const useInvasivesApi = () => {
       console.log('getFundingAgencies', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getEmployers = async (): Promise<any> => {
@@ -547,7 +547,7 @@ export const useInvasivesApi = () => {
       console.log('getEmployers', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -570,7 +570,7 @@ export const useInvasivesApi = () => {
       console.log('getPointsOfInterestLean', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -630,7 +630,7 @@ export const useInvasivesApi = () => {
       console.log('createMetabaseQuery', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -672,7 +672,7 @@ export const useInvasivesApi = () => {
       console.log('getGridItemsThatOverlapPolygon', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -712,7 +712,7 @@ export const useInvasivesApi = () => {
       console.log('getMedia', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -731,7 +731,7 @@ export const useInvasivesApi = () => {
       console.log('getApplicationUsers', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const renewUser = async (id): Promise<any> => {
@@ -745,7 +745,7 @@ export const useInvasivesApi = () => {
       console.log('renewUser', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getUserByIDIR = async (idir_userid, bearer?: string): Promise<any> => {
@@ -762,7 +762,7 @@ export const useInvasivesApi = () => {
       console.log('getUserByIDIR', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getUserByBCEID = async (bceid_userid, bearer?: string): Promise<any> => {
@@ -779,7 +779,7 @@ export const useInvasivesApi = () => {
       console.log('getUserByBCEID', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -804,7 +804,7 @@ export const useInvasivesApi = () => {
       console.log('createActivity', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -828,7 +828,7 @@ export const useInvasivesApi = () => {
       console.log('updateActivity', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -866,7 +866,7 @@ export const useInvasivesApi = () => {
       console.log('getSimplifiedGeoJSON', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -914,9 +914,9 @@ export const useInvasivesApi = () => {
       }
     });
 
-    if (data?.length > 0) {
-      data = JSON.parse(data[0].json);
-      return data;
+    if (data?.result?.length > 0) {
+      data = JSON.parse(data.result[0].json);
+      return data.result;
     }
   };
 
@@ -1039,7 +1039,7 @@ export const useInvasivesApi = () => {
       console.log('getSpeciesDetails', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -1060,7 +1060,7 @@ export const useInvasivesApi = () => {
       console.log('postBatchUpload', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const getBatchUploads = async (): Promise<any> => {
@@ -1089,7 +1089,7 @@ export const useInvasivesApi = () => {
       console.log('downloadTemplate', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const listCodeTables = async (): Promise<any> => {
@@ -1103,7 +1103,7 @@ export const useInvasivesApi = () => {
       console.log('listCodeTables', data);
     }
 
-    return data;
+    return data.result;
   };
 
   const fetchCodeTable = async (codeHeaderId, csv = false): Promise<any> => {
@@ -1117,7 +1117,7 @@ export const useInvasivesApi = () => {
       console.log('fetchCodeTable', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**
@@ -1137,7 +1137,7 @@ export const useInvasivesApi = () => {
       console.log('getAdminUploadGeoJSONLayer', data);
     }
 
-    return data;
+    return data.result;
   };
 
   /**

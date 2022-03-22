@@ -12,7 +12,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   useEffect(() => {
     const fetchPOI = async () => {
       const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: urlParams.id, isIAPP: true });
-      setPOI(poiData.result[0]);
+      setPOI(poiData[0]);
     };
 
     if (!poi) {

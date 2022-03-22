@@ -10,13 +10,13 @@ const CodeTablesDownload: React.FC = () => {
 
   useEffect(() => {
     api.listCodeTables().then((response) => {
-      setCodeTablesList(response.result);
+      setCodeTablesList(response);
     });
   }, [api]);
 
   const downloadCodeTable = async (codeHeaderId, codeTableName) => {
     const response = await api.fetchCodeTable(codeHeaderId, true);
-    const data = response.result;
+    const data = response;
     const dataUrl = `data:text/csv;base64,${btoa(data)}`;
     const downloadLink = document.createElement('a');
     downloadLink.setAttribute('href', dataUrl);

@@ -36,7 +36,7 @@ export const ActivitiesLayer = (props) => {
     );
     console.log('ActivitiesData: ', activitiesData);
     const activitiesFeatureArray = [];
-    activitiesData?.result?.rows?.forEach((row) => {
+    activitiesData?.rows?.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
     });
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });

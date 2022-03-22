@@ -99,7 +99,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       const response = await api.getAccessRequestData({
         username: userInfo.preferred_username
       });
-      const accessRequest = response.result;
+      const accessRequest = response;
       if (accessRequest) {
         if (!accessRequest.primary_email || (accessRequest !== {} && accessRequest.status === 'DECLINED')) {
           setAccessRequested(false);

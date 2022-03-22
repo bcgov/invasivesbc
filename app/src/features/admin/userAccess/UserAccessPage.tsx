@@ -275,7 +275,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       await api.getRolesForUser(user.user_id).then((res) => {
-        const roles = res.result.map((role) => role.role_description);
+        const roles = res.map((role) => role.role_description);
         const roleString = roles.join(', ');
         rows.push({
           id: user.user_id,
@@ -432,14 +432,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setUsersTableLoading(true);
     setRequestTableLoading(true);
     api.getApplicationUsers().then(async (res) => {
-      await setUsers(res.result);
-      await getRows(res.result);
+      await setUsers(res);
+      await getRows(res);
       setUsersTableLoading(false);
     });
 
     api.getAccessRequests().then(async (res) => {
-      await setAccessRequests(res.result);
-      await getRequestRows(res.result);
+      await setAccessRequests(res);
+      await getRequestRows(res);
       setRequestTableLoading(false);
     });
   };
@@ -447,10 +447,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const getFundingAgencies = () => {
     api.getFundingAgencies().then((res) => {
       const agencies = [];
-      for (let i = 0; i < res.result.length; i++) {
+      for (let i = 0; i < res.length; i++) {
         agencies.push({
-          value: res.result[i].code_name,
-          description: res.result[i].code_description
+          value: res[i].code_name,
+          description: res[i].code_description
         });
       }
       setAgencyCodes(agencies);
@@ -460,11 +460,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const getAvailableRoles = () => {
     api.getRoles().then((res) => {
       const roles = [];
-      for (let i = 0; i < res.result.length; i++) {
+      for (let i = 0; i < res.length; i++) {
         roles.push({
-          id: res.result[i].role_id,
-          name: res.result[i].role_name,
-          description: res.result[i].role_description
+          id: res[i].role_id,
+          name: res[i].role_name,
+          description: res[i].role_description
         });
       }
       setAvailableRoles(roles);
@@ -474,10 +474,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const getEmployers = () => {
     api.getEmployers().then((res) => {
       const employers = [];
-      for (let i = 0; i < res.result.length; i++) {
+      for (let i = 0; i < res.length; i++) {
         employers.push({
-          value: res.result[i].code_name,
-          description: res.result[i].code_description
+          value: res[i].code_name,
+          description: res[i].code_description
         });
       }
       setEmployerCodes(employers);
@@ -535,11 +535,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     } else {
       api.getRolesForUser(selectedUsers[0].user_id).then((res) => {
         const roles = [];
-        for (let i = 0; i < res.result.length; i++) {
+        for (let i = 0; i < res.length; i++) {
           roles.push({
-            id: res.data.result[i].role_id,
-            name: res.data.result[i].role_name,
-            description: res.data.result[i].role_description
+            id: res.data[i].role_id,
+            name: res.data[i].role_name,
+            description: res.data[i].role_description
           });
           setUserRoles(roles);
         }

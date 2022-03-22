@@ -97,8 +97,7 @@ export const getDataFromDataBC: any = async (
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
-  let response = await getSimplifiedJSON(encode(URL), '0.02');
-  let resp = response.result;
+  let resp = await getSimplifiedJSON(encode(URL), '0.02');
 
   let returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);

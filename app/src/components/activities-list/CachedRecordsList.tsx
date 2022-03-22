@@ -146,7 +146,7 @@ const CachedRecordsList: React.FC = (props) => {
       const pois = await getPointsOfInterest();
       setPointsOfInterest(pois);
 
-      const newDocs = records.result.rows
+      const newDocs = records.rows
         ?.map((doc) => doc && sanitizeRecord(doc))
         .filter(
           (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety

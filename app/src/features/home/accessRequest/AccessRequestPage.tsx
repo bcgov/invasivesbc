@@ -189,22 +189,22 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     const userName = authState.keycloak?.obj?.userInfo?.preferred_username;
     const fetchFundingAgencies = async () => {
       const response = await api.getFundingAgencies();
-      setFundingAgenciesList(response.result);
+      setFundingAgenciesList(response);
     };
     const fetchEmployers = async () => {
       const response = await api.getEmployers();
-      setEmployersList(response.result);
+      setEmployersList(response);
     };
     const fetchAccessRequestData = async () => {
       const response = await api.getAccessRequestData({ username: userName });
-      setUserInfo(response.result);
+      setUserInfo(response);
     };
     fetchAccessRequestData();
     fetchFundingAgencies();
     fetchEmployers();
     api.getRoles().then((response) => {
       const roles = [];
-      for (const role of response.result) {
+      for (const role of response) {
         roles.push({
           id: role.id,
           value: role.role_name,
