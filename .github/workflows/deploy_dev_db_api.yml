@@ -8,8 +8,8 @@ on:
     branches:
       - dev
     paths:
-      - 'api/*'
-      - 'database/*'
+      - 'api/**'
+      - 'database/**'
 
 concurrency:
   group: db_api-${{ github.ref }}
