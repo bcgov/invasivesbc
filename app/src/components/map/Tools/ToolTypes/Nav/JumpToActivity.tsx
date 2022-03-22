@@ -104,7 +104,6 @@ export const JumpToActivity = (props) => {
   useEffect(() => {
     if (readyActivityNavJump) {
       jump();
-      dataAccess.setAppState({ activeActivity: null });
     }
   }, [readyActivityNavJump]);
 

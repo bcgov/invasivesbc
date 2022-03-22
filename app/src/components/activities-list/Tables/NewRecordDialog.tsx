@@ -171,6 +171,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       console.log(e);
     }
     //return dbActivity.activity_id;
+    console.log('APPSTATE', await dataAccess.getAppState());
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });
     }, 1000);
