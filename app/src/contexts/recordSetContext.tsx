@@ -25,7 +25,11 @@ export const RecordSetProvider = (props) => {
   const add = () => {
     setRecordSetState((prev) => ({
       ...prev,
-      [JSON.stringify(Object.keys(prev).length + 1)]: { recordSetName: 'New Record Set' }
+      [JSON.stringify(Object.keys(prev).length + 1)]: {
+        recordSetName: 'New Record Set',
+        advancedFilters: [],
+        gridFilters: {}
+      }
     }));
   };
 

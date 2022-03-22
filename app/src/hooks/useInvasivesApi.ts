@@ -25,7 +25,7 @@ const API_HOST = REACT_APP_API_HOST;
 const API_PORT = REACT_APP_API_PORT;
 
 // Set this variable to true to enable debugging of the API calls
-const LOGVERBOSE = true;
+const LOGVERBOSE = false;
 
 // If NODE_ENV is set, it will take precedence.
 // If no node env is set, you get react env vars.
@@ -132,7 +132,7 @@ export const useInvasivesApi = () => {
     console.log('Activities as geojson', geojson);
     /******************End of GeoJSON*******************/
 
-    return data.result;
+    return { rows: data.result, count: data.count };
   };
 
   /**
