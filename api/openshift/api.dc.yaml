@@ -82,9 +82,9 @@ objects:
       selector:
         deploymentConfig: ${NAME}${SUFFIX}
       strategy:
-        activeDeadlineSeconds: 21600
+        activeDeadlineSeconds: 2100
         recreateParams:
-          timeoutSeconds: 600
+          timeoutSeconds: 2500
         resources:
           limits:
             cpu: ${CPU_LIMIT}
@@ -185,12 +185,12 @@ objects:
                   cpu: ${CPU_REQ}
                   memory: ${MEMORY_REQ}
               readinessProbe:
-                failureThreshold: 10
+                failureThreshold: 100
                 httpGet:
                   path: /api/misc/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 1000
+                initialDelaySeconds: 180
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
@@ -200,7 +200,7 @@ objects:
                   path: /api/misc/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 1000
+                initialDelaySeconds: 180
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
