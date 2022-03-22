@@ -1,50 +1,12 @@
-export const mapActivitiesToDataGridRows = (activities) => {
-  if (!activities) {
-    return [];
-  }
-  if (activities.code) {
-    return [];
-  }
-  return activities.rows.map((activity, index) => {
-    return {
-      //  id: index,
-      short_id: activity?.activity_payload?.short_id,
-      //  activity_type: activity?.activity_payload?.activity_type,
-      //  activity_subtype:
-      //  ActivitySubtypeShortLabels[
-      //     activity?.activity_payload?.activity_subtype && activity?.activity_payload?.activity_subtype
-      //    ],
-      // date_created: new Date(activity?.activity_payload?.date_created).toString(),
-      //  reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
-      //   latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
-      //    longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
-      activity_id: activity?.activity_id
-    };
-  });
-};
+import { ActivitySubtypeShortLabels } from 'constants/activities';
 
-// const createAction = (type: string, subtype: string) => ({
-//   key: `create_${subtype.toString().toLowerCase()}`,
-//   enabled: true,
-//   action: async (selectedRows) => {
-//     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-//     dbActivity.created_by = userInfo?.preferred_username;
-//     dbActivity.user_role = userRoles?.map((role) => role.role_id);
-//     await dataAccess.createActivity(dbActivity, databaseContext);
-//     await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
-//     setTimeout(() => {
-//       history.push({ pathname: `/home/activity` });
-//     }, 500);
-//   },
-//   icon: <Add />,
-//   label: ActivitySubtypeShortLabels[subtype],
-//   bulkAction: false,
-//   rowAction: false,
-//   globalAction: true,
-//   triggerReload: true,
-//   displayInvalid: 'error',
-//   ...actions?.create_activity // allow prop overwrites by defaulto
-// });
+export interface ActivityRow {
+  activity_id: string;
+  short_id: string;
+  type: string;
+  sub_type: string;
+  date_modified: string;
+}
 
 export const activites_default_headers = [
   {
@@ -52,7 +14,7 @@ export const activites_default_headers = [
     name: 'Activity ID'
   },
   {
-    key: 'activity_type',
+    key: 'type',
     name: 'Activity Type'
   },
   {
@@ -60,8 +22,8 @@ export const activites_default_headers = [
     name: 'Activity Sub Type'
   },
   {
-    key: 'date_created',
-    name: 'Date Created'
+    key: 'date_modified',
+    name: 'Date Modified'
   },
   {
     key: 'reported_area',
@@ -74,9 +36,32 @@ export const activites_default_headers = [
   {
     key: 'longitude',
     name: 'Longitude'
-  },
-  {
-    key: 'activity_id',
-    name: 'Full ID'
   }
 ];
+
+export const mapActivitiesToDataGridRows = (activities) => {
+  console.log('activities');
+  console.dir(activities);
+  if (!activities) {
+    return [];
+  }
+  if (activities.code) {
+    return [];
+  }
+
+  return activities.rows.map((activity, index) => {
+    console.dir(activity);
+    return {
+      //  id: index,
+      short_id: activity?.activity_payload?.short_id,
+      type: activity?.activity_payload?.activity_type,
+      //      activity_type:
+      activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
+      date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
+      //  reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
+      //   latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
+      //    longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
+      activity_id: activity?.activity_id
+    };
+  });
+};

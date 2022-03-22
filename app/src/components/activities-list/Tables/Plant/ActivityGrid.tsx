@@ -9,7 +9,7 @@ import React, { useContext, useState, useEffect, useMemo, createContext } from '
 import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
-import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { activites_default_headers, ActivityRow, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
@@ -91,7 +91,7 @@ interface Row {
 }
 
 const FilterContext = createContext<Filter | undefined>(undefined);
-interface Filter extends Omit<Row, 'id' | 'complete'> {
+interface Filter extends Omit<ActivityRow, 'id' | 'complete'> {
   enabled: boolean;
 }
 
@@ -255,7 +255,7 @@ const ActivityGrid = (props) => {
             ...x,
             headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
             headerRenderer: (p) => (
-              <FilterRenderer<Row, unknown, HTMLInputElement> {...p}>
+              <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
                 {({ filters, ...rest }) => (
                   <input
                     {...rest}
