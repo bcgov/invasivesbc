@@ -283,7 +283,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
   sqlStatement.append(
-    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id WHERE 1 = 1`
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id join activity_jurisdictions c on a.activity_incoming_data_id = c.activity_incoming_data_id WHERE 1 = 1`
   );
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
@@ -384,6 +384,15 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     for (let idx = 1; idx < searchCriteria.species_negative.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.species_negative[idx]}`);
     sqlStatement.append(SQL`]::varchar[] && species_negative`);
+  }
+
+  // search intersects with jurisdiction codes
+  if (searchCriteria.jurisdictions && searchCriteria.jurisdictions.length) {
+    sqlStatement.append(SQL` AND ARRAY[`);
+    sqlStatement.append(SQL`${searchCriteria.jurisdictions[0]}`);
+    for (let idx = 1; idx < searchCriteria.jurisdictions.length; idx++)
+      sqlStatement.append(SQL`, ${searchCriteria.jurisdictions[idx]}`);
+    sqlStatement.append(SQL`]::varchar[] && jurisdictions`);
   }
 
   if (searchCriteria.search_feature) {

@@ -97,6 +97,13 @@ POST.apiDoc = {
                 type: 'string'
               }
             },
+            jurisdictions: {
+              type: 'array',
+              description: 'Jurisdictions to filter by',
+              items: {
+                type: 'string'
+              }
+            },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },
