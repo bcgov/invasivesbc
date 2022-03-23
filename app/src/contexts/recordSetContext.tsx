@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 export const RecordSetContext = React.createContext(null);
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const dataAccess = useDataAccess();
 
   const getInitialState = async () => {
@@ -17,6 +18,7 @@ export const RecordSetProvider = (props) => {
       const defaults = {
         recordSets: { ['1']: { recordSetName: 'My Drafts' }, ['2']: { recordSetName: 'All Data' } }
       };
+
       dataAccess.setAppState({ ...defaults });
       setRecordSetState({ ...defaults.recordSets });
     }
@@ -55,18 +57,29 @@ export const RecordSetProvider = (props) => {
     const oldState = dataAccess.getAppState();
     const oldRecordSets = oldState?.recordSets;
     if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
-      dataAccess.setAppState({ recordSets: { ...recordSetState } });
+      if (selectedRecord?.id) {
+        dataAccess.setAppState({ recordSets: { ...recordSetState }, activeActivity: selectedRecord.id });
+      } else {
+        dataAccess.setAppState({ recordSets: { ...recordSetState } });
+      }
     }
   };
 
   useEffect(() => {
     updateState();
-  }, [JSON.stringify(recordSetState)]);
+  }, [JSON.stringify(recordSetState), JSON.stringify(selectedRecord)]);
 
   if (recordSetState !== null) {
     return (
       <RecordSetContext.Provider
-        value={{ recordSetState: recordSetState, setRecordSetState: setRecordSetState, add: add, remove: remove }}>
+        value={{
+          setSelectedRecord: setSelectedRecord,
+          selectedRecord: selectedRecord,
+          recordSetState: recordSetState,
+          setRecordSetState: setRecordSetState,
+          add: add,
+          remove: remove
+        }}>
         {props.children}
       </RecordSetContext.Provider>
     );

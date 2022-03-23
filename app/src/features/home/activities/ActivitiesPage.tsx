@@ -30,7 +30,6 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   // main page component - moved everything in here so it could be wrapped in a context local to this page.
   const PageContainer = (props) => {
     // record to act on and context for all children dealing with record sets, types, and filters
-    const [selectedRecord, setSelectedRecord] = useState<any>({});
     const recordStateContext = useContext(RecordSetContext);
 
     const handleNewRecordDialogClose = () => {
@@ -98,12 +97,16 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           }
         },
         {
-          name: 'Open' + (selectedRecord?.description !== undefined ? selectedRecord?.description : ''),
-          disabled: !(selectedRecord?.description !== undefined),
-          hidden: !selectedRecord,
+          name:
+            'Open' +
+            (recordStateContext.selectedRecord?.description !== undefined
+              ? recordStateContext.selectedRecord?.description
+              : ''),
+          disabled: !(recordStateContext.selectedRecord?.description !== undefined),
+          hidden: !recordStateContext.selectedRecord,
           onClick: async () => {
             try {
-              await dataAccess.setAppState({ activeActivity: selectedRecord.id });
+              await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
             } catch (e) {
               console.log('unable to http ');
               console.log(e);
@@ -114,7 +117,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           }
         }
       ]);
-    }, [recordStateContext.recordSetState.length]);
+    }, [recordStateContext.recordSetState.length, recordStateContext?.selectedRecord?.id]);
 
     return useMemo(() => {
       /* set up main menu bar options: */
@@ -158,7 +161,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           />
         </>
       );
-    }, [options, newRecordDialog, recordStateContext.recordSetState.length, selectedRecord]);
+    }, [options, newRecordDialog, recordStateContext.recordSetState.length, recordStateContext?.selectedRecord]);
   };
   return (
     <Box sx={{ height: '100%' }}>
