@@ -267,14 +267,16 @@ const ActivityGrid = (props) => {
     }
   }
 
+  /*
   const developerOptions = useMemo(
     () =>
-      Array.from(new Set(rows.map((r) => r.developer))).map((d) => ({
+      Array.from(new Set(rows?.map((r) => r.developer))).map((d) => ({
         label: d,
         value: d
       })),
     [rows]
   );
+  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
@@ -312,7 +314,7 @@ const ActivityGrid = (props) => {
 
   //todo - tests need to take into account type, they're all strings right now
   const filteredRowsDynamic = useMemo(() => {
-    return rows.filter((r) => {
+    return rows?.filter((r) => {
       // grab all keys except enabled
       let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
       // build a check for each
@@ -368,18 +370,20 @@ const ActivityGrid = (props) => {
   }
 
   const sortedRows = useMemo(() => {
-    if (sortColumns.length === 0) return rows;
+    if (sortColumns?.length === 0) return rows;
 
-    return [...rows].sort((a, b) => {
-      for (const sort of sortColumns) {
-        const comparator = getComparator(sort.columnKey);
-        const compResult = comparator(a, b);
-        if (compResult !== 0) {
-          return sort.direction === 'ASC' ? compResult : -compResult;
+    if (rows?.length) {
+      return [...rows].sort((a, b) => {
+        for (const sort of sortColumns) {
+          const comparator = getComparator(sort.columnKey);
+          const compResult = comparator(a, b);
+          if (compResult !== 0) {
+            return sort.direction === 'ASC' ? compResult : -compResult;
+          }
         }
-      }
-      return 0;
-    });
+        return 0;
+      });
+    } else return [];
   }, [rows, sortColumns]);
 
   //TODO THEME MODE
