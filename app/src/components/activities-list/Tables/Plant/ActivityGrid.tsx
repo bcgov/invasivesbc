@@ -137,13 +137,13 @@ const ActivityGrid = (props) => {
     const parentStateCollection = recordSetContext.recordSetState;
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
-      setFilters(oldRecordSetState.gridFilters);
+      setFilters([...oldRecordSetState.gridFilters]);
     } else {
       setFilters({ enabled: false });
     }
 
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
-      setAdvancedFilterRows(oldRecordSetState.advancedFilters);
+      setAdvancedFilterRows([...oldRecordSetState.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);
     }
@@ -153,17 +153,31 @@ const ActivityGrid = (props) => {
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
     recordSetContext.setRecordSetState((prev) => {
-      if (
-        (save !== 0 &&
-          filters !== null &&
-          prev[props.setName] !== null &&
-          JSON.stringify(prev[props.setName].gridFilters) !== JSON.stringify(filters)) ||
-        JSON.stringify(prev[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
-      ) {
-        return {
-          ...prev,
-          [props.setName]: { ...prev[props.setName], gridFilters: { ...filters }, advancedFilters: advancedFilterRows }
-        };
+      if (save !== 0 && prev[props.setName]) {
+        const thereAreNewFilters =
+          filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
+            ? true
+            : false;
+        const thereAreNewAdvancedFilters =
+          advancedFilterRows !== null &&
+          JSON.stringify(prev[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+            ? true
+            : false;
+
+        if (thereAreNewFilters || thereAreNewAdvancedFilters) {
+          const updatedFilters = thereAreNewFilters ? [...filters] : [...prev[props.setName]?.gridFilters];
+          const updatedAdvancedFilters = thereAreNewAdvancedFilters
+            ? [...advancedFilterRows]
+            : [...prev[props.setName].advancedFilters];
+          return {
+            ...prev,
+            [props.setName]: {
+              ...prev[props.setName],
+              gridFilters: updatedFilters,
+              advancedFilters: updatedAdvancedFilters
+            }
+          };
+        }
       } else {
         return prev;
       }
@@ -179,8 +193,12 @@ const ActivityGrid = (props) => {
   };
 
   const getActivities = async () => {
+    const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+    console.dir(created_by_filter);
+    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterKey : null;
+    console.dir(created_by);
     let filter: any = {
-      created_by: userInfo.preferred_username,
+      created_by: created_by,
       user_roles: rolesUserHasAccessTo
     };
     if (props.subType) {
@@ -419,14 +437,15 @@ const ActivityGrid = (props) => {
               }}>
               {advancedFilterRows && advancedFilterRows.length > 0 ? (
                 advancedFilterRows.map((r, i) => {
-                  return (
-                    <FilterRow
-                      filterField={r.filterField}
-                      filterValue={r.filterValue}
-                      filterKey={r.filterKey}
-                      key={i}
-                    />
-                  );
+                  if (r.filterField !== 'created_by' || r.filterField !== 'record_status')
+                    return (
+                      <FilterRow
+                        filterField={r.filterField}
+                        filterValue={r.filterValue}
+                        filterKey={r.filterKey}
+                        key={i}
+                      />
+                    );
                 })
               ) : (
                 <></>

@@ -1,5 +1,7 @@
+import { ActivityStatus } from 'constants/activities';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthStateContext } from './authStateContext';
 
 // Where state is managed for all the sets of records, updates localstorage as it happens.
 // Everything that uses this context needs a memo that adequately checks dependencies, and none of them
@@ -9,6 +11,7 @@ export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const dataAccess = useDataAccess();
+  const { userInfo } = useContext(AuthStateContext);
 
   const getInitialState = async () => {
     const oldState = dataAccess.getAppState();
@@ -16,7 +19,16 @@ export const RecordSetProvider = (props) => {
       setRecordSetState({ ...oldState.recordSets });
     } else {
       const defaults = {
-        recordSets: { ['1']: { recordSetName: 'My Drafts' }, ['2']: { recordSetName: 'All Data' } }
+        recordSets: {
+          ['1']: {
+            recordSetName: 'My Drafts',
+            advancedFilters: [
+              { filterField: 'created_by', filterKey: userInfo?.preferred_username },
+              { filterField: 'record_status', filterKey: ActivityStatus.DRAFT }
+            ]
+          },
+          ['2']: { recordSetName: 'All Data' }
+        }
       };
 
       dataAccess.setAppState({ ...defaults });
