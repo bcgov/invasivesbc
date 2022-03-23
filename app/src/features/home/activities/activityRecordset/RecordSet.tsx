@@ -144,7 +144,7 @@ export const RecordSet = (props) => {
                 setAdvancedFilters={setAdvancedFilters}
                 //  formType={formType}
                 // subType={subType}
-                //    setSelectedRecord={props.setSelectedRecord}
+                setSelectedRecord={recordSetContext.setSelectedRecord}
                 //   filtersCallBack={setFilters}
                 //   initialFilters={filters}
               />
