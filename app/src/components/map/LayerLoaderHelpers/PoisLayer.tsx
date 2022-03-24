@@ -35,21 +35,13 @@ export const PoisLayer = (props) => {
     }
   };
 
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
-  useMapEvent('zoomend', () => {
+  useMapEvent('moveend', () => {
     fetchData();
   });
 
   useEffect(() => {
-    if (isReady) {
-      fetchData();
-    }
-  }, [isReady]);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean(
@@ -59,31 +51,27 @@ export const PoisLayer = (props) => {
 
     const poisFeatureArray = [];
     poisData?.rows?.forEach((row) => {
-      poisFeatureArray.push(row.geojson ? row.geojson : row);
+      if (row.geom) poisFeatureArray.push(row.geom);
     });
 
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
-  };
 
-  useEffect(() => {
-    if (pois) {
-      const poiArr = pois.features.map((feature) => {
-        return {
-          id: 'IAPP: ' + feature.properties.site_id,
-          species_positive: feature.properties.species_on_site
-        };
-      });
-      setCurrentRecords((prev) => {
-        return { ...prev, pois: [...poiArr] };
-      });
-    }
-  }, [pois]);
+    const poiArr = poisData?.rows?.map((row) => {
+      return {
+        id: row.point_of_interest_id,
+        type: row.point_of_interest_type,
+        subtype: row.point_of_interest_subtype,
+        species_positive: row.species_on_site
+      };
+    });
+    setCurrentRecords((prev) => {
+      return { ...prev, pois: [...poiArr] };
+    });
+  };
 
   if (!pois) {
     return null;
   }
-
-  // map zoom check: console.log(map.getZoom());
 
   return (
     <>
