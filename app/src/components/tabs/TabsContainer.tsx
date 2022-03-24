@@ -487,7 +487,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             })
           }}
           variant="permanent">
-          {/* removed style component with paddingTop */}
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
@@ -496,7 +495,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     () => {
                       if (userInfo.displayName) {
                         return <Avatar>{userInfo.displayName?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      }
+                      } else return <></>;
                     }
                   ) : (
                     <Avatar></Avatar>
@@ -508,7 +507,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {authContext.keycloak?.obj?.token && <p>Keycloak token is present</p>}
+          {authContext.keycloak?.obj?.token ? <p>Keycloak token is present</p> : <></>}
           {networkContext.connected ? (
             <div>
               {userInfoLoaded ? (

@@ -148,7 +148,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
 
           {/*the main list of record sets:*/}
           <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.originalActivityPageClassName}>
-            <Grid container xs={12} height="50px" display="flex" justifyContent="left">
+            <Grid container height="50px" display="flex" justifyContent="left">
               <Grid sx={{ pb: 15 }} xs={12} item>
                 {props.children}
               </Grid>

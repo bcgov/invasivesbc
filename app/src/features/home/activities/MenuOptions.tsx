@@ -77,10 +77,10 @@ export const MenuOptions = (props) => {
   if (props.options !== undefined) {
     return (
       <List sx={{ ...props.sx }}>
-        {props.options.map((option) => {
+        {props.options.map((option, i) => {
           if (!option.hidden) {
             return (
-              <ListItem sx={{ ...props.listSX }}>
+              <ListItem key={'menuOption' + i} sx={{ ...props.listSX }}>
                 <MenuOption {...option} />
               </ListItem>
             );

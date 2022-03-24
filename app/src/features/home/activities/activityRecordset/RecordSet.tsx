@@ -124,7 +124,6 @@ export const RecordSet = (props) => {
             setExpanded((prev) => !prev);
           }}
           expanded={expanded}>
-          {/*<AccordionSummary sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>*/}
           <RecordSetAccordionSummary
             recordSetName={recordSetName}
             setName={props.setName}
@@ -151,7 +150,6 @@ export const RecordSet = (props) => {
                 //   initialFilters={filters}
               />
             </Grid>
-            {/*} <ActivitiesList2 setName={props.setName} setSelectedRecord={props.setSelectedRecord} />*/}
           </AccordionDetails>
         </Accordion>
       </>

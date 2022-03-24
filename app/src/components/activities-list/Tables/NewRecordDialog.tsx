@@ -205,7 +205,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivityCategoryChange}
             label="Select Form Type">
             {activityCategorySelectOptions.map((option) => (
-              <MenuItem value={option}>{option}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -219,7 +221,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivityTypeChange}
             label="Select Form Type">
             {activityTypeSelectOptions.map((option) => (
-              <MenuItem value={option}>{option}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -233,7 +237,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivitySubTypeChange}
             label="Select Form Type">
             {activitySubTypeSelectOptions.map((option) => (
-              <MenuItem value={option}>{ActivitySubtypeShortLabels[option]}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {ActivitySubtypeShortLabels[option]}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
