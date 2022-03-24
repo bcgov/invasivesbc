@@ -204,13 +204,13 @@ const ActivityGrid = (props) => {
 
   const getActivities = async () => {
     const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
-    console.dir(created_by_filter);
     const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterKey : null;
-    console.dir(created_by);
     let filter: any = {
-      created_by: created_by,
       user_roles: rolesUserHasAccessTo
     };
+    if (created_by !== null) {
+      filter.created_by = created_by;
+    }
     if (props.subType) {
       filter.activity_subtype = [props.subType];
     } else if (props.formType) {
