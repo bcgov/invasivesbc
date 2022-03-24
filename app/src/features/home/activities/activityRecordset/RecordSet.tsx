@@ -4,6 +4,8 @@ import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityGrid';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
 import { Accordion, AccordionDetails, Grid } from '@mui/material';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
+import { userInfo } from 'os';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -30,7 +32,7 @@ export const RecordSet = (props) => {
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
-
+  const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const recordSetContext = useContext(RecordSetContext);
   const { remove, recordSetState } = recordSetContext;
 
@@ -154,7 +156,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [recordSetState[props.setName], recordSetName]
+    [JSON.stringify(recordSetState?.[props.setName]), JSON.stringify(recordSetName)]
   );
 };
 export default RecordSet;

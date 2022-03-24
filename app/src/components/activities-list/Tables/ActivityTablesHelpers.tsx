@@ -40,8 +40,6 @@ export const activites_default_headers = [
 ];
 
 export const mapActivitiesToDataGridRows = (activities) => {
-  console.log('activities');
-  console.dir(activities);
   if (!activities) {
     return [];
   }
@@ -50,7 +48,6 @@ export const mapActivitiesToDataGridRows = (activities) => {
   }
 
   return activities.rows.map((activity, index) => {
-    console.dir(activity);
     return {
       //  id: index,
       short_id: activity?.activity_payload?.short_id,

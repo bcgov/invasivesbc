@@ -125,7 +125,7 @@ const ActivityGrid = (props) => {
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>([]);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
-  const [filters, setFilters] = useState(null);
+  const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
 
   const themeContext = useContext(ThemeContext);
@@ -135,15 +135,16 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
+    console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
-      setFilters(oldRecordSetState.gridFilters);
+      setFilters({ ...oldRecordSetState?.gridFilters });
     } else {
       setFilters({ enabled: false });
     }
 
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
-      setAdvancedFilterRows(oldRecordSetState.advancedFilters);
+      setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);
     }
@@ -153,17 +154,40 @@ const ActivityGrid = (props) => {
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
     recordSetContext.setRecordSetState((prev) => {
-      if (
-        (save !== 0 &&
-          filters !== null &&
-          prev[props.setName] !== null &&
-          JSON.stringify(prev[props.setName].gridFilters) !== JSON.stringify(filters)) ||
-        JSON.stringify(prev[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
-      ) {
-        return {
-          ...prev,
-          [props.setName]: { ...prev[props.setName], gridFilters: { ...filters }, advancedFilters: advancedFilterRows }
-        };
+      if (save !== 0 && prev?.[props.setName]) {
+        const thereAreNewFilters =
+          filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
+            ? true
+            : false;
+        const thereAreNewAdvancedFilters =
+          advancedFilterRows !== null &&
+          JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+            ? true
+            : false;
+
+        const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
+        const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
+
+        if (thereAreNewFilters || thereAreNewAdvancedFilters) {
+          const updatedFilters = thereAreNewFilters
+            ? { ...filters }
+            : thereAreOldFilters
+            ? { ...prev?.[props.setName]?.gridFilters }
+            : {};
+          const updatedAdvancedFilters = thereAreNewAdvancedFilters
+            ? [...advancedFilterRows]
+            : thereAreOldAdvancedFilters
+            ? [...prev?.[props.setName]?.advancedFilters]
+            : [];
+          return {
+            ...prev,
+            [props.setName]: {
+              ...prev?.[props.setName],
+              gridFilters: updatedFilters,
+              advancedFilters: updatedAdvancedFilters
+            }
+          };
+        }
       } else {
         return prev;
       }
@@ -172,17 +196,21 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     getActivities();
-  }, [recordSetContext.recordSetState[props.setName]]);
+  }, [recordSetContext?.recordSetState?.[props.setName], save]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
   };
 
   const getActivities = async () => {
+    const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterKey : null;
     let filter: any = {
-      created_by: userInfo.preferred_username,
       user_roles: rolesUserHasAccessTo
     };
+    if (created_by !== null) {
+      filter.created_by = created_by;
+    }
     if (props.subType) {
       filter.activity_subtype = [props.subType];
     } else if (props.formType) {
@@ -391,7 +419,7 @@ const ActivityGrid = (props) => {
       dialogOpen: true,
       filterKey: filterKey,
       setAllFilters: setAdvancedFilterRows,
-      allFiltersBefore: advancedFilterRows,
+      allFiltersBefore: [...advancedFilterRows],
       closeActionDialog: () => {
         setFilterDialog({ ...filterDialog, dialogOpen: false });
       }
@@ -419,14 +447,18 @@ const ActivityGrid = (props) => {
               }}>
               {advancedFilterRows && advancedFilterRows.length > 0 ? (
                 advancedFilterRows.map((r, i) => {
-                  return (
-                    <FilterRow
-                      filterField={r.filterField}
-                      filterValue={r.filterValue}
-                      filterKey={r.filterKey}
-                      key={i}
-                    />
-                  );
+                  if (
+                    !(props.setName === '1' && (r.filterField === 'created_by' || r.filterField === 'record_status'))
+                  ) {
+                    return (
+                      <FilterRow
+                        filterField={r.filterField}
+                        filterValue={r.filterValue}
+                        filterKey={r.filterKey}
+                        key={i}
+                      />
+                    );
+                  }
                 })
               ) : (
                 <></>
@@ -486,7 +518,7 @@ const ActivityGrid = (props) => {
       </Box>
     ),
     [
-      recordSetContext.recordSetState[props.setName],
+      recordSetContext?.recordSetState?.[props.setName],
       filterDialog,
       advancedFilterRows,
       filters,

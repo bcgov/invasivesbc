@@ -117,7 +117,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           }
         }
       ]);
-    }, [recordStateContext.recordSetState.length, recordStateContext?.selectedRecord?.id]);
+    }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
 
     return useMemo(() => {
       /* set up main menu bar options: */
@@ -161,7 +161,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
           />
         </>
       );
-    }, [options, newRecordDialog, recordStateContext.recordSetState.length, recordStateContext?.selectedRecord]);
+    }, [options, newRecordDialog, recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord]);
   };
   return (
     <Box sx={{ height: '100%' }}>
