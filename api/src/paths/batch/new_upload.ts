@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import { PlantFormSubmissionFromData } from '../../utils/batch/plant_form_submit_template';
 import fetch from 'node-fetch';
@@ -20,11 +20,13 @@ export const POST: Operation = [upload()];
 
 const POST_API_DOC = {
   tags: ['batch'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Batch upload processor',
     content: {

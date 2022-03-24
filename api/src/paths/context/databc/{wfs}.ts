@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -13,11 +13,13 @@ export const GET: Operation = [getDataBC()];
 GET.apiDoc = {
   description: 'Fetches a single feature of a DataBC WFS layer from a geographic point location.',
   tags: ['activity', 'databc'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'query',

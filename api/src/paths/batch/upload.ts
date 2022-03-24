@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 import { atob } from 'js-base64';
@@ -14,11 +14,13 @@ export const GET: Operation = [listBatches()];
 
 const GET_API_DOC = {
   tags: ['batch'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ]
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : []
 };
 
 GET.apiDoc = {

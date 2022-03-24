@@ -4,7 +4,7 @@ import { request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -22,11 +22,13 @@ export const PUT: Operation = [uploadMedia(), updateActivity()];
 // Api doc common to both the POST and PUT endpoints
 const post_put_apiDoc = {
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Activity post request object.',
     content: {

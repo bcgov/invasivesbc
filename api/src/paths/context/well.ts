@@ -7,7 +7,7 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -18,11 +18,13 @@ GET.apiDoc = {
   description:
     'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
   tags: ['activity', 'databc'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'query',

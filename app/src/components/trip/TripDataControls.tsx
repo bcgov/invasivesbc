@@ -831,7 +831,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }));
       console.log('Error when fetching from network: ' + error);
     }
-    await dataAccess.cacheApplicationUsers(databaseContext);
+    await dataAccess.cacheApplicationUsers();
   };
 
   return (

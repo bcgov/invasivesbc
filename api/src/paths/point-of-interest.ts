@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -17,11 +17,13 @@ export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 POST.apiDoc = {
   description: 'Create a new point of interest.',
   tags: ['point-of-interest'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Point of interest post request object.',
     content: {

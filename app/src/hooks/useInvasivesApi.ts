@@ -60,15 +60,11 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
  */
 const useRequestOptions = () => {
   const { keycloak } = useContext(AuthStateContext); //useKeycloak();
-  // const instance = useMemo(() => {
-  //console.log('keycloak @ useRequestOptions', keycloak);
+
   return {
     baseUrl: API_URL,
     headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
   };
-  // }, [keycloak]);
-
-  // return instance;
 };
 /**
  * Returns a set of supported api methods.

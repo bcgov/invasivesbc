@@ -41,10 +41,6 @@ export const useDataAccess = () => {
    */
   const getPointsOfInterest = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
-    context?: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    },
     forceCache = false
   ): Promise<any> => {
     if (platform === 'web') {
@@ -52,8 +48,7 @@ export const useDataAccess = () => {
       return response;
     } else {
       if (forceCache === true || !networkContext.connected) {
-        const dbcontext = context;
-        return dbcontext.asyncQueue({
+        return databaseContext.asyncQueue({
           asyncTask: () => {
             return query(
               {
@@ -80,11 +75,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getPointsOfInterestLean = async (
-    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
-    context: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    }
+    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
     if (platform === 'web') {
       const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
@@ -94,7 +85,7 @@ export const useDataAccess = () => {
         const featuresArray = await fetchLayerDataFromLocal(
           'LEAN_POI',
           pointsOfInterestSearchCriteria.search_feature,
-          context
+          databaseContext
         );
         return {
           rows: featuresArray,
@@ -113,13 +104,7 @@ export const useDataAccess = () => {
    * @param {jurisdictionSearchCriteria} jurisdictionSearchCriteria
    * @return {*}  {Promise<any>}
    */
-  const getJurisdictions = async (
-    jurisdictionSearchCriteria: IJurisdictionSearchCriteria,
-    context: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    }
-  ): Promise<any> => {
+  const getJurisdictions = async (jurisdictionSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
     if (platform === 'web') {
       const response = await api.getJurisdictions(jurisdictionSearchCriteria);
       return response;
@@ -128,7 +113,7 @@ export const useDataAccess = () => {
         const featuresArray = await fetchLayerDataFromLocal(
           'JURISDICTIONS',
           jurisdictionSearchCriteria.search_feature,
-          context
+          databaseContext
         );
 
         return {
@@ -148,13 +133,7 @@ export const useDataAccess = () => {
    * @param {risoSearchCriteria} risoSearchCriteria
    * @returns {*} {Promise<any>}
    */
-  const getRISOs = async (
-    risoSearchCriteria: IRisoSearchCriteria,
-    context: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    }
-  ): Promise<any> => {
+  const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
     if (platform === 'web') {
       const response = await api.getRISOs(risoSearchCriteria);
       return response;
@@ -179,24 +158,15 @@ export const useDataAccess = () => {
    * @param {string} activityId
    * @return {*}  {Promise<any>}
    */
-  const getActivityById = async (
-    activityId: string,
-    context?: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    },
-    forceCache?: boolean,
-    referenceData = false
-  ): Promise<any> => {
+  const getActivityById = async (activityId: string, forceCache?: boolean, referenceData = false): Promise<any> => {
     try {
       if (Capacitor.getPlatform() === 'web') {
         const response = await api.getActivityById(activityId);
         return response;
       } else {
         if (forceCache === true || !networkContext.connected) {
-          const dbcontext = context;
           // Removed for now due to not being able to open cached activity
-          const res = await dbcontext.asyncQueue({
+          const res = await databaseContext.asyncQueue({
             asyncTask: async () => {
               const res = await query(
                 {
@@ -204,7 +174,7 @@ export const useDataAccess = () => {
                   docType: referenceData ? DocType.REFERENCE_ACTIVITY : DocType.ACTIVITY,
                   ID: activityId
                 },
-                dbcontext
+                databaseContext
               );
               return JSON.parse(res[0]?.json);
               // Removed for now due to not being able to open cached activity
@@ -231,20 +201,13 @@ export const useDataAccess = () => {
    * @param {ICreateOrUpdateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const updateActivity = async (
-    activity: ICreateOrUpdateActivity,
-    context?: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    }
-  ): Promise<any> => {
+  const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       //TODO: implement getting old version from server and making new with overwritten props
       // IN USEINVASIVES API
       return await api.updateActivity(activity);
     } else {
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           try {
             return upsert(
@@ -258,7 +221,7 @@ export const useDataAccess = () => {
                   activity_subtype: activity.activity_subtype
                 }
               ],
-              dbcontext
+              databaseContext
             );
           } catch (err) {
             console.log('Error occurred: ', err);
@@ -273,11 +236,10 @@ export const useDataAccess = () => {
    *
    * @return {*}  {Promise<any>}
    */
-  const getTrips = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getTrips = async () => {
+    return databaseContext.asyncQueue({
       asyncTask: () => {
-        return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, dbcontext);
+        return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
       }
     });
   };
@@ -288,24 +250,16 @@ export const useDataAccess = () => {
    * @param {any} newTripObj
    * @return {*}  {Promise<any>}
    */
-  const addTrip = async (
-    newTripObj: any,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ) => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const addTrip = async (newTripObj: any) => {
+    return databaseContext.asyncQueue({
       asyncTask: () => {
-        return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
+        return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], databaseContext);
       }
     });
   };
 
-  const getApplicationUsers = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getApplicationUsers = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -313,7 +267,7 @@ export const useDataAccess = () => {
             docType: DocType.APPLICATION_USER,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -321,18 +275,14 @@ export const useDataAccess = () => {
     });
   };
 
-  const cacheApplicationUsers = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }) => {
+  const cacheApplicationUsers = async () => {
     if (networkContext.connected && isMobile()) {
       const users = await api.getApplicationUsers();
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.APPLICATION_USER, ID: '1', json: users }],
-            dbcontext
+            databaseContext
           );
         }
       });
@@ -340,7 +290,7 @@ export const useDataAccess = () => {
   };
 
   useEffect(() => {
-    if (keycloak?.obj?.token) cacheApplicationUsers(databaseContext);
+    if (keycloak?.obj?.token) cacheApplicationUsers();
   }, [networkContext.connected, keycloak?.obj?.authenticated]);
 
   /**
@@ -349,12 +299,9 @@ export const useDataAccess = () => {
    * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
-  const getActivitiesForMobileSync = async (
-    activitiesSearchCriteria: IActivitySearchCriteria,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ): Promise<any> => {
+  const getActivitiesForMobileSync = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     if (Capacitor.getPlatform() !== 'web') {
-      const dbContext = context;
+      const dbContext = databaseContext;
 
       const typeClause = activitiesSearchCriteria.activity_type
         ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
@@ -386,108 +333,98 @@ export const useDataAccess = () => {
     }
   };
 
-  const cacheEmployers = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+  const cacheEmployers = async () => {
     if (networkContext.connected && isMobile()) {
       const employers = await api.getEmployers();
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      console.log('employers', employers);
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.EMPLOYER, ID: '1', json: employers }],
-            dbcontext
+            databaseContext
           );
         }
       });
     }
   };
 
-  const cacheFundingAgencies = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }) => {
+  const cacheFundingAgencies = async () => {
     if (networkContext.connected && isMobile()) {
       const agencies = await api.getFundingAgencies();
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.AGENCY, ID: '1', json: agencies }],
-            dbcontext
+            databaseContext
           );
         }
       });
     }
   };
 
-  const cacheRolesForUser = async (
-    userId,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ) => {
+  const cacheRolesForUser = async (userId) => {
     if (networkContext.connected && isMobile()) {
       const userRoles = await api.getRolesForUser(userId);
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER_ROLE, ID: '1', json: userRoles }],
-            dbcontext
+            databaseContext
           );
         }
       });
     }
   };
 
-  const cacheAllRoles = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+  const cacheAllRoles = async () => {
     if (networkContext.connected && isMobile()) {
       const roles = await api.getRoles();
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      if (!roles) {
+        return;
+      }
+
+      return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.ROLE, ID: '1', json: roles }], dbcontext);
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.ROLE, ID: '1', json: roles }],
+            databaseContext
+          );
         }
       });
     }
   };
 
-  const cacheCurrentUserBCEID = async (
-    bceid_userid,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ) => {
+  const cacheCurrentUserBCEID = async (bceid_userid) => {
     if (networkContext.connected && isMobile()) {
       const user = await api.getUserByBCEID(bceid_userid);
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }], dbcontext);
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }],
+            databaseContext
+          );
         }
       });
     }
   };
 
-  const cacheCurrentUserIDIR = async (
-    idir_userid,
-    context?: {
-      asyncQueue: (request: DBRequest) => Promise<any>;
-      ready: boolean;
-    }
-  ) => {
+  const cacheCurrentUserIDIR = async (idir_userid) => {
     if (networkContext.connected && isMobile()) {
       const user = await api.getUserByIDIR(idir_userid);
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+
+      return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }], dbcontext);
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.USER, ID: '1', json: user }],
+            databaseContext
+          );
         }
       });
     }
   };
 
-  const getEmployers = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getEmployers = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -495,7 +432,7 @@ export const useDataAccess = () => {
             docType: DocType.EMPLOYER,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -503,12 +440,8 @@ export const useDataAccess = () => {
     });
   };
 
-  const getFundingAgencies = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getFundingAgencies = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -516,7 +449,7 @@ export const useDataAccess = () => {
             docType: DocType.AGENCY,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -524,12 +457,8 @@ export const useDataAccess = () => {
     });
   };
 
-  const getRolesForUser = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getRolesForUser = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -537,7 +466,7 @@ export const useDataAccess = () => {
             docType: DocType.USER_ROLE,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -545,12 +474,8 @@ export const useDataAccess = () => {
     });
   };
 
-  const getRoles = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getRoles = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -558,7 +483,7 @@ export const useDataAccess = () => {
             docType: DocType.ROLE,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -566,12 +491,8 @@ export const useDataAccess = () => {
     });
   };
 
-  const getCurrentUser = async (context?: {
-    asyncQueue: (request: DBRequest) => Promise<any>;
-    ready: boolean;
-  }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+  const getCurrentUser = async (): Promise<any> => {
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -579,7 +500,7 @@ export const useDataAccess = () => {
             docType: DocType.USER,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -595,7 +516,6 @@ export const useDataAccess = () => {
    */
   const getActivities = async (
     activitiesSearchCriteria: IActivitySearchCriteria,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean },
     forceCache = false,
     referenceCache = false
   ): Promise<any> => {
@@ -603,7 +523,7 @@ export const useDataAccess = () => {
       return await api.getActivities(activitiesSearchCriteria);
     } else {
       if (forceCache === true || !networkContext.connected) {
-        const dbcontext = context;
+        const dbcontext = databaseContext;
         const table = referenceCache ? 'reference_activity' : 'activity';
         const typeClause = activitiesSearchCriteria.activity_type
           ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
@@ -646,10 +566,7 @@ export const useDataAccess = () => {
    * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
-  const getActivitiesLean = async (
-    activitiesSearchCriteria: IActivitySearchCriteria,
-    context: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ): Promise<any> => {
+  const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       const response = await api.getActivitiesLean(activitiesSearchCriteria);
       return response;
@@ -658,7 +575,7 @@ export const useDataAccess = () => {
         const featuresArray = await fetchLayerDataFromLocal(
           'LEAN_ACTIVITIES',
           activitiesSearchCriteria.search_feature,
-          context
+          databaseContext
         );
 
         return {
@@ -685,8 +602,7 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return await api.createActivity(activity);
     } else {
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [
@@ -699,7 +615,7 @@ export const useDataAccess = () => {
                 sync_status: ActivitySyncStatus.NOT_SAVED
               }
             ],
-            dbcontext
+            databaseContext
           );
         }
       });
@@ -711,15 +627,11 @@ export const useDataAccess = () => {
    * @param {string[]} activityIds
    * @return {*}  {Promise<any>}
    */
-  const deleteActivities = async (
-    activityIds: string[],
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ): Promise<any> => {
+  const deleteActivities = async (activityIds: string[]): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return await api.deleteActivities(activityIds);
     } else {
-      const dbcontext = context;
-      return dbcontext.asyncQueue({
+      return databaseContext.asyncQueue({
         asyncTask: () => {
           const idsForSQL = JSON.stringify(activityIds).replace(/[\[\]']+/g, '');
           const sql = `DELETE FROM Activity WHERE id IN ${'(' + idsForSQL + ')'}`;
@@ -730,7 +642,7 @@ export const useDataAccess = () => {
                 sql: sql
               }
             ],
-            dbcontext
+            databaseContext
           );
         }
       });
@@ -741,8 +653,7 @@ export const useDataAccess = () => {
     asyncQueue: (request: DBRequest) => Promise<any>;
     ready: boolean;
   }): Promise<any> => {
-    const dbcontext = context;
-    return dbcontext.asyncQueue({
+    return databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {
@@ -750,7 +661,7 @@ export const useDataAccess = () => {
             docType: DocType.USER_ROLE,
             ID: '1'
           },
-          dbcontext
+          databaseContext
         );
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
@@ -759,7 +670,7 @@ export const useDataAccess = () => {
   };
 
   /**
-   * Get appState
+   * Ge appState
    *
    * @param {any} selector
    * @return {*}  {Promise<any>}
@@ -781,24 +692,23 @@ export const useDataAccess = () => {
   const syncCachedRecords = async (): Promise<any> => {
     // Only callable on mobile
     if (Capacitor.getPlatform() !== 'web' && networkContext.connected) {
-      await getActivitiesForMobileSync(
-        { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
-        databaseContext
-      ).then((res: any) => {
-        if (res.count > 0) {
-          res.rows.forEach(async (row: ICreateOrUpdateActivity) => {
-            try {
-              await api.createActivity(row);
-            } catch (err) {
-              console.log('Error saving activity to api');
-            }
-            let tempRow: ICreateOrUpdateActivity = row;
-            tempRow.sync_status = ActivitySyncStatus.SAVE_SUCCESSFUL;
-            console.log(tempRow);
-            updateActivity(tempRow, databaseContext);
-          });
+      await getActivitiesForMobileSync({ activity_type: ['Observation', 'Treatment', 'Monitoring'] }).then(
+        (res: any) => {
+          if (res.count > 0) {
+            res.rows.forEach(async (row: ICreateOrUpdateActivity) => {
+              try {
+                await api.createActivity(row);
+              } catch (err) {
+                console.log('Error saving activity to api');
+              }
+              let tempRow: ICreateOrUpdateActivity = row;
+              tempRow.sync_status = ActivitySyncStatus.SAVE_SUCCESSFUL;
+              console.log(tempRow);
+              updateActivity(tempRow);
+            });
+          }
         }
-      });
+      );
     }
   };
 
@@ -808,10 +718,7 @@ export const useDataAccess = () => {
    * @param {any} activeActivity
    * @return {*}  {Promise<any>}
    */
-  const setAppState = async (
-    newState: any,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
-  ): Promise<any> => {
+  const setAppState = async (newState: any): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       const old = getAppState();
       if (old) {
@@ -820,7 +727,7 @@ export const useDataAccess = () => {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...newState }));
       }
     } else {
-      const dbcontext = context;
+      const dbcontext = databaseContext;
 
       const appStateDoc = getAppState();
 

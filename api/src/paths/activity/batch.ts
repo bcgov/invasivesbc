@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import geoJSON_Feature_Schema from '../../openapi/geojson-feature-doc.json';
 import { getLogger } from '../../utils/logger';
 import { ActivityPostRequestBody } from '../../models/activity';
@@ -17,11 +17,13 @@ export const POST: Operation = [createActivities()];
 // Api doc common to both the POST and PUT endpoints
 const batch_apiDoc = {
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Activity post request object array.',
     content: {

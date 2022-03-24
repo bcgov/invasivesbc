@@ -2,18 +2,20 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { HEADERS } from './new_upload';
 
 export const GET: Operation = [getTemplate()];
 
 const GET_API_DOC = {
   tags: ['batch', 'template'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ]
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : []
 };
 
 GET.apiDoc = {

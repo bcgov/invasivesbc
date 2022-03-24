@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { JurisdictionSearchCriteria } from '../models/jurisdiction';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -17,11 +17,13 @@ export const POST: Operation = [getJurisdictionsBySearchFilterCriteria()];
 POST.apiDoc = {
   description: 'Fetches all jurisdictions based on search criteria.',
   tags: ['jurisdictions'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Jurisdictions search filter criteria object.',
     content: {

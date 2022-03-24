@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -19,11 +19,13 @@ export const DELETE: Operation = [deleteActivitiesByIds()];
 POST.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Activities search filter criteria object.',
     content: {
@@ -135,11 +137,13 @@ POST.apiDoc = {
 DELETE.apiDoc = {
   description: 'Soft-deletes all activities based on a list of ids.',
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES // TODO make admin only
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'query',

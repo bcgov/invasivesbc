@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from './../../database/db';
 import { fetchCodeTablesSQL } from '../../queries/code-queries';
 
@@ -12,11 +12,13 @@ export const GET: Operation = [getCodeTableValues()];
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'path',

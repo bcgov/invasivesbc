@@ -2,7 +2,7 @@
 
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
 
@@ -13,11 +13,13 @@ export const GET: Operation = [getContext()];
 GET.apiDoc = {
   description: 'Fetch internal contextual data for a single point.',
   tags: ['activity', 'RISO', 'IPMA'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'query',

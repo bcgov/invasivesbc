@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getS3SignedURL } from '../../utils/file-utils';
 
 export const GET: Operation = [getSignedURL()];
@@ -10,11 +10,13 @@ export const GET: Operation = [getSignedURL()];
 GET.apiDoc = {
   description: 'Fetches a signed url for a single media item based on its key.',
   tags: ['media'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'path',

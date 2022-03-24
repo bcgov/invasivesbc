@@ -3,7 +3,7 @@
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from './../../database/db';
 import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
@@ -16,11 +16,13 @@ export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
   tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'path',
