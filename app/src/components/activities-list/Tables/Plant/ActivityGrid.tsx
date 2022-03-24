@@ -135,6 +135,7 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
+    console.log('record set state on first render');
     console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
@@ -144,6 +145,8 @@ const ActivityGrid = (props) => {
     }
 
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
+      console.log('setting advanced filters');
+      console.dir(oldRecordSetState.advancedFilters);
       setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);

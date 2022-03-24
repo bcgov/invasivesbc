@@ -29,7 +29,8 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       geog,
       media_keys,
       species_positive,
-      species_negative
+      species_negative,
+      jurisdiction
     ) VALUES (
       ${activity.activity_id},
       ${activity.activity_type},
@@ -88,6 +89,16 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   if (activity.species_negative?.length) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_negative}::text, '{', '['), '}', ']')::jsonb
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,'null'
+    `);
+  }
+
+  if (activity.jurisdiction?.length) {
+    sqlStatement.append(SQL`
+      ,replace(replace(${activity.jurisdiction}::text, '{', '['), '}', ']')::jsonb
     `);
   } else {
     sqlStatement.append(SQL`

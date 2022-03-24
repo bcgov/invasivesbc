@@ -39,6 +39,8 @@ export class ActivityPostRequestBody {
   species_positive: string[];
   species_negative: string[];
 
+  jurisdiction: string[];
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
@@ -90,6 +92,8 @@ export class ActivityPostRequestBody {
 
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
+
+    this.jurisdiction = obj?.jurisdiction || [];
   }
 }
 
@@ -126,7 +130,7 @@ export class ActivitySearchCriteria {
   species_positive: string[];
   species_negative: string[];
 
-  jurisdictions: string[];
+  jurisdiction: string[];
 
   order: string[];
 
@@ -164,7 +168,7 @@ export class ActivitySearchCriteria {
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
 
-    this.jurisdictions = obj?.jurisdictions || [];
+    this.jurisdiction = obj?.jurisdiction || [];
 
     this.order = (obj && obj.order) || [];
   }
