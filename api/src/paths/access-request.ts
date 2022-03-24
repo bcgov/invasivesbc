@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { grantRoleByValueSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import {
   createAccessRequestSQL,
@@ -23,11 +23,13 @@ export const GET: Operation = [getAccessRequests()];
 POST.apiDoc = {
   description: 'Create a new access request.',
   tags: ['access-request'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Access request post request object.',
     content: {
@@ -64,11 +66,13 @@ POST.apiDoc = {
 GET.apiDoc = {
   description: 'Get list of access requests',
   tags: ['access-request'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   responses: {
     200: {
       description: 'Access request post response object.',

@@ -4,7 +4,7 @@ import { RequestHandler, response } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { getIAPPsites } from '../utils/iapp-json-utils';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -18,11 +18,13 @@ export const POST: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 POST.apiDoc = {
   description: 'Fetches all ponts of interest based on search criteria.',
   tags: ['point-of-interest'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Points Of Interest search filter criteria object.',
     content: {

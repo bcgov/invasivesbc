@@ -4,7 +4,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../constants/misc';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('metabase-query');
@@ -25,11 +25,13 @@ export const GET: Operation = [getMetabaseQueryOptions()];
 POST.apiDoc = {
   description: 'Creates new Metabase queries for a list of activities and points of interest.',
   tags: ['metabase'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Lists of Activity IDs and Point of Interest IDs.',
     content: {

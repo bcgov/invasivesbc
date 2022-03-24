@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { listCodeTablesSQL } from '../queries/code-queries';
@@ -11,11 +11,13 @@ export const GET: Operation = [listCodeTables()];
 
 const LIST_API_DOC = {
   tags: ['template'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ]
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : []
 };
 
 GET.apiDoc = {

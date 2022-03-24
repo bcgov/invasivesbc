@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { RISOSearchCriteria } from '../models/riso';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -17,11 +17,13 @@ export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 POST.apiDoc = {
   description: 'Fetches all RISOs based on search criteria.',
   tags: ['risos'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'RISOs search filter criteria object.',
     content: {

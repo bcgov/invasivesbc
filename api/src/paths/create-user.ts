@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { createUserSQL } from '../queries/createUserQuery';
 import { getLogger } from '../utils/logger';
@@ -15,11 +15,13 @@ export const POST: Operation = [createUser()];
 POST.apiDoc = {
   description: 'Get some information about users and their roles',
   tags: ['create-user'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'User access post request object.',
     content: {

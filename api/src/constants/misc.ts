@@ -22,6 +22,8 @@ export enum Role {
   MASTER_ADMINISTRATOR = 'master_administrator'
 }
 
+export const SECURITY_ON = true;
+
 export const ALL_ROLES = [
   Role.ADMIN,
   Role.MANAGER,

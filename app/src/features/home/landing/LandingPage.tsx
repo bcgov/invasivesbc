@@ -86,7 +86,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
 
   useEffect(() => {
     hasRequestedAccess();
-  }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo.email, userInfo.preferred_username]);
+  }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo?.email, userInfo?.preferred_username]);
 
   const hasRequestedAccess = async () => {
     // If no user is logged in, return false

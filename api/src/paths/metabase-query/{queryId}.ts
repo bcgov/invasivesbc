@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import { getMetabaseSession, closeMetabaseSession, METABASE_URL, METABASE_TIMEOUT } from '../metabase-query';
 
@@ -14,11 +14,13 @@ export const GET: Operation = [getMetabaseQueryResults()];
 GET.apiDoc = {
   description: 'Fetches all activity and point of interest ids from an existing Metabase query.',
   tags: ['metabase'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
     {
       in: 'path',
