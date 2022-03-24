@@ -23,8 +23,16 @@ export const RecordSetProvider = (props) => {
           ['1']: {
             recordSetName: 'My Drafts',
             advancedFilters: [
-              { filterField: 'created_by', filterKey: userInfo?.preferred_username },
-              { filterField: 'record_status', filterKey: ActivityStatus.DRAFT }
+              {
+                filterField: 'created_by',
+                filterValue: userInfo?.preferred_username,
+                filterKey: 'created_by' + userInfo?.preferred_username
+              },
+              {
+                filterField: 'record_status',
+                filterValue: ActivityStatus.DRAFT,
+                filterKey: 'record_status' + ActivityStatus.DRAFT
+              }
             ]
           },
           ['2']: { recordSetName: 'All Data' }

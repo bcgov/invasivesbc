@@ -447,7 +447,9 @@ const ActivityGrid = (props) => {
               }}>
               {advancedFilterRows && advancedFilterRows.length > 0 ? (
                 advancedFilterRows.map((r, i) => {
-                  if (r.filterField !== 'created_by' || r.filterField !== 'record_status')
+                  if (
+                    !(props.setName === '1' && (r.filterField === 'created_by' || r.filterField === 'record_status'))
+                  ) {
                     return (
                       <FilterRow
                         filterField={r.filterField}
@@ -456,6 +458,7 @@ const ActivityGrid = (props) => {
                         key={i}
                       />
                     );
+                  }
                 })
               ) : (
                 <></>
