@@ -154,7 +154,8 @@ const ActivityGrid = (props) => {
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
     recordSetContext.setRecordSetState((prev) => {
-      if (save !== 0 && prev?.[props.setName]) {
+      //if (save !== 0 && prev?.[props.setName]) {
+      if (prev?.[props.setName]) {
         const thereAreNewFilters =
           filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
             ? true
@@ -196,7 +197,7 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     getActivities();
-  }, [recordSetContext?.recordSetState?.[props.setName], save]);
+  }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -204,11 +205,11 @@ const ActivityGrid = (props) => {
 
   const getActivities = async () => {
     const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
-    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterKey : null;
+    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
     let filter: any = {
       user_roles: rolesUserHasAccessTo
     };
-    if (created_by !== null) {
+    if (created_by) {
       filter.created_by = created_by;
     }
     if (props.subType) {

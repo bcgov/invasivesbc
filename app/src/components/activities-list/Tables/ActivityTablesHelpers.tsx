@@ -6,6 +6,7 @@ export interface ActivityRow {
   type: string;
   sub_type: string;
   date_modified: string;
+  created_by: string;
 }
 
 export const activites_default_headers = [
@@ -36,7 +37,8 @@ export const activites_default_headers = [
   {
     key: 'longitude',
     name: 'Longitude'
-  }
+  },
+  { key: 'created_by', name: 'Created By' }
 ];
 
 export const mapActivitiesToDataGridRows = (activities) => {
@@ -58,7 +60,8 @@ export const mapActivitiesToDataGridRows = (activities) => {
       //  reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
       //   latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
       //    longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
-      activity_id: activity?.activity_id
+      activity_id: activity?.activity_id,
+      created_by: activity?.created_by
     };
   });
 };
