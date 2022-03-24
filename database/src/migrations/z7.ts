@@ -5,7 +5,7 @@ const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 const NODE_ENV = process.env.NODE_ENV;
 
 export async function up(knex: Knex): Promise<void> {
-  let sql = `
+  const sql = `
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
  drop view invasivesbc.activity_jurisdictions ;
@@ -29,10 +29,9 @@ export async function up(knex: Knex): Promise<void> {
   inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id 
   left join jurisdictions j on j.activity_incoming_data_id = a.activity_incoming_data_id
   order by a.activity_id desc
-  
   );
-  
-  
+
+  alter table invasivesbc.activity_incoming_data add column jurisdiction VARCHAR[] DEFAULT '{}' NOT NULL;
   `;
 
   await knex.raw(sql);
