@@ -156,7 +156,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [JSON.stringify(recordSetState[props.setName]), JSON.stringify(recordSetName)]
+    [JSON.stringify(recordSetState?.[props.setName]), JSON.stringify(recordSetName)]
   );
 };
 export default RecordSet;

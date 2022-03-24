@@ -125,7 +125,7 @@ const ActivityGrid = (props) => {
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>([]);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
-  const [filters, setFilters] = useState(null);
+  const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
 
   const themeContext = useContext(ThemeContext);
@@ -135,15 +135,16 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
+    console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
-      setFilters([...oldRecordSetState.gridFilters]);
+      setFilters({ ...oldRecordSetState?.gridFilters });
     } else {
       setFilters({ enabled: false });
     }
 
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
-      setAdvancedFilterRows([...oldRecordSetState.advancedFilters]);
+      setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);
     }
@@ -153,26 +154,35 @@ const ActivityGrid = (props) => {
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
     recordSetContext.setRecordSetState((prev) => {
-      if (save !== 0 && prev[props.setName]) {
+      if (save !== 0 && prev?.[props.setName]) {
         const thereAreNewFilters =
           filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
             ? true
             : false;
         const thereAreNewAdvancedFilters =
           advancedFilterRows !== null &&
-          JSON.stringify(prev[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+          JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
             ? true
             : false;
 
+        const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
+        const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
+
         if (thereAreNewFilters || thereAreNewAdvancedFilters) {
-          const updatedFilters = thereAreNewFilters ? [...filters] : [...prev[props.setName]?.gridFilters];
+          const updatedFilters = thereAreNewFilters
+            ? { ...filters }
+            : thereAreOldFilters
+            ? { ...prev?.[props.setName]?.gridFilters }
+            : {};
           const updatedAdvancedFilters = thereAreNewAdvancedFilters
             ? [...advancedFilterRows]
-            : [...prev[props.setName].advancedFilters];
+            : thereAreOldAdvancedFilters
+            ? [...prev?.[props.setName]?.advancedFilters]
+            : [];
           return {
             ...prev,
             [props.setName]: {
-              ...prev[props.setName],
+              ...prev?.[props.setName],
               gridFilters: updatedFilters,
               advancedFilters: updatedAdvancedFilters
             }
@@ -186,7 +196,7 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     getActivities();
-  }, [recordSetContext.recordSetState[props.setName]]);
+  }, [recordSetContext?.recordSetState?.[props.setName], save]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -409,7 +419,7 @@ const ActivityGrid = (props) => {
       dialogOpen: true,
       filterKey: filterKey,
       setAllFilters: setAdvancedFilterRows,
-      allFiltersBefore: advancedFilterRows,
+      allFiltersBefore: [...advancedFilterRows],
       closeActionDialog: () => {
         setFilterDialog({ ...filterDialog, dialogOpen: false });
       }
@@ -505,7 +515,7 @@ const ActivityGrid = (props) => {
       </Box>
     ),
     [
-      recordSetContext.recordSetState[props.setName],
+      recordSetContext?.recordSetState?.[props.setName],
       filterDialog,
       advancedFilterRows,
       filters,
