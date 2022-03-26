@@ -2,6 +2,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -17,7 +18,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { IconButton, List, ListItem } from '@mui/material';
+import { List, ListItem } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 
@@ -395,10 +396,10 @@ const ActivityGrid = (props) => {
   };
 
   const FilterToggle = (props) => {
-    return filters.enabled ? (
-      <FilterAltIcon style={props.style} onClick={toggleFilters} />
-    ) : (
-      <FilterAltOff style={props.style} onClick={toggleFilters} />
+    return (
+      <IconButton color={'primary'} style={props.style} onClick={toggleFilters}>
+        {filters.enabled ? <FilterAltIcon /> : <FilterAltOff />}
+      </IconButton>
     );
   };
 
