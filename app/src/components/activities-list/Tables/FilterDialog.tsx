@@ -31,9 +31,11 @@ export const FilterDialog = (props: IFilterDialog) => {
   const choices = ['Jurisdiction', 'Species Positive', 'Species Negative', 'Metabase Report ID'];
 
   const [jurisdictionOptions, setJurisdictionOptions] = useState({});
+  const [speciesPOptions, setSpeciesPOptions] = useState({});
+  const [speciesNOptions, setSpeciesNOptions] = useState({});
 
-  const speciesPOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
-  const speciesNOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
+  // const speciesPOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
+  // const speciesNOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
   const invasivesApi = useInvasivesApi();
   const { fetchCodeTable } = invasivesApi;
 
@@ -61,7 +63,30 @@ export const FilterDialog = (props: IFilterDialog) => {
       });
     };
 
+    const getSpeciesOptions = async () => {
+      const dataTerrestial = await fetchCodeTable('37');
+      const dataAquatic = await fetchCodeTable('36');
+      const data = [...dataTerrestial, ...dataAquatic];
+
+      setSpeciesPOptions((prev) => {
+        const newOptions = {};
+        data.forEach((d) => {
+          newOptions[d.code] = d.description;
+        });
+        return newOptions;
+      });
+
+      setSpeciesNOptions((prev) => {
+        const newOptions = {};
+        data.forEach((d) => {
+          newOptions[d.code] = d.description;
+        });
+        return newOptions;
+      });
+    };
+
     getJurisdictionOptions();
+    getSpeciesOptions();
   }, []);
 
   useEffect(() => {
