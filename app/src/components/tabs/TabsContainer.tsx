@@ -429,6 +429,17 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   <MenuItem>
                     <Switch
                       color="secondary"
+                      checked={connected}
+                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        setConnected(!connected);
+                      }}
+                    />
+                    Network Online
+                  </MenuItem>
+                  <MenuItem>
+                    <Switch
+                      color="secondary"
                       checked={themeType}
                       checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
                       onChange={() => {

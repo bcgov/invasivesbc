@@ -240,6 +240,11 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
   };
 
   React.useEffect(() => {
+    if (!keycloak?.obj) {
+      console.log('keycloak undefined');
+      return;
+    }
+
     if (!networkContext.connected && isMobile() && !userInfoLoaded) {
       loadUserFromCache();
     } else if (keycloak?.obj?.authenticated) {

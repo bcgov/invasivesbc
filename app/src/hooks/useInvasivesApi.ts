@@ -17,6 +17,7 @@ import {
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
+import {useKeycloak} from "@react-keycloak/web";
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -46,7 +47,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://api-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = 'http://localhost:7080';
+    API_URL = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
@@ -54,27 +55,28 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 // console.log('API_URL', API_URL);
 
 /**
- * Returns an instance of axios with baseURL and authorization headers set.
- *
- * @return {*}
- */
-const useRequestOptions = () => {
-  const { keycloak } = useContext(AuthStateContext); //useKeycloak();
-
-  return {
-    baseUrl: API_URL,
-    headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
-  };
-};
-/**
  * Returns a set of supported api methods.
  *
  * @return {object} object whose properties are supported api methods.
  */
 export const useInvasivesApi = () => {
-  const options = useRequestOptions();
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
+  const [keycloakObject, keycloakReady] = useKeycloak();
+
+  const getRequestOptions = async () => {
+
+    console.dir(keycloakObject);
+
+    if (!keycloakObject) {
+      console.error('Network request while keycloak object is not ready');
+    }
+
+    return {
+      baseUrl: API_URL,
+      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloakObject.token}` }
+    };
+  };
 
   const checkForErrors = (response: any) => {
     if (response.status && response.status > 201) {
@@ -95,6 +97,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -138,6 +141,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -158,6 +162,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getJurisdictions = async (jurisdictionsSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -178,6 +183,7 @@ export const useInvasivesApi = () => {
    * @returns {*} (Promise<any>)
    */
   const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -199,6 +205,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
@@ -219,6 +226,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const undeleteActivities = async (activityIds: string[]): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/deleted/activities?` + qs.stringify({ id: activityIds }),
@@ -237,6 +245,8 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getRoles = async (bearer?: string): Promise<any> => {
+    const options = await getRequestOptions();
+
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
@@ -260,6 +270,8 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
+
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -296,6 +308,8 @@ export const useInvasivesApi = () => {
   };
 
   const createUser = async (userInfo: any, bearer?: string): Promise<any> => {
+    const options = await getRequestOptions();
+
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
@@ -325,6 +339,8 @@ export const useInvasivesApi = () => {
   };
 
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
+    const options = await getRequestOptions();
+
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -340,6 +356,8 @@ export const useInvasivesApi = () => {
   };
 
   const getAccessRequests = async (): Promise<any> => {
+    const options = await getRequestOptions();
+
     const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/access-request/`,
@@ -354,6 +372,8 @@ export const useInvasivesApi = () => {
   };
 
   const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
+    const options = await getRequestOptions();
+
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -369,6 +389,7 @@ export const useInvasivesApi = () => {
   };
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -384,6 +405,7 @@ export const useInvasivesApi = () => {
   };
 
   const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/user-access`,
@@ -399,6 +421,7 @@ export const useInvasivesApi = () => {
   };
 
   const getRolesForUser = async (userId: string, bearer?: string): Promise<any> => {
+    const options = await getRequestOptions();
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
@@ -416,6 +439,7 @@ export const useInvasivesApi = () => {
   };
 
   const getUsersForRole = async (roleId: string): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?roleId=${roleId}`,
@@ -430,6 +454,7 @@ export const useInvasivesApi = () => {
   };
 
   const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/user-access`,
@@ -445,6 +470,7 @@ export const useInvasivesApi = () => {
   };
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -460,6 +486,7 @@ export const useInvasivesApi = () => {
   };
 
   const submitUpdateRequest = async (updateRequest: any): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -475,6 +502,7 @@ export const useInvasivesApi = () => {
   };
 
   const getUpdateRequests = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/update-request/`,
@@ -489,6 +517,7 @@ export const useInvasivesApi = () => {
   };
 
   const declineUpdateRequest = async (updateRequest) => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/update-request`,
@@ -504,6 +533,7 @@ export const useInvasivesApi = () => {
   };
 
   const approveUpdateRequests = async (updateRequest) => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/update-request`,
@@ -519,6 +549,7 @@ export const useInvasivesApi = () => {
   };
 
   const getFundingAgencies = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -533,6 +564,7 @@ export const useInvasivesApi = () => {
   };
 
   const getEmployers = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -555,6 +587,7 @@ export const useInvasivesApi = () => {
   const getPointsOfInterestLean = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -576,6 +609,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
+    const options = await getRequestOptions();
     let activities, points_of_interest;
     try {
       const { data } = await Http.request({
@@ -615,6 +649,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const createMetabaseQuery = async (metabaseQueriesCreateCriteria: ICreateMetabaseQuery): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -635,6 +670,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryOptions = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -653,6 +689,7 @@ export const useInvasivesApi = () => {
     largeGrid: string,
     largeGrid_item_ids?: number[]
   ): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'POST',
@@ -678,6 +715,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivityById = async (activityId: string): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -698,6 +736,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMedia = async (mediaKeys: string[]): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -717,6 +756,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getApplicationUsers = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
@@ -731,6 +771,7 @@ export const useInvasivesApi = () => {
   };
 
   const renewUser = async (id): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'POST',
@@ -745,6 +786,7 @@ export const useInvasivesApi = () => {
   };
 
   const getUserByIDIR = async (idir_userid, bearer?: string): Promise<any> => {
+    const options = await getRequestOptions();
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
@@ -762,6 +804,7 @@ export const useInvasivesApi = () => {
   };
 
   const getUserByBCEID = async (bceid_userid, bearer?: string): Promise<any> => {
+    const options = await getRequestOptions();
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
@@ -785,6 +828,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -806,6 +850,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+    const options = await getRequestOptions();
     // Not sure who is using this... But its smelling
     // const oldActivity = await getActivityById(activity.activity_id);
 
@@ -829,6 +874,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getApiSpec = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -848,6 +894,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getSimplifiedGeoJSON = async (url: string, percentage: string): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -868,6 +915,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getCachedApiSpec = async (): Promise<any> => {
+
     try {
       // on mobile - think there is internet:
       if (Capacitor.getPlatform() !== 'web') {
@@ -1021,6 +1069,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getSpeciesDetails = async (species: string[]): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -1041,6 +1090,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -1056,6 +1106,7 @@ export const useInvasivesApi = () => {
   };
 
   const getBatchUploads = async (): Promise<any> => {
+    const options = await getRequestOptions();
     console.dir(options.headers);
     const { data } = await Http.request({
       method: 'GET',
@@ -1071,6 +1122,7 @@ export const useInvasivesApi = () => {
   };
 
   const downloadTemplate = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -1085,6 +1137,7 @@ export const useInvasivesApi = () => {
   };
 
   const listCodeTables = async (): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -1099,6 +1152,7 @@ export const useInvasivesApi = () => {
   };
 
   const fetchCodeTable = async (codeHeaderId, csv = false): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
@@ -1119,6 +1173,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getAdminUploadGeoJSONLayers = async (user_id: string): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
@@ -1139,6 +1194,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
+    const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
