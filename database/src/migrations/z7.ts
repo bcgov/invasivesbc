@@ -8,9 +8,9 @@ export async function up(knex: Knex): Promise<void> {
   const sql = `
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
- drop view invasivesbc.activity_jurisdictions ;
-  create or replace view  invasivesbc.activity_jurisdictions as (
+  drop view if exists invasivesbc.activity_jurisdictions;
 
+  create or replace view  invasivesbc.activity_jurisdictions as (
   with jurisdictions as (
   
       select activity_incoming_data_id,
@@ -31,7 +31,10 @@ export async function up(knex: Knex): Promise<void> {
   order by a.activity_id desc
   );
 
-  alter table invasivesbc.activity_incoming_data add column jurisdiction VARCHAR[] DEFAULT '{}' NOT NULL;
+  alter table invasivesbc.activity_incoming_data drop column jurisdiction ;
+  alter table invasivesbc.activity_incoming_data add column jurisdiction VARCHAR[]  DEFAULT '{}';
+
+  update invasivesbc.activity_incoming_data a set jurisdiction = (select array(select jurisdiction_code from invasivesbc.activity_jurisdictions where activity_incoming_data_id = a.activity_incoming_data_id));
   `;
 
   await knex.raw(sql);

@@ -794,7 +794,6 @@ export function getTreatedAreaValidator(): rjsfValidator {
     ) {
       return errors;
     }
-    console.log(formData);
 
     const reported_area = formData.activity_data.reported_area;
 

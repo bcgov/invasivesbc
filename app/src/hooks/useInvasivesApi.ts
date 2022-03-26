@@ -791,10 +791,6 @@ export const useInvasivesApi = () => {
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
-    if (data.errors) {
-      console.log('Error creating activity');
-      console.dir(data.errors);
-    }
     checkForErrors(data);
     if (LOGVERBOSE) {
       console.log('createActivity', data);

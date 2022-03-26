@@ -96,22 +96,21 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.jurisdiction?.length) {
-    sqlStatement.append(SQL`
-      ,replace(replace(${activity.jurisdiction}::text, '{', '['), '}', ']')::jsonb
+  // if (activity.jurisdiction?.length) {
+  //   sqlStatement.append(SQL`
+  //     ,replace(replace(${activity.jurisdiction}::text, '{', '['), '}', ']')::jsonb
+  //   `);
+  // } else {
+  sqlStatement.append(SQL`
+      ,null
     `);
-  } else {
-    sqlStatement.append(SQL`
-      ,'null'
-    `);
-  }
+  // }
 
   sqlStatement.append(SQL`
     )
     RETURNING
       activity_id;
   `);
-
   return sqlStatement;
 };
 
