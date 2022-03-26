@@ -30,15 +30,15 @@ export const FilterDialog = (props: IFilterDialog) => {
 
   const choices = ['Jurisdiction', 'Species Positive', 'Species Negative', 'Metabase Report ID'];
 
-  const [jurisdictionOptions, setJurisdictionOptions] = useState([]);
+  const [jurisdictionOptions, setJurisdictionOptions] = useState({});
 
-  const speciesPOptions = [{ Blueweed: 'Blueweed' }, { Cheatgrass: 'Cheatgrass' }];
-  const speciesNOptions = [{ Blueweed: 'Blueweed' }, { Cheatgrass: 'Cheatgrass' }];
+  const speciesPOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
+  const speciesNOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
   const invasivesApi = useInvasivesApi();
   const { fetchCodeTable } = invasivesApi;
 
   const [choice, setChoice] = useState('Jurisdiction');
-  const [subChoices, setSubChoices] = useState([...jurisdictionOptions]);
+  const [subChoices, setSubChoices] = useState({ ...jurisdictionOptions });
   const [subChoice, setSubChoice] = useState(null);
 
   useEffect(() => {
@@ -52,7 +52,13 @@ export const FilterDialog = (props: IFilterDialog) => {
 
     const getJurisdictionOptions = async () => {
       const data = await fetchCodeTable('42');
-      setJurisdictionOptions(data);
+      setJurisdictionOptions((prev) => {
+        const newOptions = {};
+        data.forEach((d) => {
+          newOptions[d.code] = d.description;
+        });
+        return newOptions;
+      });
     };
 
     getJurisdictionOptions();
@@ -61,24 +67,20 @@ export const FilterDialog = (props: IFilterDialog) => {
   useEffect(() => {
     switch (choice) {
       case 'Jurisdiction':
-        setSubChoices(
-          jurisdictionOptions.map((jur) => {
-            return { [jur.code]: jur.description };
-          })
-        );
-        setSubChoice(null);
+        setSubChoices({ ...jurisdictionOptions });
+        // setSubChoice(null);
         break;
       case 'Species Positive':
-        setSubChoices([...speciesPOptions]);
-        setSubChoice(null);
+        setSubChoices({ ...speciesPOptions });
+        // setSubChoice(null);
         break;
       case 'Species Negative':
-        setSubChoices([...speciesNOptions]);
-        setSubChoice(null);
+        setSubChoices({ ...speciesNOptions });
+        // setSubChoice(null);
         break;
       case 'Metabase Report ID':
-        setSubChoices([...speciesNOptions]);
-        setSubChoice(null);
+        setSubChoices({ ...speciesNOptions });
+        // setSubChoice(null);
         break;
     }
   }, [choice, jurisdictionOptions]);
@@ -115,17 +117,31 @@ export const FilterDialog = (props: IFilterDialog) => {
                 ...props.allFiltersBefore.filter((f) => {
                   return f.filterKey !== choice + subChoice;
                 }),
-                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
+                {
+                  filterField: choice,
+                  filterValue: { [subChoice]: subChoices[subChoice] },
+                  filterKey: choice + subChoice
+                }
               ]);
             } else if (props.allFiltersBefore && props.allFiltersBefore.length > 0 && props.filterKey) {
               props.setAllFilters([
                 ...props.allFiltersBefore.filter((f) => {
                   return f.filterKey !== props.filterKey;
                 }),
-                { filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }
+                {
+                  filterField: choice,
+                  filterValue: { [subChoice]: subChoices[subChoice] },
+                  filterKey: choice + subChoice
+                }
               ]);
             } else
-              props.setAllFilters([{ filterField: choice, filterValue: subChoice, filterKey: choice + subChoice }]);
+              props.setAllFilters([
+                {
+                  filterField: choice,
+                  filterValue: { [subChoice]: subChoices[subChoice] },
+                  filterKey: choice + subChoice
+                }
+              ]);
 
             props.closeActionDialog();
           }}>
@@ -163,25 +179,19 @@ const DropDown = (props) => {
 
 const SubChoiceDropDown = (props) => {
   return (
-    <>
-      <Select
-        sx={{ minWidth: 150, mt: 3, mb: 3 }}
-        onChange={(e) => {
-          props.setChoice(e.target.value);
-        }}
-        value={props.choice}>
-        {props.choices && props.choices.length > 0 ? (
-          props.choices.map((c) => {
-            if (c) {
-              return <MenuItem value={c}>{c[Object.keys(c)[0]]}</MenuItem>;
-            } else {
-              return null;
-            }
-          })
-        ) : (
-          <></>
-        )}
-      </Select>
-    </>
+    <Select
+      sx={{ minWidth: 150, mt: 3, mb: 3 }}
+      onChange={(e) => {
+        props.setChoice(e.target.value);
+      }}
+      value={props.choice}>
+      {props.choices ? (
+        Object.keys(props.choices).map((ikey) => {
+          return <MenuItem value={ikey}>{props.choices[ikey]}</MenuItem>;
+        })
+      ) : (
+        <></>
+      )}
+    </Select>
   );
 };
