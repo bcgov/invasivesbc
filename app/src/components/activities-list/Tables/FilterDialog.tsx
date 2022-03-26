@@ -32,16 +32,14 @@ export const FilterDialog = (props: IFilterDialog) => {
 
   const [jurisdictionOptions, setJurisdictionOptions] = useState([]);
 
-  const speciesPOptions = ['Blueweed', 'Cheatgrass'];
-  const speciesNOptions = ['Blueweed', 'Cheatgrass'];
+  const speciesPOptions = [{ Blueweed: 'Blueweed' }, { Cheatgrass: 'Cheatgrass' }];
+  const speciesNOptions = [{ Blueweed: 'Blueweed' }, { Cheatgrass: 'Cheatgrass' }];
   const invasivesApi = useInvasivesApi();
   const { fetchCodeTable } = invasivesApi;
 
   const [choice, setChoice] = useState('Jurisdiction');
   const [subChoices, setSubChoices] = useState([...jurisdictionOptions]);
-  const [subChoice, setSubChoice] = useState(
-    'Ministry of Forests, Lands, Natural Resource Operations & Rural Development'
-  );
+  const [subChoice, setSubChoice] = useState(null);
 
   useEffect(() => {
     if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
@@ -65,22 +63,22 @@ export const FilterDialog = (props: IFilterDialog) => {
       case 'Jurisdiction':
         setSubChoices(
           jurisdictionOptions.map((jur) => {
-            return jur.description;
+            return { [jur.code]: jur.description };
           })
         );
-        setSubChoice('BC Hydro');
+        setSubChoice(null);
         break;
       case 'Species Positive':
         setSubChoices([...speciesPOptions]);
-        setSubChoice('Blueweed');
+        setSubChoice(null);
         break;
       case 'Species Negative':
         setSubChoices([...speciesNOptions]);
-        setSubChoice('Cheatgrass');
+        setSubChoice(null);
         break;
       case 'Metabase Report ID':
         setSubChoices([...speciesNOptions]);
-        setSubChoice('Cheatgrass');
+        setSubChoice(null);
         break;
     }
   }, [choice, jurisdictionOptions]);
@@ -99,7 +97,7 @@ export const FilterDialog = (props: IFilterDialog) => {
           }}>
           <DropDown choice={choice} choices={choices} setChoice={setChoice} />
           <ArrowDownwardIcon />
-          <DropDown choice={subChoice} choices={subChoices} setChoice={setSubChoice} />
+          <SubChoiceDropDown choice={subChoice} choices={subChoices} setChoice={setSubChoice} />
         </Box>
       </DialogContent>
       <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -149,7 +147,36 @@ const DropDown = (props) => {
         value={props.choice}>
         {props.choices && props.choices.length > 0 ? (
           props.choices.map((c) => {
-            return <MenuItem value={c}>{c}</MenuItem>;
+            if (c) {
+              return <MenuItem value={c}>{c}</MenuItem>;
+            } else {
+              return null;
+            }
+          })
+        ) : (
+          <></>
+        )}
+      </Select>
+    </>
+  );
+};
+
+const SubChoiceDropDown = (props) => {
+  return (
+    <>
+      <Select
+        sx={{ minWidth: 150, mt: 3, mb: 3 }}
+        onChange={(e) => {
+          props.setChoice(e.target.value);
+        }}
+        value={props.choice}>
+        {props.choices && props.choices.length > 0 ? (
+          props.choices.map((c) => {
+            if (c) {
+              return <MenuItem value={c}>{c[Object.keys(c)[0]]}</MenuItem>;
+            } else {
+              return null;
+            }
           })
         ) : (
           <></>

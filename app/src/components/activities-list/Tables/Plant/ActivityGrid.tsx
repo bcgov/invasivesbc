@@ -136,7 +136,6 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
-    console.log('record set state on first render');
     console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
@@ -146,8 +145,6 @@ const ActivityGrid = (props) => {
     }
 
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
-      console.log('setting advanced filters');
-      console.dir(oldRecordSetState.advancedFilters);
       setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);
@@ -221,10 +218,19 @@ const ActivityGrid = (props) => {
     } else if (props.formType) {
       filter.activity_type = [props.formType];
     }
+
     // if (recordSetContext.recordSetState[props.setName].gridFilters) {
     // }
-    // if (recordSetContext.recordSetState[props.setName].advancedFilters) {
-    // }
+    if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
+      const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
+      const jurisdictions = [];
+      currentAdvFilters.forEach((filter) => {
+        if (filter.filterField === 'Jurisdiction') {
+          jurisdictions.push(Object.keys(filter.filterValue)[0]);
+        }
+      });
+      filter.jurisdiction = jurisdictions;
+    }
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
@@ -413,15 +419,11 @@ const ActivityGrid = (props) => {
             newFilter(props.filterKey);
           }}
           endIcon={<EditIcon sx={{ fontSize: '10' }} />}>
-          {props.filterField} = {props.filterValue}
+          {props.filterField} = {Object.values(props.filterValue)[0]}
         </Button>
       </ListItem>
     );
   };
-
-  // useEffect(() => {
-  //   props.setAdvancedFilters(advancedFilterRows);
-  // }, [setAdvancedFilterRows]);
 
   const newFilter = (filterKey) => {
     setFilterDialog({

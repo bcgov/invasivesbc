@@ -163,7 +163,8 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
         'elev', elevation,
         'wellProx', well_proximity,
         'species_positive', species_positive,
-        'species_negative', species_negative
+        'species_negative', species_negative,
+        'jurisdiction', jurisdiction
       ),
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson",
@@ -402,7 +403,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`${searchCriteria.jurisdiction[0]}`);
     for (let idx = 1; idx < searchCriteria.jurisdiction.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.jurisdiction[idx]}`);
-    sqlStatement.append(SQL`]::varchar[] && jurisdictions`);
+    sqlStatement.append(SQL`]::varchar[] && a.jurisdiction`);
   }
 
   if (searchCriteria.search_feature) {
