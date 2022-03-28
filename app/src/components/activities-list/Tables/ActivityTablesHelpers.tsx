@@ -49,7 +49,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
     return [];
   }
 
-  return activities.rows.map((activity, index) => {
+  return activities?.rows?.map((activity, index) => {
     return {
       //  id: index,
       short_id: activity?.activity_payload?.short_id,

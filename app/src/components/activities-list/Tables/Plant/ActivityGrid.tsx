@@ -2,6 +2,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -17,7 +18,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { IconButton, List, ListItem } from '@mui/material';
+import { List, ListItem } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 
@@ -217,10 +218,19 @@ const ActivityGrid = (props) => {
     } else if (props.formType) {
       filter.activity_type = [props.formType];
     }
+
     // if (recordSetContext.recordSetState[props.setName].gridFilters) {
     // }
-    // if (recordSetContext.recordSetState[props.setName].advancedFilters) {
-    // }
+    if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
+      const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
+      const jurisdictions = [];
+      currentAdvFilters.forEach((filter) => {
+        if (filter.filterField === 'Jurisdiction') {
+          jurisdictions.push(Object.keys(filter.filterValue)[0]);
+        }
+      });
+      filter.jurisdiction = jurisdictions;
+    }
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
@@ -267,14 +277,16 @@ const ActivityGrid = (props) => {
     }
   }
 
+  /*
   const developerOptions = useMemo(
     () =>
-      Array.from(new Set(rows.map((r) => r.developer))).map((d) => ({
+      Array.from(new Set(rows?.map((r) => r.developer))).map((d) => ({
         label: d,
         value: d
       })),
     [rows]
   );
+  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
@@ -312,7 +324,7 @@ const ActivityGrid = (props) => {
 
   //todo - tests need to take into account type, they're all strings right now
   const filteredRowsDynamic = useMemo(() => {
-    return rows.filter((r) => {
+    return rows?.filter((r) => {
       // grab all keys except enabled
       let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
       // build a check for each
@@ -368,18 +380,20 @@ const ActivityGrid = (props) => {
   }
 
   const sortedRows = useMemo(() => {
-    if (sortColumns.length === 0) return rows;
+    if (sortColumns?.length === 0) return rows;
 
-    return [...rows].sort((a, b) => {
-      for (const sort of sortColumns) {
-        const comparator = getComparator(sort.columnKey);
-        const compResult = comparator(a, b);
-        if (compResult !== 0) {
-          return sort.direction === 'ASC' ? compResult : -compResult;
+    if (rows?.length) {
+      return [...rows].sort((a, b) => {
+        for (const sort of sortColumns) {
+          const comparator = getComparator(sort.columnKey);
+          const compResult = comparator(a, b);
+          if (compResult !== 0) {
+            return sort.direction === 'ASC' ? compResult : -compResult;
+          }
         }
-      }
-      return 0;
-    });
+        return 0;
+      });
+    } else return [];
   }, [rows, sortColumns]);
 
   //TODO THEME MODE
@@ -388,10 +402,10 @@ const ActivityGrid = (props) => {
   };
 
   const FilterToggle = (props) => {
-    return filters.enabled ? (
-      <FilterAltIcon style={props.style} onClick={toggleFilters} />
-    ) : (
-      <FilterAltOff style={props.style} onClick={toggleFilters} />
+    return (
+      <IconButton color={'primary'} style={props.style} onClick={toggleFilters}>
+        {filters.enabled ? <FilterAltIcon /> : <FilterAltOff />}
+      </IconButton>
     );
   };
 
@@ -405,15 +419,11 @@ const ActivityGrid = (props) => {
             newFilter(props.filterKey);
           }}
           endIcon={<EditIcon sx={{ fontSize: '10' }} />}>
-          {props.filterField} = {props.filterValue}
+          {props.filterField} = {Object.values(props.filterValue)[0]}
         </Button>
       </ListItem>
     );
   };
-
-  // useEffect(() => {
-  //   props.setAdvancedFilters(advancedFilterRows);
-  // }, [setAdvancedFilterRows]);
 
   const newFilter = (filterKey) => {
     setFilterDialog({

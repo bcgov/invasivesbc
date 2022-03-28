@@ -111,7 +111,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       setActivityType('');
     } else {
       const types = [];
-      console.log(activityCategory);
       Object.keys(ActivitySubtypeRelations[activityCategory]).forEach((key) => {
         types.push(key);
       });
@@ -131,7 +130,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       setActivitySubType('');
     } else {
       const subTypes = ActivitySubtypeRelations[activityCategory][activityType];
-      console.log(subTypes);
       setActivitySubTypeSelectOptions(subTypes);
 
       const cachedSubType = dataAccess.getAppState()?.newActivityChoices?.subType || undefined;
@@ -171,7 +169,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       console.log(e);
     }
     //return dbActivity.activity_id;
-    console.log('APPSTATE', await dataAccess.getAppState());
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });
     }, 1000);
@@ -190,8 +187,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     setActivitySubType(event.target.value);
   };
 
-  console.log(props);
-
   return (
     <Dialog open={props.dialogOpen}>
       <DialogTitle>Create New Record</DialogTitle>
@@ -205,7 +200,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivityCategoryChange}
             label="Select Form Type">
             {activityCategorySelectOptions.map((option) => (
-              <MenuItem value={option}>{option}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -219,7 +216,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivityTypeChange}
             label="Select Form Type">
             {activityTypeSelectOptions.map((option) => (
-              <MenuItem value={option}>{option}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -233,7 +232,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             onChange={handleActivitySubTypeChange}
             label="Select Form Type">
             {activitySubTypeSelectOptions.map((option) => (
-              <MenuItem value={option}>{ActivitySubtypeShortLabels[option]}</MenuItem>
+              <MenuItem key={Math.random()} value={option}>
+                {ActivitySubtypeShortLabels[option]}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

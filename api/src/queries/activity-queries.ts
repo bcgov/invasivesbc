@@ -29,7 +29,8 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       geog,
       media_keys,
       species_positive,
-      species_negative
+      species_negative,
+      jurisdiction
     ) VALUES (
       ${activity.activity_id},
       ${activity.activity_type},
@@ -95,12 +96,21 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
+  // if (activity.jurisdiction?.length) {
+  //   sqlStatement.append(SQL`
+  //     ,replace(replace(${activity.jurisdiction}::text, '{', '['), '}', ']')::jsonb
+  //   `);
+  // } else {
+  sqlStatement.append(SQL`
+      ,null
+    `);
+  // }
+
   sqlStatement.append(SQL`
     )
     RETURNING
       activity_id;
   `);
-
   return sqlStatement;
 };
 
@@ -153,7 +163,8 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
         'elev', elevation,
         'wellProx', well_proximity,
         'species_positive', species_positive,
-        'species_negative', species_negative
+        'species_negative', species_negative,
+        'jurisdiction', jurisdiction
       ),
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson",
@@ -384,6 +395,15 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     for (let idx = 1; idx < searchCriteria.species_negative.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.species_negative[idx]}`);
     sqlStatement.append(SQL`]::varchar[] && species_negative`);
+  }
+
+  // search intersects with jurisdiction codes
+  if (searchCriteria.jurisdiction && searchCriteria.jurisdiction.length) {
+    sqlStatement.append(SQL` AND ARRAY[`);
+    sqlStatement.append(SQL`${searchCriteria.jurisdiction[0]}`);
+    for (let idx = 1; idx < searchCriteria.jurisdiction.length; idx++)
+      sqlStatement.append(SQL`, ${searchCriteria.jurisdiction[idx]}`);
+    sqlStatement.append(SQL`]::varchar[] && a.jurisdiction`);
   }
 
   if (searchCriteria.search_feature) {
