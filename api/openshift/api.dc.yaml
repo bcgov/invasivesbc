@@ -33,7 +33,7 @@ parameters:
   - name: CPU_REQ
     value: '100m'
   - name: CPU_LIMIT
-    value: '1500m'
+    value: '900m'
   - name: MEMORY_REQ
     value: '0.5Gi'
   - name: MEMORY_LIMIT
