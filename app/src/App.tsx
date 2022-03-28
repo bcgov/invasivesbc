@@ -96,7 +96,7 @@ const App: React.FC<IAppProps> = (props) => {
         adapter: 'web',
         pkceMethod: 'S256',
         checkLoginIframe: false,
-        redirectUri: 'invasivesbc://'
+        redirectUri: 'invasivesbc://localhost/home/landing'
       };
       break;
     case 'android':
