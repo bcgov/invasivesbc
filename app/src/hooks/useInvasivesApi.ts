@@ -1141,12 +1141,34 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       url: options.baseUrl + '/api/code_tables'
     });
+    cacheCodeTables(data);
     checkForErrors(data);
     if (LOGVERBOSE) {
       console.log('listCodeTables', data);
     }
 
     return data.result;
+  };
+
+  const cacheCodeTables = async (data) => {
+    if (data.result && data.result.length > 0) {
+      const upserts = data.result.map((codeTableJSON, index) => ({
+        type: UpsertType.DOC_TYPE_AND_ID,
+        docType: DocType.CODE_TABLE,
+        id: codeTableJSON.name,
+        json: codeTableJSON
+      }));
+      try {
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(upserts, databaseContext);
+          }
+        });
+      } catch (e) {
+        alert('unable to cache api spec');
+      }
+      return false;
+    }
   };
 
   const fetchCodeTable = async (codeHeaderName, csv = false): Promise<any> => {

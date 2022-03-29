@@ -81,7 +81,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     if (!userInfoLoaded) {
       return false;
     }
-    return userInfo.activation_status === 1;
+    return userInfo?.activation_status === 1;
   };
 
   useEffect(() => {
@@ -156,13 +156,13 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             <Typography variant="h5">User Information</Typography>
             <br />
             <Grid className={classes.userInfoItemGrid} container spacing={2}>
-              {userInfo.first_name && userInfo.last_name && (
+              {userInfo?.first_name && userInfo?.last_name && (
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
                     <Typography>
                       <strong>Name</strong>
                     </Typography>
-                    {userInfo?.first_name + ' ' + userInfo.last_name}
+                    {userInfo?.first_name + ' ' + userInfo?.last_name}
                   </Box>
                 </Grid>
               )}

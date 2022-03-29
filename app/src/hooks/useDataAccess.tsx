@@ -749,6 +749,45 @@ export const useDataAccess = () => {
     }
   };
 
+  const listCodeTables = async (): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web' || networkContext.connected) {
+      return await api.listCodeTables();
+    } else {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE,
+              docType: DocType.CODE_TABLE
+            },
+            databaseContext
+          );
+        }
+      });
+    }
+  };
+
+  const fetchCodeTable = async (codeHeaderName, csv = false) => {
+    if (Capacitor.getPlatform() === 'web') {
+      return await api.fetchCodeTable(codeHeaderName, csv);
+    } else {
+      const data = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE,
+              docType: DocType.CODE_TABLE,
+              ID: codeHeaderName
+            },
+            databaseContext
+          );
+        }
+      });
+      console.log('DAAATAAA', data);
+      return data;
+    }
+  };
+
   return {
     ...api,
     getPointsOfInterest,
@@ -779,6 +818,8 @@ export const useDataAccess = () => {
     cacheCurrentUserBCEID,
     cacheCurrentUserIDIR,
     getCurrentUser,
-    createUser
+    createUser,
+    listCodeTables,
+    fetchCodeTable
   };
 };
