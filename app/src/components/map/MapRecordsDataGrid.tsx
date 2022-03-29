@@ -56,6 +56,11 @@ const MapRecordsDataGrid = (props) => {
       width: 150
     },
     {
+      field: 'subtype',
+      headerName: 'Activity Sub Type',
+      width: 150
+    },
+    {
       field: 'species_negative',
       headerName: 'Species Negative',
       width: 150

@@ -18,7 +18,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { List, ListItem } from '@mui/material';
+import { Chip, List, ListItem } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 
@@ -411,17 +411,26 @@ const ActivityGrid = (props) => {
 
   const FilterRow = (props) => {
     return (
-      <ListItem key={props.key} sx={{ width: 'auto' }}>
-        <Button
-          variant="outlined"
-          onClick={(e) => {
-            e.stopPropagation();
-            newFilter(props.filterKey);
-          }}
-          endIcon={<EditIcon sx={{ fontSize: '10' }} />}>
-          {props.filterField} = {Object.values(props.filterValue)[0]}
-        </Button>
-      </ListItem>
+      <Chip
+        label={`${props.filterField} = ${Object.values(props.filterValue)[0]}`}
+        variant="outlined"
+        onClick={(e) => {
+          e.stopPropagation();
+          newFilter(props.filterKey);
+        }}
+        onDelete={(e) => {
+          e.stopPropagation();
+          console.log(advancedFilterRows);
+          console.log(props);
+          setAdvancedFilterRows((prev) => {
+            if (prev.length < 2) {
+              return [];
+            } else {
+              return prev.splice(props.key, 1);
+            }
+          });
+        }}
+      />
     );
   };
 
