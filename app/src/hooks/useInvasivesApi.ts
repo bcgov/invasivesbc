@@ -17,7 +17,7 @@ import {
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
-import {useKeycloak} from "@react-keycloak/web";
+import { useKeycloak } from '@react-keycloak/web';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -47,7 +47,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://api-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+    API_URL = 'http://localhost:7080';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
@@ -65,7 +65,6 @@ export const useInvasivesApi = () => {
   const [keycloakObject, keycloakReady] = useKeycloak();
 
   const getRequestOptions = async () => {
-
     console.dir(keycloakObject);
 
     if (!keycloakObject) {
@@ -915,7 +914,6 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getCachedApiSpec = async (): Promise<any> => {
-
     try {
       // on mobile - think there is internet:
       if (Capacitor.getPlatform() !== 'web') {
@@ -1151,12 +1149,12 @@ export const useInvasivesApi = () => {
     return data.result;
   };
 
-  const fetchCodeTable = async (codeHeaderId, csv = false): Promise<any> => {
+  const fetchCodeTable = async (codeHeaderName, csv = false): Promise<any> => {
     const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
-      url: `${options.baseUrl}/api/code_tables/${codeHeaderId}`
+      url: `${options.baseUrl}/api/code_tables/${codeHeaderName}`
     });
     checkForErrors(data);
     if (LOGVERBOSE) {
