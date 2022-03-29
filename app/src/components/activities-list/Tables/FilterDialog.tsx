@@ -53,7 +53,7 @@ export const FilterDialog = (props: IFilterDialog) => {
     }
 
     const getJurisdictionOptions = async () => {
-      const data = await fetchCodeTable('42');
+      const data = await fetchCodeTable('jurisdiction_code');
       setJurisdictionOptions((prev) => {
         const newOptions = {};
         data.forEach((d) => {
@@ -64,8 +64,8 @@ export const FilterDialog = (props: IFilterDialog) => {
     };
 
     const getSpeciesOptions = async () => {
-      const dataTerrestial = await fetchCodeTable('37');
-      const dataAquatic = await fetchCodeTable('36');
+      const dataTerrestial = await fetchCodeTable('invasive_plant_code');
+      const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
       const data = [...dataTerrestial, ...dataAquatic];
 
       setSpeciesPOptions((prev) => {

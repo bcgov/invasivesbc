@@ -142,6 +142,14 @@ export const DatabaseContextProvider = (props) => {
     let setupSQL = ``;
     for (const value of enumKeys(DocType)) {
       switch (value) {
+        case 'CODE_TABLE':
+          setupSQL += `create table if not exists  
+            ${DocType[value]} 
+             (
+              ID TEXT,
+              json TEXT
+            );`;
+          break;
         case 'SMALL_GRID_LAYER_DATA':
           setupSQL += `create table if not exists  
             ${DocType[value]} 

@@ -24,7 +24,8 @@ export enum DocType {
   ROLE = 'role',
   EMPLOYER = 'employer',
   AGENCY = 'agency',
-  USER = 'user'
+  USER = 'user',
+  CODE_TABLE = 'code_table'
 }
 
 // max and default db page row limit

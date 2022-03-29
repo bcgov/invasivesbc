@@ -90,16 +90,16 @@ export const listCodeTablesSQL = (): SQLStatement => {
 /**
  * SQL query to fetch the list of code tables in invasives (for batch code tables view)
  *
- * @param codeHeaderId the id of the code header for which you want codes
+ * @param codeHeaderName the name of the code header for which you want codes
  * @returns {SQLStatement} sql query object
  */
-export const fetchCodeTablesSQL = (codeHeaderId: string): SQLStatement => {
+export const fetchCodeTablesSQL = (codeHeaderName: string): SQLStatement => {
   return SQL`
     SELECT ct.code_name as code, ct.code_description as description
     from code as ct
        inner join code_header ch on ct.code_header_id = ch.code_header_id
        inner join code_category cc on ch.code_category_id = cc.code_category_id
-    where ct.code_header_id = ${codeHeaderId} and cc.code_category_name = 'invasives'
+    where ch.code_header_name = ${codeHeaderName} and cc.code_category_name = 'invasives'
     order by ct.code_sort_order asc;
   `;
 };
