@@ -125,13 +125,13 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
         <>
           <Box
             style={{
-              position: 'absolute',
+              position: 'fixed',
               zIndex: 9999,
               backgroundColor: '#223f75',
               width: '100%',
               padding: 8,
               bottom: 30,
-              height: '80px'
+              height: 'auto'
             }}>
             <MenuOptions
               sx={{
