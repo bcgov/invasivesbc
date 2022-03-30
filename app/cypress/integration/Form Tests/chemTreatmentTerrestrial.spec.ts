@@ -89,7 +89,13 @@ describe('CREATING A NEW RECORD', function () {
   it('It goes to My Records Page', function () {
     cy.get('[data-testid=HomeWorkIcon]').click('center');
   });
+  it('It is a buffer that may or may not fail', function () {
+    cy.wait(2500);
+  });
   it('It creates a Chemical Terrestrial Treatment record', function () {
+    // Open Show Records Tab
+    cy.get('#show-records-tab').click('center');
+    // Click New Record Button
     cy.get(':nth-child(4) > .MuiButton-root').click('center');
     // Record Category
     cy.get(':nth-child(1) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
@@ -102,10 +108,9 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('.MuiList-root > [tabindex="0"]').click('center');
     // Page Check
     cy.get('.MuiDialogActions-root > .MuiButton-contained').click('center');
-    cy.contains('Activity Treatment Chemical Plant Terrestrial');
   });
-  it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
-    cy.wait(5000);
+  it('It is a buffer that may or may not fail', function () {
+    cy.wait(2500);
   });
   it('It places a marker', function () {
     cy.get('.leaflet-container').click('center');
