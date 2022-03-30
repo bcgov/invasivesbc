@@ -104,6 +104,20 @@ POST.apiDoc = {
                 type: 'string'
               }
             },
+            created_by: {
+              type: 'array',
+              description: 'People to search by',
+              items: {
+                type: 'string'
+              }
+            },
+            form_stauts: {
+              type: 'array',
+              description: 'Form status to search by',
+              items: {
+                type: 'string'
+              }
+            },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },

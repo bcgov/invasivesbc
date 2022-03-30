@@ -24,6 +24,7 @@ import { DocType } from 'constants/database';
 
 import SaveIcon from '@mui/icons-material/Save';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
+import { ActivityStatus } from 'constants/activities';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -197,21 +198,28 @@ const ActivityGrid = (props) => {
   }, [save]);
 
   useEffect(() => {
-    getActivities();
+    if (recordSetContext?.recordSetState?.[props.setName]) {
+      getActivities();
+    }
   }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const getActivities = async () => {
+  const getSearchCriteriaFromFilters = (advancedFilterRows: any, rolesUserHasAccessTo: any) => {
     const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+    const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
     const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
+    const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
     let filter: any = {
       user_roles: rolesUserHasAccessTo
     };
     if (created_by) {
-      filter.created_by = created_by;
+      filter.created_by = [created_by];
+    }
+    if (form_status) {
+      filter.form_status = [form_status];
     }
     if (props.subType) {
       filter.activity_subtype = [props.subType];
@@ -219,8 +227,6 @@ const ActivityGrid = (props) => {
       filter.activity_type = [props.formType];
     }
 
-    // if (recordSetContext.recordSetState[props.setName].gridFilters) {
-    // }
     if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
       const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
       const jurisdictions = [];
@@ -231,6 +237,12 @@ const ActivityGrid = (props) => {
       });
       filter.jurisdiction = jurisdictions;
     }
+
+    return filter;
+  };
+
+  const getActivities = async () => {
+    const filter = getSearchCriteriaFromFilters(advancedFilterRows, rolesUserHasAccessTo);
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {

@@ -121,7 +121,7 @@ export class ActivitySearchCriteria {
 
   column_names: string[];
 
-  created_by: string;
+  created_by: string[];
 
   review_status: string[];
 
@@ -129,6 +129,7 @@ export class ActivitySearchCriteria {
 
   species_positive: string[];
   species_negative: string[];
+  form_status: string[];
 
   jurisdiction: string[];
 
@@ -159,9 +160,9 @@ export class ActivitySearchCriteria {
 
     this.column_names = (obj && obj.column_names) || [];
 
-    this.created_by = (obj && obj.created_by) || null;
+    this.created_by = (obj && obj.created_by) || [];
 
-    this.review_status = (obj && obj.review_status) || [];
+    this.form_status = (obj && obj.form_status) || [];
 
     this.linked_id = obj?.linked_id || null;
 

@@ -2,175 +2,231 @@ import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Container, Grid } from '@mui/material';
+import { Box, Button, Container, Grid, Theme } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
 import { RecordSetContext, RecordSetProvider } from '../../../contexts/recordSetContext';
 import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
+import MapContainer from 'components/map/MapContainer';
+import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
+import makeStyles from '@mui/styles/makeStyles';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
   classes?: any;
 }
-const flexContainer = {
-  display: 'flex',
-  flexDirection: 'row',
-  padding: 0
-};
+
+const useStyles = makeStyles((theme: Theme) => ({
+  pageContainer: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    oberflow: 'hidden',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 0,
+    padding: 0
+  },
+  toggleButtonContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    position: 'relative',
+    height: 0,
+    transform: 'translateY(-100%)',
+    zIndex: 1000
+  },
+  toggleButton: {
+    position: 'absolute',
+    top: '-38px',
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    boxShadow: 'none'
+  },
+  mapContainer: {
+    flex: 1,
+    transition: 'height 0.3s ease-in-out'
+  },
+  recordSetContainer: { flex: 1 },
+  map: {
+    height: '100%',
+    width: '100%',
+    zIndex: 0
+  }
+}));
 
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
+  const classes = useStyles();
+
+  return (
+    <RecordSetProvider>
+      <PageContainer originalActivityPageClassName={classes.pageContainer} />
+    </RecordSetProvider>
+  );
+};
+
+// main page component - moved everything in here so it could be wrapped in a context local to this page.
+const PageContainer = (props) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
+  const recordStateContext = useContext(RecordSetContext);
+  const [geometry, setGeometry] = useState<any[]>([]);
+  const classes = useStyles();
+  const [recordsExpanded, setRecordsExpanded] = useState(false);
 
-  // main page component - moved everything in here so it could be wrapped in a context local to this page.
-  const PageContainer = (props) => {
-    // record to act on and context for all children dealing with record sets, types, and filters
-    const recordStateContext = useContext(RecordSetContext);
-
-    const handleNewRecordDialogClose = () => {
-      setNewRecordDialog((prev) => ({ ...prev, dialogOpen: false }));
-    };
-
-    const [newRecordDialog, setNewRecordDialog] = useState<INewRecordDialog>({
-      dialogOpen: false,
-      handleDialogClose: handleNewRecordDialogClose
-    });
-
-    // the menu at the bottom:
-    const [options, setOptions] = useState<any>();
-    useEffect(() => {
-      setOptions([
-        {
-          name: 'Toggle Filters on Map',
-          hidden: false,
-          disabled: false,
-          //type: optionType.toggle,
-          onClick: () => {
-            alert('no');
-          },
-          icon: (props) => {
-            return (
-              <>
-                <FilterListIcon />
-                <MapIcon />
-              </>
-            );
-          }
-        },
-        {
-          name: 'Current window only',
-          hidden: false,
-          disabled: false,
-          icon: (props) => {
-            return (
-              <>
-                <FilterListIcon />
-                <CropFreeIcon />
-              </>
-            );
-          },
-          onClick: () => {
-            alert('no');
-          }
-        },
-        {
-          name: 'New Record List/Layer',
-          hidden: false,
-          disabled: false,
-          icon: PlaylistAddIcon,
-          onClick: () => {
-            recordStateContext.add();
-          }
-        },
-        {
-          name: 'New Record',
-          hidden: false,
-          disabled: false,
-          icon: AddIcon,
-          onClick: () => {
-            setNewRecordDialog((prev) => ({ ...prev, dialogOpen: true }));
-          }
-        },
-        {
-          name:
-            'Open' +
-            (recordStateContext.selectedRecord?.description !== undefined
-              ? recordStateContext.selectedRecord?.description
-              : ''),
-          disabled: !(recordStateContext.selectedRecord?.description !== undefined),
-          hidden: !recordStateContext.selectedRecord,
-          onClick: async () => {
-            try {
-              await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
-            } catch (e) {
-              console.log('unable to http ');
-              console.log(e);
-            }
-            setTimeout(() => {
-              history.push({ pathname: `/home/activity` });
-            }, 1000);
-          }
-        }
-      ]);
-    }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
-
-    return useMemo(() => {
-      /* set up main menu bar options: */
-      return (
-        <>
-          <Box
-            style={{
-              position: 'absolute',
-              zIndex: 9999,
-              backgroundColor: '#223f75',
-              width: '100%',
-              padding: 8,
-              bottom: 30,
-              height: '80px'
-            }}>
-            <MenuOptions
-              sx={{
-                flexWrap: 'wrap',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'start'
-              }}
-              listSX={{ width: 'auto' }}
-              options={options}
-            />
-          </Box>
-
-          {/*the main list of record sets:*/}
-          <Container maxWidth={false} style={{ maxHeight: '100%' }} className={props.originalActivityPageClassName}>
-            <Grid container height="50px" display="flex" justifyContent="left">
-              <Grid sx={{ pb: 15 }} xs={12} item>
-                {props.children}
-              </Grid>
-              <Grid sx={{ pb: 15 }} xs={12} item></Grid>
-            </Grid>
-          </Container>
-          <NewRecordDialog
-            dialogOpen={newRecordDialog.dialogOpen}
-            handleDialogClose={newRecordDialog.handleDialogClose}
-          />
-        </>
-      );
-    }, [options, newRecordDialog, recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord]);
+  const handleNewRecordDialogClose = () => {
+    setNewRecordDialog((prev) => ({ ...prev, dialogOpen: false }));
   };
+
+  const [newRecordDialog, setNewRecordDialog] = useState<INewRecordDialog>({
+    dialogOpen: false,
+    handleDialogClose: handleNewRecordDialogClose
+  });
+
+  // the menu at the bottom:
+  const [options, setOptions] = useState<any>();
+  useEffect(() => {
+    setOptions([
+      {
+        name: 'Toggle Filters on Map',
+        hidden: false,
+        disabled: false,
+        //type: optionType.toggle,
+        onClick: () => {
+          alert('no');
+        },
+        icon: (props) => {
+          return (
+            <>
+              <FilterListIcon />
+              <MapIcon />
+            </>
+          );
+        }
+      },
+      {
+        name: 'Current window only',
+        hidden: false,
+        disabled: false,
+        icon: (props) => {
+          return (
+            <>
+              <FilterListIcon />
+              <CropFreeIcon />
+            </>
+          );
+        },
+        onClick: () => {
+          alert('no');
+        }
+      },
+      {
+        name: 'New Record List/Layer',
+        hidden: false,
+        disabled: false,
+        icon: PlaylistAddIcon,
+        onClick: () => {
+          recordStateContext.add();
+        }
+      },
+      {
+        name: 'New Record',
+        hidden: false,
+        disabled: false,
+        icon: AddIcon,
+        onClick: () => {
+          setNewRecordDialog((prev) => ({ ...prev, dialogOpen: true }));
+        }
+      },
+      {
+        name:
+          'Open' +
+          (recordStateContext.selectedRecord?.description !== undefined
+            ? recordStateContext.selectedRecord?.description
+            : ''),
+        disabled: !(recordStateContext.selectedRecord?.description !== undefined),
+        hidden: !recordStateContext.selectedRecord,
+        onClick: async () => {
+          try {
+            await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
+          } catch (e) {
+            console.log('unable to http ');
+            console.log(e);
+          }
+          setTimeout(() => {
+            history.push({ pathname: `/home/activity` });
+          }, 1000);
+        }
+      }
+    ]);
+  }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
+
+  /* set up main menu bar options: */
   return (
-    <Box sx={{ height: '100%' }}>
-      <RecordSetProvider>
-        <PageContainer originalActivityPageClassName={props.classes.container}>
-          <RecordSetRenderer />
-        </PageContainer>
-      </RecordSetProvider>
-    </Box>
+    <>
+      {/*the main list of record sets:*/}
+      <Box style={{ height: recordsExpanded ? 'calc(100% - 400px)' : 'calc(100% - 30px)' }}>
+        <MapRecordsContextProvider>
+          <MapContainer
+            classes={classes}
+            showDrawControls={false}
+            center={[55, -128]}
+            zoom={5}
+            mapId={'mainMap'}
+            geometryState={{ geometry, setGeometry }}></MapContainer>
+        </MapRecordsContextProvider>
+      </Box>
+      <Box>
+        <Box className={classes.toggleButtonContainer}>
+          <Button
+            className={classes.toggleButton}
+            color={'warning'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setRecordsExpanded((prev) => !prev);
+            }}
+            variant={'contained'}
+            endIcon={
+              <ArrowDropUpIcon
+                style={{
+                  transition: 'transform 200ms ease-in-out',
+                  transform: recordsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                }}
+              />
+            }>
+            Show Records
+          </Button>
+        </Box>
+        <MenuOptions
+          sx={{
+            backgroundColor: '#223f75',
+            width: '100%',
+            padding: '5px',
+            height: 'auto',
+            flexWrap: 'wrap',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'start'
+          }}
+          listSX={{ width: 'auto' }}
+          options={options}
+        />
+        {useMemo(
+          () => (
+            <RecordSetRenderer />
+          ),
+          [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord]
+        )}
+      </Box>
+      <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
+    </>
   );
 };
 

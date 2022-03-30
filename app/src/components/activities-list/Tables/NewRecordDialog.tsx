@@ -153,17 +153,14 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     dbActivity.created_by = (userInfo as any)?.preferred_username;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
-      await dataAccess.setAppState(
-        {
-          activeActivity: dbActivity.activity_id,
-          newActivityChoices: {
-            category: activityCategory,
-            type: activityType,
-            subType: activitySubType
-          }
-        },
-        databaseContext
-      );
+      await dataAccess.setAppState({
+        activeActivity: dbActivity.activity_id,
+        newActivityChoices: {
+          category: activityCategory,
+          type: activityType,
+          subType: activitySubType
+        }
+      });
     } catch (e) {
       console.log('unable to http ');
       console.log(e);

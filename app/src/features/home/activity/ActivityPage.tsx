@@ -169,7 +169,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
         // this has to be a bug? if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
         if (saveReason) {
-          await dataAccess.updateActivity(newActivity, databaseContext);
+          await dataAccess.updateActivity(newActivity);
         }
       });
       await dbUpdates(updatedDoc);
@@ -256,6 +256,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} activity The doc/activity object
    */
   const getDefaultFormDataValues = (activity: any) => {
+    if (!activity) {
+      return;
+    }
     let activitySubtype = activity.activitySubtype;
     let updatedActivity = activity;
     let { activity_data } = activity.formData || {};
@@ -561,7 +564,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
     const appStateResults = dataAccess.getAppState();
-    if (!appStateResults) {
+    if (!appStateResults.activeActivity) {
       return;
     }
 
@@ -569,14 +572,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (Capacitor.getPlatform() === 'web') {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
-        databaseContext,
         false
       );
     } else {
       try {
         activityResults = await dataAccess.getActivityById(
           activityId || appStateResults.activeActivity,
-          databaseContext,
           true,
           appStateResults.referenceData
         );
@@ -767,7 +768,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
   const getJurSuggestions = async () => {
     if (geometry[0]) {
-      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] }, databaseContext);
+      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] });
       setSuggestedJurisdictions(res);
     }
   };
@@ -792,7 +793,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       await updateDoc(updatedDoc);
 
       if (updatedDoc.geometry) {
-        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
+        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
         setSuggestedJurisdictions(res);
       }
 
@@ -800,7 +801,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext]);
+  }, []);
 
   useEffect(() => {
     if (isLoading || !doc) {
@@ -851,7 +852,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     if (isMobile()) {
       // Load users from cache
-      dataAccess.getApplicationUsers(databaseContext).then((res) => {
+      dataAccess.getApplicationUsers().then((res) => {
         setApplicationUsers(res);
       });
     } else {
@@ -924,7 +925,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             mapId={activityId}
             geometryState={{ geometry, setGeometry }}
             showDrawControls={true}
-            extentState={{ extent, setExtent }}
           />
         ),
         [classes, activityId, geometry, setGeometry, extent, setExtent]
