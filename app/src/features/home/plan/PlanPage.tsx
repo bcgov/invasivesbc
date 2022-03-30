@@ -196,7 +196,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       let results: any; //sqlite db response
 
       if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-        results = await dataAccess.getTrips(databaseContext);
+        results = await dataAccess.getTrips();
       } else {
         return;
       }
@@ -245,7 +245,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         { status: TripStatusCode.initial, expanded: false }
       ]
     };
-    await dataAccess.addTrip(newTripObj, databaseContext);
+    await dataAccess.addTrip(newTripObj);
     setGeometry([]);
 
     setNewTripID(newID);
@@ -267,8 +267,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
           isPlanPage={true}
           geometryState={{ geometry, setGeometry }}
-          interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent }}
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
       </Paper>

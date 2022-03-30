@@ -113,11 +113,7 @@ export interface IMapContainerProps {
   cacheMapTilesFlag?: any;
   pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
-  interactiveGeometryState?: {
-    interactiveGeometry: any;
-    setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
-  };
-  extentState: { extent: any; setExtent: (extent: any) => void };
+
   setMapForActivityPage?: React.Dispatch<any>;
   contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
 }
@@ -205,7 +201,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           bounceAtZoomLimits={true}
           maxZoom={mapMaxZoom}
           minZoom={6}
-          style={{ height: 'calc(100% - 30px)', width: '100%' }}
+          style={{ height: 'calc(100%)', width: '100%' }}
           zoomControl={false}
           whenCreated={setMap}
           preferCanvas={true}
@@ -247,7 +243,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
               {props.children}
               <MapResizer />
-              <MapRecordsDataGrid />
+              {/* <MapRecordsDataGrid /> */}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>

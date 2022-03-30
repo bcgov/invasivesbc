@@ -169,9 +169,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
                 zoom={initialZoom()}
                 mapId={'mainMap'}
                 pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                geometryState={{ geometry, setGeometry }}
-                interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                extentState={{ extent, setExtent }}>
+                geometryState={{ geometry, setGeometry }}>
+                {' '}
                 <MapUrlListener />
               </MapContainer>
             </Container>
