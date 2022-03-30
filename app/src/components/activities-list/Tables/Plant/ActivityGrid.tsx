@@ -214,10 +214,10 @@ const ActivityGrid = (props) => {
       user_roles: rolesUserHasAccessTo
     };
     if (created_by) {
-      filter.created_by = created_by;
+      filter.created_by = [created_by];
     }
     if (form_status) {
-      filter.record_status = form_status;
+      filter.form_status = [form_status];
     }
     if (props.subType) {
       filter.activity_subtype = [props.subType];

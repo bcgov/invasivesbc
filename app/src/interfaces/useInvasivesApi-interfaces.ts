@@ -87,7 +87,7 @@ export interface IActivitySearchCriteria {
    * @type {string}
    * @memberof IActivitySearchCriteria
    */
-  created_by?: string;
+  created_by?: string[];
   /**
    * Identifier of the requesting user's role
    *
@@ -101,7 +101,7 @@ export interface IActivitySearchCriteria {
    * @type {string}
    * @memberof IActivitySearchCriteria
    */
-  review_status?: string[];
+  form_status?: string[];
   /**
    * Search for records linked to a particular ID
    *
