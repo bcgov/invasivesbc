@@ -24,6 +24,7 @@ import { DocType } from 'constants/database';
 
 import SaveIcon from '@mui/icons-material/Save';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
+import { ActivityStatus } from 'constants/activities';
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -206,12 +207,17 @@ const ActivityGrid = (props) => {
 
   const getSearchCriteriaFromFilters = (advancedFilterRows: any, rolesUserHasAccessTo: any) => {
     const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+    const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
     const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
+    const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
     let filter: any = {
       user_roles: rolesUserHasAccessTo
     };
     if (created_by) {
       filter.created_by = created_by;
+    }
+    if (form_status) {
+      filter.record_status = form_status;
     }
     if (props.subType) {
       filter.activity_subtype = [props.subType];
