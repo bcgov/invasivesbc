@@ -198,7 +198,9 @@ const ActivityGrid = (props) => {
   }, [save]);
 
   useEffect(() => {
-    getActivities();
+    if (recordSetContext?.recordSetState?.[props.setName]) {
+      getActivities();
+    }
   }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
 
   const handleAccordionExpand = () => {
