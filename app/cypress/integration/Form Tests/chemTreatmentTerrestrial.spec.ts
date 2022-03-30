@@ -36,7 +36,6 @@ describe('CREATING A NEW RECORD', function () {
   const comment = faker.random.arrayElement(commentArray);
   // - Treatment Information
   const treatmentPerson = faker.random.arrayElement(nameArray);
-  const pesticideApplicator = faker.datatype.number({ min: 1000, max: 9999 });
   // - Chemical Treatment Information
   const pestManagementPlan = faker.random.arrayElement(pestManagementPlans);
   const temperature = faker.datatype.number({ min: 15, max: 22 });
@@ -44,7 +43,7 @@ describe('CREATING A NEW RECORD', function () {
   const windDirection = windSpeed > 0 ? faker.random.arrayElement(windDirectionArray) : 'No Wind{enter}';
   const humidity = faker.random.arrayElement(humidityArray);
   const treatmentNoticeSigns = faker.random.arrayElement(yesNo);
-  const applicationStartTime = dateFormatter(new Date(faker.date.recent()));
+  const applicationStartTime = dateFormatter(new Date(faker.date.recent())) + 'T10:30';
   // - Pest Injury Threshold Determination
   const radioPestInjury = faker.datatype.number({ min: 1, max: 2 });
   const invasivePlant = faker.random.arrayElement(invasivePlants);
@@ -89,18 +88,20 @@ describe('CREATING A NEW RECORD', function () {
   });
   it('It goes to My Records Page', function () {
     cy.get('[data-testid=HomeWorkIcon]').click('center');
-    cy.contains('Observations');
   });
   it('It creates a Chemical Terrestrial Treatment record', function () {
-    if (Cypress.env().configFile === 'development') {
-      cy.get(':nth-child(2) > .MuiPaper-root > #panel-map-header > .jss62 > :nth-child(2) > :nth-child(1)').click(
-        'center'
-      );
-    } else {
-      cy.get(
-        ':nth-child(2) > :nth-child(1) > #panel-map-header > .makeStyles-toolbar-62 > :nth-child(2) > :nth-child(1)'
-      ).click('center');
-    }
+    cy.get(':nth-child(4) > .MuiButton-root').click('center');
+    // Record Category
+    cy.get(':nth-child(1) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Record Type
+    cy.get(':nth-child(3) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('[data-value="Treatment"]').click('center');
+    // Record Sub-Type
+    cy.get(':nth-child(5) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Page Check
+    cy.get('.MuiDialogActions-root > .MuiButton-contained').click('center');
     cy.contains('Activity Treatment Chemical Plant Terrestrial');
   });
   it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
@@ -142,8 +143,6 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name')
       .clear()
       .type(treatmentPerson);
-    // Pesticide Applicator Certificate Number
-    cy.get('#root_activity_type_data_activity_persons_0_applicator_license').type(pesticideApplicator);
   });
   it('It inputs chemical treatment information', function () {
     // Pest Management Plan
@@ -168,15 +167,14 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('#root_activity_subtype_data_Treatment_ChemicalPlant_Information_signage_on_site').click('center');
     cy.get(`[data-value="${treatmentNoticeSigns}"]`).click('center');
     // Application Start Time
-    cy.wait(250);
     cy.get(
       '.MuiOutlinedInput-root > #root_activity_subtype_data_Treatment_ChemicalPlant_Information_application_start_time'
     ).click('center');
-    cy.wait(250);
+    cy.wait(500);
     cy.get(
       '.MuiOutlinedInput-root > #root_activity_subtype_data_Treatment_ChemicalPlant_Information_application_start_time'
-    ).type(applicationStartTime + 'T08:30');
-    cy.wait(250);
+    ).type(applicationStartTime, { force: true });
+    cy.wait(500);
   });
   it('It can select a radio button of the Pest Injury Threshold Determination', function () {
     cy.get(

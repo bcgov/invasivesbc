@@ -78,13 +78,20 @@ describe('CREATING A NEW RECORD', function () {
   });
   it('It goes to My Records Page', function () {
     cy.get('[data-testid=HomeWorkIcon]').click('center');
-    cy.contains('Observations');
   });
   it('It creates a Terrestrial Plant Observation record', function () {
-    cy.get(
-      ':nth-child(1) > .MuiPaper-root > #panel-map-header > .makeStyles-toolbar-62 > :nth-child(2) > :nth-child(1)'
-    ).click('center');
-    cy.contains('Activity Observation Plant Terrestrial');
+    cy.get(':nth-child(4) > .MuiButton-root').click('center');
+    // Record Category
+    cy.get(':nth-child(1) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Record Type
+    cy.get(':nth-child(3) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Record Sub-Type
+    cy.get(':nth-child(5) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Page Check
+    cy.get('.MuiDialogActions-root > .MuiButton-contained').click('center');
   });
   it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
     cy.wait(5000);
