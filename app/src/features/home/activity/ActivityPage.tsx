@@ -256,6 +256,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} activity The doc/activity object
    */
   const getDefaultFormDataValues = (activity: any) => {
+    if (!activity) {
+      return;
+    }
     let activitySubtype = activity.activitySubtype;
     let updatedActivity = activity;
     let { activity_data } = activity.formData || {};
@@ -561,7 +564,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
     const appStateResults = dataAccess.getAppState();
-    if (!appStateResults) {
+    if (!appStateResults.activeActivity) {
       return;
     }
 
@@ -798,7 +801,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext]);
+  }, []);
 
   useEffect(() => {
     if (isLoading || !doc) {

@@ -270,15 +270,17 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Home fontSize={'small'} />
         });
 
+        /*
         tabsUserHasAccessTo.push({
           label: 'Map',
           path: '/home/map',
           icon: <Map fontSize={'small'} />
         });
+        */
 
         if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
-            label: 'My Records',
+            label: 'Recorded Activities',
             path: '/home/activities',
             icon: <HomeWork fontSize={'small'} />
           });
@@ -300,6 +302,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
+        /*
         if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
@@ -308,6 +311,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Bookmarks fontSize={'small'} />
           });
         }
+        */
 
         if (isAdmin()) {
           tabsUserHasAccessTo.push({
