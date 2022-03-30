@@ -198,69 +198,69 @@ const EditTools = (props: any) => {
         });
       });
     }
-    if (props.interactiveGeometryState?.interactiveGeometry) {
-      props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-        const key = interactObj.recordDocID || interactObj._id;
-        if (newGeoKeys[key] && newGeoKeys[key].hash === JSON.stringify(interactObj) && newGeoKeys[key] !== true) {
-          // old unchanged geo, no need to redraw
-          newGeoKeys[key] = {
-            ...newGeoKeys[key],
-            updated: false
-          };
-          return;
-        }
+    // if (props.interactiveGeometryState?.interactiveGeometry) {
+    //   props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+    //     const key = interactObj.recordDocID || interactObj._id;
+    //     if (newGeoKeys[key] && newGeoKeys[key].hash === JSON.stringify(interactObj) && newGeoKeys[key] !== true) {
+    //       // old unchanged geo, no need to redraw
+    //       newGeoKeys[key] = {
+    //         ...newGeoKeys[key],
+    //         updated: false
+    //       };
+    //       return;
+    //     }
 
-        // else prepare new Geo for drawing:
-        const style = {
-          color: interactObj.color,
-          weight: 4,
-          opacity: 0.65
-        };
+    //     // else prepare new Geo for drawing:
+    //     const style = {
+    //       color: interactObj.color,
+    //       weight: 4,
+    //       opacity: 0.65
+    //     };
 
-        const markerStyle = {
-          radius: 10,
-          weight: 4,
-          stroke: true
-        };
+    //     const markerStyle = {
+    //       radius: 10,
+    //       weight: 4,
+    //       stroke: true
+    //     };
 
-        const geo = L.geoJSON(interactObj.geometry, {
-          // Note: the result of this isn't actually used, it seems?
-          style,
-          pointToLayer: (feature: any, latLng: any) => circleORmarker(feature, latLng, markerStyle),
-          onEachFeature: (feature: any, layer: any) => {
-            const content = interactObj.popUpComponent(interactObj.description);
-            layer.on('click', () => {
-              // Fires on click of single feature
+    //     const geo = L.geoJSON(interactObj.geometry, {
+    //       // Note: the result of this isn't actually used, it seems?
+    //       style,
+    //       pointToLayer: (feature: any, latLng: any) => circleORmarker(feature, latLng, markerStyle),
+    //       onEachFeature: (feature: any, layer: any) => {
+    //         const content = interactObj.popUpComponent(interactObj.description);
+    //         layer.on('click', () => {
+    //           // Fires on click of single feature
 
-              // Formulate a table containing all attributes
-              let table = formulateTable(feature);
+    //           // Formulate a table containing all attributes
+    //           let table = formulateTable(feature);
 
-              const loc = centroid(feature);
-              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+    //           const loc = centroid(feature);
+    //           const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
 
-              if (feature.properties.uploadedSpatial) {
-                L.popup()
-                  .setLatLng(center as L.LatLngExpression)
-                  .setContent(table)
-                  .openOn(map);
-              } else {
-                L.popup()
-                  .setLatLng(center as L.LatLngExpression)
-                  .setContent(content)
-                  .openOn(map);
-              }
+    //           if (feature.properties.uploadedSpatial) {
+    //             L.popup()
+    //               .setLatLng(center as L.LatLngExpression)
+    //               .setContent(table)
+    //               .openOn(map);
+    //           } else {
+    //             L.popup()
+    //               .setLatLng(center as L.LatLngExpression)
+    //               .setContent(content)
+    //               .openOn(map);
+    //           }
 
-              interactObj.onClickCallback();
-            });
-          }
-        });
-        newGeoKeys[key] = {
-          hash: JSON.stringify(interactObj),
-          geo: geo,
-          updated: true
-        };
-      });
-    }
+    //           interactObj.onClickCallback();
+    //         });
+    //       }
+    //     });
+    //     newGeoKeys[key] = {
+    //       hash: JSON.stringify(interactObj),
+    //       geo: geo,
+    //       updated: true
+    //     };
+    //   });
+    // }
     // Drawing step:
     drawingStep(newGeoKeys, context);
     // update stored geos, mapped by key
@@ -278,7 +278,7 @@ const EditTools = (props: any) => {
 
     //setGeometryMapBounds();
     updateMapOnGeometryChange();
-  }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
+  }, [props.geometryState.geometry]);
 
   // Get out if the tools are already defined.
   if (!(drawRef?.current as any)?._map) {

@@ -204,7 +204,7 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const getActivities = async () => {
+  const getSearchCriteriaFromFilters = (advancedFilterRows: any, rolesUserHasAccessTo: any) => {
     const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
     const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
     let filter: any = {
@@ -219,8 +219,6 @@ const ActivityGrid = (props) => {
       filter.activity_type = [props.formType];
     }
 
-    // if (recordSetContext.recordSetState[props.setName].gridFilters) {
-    // }
     if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
       const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
       const jurisdictions = [];
@@ -231,6 +229,12 @@ const ActivityGrid = (props) => {
       });
       filter.jurisdiction = jurisdictions;
     }
+
+    return filter;
+  };
+
+  const getActivities = async () => {
+    const filter = getSearchCriteriaFromFilters(advancedFilterRows, rolesUserHasAccessTo);
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
