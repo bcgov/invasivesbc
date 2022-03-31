@@ -34,8 +34,6 @@ describe('CREATING A NEW RECORD', function () {
   // - Project Code
   const description = faker.random.arrayElement(projectCodeDescription);
   const comment = faker.random.arrayElement(commentArray);
-  // - Treatment Information
-  const treatmentPerson = faker.random.arrayElement(nameArray);
   // - Chemical Treatment Information
   const pestManagementPlan = faker.random.arrayElement(pestManagementPlans);
   const temperature = faker.datatype.number({ min: 15, max: 22 });
@@ -43,7 +41,7 @@ describe('CREATING A NEW RECORD', function () {
   const windDirection = windSpeed > 0 ? faker.random.arrayElement(windDirectionArray) : 'No Wind{enter}';
   const humidity = faker.random.arrayElement(humidityArray);
   const treatmentNoticeSigns = faker.random.arrayElement(yesNo);
-  const applicationStartTime = dateFormatter(new Date(faker.date.recent())) + 'T10:30';
+  // Removed for now: const applicationStartTime = dateFormatter(new Date(faker.date.recent())) + 'T10:30';
   // - Pest Injury Threshold Determination
   const radioPestInjury = faker.datatype.number({ min: 1, max: 2 });
   const invasivePlant = faker.random.arrayElement(invasivePlants);
@@ -90,7 +88,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('[data-testid=HomeWorkIcon]').click('center');
   });
   it('It is a buffer that may or may not fail', function () {
-    cy.wait(2500);
+    cy.wait(1500);
   });
   it('It creates a Chemical Terrestrial Treatment record', function () {
     // Open Show Records Tab
@@ -110,7 +108,7 @@ describe('CREATING A NEW RECORD', function () {
     cy.get('.MuiDialogActions-root > .MuiButton-contained').click('center');
   });
   it('It is a buffer that may or may not fail', function () {
-    cy.wait(2500);
+    cy.wait(1500);
   });
   it('It places a marker', function () {
     cy.get('.leaflet-container').click('center');
@@ -143,12 +141,6 @@ describe('CREATING A NEW RECORD', function () {
     // Comment
     cy.get('#root_activity_data_general_comment').type(comment);
   });
-  it('It inputs observation information', function () {
-    // Treatment Person
-    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name')
-      .clear()
-      .type(treatmentPerson);
-  });
   it('It inputs chemical treatment information', function () {
     // Pest Management Plan
     cy.get(
@@ -171,15 +163,11 @@ describe('CREATING A NEW RECORD', function () {
     // Treatment Notice Signs
     cy.get('#root_activity_subtype_data_Treatment_ChemicalPlant_Information_signage_on_site').click('center');
     cy.get(`[data-value="${treatmentNoticeSigns}"]`).click('center');
-    // Application Start Time
+  });
+  it('It can input Application Start Time', function () {
     cy.get(
       '.MuiOutlinedInput-root > #root_activity_subtype_data_Treatment_ChemicalPlant_Information_application_start_time'
-    ).click('center');
-    cy.wait(500);
-    cy.get(
-      '.MuiOutlinedInput-root > #root_activity_subtype_data_Treatment_ChemicalPlant_Information_application_start_time'
-    ).type(applicationStartTime, { force: true });
-    cy.wait(500);
+    ).type('2020-09-09T10:30');
   });
   it('It can select a radio button of the Pest Injury Threshold Determination', function () {
     cy.get(

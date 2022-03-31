@@ -61,6 +61,35 @@ export const slopeArray = [
   'very strong{enter}',
   'variable{enter}'
 ];
+
+export const specficUses = [
+  'None',
+  'Unknown',
+  'Gravel pit',
+  'No-spray zone',
+  'Numbered highway',
+  'Parking lot',
+  'Rec site/trail',
+  'Rest area',
+  'Sensitive site',
+  'Transfer station/landfill',
+  'Within PFZ',
+  'Within PFZ - water body',
+  'Within PFZ - well',
+  'Yard / ditching waste dump',
+  'Quarry',
+  'Railway',
+  'Transmission line',
+  'Cultivated land',
+  'Research site',
+  'Reservoir',
+  'Mine site',
+  'Mine tailings',
+  'Burn scar',
+  'Industrial site',
+  'Community pasture'
+];
+
 export const aspectArray = [
   'north f{enter}',
   'northeast f{enter}',
