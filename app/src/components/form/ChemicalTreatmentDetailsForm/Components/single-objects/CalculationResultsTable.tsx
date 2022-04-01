@@ -91,6 +91,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                   <TableHead>
                     <TableCell style={{ fontWeight: 'bold' }}>#</TableCell>
                     {Object.keys(row[0]).map((key) => {
+                      if (key === 'index') return <></>;
                       return (
                         <TableCell key={key} style={{ fontWeight: 'bold' }}>
                           {key
@@ -111,6 +112,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                         <TableRow key={Math.random()}>
                           <TableCell>{index + 1}</TableCell>
                           {Object.keys(plant).map((key) => {
+                            if (key === 'index') return <></>;
                             return (
                               <TableCell key={key}>
                                 {Array.isArray(plant[key]) ? (

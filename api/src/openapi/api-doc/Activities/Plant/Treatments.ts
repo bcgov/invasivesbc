@@ -27,6 +27,9 @@ export const Activity_Treatment_ChemicalPlantAquatic = {
     activity_data: {
       ...Activity
     },
+    activity_type_data: {
+      ...Treatment_Chemical
+    },
     activity_subtype_data: {
       ...Subtype_Data_Treatment_ChemicalPlantAquatic
     }

@@ -137,7 +137,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   return (
     <div>
       <Autocomplete
-        autoComplete
         autoHighlight
         autoSelect={props.required}
         blurOnSelect
@@ -203,6 +202,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         renderInput={(params) => (
           <TextField
             {...params}
+            autoComplete="new-password"
             variant="outlined"
             required={props.required}
             label={props.label || props.schema.title}
