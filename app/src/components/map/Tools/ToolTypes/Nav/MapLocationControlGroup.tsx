@@ -392,20 +392,33 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @description Clears the map and stops watching when component unmounts
    * @returns {void}
    */
-  // useEffect(() => {
-  //   return () => {
-  //     console.log('Unmounting');
-  //     if (watchId) {
-  //       console.log('Unmounting. Unwatching');
-  //       Geolocation.clearWatch({ id: watchId });
-  //     }
-  //     // Stop watching
-  //     setWatching(false);
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      console.log('Unmounting');
+      if (watchId || watching) {
+        console.log('Unmounting. Unwatching');
+        setWatching(false);
+        Geolocation.clearWatch({ id: watchId });
+      }
+      setIsTracking(false);
+      setAccuracyOn(false);
+      setIsLoading(true);
+      console.log(
+        'Watch ID: ' +
+          watchId +
+          ' Watching: ' +
+          watching +
+          ' Is tracking: ' +
+          isTracking +
+          ' Is loading: ' +
+          isLoading +
+          ' Accuracy on: ' +
+          accuracyOn
+      );
+    };
+  }, []);
 
   // If accuracy toggle changed, either hide or show accuracy circle
-
   useEffect(() => {
     // If accuracyOn changes, disable or enable the circle
     if (accuracyOn && !!position && !!accuracy) {
