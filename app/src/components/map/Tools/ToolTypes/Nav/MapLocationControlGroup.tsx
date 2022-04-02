@@ -118,15 +118,49 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
 
   /**
    * TrackMeButton
+   * @description Component to handle the functionality of the find me button
+   * @returns {void}
+   */
+  function FindMeButton() {
+    const classes = useStyles();
+    return (
+      <div
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '30px',
+          width: '40px',
+          height: '40px'
+        }}>
+        <Tooltip title="Find Me" placement="right-start">
+          <IconButton
+            disabled={startTimer}
+            onClick={() => {
+              try {
+                zoomToLocation();
+              } catch (e) {
+                console.log('Map SetView error', e);
+              }
+            }}
+            className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
+            sx={{ color: '#000' }}>
+            <MyLocationIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /**
+   * TrackMeButton
    * @description Component to handle the functionality of the track me button
    * @returns {void}
    */
   function TrackMeButton() {
     return (
       <div
-        className="leaflet-bottom leaflet-left"
+        className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '160px',
+          bottom: '80px',
           width: '40px',
           height: '40px'
         }}>
@@ -158,9 +192,9 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   function AccuracyButton() {
     return (
       <div
-        className="leaflet-bottom leaflet-left"
+        className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '210px',
+          bottom: '130px',
           width: '40px',
           height: '40px'
         }}>
@@ -178,40 +212,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             }
             sx={{ color: '#000' }}>
             <AttributionIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
-    );
-  }
-
-  /**
-   * TrackMeButton
-   * @description Component to handle the functionality of the find me button
-   * @returns {void}
-   */
-  function FindMeButton() {
-    const classes = useStyles();
-    return (
-      <div
-        className="leaflet-bottom leaflet-left"
-        style={{
-          bottom: '110px',
-          width: '40px',
-          height: '40px'
-        }}>
-        <Tooltip title="Find Me" placement="right-start">
-          <IconButton
-            disabled={startTimer}
-            onClick={() => {
-              try {
-                zoomToLocation();
-              } catch (e) {
-                console.log('Map SetView error', e);
-              }
-            }}
-            className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
-            sx={{ color: '#000' }}>
-            <MyLocationIcon />
           </IconButton>
         </Tooltip>
       </div>
