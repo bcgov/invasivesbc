@@ -5,15 +5,16 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.offline';
 import 'leaflet-editable';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Marker, Popup, useMap } from 'react-leaflet';
-import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { IPointOfInterestSearchCriteria } from '../../../../../interfaces/useInvasivesApi-interfaces';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
+import LayersIcon from '@mui/icons-material/Layers';
+import LayersClearIcon from '@mui/icons-material/LayersClear';
 import AttributionIcon from '@mui/icons-material/Attribution';
-import { CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import proj4 from 'proj4';
 
@@ -73,10 +74,22 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   const [initialTime, setInitialTime] = useState(0); // Keeps track of the initial time of the timer
   const [startTimer, setStartTimer] = useState(false); // Keeps track of whether or not the timer has started
 
-  const [group] = useState(L.layerGroup());
+  const [showTopo, setShowTopo] = useState(false);
+
+  const [positionGroup] = useState(L.layerGroup());
+  const [baseMapGroup] = useState(L.layerGroup());
 
   const [map] = useState(useMap());
 
+  const topoMap = (L.tileLayer as any).offline(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
+      subdomains: 'abc',
+      zIndex: 3000,
+      crossOrigin: true
+    }
+  );
   // const map = useMap(); // Get the map from the context
   // const group = ; // Create a group to hold the drawn features
   const classes = useStyles(); // Get the classes from the context
@@ -218,6 +231,40 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   }
 
   /**
+   * BaseMapToggleButton
+   * @description Component to handle the functionality of the base map toggle
+   * @returns {void}
+   */
+  function BaseMapToggleButton() {
+    return (
+      <div
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '180px',
+          width: '40px',
+          height: '40px'
+        }}>
+        <Tooltip title={showTopo ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
+          <IconButton
+            disabled={startTimer}
+            onClick={() => {
+              setShowTopo(!showTopo);
+            }}
+            className={
+              'leaflet-control-zoom leaflet-bar leaflet-control ' +
+              classes.customHoverFocus +
+              ' ' +
+              (showTopo ? classes.selected : classes.notSelected)
+            }
+            sx={{ color: '#000' }}>
+            {showTopo ? <LayersClearIcon /> : <LayersIcon />}
+          </IconButton>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /**
    * drawCircle
    * @description Draws a circle at a position with a given radius
    * @returns {void}
@@ -236,8 +283,8 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     });
     // Remove the circle
     // Draw the new circle
-    group.addLayer(circleProps);
-    map.addLayer(group);
+    positionGroup.addLayer(circleProps);
+    map.addLayer(positionGroup);
     setCircleDrawn(true);
   };
 
@@ -247,8 +294,8 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   const removeCircle = () => {
-    group.clearLayers();
-    map.removeLayer(group);
+    positionGroup.clearLayers();
+    map.removeLayer(positionGroup);
     setCircleDrawn(false);
   };
 
@@ -296,7 +343,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   const watch = async () => {
-    console.log('STARTING WATCH');
     if (watchId || watching) {
       console.log('Watch already exists. Will not start new one.');
     } else {
@@ -309,7 +355,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         };
         const watchId = await Geolocation.watchPosition(options, foundLocation);
         setWatchId(watchId);
-        console.log('WATCH ID SET: ', watchId);
       } catch (e) {
         console.error('Error starting watch: ', e);
       }
@@ -323,9 +368,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   const stopWatch = async (watchId) => {
-    console.log('STOPPING WATCH');
     try {
-      console.log('Clearing watch ID: ' + watchId);
       await Geolocation.clearWatch({ id: watchId });
       setWatching(false);
       setWatchId(null);
@@ -379,6 +422,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     if (isLoading) {
       setInitialTime(2);
       setStartTimer(true);
+
       findMe().then(() => {
         // Stop loading once location found
         setIsLoading(false);
@@ -393,29 +437,27 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    */
   useEffect(() => {
     return () => {
-      console.log('Unmounting');
       if (watchId || watching) {
-        console.log('Unmounting. Unwatching');
         setWatching(false);
         Geolocation.clearWatch({ id: watchId });
       }
       setIsTracking(false);
       setAccuracyOn(false);
+      setShowTopo(false);
       setIsLoading(true);
-      console.log(
-        'Watch ID: ' +
-          watchId +
-          ' Watching: ' +
-          watching +
-          ' Is tracking: ' +
-          isTracking +
-          ' Is loading: ' +
-          isLoading +
-          ' Accuracy on: ' +
-          accuracyOn
-      );
     };
   }, []);
+
+  useEffect(() => {
+    // If showTopo changes, disable or enable the circle
+    if (showTopo) {
+      baseMapGroup.addLayer(topoMap);
+      map.addLayer(baseMapGroup);
+    } else {
+      baseMapGroup.clearLayers();
+      map.removeLayer(baseMapGroup);
+    }
+  }, [showTopo]);
 
   // If accuracy toggle changed, either hide or show accuracy circle
   useEffect(() => {
@@ -488,6 +530,12 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           </>
         ),
         [position, accuracyOn, isTracking, startTimer]
+      )}
+      {useMemo(
+        () => (
+          <BaseMapToggleButton />
+        ),
+        [showTopo, startTimer]
       )}
       {useMemo(
         () => (
