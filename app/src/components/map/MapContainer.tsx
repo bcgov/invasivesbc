@@ -244,7 +244,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
               {props.children}
               <MapResizer />
-              <MapRecordsDataGrid />
+              {/* <MapRecordsDataGrid /> */}
               {useMemo(
                 () => (
                   <MapLocationControlGroup {...props} />
