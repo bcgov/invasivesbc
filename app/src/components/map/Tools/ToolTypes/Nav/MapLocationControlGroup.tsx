@@ -50,7 +50,6 @@ export interface IMapLocationControlGroupProps {
     interactiveGeometry: any;
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
-  extentState: { extent: any; setExtent: (extent: any) => void };
   setMapForActivityPage?: React.Dispatch<any>;
   contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
 }
