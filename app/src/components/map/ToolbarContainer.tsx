@@ -6,7 +6,6 @@ import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
-import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -100,7 +99,6 @@ export const ToolbarContainer = (props) => {
         <LayerPicker inputGeo={props.inputGeo} />
         <Divider />
         <SetPointOnClick map={props.map} />
-        <DisplayPosition map={props.map} />
         <MeasureTool />
         <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
         {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}

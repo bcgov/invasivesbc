@@ -30,7 +30,7 @@ import MapRecordsDataGrid from './MapRecordsDataGrid';
 import OfflineMap from './OfflineMap';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import Layers from './Layers/Layers';
-//Added comment
+import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -127,10 +127,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const editRef = useRef();
 
   useEffect(() => {
-    try {
-      props.setMapForActivityPage(map);
-    } catch (e) {
-      console.log('setMapForButton error', e);
+    if (props.setMapForActivityPage) {
+      try {
+        props.setMapForActivityPage(map);
+      } catch (e) {
+        console.error(e);
+      }
     }
   }, [map]);
 
@@ -214,7 +216,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 ),
                 [props.geometryState.geometry]
               )}
-
               <ZoomButtons position="bottomleft" />
               <ScaleControl position="bottomleft" imperial={false} />
 
@@ -244,6 +245,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               {props.children}
               <MapResizer />
               {/* <MapRecordsDataGrid /> */}
+              {useMemo(
+                () => (
+                  <MapLocationControlGroup {...props} />
+                ),
+                [props.geometryState.geometry]
+              )}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>
