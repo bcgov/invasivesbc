@@ -132,7 +132,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       try {
         props.setMapForActivityPage(map);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
   }, [map]);
