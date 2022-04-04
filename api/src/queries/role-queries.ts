@@ -60,17 +60,17 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
     return null;
   } else {
     const sql = SQL`
-      select 
-        user_access.role_id, 
-        user_role.role_name, 
-        user_role.role_description 
-      from 
-        user_access 
-      inner join 
-        user_role 
-      on 
-        user_access.role_id = user_role.role_id 
-      where 
+      select
+        user_access.role_id,
+        user_role.role_name,
+        user_role.role_description
+      from
+        user_access
+      inner join
+        user_role
+      on
+        user_access.role_id = user_role.role_id
+      where
         user_access.user_id=${user_id};
     `;
     return sql;
@@ -87,22 +87,22 @@ export const getUsersForRoleSQL = (role_id): SQLStatement => {
     return null;
   } else {
     const sql = SQL`
-      select 
-        user_access.user_id, 
-        application_user.first_name, 
-        application_user.last_name, 
-        application_user.email, 
-        application_user.preferred_username, 
-        application_user.account_status, 
-        application_user.activation_status, 
+      select
+        user_access.user_id,
+        application_user.first_name,
+        application_user.last_name,
+        application_user.email,
+        application_user.preferred_username,
+        application_user.account_status,
+        application_user.activation_status,
         application_user.activation_status
-      from 
-        user_access 
-      inner join 
-        application_user 
-      on 
-        user_access.user_id = application_user.user_id 
-      where 
+      from
+        user_access
+      inner join
+        application_user
+      on
+        user_access.user_id = application_user.user_id
+      where
         user_access.role_id=${role_id};
     `;
     return sql;
@@ -134,5 +134,19 @@ export const getAllRolesSQL = (): SQLStatement => {
   return SQL`
     SELECT *
     FROM user_role;
+  `;
+};
+
+/**
+ * SQL query to get metabase groups to be associated with each user
+ * @returns {SQLStatement} sql query object
+ */
+export const getMetabaseGroupsSQL = (): SQLStatement => {
+  return SQL`
+    select u.email,
+           array_remove(array_agg(distinct r.metabase_group),NULL) as metabase_groups
+    from user_access ua left join application_user u on ua.user_id=u.user_id inner join user_role r on ua.role_id = r.role_id
+    group by u.email
+    order by u.email asc;
   `;
 };
