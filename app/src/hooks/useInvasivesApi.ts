@@ -65,8 +65,6 @@ export const useInvasivesApi = () => {
   const [keycloakObject, keycloakReady] = useKeycloak();
 
   const getRequestOptions = async () => {
-    console.dir(keycloakObject);
-
     if (!keycloakObject) {
       console.error('Network request while keycloak object is not ready');
     }

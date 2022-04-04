@@ -15,6 +15,7 @@ import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Ta
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
+import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -183,7 +184,9 @@ const PageContainer = (props) => {
             center={[55, -128]}
             zoom={5}
             mapId={'mainMap'}
-            geometryState={{ geometry, setGeometry }}></MapContainer>
+            geometryState={{ geometry, setGeometry }}>
+            <RecordSetLayersRenderer />
+          </MapContainer>
         </MapRecordsContextProvider>
       </Box>
       <Box>

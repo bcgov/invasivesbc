@@ -178,7 +178,7 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
-    console.dir(parentStateCollection);
+    //console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
       setFilters({ ...oldRecordSetState?.gridFilters });
