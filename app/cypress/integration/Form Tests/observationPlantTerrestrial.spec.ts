@@ -37,7 +37,6 @@ describe('CREATING A NEW RECORD', function () {
   const comment = faker.random.arrayElement(commentArray);
   // - Observation Information
   const preTreatmentObservation = faker.random.arrayElement(yesNo);
-  const observationPerson = faker.random.arrayElement(nameArray);
   // - Observation Plant Terrestrial Information
   const soilTexture = faker.random.arrayElement(soilTextureArray);
   const specificUse = faker.datatype.number({ max: 24 });
@@ -70,24 +69,38 @@ describe('CREATING A NEW RECORD', function () {
   const collectedDate = dateFormatter(new Date(faker.date.recent()));
   const verifiedDate = dateFormatter(new Date(faker.date.between('2021-01-01', '2022-02-02')));
 
-  before(() => {
-    cy.log('CHECK IF configFile HAS CORRECT dbConfig IN ORDER TO TEST DATABASE');
-    cy.log('LOG IN PRIOR TO RUNNING TEST');
-    cy.wait(5000);
-    cy.visit(Cypress.env('redirectUri'));
-  });
-  it('It goes to My Records Page', function () {
-    cy.get('[data-testid=HomeWorkIcon]').click('center');
-    cy.contains('Observations');
+  // before(() => {
+  // cy.log('CHECK IF configFile HAS CORRECT dbConfig IN ORDER TO TEST DATABASE');
+  // cy.log('LOG IN PRIOR TO RUNNING TEST');
+  // cy.wait(5000);
+  // cy.visit(Cypress.env('redirectUri'));
+  // });
+  // it('It goes to My Records Page', function () {
+  //   cy.get('[data-testid=HomeWorkIcon]').click('center');
+  // });
+  it('It is a buffer that may or may not fail', function () {
+    cy.wait(1500);
   });
   it('It creates a Terrestrial Plant Observation record', function () {
-    cy.get(
-      ':nth-child(1) > .MuiPaper-root > #panel-map-header > .makeStyles-toolbar-62 > :nth-child(2) > :nth-child(1)'
-    ).click('center');
-    cy.contains('Activity Observation Plant Terrestrial');
+    // Open Show Records Tab
+    cy.get('#show-records-tab').click('center');
+    // Click New Record Button
+    cy.get(':nth-child(4) > .MuiButton-root').click('center');
+    // Record Category
+    cy.get(':nth-child(1) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Record Type
+    cy.get(':nth-child(3) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Record Sub-Type
+    cy.get(':nth-child(5) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
+    cy.get('.MuiList-root > [tabindex="0"]').click('center');
+    // Page Check
+    cy.get('.MuiDialogActions-root > .MuiButton-contained').click('center');
   });
-  it('It shouldn\'t wait because of "undefined: user denied geolocation prompt"', function () {
-    cy.wait(5000);
+
+  it('It is a buffer that may or may not fail', function () {
+    cy.wait(1500);
   });
   it('It places a marker', function () {
     cy.get('.leaflet-container').click('center');
@@ -141,9 +154,6 @@ describe('CREATING A NEW RECORD', function () {
     // Pre-treatment Observation
     cy.get('#root_activity_type_data_pre_treatment_observation').click('center');
     cy.get(`[data-value="${preTreatmentObservation}"]`).click();
-    // Observation Person
-    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name').clear();
-    cy.get('.MuiOutlinedInput-root > #root_activity_type_data_activity_persons_0_person_name').type(observationPerson);
   });
   it('It inputs Observation Plant Terrestrial Information', function () {
     // Soil Texture
@@ -151,8 +161,9 @@ describe('CREATING A NEW RECORD', function () {
     // Specific Use
     cy.get(
       ':nth-child(2) > :nth-child(2) > #custom-multi-select > .MuiFormControl-root > .css-oyful7-container > .css-165m9mz-control > .css-2y7ope-ValueContainer'
-    ).click('center');
-    cy.get(`#react-select-3-option-${specificUse}`).click();
+    )
+      .click('center')
+      .type('None{enter}');
     // Slope
     cy.get(
       '.MuiOutlinedInput-root > #root_activity_subtype_data_Observation_PlantTerrestrial_Information_slope_code'
@@ -275,7 +286,6 @@ describe('CREATING A NEW RECORD', function () {
     expect(myTestRow.project_code).to.eq(description);
     expect(myTestRow.comment).to.eq(comment);
     expect(myTestRow.pre_treatment_observation).to.eq(preTreatmentObservation);
-    expect(myTestRow.observation_person.substring(0, observationPerson.length)).to.eq(observationPerson);
     expect(myTestRow.soil_texture.substring(0, soilTexture.length - 7).toLowerCase()).to.eq(
       soilTexture.substring(0, soilTexture.length - 7)
     );

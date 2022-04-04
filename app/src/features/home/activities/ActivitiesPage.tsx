@@ -185,6 +185,7 @@ const PageContainer = (props) => {
       <Box>
         <Box className={classes.toggleButtonContainer}>
           <Button
+            id="show-records-tab"
             className={classes.toggleButton}
             color={'warning'}
             onClick={(e) => {
