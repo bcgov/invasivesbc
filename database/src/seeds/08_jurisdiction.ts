@@ -8,12 +8,12 @@ export async function seed(knex: Knex): Promise<void> {
    * speeding up the development life cycle.
    */
   const env: string = process.env.REACT_APP_REAL_NODE_ENV;
-  const url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
-  // if (env.match(/dev/i) || env.match(/local/i)) {
-  //   url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
-  // } else {
-  //   url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
-  // }
+  let url: string;
+  if (env.match(/dev/i) || env.match(/local/i)) {
+    url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
+  } else {
+    url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
+  }
 
   // Fetch data
   const { data } = await axios.get(url, { responseType: 'arraybuffer' });
