@@ -8,11 +8,14 @@ import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
+import {getMetabaseGroupMappings} from "./admin/metabase_groups";
 
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
+
+const ADMIN_PORT = 8500;
 
 export { HOST, PORT };
 
@@ -76,10 +79,16 @@ initialize({
   }
 });
 
+const adminApp: express.Express = express();
+adminApp.get('/metabase_groups', getMetabaseGroupMappings);
+
 // Start api
 try {
   app.listen(PORT, () => {
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
+  });
+  adminApp.listen(ADMIN_PORT, () => {
+    defaultLog.info({ label: 'start admin api', message: `started api on ${HOST}:${ADMIN_PORT}/admin` });
   });
 } catch (error) {
   defaultLog.error({ label: 'start api', message: 'error', error });
