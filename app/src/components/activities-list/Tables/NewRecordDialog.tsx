@@ -85,11 +85,11 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       Object.keys(ActivityCategory).forEach((key) => {
         categories.push(ActivityCategory[key]);
       });
-    } else if (userAccessDict['animal']) {
+    } else if (userAccessDict['animals']) {
       Object.keys(ActivityCategory).forEach((key) => {
         if (key !== 'Plant') categories.push(ActivityCategory[key]);
       });
-    } else if (userAccessDict['plant']) {
+    } else if (userAccessDict['plants']) {
       Object.keys(ActivityCategory).forEach((key) => {
         if (key !== 'Animal') categories.push(ActivityCategory[key]);
       });
