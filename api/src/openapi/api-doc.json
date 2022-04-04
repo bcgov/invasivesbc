@@ -3758,7 +3758,7 @@
           "biological_agent_code",
           "biological_agent_count",
           "monitoring_type",
-          "monitoring_method",
+          "biocontrol_monitoring_methods_code",
           "applicator1_name",
           "applicator2_name",
           "invasive_plant_code",
@@ -4120,7 +4120,7 @@
             "title": "Monitoring Type",
             "enum": ["Timed", "Count"]
           },
-          "monitoring_method": {
+          "biocontrol_monitoring_methods_code": {
             "type": "string",
             "title": "Monitoring Method",
             "x-enum-code": {
@@ -4129,7 +4129,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Choose the method used for monitoring from the drop down"
           },
           "biological_agent_stages": {
             "type": "array",
@@ -7488,8 +7489,7 @@
           "reported_area": {
             "type": "number",
             "minimum": 0,
-            "title": "Area (m\u00B2)",
-            "minimum": 1
+            "title": "Area (m\u00B2)"
           },
           "map_code": {
             "type": "string",

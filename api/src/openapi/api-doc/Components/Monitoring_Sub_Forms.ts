@@ -308,11 +308,11 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
         }
       ]
     },
-    monitoring_method: {
+    biocontrol_monitoring_methods_code: {
       oneOf: [
         {
           properties: {
-            monitoring_method: {
+            biocontrol_monitoring_methods_code: {
               enum: ['S']
             },
             num_of_sweeps: {
@@ -362,7 +362,7 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       enum: ['Timed', 'Count'],
       'x-tooltip-text': 'Choose whether the monitoring duration was timed or by the number of plants checked'
     },
-    monitoring_method: {
+    biocontrol_monitoring_methods_code: {
       type: 'string',
       title: 'Monitoring Method',
       'x-enum-code': {
@@ -400,18 +400,18 @@ export const Monitoring_BiocontrolDispersal_Information = {
     'biological_agent_presence_code',
     'biological_agent_code',
     'monitoring_type',
-    'monitoring_method',
+    'biocontrol_monitoring_methods_code',
     'invasive_plant_code',
     'start_time',
     'stop_time',
     'total_bio_agent_quantity'
   ],
   dependencies: {
-    monitoring_method: {
+    biocontrol_monitoring_methods_code: {
       oneOf: [
         {
           properties: {
-            monitoring_method: {
+            biocontrol_monitoring_methods_code: {
               enum: ['S']
             },
             num_of_sweeps: {
@@ -583,7 +583,7 @@ export const Monitoring_BiocontrolDispersal_Information = {
       enum: ['Timed', 'Count'],
       'x-tooltip-text': 'Choose whether the monitoring duration was timed or by the number of plants checked'
     },
-    monitoring_method: {
+    biocontrol_monitoring_methods_code: {
       type: 'string',
       title: 'Monitoring Method',
       'x-enum-code': {
