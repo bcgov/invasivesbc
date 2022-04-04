@@ -8,8 +8,8 @@ export async function up(knex: Knex): Promise<void> {
   set schema 'invasivesbc';
   set search_path = invasivesbc,public;
 
-  alter table application_user drop CONSTRAINT unique_idir_userid;
-  alter table application_user drop CONSTRAINT unique_bceid_userid;
+  alter table application_user drop CONSTRAINT if exists unique_idir_userid;
+  alter table application_user drop CONSTRAINT if exists unique_bceid_userid;
 
   create unique index unique_idir_userid_if_not_null on application_user (idir_userid) where idir_userid is not null;
   create unique index unique_bceid_userid_if_not_null on application_user (bceid_userid) where bceid_userid is not null;
