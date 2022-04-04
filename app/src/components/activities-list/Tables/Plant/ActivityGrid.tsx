@@ -86,6 +86,47 @@ const filterContainerClassname = `
   }
 `;
 
+export const getSearchCriteriaFromFilters = (
+  advancedFilterRows: any,
+  rolesUserHasAccessTo: any,
+  recordSetContext: any,
+  setName: string,
+  gridFilters?: any
+) => {
+  const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+  const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
+  const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
+  const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
+  let filter: any = {
+    user_roles: rolesUserHasAccessTo
+  };
+  if (created_by) {
+    filter.created_by = [created_by];
+  }
+  if (form_status) {
+    filter.form_status = [form_status];
+  }
+  /*if (props.subType) {
+    filter.activity_subtype = [props.subType];
+  } else if (props.formType) {
+    filter.activity_type = [props.formType];
+  }
+  */
+
+  if (recordSetContext.recordSetState[setName]?.advancedFilters) {
+    const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
+    const jurisdictions = [];
+    currentAdvFilters.forEach((filter) => {
+      if (filter.filterField === 'Jurisdiction') {
+        jurisdictions.push(Object.keys(filter.filterValue)[0]);
+      }
+    });
+    filter.jurisdiction = jurisdictions;
+  }
+
+  return filter;
+};
+
 // no good way to do this dynamically
 interface Row {
   activity_id: string;
@@ -207,42 +248,13 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const getSearchCriteriaFromFilters = (advancedFilterRows: any, rolesUserHasAccessTo: any) => {
-    const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
-    const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
-    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
-    const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
-    let filter: any = {
-      user_roles: rolesUserHasAccessTo
-    };
-    if (created_by) {
-      filter.created_by = [created_by];
-    }
-    if (form_status) {
-      filter.form_status = [form_status];
-    }
-    if (props.subType) {
-      filter.activity_subtype = [props.subType];
-    } else if (props.formType) {
-      filter.activity_type = [props.formType];
-    }
-
-    if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
-      const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
-      const jurisdictions = [];
-      currentAdvFilters.forEach((filter) => {
-        if (filter.filterField === 'Jurisdiction') {
-          jurisdictions.push(Object.keys(filter.filterValue)[0]);
-        }
-      });
-      filter.jurisdiction = jurisdictions;
-    }
-
-    return filter;
-  };
-
   const getActivities = async () => {
-    const filter = getSearchCriteriaFromFilters(advancedFilterRows, rolesUserHasAccessTo);
+    const filter = getSearchCriteriaFromFilters(
+      advancedFilterRows,
+      rolesUserHasAccessTo,
+      recordSetContext,
+      props.setName
+    );
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {

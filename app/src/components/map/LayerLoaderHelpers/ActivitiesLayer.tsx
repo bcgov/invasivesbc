@@ -30,10 +30,10 @@ export const ActivitiesLayer = (props) => {
   };
 
   const fetchData = async () => {
-    const activitiesData = await dataAccess.getActivitiesLean(
-      { search_feature: mapBounds, activity_subtype: [props.activity_subtype] },
-      databaseContext
-    );
+    const activitiesData = await dataAccess.getActivitiesLean({
+      search_feature: mapBounds,
+      activity_subtype: [props.activity_subtype]
+    });
     console.log('ActivitiesData: ', activitiesData);
     const activitiesFeatureArray = [];
     activitiesData?.rows?.forEach((row) => {
