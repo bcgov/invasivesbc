@@ -284,10 +284,7 @@ export const RenderTableActivity = (props: any) => {
   const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [emptyRows, setEmptyRows] = useState(0);
   const [rows, setRows] = useState([]);
-  const [page, setPage] = useState(0);
   const history = useHistory();
   const { keycloak } = useContext(AuthStateContext);
 
@@ -356,7 +353,8 @@ export const RenderTableActivity = (props: any) => {
   return (
     <div style={{ height: 300, minWidth: '100%' }}>
       <Typography>Work in progress</Typography>
-      {/* <DataGrid
+      {/* Removed for now:
+      <DataGrid
         columns={columns}
         rows={rows}
         pageSize={5}
@@ -426,7 +424,6 @@ export const RenderTableDataBC = ({ rows }) => {
 
 export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
-  const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
