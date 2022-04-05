@@ -589,7 +589,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           opacity: 1,
           zIndex: 10,
           loaded: 70,
-          enabled: false,
+          enabled: true,
           dataBCAcceptsGeometry: true
         }
       ]
