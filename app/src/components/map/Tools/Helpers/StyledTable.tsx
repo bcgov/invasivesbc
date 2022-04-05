@@ -1,8 +1,5 @@
 import {
-  Button,
   ClickAwayListener,
-  Collapse,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -14,8 +11,6 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import area from '@turf/area';
 import center from '@turf/center';
 import { createStyles, withStyles } from '@mui/styles';
@@ -279,7 +274,7 @@ export const RenderTablePosition = ({ rows }) => {
 };
 
 export const RenderTableActivity = (props: any) => {
-  const { bufferedGeo, map, setActivityGeo } = props;
+  const { bufferedGeo } = props;
   const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
@@ -288,7 +283,7 @@ export const RenderTableActivity = (props: any) => {
   const history = useHistory();
   const { keycloak } = useContext(AuthStateContext);
 
-  const labels = ['ID', 'Species'];
+  // Removed for now: const labels = ['ID', 'Species'];
 
   useEffect(() => {
     updateActivityRecords();
