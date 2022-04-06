@@ -97,11 +97,11 @@ export const GeneratePopup = (props) => {
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
-            {section == 'activity' && (
+            {section == 'invasivesbc' && (
               <RenderTableActivity bufferedGeo={bufferedGeo} map={map} setActivityGeo={setRecordGeo} />
             )}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'poi' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} setPoiMarker={setRecordGeo} />}
+            {section == 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} setPoiMarker={setRecordGeo} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -109,9 +109,9 @@ export const GeneratePopup = (props) => {
               value={section}
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-              <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
+              <BottomNavigationAction value="invasivesbc" label="InvasivesBC" icon={<FolderIcon />} />
               {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
-              <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
+              <BottomNavigationAction value="iapp" label="IAPP" icon={<AdjustIcon />} />
             </BottomNavigation>
           </Grid>
           <Grid container>
@@ -172,7 +172,7 @@ function SetPointOnClick({ map }: any) {
   // }, [position]);
 
   useMapEvent('click', (e) => {
-    if (drawnGeo) {
+    try {
       if (clickMode) {
         console.log('mousedown ding');
         if (positionOne === null) {
@@ -204,6 +204,8 @@ function SetPointOnClick({ map }: any) {
           createDataUTM('Northing', result[2])
         ]);
       }
+    } catch (_e) {
+      console.log('Info Area Description click error', _e);
     }
   });
 

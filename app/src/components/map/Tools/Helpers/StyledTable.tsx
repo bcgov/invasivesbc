@@ -1,8 +1,5 @@
 import {
-  Button,
   ClickAwayListener,
-  Collapse,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -11,10 +8,9 @@ import {
   TablePagination,
   TableRow,
   Theme,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@mui/material';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import area from '@turf/area';
 import center from '@turf/center';
 import { createStyles, withStyles } from '@mui/styles';
@@ -278,29 +274,20 @@ export const RenderTablePosition = ({ rows }) => {
 };
 
 export const RenderTableActivity = (props: any) => {
-  const { bufferedGeo, map, setActivityGeo } = props;
+  const { bufferedGeo } = props;
   const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [emptyRows, setEmptyRows] = useState(0);
   const [rows, setRows] = useState([]);
-  const [page, setPage] = useState(0);
   const history = useHistory();
   const { keycloak } = useContext(AuthStateContext);
 
-  const labels = ['ID', 'Species'];
+  // Removed for now: const labels = ['ID', 'Species'];
 
   useEffect(() => {
     updateActivityRecords();
   }, [bufferedGeo]);
-
-  useEffect(() => {
-    if (rows) {
-      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
-    }
-  }, [rows]);
 
   useEffect(() => {
     const getApiSpec = async () => {
@@ -313,7 +300,7 @@ export const RenderTableActivity = (props: any) => {
 
   const activityPage = async (row) => {
     var id = row.obj.activity_id;
-    await dataAccess.setAppState({ activeActivity: id }, dbContext);
+    await dataAccess.setAppState({ activeActivity: id });
     history.push({ pathname: `/home/activity` });
   };
 
@@ -335,22 +322,16 @@ export const RenderTableActivity = (props: any) => {
     }
   };
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const updateActivityRecords = React.useCallback(async () => {
     try {
-      const activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
+      const activities = await dataAccess.getActivities({
+        limit: 10
+      });
+      console.log(activities);
       var tempArr = [];
       for (let i in activities) {
         if (activities[i]) {
-          var obj = activities[i];
+          var obj = activities.rows[i];
           tempArr.push({
             obj,
             open: false
@@ -365,45 +346,24 @@ export const RenderTableActivity = (props: any) => {
   }, [bufferedGeo, dataAccess, dbContext]);
 
   return (
-    <Table padding="none" size="small">
-      <CreateTableHead labels={labels} />
-      <TableBody>
-        {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows)?.map((row) => (
-          <>
-            <StyledTableRow key={row?.obj.activity_id}>
-              <StyledTableCell
-                style={{ display: 'flex', flexflow: 'row nowrap', width: 150.5 }}
-                component="th"
-                scope="row">
-                <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
-                  {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
-                </IconButton>
-                <Button size="small" onClick={() => activityPage(row)}>
-                  {row?.obj.activity_payload.short_id}
-                </Button>
-              </StyledTableCell>
-              <StyledTableCell style={{ width: 150.5 }}>
-                {getPlantCodes(row.obj).map((code) => (
-                  <>{code}</>
-                ))}
-              </StyledTableCell>
-              {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
-            </StyledTableRow>
-            <Collapse in={row?.open} timeout="auto" unmountOnExit>
-              <CreateAccordionTable map={map} row={row} response={response} setActivityGeo={setActivityGeo} />
-            </Collapse>
-          </>
-        ))}
-        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
-        <CreateTableFooter
-          records={rows}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </TableBody>
-    </Table>
+    <div style={{ height: 300, minWidth: '100%' }}>
+      <Typography>Work in progress</Typography>
+      {/* Removed for now:
+      <DataGrid
+        columns={columns}
+        rows={rows}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        rowHeight={30}
+        headerHeight={30}
+        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+          history.push(`/home/iapp/${params.id}`);
+        }}
+        // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+        //   console.log('params', params);
+        // }}
+      /> */}
+    </div>
   );
 };
 
@@ -459,7 +419,6 @@ export const RenderTableDataBC = ({ rows }) => {
 
 export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
-  const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
@@ -503,15 +462,12 @@ export const RenderTablePOI = (props: any) => {
 
   const updatePOIRecords = React.useCallback(async () => {
     try {
-      var pointsofinterest = await dataAccess.getPointsOfInterest(
-        {
-          search_feature: bufferedGeo,
-          isIAPP: true,
-          limit: 500,
-          page: 0
-        },
-        dbContext
-      );
+      var pointsofinterest = await dataAccess.getPointsOfInterest({
+        search_feature: bufferedGeo,
+        isIAPP: true,
+        limit: 500,
+        page: 0
+      });
 
       if (!pointsofinterest) {
         return;
@@ -519,7 +475,7 @@ export const RenderTablePOI = (props: any) => {
 
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
-      pointsofinterest.forEach((poi) => {
+      pointsofinterest.rows.forEach((poi) => {
         const surveys = poi.point_of_interest_payload.form_data.surveys;
         const tempSurveyArea = getLatestReportedArea(surveys);
         const newArr: any = getJurisdictions(surveys);
