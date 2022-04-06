@@ -147,7 +147,10 @@ function SetPointOnClick({ map }: any) {
   const [positionOne, setPositionOne] = useState(null);
   const [drawnGeo, setDrawnGeo] = useState(null);
   const [clickMode, setClickMode] = useState(false);
-  const [drawnOpacity, setDrawnOpacity] = useState({});
+  const [drawnOpacity, setDrawnOpacity] = useState({
+    opacity: 0,
+    fillOpacity: 0
+  });
   const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
   const drawnGeoKey = Math.random(); // NOSONAR
@@ -177,6 +180,7 @@ function SetPointOnClick({ map }: any) {
       if (clickMode) {
         if (positionOne === null) {
           setPositionOne(e.latlng);
+          setDrawnOpacity(null);
         } else {
           const coords = center(drawnGeo).geometry.coordinates;
           const result = calc_utm(coords[0], coords[1]);
@@ -187,7 +191,7 @@ function SetPointOnClick({ map }: any) {
             createDataUTM('Easting', result[1]),
             createDataUTM('Northing', result[2])
           ]);
-          setDrawnOpacity({});
+          setDrawnOpacity(null);
         }
       } else {
         const temp = e.latlng;
@@ -259,7 +263,7 @@ function SetPointOnClick({ map }: any) {
         </ListItemText>
       </ListItemButton>
       {drawnGeo && (
-        <GeoJSON style={() => !clickMode && drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
+        <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
           {!clickMode && (
             <GeneratePopup
               utmRows={utm}
