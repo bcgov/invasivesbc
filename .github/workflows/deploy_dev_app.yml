@@ -35,6 +35,7 @@ jobs:
             # Build the web frontend app
 
   buildAPP:
+    if: ${{ github.event.pull_request.merged == true }}
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: false
