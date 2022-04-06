@@ -6,21 +6,21 @@ pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern I
 pest_management_plan,BC HYDRO 105-0985-21/26,BC HYDRO PMP 105-0985-21/26 [Facilities/Adjacent],5
 pest_management_plan,BC HYDRO 105-0982-16/21,BC HYDRO PMP 105-0982-16/21 [ROWs/Corridors],6
 pest_management_plan,N/A,PMP Not Required,7
-plant_life_stage,U,Unknown,1
-plant_life_stage,SG,Small germinating plants,2
-plant_life_stage,RO,Rosettes,3
-plant_life_stage,SD,Seedlings,4
-plant_life_stage,SE,Plants are senescing,5
-plant_life_stage,MP,Mature plants,6
-plant_life_stage,MFL,Mature: flowering,7
-plant_life_stage,MIF,Mature: immature fruit,8
-plant_life_stage,MMF,Mature: mature fruit,9
-plant_life_stage,MV,Mature: vegetative only,10
-plant_life_stage,MBD,Mature: in bud,11
-plant_life_stage,MFD,Mature: fading,12
-plant_life_stage,MDF,Mature: dispersing fruit,13
-plant_life_stage,D,Dead,14
-plant_life_stage,OTH,Other - Add notes in comments,15
+plant_life_stage_code,U,Unknown,1
+plant_life_stage_code,SG,Small germinating plants,2
+plant_life_stage_code,RO,Rosettes,3
+plant_life_stage_code,SD,Seedlings,4
+plant_life_stage_code,SE,Plants are senescing,5
+plant_life_stage_code,MP,Mature plants,6
+plant_life_stage_code,MFL,Mature: flowering,7
+plant_life_stage_code,MIF,Mature: immature fruit,8
+plant_life_stage_code,MMF,Mature: mature fruit,9
+plant_life_stage_code,MV,Mature: vegetative only,10
+plant_life_stage_code,MBD,Mature: in bud,11
+plant_life_stage_code,MFD,Mature: fading,12
+plant_life_stage_code,MDF,Mature: dispersing fruit,13
+plant_life_stage_code,D,Dead,14
+plant_life_stage_code,OTH,Other - Add notes in comments,15
 animal_life_stage_code,U,Unknown,1
 animal_life_stage_code,E,Egg,2
 animal_life_stage_code,N,Neonate,3
