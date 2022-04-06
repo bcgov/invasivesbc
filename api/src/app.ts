@@ -8,7 +8,7 @@ import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
-import {getMetabaseGroupMappings} from "./admin/metabase_groups";
+import {getMetabaseGroupMappings, postSyncMetabaseGroupMappings} from "./admin/metabase_groups";
 
 const defaultLog = getLogger('app');
 
@@ -81,6 +81,7 @@ initialize({
 
 const adminApp: express.Express = express();
 adminApp.get('/metabase_groups', getMetabaseGroupMappings);
+adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
 
 // Start api
 try {
