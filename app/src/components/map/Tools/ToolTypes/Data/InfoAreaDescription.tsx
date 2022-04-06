@@ -147,6 +147,7 @@ function SetPointOnClick({ map }: any) {
   const [positionOne, setPositionOne] = useState(null);
   const [drawnGeo, setDrawnGeo] = useState(null);
   const [clickMode, setClickMode] = useState(false);
+  const [drawnOpacity, setDrawnOpacity] = useState({});
   const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
   const drawnGeoKey = Math.random(); // NOSONAR
@@ -174,7 +175,6 @@ function SetPointOnClick({ map }: any) {
   useMapEvent('click', (e) => {
     try {
       if (clickMode) {
-        console.log('mousedown ding');
         if (positionOne === null) {
           setPositionOne(e.latlng);
         } else {
@@ -187,6 +187,7 @@ function SetPointOnClick({ map }: any) {
             createDataUTM('Easting', result[1]),
             createDataUTM('Northing', result[2])
           ]);
+          setDrawnOpacity({});
         }
       } else {
         const temp = e.latlng;
@@ -203,6 +204,10 @@ function SetPointOnClick({ map }: any) {
           createDataUTM('Easting', result[1]),
           createDataUTM('Northing', result[2])
         ]);
+        setDrawnOpacity({
+          opacity: 0,
+          fillOpacity: 0
+        });
       }
     } catch (_e) {
       console.log('Info Area Description click error', _e);
@@ -254,15 +259,7 @@ function SetPointOnClick({ map }: any) {
         </ListItemText>
       </ListItemButton>
       {drawnGeo && (
-        <GeoJSON
-          // style={() =>
-          //   !clickMode && {
-          //     opacity: 0,
-          //     fillOpacity: 0
-          //   }
-          // }
-          data={drawnGeo}
-          key={drawnGeoKey}>
+        <GeoJSON style={() => !clickMode && drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
           {!clickMode && (
             <GeneratePopup
               utmRows={utm}
