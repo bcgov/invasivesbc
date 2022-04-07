@@ -1,9 +1,8 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
-import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -15,7 +14,6 @@ export const PoisLayer = (props) => {
   const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext);
 
   const markerIcon = L.icon({
     iconUrl: marker,
@@ -36,18 +34,20 @@ export const PoisLayer = (props) => {
   };
 
   useMapEvent('moveend', () => {
-    fetchData();
+    if (map.getZoom() > 14) fetchData();
   });
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [map]);
 
   const fetchData = async () => {
-    const poisData = await dataAccess.getPointsOfInterestLean(
-      { search_feature: mapBounds, isIAPP: true, point_of_interest_type: props.poi_type },
-      databaseContext
-    );
+    console.log('fetching...');
+    const poisData = await dataAccess.getPointsOfInterestLean({
+      search_feature: mapBounds,
+      isIAPP: true,
+      point_of_interest_type: props.poi_type
+    });
 
     const poisFeatureArray = [];
     poisData?.rows?.forEach((row) => {
@@ -75,7 +75,7 @@ export const PoisLayer = (props) => {
 
   return (
     <>
-      {map.getZoom() < 16 ? (
+      {/* Removed for now: map.getZoom() < 16 ? (
         <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />
       ) : (
         <>
@@ -88,6 +88,16 @@ export const PoisLayer = (props) => {
                 </Tooltip>
               </Marker>
             );
+          })}
+        </>
+        )*/}
+      {/* Close Zoom Renders */}
+      {map.getZoom() < 15 && <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />}
+      {map.getZoom() > 14 && (
+        <>
+          {pois.features.map((feature) => {
+            console.log('feature', feature);
+            return <GeoJSON data={feature} />;
           })}
         </>
       )}

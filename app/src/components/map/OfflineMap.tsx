@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import Spinner from 'components/spinner/Spinner';
 import React, { useEffect, useState } from 'react';
-import { useMap } from 'react-leaflet';
+import { useMap, useMapEvent } from 'react-leaflet';
 import * as L from 'leaflet';
 
 // Style the image inside the download button
@@ -62,6 +62,10 @@ const OfflineMap = (props) => {
       cacheMapTiles();
     }
   }, [props.cacheMapTilesFlag]);
+
+  useMapEvent('zoomend' as any, () => {
+    console.log(props.map.getZoom());
+  });
 
   const [offlineing, setOfflineing] = useState(false);
 

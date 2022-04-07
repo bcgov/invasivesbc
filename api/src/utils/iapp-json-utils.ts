@@ -333,7 +333,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    const returnVal = await mapSitesRowsToJSON(response);
+    var returnVal = response.rowCount > 0 ? await mapSitesRowsToJSON(response) : [];
 
     return {
       rows: returnVal,

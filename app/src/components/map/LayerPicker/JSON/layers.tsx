@@ -184,7 +184,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'iapp_records',
       name: 'IAPP Records',
       order: 1,
-      zIndex: 5000,
+      zIndex: 7000,
       source: 'INVASIVESBC',
       loaded: 70,
       enabled: true,
@@ -201,7 +201,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           opacity: 1,
           zIndex: 80,
           loaded: 70,
-          enabled: false
+          enabled: true
         },
         {
           id: 'surveys',
@@ -405,7 +405,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'administrative_boundaries',
       name: 'Administrative Boundaries',
       order: 2,
-      zIndex: 4000,
+      zIndex: 6000,
       source: ['DATABC', 'INVASIVESBC'],
       loaded: 70,
       enabled: false,
@@ -488,7 +488,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'aquatic_layers_and_wells',
       name: 'Aquatic Layers and Wells',
       order: 3,
-      zIndex: 3000,
+      zIndex: 5000,
       source: ['DATABC'],
       loaded: 70,
       enabled: false,
@@ -598,7 +598,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'terrestial_layers',
       name: 'Terrestrial Layers',
       order: 4,
-      zIndex: 2000,
+      zIndex: 4000,
       loaded: 70,
       source: ['DATABC'],
       enabled: false,
@@ -637,7 +637,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
       id: 'user_uploaded_layers',
       name: 'User Uploaded Layers',
       order: 5,
-      zIndex: 1000,
+      zIndex: 3000,
       loaded: 70,
       enabled: false,
       children: []

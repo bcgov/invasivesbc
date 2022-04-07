@@ -154,95 +154,93 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [mapRecordsContext]);
 
   return (
-    <>
-      {' '}
-      <ReactLeafletEditable
-        ref={editRef}
-        map={map}
-        // if you want to edit geometries, set the appropriate handlers first via
-        // mapRecordsContext.setLeafletEditbaleHandlers
+    <ReactLeafletEditable
+      ref={editRef}
+      map={map}
+      // if you want to edit geometries, set the appropriate handlers first via
+      // mapRecordsContext.setLeafletEditbaleHandlers
 
-        //handlers to pull from can be found in ___
-        onShapeDelete={mapRecordsContext.leafletEditableHandlers.onShapeDelete}
-        onShapeDeleted={mapRecordsContext.leafletEditableHandlers.onShapeDeleted}
-        onEditing={mapRecordsContext.leafletEditableHandlers.onEditing}
-        onEnable={mapRecordsContext.leafletEditableHandlers.onEnable}
-        onDisable={mapRecordsContext.leafletEditableHandlers.onDisable}
-        onStartDrawing={mapRecordsContext.leafletEditableHandlers.onStartDrawing}
-        onDrawingClick={mapRecordsContext.leafletEditableHandlers.onDrawingClick}
-        onEndDrawing={mapRecordsContext.leafletEditableHandlers.onEndDrawing}
-        onDrawingCommit={mapRecordsContext.leafletEditableHandlers.onDrawingCommit}
-        onDrawingMouseDown={mapRecordsContext.leafletEditableHandlers.onDrawingMouseDown}
-        onDrawingMouseUp={mapRecordsContext.leafletEditableHandlers.onDrawingMouseUp}
-        onDrawingMove={mapRecordsContext.leafletEditableHandlers.onDrawingMove}
-        onCancelDrawing={mapRecordsContext.leafletEditableHandlers.onCancelDrawing}
-        onDragStart={mapRecordsContext.leafletEditableHandlers.onDragStart}
-        onDrag={mapRecordsContext.leafletEditableHandlers.onDrag}
-        onDragEnd={mapRecordsContext.leafletEditableHandlers.onDragEnd}
-        onVertexMarkerDrag={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDrag}
-        onVertexMarkerDragStart={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDragStart}
-        onVertexMarkerDragEnd={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDragEnd}
-        onVertextCtrlClick={mapRecordsContext.leafletEditableHandlers.onVertextCtrlClick}
-        onNewVertex={mapRecordsContext.leafletEditableHandlers.onNewVertex}
-        onVertexMarkerClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerClick}
-        onVertexRawMarkerClick={mapRecordsContext.leafletEditableHandlers.onVertexRawMarkerClick}
-        onVertexDeleted={mapRecordsContext.leafletEditableHandlers.onVertexDeleted}
-        onVertexMarkerCtrlClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerCtrlClick}
-        onVertexMarkerShiftClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerShiftClick}
-        onVertexMarkerMetaKeyClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMetaKeyClick}
-        onVertexMarkerAltClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerAltClick}
-        onVertexMarkerContextMenu={mapRecordsContext.leafletEditableHandlers.onVertexMarkerContextMenu}
-        onVertexMarkerMouseDown={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseDown}
-        onVertexMarkerMouseOver={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseOver}
-        onVertexMarkerMouseOut={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseOut}
-        onMiddleMarkerMouseDown={mapRecordsContext.leafletEditableHandlers.onMiddleMarkerMouseDown}
-        //mapRecordsContext.editRef?.current?.clearAll();
-      >
-        <ReactLeafletMapContainer
-          editable={true}
-          center={props.center ? props.center : [55, -128]}
-          zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
-          bounceAtZoomLimits={true}
-          maxZoom={mapMaxZoom}
-          minZoom={6}
-          style={{ height: 'calc(100%)', width: '100%' }}
-          zoomControl={false}
-          whenCreated={setMap}
-          preferCanvas={true}
-          tap={true}>
-          <FlyToAndFadeContextProvider>
-            <MapRequestContextProvider>
-              {useMemo(
-                () => (
-                  <Layers inputGeo={props.geometryState.geometry} />
-                ),
-                [props.geometryState.geometry]
-              )}
-              <ZoomButtons position="bottomleft" />
-              <ScaleControl position="bottomleft" imperial={false} />
+      //handlers to pull from can be found in ___
+      onShapeDelete={mapRecordsContext.leafletEditableHandlers.onShapeDelete}
+      onShapeDeleted={mapRecordsContext.leafletEditableHandlers.onShapeDeleted}
+      onEditing={mapRecordsContext.leafletEditableHandlers.onEditing}
+      onEnable={mapRecordsContext.leafletEditableHandlers.onEnable}
+      onDisable={mapRecordsContext.leafletEditableHandlers.onDisable}
+      onStartDrawing={mapRecordsContext.leafletEditableHandlers.onStartDrawing}
+      onDrawingClick={mapRecordsContext.leafletEditableHandlers.onDrawingClick}
+      onEndDrawing={mapRecordsContext.leafletEditableHandlers.onEndDrawing}
+      onDrawingCommit={mapRecordsContext.leafletEditableHandlers.onDrawingCommit}
+      onDrawingMouseDown={mapRecordsContext.leafletEditableHandlers.onDrawingMouseDown}
+      onDrawingMouseUp={mapRecordsContext.leafletEditableHandlers.onDrawingMouseUp}
+      onDrawingMove={mapRecordsContext.leafletEditableHandlers.onDrawingMove}
+      onCancelDrawing={mapRecordsContext.leafletEditableHandlers.onCancelDrawing}
+      onDragStart={mapRecordsContext.leafletEditableHandlers.onDragStart}
+      onDrag={mapRecordsContext.leafletEditableHandlers.onDrag}
+      onDragEnd={mapRecordsContext.leafletEditableHandlers.onDragEnd}
+      onVertexMarkerDrag={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDrag}
+      onVertexMarkerDragStart={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDragStart}
+      onVertexMarkerDragEnd={mapRecordsContext.leafletEditableHandlers.onVertexMarkerDragEnd}
+      onVertextCtrlClick={mapRecordsContext.leafletEditableHandlers.onVertextCtrlClick}
+      onNewVertex={mapRecordsContext.leafletEditableHandlers.onNewVertex}
+      onVertexMarkerClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerClick}
+      onVertexRawMarkerClick={mapRecordsContext.leafletEditableHandlers.onVertexRawMarkerClick}
+      onVertexDeleted={mapRecordsContext.leafletEditableHandlers.onVertexDeleted}
+      onVertexMarkerCtrlClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerCtrlClick}
+      onVertexMarkerShiftClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerShiftClick}
+      onVertexMarkerMetaKeyClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMetaKeyClick}
+      onVertexMarkerAltClick={mapRecordsContext.leafletEditableHandlers.onVertexMarkerAltClick}
+      onVertexMarkerContextMenu={mapRecordsContext.leafletEditableHandlers.onVertexMarkerContextMenu}
+      onVertexMarkerMouseDown={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseDown}
+      onVertexMarkerMouseOver={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseOver}
+      onVertexMarkerMouseOut={mapRecordsContext.leafletEditableHandlers.onVertexMarkerMouseOut}
+      onMiddleMarkerMouseDown={mapRecordsContext.leafletEditableHandlers.onMiddleMarkerMouseDown}
+      //mapRecordsContext.editRef?.current?.clearAll();
+    >
+      <ReactLeafletMapContainer
+        editable={true}
+        center={props.center ? props.center : [55, -128]}
+        zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
+        bounceAtZoomLimits={true}
+        maxZoom={mapMaxZoom}
+        minZoom={6}
+        style={{ height: 'calc(100%)', width: '100%' }}
+        zoomControl={false}
+        whenCreated={setMap}
+        preferCanvas={true}
+        tap={true}>
+        <FlyToAndFadeContextProvider>
+          <MapRequestContextProvider>
+            {useMemo(
+              () => (
+                <Layers inputGeo={props.geometryState.geometry} />
+              ),
+              [props.geometryState.geometry]
+            )}
+            <ZoomButtons position="bottomleft" />
+            <ScaleControl position="bottomleft" imperial={false} />
 
-              {props.showDrawControls && (
-                <FeatureGroup>
-                  <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-                </FeatureGroup>
-              )}
+            {props.showDrawControls && (
+              <FeatureGroup>
+                <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
+              </FeatureGroup>
+            )}
 
-              {/* Offline component */}
-              <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} />
+            {/* Offline component */}
+            <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} map={map} />
 
-              {/* List of functions is located in this component */}
-              {useMemo(() => {
-                return (
-                  <ToolbarContainer
-                    position="topright"
-                    id={props.activityId}
-                    map={map}
-                    inputGeo={props.geometryState.geometry}
-                    mapMaxNativeZoom={mapMaxNativeZoom}
-                    setMapMaxNativeZoom={setMapMaxNativeZoom}
-                  />
-                );
-              }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
+            {/* List of functions is located in this component */}
+            {useMemo(() => {
+              return (
+                <ToolbarContainer
+                  position="topright"
+                  id={props.activityId}
+                  map={map}
+                  inputGeo={props.geometryState.geometry}
+                  mapMaxNativeZoom={mapMaxNativeZoom}
+                  setMapMaxNativeZoom={setMapMaxNativeZoom}
+                />
+              );
+            }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
               <MapResizer />
               {/* <MapRecordsDataGrid /> */}
