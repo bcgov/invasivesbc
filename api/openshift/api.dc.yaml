@@ -177,6 +177,8 @@ objects:
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP
+                - containerPort: 8500
+                  protocol: TCP
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
