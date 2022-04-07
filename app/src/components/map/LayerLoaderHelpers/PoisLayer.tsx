@@ -2,7 +2,7 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
-import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
+import { GeoJSON, Marker, useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -97,7 +97,8 @@ export const PoisLayer = (props) => {
         <>
           {pois.features.map((feature) => {
             console.log('feature', feature);
-            return <GeoJSON data={feature} />;
+            const coords = feature.geometry.coordinates;
+            return <Marker icon={markerIcon} position={[coords[1], coords[0]]} />;
           })}
         </>
       )}
