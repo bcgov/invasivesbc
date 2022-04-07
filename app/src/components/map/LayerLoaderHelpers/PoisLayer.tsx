@@ -2,7 +2,7 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
-import { GeoJSON, Marker, useMap, useMapEvent } from 'react-leaflet';
+import { GeoJSON, Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
@@ -42,7 +42,6 @@ export const PoisLayer = (props) => {
   }, [map]);
 
   const fetchData = async () => {
-    console.log('fetching...');
     const poisData = await dataAccess.getPointsOfInterestLean({
       search_feature: mapBounds,
       isIAPP: true,
@@ -51,7 +50,19 @@ export const PoisLayer = (props) => {
 
     const poisFeatureArray = [];
     poisData?.rows?.forEach((row) => {
-      if (row.geom) poisFeatureArray.push(row.geom);
+      if (row.geom) {
+        const object = {
+          geometry: row.geom.geometry,
+          properties: {
+            point_of_interest_id: row.point_of_interest_id,
+            point_of_interest_payload: row.point_of_interest_payload,
+            point_of_interest_subtype: row.point_of_interest_subtype,
+            species_on_site: row.species_on_site
+          },
+          type: row.geom.type
+        };
+        poisFeatureArray.push(object);
+      }
     });
 
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
@@ -96,9 +107,13 @@ export const PoisLayer = (props) => {
       {map.getZoom() > 14 && (
         <>
           {pois.features.map((feature) => {
-            console.log('feature', feature);
             const coords = feature.geometry.coordinates;
-            return <Marker icon={markerIcon} position={[coords[1], coords[0]]} />;
+            console.log(feature);
+            return (
+              <Marker icon={markerIcon} position={[coords[1], coords[0]]}>
+                <Tooltip direction="top">{feature.properties.species_on_site.toString()}</Tooltip>
+              </Marker>
+            );
           })}
         </>
       )}
