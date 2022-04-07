@@ -2,10 +2,23 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
-import { GeoJSON, Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
+import IAPPSiteMarker from '../Icons/pinned.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+
+const IAPPSite = L.icon({
+  iconUrl: IAPPSiteMarker,
+  //shadowUrl: 'leaf-shadow.png',
+  iconSize: [38, 95], // size of the icon
+  //shadowSize: [50, 64], // size of the shadow
+  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+  //shadowAnchor: [4, 62], // the same for the shadow
+  popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+  className: 'greenIconFilter'
+});
 
 export const PoisLayer = (props) => {
   const map = useMap();
@@ -34,7 +47,11 @@ export const PoisLayer = (props) => {
   };
 
   useMapEvent('moveend', () => {
-    if (map.getZoom() > 14) fetchData();
+    if (map.getZoom() > 9) fetchData();
+  });
+
+  useMapEvent('zoomend', () => {
+    if (map.getZoom() < 10) fetchData();
   });
 
   useEffect(() => {
@@ -103,12 +120,24 @@ export const PoisLayer = (props) => {
         </>
         )*/}
       {/* Close Zoom Renders */}
-      {map.getZoom() < 15 && <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />}
+      {map.getZoom() < 10 && <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />}
+      {map.getZoom() > 9 && map.getZoom() < 15 && (
+        <MarkerClusterGroup chunkedLoading>
+          {pois.features.map((feature) => {
+            const coords = feature.geometry.coordinates;
+            return (
+              <Marker
+                key={feature.properties.point_of_interest_id}
+                position={[coords[1], coords[0]]}
+                icon={IAPPSite}></Marker>
+            );
+          })}
+        </MarkerClusterGroup>
+      )}
       {map.getZoom() > 14 && (
         <>
           {pois.features.map((feature) => {
             const coords = feature.geometry.coordinates;
-            console.log(feature);
             return (
               <Marker icon={markerIcon} position={[coords[1], coords[0]]}>
                 <Tooltip direction="top">{feature.properties.species_on_site.toString()}</Tooltip>
