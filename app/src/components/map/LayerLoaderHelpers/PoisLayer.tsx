@@ -61,8 +61,10 @@ export const PoisLayer = (props) => {
   useEffect(() => {
     fetchData();
   }, [map]);
+
   useEffect(() => {
     fetchData();
+    console.log(mapBounds);
   }, [mapBounds]);
 
   const fetchData = async () => {
