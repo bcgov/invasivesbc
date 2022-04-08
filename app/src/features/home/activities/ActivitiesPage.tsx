@@ -44,10 +44,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   toggleButton: {
     position: 'absolute',
-    top: '-38px',
+    top: '-37px',
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    boxShadow: 'none'
+    background: theme.palette.background.default,
+    boxShadow: 'none',
+    '&:hover': {
+      background: 'skyblue'
+    }
   },
   mapContainer: {
     flex: 1,

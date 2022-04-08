@@ -8,7 +8,8 @@ import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import L from 'leaflet';
@@ -44,12 +45,12 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
     marginRight: 10,
     zIndex: 1500,
     width: 40,
-    transition: 'transform 200ms ease-in-out',
+    transition: 'all 200ms ease-in-out',
     height: 40,
     spacing: 'space-around',
     backgroundColor: theme.palette.background.default,
     '&:hover': {
-      background: theme.palette.background.default
+      background: 'skyblue'
     }
   }
 }));
@@ -86,9 +87,8 @@ export const ToolbarContainer = (props) => {
         onClick={() => {
           handleExpand();
         }}
-        className={classes.toggleMenuBTN + ' leaflet-control'}
-        style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-        <KeyboardArrowLeftIcon />
+        className={classes.toggleMenuBTN + ' leaflet-control'}>
+        {expanded ? <CloseIcon /> : <MenuIcon />}
       </IconButton>
       <List
         ref={divRef}
