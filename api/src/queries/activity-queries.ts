@@ -206,9 +206,23 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL`)`);
   }
 
-  if (searchCriteria.created_by) {
-    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
+  if (searchCriteria.created_by && searchCriteria.created_by.length) {
+    sqlStatement.append(SQL` AND created_by IN (`);
+
+    // add the first activity subtype, which does not get a comma prefix
+    sqlStatement.append(SQL`${searchCriteria.created_by[0]}`);
+
+    for (let idx = 1; idx < searchCriteria.created_by.length; idx++) {
+      // add all subsequent activity subtypes, which do get a comma prefix
+      sqlStatement.append(SQL`, ${searchCriteria.created_by[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
   }
+
+  /*  if (searchCriteria.created_by) {
+    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
+  }*/
 
   if (searchCriteria.date_range_start) {
     sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
