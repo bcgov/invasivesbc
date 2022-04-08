@@ -12,6 +12,7 @@ import {
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
+  WMSTileLayer,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
@@ -243,7 +244,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 );
               }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
-              {props.children}
               <MapResizer />
               {/* <MapRecordsDataGrid /> */}
               {useMemo(
@@ -252,6 +252,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 ),
                 [props.geometryState.geometry]
               )}
+              {props.children}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>

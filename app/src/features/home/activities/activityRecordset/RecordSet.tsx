@@ -6,6 +6,7 @@ import { Accordion, AccordionDetails, Grid } from '@mui/material';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { userInfo } from 'os';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { blue, green, red, brown, purple } from '@mui/material/colors';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -28,10 +29,10 @@ export const RecordSet = (props) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [mapToggle, setMapToggle] = useState(false);
-  const [colour, setColour] = useState('blue');
+  const [color, setColor] = useState(blue[500]);
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
   const [advancedFilters, setAdvancedFilters] = useState([]);
-  const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
+  const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const recordSetContext = useContext(RecordSetContext);
   const { remove, recordSetState } = recordSetContext;
@@ -53,8 +54,8 @@ export const RecordSet = (props) => {
         case 'mapToggle':
           setMapToggle(initial);
           break;
-        case 'colour':
-          setColour(initial);
+        case 'color':
+          setColor(initial);
           break;
         case 'recordSetName':
           setRecordSetName(initial);
@@ -85,8 +86,8 @@ export const RecordSet = (props) => {
           case 'mapToggle':
             newState['mapToggle'] = mapToggle;
             break;
-          case 'colour':
-            newState['colour'] = colour;
+          case 'color':
+            newState['color'] = color;
             break;
           case 'recordSetName':
             newState['recordSetName'] = recordSetName;
@@ -107,14 +108,14 @@ export const RecordSet = (props) => {
   useEffect(() => {
     getInitialPropertyState('expanded');
     getInitialPropertyState('mapToggle');
-    getInitialPropertyState('colour');
+    getInitialPropertyState('color');
     getInitialPropertyState('recordSetName');
     getInitialPropertyState('advancedFilters');
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName', 'advancedFilters']);
-  }, [expanded, mapToggle, colour, recordSetName, advancedFilters]);
+    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters']);
+  }, [expanded, mapToggle, color, recordSetName, advancedFilters]);
 
   return useMemo(
     () => (
@@ -129,8 +130,8 @@ export const RecordSet = (props) => {
             setName={props.setName}
             setRecordSetName={setRecordSetName}
             colours={colours}
-            colour={colour}
-            setColour={setColour}
+            color={color}
+            setColor={setColor}
             mapToggle={mapToggle}
             setMapToggle={setMapToggle}
             expanded={expanded}

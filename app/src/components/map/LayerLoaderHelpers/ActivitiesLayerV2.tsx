@@ -11,26 +11,33 @@ export const ActivitiesLayerV2 = (props: any) => {
   const map = useMap();
   const [activities, setActivities] = useState(null);
   const dataAccess = useDataAccess();
-  const options = {
-    maxZoom: 24,
-    tolerance: 3,
-    debug: 0,
-    style: {
-      fillColor: props.color_code || '#0000ff',
-      color: props.color_code || '#0000ff',
-      stroke: true,
-      opacity: props.opacity,
-      fillOpacity: props.opacity / 2,
-      weight: 5,
-      zIndex: 1000000
-    }
-  };
+  const options = useMemo(() => {
+    return {
+      //maxZoom: 2,
+      tolerance: 3,
+      debug: 0,
+      style: {
+        fillColor: props.color.toUpperCase(),
+        color: props.color.toUpperCase(),
+        strokeColor: props.color.toUpperCase(),
+        stroke: true,
+        opacity: props.opacity,
+        fillOpacity: props.opacity / 2,
+        weight: 5,
+        zIndex: props.zIndex
+      }
+    };
+  }, [props.color]);
 
   const filters: IActivitySearchCriteria = props.filters;
+  //  console.log('filters for api');
+  // console.dir(filters);
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({
       ...filters
     });
+    //  console.log('fetched activities');
+    //  console.dir(activitiesData);
     const activitiesFeatureArray = [];
     activitiesData?.rows?.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
@@ -42,16 +49,13 @@ export const ActivitiesLayerV2 = (props: any) => {
     fetchData();
   }, [props.filters]);
 
-  console.dir(activities);
-
-  const ReturnVal = useMemo(() => {
-    return (
-      <>
-        {
-          activities && <GeoJSONVtLayer geoJSON={activities} zIndex={props.zIndex} options={options} /> //NOSONAR
-        }
-      </>
-    );
-  }, [JSON.stringify(props.filters), JSON.stringify(props.color)]);
-  return ReturnVal;
+  return useMemo(() => {
+    if (activities) {
+      console.log('color from inside activities 2:');
+      console.log(props.color.toUpperCase());
+      console.log('activities: ' + activities.features.length);
+      console.dir(activities);
+      return <GeoJSONVtLayer key={Math.random()} geoJSON={activities} zIndex={props.zIndex} options={options} />;
+    } else return <></>;
+  }, [JSON.stringify(props.filters), JSON.stringify(props.color), JSON.stringify(activities)]);
 };
