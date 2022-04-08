@@ -16,6 +16,7 @@ import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material';
+import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -59,6 +60,8 @@ export const ToolbarContainer = (props) => {
   const mapRequestContext = useContext(MapRequestContext);
   const { setMapZoom } = mapRequestContext;
 
+  const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
+
   const mapObj = useMap();
   useMapEvent('zoomend' as any, () => {
     setMapZoom(mapObj.getZoom());
@@ -81,33 +84,36 @@ export const ToolbarContainer = (props) => {
   });
 
   return (
-    <div ref={divRef} key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
-      <IconButton
-        id="toolbar-drawer-button"
-        onClick={() => {
-          handleExpand();
-        }}
-        className={classes.toggleMenuBTN + ' leaflet-control'}>
-        {expanded ? <CloseIcon /> : <MenuIcon />}
-      </IconButton>
-      <List
-        ref={divRef}
-        key={'toolbar2'}
-        className={classes.innerToolBarContainer + ' leaflet-control'}
-        style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
-        <LayerPicker inputGeo={props.inputGeo} />
-        <Divider />
-        <SetPointOnClick map={props.map} />
-        <MeasureTool />
-        <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-        {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
-        {/* <NewRecord />
+    <>
+      <div ref={divRef} key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+        <IconButton
+          id="toolbar-drawer-button"
+          onClick={() => {
+            handleExpand();
+          }}
+          className={classes.toggleMenuBTN + ' leaflet-control'}>
+          {expanded ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
+        <List
+          ref={divRef}
+          key={'toolbar2'}
+          className={classes.innerToolBarContainer + ' leaflet-control'}
+          style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
+          <LayerPicker inputGeo={props.inputGeo} />
+          <Divider />
+          <SetPointOnClick map={props.map} />
+          <MeasureTool setMeasureToolContainerOpen={setMeasureToolContainerOpen} />
+          <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
+          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          {/* <NewRecord />
         <EditRecord />
         <MultiSelectOrEdit />
         <DrawButtonList /> */}
 
-        <JumpToActivity id={props.id} />
-      </List>
-    </div>
+          <JumpToActivity id={props.id} />
+        </List>
+      </div>
+      <MeasureToolContainer measureToolContainerOpen={measureToolContainerOpen} />
+    </>
   );
 };
