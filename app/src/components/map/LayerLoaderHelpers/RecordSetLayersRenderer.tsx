@@ -12,8 +12,7 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const RecordSetLayersRenderer = (props: any) => {
-  const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
-  const da = useDataAccess();
+  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
   const recordsetContext = useContext(RecordSetContext);
   const [layersToRender, setLayersToRender] = useState([]);
   interface ILayerToRender {
@@ -22,17 +21,14 @@ export const RecordSetLayersRenderer = (props: any) => {
     setName: string;
   }
   useEffect(() => {
+    console.log('****record set layer renderer record state***');
     console.dir(recordsetContext.recordSetState);
     const sets = Object.keys(recordsetContext.recordSetState);
     if (!sets || !sets.length) {
       return;
     }
-    console.dir(sets);
 
     const layers = sets.map((s) => {
-      console.log(s);
-      console.dir(s);
-      console.log(recordsetContext.recordSetState[s].advancedFilters);
       let l: any = {};
       l.filters = getSearchCriteriaFromFilters(
         recordsetContext.recordSetState[s].advancedFilters,
@@ -40,21 +36,29 @@ export const RecordSetLayersRenderer = (props: any) => {
         recordsetContext,
         s
       );
-      l.color = 'blue';
+      l.color = recordsetContext.recordSetState[s].color;
       l.setName = s;
       return l;
     });
 
-    console.log('layers');
-    console.dir(layers);
     setLayersToRender([...layers]);
-  }, []);
+  }, [recordsetContext.recordSetState]);
 
   return (
     <>
       {layersToRender.map((l) => {
-        if (l && l.filters) {
-          return <ActivitiesLayerV2 key={'activitiesv2filter' + l} filters={l.filters} color={l.color} />;
+        if (l && l.filters && l.color) {
+          return (
+            <ActivitiesLayerV2
+              key={'activitiesv2filter' + l.setName}
+              filters={l.filters}
+              zIndex={999999999}
+              color={l.color}
+              opacity={0.4}
+            />
+          );
+        } else {
+          return <></>;
         }
       })}
     </>

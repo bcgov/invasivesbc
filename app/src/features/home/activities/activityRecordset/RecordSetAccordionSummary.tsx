@@ -85,11 +85,11 @@ const RecordSetAccordionSummary = (props) => {
           //className={classes.mainHeader}
           onClick={(e) => {
             e.stopPropagation();
-            const currentIndex = props.colours.indexOf(props.colour);
+            const currentIndex = props.colours.indexOf(props.color);
             const nextIndex = (currentIndex + 1) % props.colours.length;
-            props.setColour(props.colours[nextIndex]);
+            props.setColor(props.colours[nextIndex]);
           }}
-          style={{ backgroundColor: props.colour }}
+          style={{ backgroundColor: props.color }}
           variant="contained">
           <ColorLensIcon />
         </Button>
