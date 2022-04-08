@@ -1,4 +1,4 @@
-import { Button, Grid, Theme, Typography, Card } from '@mui/material';
+import { Button, Grid, Theme, Typography, Card, Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -16,9 +16,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: 150
   },
   button: {
+    marginRight: '5px',
     display: 'flex',
     justifyContent: 'flex-start',
     width: 150
+  },
+  container: {
+    position: 'absolute',
+    padding: '1rem',
+    margin: '0.5rem',
+    transition: 'all 200ms ease-in-out'
   }
 }));
 
@@ -131,11 +138,16 @@ const MeasureToolContainer = (props: any) => {
   const [locArray, setLocArray] = useState([]);
   const [aGeoJSON, setGeoJSON] = useState([]);
   const distance = { totalDistance, setTotalDistance };
-  const divRef = useRef(null);
+  const divRef = useRef();
   const map = useMap();
 
   useEffect(() => {
-    console.log('measureToolContainerOpen', props.measureToolContainerOpen);
+    if (!props.measureToolContainerOpen) {
+      setIsMeasuringArea(false);
+      setIsMeasuringDistance(false);
+      setPolyArea(0);
+      setTotalDistance(0);
+    }
   }, [props.measureToolContainerOpen]);
 
   const markerIcon = L.icon({
@@ -164,9 +176,11 @@ const MeasureToolContainer = (props: any) => {
   });
 
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef.current);
-    L.DomEvent.disableScrollPropagation(divRef.current);
-  }, []);
+    if (divRef.current) {
+      L.DomEvent.disableClickPropagation(divRef.current);
+      L.DomEvent.disableScrollPropagation(divRef.current);
+    }
+  }, [divRef.current]);
 
   useEffect(() => {
     // need for geoJSON
@@ -199,18 +213,20 @@ const MeasureToolContainer = (props: any) => {
 
   return (
     <>
-      <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
-        {isMeasuringDistance && (
-          <Popup closeOnClick closeOnEscapeKey keepInView>
-            {totalDistance.toFixed(1)} meters
-          </Popup>
-        )}
-        {isMeasuringArea && (
-          <Popup closeOnClick closeOnEscapeKey keepInView>
-            {polyArea.toFixed(2)} meters&#178;
-          </Popup>
-        )}
-      </GeoJSON>
+      {(isMeasuringDistance || isMeasuringArea) && (
+        <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
+          {isMeasuringDistance && (
+            <Popup closeOnClick closeOnEscapeKey keepInView>
+              {totalDistance.toFixed(1)} meters
+            </Popup>
+          )}
+          {isMeasuringArea && (
+            <Popup closeOnClick closeOnEscapeKey keepInView>
+              {polyArea.toFixed(2)} meters&#178;
+            </Popup>
+          )}
+        </GeoJSON>
+      )}
       {isMeasuringArea && (
         <>
           {!finishDraw &&
@@ -219,57 +235,82 @@ const MeasureToolContainer = (props: any) => {
             ))}
         </>
       )}
-      {props.measureToolContainerOpen && (
+      {isMeasuringDistance && (
+        <>
+          {locArray.map((item: { lat: any; lng: any }) => (
+            <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
+          ))}
+        </>
+      )}
+      {
         <Card
           ref={divRef}
-          style={{ position: 'absolute', padding: '1rem', margin: '0.5rem' }}
-          className={'topleft leaflet-control'}>
+          style={{ transform: props.measureToolContainerOpen ? 'translateX(0)' : 'translateX(-150%)' }}
+          className={classes.container + ' topleft leaflet-control'}>
+          <Typography style={{ marginBottom: '1rem' }} variant="h5">
+            Measure Tool
+          </Typography>
           <Grid container direction="column">
-            <Grid item xs={3}>
+            <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
               <Button className={classes.button} onClick={toggleMeasureDistance}>
                 {isMeasuringDistance ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}
                 Distance
               </Button>
-            </Grid>
-
-            <Grid item xs={3}>
               {totalDistance !== 0 && (
                 <Typography className={classes.typography}>{totalDistance.toFixed(2)} m</Typography>
               )}
             </Grid>
 
             <Grid item xs={3}>
-              <Button className={classes.button} onClick={toggleMeasureArea}>
-                {isMeasuringArea ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}
-                Area
-              </Button>
-            </Grid>
-
-            <Grid item xs={3}>
-              {polyArea !== 0 && <Typography className={classes.typography}>{polyArea.toFixed(2)}m&#178;</Typography>}
-            </Grid>
-
-            <Grid item xs={3}>
-              {isMeasuringArea && (
-                <Button
-                  className={classes.button}
-                  onClick={() => {
-                    finishPolygon(aGeoJSON, setGeoJSON, setPolyArea, locArray);
-                    setFinishDraw(true);
-                  }}>
-                  Finish Draw
+              <Box style={{ display: 'flex', alignItems: 'center' }}>
+                <Button className={classes.button} onClick={toggleMeasureArea}>
+                  {isMeasuringArea ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}
+                  Area
                 </Button>
-              )}
+                {polyArea !== 0 && <Typography className={classes.typography}>{polyArea.toFixed(2)}m&#178;</Typography>}
+              </Box>
+              <Box style={{ display: 'flex', alignItems: 'stretch' }}>
+                {isMeasuringArea && (
+                  <>
+                    <Button
+                      variant="contained"
+                      disabled={locArray.length < 3 || finishDraw}
+                      className={classes.button}
+                      onClick={() => {
+                        finishPolygon(aGeoJSON, setGeoJSON, setPolyArea, locArray);
+                        setFinishDraw(true);
+                      }}>
+                      Finish Drawing
+                    </Button>
+                    <Button
+                      variant="contained"
+                      disabled={!finishDraw}
+                      className={classes.button}
+                      onClick={() => {
+                        setFinishDraw(false);
+                        clearMeasure();
+                      }}>
+                      Restart Drawing
+                    </Button>
+                  </>
+                )}
+              </Box>
             </Grid>
 
             <Grid item xs={3}>
-              <Button className={classes.button} onClick={() => clearMeasure()}>
+              <Button
+                color={'secondary'}
+                variant="contained"
+                disabled={locArray.length === 0}
+                className={classes.button}
+                style={{ width: '100%', marginTop: '1rem' }}
+                onClick={() => clearMeasure()}>
                 Clear
               </Button>
             </Grid>
           </Grid>
         </Card>
-      )}
+      }
     </>
   );
 };

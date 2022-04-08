@@ -102,7 +102,10 @@ export const ToolbarContainer = (props) => {
           <LayerPicker inputGeo={props.inputGeo} />
           <Divider />
           <SetPointOnClick map={props.map} />
-          <MeasureTool setMeasureToolContainerOpen={setMeasureToolContainerOpen} />
+          <MeasureTool
+            setMeasureToolContainerOpen={setMeasureToolContainerOpen}
+            measureToolContainerOpen={measureToolContainerOpen}
+          />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
           {/* <NewRecord />

@@ -13,7 +13,10 @@ const MeasureTool = (props: any) => {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      <ListItemButton ref={divRef} onClick={handleClick}>
+      <ListItemButton
+        style={{ backgroundColor: props.measureToolContainerOpen ? 'lightgray' : null }}
+        ref={divRef}
+        onClick={handleClick}>
         <ListItemIcon>
           <img alt={Math.random().toString()} className={toolClass.toolImg} src={ruler} />
         </ListItemIcon>
