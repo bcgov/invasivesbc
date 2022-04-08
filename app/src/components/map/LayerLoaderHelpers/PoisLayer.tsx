@@ -22,7 +22,7 @@ const IAPPSite = L.icon({
 
 export const PoisLayer = (props) => {
   const map = useMap();
-  const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+  const [mapBounds, setMapBounds] = useState(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
   const mapRequestContext = useContext(MapRequestContext);
   const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
@@ -47,16 +47,23 @@ export const PoisLayer = (props) => {
   };
 
   useMapEvent('moveend', () => {
-    if (map.getZoom() > 9) fetchData();
+    if (map.getZoom() > 9) {
+      setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
+    }
   });
 
   useMapEvent('zoomend', () => {
-    if (map.getZoom() < 10) fetchData();
+    if (map.getZoom() < 10) {
+      setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
+    }
   });
 
   useEffect(() => {
     fetchData();
   }, [map]);
+  useEffect(() => {
+    fetchData();
+  }, [mapBounds]);
 
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean({
