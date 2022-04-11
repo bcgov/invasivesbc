@@ -650,7 +650,8 @@ export function getTargetPhenologySumValidator(): rjsfValidator {
       !formData ||
       !formData.activity_subtype_data ||
       !formData.activity_subtype_data.Target_Plant_Phenology ||
-      !formData.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded
+      !formData.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded ||
+      formData.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded === 'No'
     ) {
       return errors;
     }
