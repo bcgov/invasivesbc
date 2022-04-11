@@ -11,14 +11,13 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import BC_AREA from '../BC_AREA.json';
 
 const IAPPSite = L.icon({
-  iconUrl: IAPPSiteMarker,
+  iconUrl: marker,
   //shadowUrl: 'leaf-shadow.png',
-  iconSize: [38, 95], // size of the icon
+  iconSize: [20, 20], // size of the icon
   //shadowSize: [50, 64], // size of the shadow
-  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+  iconAnchor: [20, 20], // point of the icon which will correspond to marker's location
   //shadowAnchor: [4, 62], // the same for the shadow
-  popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-  className: 'greenIconFilter'
+  popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 
 export const PoisLayer = (props) => {
@@ -32,36 +31,37 @@ export const PoisLayer = (props) => {
 
   const markerIcon = L.icon({
     iconUrl: marker,
-    iconSize: [16, 16]
+    iconSize: [20, 20]
   });
   const options = {
     maxZoom: 24,
     tolerance: 3,
     debug: 0,
     style: {
+      zIndex: props.zIndex,
       fillColor: '#2CFA1F',
       color: '#2CFA1F',
       stroke: true,
       opacity: props.opacity,
-      fillOpacity: props.opacity - 0.2,
+      fillOpacity: props.opacity - 5,
       weight: 5
     }
   };
 
-  useMapEvent('moveend', () => {
+  const settingBounds = () => {
     if (map.getZoom() > 9) {
       setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
     }
-  });
+  };
 
-  useMapEvent('zoomend', () => {
-    if (map.getZoom() > 9) {
-      setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
-    }
-  });
+  useMapEvent('moveend', settingBounds);
+
+  useMapEvent('zoomend', settingBounds);
 
   useEffect(() => {
-    fetchData(map.getZoom() === 6);
+    if (!vPOIs) {
+      fetchData(map.getZoom() === 6);
+    }
   }, [map]);
 
   useEffect(() => {
