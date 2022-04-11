@@ -50,7 +50,8 @@ export const RecordSetProvider = (props) => {
       [JSON.stringify(Object.keys(prev).length + 1)]: {
         recordSetName: 'New Record Set',
         advancedFilters: [],
-        gridFilters: {}
+        gridFilters: {},
+        drawOrder: Object.keys(prev).length + 1
       }
     }));
   };

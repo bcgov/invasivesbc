@@ -236,6 +236,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
+      defaultLog.info({
+        label: 'activities-lean',
+        message: 'response',
+        body: count
+      });
 
       return res.status(200).json({
         message: 'Got activities by search filter criteria',

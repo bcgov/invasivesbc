@@ -38,6 +38,7 @@ export const RecordSetLayersRenderer = (props: any) => {
       );
       l.color = recordsetContext.recordSetState[s].color;
       l.setName = s;
+      l.drawOrder = recordsetContext.recordSetState[s].drawOrder;
       return l;
     });
 
@@ -52,7 +53,7 @@ export const RecordSetLayersRenderer = (props: any) => {
             <ActivitiesLayerV2
               key={'activitiesv2filter' + l.setName}
               filters={l.filters}
-              zIndex={999999999}
+              zIndex={999999999 - l.drawOrder}
               color={l.color}
               opacity={0.4}
             />
