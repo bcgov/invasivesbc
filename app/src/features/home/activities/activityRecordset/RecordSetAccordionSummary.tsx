@@ -12,8 +12,35 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
+import Reorderer from 'reorderer';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { RecordSetContext } from 'contexts/recordSetContext';
+
+const OrderSelector = (props) => {
+  return (
+    <Box sx={{ height: 50, width: 50 }}>
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          props.moveUp();
+        }}>
+        <ArrowDropUpIcon />
+      </IconButton>
+
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          props.moveDown();
+        }}>
+        <ArrowDropDownIcon />
+      </IconButton>
+      {props.drawOrder}
+    </Box>
+  );
+};
 
 const RecordSetAccordionSummary = (props) => {
   const [newName, setNewName] = useState(props.recordSetName);
@@ -93,7 +120,6 @@ const RecordSetAccordionSummary = (props) => {
           variant="contained">
           <ColorLensIcon />
         </Button>
-
         <Button onClick={(e) => e.stopPropagation()} variant="outlined">
           <LayersIcon />
           <Checkbox
@@ -105,6 +131,7 @@ const RecordSetAccordionSummary = (props) => {
             }}
           />
         </Button>
+        <OrderSelector moveUp={props.moveUp} moveDown={props.moveDown} drawOrder={props.drawOrder} />{' '}
         {props.canRemove ? (
           <Button
             onClick={(e) => {

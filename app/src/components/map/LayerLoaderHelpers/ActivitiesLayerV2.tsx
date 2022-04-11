@@ -57,5 +57,5 @@ export const ActivitiesLayerV2 = (props: any) => {
       console.dir(activities);
       return <GeoJSONVtLayer key={Math.random()} geoJSON={activities} zIndex={props.zIndex} options={options} />;
     } else return <></>;
-  }, [JSON.stringify(props.filters), JSON.stringify(props.color), JSON.stringify(activities)]);
+  }, [JSON.stringify(props.filters), JSON.stringify(props.color), JSON.stringify(activities), props.zIndex]);
 };

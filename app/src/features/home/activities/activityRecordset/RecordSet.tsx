@@ -28,6 +28,7 @@ export const RecordSet = (props) => {
   }));
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
   const [color, setColor] = useState(blue[500]);
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
@@ -50,6 +51,9 @@ export const RecordSet = (props) => {
       switch (propertyName) {
         case 'expanded':
           setExpanded(initial);
+          break;
+        case 'drawOrder':
+          setDrawOrder(initial);
           break;
         case 'mapToggle':
           setMapToggle(initial);
@@ -83,6 +87,9 @@ export const RecordSet = (props) => {
           case 'expanded':
             newState['expanded'] = expanded;
             break;
+          case 'drawOrder':
+            newState['drawOrder'] = drawOrder;
+            break;
           case 'mapToggle':
             newState['mapToggle'] = mapToggle;
             break;
@@ -107,6 +114,7 @@ export const RecordSet = (props) => {
 
   useEffect(() => {
     getInitialPropertyState('expanded');
+    getInitialPropertyState('drawOrder');
     getInitialPropertyState('mapToggle');
     getInitialPropertyState('color');
     getInitialPropertyState('recordSetName');
@@ -114,8 +122,8 @@ export const RecordSet = (props) => {
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters']);
-  }, [expanded, mapToggle, color, recordSetName, advancedFilters]);
+    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters', 'drawOrder']);
+  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder]);
 
   return useMemo(
     () => (
@@ -134,6 +142,13 @@ export const RecordSet = (props) => {
             setColor={setColor}
             mapToggle={mapToggle}
             setMapToggle={setMapToggle}
+            drawOrder={drawOrder}
+            moveUp={() => {
+              setDrawOrder(drawOrder + 1);
+            }}
+            moveDown={() => {
+              setDrawOrder(drawOrder - 1);
+            }}
             expanded={expanded}
             remove={remove}
             canRemove={props.canRemove}
