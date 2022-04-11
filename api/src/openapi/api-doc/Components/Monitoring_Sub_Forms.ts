@@ -200,7 +200,9 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'plant_count',
     'start_time',
     'stop_time',
-    'biological_agent_code'
+    'biological_agent_code',
+    'monitoring_type',
+    'biocontrol_monitoring_methods_code'
   ],
   dependencies: {
     monitoring_type: {
@@ -383,13 +385,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       type: 'string',
       format: 'date-time',
       title: 'Monitoring Stop time '
-    },
-    legacy_presence_ind: {
-      type: 'string',
-      title: 'Legacy Presence',
-      enum: ['Yes', 'No', 'Unknown'],
-      default: 'No',
-      'x-tooltip-text': 'Please indicate the presence of legacy IAPP records'
     }
   }
 };
