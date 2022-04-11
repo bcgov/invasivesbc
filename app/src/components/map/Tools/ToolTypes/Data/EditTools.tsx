@@ -5,6 +5,8 @@ import bbox from '@turf/bbox';
 import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
 import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import React, { useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
@@ -170,6 +172,13 @@ const EditTools = (props: any) => {
     }
   };
 
+  // define default marker icon to override src defined in leaflet.css
+  const DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconAnchor: [12, 41]
+  });
+
   const updateMapOnGeometryChange = () => {
     // upload from geometrystate props
     // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
@@ -291,6 +300,9 @@ const EditTools = (props: any) => {
         circlemarker: false,
         polyline: {
           disabled: true
+        },
+        marker: {
+          icon: DefaultIcon
         }
       },
       edit: {
