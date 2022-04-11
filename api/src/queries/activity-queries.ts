@@ -1,4 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { getLogger } from '../utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity';
 
 /**
@@ -182,7 +183,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL` AND activity_type IN (`);
 
     // add the first activity type, which does not get a comma prefix
-    sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
+    //sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
 
     for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
       // add all subsequent activity types, which do get a comma prefix
@@ -232,11 +233,20 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
   }
 
-  if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
+  /* if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
     sqlStatement.append(SQL` AND a.activity_id IN (`);
     sqlStatement.append(SQL`${searchCriteria.activity_ids[0]}`);
     for (let idx = 1; idx < searchCriteria.activity_ids.length; idx++) {
       sqlStatement.append(SQL`, ${searchCriteria.activity_ids[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+  */
+  if (searchCriteria.form_status && searchCriteria.form_status.length) {
+    sqlStatement.append(SQL` AND form_status IN (`);
+    sqlStatement.append(SQL`${searchCriteria.form_status[0]}`);
+    for (let idx = 1; idx < searchCriteria.form_status.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.form_status[idx]}`);
     }
     sqlStatement.append(SQL`)`);
   }
@@ -270,6 +280,27 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   }
 
   sqlStatement.append(SQL`;`);
+  const defaultLog = getLogger('acitivies-lean');
+  defaultLog.info({
+    label: 'acitivies-lean',
+    message: 'sql',
+    body: sqlStatement.sql
+  });
+  defaultLog.info({
+    label: 'acitivies-lean',
+    message: 'values',
+    body: sqlStatement.values
+  });
+  defaultLog.info({
+    label: 'acitivies-lean',
+    message: 'text',
+    body: sqlStatement.text
+  });
+  defaultLog.info({
+    label: 'acitivies-lean',
+    message: 'jsonstr',
+    body: JSON.stringify(sqlStatement)
+  });
 
   return sqlStatement;
 };
@@ -442,6 +473,28 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
   }
 
   sqlStatement.append(SQL`;`);
+  /**const defaultLog = getLogger('activities');
+  defaultLog.info({
+    label: 'activities',
+    message: 'sql',
+    body: sqlStatement.sql
+  });
+  defaultLog.info({
+    label: 'activities',
+    message: 'values',
+    body: sqlStatement.values
+  });
+  defaultLog.info({
+    label: 'activities',
+    message: 'text',
+    body: sqlStatement.text
+  });
+  defaultLog.info({
+    label: 'activities',
+    message: 'jsonstr',
+    body: JSON.stringify(sqlStatement)
+  });
+  */
 
   return sqlStatement;
 };
