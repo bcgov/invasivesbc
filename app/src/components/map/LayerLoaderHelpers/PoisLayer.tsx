@@ -8,6 +8,7 @@ import marker from '../Icons/POImarker.png';
 import IAPPSiteMarker from '../Icons/pinned.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import BC_AREA from '../BC_AREA.json';
 
 const IAPPSite = L.icon({
   iconUrl: IAPPSiteMarker,
@@ -27,6 +28,7 @@ export const PoisLayer = (props) => {
   const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
   const dataAccess = useDataAccess();
+  const [vPOIs, setVPOIs] = useState(null);
 
   const markerIcon = L.icon({
     iconUrl: marker,
@@ -53,13 +55,13 @@ export const PoisLayer = (props) => {
   });
 
   useMapEvent('zoomend', () => {
-    if (map.getZoom() < 10) {
+    if (map.getZoom() > 9) {
       setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
     }
   });
 
   useEffect(() => {
-    fetchData();
+    fetchData(map.getZoom() === 6);
   }, [map]);
 
   useEffect(() => {
@@ -67,9 +69,9 @@ export const PoisLayer = (props) => {
     console.log(mapBounds);
   }, [mapBounds]);
 
-  const fetchData = async () => {
+  const fetchData = async (isZoomSix?: boolean) => {
     const poisData = await dataAccess.getPointsOfInterestLean({
-      search_feature: mapBounds,
+      search_feature: isZoomSix ? (BC_AREA.features[0] as any) : mapBounds,
       isIAPP: true,
       point_of_interest_type: props.poi_type
     });
@@ -91,8 +93,11 @@ export const PoisLayer = (props) => {
       }
     });
 
-    setPois({ type: 'FeatureCollection', features: poisFeatureArray });
-
+    if (isZoomSix) {
+      setVPOIs({ type: 'FeatureCollection', features: poisFeatureArray });
+    } else {
+      setPois({ type: 'FeatureCollection', features: poisFeatureArray });
+    }
     const poiArr = poisData?.rows?.map((row) => {
       return {
         id: row.point_of_interest_id,
@@ -129,7 +134,7 @@ export const PoisLayer = (props) => {
         </>
         )*/}
       {/* Close Zoom Renders */}
-      {map.getZoom() < 10 && <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />}
+      {map.getZoom() < 10 && <GeoJSONVtLayer geoJSON={vPOIs} zIndex={props.zIndex} options={options} />}
       {map.getZoom() > 9 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois.features.map((feature) => {
