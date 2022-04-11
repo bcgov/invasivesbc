@@ -134,7 +134,7 @@ export const PoisLayer = (props) => {
         </>
         )*/}
       {/* Close Zoom Renders */}
-      {map.getZoom() < 10 && <GeoJSONVtLayer geoJSON={vPOIs} zIndex={props.zIndex} options={options} />}
+      {map.getZoom() < 10 && vPOIs && <GeoJSONVtLayer geoJSON={vPOIs} zIndex={props.zIndex} options={options} />}
       {map.getZoom() > 9 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois.features.map((feature) => {
