@@ -21,6 +21,8 @@ import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/Displ
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Geolocation } from '@capacitor/geolocation';
 import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -125,8 +127,15 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     map.setView([result[1], result[0]], 17);
   };
 
+  // define default marker icon to override src defined in leaflet.css
+  const DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconAnchor: [12, 41],
+  });
+
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(map, {});
+    const draw = new (L as any).Draw.Marker(map, {icon: DefaultIcon});
     draw.enable();
     setInitialTime(3);
     setStartTimer(true);
@@ -206,7 +215,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                   </Button>
                   <Button
                     onClick={() => {
-                      new (L as any).Draw.Marker(map, {}).enable();
+                      new (L as any).Draw.Marker(map, {
+                        icon: DefaultIcon,
+                      }).enable();
                       setDialog(false);
                     }}>
                     No
