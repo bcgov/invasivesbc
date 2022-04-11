@@ -83,8 +83,9 @@ const Observation = {
 
 const Monitoring = {
   linked_id: { 'ui:widget': 'single-select-autocomplete' },
+  legacy_iapp_id: {},
   activity_persons: {},
-  'ui:order': ['linked_id', 'activity_persons']
+  'ui:order': ['linked_id', 'legacy_iapp_id', 'activity_persons']
 };
 
 const Treatment = {
@@ -194,9 +195,7 @@ const TransectData = {
 const Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   release_quantity: {},
-  agent_location: { 'ui:widget': 'single-select-autocomplete' },
-  plant_position: { 'ui:widget': 'single-select-autocomplete' },
-  'ui:order': ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
+  'ui:order': ['biological_agent_stage_code', 'release_quantity']
 };
 
 const Well_Information = {
@@ -1090,6 +1089,8 @@ const Biocontrol_Collection_Information = {
     stop_time: { 'ui:widget': 'datetime' },
     actual_quantity_and_life_stage_of_agent_collected: {},
     estimated_quantity_and_life_stage_of_agent_collected: {},
+    total_bio_agent_quantity_actual: { 'ui:readonly': true },
+    total_bio_agent_quantity_estimated: { 'ui:readonly': true },
     comment: { 'ui:widget': 'textarea' },
     'ui:order': [
       'invasive_plant_code',
@@ -1103,6 +1104,8 @@ const Biocontrol_Collection_Information = {
       'stop_time',
       'actual_quantity_and_life_stage_of_agent_collected',
       'estimated_quantity_and_life_stage_of_agent_collected',
+      'total_bio_agent_quantity_actual',
+      'total_bio_agent_quantity_estimated',
       'comment'
     ]
   }
