@@ -64,7 +64,7 @@ GET.apiDoc = {
 };
 
 /**
- * Fetches all activity and point of interest ids present in a given Metabase Query, identified by query id.
+ * Create and sign a URL for metabase for the given reportId (assuming it is valid)
  *
  * @return {RequestHandler}
  */
