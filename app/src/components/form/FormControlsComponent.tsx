@@ -87,15 +87,6 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               </Tooltip>
             </Grid>
           )}
-          {sessionStorage.getItem('copiedFormData') &&
-            sessionStorage.getItem('activitySubtype') === props.activitySubtype &&
-            props.onPaste && (
-              <Grid item>
-                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
-                  Paste Form Data
-                </Button>
-              </Grid>
-            )}
 
           {/*
           {props.onSave && (

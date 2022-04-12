@@ -304,32 +304,11 @@ export const Biological_Agent_Stage = {
       minimum: 1,
       maximum: 100000,
       default: 1,
-      'x-tooltip-text': 'Number of agents released (exact or approximate)'
-    },
-    agent_location: {
-      type: 'string',
-      title: 'Agent Location',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'agent_location_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      }
-    },
-    plant_position: {
-      type: 'string',
-      title: 'Plant Position',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'plant_position_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      }
+      'x-tooltip-text':
+        'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
     }
   },
-  required: ['biological_agent_stage_code', 'release_quantity', 'agent_location', 'plant_position']
+  required: ['biological_agent_stage_code', 'release_quantity']
 };
 export const Weather_Conditions = {
   type: 'object',
@@ -348,7 +327,7 @@ export const Weather_Conditions = {
     temperature: {
       type: 'number',
       title: 'Temperature (C°)',
-      'x-tooltip-text': 'Enter the highest temperature (in Celcius) that occurred during the collection period.'
+      'x-tooltip-text': 'Enter the highest temperature (in Celcius) that occurred during the activity'
     },
     cloud_cover_code: {
       type: 'string',
@@ -360,7 +339,7 @@ export const Weather_Conditions = {
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Enter the average cloud cover over the duration of the collection'
+      'x-tooltip-text': 'Enter the average cloud cover over the duration of the activity'
     },
     precipitation_code: {
       type: 'string',
@@ -372,14 +351,13 @@ export const Weather_Conditions = {
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Enter the average preciptation over the duration of the collection'
+      'x-tooltip-text': 'Enter the average preciptation over the duration of the activity'
     },
     wind_speed: {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      default: 0,
-      'x-tooltip-text': 'Enter the average wind over the duration of the collection'
+      'x-tooltip-text': 'Enter the average wind over the duration of the activity'
     },
     wind_aspect: {
       type: 'number',
@@ -402,7 +380,8 @@ export const Target_Plant_Phenology = {
   properties: {
     phenology_details_recorded: {
       title: 'Phenology Details Recorded',
-      type: 'boolean'
+      type: 'string',
+      enum: ['Yes', 'No']
     }
   },
   dependencies: {
@@ -411,7 +390,7 @@ export const Target_Plant_Phenology = {
         {
           properties: {
             phenology_details_recorded: {
-              enum: [true]
+              enum: ['Yes']
             },
             target_plant_heights: {
               type: 'array',
@@ -468,7 +447,7 @@ export const Target_Plant_Phenology = {
         {
           properties: {
             phenology_details_recorded: {
-              enum: [false]
+              enum: ['No']
             }
           }
         }
@@ -484,7 +463,8 @@ export const Spread_Results = {
   properties: {
     spread_details_recorded: {
       title: 'Spread Details Recorded',
-      type: 'boolean',
+      type: 'string',
+      enum: ['Yes', 'No'],
       'x-tooltip-text':
         'Optional monitoring technique that records the distance biocontrol agents have spread beyond the release UTM. Beyond 100m is Dispersal monitoring.'
     }
@@ -495,7 +475,7 @@ export const Spread_Results = {
         {
           properties: {
             spread_details_recorded: {
-              enum: [true]
+              enum: ['Yes']
             },
             agent_density: {
               title: 'Agent Density (%)',
@@ -526,7 +506,14 @@ export const Spread_Results = {
                 'Aspect (degrees): Record the direction/aspect of the greatest distance the agent has spread.'
             }
           },
-          required: ['max_spread_aspect', 'max_spread_distance', 'plant_attack', 'agent_density']
+          required: ['max_spread_aspect', 'max_spread_distance']
+        },
+        {
+          properties: {
+            spread_details_recorded: {
+              enum: ['No']
+            }
+          }
         }
       ]
     }

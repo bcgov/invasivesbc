@@ -39,6 +39,7 @@ import {
 import {
   autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
+  autofillBiocontrolCollectionTotalQuantity,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
   populateTransectLineAndPointData,
@@ -98,6 +99,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
+  const [alertCopiedOpen, setAlertCopiedOpen] = useState(false);
+  const [alertPastedOpen, setAlertPastedOpen] = useState(false);
   const [suggestedJurisdictions, setSuggestedJurisdictions] = useState();
   const history = useHistory();
   const [doc, setDoc] = useState(null);
@@ -449,6 +452,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
+    console.log('ERROR: ', error);
     const newDoc = {
       formData: { ...doc.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
@@ -473,6 +477,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
     setAlertSavedOpen(false);
+  };
+
+  const handleAlertCopiedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertCopiedOpen(false);
+  };
+
+  const handleAlertPastedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertPastedOpen(false);
   };
 
   /**
@@ -526,6 +544,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+      // Autofills total bioagent quantity specifically for biocontrol collections
+      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
 
       updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
@@ -542,12 +562,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Update the doc (activity) with the latest form data and store it in DB
    */
   const pasteFormData = async () => {
+    console.log('Pasting form data');
     await updateDoc({
       formData: retrieveFormDataFromSession(doc),
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT
     });
+    setAlertPastedOpen(true);
   };
 
   /**
@@ -555,8 +577,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const copyFormData = () => {
     const { formData, activitySubtype } = doc;
-
+    console.log('Copying ', formData, activitySubtype);
     saveFormDataToSession(formData, activitySubtype);
+    setAlertCopiedOpen(true);
   };
 
   /*
@@ -990,6 +1013,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       <Snackbar open={alertSavedOpen} autoHideDuration={6000} onClose={handleAlertSavedClose}>
         <Alert onClose={handleAlertSavedClose} severity="success" sx={{ width: '100%' }}>
           The form was saved successfully.
+        </Alert>
+      </Snackbar>
+      <Snackbar open={alertCopiedOpen} autoHideDuration={6000} onClose={handleAlertCopiedClose}>
+        <Alert onClose={handleAlertCopiedClose} severity="success" sx={{ width: '100%' }}>
+          The form data was copied successfully.
+        </Alert>
+      </Snackbar>
+      <Snackbar open={alertPastedOpen} autoHideDuration={6000} onClose={handleAlertPastedClose}>
+        <Alert onClose={handleAlertPastedClose} severity="success" sx={{ width: '100%' }}>
+          The form data was pasted successfully.
         </Alert>
       </Snackbar>
     </Container>

@@ -151,7 +151,6 @@ export const Treatment_ChemicalPlant_Information = {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      default: 0,
       'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
     },
     wind_direction_code: {
@@ -502,14 +501,7 @@ export const Treatment_MechanicalAnimalTerrestrial = {
 export const Biocontrol_Release_Information = {
   title: 'Biological Treatment Information',
   type: 'object',
-  required: [
-    'invasive_plant_code',
-    'release_quantity',
-    'mortality',
-    'agent_source',
-    'biological_agent_code',
-    'biological_agent_stage_code'
-  ],
+  required: ['invasive_plant_code', 'mortality', 'agent_source', 'biological_agent_code'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -545,7 +537,7 @@ export const Biocontrol_Release_Information = {
       title: 'Plant Collected From',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'invasive_plant_code',
+        'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
@@ -575,14 +567,16 @@ export const Biocontrol_Release_Information = {
       title: 'Actual Biological Agents',
       items: {
         ...Biological_Agent_Stage
-      }
+      },
+      'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
     },
     estimated_biological_agents: {
       type: 'array',
       title: 'Estimated Biological Agents',
       items: {
         ...Biological_Agent_Stage
-      }
+      },
+      'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
     },
     total_bio_agent_quantity_estimated: {
       type: 'number',
@@ -665,6 +659,13 @@ export const Biocontrol_Collection_Information = {
               }
             },
             required: ['num_of_sweeps']
+          },
+          {
+            properties: {
+              collection_method: {
+                enum: ['As', 'Hp', 'Sw', 'Tt', 'Tp']
+              }
+            }
           }
         ]
       }
@@ -743,6 +744,16 @@ export const Biocontrol_Collection_Information = {
         },
         'x-tooltip-text':
           'When plant parts are collected with agents within those plant parts, an estimate of the quantity of the biocontrol agent collected in the life stage it was collected if required.'
+      },
+      total_bio_agent_quantity_estimated: {
+        type: 'number',
+        default: 0,
+        title: 'Total Bioagent Quantity (Estimated)'
+      },
+      total_bio_agent_quantity_actual: {
+        type: 'number',
+        default: 0,
+        title: 'Total Bioagent Quantity (Actual)'
       },
       comment: {
         type: 'string',

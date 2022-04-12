@@ -190,17 +190,14 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   title: 'Biological Monitoring Information',
   type: 'object',
   required: [
-    'agent_destroyed_ind',
-    'legacy_presence_ind',
     'biocontrol_present',
-    'biological_agent_presence_code',
     'invasive_plant_code',
-    'adults_present_ind',
-    'tunnels_present_ind',
     'plant_count',
     'start_time',
     'stop_time',
-    'biological_agent_code'
+    'biological_agent_code',
+    'monitoring_type',
+    'biocontrol_monitoring_methods_code'
   ],
   dependencies: {
     monitoring_type: {
@@ -249,7 +246,8 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
                 'x-enum-code-text': 'code_description',
                 'x-enum-code-sort-order': 'code_sort_order'
               },
-              'x-tooltip-text': 'Visible state of the agent present'
+              'x-tooltip-text':
+                'Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen.'
             },
             bio_agent_location_code: {
               type: 'string',
@@ -277,14 +275,16 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             estimated_biological_agents: {
               type: 'array',
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             total_bio_agent_quantity_estimated: {
               type: 'number',
@@ -322,6 +322,13 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
             }
           },
           required: ['num_of_sweeps']
+        },
+        {
+          properties: {
+            biocontrol_monitoring_methods_code: {
+              enum: ['As', 'Hp', 'Cl', 'Tt', 'Tp', 'Ex', 'Ob']
+            }
+          }
         }
       ]
     }
@@ -383,13 +390,6 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
       type: 'string',
       format: 'date-time',
       title: 'Monitoring Stop time '
-    },
-    legacy_presence_ind: {
-      type: 'string',
-      title: 'Legacy Presence',
-      enum: ['Yes', 'No', 'Unknown'],
-      default: 'No',
-      'x-tooltip-text': 'Please indicate the presence of legacy IAPP records'
     }
   }
 };
@@ -397,14 +397,12 @@ export const Monitoring_BiocontrolDispersal_Information = {
   title: 'Biological Dispersal Information',
   type: 'object',
   required: [
-    'biological_agent_presence_code',
     'biological_agent_code',
     'monitoring_type',
     'biocontrol_monitoring_methods_code',
     'invasive_plant_code',
     'start_time',
-    'stop_time',
-    'total_bio_agent_quantity'
+    'stop_time'
   ],
   dependencies: {
     biocontrol_monitoring_methods_code: {
@@ -421,6 +419,13 @@ export const Monitoring_BiocontrolDispersal_Information = {
             }
           },
           required: ['num_of_sweeps']
+        },
+        {
+          properties: {
+            biocontrol_monitoring_methods_code: {
+              enum: ['As', 'Hp', 'Cl', 'Tt', 'Tp', 'Ex', 'Ob']
+            }
+          }
         }
       ]
     },
@@ -468,7 +473,8 @@ export const Monitoring_BiocontrolDispersal_Information = {
                 'x-enum-code-text': 'code_description',
                 'x-enum-code-sort-order': 'code_sort_order'
               },
-              'x-tooltip-text': 'Visible state of the agent present'
+              'x-tooltip-text':
+                'Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen.'
             },
             bio_agent_location_code: {
               type: 'string',
@@ -495,14 +501,16 @@ export const Monitoring_BiocontrolDispersal_Information = {
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             estimated_biological_agents: {
               type: 'array',
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             total_bio_agent_quantity_estimated: {
               type: 'number',

@@ -3313,8 +3313,6 @@
                 "type": "number",
                 "minimum": 0,
                 "title": "Wind Speed (km/h)",
-                "minimum": 0,
-                "default": 0,
                 "x-tooltip-text": "Wind speed in km/hr at time of treatment"
               },
               "wind_direction_code": {
@@ -3426,8 +3424,6 @@
                 "type": "number",
                 "minimum": 0,
                 "title": "Wind Speed (km/h)",
-                "minimum": 0,
-                "default": 0,
                 "x-tooltip-text": "Wind speed in km/hr at time of treatment"
               },
               "wind_direction_code": {
@@ -3616,14 +3612,12 @@
         "type": "object",
         "required": [
           "invasive_plant_code",
-          "release_quantity",
           "mortality",
           "agent_source",
           "collection_date",
           "plant_collected_from",
           "total_release_quantity",
-          "biological_agent_code",
-          "biological_agent_stage_code"
+          "biological_agent_code"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -3656,8 +3650,23 @@
           },
           "plant_collected_from": {
             "type": "string",
-            "title": "Plant Collected From"
+            "title": "Plant Collected From",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code_withbiocontrol",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "If known, choose the species from the list that the agents were collected from"
           },
+
+          "plant_collected_from_unlisted": {
+            "type": "string",
+            "title": "Plant Collected From - unlisted",
+            "x-tooltip-text": "If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required."
+          },
+
           "biological_agent_code": {
             "type": "string",
             "title": "Biological Agent",
@@ -3781,7 +3790,6 @@
           "phen_level_bo",
           "phen_level_fl",
           "phen_level_sf",
-          "total_bio_agent_quantity",
           "phen_level_sc",
           "phen_total_percentage",
           "collection_history",
@@ -3828,7 +3836,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Visible state of the agent present"
+            "x-tooltip-text": "Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen."
           },
           "biological_agent_code": {
             "type": "string",
@@ -4036,18 +4044,7 @@
       "Monitoring_BiocontrolRelease_TerrestrialPlant_Information": {
         "title": "Biological Monitoring Information",
         "type": "object",
-        "required": [
-          "agent_count",
-          "agent_destroyed_ind",
-          "legacy_presence_ind",
-          "biological_agent_presence_code",
-          "invasive_plant_code",
-          "total_bio_agent_quantity",
-          "adults_present_ind",
-          "tunnels_present_ind",
-          "suitable_collection_site",
-          "biological_agent_code"
-        ],
+        "required": ["agent_count", "invasive_plant_code", "suitable_collection_site", "biological_agent_code"],
         "dependencies": {
           "monitoring_type": {
             "oneOf": [
@@ -4101,7 +4098,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Visible state of the agent present"
+            "x-tooltip-text": "Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen."
           },
           "biological_agent_code": {
             "type": "string",
@@ -4172,13 +4169,6 @@
             "title": "Suitable Collection Site",
             "enum": ["Unknown", "Yes", "No"],
             "x-tooltip-text": "Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field."
-          },
-          "legacy_presence_ind": {
-            "type": "string",
-            "title": "Legacy Presence",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of legacy IAPP records"
           }
         }
       },
@@ -4398,6 +4388,13 @@
                         }
                       },
                       "required": ["num_of_sweeps"]
+                    },
+                    {
+                      "properties": {
+                        "collection_method": {
+                          "enum": ["As", "Hp", "Sw", "Tt", "Tp"]
+                        }
+                      }
                     }
                   ]
                 }
@@ -4580,7 +4577,7 @@
             "minimum": 1,
             "maximum": 100000,
             "default": 1,
-            "x-tooltip-text": "Number of agents released (exact or approximate)"
+            "x-tooltip-text": "Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae"
           }
         },
         "required": ["biological_agent_stage_code", "release_quantity"]
@@ -4607,7 +4604,7 @@
           "temperature": {
             "type": "number",
             "title": "Temperature (C)",
-            "x-tooltip-text": "Enter the highest temperature (in Celcius) that occurred during the collection period."
+            "x-tooltip-text": "Enter the highest temperature (in Celcius) that occurred during the activity"
           },
           "cloud_cover_code": {
             "type": "string",
@@ -4619,7 +4616,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Enter the average cloud cover over the duration of the collection"
+            "x-tooltip-text": "Enter the average cloud cover over the duration of the activity"
           },
           "precipitation_code": {
             "type": "string",
@@ -4631,14 +4628,13 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Enter the average preciptation over the duration of the collection"
+            "x-tooltip-text": "Enter the average preciptation over the duration of the activity"
           },
           "wind_speed": {
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "default": 0,
-            "x-tooltip-text": "Enter the average wind over the duration of the collection"
+            "x-tooltip-text": "Enter the average wind over the duration of the activity"
           },
           "wind_aspect": {
             "type": "number",
@@ -4675,7 +4671,8 @@
         "properties": {
           "phenology_details_recorded": {
             "title": "Phenology Details Recorded",
-            "type": "boolean"
+            "type": "string",
+            "enum": ["Yes", "No"]
           },
           "target_plant_height": {
             "title": "Target Plant Height (cm)",
@@ -4690,7 +4687,7 @@
               {
                 "properties": {
                   "phenology_details_recorded": {
-                    "const": true
+                    "enum": ["Yes"]
                   },
                   "winter_dormant": {
                     "title": "Winter Dormant",
@@ -4741,7 +4738,7 @@
               {
                 "properties": {
                   "phenology_details_recorded": {
-                    "const": false
+                    "enum": ["No"]
                   }
                 }
               }
@@ -4757,7 +4754,8 @@
         "properties": {
           "spread_details_recorded": {
             "title": "Spread Details Recorded",
-            "type": "boolean"
+            "type": "string",
+            "enum": ["Yes", "No"]
           }
         },
         "dependencies": {
@@ -4766,7 +4764,7 @@
               {
                 "properties": {
                   "spread_details_recorded": {
-                    "const": true
+                    "enum": ["Yes"]
                   },
                   "agent_density": {
                     "title": "% Agent Density",
@@ -4795,11 +4793,11 @@
                     "x-tooltip-text": "Aspect (degrees): Record the direction/aspect of the greatest distance the agent has spread."
                   }
                 },
-                "required": ["max_spread_aspect", "max_spread_distance", "plant_attack", "agent_density"]
+                "required": ["max_spread_aspect", "max_spread_distance"]
               },
               {
                 "spread_details_recorded": {
-                  "const": false
+                  "enum": ["No"]
                 }
               }
             ]
@@ -7838,7 +7836,6 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "default": 0,
             "x-tooltip-text": "Wind speed in km/hr at time of treatment"
           },
           "wind_direction": {
@@ -7920,7 +7917,7 @@
             "minimum": 1,
             "maximum": 100000,
             "default": 1,
-            "x-tooltip-text": "Number of agents released (exact or approximate)"
+            "x-tooltip-text": "Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae"
           },
           "mortality": {
             "type": "number",

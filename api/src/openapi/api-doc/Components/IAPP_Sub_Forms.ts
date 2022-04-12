@@ -484,7 +484,6 @@ export const IAPP_Chemical_Treatment = {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      default: 0,
       'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
     },
     wind_direction: {
@@ -566,7 +565,8 @@ export const IAPP_Biological_Treatment = {
       minimum: 1,
       maximum: 100000,
       default: 1,
-      'x-tooltip-text': 'Number of agents released (exact or approximate)'
+      'x-tooltip-text':
+        'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
     },
     mortality: {
       type: 'number',
