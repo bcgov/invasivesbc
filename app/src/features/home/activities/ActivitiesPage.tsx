@@ -99,23 +99,6 @@ const PageContainer = (props) => {
   useEffect(() => {
     setOptions([
       {
-        name: 'Toggle Filters on Map',
-        hidden: false,
-        disabled: false,
-        //type: optionType.toggle,
-        onClick: () => {
-          alert('no');
-        },
-        icon: (props) => {
-          return (
-            <>
-              <FilterListIcon />
-              <MapIcon />
-            </>
-          );
-        }
-      },
-      {
         name: 'Current window only',
         hidden: false,
         disabled: false,
@@ -123,7 +106,7 @@ const PageContainer = (props) => {
           return (
             <>
               <FilterListIcon />
-              <CropFreeIcon />
+              <MapIcon />
             </>
           );
         },

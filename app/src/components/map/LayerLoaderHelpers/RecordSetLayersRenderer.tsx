@@ -55,7 +55,7 @@ export const RecordSetLayersRenderer = (props: any) => {
               filters={l.filters}
               zIndex={999999999 - l.drawOrder}
               color={l.color}
-              opacity={0.4}
+              opacity={0.8}
             />
           );
         } else {
