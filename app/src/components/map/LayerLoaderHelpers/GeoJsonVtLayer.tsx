@@ -14,7 +14,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
 
 (String.prototype as any).iscolorHex = function () {
   var sColor = this.toLowerCase();
-  var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+  var reg = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
   return reg.test(sColor);
 };
 
@@ -29,7 +29,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   }
   var sColorChange = [];
   for (var i1 = 1; i1 < 7; i1 += 2) {
-    sColorChange.push(parseInt('0x' + sColor.slice(i1, i + 2)));
+    sColorChange.push(parseInt('0x' + sColor.slice(i1, i1 + 2)));
   }
   return sColorChange as number[];
 };
