@@ -507,6 +507,13 @@ export const Spread_Results = {
             }
           },
           required: ['max_spread_aspect', 'max_spread_distance']
+        },
+        {
+          properties: {
+            spread_details_recorded: {
+              enum: ['No']
+            }
+          }
         }
       ]
     }

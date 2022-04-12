@@ -3612,14 +3612,12 @@
         "type": "object",
         "required": [
           "invasive_plant_code",
-          "release_quantity",
           "mortality",
           "agent_source",
           "collection_date",
           "plant_collected_from",
           "total_release_quantity",
-          "biological_agent_code",
-          "biological_agent_stage_code"
+          "biological_agent_code"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -3792,7 +3790,6 @@
           "phen_level_bo",
           "phen_level_fl",
           "phen_level_sf",
-          "total_bio_agent_quantity",
           "phen_level_sc",
           "phen_total_percentage",
           "collection_history",
@@ -4047,18 +4044,7 @@
       "Monitoring_BiocontrolRelease_TerrestrialPlant_Information": {
         "title": "Biological Monitoring Information",
         "type": "object",
-        "required": [
-          "agent_count",
-          "agent_destroyed_ind",
-          "legacy_presence_ind",
-          "biological_agent_presence_code",
-          "invasive_plant_code",
-          "total_bio_agent_quantity",
-          "adults_present_ind",
-          "tunnels_present_ind",
-          "suitable_collection_site",
-          "biological_agent_code"
-        ],
+        "required": ["agent_count", "invasive_plant_code", "suitable_collection_site", "biological_agent_code"],
         "dependencies": {
           "monitoring_type": {
             "oneOf": [
@@ -4402,6 +4388,13 @@
                         }
                       },
                       "required": ["num_of_sweeps"]
+                    },
+                    {
+                      "properties": {
+                        "collection_method": {
+                          "enum": ["As", "Hp", "Sw", "Tt", "Tp"]
+                        }
+                      }
                     }
                   ]
                 }
@@ -4678,7 +4671,8 @@
         "properties": {
           "phenology_details_recorded": {
             "title": "Phenology Details Recorded",
-            "type": "boolean"
+            "type": "string",
+            "enum": ["Yes", "No"]
           },
           "target_plant_height": {
             "title": "Target Plant Height (cm)",
@@ -4693,7 +4687,7 @@
               {
                 "properties": {
                   "phenology_details_recorded": {
-                    "const": true
+                    "enum": ["Yes"]
                   },
                   "winter_dormant": {
                     "title": "Winter Dormant",
@@ -4744,7 +4738,7 @@
               {
                 "properties": {
                   "phenology_details_recorded": {
-                    "const": false
+                    "enum": ["No"]
                   }
                 }
               }
@@ -4760,7 +4754,8 @@
         "properties": {
           "spread_details_recorded": {
             "title": "Spread Details Recorded",
-            "type": "boolean"
+            "type": "string",
+            "enum": ["Yes", "No"]
           }
         },
         "dependencies": {
@@ -4769,7 +4764,7 @@
               {
                 "properties": {
                   "spread_details_recorded": {
-                    "const": true
+                    "enum": ["Yes"]
                   },
                   "agent_density": {
                     "title": "% Agent Density",
@@ -4802,7 +4797,7 @@
               },
               {
                 "spread_details_recorded": {
-                  "const": false
+                  "enum": ["No"]
                 }
               }
             ]

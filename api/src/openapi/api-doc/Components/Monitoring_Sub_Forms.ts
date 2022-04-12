@@ -190,13 +190,8 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   title: 'Biological Monitoring Information',
   type: 'object',
   required: [
-    'agent_destroyed_ind',
-    'legacy_presence_ind',
     'biocontrol_present',
-    'biological_agent_presence_code',
     'invasive_plant_code',
-    'adults_present_ind',
-    'tunnels_present_ind',
     'plant_count',
     'start_time',
     'stop_time',
@@ -327,6 +322,13 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
             }
           },
           required: ['num_of_sweeps']
+        },
+        {
+          properties: {
+            biocontrol_monitoring_methods_code: {
+              enum: ['As', 'Hp', 'Cl', 'Tt', 'Tp', 'Ex', 'Ob']
+            }
+          }
         }
       ]
     }
@@ -395,14 +397,12 @@ export const Monitoring_BiocontrolDispersal_Information = {
   title: 'Biological Dispersal Information',
   type: 'object',
   required: [
-    'biological_agent_presence_code',
     'biological_agent_code',
     'monitoring_type',
     'biocontrol_monitoring_methods_code',
     'invasive_plant_code',
     'start_time',
-    'stop_time',
-    'total_bio_agent_quantity'
+    'stop_time'
   ],
   dependencies: {
     biocontrol_monitoring_methods_code: {
@@ -419,6 +419,13 @@ export const Monitoring_BiocontrolDispersal_Information = {
             }
           },
           required: ['num_of_sweeps']
+        },
+        {
+          properties: {
+            biocontrol_monitoring_methods_code: {
+              enum: ['As', 'Hp', 'Cl', 'Tt', 'Tp', 'Ex', 'Ob']
+            }
+          }
         }
       ]
     },

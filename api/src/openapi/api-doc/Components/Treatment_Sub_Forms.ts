@@ -501,14 +501,7 @@ export const Treatment_MechanicalAnimalTerrestrial = {
 export const Biocontrol_Release_Information = {
   title: 'Biological Treatment Information',
   type: 'object',
-  required: [
-    'invasive_plant_code',
-    'release_quantity',
-    'mortality',
-    'agent_source',
-    'biological_agent_code',
-    'biological_agent_stage_code'
-  ],
+  required: ['invasive_plant_code', 'mortality', 'agent_source', 'biological_agent_code'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -666,6 +659,13 @@ export const Biocontrol_Collection_Information = {
               }
             },
             required: ['num_of_sweeps']
+          },
+          {
+            properties: {
+              collection_method: {
+                enum: ['As', 'Hp', 'Sw', 'Tt', 'Tp']
+              }
+            }
           }
         ]
       }

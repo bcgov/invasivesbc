@@ -1008,7 +1008,6 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   count_duration: {},
   suitable_collection_site: {},
-  legacy_presence_ind: {},
   'ui:order': [
     'invasive_plant_code',
     'biological_agent_code',
@@ -1025,8 +1024,7 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'estimated_biological_agents',
     'total_bio_agent_quantity_actual',
     'total_bio_agent_quantity_estimated',
-    'suitable_collection_site',
-    'legacy_presence_ind'
+    'suitable_collection_site'
   ]
 };
 
@@ -1070,7 +1068,6 @@ const Monitoring_BiocontrolDispersal_Information = {
     'estimated_biological_agents',
     'total_bio_agent_quantity_actual',
     'total_bio_agent_quantity_estimated',
-    'total_bio_agent_quantity',
     'suitable_collection_site'
   ]
 };
