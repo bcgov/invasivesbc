@@ -36,6 +36,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
@@ -321,6 +322,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
+        if (isAuthorized() && !isMobile()) {
+          tabsUserHasAccessTo.push({
+            label: 'Embedded Reports',
+            path: '/home/reports',
+            icon: <AssessmentIcon fontSize={'small'} />
+          });
+        }
         return tabsUserHasAccessTo;
       });
     };

@@ -15,6 +15,7 @@ import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import { AuthStateContext } from '../../contexts/authStateContext';
 import LandingPage from './landing/LandingPage';
+import {EmbeddedReportsPage} from "./reports/EmbeddedReportsPage";
 
 interface IHomeRouterProps {
   classes: any;
@@ -105,6 +106,15 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         title={getTitle('Activity')}
         roles={authContext.userRoles}
         component={ActivityPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/reports"
+        title={getTitle('Reports')}
+        roles={authContext.userRoles}
+        component={EmbeddedReportsPage}
         componentProps={props}
       />
       <PrivateRoute
