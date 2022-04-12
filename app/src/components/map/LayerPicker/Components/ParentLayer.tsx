@@ -32,7 +32,7 @@ export const ParentLayer = (props: any) => {
         <Grid id="accordion-summary" item xs={10}>
           <AccordionSummary>
             <Typography variant="subtitle1">{parent.name}</Typography>
-            <ListItemIcon>{expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}</ListItemIcon>
+            <ListItemIcon>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</ListItemIcon>
           </AccordionSummary>
         </Grid>
         {/* DragHandle */}

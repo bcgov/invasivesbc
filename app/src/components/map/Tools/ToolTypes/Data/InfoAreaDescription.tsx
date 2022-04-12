@@ -245,7 +245,7 @@ function SetPointOnClick({ map }: any) {
           setClickMode(!clickMode);
         }}
         style={{
-          backgroundColor: clickMode ? '#006ee6' : null,
+          backgroundColor: clickMode ? 'lightgray' : null,
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           marginTop: 5

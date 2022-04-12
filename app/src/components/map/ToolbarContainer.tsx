@@ -8,13 +8,15 @@ import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material';
+import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -44,12 +46,12 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
     marginRight: 10,
     zIndex: 1500,
     width: 40,
-    transition: 'transform 200ms ease-in-out',
+    transition: 'all 200ms ease-in-out',
     height: 40,
     spacing: 'space-around',
     backgroundColor: theme.palette.background.default,
     '&:hover': {
-      background: theme.palette.background.default
+      background: 'skyblue'
     }
   }
 }));
@@ -57,6 +59,8 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
 export const ToolbarContainer = (props) => {
   const mapRequestContext = useContext(MapRequestContext);
   const { setMapZoom } = mapRequestContext;
+
+  const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
 
   const mapObj = useMap();
   useMapEvent('zoomend' as any, () => {
@@ -80,34 +84,39 @@ export const ToolbarContainer = (props) => {
   });
 
   return (
-    <div ref={divRef} key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
-      <IconButton
-        id="toolbar-drawer-button"
-        onClick={() => {
-          handleExpand();
-        }}
-        className={classes.toggleMenuBTN + ' leaflet-control'}
-        style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-        <KeyboardArrowLeftIcon />
-      </IconButton>
-      <List
-        ref={divRef}
-        key={'toolbar2'}
-        className={classes.innerToolBarContainer + ' leaflet-control'}
-        style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
-        <LayerPicker inputGeo={props.inputGeo} />
-        <Divider />
-        <SetPointOnClick map={props.map} />
-        <MeasureTool />
-        <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-        {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
-        {/* <NewRecord />
+    <>
+      <div ref={divRef} key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+        <IconButton
+          id="toolbar-drawer-button"
+          onClick={() => {
+            handleExpand();
+          }}
+          className={classes.toggleMenuBTN + ' leaflet-control'}>
+          {expanded ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
+        <List
+          ref={divRef}
+          key={'toolbar2'}
+          className={classes.innerToolBarContainer + ' leaflet-control'}
+          style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
+          <LayerPicker inputGeo={props.inputGeo} />
+          <Divider />
+          <SetPointOnClick map={props.map} />
+          <MeasureTool
+            setMeasureToolContainerOpen={setMeasureToolContainerOpen}
+            measureToolContainerOpen={measureToolContainerOpen}
+          />
+          <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
+          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          {/* <NewRecord />
         <EditRecord />
         <MultiSelectOrEdit />
         <DrawButtonList /> */}
 
-        <JumpToActivity id={props.id} />
-      </List>
-    </div>
+          <JumpToActivity id={props.id} />
+        </List>
+      </div>
+      <MeasureToolContainer measureToolContainerOpen={measureToolContainerOpen} />
+    </>
   );
 };

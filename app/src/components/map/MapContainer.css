@@ -35,3 +35,7 @@
   pointer-events: none;
   transform: translate(0%, -50%);
 }
+
+.leaflet-container.crosshair-cursor-enabled {
+  cursor: crosshair;
+}
