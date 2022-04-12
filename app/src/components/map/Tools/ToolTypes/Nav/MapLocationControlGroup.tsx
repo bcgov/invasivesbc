@@ -97,15 +97,15 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   // Taken from DisplayPosition
   // Calculates UTM from lat/long
   const calc_utm = (longitude: number, latitude: number) => {
-    let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+    let zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
     proj4.defs([
       ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-      ['EPSG:AUTO', `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`]
+      ['EPSG:AUTO', `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`]
     ]);
     const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-    let utmEasting = Number(en_m[0].toFixed(0));
-    let utmNorthing = Number(en_m[1].toFixed(0));
-    return [utmZone, utmEasting, utmNorthing];
+    let easting = Number(en_m[0].toFixed(0));
+    let northing = Number(en_m[1].toFixed(0));
+    return { zone, easting, northing };
   };
 
   // Taken from DisplayPosition
@@ -486,6 +486,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   function LocationMarker() {
+    const UTM: any = calc_utm(latitude, longitude);
     return position === null ? null : (
       <Marker
         position={position}
@@ -502,7 +503,9 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           You are here: <br />
           <b>Latitude</b>: {latitude} <br />
           <b>Longitude</b>: {longitude} <br />
-          <b>UTM</b>: {calc_utm(latitude, longitude)} <br />
+          <b>UTM Zone</b>: {UTM.zone} <br />
+          <b>UTM Easting</b>: {UTM.easting} <br />
+          <b>UTM Northing</b>: {UTM.northing} <br />
           <b>Accuracy</b>: {Math.round(accuracy * 10) / 10}m
         </Popup>
       </Marker>
