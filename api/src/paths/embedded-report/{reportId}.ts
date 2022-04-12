@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import { sign } from 'jsonwebtoken';
 const defaultLog = getLogger('metabase-query/{reportId}');

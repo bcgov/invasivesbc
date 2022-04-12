@@ -3,10 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { SQLStatement } from 'sql-template-strings';
-import { listCodeTablesSQL } from '../queries/code-queries';
-import {VALID_EMBEDDED_REPORTS} from "./embedded-report/{reportId}";
+import { VALID_EMBEDDED_REPORTS } from './embedded-report/{reportId}';
 
 export const GET: Operation = [listValidEmbeddedReports()];
 
