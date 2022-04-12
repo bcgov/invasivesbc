@@ -21,9 +21,11 @@ export const ActivitiesLayerV2 = (props: any) => {
         color: props.color.toUpperCase(),
         strokeColor: props.color.toUpperCase(),
         stroke: true,
+        strokeOpacity: 1,
         opacity: props.opacity,
+        //fillOpacity: props.opacity / 2,
         fillOpacity: props.opacity / 2,
-        weight: 5,
+        weight: 3,
         zIndex: props.zIndex
       }
     };
@@ -55,7 +57,15 @@ export const ActivitiesLayerV2 = (props: any) => {
       console.log(props.color.toUpperCase());
       console.log('activities: ' + activities.features.length);
       console.dir(activities);
-      return <GeoJSONVtLayer key={Math.random()} geoJSON={activities} zIndex={props.zIndex} options={options} />;
+      return (
+        <GeoJSONVtLayer
+          key={'activities_layer_v2_geojson_vt' + Math.random()}
+          // opacity={props.opacity}
+          geoJSON={activities}
+          zIndex={props.zIndex}
+          options={options}
+        />
+      );
     } else return <></>;
   }, [JSON.stringify(props.filters), JSON.stringify(props.color), JSON.stringify(activities), props.zIndex]);
 };

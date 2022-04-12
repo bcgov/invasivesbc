@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Container,
   IconButton,
   TextField,
   Typography
@@ -18,11 +19,14 @@ import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { RecordSetContext } from 'contexts/recordSetContext';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const OrderSelector = (props) => {
   return (
-    <Box sx={{ height: 50, width: 50 }}>
+    <Box sx={{ display: 'grid', height: 50, width: 100, pr: 5 }}>
       <IconButton
+        size={'small'}
+        sx={{ gridColumn: 1, gridRow: 1, justifySelf: 'center' }}
         onClick={(e) => {
           e.stopPropagation();
           props.moveUp();
@@ -31,13 +35,18 @@ const OrderSelector = (props) => {
       </IconButton>
 
       <IconButton
+        size={'small'}
+        sx={{ gridColumn: 1, gridRow: 2, pb: 5 }}
         onClick={(e) => {
           e.stopPropagation();
           props.moveDown();
         }}>
         <ArrowDropDownIcon />
       </IconButton>
-      {props.drawOrder}
+      <Container sx={{ gridColumn: 2, alignContent: 'center', justifyContent: 'center' }}>
+        <LayersIcon fontSize={'small'} />
+        {props.drawOrder}
+      </Container>
     </Box>
   );
 };
@@ -148,6 +157,27 @@ const RecordSetAccordionSummary = (props) => {
             style={{ justifySelf: 'end', alignSelf: 'right' }}
             variant="outlined">
             <Delete />
+          </Button>
+        ) : (
+          <></>
+        )}
+        {props.canRemove ? (
+          <Button
+            disabled={true}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (
+                /*eslint-disable*/
+                confirm(
+                  'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+                )
+              ) {
+                props.remove(props.setName);
+              }
+            }}
+            style={{ justifySelf: 'end', alignSelf: 'right' }}
+            variant="outlined">
+            <DownloadIcon />
           </Button>
         ) : (
           <></>
