@@ -39,6 +39,7 @@ import {
 import {
   autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
+  autofillBiocontrolCollectionTotalQuantity,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
   populateTransectLineAndPointData,
@@ -526,6 +527,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+      // Autofills total bioagent quantity specifically for biocontrol collections
+      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
 
       updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 

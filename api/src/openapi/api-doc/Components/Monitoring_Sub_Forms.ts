@@ -251,7 +251,8 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
                 'x-enum-code-text': 'code_description',
                 'x-enum-code-sort-order': 'code_sort_order'
               },
-              'x-tooltip-text': 'Visible state of the agent present'
+              'x-tooltip-text':
+                'Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen.'
             },
             bio_agent_location_code: {
               type: 'string',
@@ -279,14 +280,16 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             estimated_biological_agents: {
               type: 'array',
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             total_bio_agent_quantity_estimated: {
               type: 'number',
@@ -463,7 +466,8 @@ export const Monitoring_BiocontrolDispersal_Information = {
                 'x-enum-code-text': 'code_description',
                 'x-enum-code-sort-order': 'code_sort_order'
               },
-              'x-tooltip-text': 'Visible state of the agent present'
+              'x-tooltip-text':
+                'Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen.'
             },
             bio_agent_location_code: {
               type: 'string',
@@ -490,14 +494,16 @@ export const Monitoring_BiocontrolDispersal_Information = {
               title: 'Actual Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             estimated_biological_agents: {
               type: 'array',
               title: 'Estimated Biological Agents',
               items: {
                 ...Biological_Agent_Stage
-              }
+              },
+              'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
             },
             total_bio_agent_quantity_estimated: {
               type: 'number',

@@ -327,7 +327,7 @@ export const Weather_Conditions = {
     temperature: {
       type: 'number',
       title: 'Temperature (C°)',
-      'x-tooltip-text': 'Enter the highest temperature (in Celcius) that occurred during the collection period.'
+      'x-tooltip-text': 'Enter the highest temperature (in Celcius) that occurred during the activity'
     },
     cloud_cover_code: {
       type: 'string',
@@ -339,7 +339,7 @@ export const Weather_Conditions = {
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Enter the average cloud cover over the duration of the collection'
+      'x-tooltip-text': 'Enter the average cloud cover over the duration of the activity'
     },
     precipitation_code: {
       type: 'string',
@@ -351,14 +351,13 @@ export const Weather_Conditions = {
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Enter the average preciptation over the duration of the collection'
+      'x-tooltip-text': 'Enter the average preciptation over the duration of the activity'
     },
     wind_speed: {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      default: 0,
-      'x-tooltip-text': 'Enter the average wind over the duration of the collection'
+      'x-tooltip-text': 'Enter the average wind over the duration of the activity'
     },
     wind_aspect: {
       type: 'number',

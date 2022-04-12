@@ -3313,8 +3313,6 @@
                 "type": "number",
                 "minimum": 0,
                 "title": "Wind Speed (km/h)",
-                "minimum": 0,
-                "default": 0,
                 "x-tooltip-text": "Wind speed in km/hr at time of treatment"
               },
               "wind_direction_code": {
@@ -3426,8 +3424,6 @@
                 "type": "number",
                 "minimum": 0,
                 "title": "Wind Speed (km/h)",
-                "minimum": 0,
-                "default": 0,
                 "x-tooltip-text": "Wind speed in km/hr at time of treatment"
               },
               "wind_direction_code": {
@@ -3656,8 +3652,23 @@
           },
           "plant_collected_from": {
             "type": "string",
-            "title": "Plant Collected From"
+            "title": "Plant Collected From",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code_withbiocontrol",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "If known, choose the species from the list that the agents were collected from"
           },
+
+          "plant_collected_from_unlisted": {
+            "type": "string",
+            "title": "Plant Collected From - unlisted",
+            "x-tooltip-text": "If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required."
+          },
+
           "biological_agent_code": {
             "type": "string",
             "title": "Biological Agent",
@@ -3828,7 +3839,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Visible state of the agent present"
+            "x-tooltip-text": "Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen."
           },
           "biological_agent_code": {
             "type": "string",
@@ -4101,7 +4112,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Visible state of the agent present"
+            "x-tooltip-text": "Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen."
           },
           "biological_agent_code": {
             "type": "string",
@@ -4600,7 +4611,7 @@
           "temperature": {
             "type": "number",
             "title": "Temperature (C)",
-            "x-tooltip-text": "Enter the highest temperature (in Celcius) that occurred during the collection period."
+            "x-tooltip-text": "Enter the highest temperature (in Celcius) that occurred during the activity"
           },
           "cloud_cover_code": {
             "type": "string",
@@ -4612,7 +4623,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Enter the average cloud cover over the duration of the collection"
+            "x-tooltip-text": "Enter the average cloud cover over the duration of the activity"
           },
           "precipitation_code": {
             "type": "string",
@@ -4624,14 +4635,13 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Enter the average preciptation over the duration of the collection"
+            "x-tooltip-text": "Enter the average preciptation over the duration of the activity"
           },
           "wind_speed": {
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "default": 0,
-            "x-tooltip-text": "Enter the average wind over the duration of the collection"
+            "x-tooltip-text": "Enter the average wind over the duration of the activity"
           },
           "wind_aspect": {
             "type": "number",
@@ -7831,7 +7841,6 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "default": 0,
             "x-tooltip-text": "Wind speed in km/hr at time of treatment"
           },
           "wind_direction": {

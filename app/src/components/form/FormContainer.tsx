@@ -31,6 +31,7 @@ import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { AuthStateContext } from 'contexts/authStateContext';
+import PasteButtonComponent from './PasteButtonComponent';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -369,6 +370,25 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
+              <Box mt={3}>
+                <PasteButtonComponent
+                  onSubmit={() => {
+                    //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
+                    (formRef.current as any).formElement.dispatchEvent(
+                      new CustomEvent('submit', {
+                        cancelable: true,
+                        bubbles: true // <-- actual fix
+                      })
+                    );
+                  }}
+                  isDisabled={isDisabled}
+                  activitySubtype={props.activity.activitySubtype}
+                  onCopy={props.copyFormData ? () => props.copyFormData() : null}
+                  onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
+                  {...props}
+                  onSubmitAsOfficial={props.onSubmitAsOfficial ? () => props.onSubmitAsOfficial() : null}
+                />
+              </Box>
               <Form
                 ObjectFieldTemplate={ObjectFieldTemplate}
                 FieldTemplate={FieldTemplate}

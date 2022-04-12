@@ -484,7 +484,6 @@ export const IAPP_Chemical_Treatment = {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      default: 0,
       'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
     },
     wind_direction: {

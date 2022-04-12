@@ -414,6 +414,50 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
   return newFormData;
 };
 
+export const autofillBiocontrolCollectionTotalQuantity = (formData: any) => {
+  if (!formData.activity_subtype_data) {
+    return formData;
+  } else {
+    const currentForm = formData.activity_subtype_data.Biocontrol_Collection_Information || undefined;
+    if (!currentForm) {
+      return formData;
+    } else {
+      const newArray = [];
+      currentForm.forEach((bioCollection) => {
+        let totalActual = 0;
+        let totalEstimated = 0;
+        if (bioCollection.actual_quantity_and_life_stage_of_agent_collected) {
+          bioCollection.actual_quantity_and_life_stage_of_agent_collected.forEach((el) => {
+            if (el.biological_agent_number) {
+              totalActual += el.biological_agent_number;
+            }
+          });
+        }
+        if (bioCollection.estimated_quantity_and_life_stage_of_agent_collected) {
+          bioCollection.estimated_quantity_and_life_stage_of_agent_collected.forEach((el) => {
+            if (el.biological_agent_number) {
+              totalEstimated += el.biological_agent_number;
+            }
+          });
+        }
+        newArray.push({
+          ...bioCollection,
+          total_bio_agent_quantity_actual: totalActual,
+          total_bio_agent_quantity_estimated: totalEstimated
+        });
+      });
+      const newFormData = {
+        ...formData,
+        activity_subtype_data: {
+          ...formData.activity_subtype_data,
+          Biocontrol_Collection_Information: newArray
+        }
+      };
+      return newFormData;
+    }
+  }
+};
+
 export const autoFillBiocontrolPresent = (formData: any) => {
   if (
     !formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information &&
