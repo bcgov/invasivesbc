@@ -16,7 +16,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
     case 'idir':
       try {
         const returnVal = SQL`
-        insert into application_user (idir_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (idir_userid) do nothing;
+        insert into application_user (idir_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (idir_userid) where idir_userid is not null do nothing;
       `;
         return returnVal;
       } catch (e) {
@@ -26,7 +26,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
     case 'bceid':
       try {
         const returnVal = SQL`
-        insert into application_user (bceid_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (bceid_userid) do nothing;
+        insert into application_user (bceid_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (bceid_userid)  where bceid_userid is not null do nothing;
       `;
         return returnVal;
       } catch (e) {

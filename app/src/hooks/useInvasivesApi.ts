@@ -1229,6 +1229,37 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  /**
+   * Request a signed embedded metabase report
+   *
+   // * @param reportId Metabase Report Id
+   * @return {*}  {Promise<any>}
+   */
+  const getEmbeddedMetabaseReport = async (reportId: string): Promise<any> => {
+    const options = await getRequestOptions();
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: `${options.baseUrl}/api/embedded-report/${reportId}`
+    });
+    return data;
+  };
+
+  /**
+   * Get the names/ids of valid metabase questions
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const listEmbeddedMetabaseReports = async (): Promise<any> => {
+    const options = await getRequestOptions();
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: `${options.baseUrl}/api/embedded-report`
+    });
+    return data;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -1280,6 +1311,8 @@ export const useInvasivesApi = () => {
     submitUpdateRequest,
     getUpdateRequests,
     declineUpdateRequest,
-    approveUpdateRequests
+    approveUpdateRequests,
+    listEmbeddedMetabaseReports,
+    getEmbeddedMetabaseReport
   };
 };

@@ -119,6 +119,11 @@ objects:
                     secretKeyRef:
                       key: METABASE_PASS
                       name: ${DB_SERVICE_NAME}
+                - name: METABASE_EMBEDDING_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_EMBEDDING_KEY
+                      name: ${DB_SERVICE_NAME}
                 - name: METABASE_COLLECTION_ID
                   valueFrom:
                     secretKeyRef:
