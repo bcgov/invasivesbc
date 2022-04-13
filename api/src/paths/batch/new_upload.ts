@@ -211,7 +211,7 @@ function upload(): RequestHandler {
           batch.push(PlantFormSubmissionFromData(dataFromRow(row, req['auth_payload'].preferred_username)));
         })
         .on('close', () => {
-          resolve();
+          //resolve();
         });
     });
 
