@@ -36,7 +36,7 @@ import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGro
 const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
-  iconAnchor: [12, 41],
+  iconAnchor: [12, 41]
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -246,13 +246,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
               <MapResizer />
               {/* <MapRecordsDataGrid /> */}
-              {useMemo(
+              {/*{useMemo(
                 () => (
                   <MapLocationControlGroup {...props} />
                 ),
                 [props.geometryState.geometry]
               )}
-              {props.children}
+                {props.children}*/}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>
