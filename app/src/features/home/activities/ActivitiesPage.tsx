@@ -16,6 +16,7 @@ import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
+import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -94,6 +95,13 @@ const PageContainer = (props) => {
     handleDialogClose: handleNewRecordDialogClose
   });
 
+  const [newLayerDialog, setNewLayerDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
+
   // the menu at the bottom:
   const [options, setOptions] = useState<any>();
   useEffect(() => {
@@ -120,7 +128,29 @@ const PageContainer = (props) => {
         disabled: false,
         icon: PlaylistAddIcon,
         onClick: () => {
-          recordStateContext.add();
+          setNewLayerDialog({
+            dialogOpen: true,
+            dialogTitle: 'Create New Record List/Layer',
+            dialogContentText: 'Would you like to create the layer with Point Of Interest records or activites?',
+            dialogActions: [
+              {
+                actionName: 'POI',
+                actionOnClick: async () => {
+                  setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
+                  recordStateContext.add("POI");
+                }
+              },
+              {
+                actionName: 'Activity',
+                actionOnClick: async () => {
+                  setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
+                  recordStateContext.add("Activity");
+                },
+                autoFocus: true
+              }
+            ]
+          });
+
         }
       },
       {
@@ -217,6 +247,12 @@ const PageContainer = (props) => {
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
+      <WarningDialog
+        dialogOpen={newLayerDialog.dialogOpen}
+        dialogTitle={newLayerDialog.dialogTitle}
+        dialogActions={newLayerDialog.dialogActions}
+        dialogContentText={newLayerDialog.dialogContentText}
+      />
     </>
   );
 };
