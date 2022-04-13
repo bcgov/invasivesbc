@@ -32,21 +32,25 @@ const storeLayersStyle = {
 
 const OfflineMap = (props) => {
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
+  const [offlineLayer, setOfflineLayer] = useState(null);
 
   const mapOffline = useMap();
-  const offlineLayer = (L.tileLayer as any).offline(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    // local_storage,
-    {
-      attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
-      subdomains: 'abc',
-      maxZoom: mapMaxZoom,
-      zIndex: 3000,
-      maxNativeZoom: props.maxNativeZoom,
-      crossOrigin: true
-    }
-  );
-  offlineLayer.addTo(mapOffline);
+  useEffect(() => {
+    const aOfflineLayer = (L.tileLayer as any).offline(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      // local_storage,
+      {
+        attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
+        subdomains: 'abc',
+        maxZoom: mapMaxZoom,
+        zIndex: 3000,
+        maxNativeZoom: props.maxNativeZoom,
+        crossOrigin: true
+      }
+    );
+    aOfflineLayer.addTo(mapOffline);
+    setOfflineLayer(aOfflineLayer);
+  }, []);
 
   useEffect(() => {
     const cacheMapTiles = async () => {
