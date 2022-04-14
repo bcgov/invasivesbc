@@ -15,11 +15,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import React, { useContext, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
-import Reorderer from 'reorderer';
+// Commented out due to module not being found, not sure what this is supposed to be
+// import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import GrassIcon from '@mui/icons-material/Grass';
 
 const OrderSelector = (props) => {
   return (
@@ -54,12 +57,12 @@ const OrderSelector = (props) => {
 const RecordSetAccordionSummary = (props) => {
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
-
   // return useMemo(() => {
   return (
     <AccordionSummary>
       <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
         {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+        {props.recordSetType === 'POI' ? <DiamondIcon /> : <GrassIcon /> }
         {!nameEdit && (
           <>
             <Typography>{props.recordSetName}</Typography>
