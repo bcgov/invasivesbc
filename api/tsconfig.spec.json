@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "paths": {
+      "@app/*": ["../app/src/**"]
+    }
+  },
+  "includes": ["@app/*", "../app/src/**"]
+}
