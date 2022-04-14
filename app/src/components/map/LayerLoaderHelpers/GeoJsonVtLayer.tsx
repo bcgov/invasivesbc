@@ -36,12 +36,19 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
 
 (L.GridLayer as any).GeoJSON = L.GridLayer.extend({
   options: {
+    tolerance: 1, // simplification tolerance (higher means simpler)
+    extent: 4096, // tile extent (both width and height)
+    buffer: 128, // tile buffer on each side
+    debug: 0, // logging level (0 to disable, 1 or 2)
+    indexMaxPoints: 100000, // max number of points per tile in the index
+    solidChildren: false,
     async: false
   },
 
   initialize: function (geojson, options) {
     L.setOptions(this, options.options);
     (L.GridLayer.prototype as any).initialize.call(this, options);
+    //L.VectorGrid.prototype.initialize.call(this, options);
     this.tileIndex = geojsonvt(geojson, this.options);
   },
 
