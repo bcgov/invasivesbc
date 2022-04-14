@@ -95,7 +95,7 @@ const PageContainer = (props) => {
     handleDialogClose: handleNewRecordDialogClose
   });
 
-  const [newLayerDialog, setNewLayerDialog] = useState<IWarningDialog>({
+  const [newLayerDialog, setNewLayerDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
@@ -137,20 +137,19 @@ const PageContainer = (props) => {
                 actionName: 'POI',
                 actionOnClick: async () => {
                   setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
-                  recordStateContext.add("POI");
+                  recordStateContext.add('POI');
                 }
               },
               {
                 actionName: 'Activity',
                 actionOnClick: async () => {
                   setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
-                  recordStateContext.add("Activity");
+                  recordStateContext.add('Activity');
                 },
                 autoFocus: true
               }
             ]
           });
-
         }
       },
       {
