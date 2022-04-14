@@ -22,7 +22,7 @@ export enum Role {
   MASTER_ADMINISTRATOR = 'master_administrator'
 }
 
-export const SECURITY_ON = true;
+export const SECURITY_ON = process.env.SECURITY_ON === 'false' ? false : true;
 
 export const ALL_ROLES = [
   Role.ADMIN,
