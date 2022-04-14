@@ -61,10 +61,23 @@ export const newRecord = () => {
   const short_id = addActivity.getShortActivityID({ ...template, _id: id, activity_id: id });
   const bc_geo = require('../../../app/src/components/map/BC_AREA.json');
   const bc_bbox = bbox(bc_geo);
+  const date = new Date().toISOString();
 
+  // 'normal' size
   const geo_array = random.polygon(1, 20, 0.001, bc_bbox).features;
+  // jumbo
+  //const geo_array = random.polygon(1, 20, 0.01, bc_bbox).features;
   console.log(JSON.stringify(geo_array));
-  return JSON.stringify({ ...template, _id: id, activity_id: id, short_id: short_id, geometry: geo_array });
+  return JSON.stringify({
+    ...template,
+    _id: id,
+    activity_id: id,
+    short_id: short_id,
+    geometry: geo_array,
+    date_created: date,
+    created_timestamp: date,
+    form_data: { activity_data: { activity_date_time: date } }
+  });
 };
 
 describe('can create activities', () => {
@@ -75,7 +88,7 @@ describe('can create activities', () => {
   });
 
   it('should be able to make 100 in a hurry', async () => {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 1001; i++) {
       const response = await await request(app)
         .post('/activity')
         .set('Content-type', 'application/json')

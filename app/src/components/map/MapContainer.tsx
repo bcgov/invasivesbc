@@ -252,7 +252,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 ),
                 [props.geometryState.geometry]
               )}
-                {props.children}*/}
+                */}
+              {props.children}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>
