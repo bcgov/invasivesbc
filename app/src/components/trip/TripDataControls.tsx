@@ -4,7 +4,7 @@ import buffer from '@turf/buffer';
 import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
-import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
+import { IGeneralDialog, GeneralDialog } from '../dialog/GeneralDialog';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -42,7 +42,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
 
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+  const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
@@ -858,7 +858,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           {'Delete this trip'}
         </Button>
       </Box>
-      <WarningDialog
+      <GeneralDialog
         dialogOpen={warningDialog.dialogOpen}
         dialogTitle={warningDialog.dialogTitle}
         dialogActions={warningDialog.dialogActions}

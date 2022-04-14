@@ -16,7 +16,7 @@ import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
-import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
+import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -247,7 +247,7 @@ const PageContainer = (props) => {
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
-      <WarningDialog
+      <GeneralDialog
         dialogOpen={newLayerDialog.dialogOpen}
         dialogTitle={newLayerDialog.dialogTitle}
         dialogActions={newLayerDialog.dialogActions}
