@@ -31,6 +31,7 @@ export const RecordSet = (props) => {
   const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
   const [color, setColor] = useState(blue[500]);
+  const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
@@ -47,6 +48,7 @@ export const RecordSet = (props) => {
     ) {
       initial = recordSetContext.recordSetState[props.setName][propertyName];
     }
+
     if (initial !== null) {
       switch (propertyName) {
         case 'expanded':
@@ -60,6 +62,9 @@ export const RecordSet = (props) => {
           break;
         case 'color':
           setColor(initial);
+          break;
+        case 'recordSetType':
+          setRecordSetType(initial);
           break;
         case 'recordSetName':
           setRecordSetName(initial);
@@ -117,6 +122,7 @@ export const RecordSet = (props) => {
     getInitialPropertyState('drawOrder');
     getInitialPropertyState('mapToggle');
     getInitialPropertyState('color');
+    getInitialPropertyState('recordSetType');
     getInitialPropertyState('recordSetName');
     getInitialPropertyState('advancedFilters');
   }, []);
@@ -134,6 +140,7 @@ export const RecordSet = (props) => {
           }}
           expanded={expanded}>
           <RecordSetAccordionSummary
+            recordSetType={recordSetType}
             recordSetName={recordSetName}
             setName={props.setName}
             setRecordSetName={setRecordSetName}
