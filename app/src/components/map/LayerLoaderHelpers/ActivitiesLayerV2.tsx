@@ -3,7 +3,7 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { LatLngExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Marker, useMap, useMapEvent } from 'react-leaflet';
+import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
@@ -21,16 +21,19 @@ export const ActivitiesLayerV2 = (props: any) => {
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
     console.log('zoom change', zoom);
-    if (zoom < 5) {
+    if (zoom < 16) {
       setZoomType(ZoomTypes.LOW);
       return;
+    } else setZoomType(ZoomTypes.HIGH);
+    /*if (zoom >= 8 && zoom < 15) {
+      setZoomType(ZoomTypes.MEDIUM);
+      return;
     }
-    if (zoom > 15) {
+    if (zoom >= 15) {
       setZoomType(ZoomTypes.HIGH);
       return;
     }
-    setZoomType(ZoomTypes.MEDIUM);
-    return;
+    */
   });
 
   const [activities, setActivities] = useState(null);
@@ -38,8 +41,12 @@ export const ActivitiesLayerV2 = (props: any) => {
   const options = useMemo(() => {
     return {
       //maxZoom: 2,
-      tolerance: 3,
-      debug: 0,
+      tolerance: 1,
+      debug: 1,
+      extent: 4096, // tile extent (both width and height)
+      buffer: 128, // tile buffer on each side
+      indexMaxPoints: 100000, // max number of points per tile in the index
+      solidChildren: false,
       style: {
         fillColor: props.color.toUpperCase(),
         color: props.color.toUpperCase(),
@@ -62,8 +69,8 @@ export const ActivitiesLayerV2 = (props: any) => {
     const activitiesData = await dataAccess.getActivitiesLean({
       ...filters
     });
-    //  console.log('fetched activities');
-    //  console.dir(activitiesData);
+    console.log('fetched activities');
+    console.dir(activitiesData.length);
     const activitiesFeatureArray = [];
     activitiesData?.rows?.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
@@ -76,7 +83,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.filters]);
 
   return useMemo(() => {
-    if (activities) {
+    if (activities && activities.features && props.color) {
       console.log('color from inside activities 2:');
       console.log(props.color.toUpperCase());
       console.log('activities: ' + activities.features.length);
@@ -85,8 +92,20 @@ export const ActivitiesLayerV2 = (props: any) => {
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
+            <GeoJSON
+              key={'activities_layer_v2_geojson' + props.zIndex}
+              // opacity={props.opacity}
+              data={activities}
+              //zIndex={props.zIndex}
+              style={options.style}
+            />
+          );
+          break;
+
+        case ZoomTypes.MEDIUM:
+          return (
             <GeoJSONVtLayer
-              key={'activities_layer_v2_geojson_vt' + Math.random()}
+              key={'activities_layer_v2_geojson_vt' + props.zIndex}
               // opacity={props.opacity}
               geoJSON={activities}
               zIndex={props.zIndex}
@@ -94,7 +113,7 @@ export const ActivitiesLayerV2 = (props: any) => {
             />
           );
           break;
-        default:
+        case ZoomTypes.LOW:
           return (
             <MarkerClusterGroup>
               {activities.features.map((a) => {
