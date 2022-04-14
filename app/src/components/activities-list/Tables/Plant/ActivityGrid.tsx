@@ -238,6 +238,7 @@ const ActivityGrid = (props) => {
     });
   }, [save]);
 
+  // TODO: grabs activities - it should check if activity or POI
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
       getActivities();
@@ -248,6 +249,7 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
+  // TODO: grabs activities - it should check if activity or POI
   const getActivities = async () => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
@@ -271,6 +273,7 @@ const ActivityGrid = (props) => {
 
   const [rows, setRows] = useState([]);
 
+  // TODO: grabs activities - it should check if activity or POI
   useEffect(() => {
     if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
       props.setSelectedRecord({
@@ -320,6 +323,7 @@ const ActivityGrid = (props) => {
             ...x,
             headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
             headerRenderer: (p) => (
+              // TODO: activity row - it should check if activity or POI
               <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
                 {({ filters, ...rest }) => (
                   <input
@@ -344,6 +348,7 @@ const ActivityGrid = (props) => {
       });
     }, [filters]);
 
+  //todo: check if activity or POI, grab from activity table helpers or point of interest table helpers
   const columnsDynamic = useColumns(activites_default_headers);
 
   //todo - tests need to take into account type, they're all strings right now
@@ -385,6 +390,7 @@ const ActivityGrid = (props) => {
 
   ///SORT STUFF:
 
+  // TODO activity or POI
   useEffect(() => {
     const newrows = mapActivitiesToDataGridRows(activities);
     setRows(newrows);
@@ -541,6 +547,7 @@ const ActivityGrid = (props) => {
                 defaultColumnOptions={{ sortable: true }}
                 //columns={columns}
                 onRowClick={(r) => {
+                  // todo: should have another button for open POI, or open button should be smart enough to open multiple types
                   setActivitiesSelected(r);
                 }}
                 columns={columnsDynamic}
