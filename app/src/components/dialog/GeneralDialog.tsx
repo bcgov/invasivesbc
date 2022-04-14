@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React from 'react';
 
-export interface IWarningDialog {
+export interface IGeneralDialog {
   dialogTitle: String;
   dialogContentText?: String;
   dialogOpen: boolean;
@@ -16,7 +16,7 @@ interface IDialogAction {
   autoFocus?: boolean;
 }
 
-export const WarningDialog = (props: IWarningDialog) => {
+export const GeneralDialog = (props: IGeneralDialog) => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {

@@ -1,7 +1,7 @@
 import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@mui/icons-material';
 import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { IGeneralDialog, GeneralDialog } from 'components/dialog/GeneralDialog';
 import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
@@ -205,7 +205,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+  const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
@@ -569,7 +569,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           }
           {...otherProps}
         />
-        <WarningDialog
+        <GeneralDialog
           dialogOpen={warningDialog.dialogOpen}
           dialogTitle={warningDialog.dialogTitle}
           dialogActions={warningDialog.dialogActions}
