@@ -9,7 +9,7 @@ import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
-import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
+import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
 import { IPhoto } from '../../../components/photo/PhotoContainer';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
@@ -108,7 +108,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const networkContext = useContext(NetworkContext);
   const { connected } = networkContext;
   const [applicationUsers, setApplicationUsers] = useState([]);
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+  const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
@@ -998,7 +998,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           />
         </>
       )}
-      <WarningDialog
+      <GeneralDialog
         dialogOpen={warningDialog.dialogOpen}
         dialogTitle={warningDialog.dialogTitle}
         dialogActions={warningDialog.dialogActions}

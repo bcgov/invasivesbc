@@ -25,13 +25,13 @@ import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccor
 import { useFormStyles } from './formStyles';
 import { runValidation } from './Validation';
 import { performCalculation } from 'utils/herbicideCalculator';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { IGeneralDialog, GeneralDialog } from 'components/dialog/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
 
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+  const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
@@ -304,7 +304,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </>
           )}
         </FormControl>
-        <WarningDialog
+        <GeneralDialog
           dialogOpen={warningDialog.dialogOpen}
           dialogTitle={warningDialog.dialogTitle}
           dialogActions={warningDialog.dialogActions}
