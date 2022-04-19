@@ -20,6 +20,7 @@ export const RecordSetLayersRenderer = (props: any) => {
     color: any;
     setName: string;
   }
+
   useEffect(() => {
     console.log('****record set layer renderer record state***');
     console.dir(recordsetContext.recordSetState);
