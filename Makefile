@@ -90,5 +90,19 @@ api: ## Executes into the workspace container.
 	@echo "==============================================="
 	@docker-compose exec api bash
 
+build-ios: ## Builds the app for mobile
+	@echo "==============================================="
+	@echo "Make: build-mobile - building app for mobile"
+	@echo "==============================================="
+	@cd app && npm install && npm run build:ios && cd ..
+
+run-ios: ## Runs the app for mobile
+	@echo "==============================================="
+	@echo "Make: run-mobile - running app for mobile"
+	@echo "==============================================="
+	@cd app && npx cap sync ios && npx cap open ios && cd ..
+
+ios: | build-ios run-ios ## Builds and runs the app for mobile
+
 help:	## Display this help screen.
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
