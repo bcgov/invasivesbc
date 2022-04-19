@@ -1,7 +1,7 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import { LatLngExpression } from 'leaflet';
+import L, { LatLngExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -24,8 +24,9 @@ export const ActivitiesLayerV2 = (props: any) => {
     if (zoom < 16) {
       setZoomType(ZoomTypes.LOW);
       return;
-    } else setZoomType(ZoomTypes.HIGH);
-    /*if (zoom >= 8 && zoom < 15) {
+    }
+    //} else setZoomType(ZoomTypes.HIGH);
+    if (zoom >= 8 && zoom < 15) {
       setZoomType(ZoomTypes.MEDIUM);
       return;
     }
@@ -33,7 +34,6 @@ export const ActivitiesLayerV2 = (props: any) => {
       setZoomType(ZoomTypes.HIGH);
       return;
     }
-    */
   });
 
   const [activities, setActivities] = useState(null);
@@ -69,8 +69,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     const activitiesData = await dataAccess.getActivitiesLean({
       ...filters
     });
-    console.log('fetched activities');
-    console.dir(activitiesData.length);
     const activitiesFeatureArray = [];
     activitiesData?.rows?.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
@@ -81,6 +79,35 @@ export const ActivitiesLayerV2 = (props: any) => {
   useEffect(() => {
     fetchData();
   }, [props.filters]);
+
+  const MarkerMemo = useMemo(() => {
+    if (activities && activities.features && props.color) {
+      const createClusterCustomIcon = (cluster) => {
+        return L.divIcon({
+          html: `<span style="height: 25px;
+      width: 25px;
+      justify-content: center;
+      color: white;
+      background-color: ${props.color};
+      display: inline-block;
+      border-radius: 50%;">${cluster.getChildCount()}</span>`,
+          className: 'marker-cluster-custom',
+          iconSize: L.point(40, 40, true)
+        });
+      };
+      return (
+        <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
+          {activities.features.map((a) => {
+            if (a.geometry.type === 'Polygon') {
+              const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+
+              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+            }
+          })}
+        </MarkerClusterGroup>
+      );
+    } else return <></>;
+  }, [props.color, activities]);
 
   return useMemo(() => {
     if (activities && activities.features && props.color) {
@@ -114,20 +141,7 @@ export const ActivitiesLayerV2 = (props: any) => {
           );
           break;
         case ZoomTypes.LOW:
-          return (
-            <MarkerClusterGroup>
-              {activities.features.map((a) => {
-                console.dir(a);
-                if (a.geometry.type === 'Polygon') {
-                  console.log('poly');
-                  const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
-                  console.log(position);
-
-                  return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
-                }
-              })}
-            </MarkerClusterGroup>
-          );
+          return MarkerMemo;
       }
     } else return <></>;
   }, [

@@ -167,7 +167,7 @@ export const GeoJSONVtLayer = createTileLayerComponent<LeafletTileLayer, TileLay
   context
 ) {
   return {
-    instance: (L.gridLayer as any).geoJson(geoJSON, withPane(options, context)),
+    instance: (L.gridLayer as any).geoJson.vt(geoJSON, withPane(options, context)),
     context
   };
 },

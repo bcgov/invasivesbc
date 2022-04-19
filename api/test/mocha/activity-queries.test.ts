@@ -6,6 +6,7 @@ import request from 'supertest';
 // needs to be in this order:
 require('dotenv').config({ path: './env_config/env.local', debug: false });
 import { app } from '../../src/app';
+import faker from '@faker-js/faker';
 
 // activity stuff
 import { v4 as uuidv4 } from 'uuid';
@@ -76,7 +77,8 @@ export const newRecord = () => {
     geometry: geo_array,
     date_created: date,
     created_timestamp: date,
-    form_data: { activity_data: { activity_date_time: date } }
+    form_data: { activity_data: { activity_date_time: date } },
+    form_status: faker.random.boolean() ? 'Draft' : 'Submitted'
   });
 };
 
