@@ -1,4 +1,4 @@
-import { Typography, Box, Button, TextField, Tooltip } from '@mui/material';
+import { Typography, Box, Button, TextField, Tooltip, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { IHerbicide } from '../../Models';
@@ -405,6 +405,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               variant="outlined"
               onChange={(event) => {
                 const input = event.target.value;
+                if (event.target.value === '') {
+                  setproduct_application_rate_g_ha(undefined);
+                }
                 if (!isNumber(event.target.value)) {
                   setRerenderNumberInputkey('herbnumberinputNotank ' + Math.random());
                   return;
@@ -420,12 +423,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               title="Recommended label rate for herbicide (L/ha) used for this treatment">
               <HelpOutlineIcon />
             </Tooltip>
+            <InputLabel>Product Application Rate (L/ha)</InputLabel>
             <TextField
               disabled={formDetails.disabled || true}
               className={classes.inputField}
               type="number"
               id="product-application-rate"
-              label="Product Application Rate (L/ha)"
+              // label="Product Application Rate (L/ha)"
               value={herbicide.product_application_rate}
               variant="outlined"
               onChange={(event) => {
