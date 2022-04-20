@@ -81,6 +81,7 @@
     "geostyler-sld-parser": "^3.0.1",
     "ionic-plugin-deeplinks": "^1.0.24",
     "ionicons": "^5.5.4",
+    "is-number": "^7.0.0",
     "js-yaml": "~3.14.1",
     "jszip": "^3.7.1",
     "keycloak-ionic": "^13.0.0",

@@ -5,7 +5,8 @@ import { IHerbicide } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { isNumber } from 'lodash';
+//import { isNumber } from 'lodash';
+import isNumber from 'is-number';
 
 export interface IHerbicideComponent {
   herbicide: any;
@@ -18,6 +19,7 @@ export interface IHerbicideComponent {
 const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, insideTankMix }) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
+  const [rerenderNumberInputkey, setRerenderNumberInputkey] = useState('0');
 
   const businessCodes = formDetails.businessCodes;
   const chemicalApplicationMethod = formDetails.formData.chemical_application_method;
@@ -399,25 +401,15 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               id="product-application-rate"
               label="Product Application Rate (g/ha)"
               value={product_application_rate_g_ha}
+              key={rerenderNumberInputkey}
               variant="outlined"
               onChange={(event) => {
                 const input = event.target.value;
-                console.log('Event: ', input);
-                console.log('typeof event: ', typeof input);
-
-                if (input === '') {
-                  console.log('Empty string. Setting undefined...');
-                  setproduct_application_rate_g_ha(undefined);
+                if (!isNumber(event.target.value)) {
+                  setRerenderNumberInputkey('herbnumberinputNotank ' + Math.random());
                   return;
-                } else if (isNaN(Number(input))) {
-                  console.log('Not a number. Will not update!');
-                  event.stopPropagation();
-                  event.preventDefault();
-                  return;
-                } else {
-                  console.log('Setting product application rate: ', Number(input));
-                  setproduct_application_rate_g_ha(Number(input));
                 }
+                setproduct_application_rate_g_ha(Number(input));
               }}
               defaultValue={undefined}
             />
