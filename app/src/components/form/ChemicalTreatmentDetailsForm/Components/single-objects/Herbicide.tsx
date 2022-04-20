@@ -1,10 +1,11 @@
 import { Typography, Box, Button, TextField, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { IHerbicide } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { isNumber } from 'lodash';
 
 export interface IHerbicideComponent {
   herbicide: any;
@@ -22,7 +23,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
   const chemicalApplicationMethod = formDetails.formData.chemical_application_method;
   const tankMixOn = formDetails.formData.tank_mix;
 
-  const [product_application_rate_g_ha, setproduct_application_rate_g_ha] = useState(0);
+  const [product_application_rate_g_ha, setproduct_application_rate_g_ha] = useState(undefined);
+
+  useEffect(() => {
+    console.log('prod app rate: ', product_application_rate_g_ha);
+  }, [product_application_rate_g_ha, setproduct_application_rate_g_ha]);
+
   useEffect(() => {
     if (!product_application_rate_g_ha || isNaN(product_application_rate_g_ha)) {
       return;
@@ -228,7 +234,8 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="number"
+              type="text"
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
               label={
                 herbicide?.herbicide_type_code === 'G'
@@ -236,16 +243,31 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   : 'Product Application Rate (l/ha)'
               }
               // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-              value={herbicide?.product_application_rate || ''}
+              value={herbicide?.product_application_rate}
               variant="outlined"
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                console.log('Event: ', input);
+                console.log('typeof event: ', typeof input);
+
+                if (input === '') {
+                  console.log('Empty string. Setting undefined...');
+                  setCurrentHerbicide((prevFields) => {
+                    return { ...prevFields, product_application_rate: undefined };
+                  });
                   return;
+                } else if (isNaN(Number(input))) {
+                  console.log('Not a number. Will not update!');
+                  event.stopPropagation();
+                  event.preventDefault();
+                  return;
+                } else {
+                  console.log('Setting product application rate: ', Number(input));
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    product_application_rate: Number(input)
+                  }));
                 }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  product_application_rate: Number(event.target.value)
-                }));
               }}
               defaultValue={undefined}
             />
@@ -373,20 +395,29 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="number"
+              type="text"
               id="product-application-rate"
               label="Product Application Rate (g/ha)"
               value={product_application_rate_g_ha}
               variant="outlined"
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                console.log('Event: ', input);
+                console.log('typeof event: ', typeof input);
+
+                if (input === '') {
+                  console.log('Empty string. Setting undefined...');
+                  setproduct_application_rate_g_ha(undefined);
                   return;
+                } else if (isNaN(Number(input))) {
+                  console.log('Not a number. Will not update!');
+                  event.stopPropagation();
+                  event.preventDefault();
+                  return;
+                } else {
+                  console.log('Setting product application rate: ', Number(input));
+                  setproduct_application_rate_g_ha(Number(input));
                 }
-                setproduct_application_rate_g_ha(Number(event.target.value));
-                // setCurrentHerbicide((prevFields) => ({
-                //   ...prevFields,
-                //   product_application_rate: Number(event.target.value) / 1000
-                // }));
               }}
               defaultValue={undefined}
             />
