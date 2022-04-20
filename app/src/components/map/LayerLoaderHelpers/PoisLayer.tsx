@@ -1,6 +1,6 @@
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import L from 'leaflet';
+import L, { layerGroup } from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
 import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -9,6 +9,12 @@ import IAPPSiteMarker from '../Icons/pinned.png';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import BC_AREA from '../BC_AREA.json';
+import { arrayBuffer } from 'stream/consumers';
+import geotiffZoom6 from '../GeoTIFFs/zoom6.tiff';
+import geotiffZoom9 from '../GeoTIFFs/zoom9.tiff';
+
+var parse_georaster = require('georaster');
+var GeoRasterLayer = require('georaster-layer-for-leaflet');
 
 const IAPPSite = L.icon({
   iconUrl: marker,
@@ -26,8 +32,8 @@ export const PoisLayer = (props) => {
   const mapRequestContext = useContext(MapRequestContext);
   const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
+  const [rasterlayer, setRasterlayer] = useState(null);
   const dataAccess = useDataAccess();
-  const [vPOIs, setVPOIs] = useState(null);
 
   const markerIcon = L.icon({
     iconUrl: marker,
@@ -59,22 +65,59 @@ export const PoisLayer = (props) => {
   useMapEvent('zoomend', settingBounds);
 
   useEffect(() => {
-    if (!vPOIs) {
-      fetchData(map.getZoom() === 6);
+    if (map.getZoom() < 8) {
+      addTiff();
     }
+    console.log(map);
   }, [map]);
 
+  const addTiff = () => {
+    fetch(geotiffZoom6)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => {
+        parse_georaster(arrayBuffer).then((georaster) => {
+          console.log('georaster:', georaster);
+
+          /*
+            GeoRasterLayer is an extension of GridLayer,
+            which means can use GridLayer options like opacity.
+  
+            Just make sure to include the georaster option!
+  
+            Optionally set the pixelValuesToColorFn function option to customize
+            how values for a pixel are translated to a color.
+  
+            http://leafletjs.com/reference-1.2.0.html#gridlayer
+        */
+          var layer = new GeoRasterLayer({
+            zIndex: props.zIndex,
+            georaster: georaster,
+            opacity: props.opacity,
+            pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
+            resolution: 240 // optional parameter for adjusting display resolution
+          });
+          layer.addTo(map);
+
+          map.fitBounds(layer.getBounds());
+        });
+      });
+  };
+
+  // const removeTiff = () => {
+
+  // }
+
   useEffect(() => {
-    fetchData();
-    console.log(mapBounds);
+    if (map.getZoom() > 9) fetchData();
   }, [mapBounds]);
 
-  const fetchData = async (isZoomSix?: boolean) => {
+  const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean({
-      search_feature: isZoomSix ? (BC_AREA.features[0] as any) : mapBounds,
+      search_feature: mapBounds,
       isIAPP: true,
       point_of_interest_type: props.poi_type
     });
+    console.log('poisData', poisData);
 
     const poisFeatureArray = [];
     poisData?.rows?.forEach((row) => {
@@ -93,11 +136,7 @@ export const PoisLayer = (props) => {
       }
     });
 
-    if (isZoomSix) {
-      setVPOIs({ type: 'FeatureCollection', features: poisFeatureArray });
-    } else {
-      setPois({ type: 'FeatureCollection', features: poisFeatureArray });
-    }
+    setPois({ type: 'FeatureCollection', features: poisFeatureArray });
     const poiArr = poisData?.rows?.map((row) => {
       return {
         id: row.point_of_interest_id,
@@ -107,7 +146,7 @@ export const PoisLayer = (props) => {
       };
     });
     setCurrentRecords((prev) => {
-      return { ...prev, pois: [...poiArr] };
+      return { ...prev, pois: [poiArr] };
     });
   };
 
@@ -134,7 +173,9 @@ export const PoisLayer = (props) => {
         </>
         )*/}
       {/* Close Zoom Renders */}
-      {map.getZoom() < 10 && vPOIs && <GeoJSONVtLayer geoJSON={vPOIs} zIndex={props.zIndex} options={options} />}
+      {/* {map.getZoom() < 10 && () => {
+        
+      })} */}
       {map.getZoom() > 9 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois.features.map((feature) => {

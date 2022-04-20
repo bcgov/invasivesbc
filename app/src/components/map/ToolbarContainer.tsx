@@ -63,9 +63,9 @@ export const ToolbarContainer = (props) => {
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
 
   const mapObj = useMap();
-  useMapEvent('zoomend' as any, () => {
-    setMapZoom(mapObj.getZoom());
-  });
+  // useMapEvent('zoomend' as any, () => {
+  //   setMapZoom(mapObj.getZoom());
+  // });
 
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
   const classes = useToolbarContainerStyles();
