@@ -557,8 +557,8 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   area: number,
   amount_of_mix: number,
   delivery_rate_of_mix: number,
-  species: IInvasivePlant[],
-  herbicides: IHerbicide[]
+  species?: IInvasivePlant[],
+  herbicides?: IHerbicide[]
 ) => {
   let resultObj = {};
 

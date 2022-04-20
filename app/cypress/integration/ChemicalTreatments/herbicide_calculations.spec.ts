@@ -262,15 +262,17 @@ describe('can test for weed poison', function () {
     console.log(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr));
 
     it('passed scenario #8', function () {
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].area_of_specie).to.eq(
+      /*  expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].area_of_specie).to.eq(
         75
-      );
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].area_treated_ha).to.eq(
-        0.0094
-      );
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].area_treated_sqm).to.eq(
-        93.75
-      );
+      );*/
+      expect(
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .area_treated_ha
+      ).to.eq(0.0094);
+      expect(
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .area_treated_sqm
+      ).to.eq(93.75);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].percent_area_covered
       ).to.eq(56.8182);
@@ -325,13 +327,14 @@ describe('can test for weed poison', function () {
           .amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.0063);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1].product_application_rate_lha
+        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1]
+          .product_application_rate_lha
       ).to.eq(0.64);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1].dilution
       ).to.eq(0.16);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1]
+        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1]
           .amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.002);
     });
