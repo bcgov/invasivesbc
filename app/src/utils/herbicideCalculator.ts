@@ -594,6 +594,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
       outputHerb.amount_of_undiluted_herbicide_used_liters = parseToRightFormat(
         outputHerb.amount_of_undiluted_herbicide_used_liters
       );
+      outputHerb.product_application_rate = herbicides[index].product_application_rate;
 
       outputSpecie.herbicides.push(outputHerb);
     });
@@ -605,6 +606,9 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 
     outputInvPlantsArr.push(outputSpecie);
   });
+
+  console.log('hello');
+  console.dir({ invasive_plants: [...outputInvPlantsArr] });
 
   return { invasive_plants: [...outputInvPlantsArr] };
 };

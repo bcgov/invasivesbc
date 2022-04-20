@@ -240,22 +240,28 @@ describe('can test for weed poison', function () {
 
     //SCENARIO #8 =============================================================================
 
-    const herbicide1 = {
+    /*const herbicide1 = {
       product_application_rate_lha: 2
     };
     const herbicide2 = {
       product_application_rate_lha: 0.64
+    };*/
+    const herbicide1 = {
+      product_application_rate: 2
+    };
+    const herbicide2 = {
+      product_application_rate: 0.64
     };
 
     const herbicideArr = [herbicide1, herbicide2];
 
     const specie1 = {
       herbicides: herbicideArr,
-      area_of_specie: 75
+      percent_area_covered: 75
     };
     const specie2 = {
       herbicides: herbicideArr,
-      area_of_specie: 25
+      percent_area_covered: 25
     };
     const speciesArr = [specie1, specie2];
 
@@ -274,68 +280,69 @@ describe('can test for weed poison', function () {
           .area_treated_sqm
       ).to.eq(93.75);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].percent_area_covered
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .percent_area_covered
       ).to.eq(56.8182);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].amount_of_mix_used
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .amount_of_mix_used
       ).to.eq(3.75);
       expect(
-        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0] as any).herbicides[0]
-          .product_application_rate_lha
-      ).to.eq(2);
-      expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].herbicides[0].dilution
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .herbicides[0].dilution
       ).to.eq(0.5);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[0]
-          .amount_of_undiluted_herbicide_used_liters
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .herbicides[0].amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.0187);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1].product_application_rate_lha
-      ).to.eq(0.64);
-      expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[0].herbicides[1].dilution
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .herbicides[1].dilution
       ).to.eq(0.16);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1]
-          .amount_of_undiluted_herbicide_used_liters
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[0]
+          .herbicides[1].amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.006);
 
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].area_of_specie).to.eq(
-        25
-      );
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].area_treated_ha).to.eq(
-        0.0031
-      );
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].area_treated_sqm).to.eq(
-        31.25
-      );
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].percent_area_covered
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .area_treated_ha
+      ).to.eq(0.0031);
+      expect(
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .area_treated_sqm
+      ).to.eq(31.25);
+      expect(
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .percent_area_covered
       ).to.eq(18.9394);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].amount_of_mix_used
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .amount_of_mix_used
       ).to.eq(1.25);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[0].product_application_rate_lha
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[0].product_application_rate
       ).to.eq(2);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[0].dilution
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[0].dilution
       ).to.eq(0.5);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[0]
-          .amount_of_undiluted_herbicide_used_liters
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[0].amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.0063);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1]
-          .product_application_rate_lha
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[1].product_application_rate
       ).to.eq(0.64);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1].dilution
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[1].dilution
       ).to.eq(0.16);
       expect(
-        mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr)[1].herbicides[1]
-          .amount_of_undiluted_herbicide_used_liters
+        (mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr, herbicideArr) as any).invasive_plants[1]
+          .herbicides[1].amount_of_undiluted_herbicide_used_liters
       ).to.eq(0.002);
     });
   });
