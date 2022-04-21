@@ -143,7 +143,6 @@ export const DatabaseContextProvider = (props) => {
     for (const value of enumKeys(DocType)) {
       switch (value) {
         case 'CODE_TABLE':
-          setupSQL += `DROP TABLE IF EXISTS ${DocType[value]};`; // To wipe old table and get latest codes
           setupSQL += `create table if not exists  
             ${DocType[value]} 
              (
