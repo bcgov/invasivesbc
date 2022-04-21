@@ -1,10 +1,12 @@
-import { Typography, Box, Button, TextField, Tooltip } from '@mui/material';
+import { Typography, Box, Button, TextField, Tooltip, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { IHerbicide } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+//import { isNumber } from 'lodash';
+import isNumber from 'is-number';
 
 export interface IHerbicideComponent {
   herbicide: any;
@@ -18,21 +20,30 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
+  const [tankProductApplicationRateKey, setTankProductApplicationRateKey] = useState(undefined);
+  const [noTankProductApplicationRateKey, setNoTankProductApplicationRateKey] = useState(undefined);
+  const [noTankProductApplicationRateLHAKey, setNoTankProductApplicationRateLHAKey] = useState(undefined);
+  const [amountOfMixUsedKey, setAmountOfMixUsedKey] = useState(undefined);
+  const [deliveryRateOfMixKey, setDeliveryRateOfMixKey] = useState(undefined);
+  const [areaTreatedSqmKey, setAreaTreatedSqmKey] = useState(undefined);
+  const [dilutionPercentKey, setDilutionPercentKey] = useState(undefined);
+
   const businessCodes = formDetails.businessCodes;
   const chemicalApplicationMethod = formDetails.formData.chemical_application_method;
   const tankMixOn = formDetails.formData.tank_mix;
 
-  const [product_application_rate_g_ha, setproduct_application_rate_g_ha] = useState(0);
+  const [product_application_rate, setproduct_application_rate] = useState(undefined);
+
   useEffect(() => {
-    if (!product_application_rate_g_ha || isNaN(product_application_rate_g_ha)) {
+    if (!product_application_rate || isNaN(product_application_rate)) {
       return;
     } else {
       setCurrentHerbicide((prevFields) => ({
         ...prevFields,
-        product_application_rate: Number(product_application_rate_g_ha) / 1000
+        product_application_rate: Number(product_application_rate) / 1000
       }));
     }
-  }, [product_application_rate_g_ha]);
+  }, [product_application_rate]);
 
   //get arrays for spray and direct chemical methods
   const chemical_method_direct_code_values = businessCodes['chemical_method_direct'].map((code) => {
@@ -228,7 +239,8 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="number"
+              type="text"
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
               label={
                 herbicide?.herbicide_type_code === 'G'
@@ -236,15 +248,24 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   : 'Product Application Rate (l/ha)'
               }
               // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-              value={herbicide?.product_application_rate || ''}
+              value={herbicide?.product_application_rate}
               variant="outlined"
+              key={tankProductApplicationRateKey}
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (input === '') {
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    product_application_rate: undefined
+                  }));
+                }
+                if (!isNumber(input)) {
+                  setTankProductApplicationRateKey(Math.random().toString());
                   return;
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  product_application_rate: Number(event.target.value)
+                  product_application_rate: Number(input)
                 }));
               }}
               defaultValue={undefined}
@@ -264,17 +285,26 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               disabled={formDetails.disabled}
               id="amount-of-mix-used"
               className={classes.inputField}
-              type="number"
+              type="text"
               label="Amount of Mix Used (L)"
               value={herbicide?.amount_of_mix}
               variant="outlined"
+              key={amountOfMixUsedKey}
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (input === '') {
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    amount_of_mix: undefined
+                  }));
+                }
+                if (!isNumber(input)) {
+                  setAmountOfMixUsedKey(Math.random().toString());
                   return;
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  amount_of_mix: Number(event.target.value)
+                  amount_of_mix: Number(input)
                 }));
               }}
               defaultValue={undefined}
@@ -294,17 +324,26 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               disabled={formDetails.disabled}
               id="dilution"
               className={classes.inputField}
-              type="number"
+              type="text"
               label="Dilution (%)"
               value={herbicide?.dilution}
               variant="outlined"
+              key={dilutionPercentKey}
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (input === '') {
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    dilution: undefined
+                  }));
+                }
+                if (!isNumber(input)) {
+                  setDilutionPercentKey(Math.random().toString());
                   return;
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  dilution: Number(event.target.value)
+                  dilution: Number(input)
                 }));
               }}
               defaultValue={undefined}
@@ -320,17 +359,26 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               disabled={formDetails.disabled}
               id="area-treated"
               className={classes.inputField}
-              type="number"
+              type="text"
               label="Area Treated (sqm)"
               value={herbicide.area_treated_sqm}
               variant="outlined"
+              key={areaTreatedSqmKey}
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (input === '') {
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    area_treated_sqm: undefined
+                  }));
+                }
+                if (!isNumber(input)) {
+                  setAreaTreatedSqmKey(Math.random().toString());
                   return;
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  area_treated_sqm: Number(event.target.value)
+                  area_treated_sqm: Number(input)
                 }));
               }}
               defaultValue={undefined}
@@ -347,18 +395,27 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="number"
+              type="text"
               id="delivery-rate-of-mix"
               label="Delivery Rate of Mix (L/ha)"
               value={herbicide.delivery_rate_of_mix}
               variant="outlined"
+              key={deliveryRateOfMixKey}
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (input === '') {
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    delivery_rate_of_mix: undefined
+                  }));
+                }
+                if (!isNumber(input)) {
+                  setDeliveryRateOfMixKey(Math.random().toString());
                   return;
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  delivery_rate_of_mix: Number(event.target.value)
+                  delivery_rate_of_mix: Number(input)
                 }));
               }}
               defaultValue={undefined}
@@ -367,55 +424,78 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <Tooltip
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
-              title="Recommended label rate for herbicide (g/ha) used for this treatment">
+              title={
+                currentHerbicide?.herbicide_type_code === 'G'
+                  ? 'Recommended label rate for herbicide (g/ha) used for this treatment'
+                  : 'Recommended label rate for herbicide (L/ha) used for this treatment'
+              }>
               <HelpOutlineIcon />
             </Tooltip>
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="number"
+              type="text"
               id="product-application-rate"
-              label="Product Application Rate (g/ha)"
-              value={product_application_rate_g_ha}
+              label={
+                currentHerbicide?.herbicide_type_code === 'G'
+                  ? 'Product Application Rate (g/ha)'
+                  : 'Product Application Rate (L/ha)'
+              }
+              value={product_application_rate}
+              key={noTankProductApplicationRateKey}
               variant="outlined"
               onChange={(event) => {
-                if (event.target.value === null) {
+                const input = event.target.value;
+                if (event.target.value === '') {
+                  setproduct_application_rate(undefined);
+                }
+                if (!isNumber(event.target.value)) {
+                  setNoTankProductApplicationRateKey(Math.random().toString());
                   return;
                 }
-                setproduct_application_rate_g_ha(Number(event.target.value));
-                // setCurrentHerbicide((prevFields) => ({
-                //   ...prevFields,
-                //   product_application_rate: Number(event.target.value) / 1000
-                // }));
+                setproduct_application_rate(Number(input));
               }}
               defaultValue={undefined}
             />
-
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Recommended label rate for herbicide (L/ha) used for this treatment">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled || true}
-              className={classes.inputField}
-              type="number"
-              id="product-application-rate"
-              label="Product Application Rate (L/ha)"
-              value={herbicide.product_application_rate}
-              variant="outlined"
-              onChange={(event) => {
-                if (event.target.value === null) {
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  product_application_rate: Number(event.target.value)
-                }));
-              }}
-              defaultValue={undefined}
-            />
+            {currentHerbicide?.herbicide_type_code === 'G' && (
+              <>
+                <Tooltip
+                  style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                  placement="left"
+                  title="Recommended label rate for herbicide (L/ha) used for this treatment">
+                  <HelpOutlineIcon />
+                </Tooltip>
+                <InputLabel>Product Application Rate (L/ha)</InputLabel>
+                <TextField
+                  disabled={formDetails.disabled || true}
+                  className={classes.inputField}
+                  type="number"
+                  id="product-application-rate"
+                  // label="Product Application Rate (L/ha)"
+                  value={herbicide.product_application_rate}
+                  variant="outlined"
+                  key={noTankProductApplicationRateLHAKey}
+                  onChange={(event) => {
+                    const input = event.target.value;
+                    if (input === '') {
+                      setCurrentHerbicide((prevFields) => ({
+                        ...prevFields,
+                        product_application_rate: undefined
+                      }));
+                    }
+                    if (!isNumber(input)) {
+                      setNoTankProductApplicationRateLHAKey(Math.random().toString());
+                      return;
+                    }
+                    setCurrentHerbicide((prevFields) => ({
+                      ...prevFields,
+                      product_application_rate: Number(input)
+                    }));
+                  }}
+                  defaultValue={undefined}
+                />
+              </>
+            )}
           </>
         ) : null}
 

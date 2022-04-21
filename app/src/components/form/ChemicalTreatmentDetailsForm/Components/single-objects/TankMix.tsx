@@ -5,6 +5,7 @@ import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import { useFormStyles } from '../../formStyles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import isNumber from 'is-number';
 
 const TankMix: React.FC = (props) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
@@ -14,6 +15,8 @@ const TankMix: React.FC = (props) => {
   const businessCodes = formDetails.businessCodes;
 
   const [currentTankMix, setCurrentTankMix] = useState(formDetails.formData.tank_mix_object);
+  const [amountOfMixUsedKey, setAmountOfMixUsedKey] = useState(undefined);
+  const [deliveryRateOfMixKey, setDeliveryRateOfMixKey] = useState(undefined);
 
   //when tank mix object changes, update it in context
   useEffect(() => {
@@ -76,17 +79,26 @@ const TankMix: React.FC = (props) => {
       <TextField
         disabled={formDetails.disabled}
         className={classes.inputField}
-        type="number"
+        type="text"
         label="Amount of Mix Used (L)"
         value={currentTankMix.amount_of_mix}
         variant="outlined"
+        key={amountOfMixUsedKey}
         onChange={(event) => {
-          if (event.target.value === null) {
+          const input = event.target.value;
+          if (input === '') {
+            setCurrentTankMix((prevFields) => ({
+              ...prevFields,
+              amount_of_mix: undefined
+            }));
+          }
+          if (!isNumber(input)) {
+            setAmountOfMixUsedKey(Math.random().toString());
             return;
           }
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
-            amount_of_mix: Number(event.target.value)
+            amount_of_mix: Number(input)
           }));
         }}
         defaultValue={undefined}
@@ -101,17 +113,26 @@ const TankMix: React.FC = (props) => {
       <TextField
         disabled={formDetails.disabled}
         className={classes.inputField}
-        type="number"
+        type="text"
         label="Delivery Rate of Mix (L/ha)"
         value={currentTankMix.delivery_rate_of_mix || ''}
         variant="outlined"
+        key={deliveryRateOfMixKey}
         onChange={(event) => {
-          if (event.target.value === null) {
+          const input = event.target.value;
+          if (input === '') {
+            setCurrentTankMix((prevFields) => ({
+              ...prevFields,
+              delivery_rate_of_mix: Number(input)
+            }));
+          }
+          if (!isNumber(input)) {
+            setDeliveryRateOfMixKey(Math.random().toString());
             return;
           }
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
-            delivery_rate_of_mix: Number(event.target.value)
+            delivery_rate_of_mix: Number(input)
           }));
         }}
         defaultValue={undefined}
