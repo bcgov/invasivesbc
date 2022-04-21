@@ -146,7 +146,7 @@ export const DatabaseContextProvider = (props) => {
           setupSQL += `create table if not exists  
             ${DocType[value]} 
              (
-              ID TEXT,
+              id TEXT PRIMARY KEY,
               json TEXT
             );`;
           break;

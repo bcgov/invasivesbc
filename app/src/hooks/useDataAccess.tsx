@@ -767,6 +767,34 @@ export const useDataAccess = () => {
     }
   };
 
+  const cacheCodeTables = async (): Promise<any> => {
+    if (networkContext.connected && isMobile()) {
+      const codeTables = await api.listCodeTables();
+      console.log('Attempting to cache code tables...');
+      if (codeTables && codeTables.length > 0) {
+        console.log('#### data: ', codeTables);
+        const upserts = codeTables.map((codeTableJSON, index) => ({
+          type: UpsertType.DOC_TYPE_AND_ID,
+          docType: DocType.CODE_TABLE,
+          ID: codeTableJSON.name,
+          json: codeTableJSON
+        }));
+        console.log('UPSERTS: ', upserts);
+        try {
+          await databaseContext.asyncQueue({
+            asyncTask: () => {
+              return upsert(upserts, databaseContext);
+            }
+          });
+        } catch (e) {
+          alert('unable to cache api spec');
+          console.log('ERROR CACHING CODE TABLES: ', e);
+        }
+        return false;
+      }
+    }
+  };
+
   const fetchCodeTable = async (codeHeaderName, csv = false) => {
     if (Capacitor.getPlatform() === 'web') {
       return await api.fetchCodeTable(codeHeaderName, csv);
@@ -820,6 +848,7 @@ export const useDataAccess = () => {
     getCurrentUser,
     createUser,
     listCodeTables,
-    fetchCodeTable
+    fetchCodeTable,
+    cacheCodeTables
   };
 };

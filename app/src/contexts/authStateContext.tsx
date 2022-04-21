@@ -140,6 +140,10 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
     await dataAccess.cacheFundingAgencies();
   };
 
+  const cacheCodeTables = async () => {
+    await dataAccess.cacheCodeTables();
+  };
+
   const cacheCurrentUserBCEID = async (bceid_userid) => {
     await dataAccess.cacheCurrentUserBCEID(bceid_userid);
   };
@@ -256,6 +260,7 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
             await cacheAllRoles();
             await cacheEmployers();
             await cacheFundingAgencies();
+            await cacheCodeTables();
           }
           const token = keycloak?.obj?.tokenParsed;
           if (token && token.idir_userid) {
