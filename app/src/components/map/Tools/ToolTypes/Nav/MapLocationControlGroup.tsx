@@ -14,9 +14,9 @@ import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import AttributionIcon from '@mui/icons-material/Attribution';
-import { IconButton, Tooltip } from '@mui/material';
+import { Divider, IconButton, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import proj4 from 'proj4';
+import { calc_utm } from '../../../Tools/ToolTypes/Nav/DisplayPosition';
 
 const useStyles = makeStyles((theme) => ({
   customHoverFocus: {
@@ -93,20 +93,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   // const map = useMap(); // Get the map from the context
   // const group = ; // Create a group to hold the drawn features
   const classes = useStyles(); // Get the classes from the context
-
-  // Taken from DisplayPosition
-  // Calculates UTM from lat/long
-  const calc_utm = (longitude: number, latitude: number) => {
-    let zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
-    proj4.defs([
-      ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-      ['EPSG:AUTO', `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`]
-    ]);
-    const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-    let easting = Number(en_m[0].toFixed(0));
-    let northing = Number(en_m[1].toFixed(0));
-    return { zone, easting, northing };
-  };
 
   // Taken from DisplayPosition
   // Timer to wait x seconds before allowing user to interact with controls
@@ -486,7 +472,8 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   function LocationMarker() {
-    const UTM: any = calc_utm(latitude, longitude);
+    const UTM: any = calc_utm(longitude, latitude);
+    const couldNotCalcString = 'UTM calculation failed.';
     return position === null ? null : (
       <Marker
         position={position}
@@ -500,13 +487,31 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           })
         }>
         <Popup>
-          You are here: <br />
-          <b>Latitude</b>: {latitude} <br />
-          <b>Longitude</b>: {longitude} <br />
-          <b>UTM Zone</b>: {UTM.zone} <br />
-          <b>UTM Easting</b>: {UTM.easting} <br />
-          <b>UTM Northing</b>: {UTM.northing} <br />
-          <b>Accuracy</b>: {Math.round(accuracy * 10) / 10}m
+          <h2>You are here:</h2>
+          <p>
+            <b>Latitude: </b>
+            {latitude}
+          </p>
+          <p>
+            <b>Longitude: </b>
+            {longitude}
+          </p>
+          <Divider />
+          <p>
+            <b>UTM Zone: </b>
+            {UTM[0] ? UTM[0] : couldNotCalcString}
+          </p>
+          <p>
+            <b>UTM Northing: </b>
+            {UTM[2] ? UTM[2] : couldNotCalcString}
+          </p>
+          <p>
+            <b>UTM Easting: </b>
+            {UTM[1] ? UTM[1] : couldNotCalcString}
+          </p>
+          <p>
+            <b>Accuracy</b>: {Math.round(accuracy * 10) / 10}m
+          </p>
         </Popup>
       </Marker>
     );
