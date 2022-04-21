@@ -69,6 +69,7 @@ export const newRecord = () => {
   // jumbo
   //const geo_array = random.polygon(1, 20, 0.01, bc_bbox).features;
   console.log(JSON.stringify(geo_array));
+
   return JSON.stringify({
     ...template,
     _id: id,
