@@ -1,17 +1,12 @@
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import L, { layerGroup } from 'leaflet';
+import L from 'leaflet';
 import React, { useContext, useEffect, useState } from 'react';
 import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
-import IAPPSiteMarker from '../Icons/pinned.png';
-import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import BC_AREA from '../BC_AREA.json';
-import { arrayBuffer } from 'stream/consumers';
-import geotiffZoom6 from '../GeoTIFFs/zoom6.tiff';
-import geotiffZoom9 from '../GeoTIFFs/zoom9.tiff';
+import iappLean from '../GeoTIFFsIAPPLean.tiff'; // NOSONAR
 
 var parse_georaster = require('georaster');
 var GeoRasterLayer = require('georaster-layer-for-leaflet');
@@ -32,27 +27,12 @@ export const PoisLayer = (props) => {
   const mapRequestContext = useContext(MapRequestContext);
   const { setCurrentRecords } = mapRequestContext;
   const [pois, setPois] = useState(null);
-  const [rasterlayer, setRasterlayer] = useState(null);
   const dataAccess = useDataAccess();
 
   const markerIcon = L.icon({
     iconUrl: marker,
     iconSize: [20, 20]
   });
-  const options = {
-    maxZoom: 24,
-    tolerance: 3,
-    debug: 0,
-    style: {
-      zIndex: props.zIndex,
-      fillColor: '#2CFA1F',
-      color: '#2CFA1F',
-      stroke: true,
-      opacity: props.opacity,
-      fillOpacity: props.opacity - 5,
-      weight: 5
-    }
-  };
 
   const settingBounds = () => {
     if (map.getZoom() > 9) {
@@ -66,13 +46,13 @@ export const PoisLayer = (props) => {
 
   useEffect(() => {
     if (map.getZoom() < 8) {
-      addTiff();
+      addTiff(map.getZoom() < 8);
     }
     console.log(map);
   }, [map]);
 
-  const addTiff = () => {
-    fetch(geotiffZoom6)
+  const addTiff = (isZoom: boolean) => {
+    fetch(highRes)
       .then((response) => response.arrayBuffer())
       .then((arrayBuffer) => {
         parse_georaster(arrayBuffer).then((georaster) => {
@@ -96,16 +76,13 @@ export const PoisLayer = (props) => {
             pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
             resolution: 240 // optional parameter for adjusting display resolution
           });
-          layer.addTo(map);
+          if (isZoom) layer.addTo(map);
+          else map.removeLayer(layer);
 
           map.fitBounds(layer.getBounds());
         });
       });
   };
-
-  // const removeTiff = () => {
-
-  // }
 
   useEffect(() => {
     if (map.getZoom() > 9) fetchData();
