@@ -6,24 +6,63 @@ import {
   Box,
   Button,
   Checkbox,
+  Container,
   IconButton,
   TextField,
   Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
+// Commented out due to module not being found, not sure what this is supposed to be
+// import Reorderer from 'reorderer';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { RecordSetContext } from 'contexts/recordSetContext';
+import DownloadIcon from '@mui/icons-material/Download';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import GrassIcon from '@mui/icons-material/Grass';
+
+const OrderSelector = (props) => {
+  return (
+    <Box sx={{ display: 'grid', height: 50, width: 100, pr: 5 }}>
+      <IconButton
+        size={'small'}
+        sx={{ gridColumn: 1, gridRow: 1, justifySelf: 'center' }}
+        onClick={(e) => {
+          e.stopPropagation();
+          props.moveUp();
+        }}>
+        <ArrowDropUpIcon />
+      </IconButton>
+
+      <IconButton
+        size={'small'}
+        sx={{ gridColumn: 1, gridRow: 2, pb: 5 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          props.moveDown();
+        }}>
+        <ArrowDropDownIcon />
+      </IconButton>
+      <Container sx={{ gridColumn: 2, alignContent: 'center', justifyContent: 'center' }}>
+        <LayersIcon fontSize={'small'} />
+        {props.drawOrder}
+      </Container>
+    </Box>
+  );
+};
 
 const RecordSetAccordionSummary = (props) => {
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
-
   // return useMemo(() => {
   return (
     <AccordionSummary>
       <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
         {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+        {props.recordSetType === 'POI' ? <DiamondIcon /> : <GrassIcon /> }
         {!nameEdit && (
           <>
             <Typography>{props.recordSetName}</Typography>
@@ -85,15 +124,14 @@ const RecordSetAccordionSummary = (props) => {
           //className={classes.mainHeader}
           onClick={(e) => {
             e.stopPropagation();
-            const currentIndex = props.colours.indexOf(props.colour);
+            const currentIndex = props.colours.indexOf(props.color);
             const nextIndex = (currentIndex + 1) % props.colours.length;
-            props.setColour(props.colours[nextIndex]);
+            props.setColor(props.colours[nextIndex]);
           }}
-          style={{ backgroundColor: props.colour }}
+          style={{ backgroundColor: props.color }}
           variant="contained">
           <ColorLensIcon />
         </Button>
-
         <Button onClick={(e) => e.stopPropagation()} variant="outlined">
           <LayersIcon />
           <Checkbox
@@ -105,6 +143,7 @@ const RecordSetAccordionSummary = (props) => {
             }}
           />
         </Button>
+        <OrderSelector moveUp={props.moveUp} moveDown={props.moveDown} drawOrder={props.drawOrder} />{' '}
         {props.canRemove ? (
           <Button
             onClick={(e) => {
@@ -121,6 +160,27 @@ const RecordSetAccordionSummary = (props) => {
             style={{ justifySelf: 'end', alignSelf: 'right' }}
             variant="outlined">
             <Delete />
+          </Button>
+        ) : (
+          <></>
+        )}
+        {props.canRemove ? (
+          <Button
+            disabled={true}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (
+                /*eslint-disable*/
+                confirm(
+                  'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+                )
+              ) {
+                props.remove(props.setName);
+              }
+            }}
+            style={{ justifySelf: 'end', alignSelf: 'right' }}
+            variant="outlined">
+            <DownloadIcon />
           </Button>
         ) : (
           <></>

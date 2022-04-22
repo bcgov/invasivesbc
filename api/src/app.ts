@@ -1,6 +1,5 @@
 'use strict';
 
-
 import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
@@ -8,14 +7,12 @@ import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
-import {getMetabaseGroupMappings, postSyncMetabaseGroupMappings} from "./admin/metabase_groups";
+import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
 
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
-
-const ADMIN_PORT = 8500;
 
 export { HOST, PORT };
 
@@ -83,15 +80,4 @@ const adminApp: express.Express = express();
 adminApp.get('/metabase_groups', getMetabaseGroupMappings);
 adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
 
-// Start api
-try {
-  app.listen(PORT, () => {
-    defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
-  });
-  adminApp.listen(ADMIN_PORT, () => {
-    defaultLog.info({ label: 'start admin api', message: `started api on ${HOST}:${ADMIN_PORT}/admin` });
-  });
-} catch (error) {
-  defaultLog.error({ label: 'start api', message: 'error', error });
-  process.exit(1);
-}
+export { adminApp, app };

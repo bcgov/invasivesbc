@@ -6,6 +6,7 @@ import { Accordion, AccordionDetails, Grid } from '@mui/material';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { userInfo } from 'os';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { blue, green, red, brown, purple } from '@mui/material/colors';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -27,11 +28,13 @@ export const RecordSet = (props) => {
   }));
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
-  const [colour, setColour] = useState('blue');
+  const [color, setColor] = useState(blue[500]);
+  const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState('New RecordSet');
   const [advancedFilters, setAdvancedFilters] = useState([]);
-  const colours = ['blue, green', 'red', 'white', 'brown', 'purple'];
+  const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const recordSetContext = useContext(RecordSetContext);
   const { remove, recordSetState } = recordSetContext;
@@ -45,16 +48,23 @@ export const RecordSet = (props) => {
     ) {
       initial = recordSetContext.recordSetState[props.setName][propertyName];
     }
+
     if (initial !== null) {
       switch (propertyName) {
         case 'expanded':
           setExpanded(initial);
           break;
+        case 'drawOrder':
+          setDrawOrder(initial);
+          break;
         case 'mapToggle':
           setMapToggle(initial);
           break;
-        case 'colour':
-          setColour(initial);
+        case 'color':
+          setColor(initial);
+          break;
+        case 'recordSetType':
+          setRecordSetType(initial);
           break;
         case 'recordSetName':
           setRecordSetName(initial);
@@ -82,11 +92,14 @@ export const RecordSet = (props) => {
           case 'expanded':
             newState['expanded'] = expanded;
             break;
+          case 'drawOrder':
+            newState['drawOrder'] = drawOrder;
+            break;
           case 'mapToggle':
             newState['mapToggle'] = mapToggle;
             break;
-          case 'colour':
-            newState['colour'] = colour;
+          case 'color':
+            newState['color'] = color;
             break;
           case 'recordSetName':
             newState['recordSetName'] = recordSetName;
@@ -106,15 +119,17 @@ export const RecordSet = (props) => {
 
   useEffect(() => {
     getInitialPropertyState('expanded');
+    getInitialPropertyState('drawOrder');
     getInitialPropertyState('mapToggle');
-    getInitialPropertyState('colour');
+    getInitialPropertyState('color');
+    getInitialPropertyState('recordSetType');
     getInitialPropertyState('recordSetName');
     getInitialPropertyState('advancedFilters');
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'colour', 'recordSetName', 'advancedFilters']);
-  }, [expanded, mapToggle, colour, recordSetName, advancedFilters]);
+    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters', 'drawOrder']);
+  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder]);
 
   return useMemo(
     () => (
@@ -125,14 +140,22 @@ export const RecordSet = (props) => {
           }}
           expanded={expanded}>
           <RecordSetAccordionSummary
+            recordSetType={recordSetType}
             recordSetName={recordSetName}
             setName={props.setName}
             setRecordSetName={setRecordSetName}
             colours={colours}
-            colour={colour}
-            setColour={setColour}
+            color={color}
+            setColor={setColor}
             mapToggle={mapToggle}
             setMapToggle={setMapToggle}
+            drawOrder={drawOrder}
+            moveUp={() => {
+              setDrawOrder(drawOrder + 1);
+            }}
+            moveDown={() => {
+              setDrawOrder(drawOrder - 1);
+            }}
             expanded={expanded}
             remove={remove}
             canRemove={props.canRemove}

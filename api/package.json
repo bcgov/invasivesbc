@@ -12,11 +12,11 @@
     "start": "ts-node src/app --max-old-space-size=8192",
     "clean": "gulp clean",
     "build": "gulp build",
-    "start:reload": "./node_modules/.bin/nodemon src/app.ts --exec ts-node",
+    "start:reload": "./node_modules/.bin/nodemon src/server.ts --exec ts-node",
     "start:migrate:reload": "npm-run-all -l -s migrate:latest start:reload",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
-    "test": "ts-mocha --timeout 60000 src/**/*.spec.ts",
+    "test": "TS_NODE_PROJECT='./tsconfig.spec.json' nodemon --watch . --ext ts --exec \"mocha -r ts-node/register test/mocha/**/*.test.ts\"",
     "lint": "eslint . --ignore-pattern 'node_modules' --ext .ts",
     "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts"
   },
@@ -39,6 +39,7 @@
     "db-migrate-pg": "~1.2.2",
     "express": "~4.17.1",
     "express-openapi": "~7.0.1",
+    "faker": "^6.6.6",
     "fast-json-patch": "~3.0.0-1",
     "js-base64": "~3.4.5",
     "jsdom": "^19.0.0",
@@ -58,7 +59,6 @@
     "simple-get": "^4.0.1",
     "sql-template-strings": "~2.2.2",
     "swagger-object-validator": "^1.2.2",
-    "typescript": "~3.9.7",
     "urldecode": "^1.0.1",
     "uuid": "~8.3.0",
     "validator": "~13.7.0",
@@ -66,6 +66,8 @@
     "yamljs": "~0.3.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.1.2",
+    "@turf/bbox": "^6.5.0",
     "@types/body-parser": "~1.19.0",
     "@types/chai": "~4.2.12",
     "@types/express": "~4.17.0",
@@ -75,7 +77,10 @@
     "@types/jsonwebtoken": "~8.5.0",
     "@types/memory-cache": "~0.2.1",
     "@types/mocha": "~8.0.1",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^17.0.23",
     "@types/pg": "~7.14.4",
+    "@types/supertest": "^2.0.12",
     "@types/uuid": "~8.3.0",
     "@types/yamljs": "~0.2.31",
     "@typescript-eslint/eslint-plugin": "~3.7.1",
@@ -88,6 +93,7 @@
     "eslint-config-prettier": "~6.11.0",
     "eslint-plugin-prettier": "~3.1.4",
     "factory-girl": "~5.0.4",
+    "geojson-random": "^0.5.0",
     "gulp": "~4.0.2",
     "gulp-typescript": "~5.0.1",
     "mocha": "~7.2.0",
@@ -97,6 +103,8 @@
     "prettier": "~2.0.5",
     "supertest": "~4.0.2",
     "ts-mocha": "~7.0.0",
-    "ts-node": "~10.4.0"
+    "ts-node": "~10.4.0",
+    "typescript": "^4.6.3",
+    "typescript-json-schema-faker": "0.0.10"
   }
 }

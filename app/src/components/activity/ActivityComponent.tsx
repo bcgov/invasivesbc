@@ -45,14 +45,13 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       ) {
         return;
       }
-      const dbActivity: any = await dataAccess.getActivityById(props.activity.activityId, databaseContext);
+      const dbActivity: any = await dataAccess.getActivityById(props.activity.activityId);
       console.dir('dbActivity', dbActivity);
       const result = await dataAccess.updateActivity(
         sanitizeRecord({
           ...dbActivity,
           sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
-        }),
-        databaseContext
+        })
       );
       if (!result?.activity_id) console.log('');
       //notifyError(databaseContext, 'Count not save to database.');

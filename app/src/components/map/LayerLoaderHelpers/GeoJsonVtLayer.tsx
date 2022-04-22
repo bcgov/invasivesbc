@@ -14,7 +14,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
 
 (String.prototype as any).iscolorHex = function () {
   var sColor = this.toLowerCase();
-  var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+  var reg = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
   return reg.test(sColor);
 };
 
@@ -29,19 +29,26 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   }
   var sColorChange = [];
   for (var i1 = 1; i1 < 7; i1 += 2) {
-    sColorChange.push(parseInt('0x' + sColor.slice(i1, i + 2)));
+    sColorChange.push(parseInt('0x' + sColor.slice(i1, i1 + 2)));
   }
   return sColorChange as number[];
 };
 
 (L.GridLayer as any).GeoJSON = L.GridLayer.extend({
   options: {
+    tolerance: 1, // simplification tolerance (higher means simpler)
+    extent: 4096, // tile extent (both width and height)
+    buffer: 128, // tile buffer on each side
+    debug: 0, // logging level (0 to disable, 1 or 2)
+    indexMaxPoints: 100000, // max number of points per tile in the index
+    solidChildren: false,
     async: false
   },
 
   initialize: function (geojson, options) {
     L.setOptions(this, options.options);
     (L.GridLayer.prototype as any).initialize.call(this, options);
+    //L.VectorGrid.prototype.initialize.call(this, options);
     this.tileIndex = geojsonvt(geojson, this.options);
   },
 
@@ -160,7 +167,7 @@ export const GeoJSONVtLayer = createTileLayerComponent<LeafletTileLayer, TileLay
   context
 ) {
   return {
-    instance: (L.gridLayer as any).geoJson(geoJSON, withPane(options, context)),
+    instance: (L.gridLayer as any).geoJson.vt(geoJSON, withPane(options, context)),
     context
   };
 },

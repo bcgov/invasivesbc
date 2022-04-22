@@ -12,6 +12,7 @@ import {
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
+  WMSTileLayer,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
@@ -35,7 +36,7 @@ import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGro
 const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
-  iconAnchor: [12, 41],
+  iconAnchor: [12, 41]
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -132,7 +133,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       try {
         props.setMapForActivityPage(map);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
   }, [map]);
@@ -243,15 +244,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 );
               }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
-              {props.children}
               <MapResizer />
               {/* <MapRecordsDataGrid /> */}
-              {useMemo(
+              {/*{useMemo(
                 () => (
                   <MapLocationControlGroup {...props} />
                 ),
                 [props.geometryState.geometry]
               )}
+                */}
+              {props.children}
             </MapRequestContextProvider>
           </FlyToAndFadeContextProvider>
         </ReactLeafletMapContainer>

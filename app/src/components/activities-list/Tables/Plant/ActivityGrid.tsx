@@ -86,6 +86,47 @@ const filterContainerClassname = `
   }
 `;
 
+export const getSearchCriteriaFromFilters = (
+  advancedFilterRows: any,
+  rolesUserHasAccessTo: any,
+  recordSetContext: any,
+  setName: string,
+  gridFilters?: any
+) => {
+  const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
+  const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
+  const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
+  const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
+  let filter: any = {
+    user_roles: rolesUserHasAccessTo
+  };
+  if (created_by) {
+    filter.created_by = [created_by];
+  }
+  if (form_status) {
+    filter.form_status = [form_status];
+  }
+  /*if (props.subType) {
+    filter.activity_subtype = [props.subType];
+  } else if (props.formType) {
+    filter.activity_type = [props.formType];
+  }
+  */
+
+  if (recordSetContext.recordSetState[setName]?.advancedFilters) {
+    const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
+    const jurisdictions = [];
+    currentAdvFilters.forEach((filter) => {
+      if (filter.filterField === 'Jurisdiction') {
+        jurisdictions.push(Object.keys(filter.filterValue)[0]);
+      }
+    });
+    filter.jurisdiction = jurisdictions;
+  }
+
+  return filter;
+};
+
 // no good way to do this dynamically
 interface Row {
   activity_id: string;
@@ -137,7 +178,7 @@ const ActivityGrid = (props) => {
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = recordSetContext.recordSetState;
-    console.dir(parentStateCollection);
+    //console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
       setFilters({ ...oldRecordSetState?.gridFilters });
@@ -197,6 +238,7 @@ const ActivityGrid = (props) => {
     });
   }, [save]);
 
+  // TODO: grabs activities - it should check if activity or POI
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
       getActivities();
@@ -207,42 +249,14 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const getSearchCriteriaFromFilters = (advancedFilterRows: any, rolesUserHasAccessTo: any) => {
-    const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
-    const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
-    const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
-    const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
-    let filter: any = {
-      user_roles: rolesUserHasAccessTo
-    };
-    if (created_by) {
-      filter.created_by = [created_by];
-    }
-    if (form_status) {
-      filter.form_status = [form_status];
-    }
-    if (props.subType) {
-      filter.activity_subtype = [props.subType];
-    } else if (props.formType) {
-      filter.activity_type = [props.formType];
-    }
-
-    if (recordSetContext.recordSetState[props?.setName]?.advancedFilters) {
-      const currentAdvFilters = recordSetContext.recordSetState[props.setName]?.advancedFilters;
-      const jurisdictions = [];
-      currentAdvFilters.forEach((filter) => {
-        if (filter.filterField === 'Jurisdiction') {
-          jurisdictions.push(Object.keys(filter.filterValue)[0]);
-        }
-      });
-      filter.jurisdiction = jurisdictions;
-    }
-
-    return filter;
-  };
-
+  // TODO: grabs activities - it should check if activity or POI
   const getActivities = async () => {
-    const filter = getSearchCriteriaFromFilters(advancedFilterRows, rolesUserHasAccessTo);
+    const filter = getSearchCriteriaFromFilters(
+      advancedFilterRows,
+      rolesUserHasAccessTo,
+      recordSetContext,
+      props.setName
+    );
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
@@ -259,6 +273,7 @@ const ActivityGrid = (props) => {
 
   const [rows, setRows] = useState([]);
 
+  // TODO: grabs activities - it should check if activity or POI
   useEffect(() => {
     if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
       props.setSelectedRecord({
@@ -308,6 +323,7 @@ const ActivityGrid = (props) => {
             ...x,
             headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
             headerRenderer: (p) => (
+              // TODO: activity row - it should check if activity or POI
               <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
                 {({ filters, ...rest }) => (
                   <input
@@ -332,6 +348,7 @@ const ActivityGrid = (props) => {
       });
     }, [filters]);
 
+  //todo: check if activity or POI, grab from activity table helpers or point of interest table helpers
   const columnsDynamic = useColumns(activites_default_headers);
 
   //todo - tests need to take into account type, they're all strings right now
@@ -373,6 +390,7 @@ const ActivityGrid = (props) => {
 
   ///SORT STUFF:
 
+  // TODO activity or POI
   useEffect(() => {
     const newrows = mapActivitiesToDataGridRows(activities);
     setRows(newrows);
@@ -529,6 +547,7 @@ const ActivityGrid = (props) => {
                 defaultColumnOptions={{ sortable: true }}
                 //columns={columns}
                 onRowClick={(r) => {
+                  // todo: should have another button for open POI, or open button should be smart enough to open multiple types
                   setActivitiesSelected(r);
                 }}
                 columns={columnsDynamic}

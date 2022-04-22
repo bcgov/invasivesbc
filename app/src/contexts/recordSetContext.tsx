@@ -21,6 +21,7 @@ export const RecordSetProvider = (props) => {
       const defaults = {
         recordSets: {
           ['1']: {
+            recordSetType: 'Activity',
             recordSetName: 'My Drafts',
             advancedFilters: [
               {
@@ -44,13 +45,15 @@ export const RecordSetProvider = (props) => {
     }
   };
 
-  const add = () => {
+  const add = (type: string) => {
     setRecordSetState((prev) => ({
       ...prev,
       [JSON.stringify(Object.keys(prev).length + 1)]: {
+        recordSetType: type,
         recordSetName: 'New Record Set',
         advancedFilters: [],
-        gridFilters: {}
+        gridFilters: {},
+        drawOrder: Object.keys(prev).length + 1
       }
     }));
   };

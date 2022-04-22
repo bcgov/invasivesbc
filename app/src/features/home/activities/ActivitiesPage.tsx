@@ -15,6 +15,8 @@ import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Ta
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
+import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
+import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -93,27 +95,17 @@ const PageContainer = (props) => {
     handleDialogClose: handleNewRecordDialogClose
   });
 
+  const [newLayerDialog, setNewLayerDialog] = useState<IGeneralDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
+
   // the menu at the bottom:
   const [options, setOptions] = useState<any>();
   useEffect(() => {
     setOptions([
-      {
-        name: 'Toggle Filters on Map',
-        hidden: false,
-        disabled: false,
-        //type: optionType.toggle,
-        onClick: () => {
-          alert('no');
-        },
-        icon: (props) => {
-          return (
-            <>
-              <FilterListIcon />
-              <MapIcon />
-            </>
-          );
-        }
-      },
       {
         name: 'Current window only',
         hidden: false,
@@ -122,7 +114,7 @@ const PageContainer = (props) => {
           return (
             <>
               <FilterListIcon />
-              <CropFreeIcon />
+              <MapIcon />
             </>
           );
         },
@@ -136,7 +128,28 @@ const PageContainer = (props) => {
         disabled: false,
         icon: PlaylistAddIcon,
         onClick: () => {
-          recordStateContext.add();
+          setNewLayerDialog({
+            dialogOpen: true,
+            dialogTitle: 'Create New Record List/Layer',
+            dialogContentText: 'Would you like to create the layer with Point Of Interest records or activites?',
+            dialogActions: [
+              {
+                actionName: 'POI',
+                actionOnClick: async () => {
+                  setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
+                  recordStateContext.add('POI');
+                }
+              },
+              {
+                actionName: 'Activity',
+                actionOnClick: async () => {
+                  setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
+                  recordStateContext.add('Activity');
+                },
+                autoFocus: true
+              }
+            ]
+          });
         }
       },
       {
@@ -183,7 +196,9 @@ const PageContainer = (props) => {
             center={[55, -128]}
             zoom={5}
             mapId={'mainMap'}
-            geometryState={{ geometry, setGeometry }}></MapContainer>
+            geometryState={{ geometry, setGeometry }}>
+            <RecordSetLayersRenderer />
+          </MapContainer>
         </MapRecordsContextProvider>
       </Box>
       <Box>
@@ -231,6 +246,12 @@ const PageContainer = (props) => {
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
+      <GeneralDialog
+        dialogOpen={newLayerDialog.dialogOpen}
+        dialogTitle={newLayerDialog.dialogTitle}
+        dialogActions={newLayerDialog.dialogActions}
+        dialogContentText={newLayerDialog.dialogContentText}
+      />
     </>
   );
 };

@@ -5,12 +5,12 @@ import {
   ActivitySyncStatus,
   ActivityType,
   ReviewStatus
-} from 'constants/activities';
-import { DocType } from 'constants/database';
+} from '../constants/activities';
+import { DocType } from '../constants/database';
 import { Feature } from 'geojson';
-import { IActivity } from 'interfaces/activity-interfaces';
+import { IActivity } from '../interfaces/activity-interfaces';
 import moment from 'moment';
-import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
 import { v4 as uuidv4 } from 'uuid';
 
 const camelCase = (str) => {
@@ -23,7 +23,7 @@ const camelCase = (str) => {
 
 const snakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
-const mapKeys = (source, mappingFunction) => {
+export const mapKeys = (source, mappingFunction) => {
   if (!source) return {};
   return Object.keys(source).reduce(
     (obj, key) => ({
