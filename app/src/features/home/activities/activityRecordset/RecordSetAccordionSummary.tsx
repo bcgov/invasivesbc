@@ -21,7 +21,6 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
-import DiamondIcon from '@mui/icons-material/Diamond';
 import GrassIcon from '@mui/icons-material/Grass';
 
 const OrderSelector = (props) => {
@@ -61,8 +60,11 @@ const RecordSetAccordionSummary = (props) => {
   return (
     <AccordionSummary>
       <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-        {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
-        {props.recordSetType === 'POI' ? <DiamondIcon /> : <GrassIcon /> }
+      {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+        {props.recordSetType === 'POI' ?
+          <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{maxWidth: '4rem', margin: '0 0.5rem'}} /> :
+          <GrassIcon style={{margin: '0 0.5rem'}}/>
+        }
         {!nameEdit && (
           <>
             <Typography>{props.recordSetName}</Typography>
