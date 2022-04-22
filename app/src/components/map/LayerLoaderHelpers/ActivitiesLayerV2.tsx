@@ -98,7 +98,7 @@ export const ActivitiesLayerV2 = (props: any) => {
       return (
         <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
           {activities.features.map((a) => {
-            if (a.geometry.type === 'Polygon') {
+            if (a?.geometry?.type === 'Polygon') {
               const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
 
               return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
