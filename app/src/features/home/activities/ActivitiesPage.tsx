@@ -163,7 +163,7 @@ const PageContainer = (props) => {
       },
       {
         name:
-          'Open' +
+          'Open ' +
           (recordStateContext.selectedRecord?.description !== undefined
             ? recordStateContext.selectedRecord?.description
             : ''),
@@ -177,7 +177,11 @@ const PageContainer = (props) => {
             console.log(e);
           }
           setTimeout(() => {
-            history.push({ pathname: `/home/activity` });
+            if (recordStateContext?.selectedRecord?.isIAPP) {
+              history.push({ pathname: `/home/iapp/${recordStateContext?.selectedRecord?.id}` });
+            } else {
+              history.push({ pathname: `/home/activity` });
+            }
           }, 1000);
         }
       }
