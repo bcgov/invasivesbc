@@ -11,6 +11,7 @@ import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid'
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
 import { activites_default_headers, ActivityRow, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { point_of_interest_iapp_default_headers, POI_IAPP_Row, mapPOI_IAPP_ToDataGridRows } from '../POITablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
@@ -164,8 +165,10 @@ const ActivityGrid = (props) => {
   const dataAccess = useDataAccess();
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const [activities, setActivities] = useState(undefined);
+  const [POIs, setPOIs] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
+  const [poiSelected, setPoiSelected] = useState(null);
   const [advancedFilterRows, setAdvancedFilterRows] = useState<any[]>([]);
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState<any>({});
@@ -238,10 +241,13 @@ const ActivityGrid = (props) => {
     });
   }, [save]);
 
-  // TODO: grabs activities - it should check if activity or POI
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
-      getActivities();
+      if (props.setType ==='POI') {
+        getPOIs();
+      } else {
+        getActivities();
+      }
     }
   }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
 
@@ -249,7 +255,6 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  // TODO: grabs activities - it should check if activity or POI
   const getActivities = async () => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
@@ -271,23 +276,52 @@ const ActivityGrid = (props) => {
     setActivities(act_list);
   };
 
+  const getPOIs = async () => {
+    // to comply with IPointOfInterestSearchCriteria interface, otherwise user records are returned
+    const filter = {
+      // page: 1,
+      limit: 10,
+      isIAPP: true
+    };
+
+    const act_list = await dataAccess.getPointsOfInterest(filter);
+    if (act_list && !act_list.count) {
+      setConsole('Unable to fetch points of interest.');
+    }
+    if (act_list && act_list.code) {
+      setConsole('Unable to fetch points of interest.');
+    }
+    if (act_list && act_list.count === 0) {
+      setConsole('No POI data found.');
+    }
+    setPOIs(act_list);
+  };
+
   const [rows, setRows] = useState([]);
 
-  // TODO: grabs activities - it should check if activity or POI
-  useEffect(() => {
+   // set selected record to activity
+   useEffect(() => {
     if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
       props.setSelectedRecord({
         type: DocType.ACTIVITY,
-        description: activitiesSelected.short_id,
+        description: "Activity-" + activitiesSelected.short_id,
         id: activitiesSelected.activity_id
       });
     }
   }, [activitiesSelected]);
 
+  // set selected record to
+  useEffect(() => {
+    if (poiSelected && props.setSelectedRecord && poiSelected.point_of_interest_id) {
+      props.setSelectedRecord({
+        type: DocType.POINT_OF_INTEREST,
+        description: "IAPP-" + poiSelected.point_of_interest_id,
+        id: poiSelected.point_of_interest_id,
+        isIAPP: true
+      });
+    }
+  }, [poiSelected]);
   // HEADER FILTER STUFF:
-
-  // Context is needed to read filter values otherwise columns are
-  // re-created when filters are changed and filter loses focus
 
   // Context is needed to read filter values otherwise columns are
   // re-created when filters are changed and filter loses focus
@@ -316,14 +350,38 @@ const ActivityGrid = (props) => {
   */
 
   const useColumns = (keyAndNameArray) =>
-    useMemo(() => {
-      return keyAndNameArray.map((x) => {
-        if (filters && filters.enabled) {
+  useMemo(() => {
+    return keyAndNameArray.map((x) => {
+      if (filters && filters.enabled) {
+        if (props.setType === 'POI') {
           return {
             ...x,
             headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
             headerRenderer: (p) => (
-              // TODO: activity row - it should check if activity or POI
+              <FilterRenderer<POI_IAPP_Row, unknown, HTMLInputElement> {...p}>
+                {({ filters, ...rest }) => (
+                  <input
+                    {...rest}
+                    className={classes.filterClassname}
+                    value={filters[x.key]}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        [x.key]: e.target.value
+                      })
+                    }
+                    onKeyDown={inputStopPropagation}
+                  />
+                )}
+              </FilterRenderer>
+            )
+          };
+
+        } else {
+          return {
+            ...x,
+            headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
+            headerRenderer: (p) => (
               <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
                 {({ filters, ...rest }) => (
                   <input
@@ -342,14 +400,18 @@ const ActivityGrid = (props) => {
               </FilterRenderer>
             )
           };
-        } else {
-          return { ...x };
+          
         }
-      });
-    }, [filters]);
+      } else {
+        return { ...x };
+      }
+    });
+  }, [filters]);
 
-  //todo: check if activity or POI, grab from activity table helpers or point of interest table helpers
-  const columnsDynamic = useColumns(activites_default_headers);
+  // sets columnns based on record set type
+  const iappColumns = useColumns(point_of_interest_iapp_default_headers);
+  const actColumns = useColumns(activites_default_headers);
+  const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
 
   //todo - tests need to take into account type, they're all strings right now
   const filteredRowsDynamic = useMemo(() => {
@@ -390,11 +452,15 @@ const ActivityGrid = (props) => {
 
   ///SORT STUFF:
 
-  // TODO activity or POI
   useEffect(() => {
     const newrows = mapActivitiesToDataGridRows(activities);
     setRows(newrows);
   }, [activities]);
+
+  useEffect(() => {
+    const newrows = mapPOI_IAPP_ToDataGridRows(POIs);
+    setRows(newrows);
+  }, [POIs]);
 
   const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
 
@@ -547,8 +613,7 @@ const ActivityGrid = (props) => {
                 defaultColumnOptions={{ sortable: true }}
                 //columns={columns}
                 onRowClick={(r) => {
-                  // todo: should have another button for open POI, or open button should be smart enough to open multiple types
-                  setActivitiesSelected(r);
+                  props.setType === 'POI' ? setPoiSelected(r) : setActivitiesSelected(r);
                 }}
                 columns={columnsDynamic}
                 sortColumns={sortColumns}

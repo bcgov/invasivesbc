@@ -131,10 +131,10 @@ const PageContainer = (props) => {
           setNewLayerDialog({
             dialogOpen: true,
             dialogTitle: 'Create New Record List/Layer',
-            dialogContentText: 'Would you like to create the layer with Point Of Interest records or activites?',
+            dialogContentText: 'Would you like to create the layer with IAPP records or activites?',
             dialogActions: [
               {
-                actionName: 'POI',
+                actionName: 'IAPP',
                 actionOnClick: async () => {
                   setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
                   recordStateContext.add('POI');
@@ -163,7 +163,7 @@ const PageContainer = (props) => {
       },
       {
         name:
-          'Open' +
+          'Open ' +
           (recordStateContext.selectedRecord?.description !== undefined
             ? recordStateContext.selectedRecord?.description
             : ''),
@@ -177,7 +177,11 @@ const PageContainer = (props) => {
             console.log(e);
           }
           setTimeout(() => {
-            history.push({ pathname: `/home/activity` });
+            if (recordStateContext?.selectedRecord?.isIAPP) {
+              history.push({ pathname: `/home/iapp/${recordStateContext?.selectedRecord?.id}` });
+            } else {
+              history.push({ pathname: `/home/activity` });
+            }
           }, 1000);
         }
       }

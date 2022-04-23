@@ -36,7 +36,10 @@ export const RecordSetProvider = (props) => {
               }
             ]
           },
-          ['2']: { recordSetName: 'All Data' }
+          ['2']: {
+            recordSetType: "Activity",
+            recordSetName: 'All Data'
+          }
         }
       };
 
