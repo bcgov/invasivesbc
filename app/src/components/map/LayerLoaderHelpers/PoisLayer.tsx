@@ -24,6 +24,7 @@ export const PoisLayer = (props) => {
   const [mapBounds, setMapBounds] = useState(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
   const [pois, setPois] = useState(null);
   const [raster, setRaster] = useState();
+  const [layer, setLayer] = useState<any>();
   const mapRequestContext = useContext(MapRequestContext);
   const { setCurrentRecords } = mapRequestContext;
   const layerRef = React.useRef(null);
@@ -40,17 +41,26 @@ export const PoisLayer = (props) => {
   }, [iappLean]);
 
   useEffect(() => {
-    if (raster && map.getZoom() < 9) {
-      const layer = new GeoRasterLayer({
-        zIndex: props.zIndex,
-        georaster: raster,
-        pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
-        resolution: 64
-      });
-      layerRef.current = layer;
-      layer.addTo(map);
+    if (raster) {
+      setLayer(
+        new GeoRasterLayer({
+          zIndex: props.zIndex,
+          georaster: raster,
+          pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
+          resolution: 64
+        })
+      );
     }
-  }, [raster, map]);
+  }, [raster]);
+
+  useEffect(() => {
+    if (layer) {
+      layerRef.current = layer;
+      if (map.getZoom() < 9) {
+        layer.addTo(map);
+      }
+    }
+  }, [layer]);
 
   useEffect(() => {
     if (map.getZoom() > 8) {
@@ -67,7 +77,12 @@ export const PoisLayer = (props) => {
 
   useMapEvent('moveend', settingBounds);
 
-  useMapEvent('zoomend', settingBounds);
+  useMapEvent('zoomend', () => {
+    settingBounds();
+    if (map.getZoom() < 9 && layerRef.current) {
+      layerRef.current.addTo(map);
+    }
+  });
 
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean({
