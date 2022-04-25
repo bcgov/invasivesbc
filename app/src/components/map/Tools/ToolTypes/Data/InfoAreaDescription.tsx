@@ -203,8 +203,7 @@ function SetPointOnClick({ map }: any) {
         const latlng2 = [temp.lng + val, temp.lat + val / 2];
         const latlng4 = [temp.lng - val, temp.lat - val / 2];
         setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-        const coords = center(drawnGeo).geometry.coordinates;
-        const result = calc_utm(coords[0], coords[1]);
+        const result = calc_utm(temp.lng, temp.lat);
         setUTM([
           createDataUTM('Zone', result[0]),
           createDataUTM('Easting', result[1]),
