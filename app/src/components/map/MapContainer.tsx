@@ -242,21 +242,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
 
-              <MapResizer />
-              {/* <MapRecordsDataGrid /> */}
-              {/*{useMemo(
+            <MapResizer />
+            {/* <MapRecordsDataGrid /> */}
+            {/*{useMemo(
                 () => (
                   <MapLocationControlGroup {...props} />
                 ),
                 [props.geometryState.geometry]
               )}
                 */}
-              {props.children}
-            </MapRequestContextProvider>
-          </FlyToAndFadeContextProvider>
-        </ReactLeafletMapContainer>
-      </ReactLeafletEditable>
-    </>
+            {props.children}
+          </MapRequestContextProvider>
+        </FlyToAndFadeContextProvider>
+      </ReactLeafletMapContainer>
+    </ReactLeafletEditable>
   );
 };
 
