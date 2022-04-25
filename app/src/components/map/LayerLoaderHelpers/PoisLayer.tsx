@@ -73,7 +73,7 @@ export const PoisLayer = (props) => {
   const settingBounds = () => {
     if (map.getZoom() > 8) {
       setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
-    }
+    } else setPois([]);
   };
 
   useMapEvent('moveend', settingBounds);
@@ -123,15 +123,11 @@ export const PoisLayer = (props) => {
     });
   };
 
-  if (!pois) {
-    return <div></div>;
-  }
-
   return (
     <>
       {map.getZoom() > 8 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
-          {pois.features.map((feature) => {
+          {pois?.features?.map((feature) => {
             const coords = feature.geometry.coordinates;
             return <Marker position={[coords[1], coords[0]]} icon={IAPPSite}></Marker>;
           })}
@@ -139,7 +135,7 @@ export const PoisLayer = (props) => {
       )}
       {map.getZoom() > 14 && (
         <>
-          {pois.features.map((feature) => {
+          {pois?.features?.map((feature) => {
             const coords = feature.geometry.coordinates;
             return (
               <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
