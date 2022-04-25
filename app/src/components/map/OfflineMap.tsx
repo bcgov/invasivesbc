@@ -63,10 +63,6 @@ const OfflineMap = (props) => {
     }
   }, [props.cacheMapTilesFlag]);
 
-  useMapEvent('zoomend' as any, () => {
-    console.log(props.map.getZoom());
-  });
-
   const [offlineing, setOfflineing] = useState(false);
 
   const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
