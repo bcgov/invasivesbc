@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { DataGrid, GridCellParams, GridColDef, MuiEvent } from '@mui/x-data-grid';
 import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { useHistory } from 'react-router';
