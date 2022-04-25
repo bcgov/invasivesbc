@@ -6,36 +6,61 @@ import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import iappLean from '../GeoTIFFsIAPPLean.tiff'; // NOSONAR
+import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR
+// import { GeoTIFFLayer } from '../GeoTIFFs/GeoTIFFLayer';
 
-var parse_georaster = require('georaster');
+var parseGeoraster = require('georaster');
 var GeoRasterLayer = require('georaster-layer-for-leaflet');
 
 const IAPPSite = L.icon({
   iconUrl: marker,
-  //shadowUrl: 'leaf-shadow.png',
   iconSize: [20, 20], // size of the icon
-  //shadowSize: [50, 64], // size of the shadow
   iconAnchor: [20, 20], // point of the icon which will correspond to marker's location
-  //shadowAnchor: [4, 62], // the same for the shadow
   popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 
 export const PoisLayer = (props) => {
   const map = useMap();
   const [mapBounds, setMapBounds] = useState(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
+  const [pois, setPois] = useState(null);
+  const [raster, setRaster] = useState();
   const mapRequestContext = useContext(MapRequestContext);
   const { setCurrentRecords } = mapRequestContext;
-  const [pois, setPois] = useState(null);
+  const layerRef = React.useRef(null);
   const dataAccess = useDataAccess();
 
-  const markerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [20, 20]
-  });
+  useEffect(() => {
+    fetch(iappLean)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => {
+        parseGeoraster(arrayBuffer).then((georaster) => {
+          setRaster(georaster);
+        });
+      });
+  }, [iappLean]);
+
+  useEffect(() => {
+    if (raster && map.getZoom() < 9) {
+      const layer = new GeoRasterLayer({
+        zIndex: props.zIndex,
+        georaster: raster,
+        pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
+        resolution: 64
+      });
+      layerRef.current = layer;
+      layer.addTo(map);
+    }
+  }, [raster, map]);
+
+  useEffect(() => {
+    if (map.getZoom() > 8) {
+      fetchData();
+      if (layerRef.current) map.removeLayer(layerRef.current);
+    }
+  }, [mapBounds]);
 
   const settingBounds = () => {
-    if (map.getZoom() > 9) {
+    if (map.getZoom() > 8) {
       setMapBounds(createPolygonFromBounds(map.getBounds(), map).toGeoJSON());
     }
   };
@@ -44,57 +69,12 @@ export const PoisLayer = (props) => {
 
   useMapEvent('zoomend', settingBounds);
 
-  useEffect(() => {
-    if (map.getZoom() < 8) {
-      addTiff(map.getZoom() < 8);
-    }
-    console.log(map);
-  }, [map]);
-
-  const addTiff = (isZoom: boolean) => {
-    fetch(highRes)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => {
-        parse_georaster(arrayBuffer).then((georaster) => {
-          console.log('georaster:', georaster);
-
-          /*
-            GeoRasterLayer is an extension of GridLayer,
-            which means can use GridLayer options like opacity.
-  
-            Just make sure to include the georaster option!
-  
-            Optionally set the pixelValuesToColorFn function option to customize
-            how values for a pixel are translated to a color.
-  
-            http://leafletjs.com/reference-1.2.0.html#gridlayer
-        */
-          var layer = new GeoRasterLayer({
-            zIndex: props.zIndex,
-            georaster: georaster,
-            opacity: props.opacity,
-            pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
-            resolution: 240 // optional parameter for adjusting display resolution
-          });
-          if (isZoom) layer.addTo(map);
-          else map.removeLayer(layer);
-
-          map.fitBounds(layer.getBounds());
-        });
-      });
-  };
-
-  useEffect(() => {
-    if (map.getZoom() > 9) fetchData();
-  }, [mapBounds]);
-
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean({
       search_feature: mapBounds,
       isIAPP: true,
       point_of_interest_type: props.poi_type
     });
-    console.log('poisData', poisData);
 
     const poisFeatureArray = [];
     poisData?.rows?.forEach((row) => {
@@ -128,41 +108,16 @@ export const PoisLayer = (props) => {
   };
 
   if (!pois) {
-    return null;
+    return <div></div>;
   }
 
   return (
     <>
-      {/* Removed for now: map.getZoom() < 16 ? (
-        <GeoJSONVtLayer geoJSON={pois} zIndex={props.zIndex} options={options} />
-      ) : (
-        <>
-          {pois.features.map((feature) => {
-            var coords = feature.geometry.coordinates;
-            return (
-              <Marker position={[coords[1], coords[0]]} icon={markerIcon}>
-                <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
-                  {feature.properties.species_on_site.toString()}
-                </Tooltip>
-              </Marker>
-            );
-          })}
-        </>
-        )*/}
-      {/* Close Zoom Renders */}
-      {/* {map.getZoom() < 10 && () => {
-        
-      })} */}
-      {map.getZoom() > 9 && map.getZoom() < 15 && (
+      {map.getZoom() > 8 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois.features.map((feature) => {
             const coords = feature.geometry.coordinates;
-            return (
-              <Marker
-                key={feature.properties.point_of_interest_id}
-                position={[coords[1], coords[0]]}
-                icon={IAPPSite}></Marker>
-            );
+            return <Marker position={[coords[1], coords[0]]} icon={IAPPSite}></Marker>;
           })}
         </MarkerClusterGroup>
       )}
@@ -171,7 +126,7 @@ export const PoisLayer = (props) => {
           {pois.features.map((feature) => {
             const coords = feature.geometry.coordinates;
             return (
-              <Marker icon={markerIcon} position={[coords[1], coords[0]]}>
+              <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
                 <Tooltip direction="top">{feature.properties.species_on_site.toString()}</Tooltip>
               </Marker>
             );
