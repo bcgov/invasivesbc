@@ -45,6 +45,7 @@ export const PoisLayer = (props) => {
       setLayer(
         new GeoRasterLayer({
           zIndex: props.zIndex,
+          opacity: props.opacity,
           georaster: raster,
           pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
           resolution: 64
