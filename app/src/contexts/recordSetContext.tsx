@@ -82,9 +82,14 @@ export const RecordSetProvider = (props) => {
   const updateState = async () => {
     const oldState = dataAccess.getAppState();
     const oldRecordSets = oldState?.recordSets;
-    if (oldRecordSets && recordSetState && JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState)) {
+    console.log((selectedRecord?.id));
+    if (oldRecordSets && recordSetState && ( JSON.stringify(oldRecordSets) !== JSON.stringify(recordSetState) || (oldState?.activeActivity !== selectedRecord?.id && oldState?.activeIappSite !== selectedRecord?.id) )) {
       if (selectedRecord?.id) {
-        dataAccess.setAppState({ recordSets: { ...recordSetState }, activeActivity: selectedRecord.id });
+        if (selectedRecord?.isIAPP) {
+          dataAccess.setAppState({ recordSets: { ...recordSetState }, activeIappSite: selectedRecord.id });
+        } else {
+          dataAccess.setAppState({ recordSets: { ...recordSetState }, activeActivity: selectedRecord.id });
+        }
       } else {
         dataAccess.setAppState({ recordSets: { ...recordSetState } });
       }
