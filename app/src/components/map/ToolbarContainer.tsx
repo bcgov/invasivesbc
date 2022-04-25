@@ -1,7 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
@@ -57,15 +55,7 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const ToolbarContainer = (props) => {
-  const mapRequestContext = useContext(MapRequestContext);
-  const { setMapZoom } = mapRequestContext;
-
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
-
-  const mapObj = useMap();
-  // useMapEvent('zoomend' as any, () => {
-  //   setMapZoom(mapObj.getZoom());
-  // });
 
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
   const classes = useToolbarContainerStyles();

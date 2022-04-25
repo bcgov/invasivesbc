@@ -62,7 +62,6 @@ export const PointsOfInterestTable = () => {
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
     const fetchData = async () => {
