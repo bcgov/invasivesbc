@@ -48,10 +48,10 @@ export const point_of_interest_iapp_default_headers = [
     key: 'bio_dispersal',
     name: 'Biocontrol Dispersal'
   },
-  // {
-  //   key: 'monitored',
-  //   name: 'Monitored'
-  // },
+  {
+    key: 'monitored',
+    name: 'Monitored'
+  },
 ];
 
 export const mapPOI_IAPP_ToDataGridRows = (activities) => {
@@ -63,7 +63,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((record, index) => {
-    // console.log(record);
     const jurisdictions = new Set();
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
@@ -74,6 +73,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const chemTreatment = record?.point_of_interest_payload?.form_data?.chemical_treatments?.length ? "Yes" : "No";
     const mechTreatment = record?.point_of_interest_payload?.form_data?.mechanical_treatments?.length ? "Yes" : "No";
     const bioDispersal = record?.point_of_interest_payload?.form_data?.biological_dispersals?.length ? "Yes" : "No";
+    const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {
       // jurisdictions
@@ -105,7 +105,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       chem_treatment: chemTreatment,
       mech_treatment: mechTreatment,
       bio_dispersal: bioDispersal,
-      // monitored: ""
+      monitored: monitored
     };
   });
 };

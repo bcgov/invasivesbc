@@ -213,6 +213,14 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
       }
     );
 
+    // monitored flag
+    const monitored = (
+      row['has_biological_treatment_monitorings'] ||
+      row['has_chemical_treatment_monitorings'] ||
+      row['has_mechanical_treatment_monitorings']) ? 'Yes' : 'No';
+
+    (iapp_site as any).point_of_interest_payload.form_data.monitored = monitored;
+
     return iapp_site;
   });
 };
