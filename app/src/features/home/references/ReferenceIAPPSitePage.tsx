@@ -25,7 +25,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
       setPOI(poiData.rows[0]);
     };
 
-    if (!poi) {
+    if (!poi && id) {
       fetchPOI();
     }
   }, [poi, dataAccess, urlParams.id, id]);
