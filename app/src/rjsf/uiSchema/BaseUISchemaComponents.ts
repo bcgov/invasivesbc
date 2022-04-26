@@ -192,10 +192,18 @@ const TransectData = {
  * ------------------------  General Objects  -----------------------------
  */
 
-const Biological_Agent_Stage = {
+const Biocontrol_Release_Biological_Agent_Stage = {
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   release_quantity: {},
   'ui:order': ['biological_agent_stage_code', 'release_quantity']
+};
+
+const Biological_Agent_Stage = {
+  biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
+  release_quantity: {},
+  plant_position: { 'ui:widget': 'single-select-autocomplete' },
+  agent_location: { 'ui:widget': 'single-select-autocomplete' },
+  'ui:order': ['biological_agent_stage_code', 'release_quantity', 'plant_position', 'agent_location']
 };
 
 const Well_Information = {
@@ -1118,8 +1126,8 @@ const Biocontrol_Release_Information = {
   plant_collected_from_unlisted: {},
   biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
   biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  actual_biological_agents: { items: { ...Biological_Agent_Stage } },
-  estimated_biological_agents: { items: { ...Biological_Agent_Stage } },
+  actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+  estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
   total_bio_agent_quantity_actual: { 'ui:readonly': true },
   total_bio_agent_quantity_estimated: { 'ui:readonly': true },
   total_release_quantity: { 'ui:readonly': true },
@@ -1180,6 +1188,7 @@ const BaseUISchemaComponents = {
   general_objects: {
     Pest_Injury_Threshold_Determination,
     Biological_Agent_Stage,
+    Biocontrol_Release_Biological_Agent_Stage,
     Well_Information,
     WaterbodyData,
     WaterbodyData_AdditionalFields,

@@ -306,6 +306,56 @@ export const Biological_Agent_Stage = {
       default: 1,
       'x-tooltip-text':
         'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
+    },
+    plant_position: {
+      type: 'string',
+      title: 'Plant Position',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'plant_position_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
+    },
+    agent_location: {
+      type: 'string',
+      title: 'Agent Location',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'agent_location_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      }
+    }
+  },
+  required: ['biological_agent_stage_code', 'release_quantity', 'plant_position', 'agent_location']
+};
+export const Biocontrol_Release_Biological_Agent_Stage = {
+  type: 'object',
+  title: 'invisible',
+  properties: {
+    biological_agent_stage_code: {
+      type: 'string',
+      title: 'Biological Agent Stage',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'biological_agent_stage_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Life stage of biocontrol agent'
+    },
+    release_quantity: {
+      type: 'number',
+      title: 'Bioagent Quantity',
+      minimum: 1,
+      maximum: 100000,
+      default: 1,
+      'x-tooltip-text':
+        'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
     }
   },
   required: ['biological_agent_stage_code', 'release_quantity']

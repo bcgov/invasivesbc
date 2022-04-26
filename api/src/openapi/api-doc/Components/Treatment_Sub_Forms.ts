@@ -1,4 +1,4 @@
-import { Agent_Quantity_And_Life_Stage, Biological_Agent_Stage } from './General_Sub_Forms';
+import { Agent_Quantity_And_Life_Stage, Biocontrol_Release_Biological_Agent_Stage } from './General_Sub_Forms';
 
 //--------------------- Chemical ---------------------
 export const Treatment_ChemicalAnimalTerrestrial = {
@@ -566,7 +566,7 @@ export const Biocontrol_Release_Information = {
       type: 'array',
       title: 'Actual Biological Agents',
       items: {
-        ...Biological_Agent_Stage
+        ...Biocontrol_Release_Biological_Agent_Stage
       },
       'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
     },
@@ -574,7 +574,7 @@ export const Biocontrol_Release_Information = {
       type: 'array',
       title: 'Estimated Biological Agents',
       items: {
-        ...Biological_Agent_Stage
+        ...Biocontrol_Release_Biological_Agent_Stage
       },
       'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
     },
