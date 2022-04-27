@@ -3,7 +3,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { VALID_EMBEDDED_REPORTS } from './embedded-report/{reportId}';
+import { getDBConnection } from '../database/db';
+import { getAllEmbeddedReports } from '../queries/embedded-report-queries';
 
 export const GET: Operation = [listValidEmbeddedReports()];
 
@@ -25,13 +26,31 @@ GET.apiDoc = {
 
 function listValidEmbeddedReports(): RequestHandler {
   return async (req, res) => {
-    return res.status(200).json({
-      message: 'Successfully got code tables',
-      request: req.body,
-      result: VALID_EMBEDDED_REPORTS,
-      count: VALID_EMBEDDED_REPORTS.length,
-      namespace: 'reports',
-      code: 200
-    });
+    const connection = await getDBConnection();
+    if (!connection) {
+      return res.status(503).json({
+        error: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'embedded-report',
+        code: 503
+      });
+    }
+
+    try {
+      const sql = getAllEmbeddedReports();
+
+      const response = await connection.query(sql.text, sql.values);
+
+      return res.status(200).json({
+        message: 'Successfully got code tables',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'reports',
+        code: 200
+      });
+    } finally {
+      connection.release();
+    }
   };
 }
