@@ -18,6 +18,11 @@
       android:launchMode="singleTask"
       android:theme="@style/AppTheme.NoActionBarLaunch">
 
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+
       <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.VIEW" />
 
@@ -27,25 +32,6 @@
         <data
           android:host="localhost"
           android:scheme="invasivesbc" />
-      </intent-filter>
-
-      <intent-filter android:autoVerify="true">
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="localhost"
-          android:scheme="https" />
-      </intent-filter>
-
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-
-        <data android:scheme="invasivesbc" />
-        <data android:host="localhost" />
       </intent-filter>
 
       <intent-filter android:autoVerify="true">
