@@ -310,7 +310,7 @@ const ActivityGrid = (props) => {
     }
   }, [activitiesSelected]);
 
-  // set selected record to
+  // set selected record to poi
   useEffect(() => {
     if (poiSelected && props.setSelectedRecord && poiSelected.point_of_interest_id) {
       props.setSelectedRecord({
