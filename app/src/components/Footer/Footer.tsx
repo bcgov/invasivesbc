@@ -18,10 +18,10 @@ const Footer: React.FC<IFooterProps> = () => {
 
   const tabs = [
     { label: `Network Status: ${networkStatusString}`, url: '/' },
-    { label: 'Disclaimer', url: 'https://www.gov.bc.ca/gov/content/home/disclaimer' },
-    { label: 'Privacy', url: 'https://www.gov.bc.ca/gov/content/home/privacy' },
-    { label: 'Accessibility', url: 'https://www.gov.bc.ca/gov/content/home/accessible-government' },
-    { label: 'Copyright', url: 'https://www.gov.bc.ca/gov/content/home/copyright' }
+    { label: 'Copyright', url: 'https://www2.gov.bc.ca/gov/content/home/copyright ' },
+    { label: 'Disclaimer', url: 'https://www2.gov.bc.ca/gov/content/home/disclaimer ' },
+    { label: 'Privacy Statement', url: 'https://www2.gov.bc.ca/gov/content/home/privacy' },
+    { label: 'Accessibility', url: 'https://www2.gov.bc.ca/gov/content/home/accessible-government' }
   ];
 
   useEffect(() => {
@@ -40,17 +40,17 @@ const Footer: React.FC<IFooterProps> = () => {
       <Toolbar
         style={{
           position: 'relative',
-          minHeight: '10px',
-          maxHeight: '30px',
-          fontSize: '.5rem',
+          minHeight: '25px',
+          maxHeight: '100px',
+          fontSize: '1rem',
           justifyContent: 'flex-start'
         }}>
         <img
           alt="bcLogo"
           src={sunriseLogo}
-          width="40px"
+          width="60px"
           style={{ objectFit: 'cover', cursor: 'pointer' }}
-          height="17px"
+          height="28px"
           onClick={() => history.push('/')}
         />
         <Tabs indicatorColor="secondary" textColor="inherit" value={false}>
