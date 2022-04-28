@@ -128,11 +128,21 @@ If you still have trouble use this link https://ionicframework.com/blog/deployin
 
 ## Run Cypress Tests
 
-By default the environment is set to local. Before running any Cypress test you have to do the following:
+# Quick start:
 
-- `npx cypress open`
-- `npx cypress open --env configFile=development`
-- `npx cypress open --env configFile=myCustomConfigFile`
+For local only env:
+
+	- `npx cypress open`
+
+For local app and dev api:
+
+	- `npx cypress open --env configFile=development`
+
+For custom: 
+
+	- `npx cypress open --env configFile=myCustomConfigFile`
+
+# Detailed setup:
 
 1. Check if your configFile matches the environment you want to run in.
 
@@ -143,7 +153,7 @@ By default the environment is set to local. Before running any Cypress test you 
 - local.json
 - development.json
 
-3. Make sure your information about your container/database matches the dbconfig.
+3. Make sure your information about your container/database matches the dbconfig in the applicable file in step 2.
 4. After when you run the cypress command above and select one of the tests in the GUI.
 5. Once a test is selected you should be prompted with a browser and the Cypress testing tab.
 6. In that browser open the app in another tab and login as you usually would when testing.
