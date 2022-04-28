@@ -78,6 +78,8 @@
     "express": "^4.17.1",
     "fs-extra": "^10.0.0",
     "geojson-vt": "^3.2.1",
+    "georaster": "^1.5.6",
+    "georaster-layer-for-leaflet": "^3.8.0",
     "geostyler-sld-parser": "^3.0.1",
     "ionic-plugin-deeplinks": "^1.0.24",
     "ionicons": "^5.5.4",

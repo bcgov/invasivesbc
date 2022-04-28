@@ -31,7 +31,7 @@ const storeLayersStyle = {
 } as React.CSSProperties;
 
 const OfflineMap = (props) => {
-  const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
+  const [mapMaxZoom] = useState<number>(30);
   const [offlineLayer, setOfflineLayer] = useState(null);
 
   const mapOffline = useMap();
@@ -54,7 +54,8 @@ const OfflineMap = (props) => {
 
   useEffect(() => {
     const cacheMapTiles = async () => {
-      //  await storeLayers();
+      // commented for now:
+      // await storeLayers();
       console.log('removed caching map tiles for now');
     };
 

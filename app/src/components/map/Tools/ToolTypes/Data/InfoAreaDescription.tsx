@@ -177,6 +177,7 @@ function SetPointOnClick({ map }: any) {
 
   useMapEvent('click', (e) => {
     try {
+      // Start drawing a box
       if (clickMode) {
         if (positionOne === null) {
           setPositionOne(e.latlng);
@@ -194,6 +195,7 @@ function SetPointOnClick({ map }: any) {
           setDrawnOpacity(null);
         }
       } else {
+        // just click to create invisible small box
         const temp = e.latlng;
         const val = 0.003;
         const latlng1 = [temp.lng + val, temp.lat - val / 2];
@@ -201,8 +203,7 @@ function SetPointOnClick({ map }: any) {
         const latlng2 = [temp.lng + val, temp.lat + val / 2];
         const latlng4 = [temp.lng - val, temp.lat - val / 2];
         setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-        const coords = center(drawnGeo).geometry.coordinates;
-        const result = calc_utm(coords[0], coords[1]);
+        const result = calc_utm(temp.lng, temp.lat);
         setUTM([
           createDataUTM('Zone', result[0]),
           createDataUTM('Easting', result[1]),
@@ -218,7 +219,7 @@ function SetPointOnClick({ map }: any) {
     }
   });
 
-  //get mouse location on map
+  // get mouse location on map to draw temporary geometry
   useMapEvent('mousemove', (e) => {
     if (positionOne && clickMode) {
       const temp = e.latlng;

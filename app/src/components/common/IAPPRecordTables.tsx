@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { DataGrid, GridCellParams, GridColDef, MuiEvent } from '@mui/x-data-grid';
 import { getJurisdictions } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { useHistory } from 'react-router';
@@ -62,12 +61,11 @@ export const PointsOfInterestTable = () => {
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
     const fetchData = async () => {
       const searchCriteria = { limit: 1000, isIAPP: true, page: 0 };
-      const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria, databaseContext);
+      const IAPPRecords: any = await dataAccess.getPointsOfInterest(searchCriteria);
       setPOIs(IAPPRecords.rows);
     };
 
