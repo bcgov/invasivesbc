@@ -1,5 +1,5 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "bc.gov.invasivesbc",
 	"appName": "InvasivesBC",
 	"webDir": "build",
 	"server": {
@@ -11,7 +11,7 @@
 			"https://dev.oidc.gov.bc.ca/*"
 		]
 	},
-	"loggingBehavior": "none",
+	"loggingBehavior": "debug",
 	"plugins": {
 		"SplashScreen": {
 			"launchShowDuration": 0
