@@ -32,7 +32,7 @@ export const RecordSet = (props) => {
   const [mapToggle, setMapToggle] = useState(false);
   const [color, setColor] = useState(blue[500]);
   const [recordSetType, setRecordSetType] = useState('Activity');
-  const [recordSetName, setRecordSetName] = useState('New RecordSet');
+  const [recordSetName, setRecordSetName] = useState(null);
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
