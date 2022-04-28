@@ -8,8 +8,8 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
   	set search_path=invasivesbc,public;
 	
-    create materialized view iapp_site_summary_end as (SELECT
-    i.site_id,
+    create materialized view iapp_site_summary_and_geojson as (SELECT
+    i.*,
     json_build_object
     (
       'type', 'Feature',
@@ -47,13 +47,13 @@ export async function up(knex: Knex): Promise<void> {
   FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id
   WHERE 1=1 LIMIT 150000);
   
-  GRANT SELECT ON iapp_site_summary_end TO invasivebc;
+  GRANT SELECT ON iapp_site_summary_and_geojson TO invasivebc;
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set search_path=invasivesbc,public;
-    drop materialized view if exists iapp_site_summary_end;
+    drop materialized view if exists iapp_site_summary_and_geojson;
   `);
 }
