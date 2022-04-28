@@ -467,8 +467,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                 </Tooltip>
                 <InputLabel>Product Application Rate (L/ha)</InputLabel>
                 <TextField
-                  disabled={formDetails.disabled || true}
+                  disabled
                   className={classes.inputField}
+                  style={{ display: 'none' }}
                   type="number"
                   id="product-application-rate"
                   // label="Product Application Rate (L/ha)"
