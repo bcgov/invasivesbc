@@ -235,9 +235,9 @@ const ActivityGrid = (props) => {
             }
           };
         }
-      } else {
-        return prev;
       }
+
+      return prev;
     });
   }, [save]);
 
