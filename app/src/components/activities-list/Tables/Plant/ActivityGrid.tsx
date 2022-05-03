@@ -92,7 +92,10 @@ export const getSearchCriteriaFromFilters = (
   rolesUserHasAccessTo: any,
   recordSetContext: any,
   setName: string,
-  gridFilters?: any
+  isIAPP: boolean,
+  page: number,
+  limit: number,
+  // gridFilters?: any
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
@@ -117,13 +120,44 @@ export const getSearchCriteriaFromFilters = (
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {
     const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
     const jurisdictions = [];
+    const speciesPositive = [];
+    const speciesNegative = [];
     currentAdvFilters.forEach((filter) => {
-      if (filter.filterField === 'Jurisdiction') {
-        jurisdictions.push(Object.keys(filter.filterValue)[0]);
+      // if (filter.filterField === 'Jurisdiction') {
+      //   jurisdictions.push(Object.keys(filter.filterValue)[0]);
+      // }
+
+      switch (filter.filterField) {
+        case 'Jurisdiction': {
+          jurisdictions.push(Object.keys(filter.filterValue)[0]);
+          break;
+        }
+        case 'Species Positive': {
+          // remember to map or it won't find the names
+          speciesPositive.push(Object.values(filter.filterValue)[0]);
+          break;
+        }
+        case 'Species Negative': {
+          // where map
+          speciesNegative.push(Object.values(filter.filterValue)[0]);
+          break;
+        }
       }
     });
-    filter.jurisdiction = jurisdictions;
+
+    // if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
+    // if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
+    // filter.species_negative = speciesNegative;
   }
+
+  // is IAPP
+  if (isIAPP) filter.isIAPP = isIAPP;
+
+  // page number
+  filter.page = page;
+
+  // row limit
+  filter.limit = limit;
 
   return filter;
 };
@@ -260,7 +294,10 @@ const ActivityGrid = (props) => {
       advancedFilterRows,
       rolesUserHasAccessTo,
       recordSetContext,
-      props.setName
+      props.setName,
+      false,
+      0,
+      20
     );
 
     const act_list = await dataAccess.getActivities(filter);
@@ -273,16 +310,20 @@ const ActivityGrid = (props) => {
     if (act_list && act_list.count === 0) {
       setConsole('No data found.');
     }
+
     setActivities(act_list);
   };
 
   const getPOIs = async () => {
-    // to comply with IPointOfInterestSearchCriteria interface, otherwise user records are returned
-    const filter = {
-      // page: 1,
-      limit: 10,
-      isIAPP: true
-    };
+    const filter = getSearchCriteriaFromFilters(
+      advancedFilterRows,
+      rolesUserHasAccessTo,
+      recordSetContext,
+      props.setName,
+      true,
+      1,
+      20
+    );
 
     const act_list = await dataAccess.getPointsOfInterest(filter);
     if (act_list && !act_list.count) {

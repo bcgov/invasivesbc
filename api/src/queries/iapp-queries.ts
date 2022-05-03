@@ -57,13 +57,13 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   }
 
   // search intersects with some species codes
-  if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
-    sqlStatement.append(SQL` AND ARRAY[`);
-    sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
-    for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
-      sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
-    sqlStatement.append(SQL`]::varchar[] && species_positive`);
-  }
+  // if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
+  //   sqlStatement.append(SQL` AND ARRAY[`);
+  //   sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
+  //   for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
+  //     sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
+  //   sqlStatement.append(SQL`]::varchar[] && species_positive`);
+  // }
 
   if (searchCriteria.search_feature?.geometry) {
     sqlStatement.append(SQL` AND  public.ST_INTERSECTS(

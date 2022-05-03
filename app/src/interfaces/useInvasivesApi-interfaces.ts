@@ -333,6 +333,20 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   iappSiteID?: string;
+  /**
+   * List of species positively occurring in the point of interest to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_positive?: string[];
+  /**
+   * List of species negatively occurring in the point of interest to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_negative?: string[];
 }
 
 /**
