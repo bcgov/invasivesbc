@@ -15,7 +15,11 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   sqlStatement.append(SQL` *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
   sqlStatement.append(
-    SQL` FROM iapp_site_summary_and_geojson i JOIN iapp_spatial s ON i.site_id = s.site_id WHERE 1=1`
+    SQL` FROM iapp_site_summary_and_geojson i
+    JOIN iapp_spatial s 
+      ON i.site_id = s.site_id WHERE 1=1`
+    // JOIN point_of_interest_incoming_data p
+    //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
 
   if (searchCriteria.iappSiteID) {
