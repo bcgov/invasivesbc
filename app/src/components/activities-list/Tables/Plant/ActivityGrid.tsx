@@ -123,31 +123,27 @@ export const getSearchCriteriaFromFilters = (
     const speciesPositive = [];
     const speciesNegative = [];
     currentAdvFilters.forEach((filter) => {
-      // if (filter.filterField === 'Jurisdiction') {
-      //   jurisdictions.push(Object.keys(filter.filterValue)[0]);
-      // }
-
       switch (filter.filterField) {
         case 'Jurisdiction': {
           jurisdictions.push(Object.keys(filter.filterValue)[0]);
           break;
         }
         case 'Species Positive': {
-          // remember to map or it won't find the names
-          speciesPositive.push(Object.values(filter.filterValue)[0]);
+          speciesPositive.push(Object.keys(filter.filterValue)[0]);
           break;
         }
         case 'Species Negative': {
-          // where map
-          speciesNegative.push(Object.values(filter.filterValue)[0]);
+          speciesNegative.push(Object.keys(filter.filterValue)[0]);
           break;
         }
       }
     });
 
-    // if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
-    // if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
-    // filter.species_negative = speciesNegative;
+    if (isIAPP) {
+      if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
+      if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
+      if (speciesNegative.length > 0) filter.species_negative = speciesNegative;
+    }
   }
 
   // is IAPP
