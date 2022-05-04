@@ -6,6 +6,10 @@ import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
+import { createDataUTM } from '../Tools/Helpers/StyledTable';
+import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
+import { polygon } from '@turf/helpers';
 import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR
 // import { GeoTIFFLayer } from '../GeoTIFFs/GeoTIFFLayer';
 
@@ -14,9 +18,7 @@ var GeoRasterLayer = require('georaster-layer-for-leaflet');
 
 const IAPPSite = L.icon({
   iconUrl: marker,
-  iconSize: [20, 20], // size of the icon
-  iconAnchor: [20, 20], // point of the icon which will correspond to marker's location
-  popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+  iconSize: [20, 20] // size of the icon
 });
 
 export const PoisLayer = (props) => {
@@ -138,9 +140,34 @@ export const PoisLayer = (props) => {
         <>
           {pois?.features?.map((feature) => {
             const coords = feature.geometry.coordinates;
+            const val = 0.003;
+            const utmResult = calc_utm(coords[0], coords[1]);
+            const utmArr: any = [
+              createDataUTM('Zone', utmResult[0]),
+              createDataUTM('Easting', utmResult[1]),
+              createDataUTM('Northing', utmResult[2])
+            ];
+            const bufferedGeo = polygon([
+              [
+                [coords[0] + val, coords[1] - val / 2],
+                [coords[0] + val, coords[1] + val / 2],
+                [coords[0] - val, coords[1] + val / 2],
+                [coords[0] - val, coords[1] - val / 2],
+                [coords[0] + val, coords[1] - val / 2]
+              ]
+            ]);
             return (
               <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
-                <Tooltip direction="top">{feature.properties.species_on_site.toString()}</Tooltip>
+                <Tooltip permanent direction="top">
+                  {feature.properties.species_on_site.toString()}
+                </Tooltip>
+                <GeneratePopup
+                  utmRows={utmArr}
+                  map={map}
+                  bufferedGeo={bufferedGeo}
+                  setRecordGeo={null}
+                  setClickMode={null}
+                />
               </Marker>
             );
           })}
