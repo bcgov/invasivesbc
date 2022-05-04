@@ -1,9 +1,5 @@
 # bcgov/invasivesbc/api
 
-
-
-
-
 ## Technologies Used
 
 | Technology | Version | Website                              | Description          |
@@ -264,3 +260,29 @@ There can sometimes be issues with the validation of the API JSON Schema Specifi
 
 - Syntax errors or issues with naming within the spec
 - `oneOf` errors where there are multiple fields in the spec that are all considered valid `oneOf` records. This can cause specific actions to fail such as syncing of records. To fix this, ensure that fields have required properties to make them unique
+
+# GDAL Setup
+
+## Mac CLI Install
+
+`conda install -c conda-forge gdal`
+
+> Make sure conda is installed for CLI install
+
+### Go [here](https://gdal.org/download.html) for more info on other ways to install
+
+# GDAL Usage
+
+## Step 1: Pull your GeoJSON from the DB
+
+Open up Dbeaver and run the SQL Console in the Local DB. After type: `SELECT geojson FROM invasivesbc.iapp_site_summary_and_geojson`
+
+You should see an output on the bottom. You select all the values then right click the view and export data. Make sure you select JSON and then hit the next button until you can hit the proceed button.
+
+## Step 2: Convert to GeoTiff
+
+We need to change the file type of the data we just exported so that it's a .geojson file. Next wee need to convert that to a GeoTIFF: `gdal_rasterize -burn 255 -burn 0 -burn 0 -ts 360 240 data.geojson data.tiff`
+
+> The burn values are for _red green blue_ > `-ts` is used for _size width_ and height which you can use `-tr` for resolution There are other file formats, but if need be look at the [docs](https://gdal.org/index.html)
+
+**Mac solution** If you have troubles running any of the commands try `conda update -c rdonnellyr -c main --all`
