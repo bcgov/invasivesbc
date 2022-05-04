@@ -77,24 +77,30 @@ Run from database/src/: npx knex --knexfile ./knexfile.ts migrate:make <insert n
 # Development
 
 ## Database Migrations
+
 Create a new Typescript migration file
+
 ```bash
 knex migrate:make --env local -x ts filename
 ```
 
 Run new migrations
+
 ```knex
 knex migrate:latest --env local
 ```
 
 ## Seeding the Database
+
 For running in Openshift. Mount the database on port 5432. Then run:
+
 ```bash
 cd database/src
 knex seed:run --env local --specific 05_riso.ts
 ```
 
 For running on Docker
+
 ```bash
 cd database/src
 knex seed:run --env local --specific 09_pmp.ts --knexfile knexfile-local.ts
@@ -154,3 +160,37 @@ aws s3 --endpoint-url https://nrs.objectstore.gov.bc.ca --profile invasivesbc ls
 ```bash
 curl https://nrs.objectstore.gov.bc.ca/seeds/aggregate.sql.gz > aggregate.sql.gz
 ```
+
+# Backup Database from Prod
+
+## Step 2: Pull down a prod backup
+
+`oc projects` displays all projects on openshift credentials `oc project <prod project name>` assigs the project you want to use `oc get pods | grep <name of db> - | grep api - | grep backup -' shows pods
+
+> grep narrows it down by looking for if the name has any matching cases
+
+rsync to your computer
+
+> can name anything, but this is more convenient and keep date current date for convenience `oc rsync <podname>:/backups/daily/2022-05-03/invasivesbci-db-postgresql-prod-InvasivesBC_2022-05-03_12-18-00.sql.gz .`
+
+## Step 3: Apply to local docker db
+
+to unzip the db backup `gzip -d invasivesbci-db-postgresql-prod-InvasivesBC_2022-05-03_12-18-00.sql.gz .`
+
+to copy to docker container `docker cp invasivesbci-db-postgresql-prod-InvasivesBC_2022-05-03_12-18-00.sql.gz <docker_postgres_container>:/`
+
+to go into the container `docker exec -it <docker_postgres_container> /bin/bash`
+
+to log into the postgres db `psql -d InvasivesBC -U invasivebc`
+
+drop schemas `drop schema public cascade;` `drop schema invasivesbc cascade;`
+
+to apply db into database `create schema public;` `\i invasivesbci-db-...sql`
+
+## Step 4: Run net new migrations
+
+start setup container `docker start <docker_postgres_setup_container>`
+
+logs the output of the setup container until it's finished `docker logs -f <docker_postgres_setup_container>`
+
+> This is about observation so look if there's any errors which if it keeps restarting that's a problem
