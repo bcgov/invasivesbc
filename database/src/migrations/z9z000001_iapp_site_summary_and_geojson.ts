@@ -49,6 +49,8 @@ export async function up(knex: Knex): Promise<void> {
   WHERE 1=1);
   
   GRANT SELECT ON iapp_site_summary_and_geojson TO invasivebc;
+
+  REFRESH MATERIALIZED VIEW iapp_site_summary_and_geojson;
   `);
 }
 
