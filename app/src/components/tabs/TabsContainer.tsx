@@ -279,7 +279,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         });
         */
 
-        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Recorded Activities',
             path: '/home/activities',
@@ -295,7 +295,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -303,11 +303,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Current IAPP Site',
             path: '/home/iapp/',
-            icon: <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{maxWidth: '3.8rem', marginBottom: '6px'}} />
+            icon: (
+              <img
+                src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
+                style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
+              />
+            )
           });
         }
 
