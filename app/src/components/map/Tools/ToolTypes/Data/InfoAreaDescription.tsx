@@ -81,7 +81,7 @@ export const GeneratePopup = (props) => {
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
     map.closePopup();
-    setRecordGeo(null);
+    if (setRecordGeo) setRecordGeo(null);
     if (setClickMode) {
       setClickMode(false);
     }
