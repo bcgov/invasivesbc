@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
   	set search_path=invasivesbc,public;
 	
+    drop materialized view if exists iapp_site_summary_and_geojson;
     create materialized view iapp_site_summary_and_geojson as (SELECT
     i.*,
     json_build_object
