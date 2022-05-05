@@ -159,6 +159,8 @@ export const PoisLayer = (props) => {
             return (
               <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
                 <Tooltip permanent direction="top">
+                  SiteID: {feature.properties.point_of_interest_id}
+                  <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
                 <GeneratePopup
