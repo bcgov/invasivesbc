@@ -5,8 +5,17 @@ export interface ActivityRow {
   short_id: string;
   type: string;
   sub_type: string;
-  date_modified: string;
+  // date_modified: string;   // Don't know if same as received timestamp
   created_by: string;
+  received_timestamp: string;
+  jurisdiction: string[];
+  species_positive: string[];
+  species_negative: string[];
+  agency: string;
+  regional_invasive_species_organization_areas: string;
+  regional_districts: string;
+  bio_geo_climatic_zones: string;
+  elevation: string;
 }
 
 export const activites_default_headers = [
@@ -22,10 +31,10 @@ export const activites_default_headers = [
     key: 'activity_subtype',
     name: 'Activity Sub Type'
   },
-  {
-    key: 'date_modified',
-    name: 'Date Modified'
-  },
+  // {
+  //   key: 'date_modified',      // Don't know if same as recieved_timestamp
+  //   name: 'Date Modified'
+  // },
   {
     key: 'reported_area',
     name: 'Area (m\u00B2)'
@@ -38,7 +47,39 @@ export const activites_default_headers = [
     key: 'longitude',
     name: 'Longitude'
   },
-  { key: 'created_by', name: 'Created By' }
+  { key: 'created_by', name: 'Created By' },
+  {
+    key: 'received_timestamp',
+    name: 'Received Timestamp'
+  },
+  {
+    key: 'jurisdiction',
+    name: 'Jurisdiction'
+  },
+  {
+    key: 'species_positive',
+    name: 'Species Positive'
+  },
+  {
+    key: 'species_negative',
+    name: 'Species Negative'
+  },
+  {
+    key: 'agency',
+    name: 'Agency'
+  },
+  {
+    key: 'regional_invasive_species_organization_areas',
+    name: 'Regional Invasive Species Organization Areas'
+  },
+  {
+    key: 'regional_districts',
+    name: 'Regional Districts'
+  },
+  {
+    key: 'bio_geo_climatic_zones',
+    name: 'Bio Geo Climatic Zones'
+  }
 ];
 
 export const mapActivitiesToDataGridRows = (activities) => {
