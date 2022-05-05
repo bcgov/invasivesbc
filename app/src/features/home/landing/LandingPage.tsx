@@ -276,7 +276,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           <Box mt={4}>
             For training materials and more info:{' '}
             <a
-              href="www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
+              href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
               target="_blank"
               rel="noreferrer">
               www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
@@ -386,7 +386,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           <Box mt={4}>
             For training materials and more info:{' '}
             <a
-              href="www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
+              href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
               target="_blank"
               rel="noreferrer">
               www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
