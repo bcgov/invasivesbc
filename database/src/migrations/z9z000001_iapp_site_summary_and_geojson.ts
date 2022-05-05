@@ -45,7 +45,7 @@ export async function up(knex: Knex): Promise<void> {
       'geometry', public.st_asGeoJSON(s.geog)::jsonb
     ) as "geojson"
   FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id
-  WHERE 1=1 LIMIT 150000);
+  WHERE 1=1);
   
   GRANT SELECT ON iapp_site_summary_and_geojson TO invasivebc;
   `);

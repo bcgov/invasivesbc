@@ -14,7 +14,13 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   sqlStatement.append(SQL` *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
-  sqlStatement.append(SQL` FROM iapp_site_summary i JOIN iapp_spatial s ON i.site_id = s.site_id WHERE 1=1`);
+  sqlStatement.append(
+    SQL` FROM iapp_site_summary_and_geojson i
+    JOIN iapp_spatial s 
+      ON i.site_id = s.site_id WHERE 1=1`
+    // JOIN point_of_interest_incoming_data p
+    //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
+  );
 
   if (searchCriteria.iappSiteID) {
     sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
@@ -25,20 +31,20 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.iappType) {
     if (searchCriteria.iappSiteID) {
-      sqlStatement.append(SQL` AND iapp_site_summary.site_id = ${searchCriteria.iappSiteID}`);
+      sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
     }
     if (searchCriteria.date_range_start) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const format = require('pg-format');
       const noTime = searchCriteria.date_range_start.toString().substr(0, 10);
-      const sql = format(" AND iapp_site_summary.%I >= '%s'::DATE", 'min_' + searchCriteria.iappType, noTime);
+      const sql = format(" AND i.%I >= '%s'::DATE", 'min_' + searchCriteria.iappType, noTime);
       sqlStatement.append(sql);
     }
     if (searchCriteria.date_range_end) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const format = require('pg-format');
       const noTime = searchCriteria.date_range_end.toString().substr(0, 10);
-      const sql = format(" AND iapp_site_summary.%I <= '%s'::DATE", 'max_' + searchCriteria.iappType, noTime);
+      const sql = format(" AND i.%I <= '%s'::DATE", 'max_' + searchCriteria.iappType, noTime);
       sqlStatement.append(sql);
     }
   } else {

@@ -163,7 +163,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         const speciesRef = await getSpeciesRef();
 
         const returnVal = response.rows.map((row) => {
-          const newGeoJSON = row.geo;
+          const newGeoJSON = row.geojson.geometry;
           const species_on_site = getSpeciesCodesFromIAPPDescriptionList(row.all_species_on_site, speciesRef);
 
           return {
@@ -172,6 +172,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
               ...newGeoJSON
             },
             properties: {
+              ...row.geojson.properties,
               site_id: row.site_id,
               species_on_site: species_on_site
             }
