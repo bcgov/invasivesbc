@@ -85,7 +85,7 @@ describe('CREATING A NEW RECORD', function () {
     // Open Show Records Tab
     cy.get('#show-records-tab').click('center');
     // Click New Record Button
-    cy.get(':nth-child(4) > .MuiButton-root').click('center');
+    cy.get('[data-testid=AddIcon]').click('center');
     // Record Category
     cy.get(':nth-child(1) > .MuiOutlinedInput-root > .MuiSelect-select').click('center');
     cy.get('.MuiList-root > [tabindex="0"]').click('center');

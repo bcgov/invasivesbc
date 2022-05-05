@@ -2,5 +2,6 @@
   "ignoreTestFiles": ["**/1-getting-started/*", "**/2-advanced-examples/*"],
   "testFiles": "**/**/*.spec.ts",
   "viewportWidth": 1280,
-  "viewportHeight": 720
+  "viewportHeight": 720,
+  "chromeWebSecurity": false
 }

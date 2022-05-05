@@ -48,7 +48,8 @@ export const PoisLayer = (props) => {
           opacity: props.opacity,
           georaster: raster,
           pixelValuesToColorFn: (values) => (values[1] === 128 ? 'green' : 'transparent'),
-          resolution: 64
+          resolution: 64,
+          debugLevel: 0
         })
       );
     }
