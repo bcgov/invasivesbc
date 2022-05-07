@@ -164,10 +164,9 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (recordStateContext.selectedRecord?.description !== undefined
-            ? recordStateContext.selectedRecord?.description
-            : ''),
-        disabled: !(recordStateContext.selectedRecord?.description !== undefined),
+          (recordStateContext.selectedRecord?.description !== undefined &&
+            recordStateContext.selectedRecord?.description),
+        disabled: recordStateContext.selectedRecord?.description === undefined,
         hidden: !recordStateContext.selectedRecord,
         onClick: async () => {
           try {
@@ -183,6 +182,19 @@ const PageContainer = (props) => {
               history.push({ pathname: `/home/activity` });
             }
           }, 1000);
+        }
+      },
+      {
+        name:
+          'Delete ' +
+          (recordStateContext.selectedRecord?.description !== undefined
+            ? recordStateContext.selectedRecord?.description
+            : ''),
+        disabled: recordStateContext.selectedRecord?.description === undefined,
+        hidden: !recordStateContext.selectedRecord,
+        onClick: async () => {
+          try {
+          } catch (e) {}
         }
       }
     ]);
