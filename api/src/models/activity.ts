@@ -84,7 +84,6 @@ export class ActivityPostRequestBody {
 
     this.form_status = (obj && obj.form_status) || null;
     this.sync_status = (obj && obj.sync_status) || null;
-    this.created_by = (obj && obj.created_by) || null;
 
     this.review_status = (obj && obj.review_status) || null;
     this.reviewed_by = (obj && obj.reviewed_by) || null;

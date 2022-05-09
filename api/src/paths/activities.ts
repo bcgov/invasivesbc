@@ -9,6 +9,7 @@ import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
+import {InvasivesRequest} from "../utils/auth-utils";
 
 const defaultLog = getLogger('activity');
 
@@ -237,10 +238,11 @@ DELETE.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
 
     const connection = await getDBConnection();
     if (!connection) {

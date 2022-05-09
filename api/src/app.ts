@@ -5,7 +5,7 @@ import express from 'express';
 import { initialize } from 'express-openapi';
 import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
-import { authenticate } from './utils/auth-utils';
+import { authenticate, InvasivesRequest } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
 import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
 
@@ -51,11 +51,11 @@ initialize({
   securityHandlers: {
     Bearer: function (req, scopes) {
       // return true // bypass authentication
-      return authenticate(req, scopes);
+      return authenticate(<InvasivesRequest>req);
     }
   },
   securityFilter: async (req, res) => {
-    const updatedReq = await applyApiDocSecurityFilters(req);
+    const updatedReq = await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
     res.status(200).json(updatedReq['apiDoc']);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {

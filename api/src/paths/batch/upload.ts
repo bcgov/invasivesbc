@@ -7,6 +7,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 import { atob } from 'js-base64';
+import {InvasivesRequest} from "../../utils/auth-utils";
 
 const defaultLog = getLogger('batch');
 
@@ -29,7 +30,7 @@ GET.apiDoc = {
 };
 
 function listBatches(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -48,7 +49,7 @@ function listBatches(): RequestHandler {
 
         const response: QueryResult = await connection.query(
           `select id, status, validation_status, validation_messages, created_at, created_by from batch_uploads where created_by like $1 order by created_at desc limit 10`,
-          [req['auth_payload'].preferred_username]
+          [req.authContext.preferredUsername]
         );
 
         await connection.query('COMMIT');
