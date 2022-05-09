@@ -224,6 +224,8 @@ const ActivityGrid = (props) => {
     } else {
       setAdvancedFilterRows([]);
     }
+
+    setSave(Math.random());
   }, []);
 
   //update state in main context and localstorage:
@@ -269,7 +271,7 @@ const ActivityGrid = (props) => {
 
       return prev;
     });
-  }, [save]);
+  }, [advancedFilterRows]);
 
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
@@ -279,7 +281,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
+  }, [save]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -317,7 +319,7 @@ const ActivityGrid = (props) => {
       recordSetContext,
       props.setName,
       true,
-      1,
+      0,
       20
     );
 
@@ -551,8 +553,6 @@ const ActivityGrid = (props) => {
         }}
         onDelete={(e) => {
           e.stopPropagation();
-          console.log(advancedFilterRows);
-          console.log(props);
           setAdvancedFilterRows((prev) => {
             if (prev.length < 2) {
               return [];

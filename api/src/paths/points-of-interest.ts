@@ -245,5 +245,7 @@ async function getMappedFilterRows(codeArray) {
     return row.iapp_name;
   });
 
+  connection.release();
+
   return speciesNames;
 }

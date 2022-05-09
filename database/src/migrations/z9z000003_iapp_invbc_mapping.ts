@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   	set search_path=invasivesbc,public;
     DROP MATERIALIZED VIEW IF EXISTS iapp_site_summary_and_geojson;
     DROP MATERIALIZED VIEW IF EXISTS iapp_site_summary;
-    CREATE MATERIALIZED VIEW iapp_site_summary AS select *, string_to_array(all_species_on_site, ', ') AS species_array FROM iapp_site_summary_slow;
+    CREATE MATERIALIZED VIEW iapp_site_summary AS select *, string_to_array(all_species_on_site, ', ') AS all_species_on_site_as_array FROM iapp_site_summary_slow;
   
     GRANT SELECT ON iapp_site_summary TO invasivebc;
 

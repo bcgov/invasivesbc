@@ -448,11 +448,12 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
  * @returns {SQLStatement} sql query object
  */
  export const getSpeciesMapSQL = (codes: Array<String>): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT iapp_name FROM iapp_invbc_mapping WHERE char_code = ANY (`;
-
-  if (codes && codes.length > 0) {
-    sqlStatement.append(SQL `${codes}`);
-  }
+  const sqlStatement: SQLStatement = SQL`SELECT iapp_name FROM iapp_invbc_mapping WHERE char_code IN (`;
+    sqlStatement.append(SQL`${codes[0]}`);
+    
+    for(let idx = 1; idx < codes.length; idx++) {
+      sqlStatement.append(SQL`, ${codes[idx]}`);
+    }
 
   sqlStatement.append(SQL`);`);
 
