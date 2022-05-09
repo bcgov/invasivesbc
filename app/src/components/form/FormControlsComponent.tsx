@@ -1,5 +1,7 @@
-import { Button, Grid, Tooltip, Zoom } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogTitle, Grid, Tooltip, Zoom } from '@mui/material';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 export interface IFormControlsComponentProps {
   classes?: any;
   isDisabled?: boolean;
@@ -16,7 +18,37 @@ export interface IFormControlsComponentProps {
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
+  const dataAccess = useInvasivesApi();
+  const history = useHistory();
   const isDisabled = props.isDisabled || false;
+  const [open, setOpen] = React.useState(false);
+
+  const deleteRecord = (activityID) => {
+    history.push('/home/activities');
+    dataAccess.deleteActivities([activityID]);
+  };
+
+  const DeleteDialog = () => {
+    return (
+      <Dialog open={open}>
+        <DialogTitle>Are you sure you want to delete this Record?</DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpen(false);
+            }}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            aria-label="Delete Record"
+            onClick={() => deleteRecord((props as any)?.activity?.activityId)}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
 
   return (
     <>
@@ -38,6 +70,19 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                 Save Record
               </Button>
             )}
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={props.isAlreadySubmitted()}
+              onClick={() => {
+                console.log('FormControlsComponent 47');
+                console.log(props);
+                setOpen(true);
+              }}>
+              Delete Record
+            </Button>
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (
@@ -153,6 +198,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               */}
         </Grid>
       </Grid>
+      <DeleteDialog />
     </>
   );
 };

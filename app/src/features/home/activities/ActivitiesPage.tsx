@@ -183,19 +183,6 @@ const PageContainer = (props) => {
             }
           }, 1000);
         }
-      },
-      {
-        name:
-          'Delete ' +
-          (recordStateContext.selectedRecord?.description !== undefined
-            ? recordStateContext.selectedRecord?.description
-            : ''),
-        disabled: recordStateContext.selectedRecord?.description === undefined,
-        hidden: !recordStateContext.selectedRecord,
-        onClick: async () => {
-          try {
-          } catch (e) {}
-        }
       }
     ]);
   }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
