@@ -1,10 +1,10 @@
 'use strict';
 
-import { verify } from 'jsonwebtoken';
-import jwksRsa, { JwksClient } from 'jwks-rsa';
-import { getLogger } from './logger';
-import { getRolesForUser, getUserByBCEID, getUserByIDIR } from './user-utils';
-import { Request } from 'express';
+import {verify} from 'jsonwebtoken';
+import jwksRsa from 'jwks-rsa';
+import {getLogger} from './logger';
+import {getRolesForUser, getUserByBCEID, getUserByIDIR} from './user-utils';
+import {Request} from 'express';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -42,7 +42,7 @@ function retrieveKey(header, callback) {
 }
 
 export const authenticate = async function (req: InvasivesRequest): Promise<any> {
-  defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
+  defaultLog.debug({label: 'authenticate', message: 'authenticating user'});
 
   const authHeader = req.header('Authorization');
 
@@ -64,7 +64,7 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
     };
   }
 
-  const fullyAuthenticated = new Promise(() => {
+  return new Promise(() => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
         defaultLog.error(error);
@@ -91,7 +91,7 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
           });
         });
       } else if (decoded.bceid_userid) {
-        getUserByIDIR(decoded.bceid_userid).then((user) => {
+        getUserByBCEID(decoded.bceid_userid).then((user) => {
           req.authContext = {
             preferredUsername: null,
             user: null,
@@ -106,6 +106,4 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
       }
     });
   });
-
-  return fullyAuthenticated;
 };
