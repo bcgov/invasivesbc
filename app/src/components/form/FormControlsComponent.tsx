@@ -33,12 +33,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
       <Dialog open={open}>
         <DialogTitle>Are you sure you want to delete this Record?</DialogTitle>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setOpen(false);
-            }}>
-            Cancel
-          </Button>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button
             variant="contained"
             aria-label="Delete Record"
@@ -72,17 +67,22 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             )}
           </Grid>
           <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={props.isAlreadySubmitted()}
-              onClick={() => {
-                console.log('FormControlsComponent 47');
-                console.log(props);
-                setOpen(true);
-              }}>
-              Delete Record
-            </Button>
+            <Tooltip
+              title={
+                props.isAlreadySubmitted()
+                  ? 'Cannot delete a record that has been submitted'
+                  : 'Able to delete the draft record'
+              }>
+              <span>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={props.isAlreadySubmitted()}
+                  onClick={() => setOpen(true)}>
+                  Delete Record
+                </Button>
+              </span>
+            </Tooltip>
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (

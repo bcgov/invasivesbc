@@ -491,11 +491,11 @@ const ActivityGrid = (props) => {
   }, [rows, sortColumns]);
 
   //TODO THEME MODE
-  const RowRenderer = (props: any) => {
+  const RowRenderer = (props) => {
     return <Row className="xRow" {...props} />;
   };
 
-  const FilterToggle = (props: any) => {
+  const FilterToggle = (props) => {
     return (
       <IconButton color={'primary'} style={props.style} onClick={toggleFilters}>
         {filters.enabled ? <FilterAltIcon /> : <FilterAltOff />}
@@ -503,7 +503,7 @@ const ActivityGrid = (props) => {
     );
   };
 
-  const FilterRow = (props: any) => {
+  const FilterRow = (props) => {
     return (
       <Chip
         label={`${props.filterField} = ${Object.values(props.filterValue)[0]}`}
