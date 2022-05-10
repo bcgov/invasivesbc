@@ -330,7 +330,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       {networkContext.connected && (
         <>
           {!accessRequested ? (
-            <Box mt={2}>
+            <Box mt={2} paddingBottom={'50px'}>
               <Button variant="outlined" color="primary" onClick={requestAccess}>
                 Request Access
               </Button>

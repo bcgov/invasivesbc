@@ -8,22 +8,12 @@ export interface IHomeLayoutProps {
 }
 
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
-  const [bottomPadding, setBottomPadding] = React.useState(10);
-
-  React.useEffect(() => {
-    if (props?.children[1]?.type?.name === 'LandingPage') {
-      setBottomPadding(10);
-    } else {
-      setBottomPadding(5);
-    }
-  }, [props]);
-
   return (
     <Box width="100%" height="100%" display="flex" flex="1" flexDirection="column">
       <Box height="80px">
         <TabsContainer isMobileNoNetwork={props?.children.props?.isMobileNoNetwork} />
       </Box>
-      <Box height="100%" width="100%" paddingBottom={bottomPadding} overflow="auto">
+      <Box height="100%" width="100%" overflow="auto">
         {props.children}
       </Box>
       <Box
