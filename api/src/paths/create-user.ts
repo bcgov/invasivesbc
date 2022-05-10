@@ -7,7 +7,7 @@ import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { createUserSQL } from '../queries/createUserQuery';
 import { getLogger } from '../utils/logger';
-import {InvasivesRequest} from "../utils/auth-utils";
+import { InvasivesRequest } from '../utils/auth-utils';
 
 const defaultLog = getLogger('user-access');
 
