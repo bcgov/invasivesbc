@@ -12,7 +12,7 @@ import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from
 import { commit as commitContext } from '../utils/context-queries';
 import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
-import {InvasivesRequest} from "../utils/auth-utils";
+import { InvasivesRequest } from '../utils/auth-utils';
 
 const defaultLog = getLogger('activity');
 
@@ -274,7 +274,7 @@ function createActivity(): RequestHandler {
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by = req.authContext.preferredUsername;
+    sanitizedActivityData.created_by = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
