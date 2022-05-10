@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Button, Container, Theme, useMediaQuery } from '@mui/material';
+import { Box, Button, Container, Theme } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -85,7 +85,6 @@ const PageContainer = (props) => {
   const [geometry, setGeometry] = useState<any[]>([]);
   const classes = useStyles();
   const [recordsExpanded, setRecordsExpanded] = useState(false);
-  const matches = useMediaQuery('minWidth: 416px');
   const [width, setWidth] = React.useState(window.innerWidth);
 
   const updateWidth = () => {
