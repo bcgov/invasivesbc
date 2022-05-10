@@ -44,7 +44,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
 
   return (
-    <Container>
+    <Container style={{ paddingBottom: '50px' }}>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Legacy IAPP Site: {site?.site_id}</Typography>

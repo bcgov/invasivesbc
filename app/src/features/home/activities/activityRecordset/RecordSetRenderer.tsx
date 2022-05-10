@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { RecordSetContext } from 'contexts/recordSetContext';
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import RecordSet from './RecordSet';
@@ -24,7 +25,7 @@ export const RecordSetRenderer = (props) => {
 
   return useMemo(() => {
     return (
-      <>
+      <Box style={{ paddingBottom: '50px' }}>
         {sets.map((recordSetName, index) => {
           return (
             <RecordSet
@@ -34,7 +35,7 @@ export const RecordSetRenderer = (props) => {
             />
           );
         })}
-      </>
+      </Box>
     );
   }, [sets]);
 };

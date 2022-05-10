@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {Report} from '../../../components/embedded-reports/Report';
-import {useInvasivesApi} from '../../../hooks/useInvasivesApi';
-import {Box, Container, Link, Theme, Typography} from '@mui/material';
-import {makeStyles} from "@mui/styles";
-import Spinner from "../../../components/spinner/Spinner";
+import React, { useEffect, useState } from 'react';
+import { Report } from '../../../components/embedded-reports/Report';
+import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
+import { Box, Container, Link, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Spinner from '../../../components/spinner/Spinner';
 
 const useStyles = makeStyles((theme: Theme) => ({
   reportContainer: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     textDecoration: 'none',
     lineHeight: 1.5,
     marginLeft: '0.5rem',
-    cursor: "pointer"
+    cursor: 'pointer'
   },
   reportMenuUL: {
     listStyleType: 'none',
@@ -51,7 +51,6 @@ const EmbeddedReportsPage: React.FC = () => {
 
   useEffect(() => {
     api.listEmbeddedMetabaseReports().then((data) => {
-
       setReports(data.result);
       setCategories(
         data.result
@@ -68,11 +67,11 @@ const EmbeddedReportsPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (<Spinner/>)
+    return <Spinner />;
   }
 
   return (
-    <Container>
+    <Container style={{ paddingBottom: '50px' }}>
       <Typography variant="h4">Embedded Reports</Typography>
       <Container className={classes.reportContainer}>
         <Box className={classes.reportSelection}>
@@ -81,23 +80,23 @@ const EmbeddedReportsPage: React.FC = () => {
             <div key={c}>
               <Typography variant="h6">{c}</Typography>
               <ul className={classes.reportMenuUL}>
-                {reports.filter(r => r.category === c).map((r) => (
-                  <li key={r.id}>
-                    <Link onClick={() => setActiveReport(r.id)} className={classes.reportLink}>
-                      {r.name}
-                    </Link>
-                  </li>
-                ))}
+                {reports
+                  .filter((r) => r.category === c)
+                  .map((r) => (
+                    <li key={r.id}>
+                      <Link onClick={() => setActiveReport(r.id)} className={classes.reportLink}>
+                        {r.name}
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </div>
           ))}
         </Box>
-        <Box className={classes.reportIFrameContainer}>
-          {activeReport && <Report reportId={activeReport} />}
-        </Box>
+        <Box className={classes.reportIFrameContainer}>{activeReport && <Report reportId={activeReport} />}</Box>
       </Container>
     </Container>
   );
 };
 
-export {EmbeddedReportsPage};
+export { EmbeddedReportsPage };

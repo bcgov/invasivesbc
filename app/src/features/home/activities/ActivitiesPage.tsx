@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Button, Container, Grid, Theme } from '@mui/material';
+import { Box, Button, Container, Theme } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -85,6 +85,11 @@ const PageContainer = (props) => {
   const [geometry, setGeometry] = useState<any[]>([]);
   const classes = useStyles();
   const [recordsExpanded, setRecordsExpanded] = useState(false);
+  const [width, setWidth] = React.useState(window.innerWidth);
+
+  const updateWidth = () => {
+    setWidth(window.innerWidth);
+  };
 
   const handleNewRecordDialogClose = () => {
     setNewRecordDialog((prev) => ({ ...prev, dialogOpen: false }));
@@ -100,6 +105,11 @@ const PageContainer = (props) => {
     dialogOpen: false,
     dialogTitle: '',
     dialogContentText: null
+  });
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   });
 
   // the menu at the bottom:
@@ -187,11 +197,18 @@ const PageContainer = (props) => {
     ]);
   }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
 
+  const recordsClosedHeight = () => {
+    return width > 415 ? 'calc(100% - 50px)' : 'calc(100% - 30px)';
+  };
+
   /* set up main menu bar options: */
   return (
     <>
       {/*the main list of record sets:*/}
-      <Box style={{ height: recordsExpanded ? 'calc(100% - 400px)' : 'calc(100% - 30px)' }}>
+      <Box
+        style={{
+          height: recordsExpanded ? 'calc(100% - 400px)' : recordsClosedHeight()
+        }}>
         <MapRecordsContextProvider>
           <MapContainer
             classes={classes}
