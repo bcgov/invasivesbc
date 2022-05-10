@@ -64,7 +64,7 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
     };
   }
 
-  return new Promise(() => {
+  return () => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
         defaultLog.error(error);
@@ -105,5 +105,5 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
         });
       }
     });
-  });
+  };
 };

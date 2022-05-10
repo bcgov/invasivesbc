@@ -49,7 +49,7 @@ initialize({
     'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
   },
   securityHandlers: {
-    Bearer: function (req) {
+    Bearer: async function (req) {
       // return true // bypass authentication
       return authenticate(<InvasivesRequest>req);
     }
