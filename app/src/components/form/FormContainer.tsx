@@ -483,7 +483,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           </SelectAutoCompleteContextProvider>
         </ThemeProvider>
 
-        <Box mt={3}>
+        <Box mt={3} style={{ paddingBottom: '50px' }}>
           <FormControlsComponent
             onSubmit={() => {
               //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986

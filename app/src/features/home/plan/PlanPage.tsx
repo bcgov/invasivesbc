@@ -281,7 +281,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
         {/*</IonContent>*/}
-        <Container className={props.classes.container}>
+        <Container className={props.classes.container} style={{ paddingBottom: '50px' }}>
           {mapMemo}
           <Button onClick={addTrip} color="primary" variant="contained">
             Add Trip

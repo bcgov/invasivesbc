@@ -612,7 +612,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container className={props.classes.container}>
+    <Container className={props.classes.container} style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
