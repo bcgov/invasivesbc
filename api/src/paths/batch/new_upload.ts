@@ -13,6 +13,7 @@ import { Readable } from 'stream';
 import { atob } from 'js-base64';
 import { getDBConnection } from '../../database/db';
 import { QueryResult } from 'pg';
+import {InvasivesRequest} from "../../utils/auth-utils";
 
 const defaultLog = getLogger('batch');
 
@@ -148,7 +149,7 @@ const dataFromRow = (row, created_by) => {
  * @returns {RequestHandler}
  */
 function upload(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     const data = { ...req.body };
     const decoded = atob(data['data']);
 
@@ -176,7 +177,7 @@ function upload(): RequestHandler {
           `insert into batch_uploads (csv_data, created_by)
            values ($1, $2)
            returning id `,
-          [decoded, req['auth_payload'].preferred_username]
+          [decoded, req.authContext.preferredUsername]
         );
 
         await connection.query('COMMIT');

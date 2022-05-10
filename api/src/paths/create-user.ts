@@ -7,6 +7,7 @@ import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { createUserSQL } from '../queries/createUserQuery';
 import { getLogger } from '../utils/logger';
+import {InvasivesRequest} from "../utils/auth-utils";
 
 const defaultLog = getLogger('user-access');
 
@@ -82,7 +83,7 @@ POST.apiDoc = {
 };
 
 function createUser(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'create-user', message: 'sql step', body: req.body });
     const connection = await getDBConnection();
     if (!connection) {
@@ -94,6 +95,15 @@ function createUser(): RequestHandler {
       });
     }
     try {
+      if (req.body.username !== req.authContext.preferredUsername) {
+        return res.status(400).json({
+          message: 'Username in request is not calling user',
+          request: req.body,
+          namespace: 'create-user',
+          code: 400
+        });
+      }
+
       const sqlStatement: SQLStatement = createUserSQL(req.body.type, req.body.id, req.body.username, req.body.email);
       if (!sqlStatement) {
         return res.status(500).json({

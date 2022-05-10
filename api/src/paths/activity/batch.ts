@@ -9,6 +9,7 @@ import { ActivityPostRequestBody } from '../../models/activity';
 import { getDBConnection } from '../../database/db';
 import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries';
 import { QueryResult } from 'pg';
+import {InvasivesRequest} from "../../utils/auth-utils";
 
 const defaultLog = getLogger('activity');
 
@@ -193,14 +194,12 @@ POST.apiDoc = {
  * @returns {RequestHandler}
  */
 function createActivities(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivities', body: req.params });
 
     const sanitizedActions = [];
 
     for (const activity of req.body) {
-      console.dir(activity);
-
       const sanitized = new ActivityPostRequestBody(activity);
       sanitized['activityPostBody']['form_data'] = activity['activity_payload']['form_data'];
 
