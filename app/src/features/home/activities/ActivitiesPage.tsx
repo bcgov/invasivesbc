@@ -164,10 +164,9 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (recordStateContext.selectedRecord?.description !== undefined
-            ? recordStateContext.selectedRecord?.description
-            : ''),
-        disabled: !(recordStateContext.selectedRecord?.description !== undefined),
+          (recordStateContext.selectedRecord?.description !== undefined &&
+            recordStateContext.selectedRecord?.description),
+        disabled: recordStateContext.selectedRecord?.description === undefined,
         hidden: !recordStateContext.selectedRecord,
         onClick: async () => {
           try {

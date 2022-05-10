@@ -243,7 +243,7 @@ const ActivityGrid = (props) => {
 
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
-      if (props.setType ==='POI') {
+      if (props.setType === 'POI') {
         getPOIs();
       } else {
         getActivities();
@@ -299,12 +299,12 @@ const ActivityGrid = (props) => {
 
   const [rows, setRows] = useState([]);
 
-   // set selected record to activity
-   useEffect(() => {
+  // set selected record to activity
+  useEffect(() => {
     if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
       props.setSelectedRecord({
         type: DocType.ACTIVITY,
-        description: "Activity-" + activitiesSelected.short_id,
+        description: 'Activity-' + activitiesSelected.short_id,
         id: activitiesSelected.activity_id
       });
     }
@@ -315,7 +315,7 @@ const ActivityGrid = (props) => {
     if (poiSelected && props.setSelectedRecord && poiSelected.point_of_interest_id) {
       props.setSelectedRecord({
         type: DocType.POINT_OF_INTEREST,
-        description: "IAPP-" + poiSelected.point_of_interest_id,
+        description: 'IAPP-' + poiSelected.point_of_interest_id,
         id: poiSelected.point_of_interest_id,
         isIAPP: true
       });
@@ -350,63 +350,61 @@ const ActivityGrid = (props) => {
   */
 
   const useColumns = (keyAndNameArray) =>
-  useMemo(() => {
-    return keyAndNameArray.map((x) => {
-      if (filters && filters.enabled) {
-        if (props.setType === 'POI') {
-          return {
-            ...x,
-            headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
-            headerRenderer: (p) => (
-              <FilterRenderer<POI_IAPP_Row, unknown, HTMLInputElement> {...p}>
-                {({ filters, ...rest }) => (
-                  <input
-                    {...rest}
-                    className={classes.filterClassname}
-                    value={filters[x.key]}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        [x.key]: e.target.value
-                      })
-                    }
-                    onKeyDown={inputStopPropagation}
-                  />
-                )}
-              </FilterRenderer>
-            )
-          };
-
+    useMemo(() => {
+      return keyAndNameArray.map((x) => {
+        if (filters && filters.enabled) {
+          if (props.setType === 'POI') {
+            return {
+              ...x,
+              headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
+              headerRenderer: (p) => (
+                <FilterRenderer<POI_IAPP_Row, unknown, HTMLInputElement> {...p}>
+                  {({ filters, ...rest }) => (
+                    <input
+                      {...rest}
+                      className={classes.filterClassname}
+                      value={filters[x.key]}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          [x.key]: e.target.value
+                        })
+                      }
+                      onKeyDown={inputStopPropagation}
+                    />
+                  )}
+                </FilterRenderer>
+              )
+            };
+          } else {
+            return {
+              ...x,
+              headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
+              headerRenderer: (p) => (
+                <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
+                  {({ filters, ...rest }) => (
+                    <input
+                      {...rest}
+                      className={classes.filterClassname}
+                      value={filters[x.key]}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          [x.key]: e.target.value
+                        })
+                      }
+                      onKeyDown={inputStopPropagation}
+                    />
+                  )}
+                </FilterRenderer>
+              )
+            };
+          }
         } else {
-          return {
-            ...x,
-            headerCellClass: !filters.enabled ? filterColumnClassName : filterColumnClassNameOpen,
-            headerRenderer: (p) => (
-              <FilterRenderer<ActivityRow, unknown, HTMLInputElement> {...p}>
-                {({ filters, ...rest }) => (
-                  <input
-                    {...rest}
-                    className={classes.filterClassname}
-                    value={filters[x.key]}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        [x.key]: e.target.value
-                      })
-                    }
-                    onKeyDown={inputStopPropagation}
-                  />
-                )}
-              </FilterRenderer>
-            )
-          };
-          
+          return { ...x };
         }
-      } else {
-        return { ...x };
-      }
-    });
-  }, [filters]);
+      });
+    }, [filters]);
 
   // sets columnns based on record set type
   const iappColumns = useColumns(point_of_interest_iapp_default_headers);
@@ -561,7 +559,8 @@ const ActivityGrid = (props) => {
                 justifyContent: 'start',
                 alignItems: 'center'
               }}>
-              {advancedFilterRows && advancedFilterRows.length > 0 ? (
+              {advancedFilterRows &&
+                advancedFilterRows.length > 0 &&
                 advancedFilterRows.map((r, i) => {
                   if (
                     !(props.setName === '1' && (r.filterField === 'created_by' || r.filterField === 'record_status'))
@@ -575,10 +574,7 @@ const ActivityGrid = (props) => {
                       />
                     );
                   }
-                })
-              ) : (
-                <></>
-              )}
+                })}
             </List>
             <Box
               sx={{
