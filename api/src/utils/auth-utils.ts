@@ -4,8 +4,7 @@ import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
 import { getRolesForUser, getUserByBCEID, getUserByIDIR } from './user-utils';
-import { NextFunction, Request } from 'express';
-import { createDeflateRaw } from 'zlib';
+import { Request } from 'express';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -65,7 +64,7 @@ export const authenticate = async (req: InvasivesRequest) => {
     };
   }
 
-  return () => {
+  return new Promise((resolve, reject) => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
         defaultLog.error(error);
@@ -91,7 +90,6 @@ export const authenticate = async (req: InvasivesRequest) => {
             req.authContext.roles = roles;
             resolve();
           });
-
         });
       } else if (decoded.bceid_userid) {
         getUserByBCEID(decoded.bceid_userid).then((user) => {
@@ -109,5 +107,5 @@ export const authenticate = async (req: InvasivesRequest) => {
         });
       }
     });
-  };
+  });
 };

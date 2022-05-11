@@ -25,7 +25,6 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
         user = { ...user, roles };
       }
       allCodeEntities = await getAllCodeEntities(user);
-      console.dir(allCodeEntities);
     } else {
       allCodeEntities = await getAllCodeEntities();
     }
