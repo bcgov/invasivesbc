@@ -816,6 +816,39 @@ export const useDataAccess = () => {
     }
   };
 
+    /**
+   * Fetch iapp jurisdictions.
+   *
+   * @return {*}  {Promise<any>}
+   */
+     const getIappJurisdictions = async (
+      forceCache = false
+    ): Promise<any> => {
+      if (platform === 'web') {
+        const response = await api.getIappJurisdictions();
+        return response;
+      } else {
+        if (forceCache === true || !networkContext.connected) {
+          // return databaseContext.asyncQueue({
+          //   asyncTask: () => {
+          //     return query(
+          //       {
+          //         type: QueryType.DOC_TYPE,
+          //         docType: DocType.REFERENCE_POINT_OF_INTEREST,
+          //         limit: pointsOfInterestSearchCriteria.limit,
+          //         offset: pointsOfInterestSearchCriteria.page
+          //       },
+          //       databaseContext
+          //     );
+          //   }
+          // });
+        } else {
+          const response = await api.getIappJurisdictions();
+          return response;
+        }
+      }
+    };
+
   return {
     ...api,
     getPointsOfInterest,
@@ -849,6 +882,7 @@ export const useDataAccess = () => {
     createUser,
     listCodeTables,
     fetchCodeTable,
-    cacheCodeTables
+    cacheCodeTables,
+    getIappJurisdictions
   };
 };
