@@ -71,10 +71,26 @@ POST.apiDoc = {
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },
+            jurisdiction: {
+              type: 'array',
+              description:
+                'A list of jurisdictions to search for.  Results will match any in the list.',
+              items: {
+                type: 'string'
+              }
+            },
             species_positive: {
               type: 'array',
               description:
-                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the positive list.',
+              items: {
+                type: 'string'
+              }
+            },
+            species_negative: {
+              type: 'array',
+              description:
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the negative list.',
               items: {
                 type: 'string'
               }
@@ -152,14 +168,13 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     // get proper names from mapping table
     if (req.body.species_positive) {
       const positiveNames = await getMappedFilterRows(req.body.species_positive);
-      defaultLog.info(positiveNames);
       if (positiveNames) {
         req.body.species_positive = positiveNames;
       }
     }
+
     if (req.body.species_negative) {
       const negativeNames = await getMappedFilterRows(req.body.species_negative);
-      defaultLog.info(negativeNames);
       if (negativeNames) {
         req.body.species_negative = negativeNames;
       }

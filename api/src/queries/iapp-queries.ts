@@ -62,36 +62,32 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
     // filter positive species encounters
     if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
-      sqlStatement.append(SQL`
-        AND i.site_id IN (SELECT site_id
-          FROM iapp_species_status
-          WHERE is_species_positive
-          AND invasive_plant IN (`);
-      
-      sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
-      
-      for(let idx = 1; idx < searchCriteria.species_positive.length; idx++) {
-        sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
+      for (let i = 0; i < searchCriteria.species_positive.length; i++ ) {
+        sqlStatement.append(SQL`
+          AND i.site_id IN (SELECT site_id
+            FROM iapp_species_status
+            WHERE is_species_positive
+            AND invasive_plant IN (`);
+
+        sqlStatement.append(SQL`${searchCriteria.species_positive[i]}`);
+
+        sqlStatement.append(SQL`))`);
       }
-      
-      sqlStatement.append(SQL`))`);
     }
 
     // filter negative species encounters
     if (searchCriteria.species_negative && searchCriteria.species_negative.length) {
-      sqlStatement.append(SQL`
-        AND i.site_id IN (SELECT site_id
-          FROM iapp_species_status
-          WHERE is_species_negative
-          AND invasive_plant IN (`);
-      
-      sqlStatement.append(SQL`${searchCriteria.species_negative[0]}`);
-      
-      for(let idx = 1; idx < searchCriteria.species_negative.length; idx++) {
-        sqlStatement.append(SQL`, ${searchCriteria.species_negative[idx]}`);
+      for (let i = 0; i < searchCriteria.species_negative.length; i++ ) {
+        sqlStatement.append(SQL`
+          AND i.site_id IN (SELECT site_id
+            FROM iapp_species_status
+            WHERE is_species_negative
+            AND invasive_plant IN (`);
+
+        sqlStatement.append(SQL`${searchCriteria.species_negative[i]}`);
+
+        sqlStatement.append(SQL`))`);
       }
-      
-      sqlStatement.append(SQL`))`);
     }
   }
     
