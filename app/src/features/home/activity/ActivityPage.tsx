@@ -798,26 +798,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      const activityResult = await getActivityResultsFromDB(props.activityId || null);
+      try {
+        const activityResult = await getActivityResultsFromDB(props.activityId || null);
 
-      if (!activityResult) {
-        setIsLoading(false);
-        return;
-      }
+        if (!activityResult) {
+          setIsLoading(false);
+          return;
+        }
 
-      let updatedFormData = getDefaultFormDataValues(activityResult);
-      updatedFormData = setUpInitialValues(activityResult, updatedFormData);
-      const updatedDoc = { ...activityResult, formData: updatedFormData };
-      setGeometry(updatedDoc.geometry);
-      // setExtent(updatedDoc.extent);
-      setPhotos(updatedDoc.photos || []);
-      setDoc(updatedDoc);
+        let updatedFormData = getDefaultFormDataValues(activityResult);
+        updatedFormData = setUpInitialValues(activityResult, updatedFormData);
+        const updatedDoc = { ...activityResult, formData: updatedFormData };
+        setGeometry(updatedDoc.geometry);
+        // setExtent(updatedDoc.extent);
+        setPhotos(updatedDoc.photos || []);
+        setDoc(updatedDoc);
 
-      await updateDoc(updatedDoc);
+        await updateDoc(updatedDoc);
 
-      if (updatedDoc.geometry) {
-        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
-        setSuggestedJurisdictions(res);
+        if (updatedDoc.geometry) {
+          const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
+          setSuggestedJurisdictions(res);
+        }
+      } catch (e) {
+        console.log('activity does not exist', e);
       }
 
       setIsLoading(false);
