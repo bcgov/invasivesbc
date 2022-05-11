@@ -16,10 +16,8 @@ const defaultLog = getLogger('api-doc-security-filter');
  */
 export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
   try {
-    await authenticate(req);
-
-    let user = req.authContext?.user;
-    const roles = req.authContext?.roles;
+    let user = req.authContext.user;
+    const roles = req.authContext.roles;
 
     let allCodeEntities: IAllCodeEntities;
     if (user) {
