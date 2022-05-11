@@ -1,10 +1,11 @@
 'use strict';
 
-import {verify} from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
-import {getLogger} from './logger';
-import {getRolesForUser, getUserByBCEID, getUserByIDIR} from './user-utils';
-import {Request} from 'express';
+import { getLogger } from './logger';
+import { getRolesForUser, getUserByBCEID, getUserByIDIR } from './user-utils';
+import { NextFunction, Request } from 'express';
+import { createDeflateRaw } from 'zlib';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -41,8 +42,8 @@ function retrieveKey(header, callback) {
   });
 }
 
-export const authenticate = async function (req: InvasivesRequest): Promise<any> {
-  defaultLog.debug({label: 'authenticate', message: 'authenticating user'});
+export const authenticate = async (req: InvasivesRequest) => {
+  defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const authHeader = req.header('Authorization');
 
@@ -68,11 +69,11 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
         defaultLog.error(error);
-        throw {
+        reject({
           code: 401,
           message: 'Token decode failure',
           namespace: 'auth-utils'
-        };
+        });
       }
 
       req.keycloakToken = decoded;
@@ -88,7 +89,9 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
           req.authContext.user = user;
           getRolesForUser(user.user_id).then((roles) => {
             req.authContext.roles = roles;
+            resolve();
           });
+
         });
       } else if (decoded.bceid_userid) {
         getUserByBCEID(decoded.bceid_userid).then((user) => {
@@ -101,6 +104,7 @@ export const authenticate = async function (req: InvasivesRequest): Promise<any>
           req.authContext.user = user;
           getRolesForUser(user.user_id).then((roles) => {
             req.authContext.roles = roles;
+            resolve();
           });
         });
       }
