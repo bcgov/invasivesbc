@@ -118,6 +118,7 @@ export interface IMapContainerProps {
 
   setMapForActivityPage?: React.Dispatch<any>;
   contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
+  isLoading?: boolean;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {

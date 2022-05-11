@@ -131,11 +131,11 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
-    iconAnchor: [12, 41],
+    iconAnchor: [12, 41]
   });
 
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(map, {icon: DefaultIcon});
+    const draw = new (L as any).Draw.Marker(map, { icon: DefaultIcon });
     draw.enable();
     setInitialTime(3);
     setStartTimer(true);
@@ -171,8 +171,12 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     }
   };
 
-  if (isLoading) {
+  if (!props.activityId && props.isLoading) {
     return <CircularProgress />;
+  }
+
+  if (!props.activityId && !props.isLoading) {
+    return <></>;
   }
 
   return (
@@ -216,7 +220,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                   <Button
                     onClick={() => {
                       new (L as any).Draw.Marker(map, {
-                        icon: DefaultIcon,
+                        icon: DefaultIcon
                       }).enable();
                       setDialog(false);
                     }}>

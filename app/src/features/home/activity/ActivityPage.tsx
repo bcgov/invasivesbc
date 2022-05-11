@@ -952,9 +952,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             mapId={activityId}
             geometryState={{ geometry, setGeometry }}
             showDrawControls={true}
+            isLoading={isLoading}
           />
         ),
-        [classes, activityId, geometry, setGeometry, extent, setExtent]
+        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading]
       )}
 
       {doc && (
@@ -999,6 +1000,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             copyFormData={() => copyFormData()}
             //cloneActivityButton={generateCloneActivityButton}
             setParentFormRef={props.setParentFormRef}
+            isLoading={isLoading}
           />
         </>
       )}

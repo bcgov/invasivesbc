@@ -21,6 +21,7 @@ export interface IActivityComponentProps extends IFormContainerProps, IPhotoCont
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
+  isLoading?: boolean;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
@@ -61,7 +62,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   };
 
-  if (isLoading) {
+  if (props.isLoading) {
     return <CircularProgress />;
   }
 
