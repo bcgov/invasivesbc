@@ -304,37 +304,6 @@ export const useInvasivesApi = () => {
     return data.result;
   };
 
-  const createUser = async (userInfo: any, bearer?: string): Promise<any> => {
-    const options = await getRequestOptions();
-
-    if (bearer) {
-      options.headers.Authorization = `Bearer ${bearer}`;
-    }
-    let type = '';
-    let id = '';
-
-    if (userInfo.idir_userid) {
-      type = 'idir';
-      id = userInfo.idir_userid;
-    }
-    if (userInfo.bceid_userid) {
-      type = 'bceid';
-      id = userInfo.bceid_userid;
-    }
-    const { data } = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/create-user`,
-      data: { type: type, id: id, username: userInfo.preferred_username, email: userInfo.email }
-    });
-    checkForErrors(data);
-    if (LOGVERBOSE) {
-      console.log('createUser', data);
-    }
-
-    return data.result;
-  };
-
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
     const options = await getRequestOptions();
 
@@ -1261,7 +1230,6 @@ export const useInvasivesApi = () => {
     downloadTemplate,
     listCodeTables,
     fetchCodeTable,
-    createUser,
     getJurisdictions,
     getRISOs,
     cacheUserInfo,
