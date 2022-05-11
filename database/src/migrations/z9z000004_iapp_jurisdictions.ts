@@ -1,7 +1,6 @@
 import * as Knex from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
-  // Creates column from delimited species list and then creates/fills iapp_invbc_mapping mapping table
   await knex.raw(`
   	set search_path=invasivesbc,public;
 
@@ -20,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
       ('EXPIRED - British Columbia Transmission Corporation'),
       ('CN Rail'),
       ('Oil and Gas Companies'),
-      ('Ministry of Forests'),
+      ('Ministry of Forests, Lands and Natural Resource Operations'),
       ('Provincial Parks'),
       ('TransCanada Pipelines'),
       ('BC Hydro');
@@ -31,7 +30,6 @@ export async function up(knex: Knex): Promise<void> {
       ('BC Rail'),
       ('Municipality owned land'),
       ('EXPIRED - Terasen Gas Inc.'),
-      ('Lands and Natural Resource Operations'),
       ('Westcoast Energy Inc.'),
       ('OBSOLETE - Railroads'),
       ('First Nations Reserves');

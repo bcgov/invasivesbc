@@ -1,13 +1,55 @@
 import * as Knex from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
-  // Creates column from delimited species list and then creates/fills iapp_invbc_mapping mapping table
+  // Creates columns for jurisdiction and species, recalls Brian's ...02 migration, then creates/fills iapp_invbc_mapping mapping table
   await knex.raw(`
   	set search_path=invasivesbc,public;
     DROP MATERIALIZED VIEW IF EXISTS iapp_site_summary_and_geojson;
-    DROP MATERIALIZED VIEW IF EXISTS iapp_site_summary;
-    CREATE MATERIALIZED VIEW iapp_site_summary AS select *, string_to_array(all_species_on_site, ', ') AS all_species_on_site_as_array FROM iapp_site_summary_slow;
-  
+    DROP materialized VIEW IF EXISTS iapp_site_summary;
+
+    CREATE materialized VIEW iapp_site_summary
+    AS (WITH jurisdiction_data
+            AS (SELECT DISTINCT( Regexp_split_to_array(jurisdictions, '(?<=\))(,)')
+                                )
+                                AS
+                                jurisdictions,
+                                site_id
+                FROM   survey_extract)
+        SELECT i.site_id,
+              all_species_on_site,
+              decimal_longitude,
+              decimal_latitude,
+              min_survey,
+              max_survey,
+              min_chemical_treatment_dates,
+              max_chemical_treatment_dates,
+              min_chemical_treatment_monitoring_dates,
+              max_chemical_treatment_monitoring_dates,
+              min_bio_dispersal_dates,
+              max_bio_dispersal_dates,
+              min_bio_treatment_dates,
+              max_bio_treatment_dates,
+              min_bio_treatment_monitoring_dates,
+              max_bio_treatment_monitoring_dates,
+              min_mechanical_treatment_dates,
+              max_mechanical_treatment_dates,
+              min_mechanical_treatment_monitoring_dates,
+              max_mechanical_treatment_monitoring_dates,
+              has_surveys,
+              has_biological_treatment_monitorings,
+              has_biological_treatments,
+              has_biological_dispersals,
+              has_chemical_treatment_monitorings,
+              has_chemical_treatments,
+              has_mechanical_treatments,
+              has_mechanical_treatment_monitorings,
+              jurisdictions,
+              String_to_array(all_species_on_site, ', ') AS
+              all_species_on_site_as_array
+        FROM   iapp_site_summary_slow i
+                join jurisdiction_data jd
+                  ON i.site_id = jd.site_id);
+
     GRANT SELECT ON iapp_site_summary TO invasivebc;
 
     REFRESH MATERIALIZED VIEW iapp_site_summary;
