@@ -254,8 +254,6 @@ export const AuthStateContextProvider: React.FC<any> = (props: any) => {
     } else if (keycloak?.obj?.authenticated) {
       keycloak?.obj?.loadUserInfo().then(async (info) => {
         if (info) {
-          await invasivesApi.createUser(info, keycloak?.obj?.token);
-          // await setUserInfo(info);
           if (isMobile()) {
             await cacheAllRoles();
             await cacheEmployers();
