@@ -64,7 +64,7 @@ export const authenticate = async (req: InvasivesRequest) => {
     };
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
         defaultLog.error(error);
