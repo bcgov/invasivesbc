@@ -486,7 +486,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             popupAnchor: [0, -20]
           })
         }>
-        <Popup>
+        <Popup closeButton={false}>
           <h2>You are here:</h2>
           <p>
             <b>Latitude: </b>
