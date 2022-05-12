@@ -486,7 +486,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             popupAnchor: [0, -20]
           })
         }>
-        <Popup>
+        <Popup closeButton={false}>
           <h2>You are here:</h2>
           <p>
             <b>Latitude: </b>
@@ -502,12 +502,12 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             {UTM[0] ? UTM[0] : couldNotCalcString}
           </p>
           <p>
-            <b>UTM Northing: </b>
-            {UTM[2] ? UTM[2] : couldNotCalcString}
-          </p>
-          <p>
             <b>UTM Easting: </b>
             {UTM[1] ? UTM[1] : couldNotCalcString}
+          </p>
+          <p>
+            <b>UTM Northing: </b>
+            {UTM[2] ? UTM[2] : couldNotCalcString}
           </p>
           <p>
             <b>Accuracy</b>: {Math.round(accuracy * 10) / 10}m
