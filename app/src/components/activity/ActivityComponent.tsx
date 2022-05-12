@@ -53,10 +53,6 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   };
 
-  if (props.isLoading) {
-    return <CircularProgress />;
-  }
-
   return (
     <>
       {props.cloneActivityButton && props.cloneActivityButton()}
