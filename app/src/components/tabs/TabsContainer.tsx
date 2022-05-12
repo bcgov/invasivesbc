@@ -337,7 +337,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
         if (isAuthorized() && !isMobile()) {
           tabsUserHasAccessTo.push({
-            label: 'Embedded Reports',
+            label: 'Reports',
             path: '/home/reports',
             icon: <AssessmentIcon fontSize={'small'} />
           });
