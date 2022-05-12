@@ -85,41 +85,42 @@ export const authenticate = async (req: InvasivesRequest) => {
       } else if (decoded.bceid_userid) {
         accountType = KeycloakAccountType.bceid;
         id = decoded.bceid_userid;
-      }
-      if (!accountType || !id) {
+      } else {
         throw {
           code: 401,
           message: 'Invalid token - missing idir_userid or bceid_userid',
           namespace: 'auth-utils'
         };
-      } else {
-        getUserByKeycloakID(accountType, id).then((user) => {
-          const createIfNeeded = new Promise((resolve: any) => {
-            if (!user) {
-              createUser(decoded, accountType, id).then(() => {
-                getUserByKeycloakID(accountType, id).then((newUser) => {
-                  user = newUser;
-                  resolve();
-                });
-              });
-            }
-          });
+      }
 
-          createIfNeeded.then(() => {
-            req.authContext = {
-              preferredUsername: null,
-              user: null,
-              roles: []
-            };
-            req.authContext.preferredUsername = decoded['preferred_username'];
-            req.authContext.user = user;
-            getRolesForUser(user.user_id).then((roles) => {
-              req.authContext.roles = roles;
-              resolve();
+      getUserByKeycloakID(accountType, id).then((user) => {
+        const createIfNeeded = new Promise((resolve: any) => {
+          if (!user) {
+            createUser(decoded, accountType, id).then(() => {
+              getUserByKeycloakID(accountType, id).then((newUser) => {
+                user = newUser;
+                resolve();
+              });
             });
+          } else {
+            resolve();
+          }
+        });
+
+        createIfNeeded.then(() => {
+          req.authContext = {
+            preferredUsername: null,
+            user: null,
+            roles: []
+          };
+          req.authContext.preferredUsername = decoded['preferred_username'];
+          req.authContext.user = user;
+          getRolesForUser(user.user_id).then((roles) => {
+            req.authContext.roles = roles;
+            resolve();
           });
         });
-      }
+      });
     });
   });
 };
