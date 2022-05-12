@@ -94,6 +94,7 @@ export class PointOfInterestSearchCriteria {
 
   order: string[]; // ["columnname1 ASC", "columnname2 DESC"]
 
+  jurisdiction: string[];
   species_positive: string[];
   species_negative: string[];
 
@@ -125,6 +126,7 @@ export class PointOfInterestSearchCriteria {
 
     this.order = (obj && obj.order) || [];
 
+    this.jurisdiction = obj.jurisdiction || [];
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
   }

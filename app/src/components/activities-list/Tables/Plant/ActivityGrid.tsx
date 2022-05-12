@@ -573,7 +573,8 @@ const ActivityGrid = (props) => {
       allFiltersBefore: [...advancedFilterRows],
       closeActionDialog: () => {
         setFilterDialog({ ...filterDialog, dialogOpen: false });
-      }
+      },
+      setType: props.setType
     });
   };
 
@@ -663,6 +664,7 @@ const ActivityGrid = (props) => {
           allFiltersBefore={filterDialog.allFiltersBefore}
           dialogOpen={filterDialog.dialogOpen}
           closeActionDialog={filterDialog.closeActionDialog}
+          setType={props.setType}
         />
       </Box>
     ),

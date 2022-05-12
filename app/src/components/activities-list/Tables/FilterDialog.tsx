@@ -19,6 +19,7 @@ export interface IFilterDialog {
   allFiltersBefore?: any[];
   setAllFilters?: React.Dispatch<React.SetStateAction<any[]>>;
   closeActionDialog?: () => void;
+  setType?: string;
 }
 
 export const FilterDialog = (props: IFilterDialog) => {
@@ -37,7 +38,7 @@ export const FilterDialog = (props: IFilterDialog) => {
   // const speciesPOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
   // const speciesNOptions = { Blueweed: 'Blueweed', Cheatgrass: 'Cheatgrass' };
   const invasivesApi = useInvasivesApi();
-  const { fetchCodeTable } = invasivesApi;
+  const { fetchCodeTable, getIappJurisdictions } = invasivesApi;
 
   const [choice, setChoice] = useState('Jurisdiction');
   const [subChoices, setSubChoices] = useState({ ...jurisdictionOptions });
@@ -53,11 +54,16 @@ export const FilterDialog = (props: IFilterDialog) => {
     }
 
     const getJurisdictionOptions = async () => {
-      const data = await fetchCodeTable('jurisdiction_code');
+      const data = props.setType === 'POI' ? await getIappJurisdictions() : await fetchCodeTable('jurisdiction_code');
       setJurisdictionOptions((prev) => {
         const newOptions = {};
-        data.forEach((d) => {
-          newOptions[d.code] = d.description;
+        data.forEach((d, i) => {
+          if (props.setType === 'POI') {
+            // separate because codes are currently null for iapp records
+            newOptions[i] = d.description;
+          } else {
+            newOptions[d.code] = d.description;
+          }
         });
         return newOptions;
       });
@@ -87,7 +93,7 @@ export const FilterDialog = (props: IFilterDialog) => {
 
     getJurisdictionOptions();
     getSpeciesOptions();
-  }, []);
+  }, [props.setType]);
 
   useEffect(() => {
     switch (choice) {

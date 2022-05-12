@@ -1217,7 +1217,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: `${options.baseUrl}/api/iapp-jurisdictions`
     });
-    return data;
+    return data.result;
   };
 
   return {

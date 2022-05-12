@@ -103,7 +103,7 @@ function getJurisdictions(): RequestHandler {
       return res.status(200).json({
         message: 'Got iapp jurisdictions',
         request: req.body,
-        result: rows,
+        result: rows.rows,
         count: count,
         namespace: 'iapp-jurisdiction',
         code: 200

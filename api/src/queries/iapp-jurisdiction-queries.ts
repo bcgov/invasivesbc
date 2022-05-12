@@ -8,7 +8,7 @@ const defaultLog = getLogger('point-of-interest');
  * @returns {SQLStatement} sql query object
  */
 export const getJurisdictionsSQL = (): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT jurisdiction AS jurisdiction_description, code FROM iapp_jurisdictions;`;
+  const sqlStatement: SQLStatement = SQL`SELECT jurisdiction AS description, code FROM iapp_jurisdictions;`;
 
   return sqlStatement;
 };

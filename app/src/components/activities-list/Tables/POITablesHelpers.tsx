@@ -63,7 +63,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((record, index) => {
-    const jurisdictions = new Set();
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
     let species = new Set();
@@ -76,12 +75,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {
-      // jurisdictions
-      for (const jurisdiction of survey?.jurisdictions) {
-        const string = `${jurisdiction?.jurisdiction_code} (${jurisdiction?.percent_covered}%)`;
-        jurisdictions.add(string);
-      }
-
       // last survey date
       const survey_date = new Date(survey?.survey_date);
       if (survey_date > lastSurveyed) lastSurveyed = survey_date;
@@ -96,7 +89,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     return {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
-      jurisdictions: Array.from(jurisdictions).join(', '),
+      jurisdictions: record?.point_of_interest_payload?.jurisdictions.join(', '),
       date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created).toISOString().substring(0, 10),
       species_on_site: Array.from(species).join(', '),
       date_last_surveyed: lastSurveyed.toISOString().substring(0, 10),
