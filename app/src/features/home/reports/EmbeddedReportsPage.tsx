@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Report } from '../../../components/embedded-reports/Report';
 import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
-import { Box, Container, Link, Theme, Typography } from '@mui/material';
+import { Autocomplete, Box, Container, TextField, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Spinner from '../../../components/spinner/Spinner';
 
@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   reportIFrameContainer: {
     flexGrow: 1,
     minHeight: 600,
-    minWidth: 800
+    minWidth: 800,
+    alignContent: 'center'
   },
   reportSelection: {
     '@media (min-device-width: 600px)': {
@@ -43,11 +44,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
   const classes = useStyles();
-
+  const metabaseIconUrl = window.location.href.split('/home')[0] + '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeReport, setActiveReport] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const options = reports.map((report) => {
+    const category = report.category;
+    return {
+      category,
+      ...report
+    };
+  });
 
   useEffect(() => {
     api.listEmbeddedMetabaseReports().then((data) => {
@@ -72,28 +81,50 @@ const EmbeddedReportsPage: React.FC = () => {
 
   return (
     <Container style={{ paddingBottom: '50px' }}>
-      <Typography variant="h4">Embedded Reports</Typography>
-      <Container className={classes.reportContainer}>
-        <Box className={classes.reportSelection}>
-          <Typography variant="h5">Select Report</Typography>
-          {categories.map((c) => (
-            <div key={c}>
-              <Typography variant="h6">{c}</Typography>
-              <ul className={classes.reportMenuUL}>
-                {reports
-                  .filter((r) => r.category === c)
-                  .map((r) => (
-                    <li key={r.id}>
-                      <Link onClick={() => setActiveReport(r.id)} className={classes.reportLink}>
-                        {r.name}
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
-        </Box>
-        <Box className={classes.reportIFrameContainer}>{activeReport && <Report reportId={activeReport} />}</Box>
+      <Box style={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
+        <Typography variant="h4" align="center">
+          <Box
+            style={{ paddingTop: '1rem' }}
+            component="img"
+            alignContent="center"
+            sx={{
+              height: 37,
+              width: 37
+            }}
+            alt="Metabase Icon"
+            src={metabaseIconUrl}
+          />
+          Metabase Reports
+        </Typography>
+      </Box>
+      <Box
+        style={{
+          paddingBottom: '30px',
+          marginRight: '15%',
+          marginLeft: '15%',
+          textAlign: 'center'
+        }}>
+        <i>
+          Reports are embedded Metabase reports accessible from the InvasivesBC application. To view a Metabase report,
+          select which report you'd like to view from the dropdown below.
+        </i>
+      </Box>
+      <Box style={{ paddingBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+        {/* MUI Dropdown for list of metabase report types */}
+        <Autocomplete
+          id="metabase-report-select"
+          options={options}
+          groupBy={(option) => option.category}
+          getOptionLabel={(option) => option.name}
+          sx={{ width: 500 }}
+          onChange={(event, report) => {
+            setActiveReport(report.id);
+          }}
+          renderInput={(params) => <TextField {...params} label="Select a Metabase Report" />}
+        />
+      </Box>
+      <Container className={classes.reportIFrameContainer}>
+        <Box>{activeReport && <Report reportId={activeReport} />}</Box>
       </Container>
     </Container>
   );
