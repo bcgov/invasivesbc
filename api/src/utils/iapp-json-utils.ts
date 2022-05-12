@@ -291,6 +291,7 @@ const getIAPPjson = (row: any, extract: any) => {
         flnro_districts: '', // Could not find
         moti_districts: '', // Could not find
         media_keys: '', // Could not find
+        jurisdictions: row.jurisdictions,
         species_positive: [], // Could not find
         species_negative: [] // Could not find
       }
