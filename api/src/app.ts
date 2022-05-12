@@ -50,13 +50,11 @@ initialize({
   },
   securityHandlers: {
     Bearer: async function (req) {
-      await authenticate(<InvasivesRequest>req);
+      await authenticate(<InvasivesRequest>req).then(() => {
+        applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+      });
       return true;
     }
-  },
-  securityFilter: async (req, res) => {
-    const updatedReq = await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
-    res.status(200).json(updatedReq['apiDoc']);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
