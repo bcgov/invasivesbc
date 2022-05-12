@@ -11,7 +11,7 @@ import {
   DialogActions
 } from '@mui/material';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ExpandMore } from '@mui/icons-material';
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';

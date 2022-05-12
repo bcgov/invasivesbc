@@ -6,7 +6,7 @@ import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import 'gridfix.css';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { sanitizeRecord } from 'utils/addActivity';
 
 export interface IActivityComponentProps extends IFormContainerProps, IPhotoContainerProps {
