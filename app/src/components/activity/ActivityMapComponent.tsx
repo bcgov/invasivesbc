@@ -37,19 +37,10 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const workingPolyline = [];
-  const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
   const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
-
-  useEffect(() => {
-    if (!props.activityId) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
-  }, [props.activityId]);
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;

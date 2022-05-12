@@ -27,15 +27,6 @@ export interface IActivityComponentProps extends IFormContainerProps, IPhotoCont
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const [isLoading, setIsLoading] = useState<boolean>(!props.activity);
-
-  useEffect(() => {
-    if (!props.activity) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
-  }, [props.activity]);
 
   const onSave = async () => {
     try {
