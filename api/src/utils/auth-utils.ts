@@ -94,7 +94,18 @@ export const authenticate = async (req: InvasivesRequest) => {
         };
       } else {
         getUserByKeycloakID(accountType, id).then((user) => {
-          if (user) {
+          const createIfNeeded = new Promise((resolve: any) => {
+            if (!user) {
+              createUser(decoded, accountType, id).then(() => {
+                getUserByKeycloakID(accountType, id).then((newUser) => {
+                  user = newUser;
+                  resolve();
+                });
+              });
+            }
+          });
+
+          createIfNeeded.then(() => {
             req.authContext = {
               preferredUsername: null,
               user: null,
@@ -106,10 +117,7 @@ export const authenticate = async (req: InvasivesRequest) => {
               req.authContext.roles = roles;
               resolve();
             });
-          } else {
-            // Create the user since they do not exist
-            createUser(decoded, accountType, id);
-          }
+          });
         });
       }
     });
