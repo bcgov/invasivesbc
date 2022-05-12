@@ -3,7 +3,7 @@
 import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
-import { getRolesForUser, getUserByBCEID, getUserByIDIR } from './user-utils';
+import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
 import { Request } from 'express';
 
 const defaultLog = getLogger('auth-utils');
@@ -77,22 +77,37 @@ export const authenticate = async (req: InvasivesRequest) => {
 
       req.keycloakToken = decoded;
 
+      let accountType, id;
+
       if (decoded.idir_userid) {
-        getUserByIDIR(decoded.idir_userid).then((user) => {
-          req.authContext = {
-            preferredUsername: null,
-            user: null,
-            roles: []
-          };
-          req.authContext.preferredUsername = decoded['preferred_username'];
-          req.authContext.user = user;
-          getRolesForUser(user.user_id).then((roles) => {
-            req.authContext.roles = roles;
-            resolve();
-          });
-        });
+        accountType = KeycloakAccountType.idir;
+        id = decoded.idir_userid;
       } else if (decoded.bceid_userid) {
-        getUserByBCEID(decoded.bceid_userid).then((user) => {
+        accountType = KeycloakAccountType.bceid;
+        id = decoded.bceid_userid;
+      } else {
+        throw {
+          code: 401,
+          message: 'Invalid token - missing idir_userid or bceid_userid',
+          namespace: 'auth-utils'
+        };
+      }
+
+      getUserByKeycloakID(accountType, id).then((user) => {
+        const createIfNeeded = new Promise((resolve: any) => {
+          if (!user) {
+            createUser(decoded, accountType, id).then(() => {
+              getUserByKeycloakID(accountType, id).then((newUser) => {
+                user = newUser;
+                resolve();
+              });
+            });
+          } else {
+            resolve();
+          }
+        });
+
+        createIfNeeded.then(() => {
           req.authContext = {
             preferredUsername: null,
             user: null,
@@ -105,7 +120,7 @@ export const authenticate = async (req: InvasivesRequest) => {
             resolve();
           });
         });
-      }
+      });
     });
   });
 };
