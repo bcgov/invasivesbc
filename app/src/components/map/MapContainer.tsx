@@ -244,13 +244,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
             <MapResizer />
             {/* <MapRecordsDataGrid /> */}
-            {/*{useMemo(
-                () => (
-                  <MapLocationControlGroup {...props} />
-                ),
-                [props.geometryState.geometry]
-              )}
-                */}
+            {useMemo(
+              () => (
+                <MapLocationControlGroup {...props} />
+              ),
+              [props.geometryState.geometry]
+            )}
+
             {props.children}
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>
