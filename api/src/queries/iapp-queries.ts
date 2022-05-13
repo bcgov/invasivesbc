@@ -17,7 +17,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
-      ON i.site_id = s.site_id WHERE 1=1`
+      ON i.site_id = s.site_id WHERE 1=1 `
     // JOIN point_of_interest_incoming_data p
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
@@ -88,6 +88,14 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
         sqlStatement.append(SQL`))`);
       }
+    }
+  }
+
+  // search intersects with jurisdiction codes
+  if (searchCriteria.jurisdiction && searchCriteria.jurisdiction.length) {
+    for (let i = 0; i < searchCriteria.jurisdiction.length; i++) {
+      const string = `%${searchCriteria.jurisdiction[i]}%`; // separate variable to get over data type issue
+      sqlStatement.append(SQL`AND array_to_string(jurisdictions, ', ') LIKE ${string} `);
     }
   }
     

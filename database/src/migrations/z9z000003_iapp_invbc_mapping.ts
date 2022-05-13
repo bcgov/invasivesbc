@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE materialized VIEW iapp_site_summary
     AS (WITH jurisdiction_data
-            AS (SELECT DISTINCT( Regexp_split_to_array(jurisdictions, '(?<=\))(,)')
+            AS (SELECT DISTINCT( Regexp_split_to_array(jurisdictions, '(?<=\))(, )')
                                 )
                                 AS
                                 jurisdictions,
