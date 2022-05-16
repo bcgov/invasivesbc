@@ -157,7 +157,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   return (
-    <Box height="inherit" width="inherit">
+    <Box height="inherit" width="inherit" paddingBottom={'50px'}>
       <MapRecordsContextProvider>
         <Grid className={classes.mainGrid} container>
           <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
