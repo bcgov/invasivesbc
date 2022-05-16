@@ -557,7 +557,8 @@ const ActivityGrid = (props) => {
             if (prev.length < 2) {
               return [];
             } else {
-              return prev.splice(props.key, 1);
+              prev.splice(props.id, 1);
+              return [...prev];
             }
           });
         }}
@@ -609,6 +610,7 @@ const ActivityGrid = (props) => {
                         filterValue={r.filterValue}
                         filterKey={r.filterKey}
                         key={i}
+                        id={i}
                       />
                     );
                   }
