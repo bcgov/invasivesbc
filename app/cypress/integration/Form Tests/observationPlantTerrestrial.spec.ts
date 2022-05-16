@@ -104,7 +104,7 @@ describe('CREATING A NEW RECORD', function () {
   });
   it('It places a marker', function () {
     cy.get('.leaflet-container').click('center');
-    cy.get('.leaflet-draw-draw-marker').dblclick('center');
+    cy.get('.leaflet-draw-draw-marker').click('center');
     cy.get('.leaflet-container').click('center');
   });
   it('It inputs basic information', function () {
