@@ -1205,6 +1205,21 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  /**
+   * Get the iapp jurisdiction names (and codes)
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getIappJurisdictions = async (): Promise<any> => {
+    const options = await getRequestOptions();
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: `${options.baseUrl}/api/iapp-jurisdictions`
+    });
+    return data.result;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -1257,6 +1272,7 @@ export const useInvasivesApi = () => {
     declineUpdateRequest,
     approveUpdateRequests,
     listEmbeddedMetabaseReports,
-    getEmbeddedMetabaseReport
+    getEmbeddedMetabaseReport,
+    getIappJurisdictions
   };
 };

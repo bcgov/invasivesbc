@@ -8,7 +8,7 @@ import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getPointsOfInterestSQL } from '../queries/point-of-interest-queries';
+import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('point-of-interest');
@@ -71,10 +71,26 @@ POST.apiDoc = {
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },
+            jurisdiction: {
+              type: 'array',
+              description:
+                'A list of jurisdictions to search for.  Results will match any in the list.',
+              items: {
+                type: 'string'
+              }
+            },
             species_positive: {
               type: 'array',
               description:
-                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the positive list.',
+              items: {
+                type: 'string'
+              }
+            },
+            species_negative: {
+              type: 'array',
+              description:
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the negative list.',
               items: {
                 type: 'string'
               }
@@ -148,6 +164,22 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       message: 'getPointsOfInterestBySearchFilterCriteria',
       body: req.body
     });
+
+    // get proper names from mapping table
+    if (req.body.species_positive) {
+      const positiveNames = await getMappedFilterRows(req.body.species_positive);
+      if (positiveNames) {
+        req.body.species_positive = positiveNames;
+      }
+    }
+
+    if (req.body.species_negative) {
+      const negativeNames = await getMappedFilterRows(req.body.species_negative);
+      if (negativeNames) {
+        req.body.species_negative = negativeNames;
+      }
+    }
+
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(req.body);
     const connection = await getDBConnection();
 
@@ -207,4 +239,28 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       connection.release();
     }
   };
+}
+
+async function getMappedFilterRows(codeArray) {
+  const sqlStatement: SQLStatement = getSpeciesMapSQL(codeArray);
+
+  if (!sqlStatement) {
+    return [];
+  }
+
+  const connection = await getDBConnection();
+
+  if (!connection) {
+    return [];
+  }
+
+  const nameResponse = await connection.query(sqlStatement.text, sqlStatement.values);
+  const speciesNameRows = { rows: (nameResponse && nameResponse.rows) || [] };
+  const speciesNames = speciesNameRows.rows.map((row) => {
+    return row.iapp_name;
+  });
+
+  connection.release();
+
+  return speciesNames;
 }

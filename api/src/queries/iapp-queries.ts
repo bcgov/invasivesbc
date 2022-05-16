@@ -17,7 +17,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
-      ON i.site_id = s.site_id WHERE 1=1`
+      ON i.site_id = s.site_id WHERE 1=1 `
     // JOIN point_of_interest_incoming_data p
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
@@ -56,15 +56,49 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     }
   }
 
-  // search intersects with some species codes
-  if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
-    sqlStatement.append(SQL` AND ARRAY[`);
-    sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
-    for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
-      sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
-    sqlStatement.append(SQL`]::varchar[] && species_positive`);
+  // search intersects with positive or negative species
+  if ((searchCriteria.species_positive && searchCriteria.species_positive.length) || 
+      (searchCriteria.species_negative && searchCriteria.species_negative.length)) {
+
+    // filter positive species encounters
+    if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
+      for (let i = 0; i < searchCriteria.species_positive.length; i++ ) {
+        sqlStatement.append(SQL`
+          AND i.site_id IN (SELECT site_id
+            FROM iapp_species_status
+            WHERE is_species_positive
+            AND invasive_plant IN (`);
+
+        sqlStatement.append(SQL`${searchCriteria.species_positive[i]}`);
+
+        sqlStatement.append(SQL`))`);
+      }
+    }
+
+    // filter negative species encounters
+    if (searchCriteria.species_negative && searchCriteria.species_negative.length) {
+      for (let i = 0; i < searchCriteria.species_negative.length; i++ ) {
+        sqlStatement.append(SQL`
+          AND i.site_id IN (SELECT site_id
+            FROM iapp_species_status
+            WHERE is_species_negative
+            AND invasive_plant IN (`);
+
+        sqlStatement.append(SQL`${searchCriteria.species_negative[i]}`);
+
+        sqlStatement.append(SQL`))`);
+      }
+    }
   }
 
+  // search intersects with jurisdiction codes
+  if (searchCriteria.jurisdiction && searchCriteria.jurisdiction.length) {
+    for (let i = 0; i < searchCriteria.jurisdiction.length; i++) {
+      const string = `%${searchCriteria.jurisdiction[i]}%`; // separate variable to get over data type issue
+      sqlStatement.append(SQL`AND array_to_string(jurisdictions, ', ') LIKE ${string} `);
+    }
+  }
+    
   if (searchCriteria.search_feature?.geometry) {
     sqlStatement.append(SQL` AND  public.ST_INTERSECTS(
         geog,

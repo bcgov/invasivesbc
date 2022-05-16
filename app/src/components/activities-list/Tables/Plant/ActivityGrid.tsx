@@ -92,7 +92,10 @@ export const getSearchCriteriaFromFilters = (
   rolesUserHasAccessTo: any,
   recordSetContext: any,
   setName: string,
-  gridFilters?: any
+  isIAPP: boolean,
+  page: number,
+  limit: number,
+  // gridFilters?: any
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
@@ -117,13 +120,40 @@ export const getSearchCriteriaFromFilters = (
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {
     const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
     const jurisdictions = [];
+    const speciesPositive = [];
+    const speciesNegative = [];
     currentAdvFilters.forEach((filter) => {
-      if (filter.filterField === 'Jurisdiction') {
-        jurisdictions.push(Object.keys(filter.filterValue)[0]);
+      switch (filter.filterField) {
+        case 'Jurisdiction': {
+          jurisdictions.push(Object.values(filter.filterValue)[0]);
+          break;
+        }
+        case 'Species Positive': {
+          speciesPositive.push(Object.keys(filter.filterValue)[0]);
+          break;
+        }
+        case 'Species Negative': {
+          speciesNegative.push(Object.keys(filter.filterValue)[0]);
+          break;
+        }
       }
     });
-    filter.jurisdiction = jurisdictions;
+
+    if (isIAPP) {
+      if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
+      if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
+      if (speciesNegative.length > 0) filter.species_negative = speciesNegative;
+    }
   }
+
+  // is IAPP
+  if (isIAPP) filter.isIAPP = isIAPP;
+
+  // page number
+  filter.page = page;
+
+  // row limit
+  filter.limit = limit;
 
   return filter;
 };
@@ -194,6 +224,8 @@ const ActivityGrid = (props) => {
     } else {
       setAdvancedFilterRows([]);
     }
+
+    setSave(Math.random());
   }, []);
 
   //update state in main context and localstorage:
@@ -235,11 +267,11 @@ const ActivityGrid = (props) => {
             }
           };
         }
-      } else {
-        return prev;
       }
+
+      return prev;
     });
-  }, [save]);
+  }, [advancedFilterRows]);
 
   useEffect(() => {
     if (recordSetContext?.recordSetState?.[props.setName]) {
@@ -249,7 +281,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [recordSetContext?.recordSetState?.[props.setName], save, advancedFilterRows]);
+  }, [save]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -260,7 +292,10 @@ const ActivityGrid = (props) => {
       advancedFilterRows,
       rolesUserHasAccessTo,
       recordSetContext,
-      props.setName
+      props.setName,
+      false,
+      0,
+      20
     );
 
     const act_list = await dataAccess.getActivities(filter);
@@ -273,16 +308,20 @@ const ActivityGrid = (props) => {
     if (act_list && act_list.count === 0) {
       setConsole('No data found.');
     }
+
     setActivities(act_list);
   };
 
   const getPOIs = async () => {
-    // to comply with IPointOfInterestSearchCriteria interface, otherwise user records are returned
-    const filter = {
-      // page: 1,
-      limit: 10,
-      isIAPP: true
-    };
+    const filter = getSearchCriteriaFromFilters(
+      advancedFilterRows,
+      rolesUserHasAccessTo,
+      recordSetContext,
+      props.setName,
+      true,
+      0,
+      20
+    );
 
     const act_list = await dataAccess.getPointsOfInterest(filter);
     if (act_list && !act_list.count) {
@@ -514,8 +553,6 @@ const ActivityGrid = (props) => {
         }}
         onDelete={(e) => {
           e.stopPropagation();
-          console.log(advancedFilterRows);
-          console.log(props);
           setAdvancedFilterRows((prev) => {
             if (prev.length < 2) {
               return [];
@@ -536,7 +573,8 @@ const ActivityGrid = (props) => {
       allFiltersBefore: [...advancedFilterRows],
       closeActionDialog: () => {
         setFilterDialog({ ...filterDialog, dialogOpen: false });
-      }
+      },
+      setType: props.setType
     });
   };
 
@@ -626,6 +664,7 @@ const ActivityGrid = (props) => {
           allFiltersBefore={filterDialog.allFiltersBefore}
           dialogOpen={filterDialog.dialogOpen}
           closeActionDialog={filterDialog.closeActionDialog}
+          setType={props.setType}
         />
       </Box>
     ),

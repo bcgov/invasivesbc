@@ -440,3 +440,22 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to fetch mapped species names based on advanced filter codes
+ *
+ * @param {Array} codes
+ * @returns {SQLStatement} sql query object
+ */
+ export const getSpeciesMapSQL = (codes: Array<String>): SQLStatement => {
+  const sqlStatement: SQLStatement = SQL`SELECT iapp_name FROM iapp_invbc_mapping WHERE char_code IN (`;
+    sqlStatement.append(SQL`${codes[0]}`);
+    
+    for(let idx = 1; idx < codes.length; idx++) {
+      sqlStatement.append(SQL`, ${codes[idx]}`);
+    }
+
+  sqlStatement.append(SQL`);`);
+
+  return sqlStatement;
+};
