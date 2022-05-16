@@ -11,7 +11,7 @@ import {
   DialogActions
 } from '@mui/material';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ExpandMore } from '@mui/icons-material';
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';
@@ -37,19 +37,10 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const workingPolyline = [];
-  const [isLoading, setIsLoading] = useState<boolean>(!props.activityId);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
   const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
-
-  useEffect(() => {
-    if (!props.activityId) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
-  }, [props.activityId]);
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;
@@ -131,11 +122,11 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
-    iconAnchor: [12, 41],
+    iconAnchor: [12, 41]
   });
 
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(map, {icon: DefaultIcon});
+    const draw = new (L as any).Draw.Marker(map, { icon: DefaultIcon });
     draw.enable();
     setInitialTime(3);
     setStartTimer(true);
@@ -171,8 +162,12 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     }
   };
 
-  if (isLoading) {
+  if (!props.activityId && props.isLoading) {
     return <CircularProgress />;
+  }
+
+  if (!props.activityId && !props.isLoading) {
+    return <></>;
   }
 
   return (
@@ -216,7 +211,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                   <Button
                     onClick={() => {
                       new (L as any).Draw.Marker(map, {
-                        icon: DefaultIcon,
+                        icon: DefaultIcon
                       }).enable();
                       setDialog(false);
                     }}>

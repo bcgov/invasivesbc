@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, CircularProgress, AccordionSummary, Box, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
@@ -6,7 +6,7 @@ import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import 'gridfix.css';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { sanitizeRecord } from 'utils/addActivity';
 
 export interface IActivityComponentProps extends IFormContainerProps, IPhotoContainerProps {
@@ -21,20 +21,12 @@ export interface IActivityComponentProps extends IFormContainerProps, IPhotoCont
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
+  isLoading?: boolean;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const [isLoading, setIsLoading] = useState<boolean>(!props.activity);
-
-  useEffect(() => {
-    if (!props.activity) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
-  }, [props.activity]);
 
   const onSave = async () => {
     try {
@@ -60,10 +52,6 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
   };
-
-  if (isLoading) {
-    return <CircularProgress />;
-  }
 
   return (
     <>
