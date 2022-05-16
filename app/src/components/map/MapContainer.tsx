@@ -32,6 +32,7 @@ import OfflineMap from './OfflineMap';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
+import { NamedBoundaryMenu } from './NamedBoundaryMenu';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -241,6 +242,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 />
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
+            <NamedBoundaryMenu
+              position="topleft"
+              id={props.activityId}
+              map={map}
+              inputGeo={props.geometryState.geometry}
+            />
 
             <MapResizer />
             {/* <MapRecordsDataGrid /> */}

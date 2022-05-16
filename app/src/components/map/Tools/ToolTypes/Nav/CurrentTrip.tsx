@@ -5,14 +5,11 @@ import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
-import { FeatureGroup } from 'react-leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 
-import CheckIcon from '@mui/icons-material/Check';
-import EditTools from '../Data/EditTools';
 /*
 
 - [ ] add ui button to let user add shapes
@@ -47,7 +44,6 @@ export const JumpToTrip = (props) => {
 
   const [IFlyToAndFadeItems, setIFlyToAndFadeItems] = useState<Array<IFlyToAndFadeItem>>([]);
   const [index, setIndex] = useState<number>(0);
-  const [edit, setEdit] = useState(false);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
@@ -84,30 +80,7 @@ export const JumpToTrip = (props) => {
         return JSON.parse(rawRecord.json);
       });
     } else {
-      tripObjects = [
-        {
-          id: 1,
-          name: 'trip a',
-          geometry: [
-            {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [-126.826171875, 51.876490970614775],
-                    [-123.70605468750001, 51.876490970614775],
-                    [-123.70605468750001, 53.68369534495075],
-                    [-126.826171875, 53.68369534495075],
-                    [-126.826171875, 51.876490970614775]
-                  ]
-                ]
-              }
-            }
-          ]
-        }
-      ];
+      return;
     }
 
     let items = new Array<IFlyToAndFadeItem>();
@@ -135,55 +108,20 @@ export const JumpToTrip = (props) => {
   };
 
   return (
-    <>
-      <ListItem disableGutters>
-        <ListItemButton
-          onClick={() => {
-            /* eslint-disable */
-            const dowe = confirm('Create new named boundary?');
-            if (dowe) {
-              const name = prompt('Name:');
-              setEdit(true);
-            }
-          }}
-          ref={divRef}
-          aria-label="Jump To Location"
-          style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
-          <ListItemIcon>
-            <ExploreIcon />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography className={toolClass.Font}>New Boundary</Typography>
-          </ListItemText>
-        </ListItemButton>
-      </ListItem>
-      <ListItem
-        onClick={() => {
-          jump();
-        }}
-        disableGutters>
-        <ListItemText>
-          <Typography className={toolClass.Font}>Sunny infested areas</Typography>
-        </ListItemText>
+    <ListItem disableGutters>
+      <ListItemButton
+        ref={divRef}
+        aria-label="Jump To Location"
+        onClick={jump}
+        style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
         <ListItemIcon>
-          <CheckIcon />
+          <ExploreIcon />
         </ListItemIcon>
-      </ListItem>
-      <ListItem disableGutters>
         <ListItemText>
-          <Typography className={toolClass.Font}>Scenic infested areas</Typography>
+          <Typography className={toolClass.Font}></Typography>
         </ListItemText>
-      </ListItem>
-      {/*
-        <>
-          edit?
-          <FeatureGroup>
-            <EditTools />
-          </FeatureGroup>
-          : <></>
-        </>
-      */}
-    </>
+      </ListItemButton>
+    </ListItem>
   );
 };
 
