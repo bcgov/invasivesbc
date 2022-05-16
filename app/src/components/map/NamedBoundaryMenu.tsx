@@ -15,6 +15,7 @@ import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
+import TabUnselectedIcon from '@mui/icons-material/TabUnselected';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -41,7 +42,7 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
   toggleMenuBTN: {
     padding: 5,
     marginTop: 10,
-    marginRight: 10,
+    marginRight: 50,
     zIndex: 1500,
     width: 40,
     transition: 'all 200ms ease-in-out',
@@ -54,7 +55,7 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const ToolbarContainer = (props) => {
+export const NamedBoundaryMenu = (props) => {
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
 
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
@@ -75,38 +76,24 @@ export const ToolbarContainer = (props) => {
 
   return (
     <>
-      <div ref={divRef} key={'toolbar1'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
+      <div ref={divRef} key={'toolbar2'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
         <IconButton
           id="toolbar-drawer-button"
           onClick={() => {
             handleExpand();
           }}
           className={classes.toggleMenuBTN + ' leaflet-control'}>
-          {expanded ? <CloseIcon /> : <MenuIcon />}
+          {expanded ? <CloseIcon /> : <TabUnselectedIcon />}
         </IconButton>
         <List
           ref={divRef}
           key={'toolbar2'}
           className={classes.innerToolBarContainer + ' leaflet-control'}
-          style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
-          <LayerPicker inputGeo={props.inputGeo} />
+          style={{ transform: expanded ? 'translateX(5%)' : 'translateX(-110%)' }}>
           <Divider />
-          <SetPointOnClick map={props.map} />
-          <MeasureTool
-            setMeasureToolContainerOpen={setMeasureToolContainerOpen}
-            measureToolContainerOpen={measureToolContainerOpen}
-          />
-          <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           <JumpToTrip />
-          {/* <NewRecord />
-        <EditRecord />
-        <MultiSelectOrEdit />
-        <DrawButtonList /> */}
-
-          <JumpToActivity id={props.id} />
         </List>
       </div>
-      <MeasureToolContainer measureToolContainerOpen={measureToolContainerOpen} />
     </>
   );
 };
