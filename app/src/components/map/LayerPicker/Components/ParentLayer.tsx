@@ -37,7 +37,7 @@ export const ParentLayer = (props: any) => {
         </Grid>
         {/* DragHandle */}
         <Grid id="draghandle" item xs={1}>
-          <DragHandle />
+          <>{/*<DragHandle />}*/}</>
         </Grid>
       </Grid>
       {parent?.children.map((child: any, index) => (
