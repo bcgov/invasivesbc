@@ -271,13 +271,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Home fontSize={'small'} />
         });
 
-        /*
-        tabsUserHasAccessTo.push({
-          label: 'Map',
-          path: '/home/map',
-          icon: <Map fontSize={'small'} />
-        });
-        */
+        if (!isAuthorized()) {
+          tabsUserHasAccessTo.push({
+            label: 'Map',
+            path: '/home/map',
+            icon: <Map fontSize={'small'} />
+          });
+        }
 
         if (isAuthorized()) {
           tabsUserHasAccessTo.push({
