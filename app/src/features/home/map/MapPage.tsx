@@ -1,6 +1,7 @@
 import { Box, Button, Container, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
+import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
@@ -159,23 +160,16 @@ const MapPage: React.FC<IMapProps> = (props) => {
   return (
     <Box height="inherit" width="inherit" paddingBottom={'50px'}>
       <MapRecordsContextProvider>
-        <Grid className={classes.mainGrid} container>
-          <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
-            <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-              <MapContainer
-                classes={classes}
-                showDrawControls={false}
-                center={initalCenter()}
-                zoom={initialZoom()}
-                mapId={'mainMap'}
-                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                geometryState={{ geometry, setGeometry }}>
-                {' '}
-                <MapUrlListener />
-              </MapContainer>
-            </Container>
-          </Grid>
-        </Grid>
+        <MapContainer
+          classes={classes}
+          showDrawControls={false}
+          center={[55, -128]}
+          zoom={5}
+          mapId={'mainMap'}
+          geometryState={{ geometry, setGeometry }}>
+          {/* <RecordSetLayersRenderer /> */}
+          <MapUrlListener />
+        </MapContainer>
         <MapContextMenu
           contextMenuState={{ state: contextMenuState, setContextMenuState }}
           handleClose={handleContextMenuClose}
