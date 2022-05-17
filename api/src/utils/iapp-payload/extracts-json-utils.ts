@@ -35,7 +35,7 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
       { description: treatment.treatment_paper_file_id } // What is the difference between site_paper_file_id
     ], //  and treatment_paper_file_id????
     treatment_id: treatment.chemicaltreatmentid,
-    reported_area: treatment.area_treated, // area of POI or treated area??????
+    reported_area: treatment.area_treated_hectares, // area of POI or treated area??????
     treatment_date: treatment.treatment_date,
     treatment_time: null, // Could not find: no treatment time; just the date
     wind_direction: null, // Could not find: no wind direction
@@ -137,7 +137,7 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
     project_code: [{ description: treatment.treatment_paper_file_id }],
     treatment_id: treatment.treatment_id,
     mechanical_id: treatment.mechanicaltreatmentid, // what is this supposed to be???? different id??
-    reported_area: null,
+    reported_area: treatment.estimated_area_hectares,
     treatment_date: treatment.treatment_date,
     general_comment: treatment.treatment_comments,
     mechanical_method: treatment.treatment_method,
