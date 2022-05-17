@@ -216,7 +216,9 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.info(`Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`);
+    defaultLog.info(
+      `Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`
+    );
 
     // return some useful info for logging in the calling cron job
     return res.status(200).json({
