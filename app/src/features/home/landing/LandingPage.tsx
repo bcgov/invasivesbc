@@ -85,6 +85,11 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     return userInfo?.activation_status === 1;
   };
 
+  const redirectToAgreement = (e) => {
+    e.preventDefault();
+    history.push('/home/data-sharing-agreement');
+  }
+
   useEffect(() => {
     hasRequestedAccess();
   }, [keycloak?.obj?.authenticated, userInfoLoaded, api, userInfo?.email, userInfo?.preferred_username]);
@@ -247,10 +252,8 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             </ul>
           </Box>
           <Box mt={4}>
-            By using this application, you agree to &nbsp;
-            <a href="https://apps.nrs.gov.bc.ca/int/confluence/dologin.action" target="_blank" rel="noreferrer">
-              the terms and conditions
-            </a>
+            By using this application, you agree to&nbsp;
+            <a href="" onClick={redirectToAgreement}>the Data Sharing Agreement</a>
           </Box>
           <Box mt={10}>
             <u>

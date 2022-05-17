@@ -16,6 +16,7 @@ import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import { AuthStateContext } from '../../contexts/authStateContext';
 import LandingPage from './landing/LandingPage';
 import {EmbeddedReportsPage} from "./reports/EmbeddedReportsPage";
+import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
 
 interface IHomeRouterProps {
   classes: any;
@@ -52,6 +53,14 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         path="/home/access-request"
         title={getTitle('Access Request')}
         component={AccessRequestPage}
+        componentProps={props}
+      />
+      <PublicRoute
+        exact
+        layout={HomeLayout}
+        path="/home/data-sharing-agreement"
+        title={getTitle('Data Sharing Agreement')}
+        component={DataSharingAgreementPage}
         componentProps={props}
       />
       <PrivateRoute
