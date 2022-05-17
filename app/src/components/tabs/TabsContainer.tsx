@@ -451,17 +451,19 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     elevation: 3
                   }}
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                  <MenuItem>
-                    <Switch
-                      color="secondary"
-                      checked={connected}
-                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
-                      onChange={() => {
-                        setConnected(!connected);
-                      }}
-                    />
-                    Network Online
-                  </MenuItem>
+                  {isMobile() && (
+                    <MenuItem>
+                      <Switch
+                        color="secondary"
+                        checked={connected}
+                        checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                        onChange={() => {
+                          setConnected(!connected);
+                        }}
+                      />
+                      Network Online
+                    </MenuItem>
+                  )}
                   <MenuItem>
                     <Switch
                       color="secondary"
