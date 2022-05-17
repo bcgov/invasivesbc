@@ -18,13 +18,13 @@ export const POST: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 POST.apiDoc = {
   description: 'Fetches all ponts of interest based on search criteria.',
   tags: ['point-of-interest'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
+  // security: SECURITY_ON
+  //   ? [
+  //       {
+  //         Bearer: ALL_ROLES
+  //       }
+  //     ]
+  //   : [],
   requestBody: {
     description: 'Points Of Interest search filter criteria object.',
     content: {
