@@ -185,13 +185,13 @@ function SetPointOnClick({ map }: any) {
         } else {
           const coords = center(drawnGeo).geometry.coordinates;
           const result = calc_utm(coords[0], coords[1]);
-          setClickMode(false);
           setPositionOne(null);
           setUTM([
             createDataUTM('Zone', result[0]),
             createDataUTM('Easting', result[1]),
             createDataUTM('Northing', result[2])
           ]);
+          setClickMode(false);
           setDrawnOpacity(null);
         }
       } else {
