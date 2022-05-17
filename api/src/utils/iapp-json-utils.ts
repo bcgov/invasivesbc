@@ -278,7 +278,8 @@ const getIAPPjson = (row: any, extract: any) => {
             site_elevation: extract.elevation,
             original_bec_id: null, // Could not find
             soil_texture_code: extract.soil_texture,
-            specific_use_code: extract.site_specific_use
+            specific_use_code: extract.site_specific_use,
+            access_description: extract.site_location
           },
           species_negative: [], // COME BACK LATER
           species_positive: [], // COME BACK LATER
