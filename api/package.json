@@ -12,6 +12,7 @@
     "start": "ts-node src/server --max-old-space-size=8192",
     "clean": "gulp clean",
     "build": "gulp build",
+    "start:windows": "nodemon --legacy-watch src/server --max-old-space-size=8192",
     "start:reload": "./node_modules/.bin/nodemon src/server.ts --exec ts-node",
     "start:migrate:reload": "npm-run-all -l -s migrate:latest start:reload",
     "migrate:latest": "knex migrate:latest",

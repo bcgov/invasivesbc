@@ -1,7 +1,7 @@
 import { getLogger } from './utils/logger';
 import { app, adminApp } from './app';
 const HOST = process.env.API_HOST || 'localhost';
-const PORT = Number(process.env.API_PORT || '3002');
+const PORT = Number(process.env.API_PORT || '7080');
 const ADMIN_PORT = 8500;
 // Start api
 const defaultLog = getLogger('app');

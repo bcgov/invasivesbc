@@ -24,8 +24,11 @@ all : help
 # 3. Run `make local` or `make local-debug`
 
 local: | setup-docker close-local build-local run-local ## Performs all commands necessary to run api in docker
-
 local-debug: | setup-docker close-local build-local run-debug ## Performs all commands necessary to run api in docker in debug mode
+
+windows: | setup-docker close-local build-windows run-windows ## Performs all commands necessary to build and run for a windows environment with hot reloading
+
+ios: | build-ios run-ios ## Builds and runs the app for mobile
 
 # ------------------------------------------------------------------------------
 # Development Commands
@@ -48,6 +51,19 @@ run-local: ## Runs the local development containers
 	@echo "Make: run-local - running api/app images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.local.yml up -d
+
+build-windows: ## Builds local development containers for windows
+	@echo "==============================================="
+	@echo "Make: build-windows - building Docker images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.windows.yml build
+
+run-windows: ## Runs the local development containers for windows
+	@echo "==============================================="
+	@echo "Make: run-windows - running api/app images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.windows.yml up -d
+	@cd api && npm run start:windows && cd ..
 
 run-debug: ## Runs the local development containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
@@ -101,8 +117,6 @@ run-ios: ## Runs the app for mobile
 	@echo "Make: run-mobile - running app for mobile"
 	@echo "==============================================="
 	@cd app && npx cap sync ios && npx cap open ios && cd ..
-
-ios: | build-ios run-ios ## Builds and runs the app for mobile
 
 help:	## Display this help screen.
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
