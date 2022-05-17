@@ -34,7 +34,7 @@ export const ChildLayer = (props) => {
       {/* Settings Dialog Box */}
       {process.env.REACT_APP_REAL_NODE_ENV === 'development' && <LayerModeDialog parent={parent} child={child} />}
       {process.env.REACT_APP_REAL_NODE_ENV === 'local' && <LayerModeDialog parent={parent} child={child} />}
-      <ColourDialog parent={parent} child={child} />
+      {/*  <ColourDialog parent={parent} child={child} />*/}
       {/* <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
                         </Grid> */}

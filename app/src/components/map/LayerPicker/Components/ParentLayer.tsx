@@ -16,6 +16,10 @@ export const ParentLayer = (props: any) => {
     </ListItemIcon>
   ));
 
+  //FEATURE FLAG
+  if (['INVASIVESBC Records'].includes(parent.name)) {
+    return <></>;
+  }
   return (
     <Accordion
       id="parent-accordion"
@@ -40,9 +44,14 @@ export const ParentLayer = (props: any) => {
           <>{/*<DragHandle />}*/}</>
         </Grid>
       </Grid>
-      {parent?.children.map((child: any, index) => (
-        <ChildLayer key={index} parent={parent} child={child} />
-      ))}
+      {parent?.children.map((child: any, index) =>
+        //FEATURE FLAG
+        ['IAPP Records'].includes(parent.name) && !['All Sites'].includes(child.name) ? (
+          <></>
+        ) : (
+          <ChildLayer key={index} parent={parent} child={child} />
+        )
+      )}
     </Accordion>
   );
 };
