@@ -55,7 +55,7 @@ const getSurveyObj = (row: any, map_code: any) => {
     ],
     employer_code: null, // Could not see
     jurisdictions: jurisdictions,
-    reported_area: row.estimated_area,
+    reported_area: row.estimated_area_hectares,
     general_comment: row.survey_comments,
     observation_type: null, // Could not see (COME BACK LATER)
     invasive_plant_code: plant_code, // COME BACK TO LATER
@@ -214,10 +214,12 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
     );
 
     // monitored flag
-    const monitored = (
+    const monitored =
       row['has_biological_treatment_monitorings'] ||
       row['has_chemical_treatment_monitorings'] ||
-      row['has_mechanical_treatment_monitorings']) ? 'Yes' : 'No';
+      row['has_mechanical_treatment_monitorings']
+        ? 'Yes'
+        : 'No';
 
     (iapp_site as any).point_of_interest_payload.form_data.monitored = monitored;
 
@@ -276,7 +278,8 @@ const getIAPPjson = (row: any, extract: any) => {
             site_elevation: extract.elevation,
             original_bec_id: null, // Could not find
             soil_texture_code: extract.soil_texture,
-            specific_use_code: extract.site_specific_use
+            specific_use_code: extract.site_specific_use,
+            access_description: extract.site_location
           },
           species_negative: [], // COME BACK LATER
           species_positive: [], // COME BACK LATER

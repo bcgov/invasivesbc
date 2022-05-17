@@ -55,7 +55,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Created
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.created_date_on_device)}
+              {ifApplicable(site?.date_created)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Slope
@@ -94,7 +94,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Elevation
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.elevation)}
+              {ifApplicable(site?.site_elevation)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Specific Use
