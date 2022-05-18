@@ -19,13 +19,13 @@ export const DELETE: Operation = [deleteActivitiesByIds()];
 POST.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
   tags: ['activity'],
-  // security: SECURITY_ON
-  //   ? [
-  //       {
-  //         Bearer: ALL_ROLES
-  //       }
-  //     ]
-  //   : [],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Activities search filter criteria object.',
     content: {
