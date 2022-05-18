@@ -70,6 +70,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
     let species = new Set();
+    const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
 
     // releases and dispersals
     const bioRelease = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_treatments);

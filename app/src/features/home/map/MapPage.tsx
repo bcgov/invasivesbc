@@ -1,6 +1,7 @@
 import { Box, Button, Container, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
+import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
@@ -169,6 +170,14 @@ const MapPage: React.FC<IMapProps> = (props) => {
           geometryState={{ geometry, setGeometry }}>
           {/* <RecordSetLayersRenderer /> */}
           <MapUrlListener />
+          <ActivitiesLayerV2
+            filters={{
+              activity_subtype: ['Activity_Observation_PlantTerrestrial', 'Activity_Observation_PlantAquatic']
+            }}
+            color={'#000'}
+            opacity={1}
+            zIndex={5000}
+          />
         </MapContainer>
         <MapContextMenu
           contextMenuState={{ state: contextMenuState, setContextMenuState }}
