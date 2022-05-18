@@ -1,15 +1,16 @@
 import { Box, Button, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-// import clsx from 'clsx';   // Removed for now
 import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
 import MapContainer from 'components/map/MapContainer';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
-import { Feature, GeoJsonObject } from 'geojson';
+import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+// Removed for now:
+// import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
