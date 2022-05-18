@@ -373,12 +373,13 @@ function createActivity(): RequestHandler {
  * @returns {RequestHandler}
  */
 function updateActivity(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
+    sanitizedActivityData.created_by = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
