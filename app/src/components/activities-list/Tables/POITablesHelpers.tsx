@@ -71,6 +71,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let agencies = new Set();
     let species = new Set();
     const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
+    const surveys = record?.point_of_interest_payload?.form_data?.surveys;
 
     // releases and dispersals
     const bioRelease = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_treatments);
@@ -79,7 +80,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const bioDispersal = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_dispersals);
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
-    for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {
+    for (const survey of surveys) {
       // last survey date
       const survey_date = new Date(survey?.survey_date);
       if (survey_date > lastSurveyed) lastSurveyed = survey_date;

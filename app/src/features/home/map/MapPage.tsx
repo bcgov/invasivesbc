@@ -1,8 +1,7 @@
-import { Box, Button, Container, Grid, Theme } from '@mui/material';
+import { Box, Button, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+// import clsx from 'clsx';   // Removed for now
 import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
-import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import MapContainer from 'components/map/MapContainer';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
@@ -93,15 +92,16 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
 
 const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
-  //TODO:  check if used
-  const [extent, setExtent] = useState(null);
   //TODO: consolidate with new context
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
-  const [showPopOut, setShowPopOut] = useState(false);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+  // Removed For now:
+  // const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
+  // const [showPopOut, setShowPopOut] = useState(false);
+  // TODO:  check if used
+  // const [extent, setExtent] = useState(null);
 
   const authContext = useContext(AuthStateContext);
   const { userInfoLoaded } = useContext(AuthStateContext);
@@ -121,6 +121,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
+  // Removed for now:
   // const handleGeoClick = async (geo: any) => {
   //   setShowPopOut(true);
   // };
