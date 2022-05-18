@@ -146,7 +146,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const MapResizer = () => {
     const mapResizer = useMap();
     setTimeout(() => {
-      mapResizer.invalidateSize();
+      try {
+        mapResizer.invalidateSize();
+      } catch (e) {
+        console.log('setTimeout error');
+      }
     }, 100);
     return null;
   };

@@ -4,10 +4,12 @@ import clsx from 'clsx';
 import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import MapContainer from 'components/map/MapContainer';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
+import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -100,6 +102,20 @@ const MapPage: React.FC<IMapProps> = (props) => {
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+
+  const authContext = useContext(AuthStateContext);
+  const { userInfoLoaded } = useContext(AuthStateContext);
+  const history = useHistory();
+
+  const isAuthorized = () => {
+    return userInfoLoaded && authContext.userRoles.length > 0;
+  };
+
+  useEffect(() => {
+    if (isAuthorized()) {
+      history.push('/home/landing');
+    }
+  }, [userInfoLoaded]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
