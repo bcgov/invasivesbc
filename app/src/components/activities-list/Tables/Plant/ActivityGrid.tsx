@@ -94,7 +94,7 @@ export const getSearchCriteriaFromFilters = (
   setName: string,
   isIAPP: boolean,
   page: number,
-  limit: number,
+  limit: number
   // gridFilters?: any
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
@@ -581,7 +581,7 @@ const ActivityGrid = (props) => {
 
   return useMemo(
     () => (
-      <Box maxHeight="100%" paddingBottom="20px">
+      <Box key={'gridbox_' + props.setName} maxHeight="100%" paddingBottom="20px">
         {!activities ? (
           <CircularProgress />
         ) : (
@@ -635,10 +635,10 @@ const ActivityGrid = (props) => {
               </Button>
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
-            <div id="xDataGrid">
+            <div id={'xDataGrid_' + props.setName}>
               <DataGrid
                 //TODO THEME MODE
-                //style={{ color: 'white', backgroundColor: 'white' }}
+                //style={{ color: 'white', backgroundColor: 'white' }o
 
                 enableVirtualization
                 headerRowHeight={filters.enabled ? 70 : undefined}
