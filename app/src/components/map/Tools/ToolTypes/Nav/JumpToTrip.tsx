@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -19,9 +19,14 @@ import EditTools from '../Data/EditTools';
 - [ ]  shapes persist - where?
 - [ ] or view existing in list
 - [ ] 
-
-
 */
+
+interface Boundary {
+  id: Number,
+  name: String,
+  geos: [],
+  server_id: Number
+}
 
 export const JumpToTrip = (props) => {
   // style
@@ -48,6 +53,7 @@ export const JumpToTrip = (props) => {
   const [IFlyToAndFadeItems, setIFlyToAndFadeItems] = useState<Array<IFlyToAndFadeItem>>([]);
   const [index, setIndex] = useState<number>(0);
   const [edit, setEdit] = useState(false);
+  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
@@ -134,18 +140,31 @@ export const JumpToTrip = (props) => {
     setIFlyToAndFadeItems([...items]);
   };
 
+  const updateBoundary = (() => {
+    const dowe = window.confirm('Create new named boundary?');
+    if (dowe) {
+      const name = prompt('Name:');
+      setEdit(true);
+
+      const tempBoundary: Boundary = {
+        id: null,
+        name: name,
+        geos: [],
+        server_id: null
+      };
+      // const temp = [...boundaries, tempBoundary];
+  
+      setBoundaries([...boundaries, tempBoundary]);
+      console.log(boundaries);
+    }
+    
+  });
+
   return (
-    <>
+    <Box>
       <ListItem disableGutters>
         <ListItemButton
-          onClick={() => {
-            /* eslint-disable */
-            const dowe = confirm('Create new named boundary?');
-            if (dowe) {
-              const name = prompt('Name:');
-              setEdit(true);
-            }
-          }}
+          onClick={updateBoundary}
           ref={divRef}
           aria-label="Jump To Location"
           style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
@@ -157,7 +176,23 @@ export const JumpToTrip = (props) => {
           </ListItemText>
         </ListItemButton>
       </ListItem>
-      <ListItem
+
+      {boundaries.map((boundary, index) => (
+        <ListItem
+          key={index}
+          onClick={() => {
+            jump();
+          }}
+          disableGutters>
+          <ListItemText>
+            <Typography className={toolClass.Font}>{boundary.name}</Typography>
+          </ListItemText>
+          <ListItemIcon>
+            <CheckIcon />
+          </ListItemIcon>
+        </ListItem>
+      ))}
+      {/* <ListItem
         onClick={() => {
           jump();
         }}
@@ -168,12 +203,12 @@ export const JumpToTrip = (props) => {
         <ListItemIcon>
           <CheckIcon />
         </ListItemIcon>
-      </ListItem>
-      <ListItem disableGutters>
+      </ListItem> */}
+      {/* <ListItem disableGutters>
         <ListItemText>
           <Typography className={toolClass.Font}>Scenic infested areas</Typography>
         </ListItemText>
-      </ListItem>
+      </ListItem> */}
       {/*
         <>
           edit?
@@ -183,7 +218,7 @@ export const JumpToTrip = (props) => {
           : <></>
         </>
       */}
-    </>
+    </Box>
   );
 };
 
