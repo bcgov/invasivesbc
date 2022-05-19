@@ -258,6 +258,47 @@ export const useDataAccess = () => {
     });
   };
 
+  /**
+   * Get all the boundary (trip currently) records
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getBoundaries = async () => {
+    if (isMobile()) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+        }
+      });
+    } else {
+      const result = localStorage.getItem("boundaries");
+      return new Promise((resolve, reject) => {
+        resolve(JSON.parse(result));
+        //no reject for now so it fails gracefully and returns a null to be handled in jumptotrip
+      });
+    }
+    
+  };
+  
+  /**
+   * Add new boundary object (triip currenntly) record
+   *
+   * @param {any} newBoundaryObj
+   * @return {*}  {Promise<any>}
+   */
+  const addBoundary = async (newBoundaryObj: any) => {
+    if (isMobile()) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newBoundaryObj }], databaseContext);
+        }
+      });
+    } else {
+      //cache in localStorage
+      localStorage.setItem("boundaries", JSON.stringify(newBoundaryObj));
+    }
+  };
+
   const getApplicationUsers = async (): Promise<any> => {
     return databaseContext.asyncQueue({
       asyncTask: async () => {
@@ -857,6 +898,8 @@ export const useDataAccess = () => {
     updateActivity,
     getTrips,
     addTrip,
+    getBoundaries,
+    addBoundary,
     getActivities,
     getActivitiesLean,
     createActivity,

@@ -46,6 +46,7 @@ export const JumpToTrip = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
     getTripGeosAndInitialPosition();
+    getBoundaries();
   }, []);
 
   // What the button cycles through.
@@ -76,6 +77,13 @@ export const JumpToTrip = (props) => {
       flyToContext.go([IFlyToAndFadeItems[index]]);
     }
   }, [index]);
+
+  const getBoundaries = async () => {
+    const results = await dataAccess.getBoundaries();
+    if (results) {
+      setBoundaries([results]);
+    }
+  };
 
   // can be replaced with a menu (later):
   const getTripGeosAndInitialPosition = async () => {
