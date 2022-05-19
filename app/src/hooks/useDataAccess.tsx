@@ -295,7 +295,12 @@ export const useDataAccess = () => {
       });
     } else {
       //cache in localStorage
-      localStorage.setItem("boundaries", JSON.stringify(newBoundaryObj));
+      const boundaries = [];
+      const currBoundaries = await getBoundaries();
+      if (currBoundaries) boundaries.push(...currBoundaries);
+      boundaries.push(newBoundaryObj);
+
+      localStorage.setItem("boundaries", JSON.stringify(boundaries));
     }
   };
 

@@ -160,12 +160,10 @@ export const JumpToTrip = (props) => {
         geos: [],
         server_id: null
       };
-      // const temp = [...boundaries, tempBoundary];
-  
+
+      dataAccess.addBoundary(tempBoundary);
       setBoundaries([...boundaries, tempBoundary]);
-      console.log(boundaries);
     }
-    
   });
 
   return (
