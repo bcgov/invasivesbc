@@ -88,7 +88,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const redirectToAgreement = (e) => {
     e.preventDefault();
     history.push('/home/data-sharing-agreement');
-  }
+  };
 
   useEffect(() => {
     hasRequestedAccess();
@@ -253,23 +253,9 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Box>
           <Box mt={4}>
             By using this application, you agree to&nbsp;
-            <a href="" onClick={redirectToAgreement}>the Data Sharing Agreement</a>
-          </Box>
-          <Box mt={10}>
-            <u>
-              <strong>LINK TO METABASE: </strong>
-            </u>
-          </Box>
-          <Box mt={4}>
-            <ul>
-              <li>
-                InvasivesBC is linked to a reporting tool called metabase that can be accessed&nbsp;
-                <a href={METABASE_URL} target="_blank" rel="noreferrer">
-                  here
-                </a>
-                .
-              </li>
-            </ul>
+            <a href="" onClick={redirectToAgreement}>
+              the Data Sharing Agreement
+            </a>
           </Box>
           <Box mt={8}>
             <u>
