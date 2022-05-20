@@ -356,7 +356,7 @@ async function getRolesForUser(req, res, next, userId) {
     connection.release();
   }
 }
-  
+
 async function getRolesForSelf(req, res, next) {
   defaultLog.debug({ label: '{userId}', message: 'getRolesForSelf', body: req.query });
   const connection = await getDBConnection();
