@@ -51,7 +51,7 @@ export const point_of_interest_iapp_default_headers = [
   {
     key: 'monitored',
     name: 'Monitored'
-  },
+  }
 ];
 
 export const mapPOI_IAPP_ToDataGridRows = (activities) => {
@@ -68,10 +68,10 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let species = new Set();
 
     // releases and dispersals
-    const bioRelease = record?.point_of_interest_payload?.form_data?.biological_treatments?.length ? "Yes" : "No";
-    const chemTreatment = record?.point_of_interest_payload?.form_data?.chemical_treatments?.length ? "Yes" : "No";
-    const mechTreatment = record?.point_of_interest_payload?.form_data?.mechanical_treatments?.length ? "Yes" : "No";
-    const bioDispersal = record?.point_of_interest_payload?.form_data?.biological_dispersals?.length ? "Yes" : "No";
+    const bioRelease = record?.point_of_interest_payload?.form_data?.biological_treatments?.length ? 'Yes' : 'No';
+    const chemTreatment = record?.point_of_interest_payload?.form_data?.chemical_treatments?.length ? 'Yes' : 'No';
+    const mechTreatment = record?.point_of_interest_payload?.form_data?.mechanical_treatments?.length ? 'Yes' : 'No';
+    const bioDispersal = record?.point_of_interest_payload?.form_data?.biological_dispersals?.length ? 'Yes' : 'No';
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {

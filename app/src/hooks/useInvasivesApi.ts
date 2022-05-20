@@ -201,11 +201,14 @@ export const useInvasivesApi = () => {
    * @param {string[]} activityIds
    * @return {*}  {Promise<any>}
    */
-  const deleteActivities = async (activityIds: string[]): Promise<any> => {
+  const deleteActivities = async (activityIds: string[], createdBy?: string[]): Promise<any> => {
     const options = await getRequestOptions();
     const { data } = await Http.request({
       method: 'DELETE',
-      url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
+      url:
+        options.baseUrl +
+        `/api/activities?` +
+        qs.stringify({ id: activityIds, createdBy: createdBy ? createdBy : null }),
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);

@@ -17,27 +17,24 @@ export interface IFormControlsComponentProps {
   canBeSubmittedWithoutErrors?: () => boolean;
 }
 
-const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
+const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any) => {
   const dataAccess = useInvasivesApi();
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
 
-  const deleteRecord = (activityID) => {
+  const deleteRecord = () => {
     history.push('/home/activities');
-    dataAccess.deleteActivities([activityID]);
+    dataAccess.deleteActivities([props?.activity?.activityId], [props?.activity?.createdBy]);
   };
 
   const DeleteDialog = () => {
     return (
       <Dialog open={open}>
-        <DialogTitle>Are you sure you want to delete this Record?</DialogTitle>
+        <DialogTitle>Are you sure you want to delete this {props.activity.formStatus} Record?</DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            aria-label="Delete Record"
-            onClick={() => deleteRecord((props as any)?.activity?.activityId)}>
+          <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
             Yes
           </Button>
         </DialogActions>
@@ -77,7 +74,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={props.isAlreadySubmitted()}
+                  // disabled={props.isAlreadySubmitted()}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
