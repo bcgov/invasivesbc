@@ -4,7 +4,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { CircularProgress } from '@mui/material';
 import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';

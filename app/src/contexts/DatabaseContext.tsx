@@ -4,8 +4,10 @@ import { DocType } from 'constants/database';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
-import {useSelector} from "../state/utilities/use_selector";
-import {selectConfiguration} from "../state/reducers/configuration";
+import { useSelector } from "../state/utilities/use_selector";
+import { selectConfiguration } from "../state/reducers/configuration";
+import { WebOnly } from "../components/common/WebOnly";
+import { MobileOnly } from "../components/common/MobileOnly";
 // Singleton SQLite Hook
 export let sqlite: any;
 // Existing Connections Store
@@ -51,6 +53,7 @@ export const DatabaseContextProvider = (props) => {
     }
   };
   const { MOBILE } = useSelector(selectConfiguration);
+
   const {
     echo,
     getPlatform,
@@ -97,7 +100,7 @@ export const DatabaseContextProvider = (props) => {
     };
     isJsonListeners = { jsonListeners: jsonListeners, setJsonListeners: setJsonListeners };
     // open connnection, make tables, set db in context
-    if (MOBILE) createSqliteTables(sqlite);
+    if (MOBILE) createSqliteTables();
     // a bunch of one time stuff
   }, []);
 
@@ -128,7 +131,7 @@ export const DatabaseContextProvider = (props) => {
   //   saveUserInfo();
   // }, [keycloak?.obj, keycloak?.userInfo, processRequest, databaseIsSetup]);
 
-  const createSqliteTables = async (sqliteDB) => {
+  const createSqliteTables = async () => {
     // initialize the connection
     let db = await getConnection();
     await db.open();
@@ -145,78 +148,118 @@ export const DatabaseContextProvider = (props) => {
         case 'CODE_TABLE':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT
-            );`;
+                       (
+                         id
+                         TEXT
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT
+                       );`;
           break;
         case 'SMALL_GRID_LAYER_DATA':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id INTEGER,
-              featureArea TEXT,
-              featuresInArea TEXT,
-              largeGridID INTEGER,
-              layerName TEXT
-            );create unique index IF NOT EXISTS idx_smallGrid_id_layerName on SMALL_GRID_LAYER_DATA (id, layerName);\n`;
+                       (
+                         id
+                         INTEGER,
+                         featureArea
+                         TEXT,
+                         featuresInArea
+                         TEXT,
+                         largeGridID
+                         INTEGER,
+                         layerName
+                         TEXT
+                       );
+          create unique index IF NOT EXISTS idx_smallGrid_id_layerName on SMALL_GRID_LAYER_DATA (id, layerName);  `;
           break;
         case 'LARGE_GRID_LAYER_DATA':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id INTEGER UNIQUE,
-              featureArea TEXT
-            );`;
+                       (
+                         id
+                         INTEGER
+                         UNIQUE,
+                         featureArea
+                         TEXT
+                       );`;
           break;
         case 'TRIP':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id INTEGER PRIMARY KEY,
-              json TEXT,
-              isCurrent INTEGER
-            );\n`;
+                       (
+                         id
+                         INTEGER
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT,
+                         isCurrent
+                         INTEGER
+                       );  `;
           break;
         case 'REFERENCE_ACTIVITY':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT,
-              activity_subtype TEXT
-            );\n`;
+                       (
+                         id
+                         TEXT
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT,
+                         activity_subtype
+                         TEXT
+                       );  `;
           break;
         case 'ACTIVITY':
           setupSQL += `create table if not exists
             ${DocType[value]}
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT,
-              activity_subtype TEXT,
-              sync_status TEXT
-            );\n`;
+                       (
+                         id
+                         TEXT
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT,
+                         activity_subtype
+                         TEXT,
+                         sync_status
+                         TEXT
+                       );  `;
           break;
         case 'REFERENCE_POINT_OF_INTEREST':
           setupSQL += `create table if not exists ${DocType[value]}
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT
-            );\n`;
+                       (
+                         id
+                         TEXT
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT
+                       );  `;
           break;
         case 'LAYER_STYLES':
           setupSQL += `create table if not exists ${DocType[value]}
-             (
-              layerName TEXT UNIQUE,
-              json TEXT
-            );\n`;
+                       (
+                         layerName
+                         TEXT
+                         UNIQUE,
+                         json
+                         TEXT
+                       );  `;
           break;
         default:
           setupSQL += `create table if not exists ${DocType[value]}
-             (
-              id INTEGER PRIMARY KEY,
-              json TEXT
-            );\n`;
+                       (
+                         id
+                         INTEGER
+                         PRIMARY
+                         KEY,
+                         json
+                         TEXT
+                       );  `;
       }
     }
 
@@ -225,11 +268,7 @@ export const DatabaseContextProvider = (props) => {
     setDatabaseIsSetup(true);
     console.log('database is setup...');
 
-    if (!ret.changes) {
-      return false;
-    } else {
-      return true;
-    }
+    return ret.changes;
   };
 
   // some usestate stuff copied in the big copy paste from capacitor-community/sqlite react template:  will remove when i know i can
@@ -240,27 +279,18 @@ export const DatabaseContextProvider = (props) => {
   // these are for example of how to notify progress of json import or export, tbd if we will use
   const [jsonListeners, setJsonListeners] = useState(false);
 
-  try {
-    //if web just be a null context and return children
-    if (!MOBILE) {
-      return (
-        <>
-          {databaseIsSetup && sqlite ? (
-            <DatabaseContext.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
-              {props.children}
-            </DatabaseContext.Provider>
-          ) : (
-            <></>
-          )}
-        </>
-      );
-    }
-
-    return <>{props.children}</>;
-  } catch (e) {
-    alert('provider crashed');
-  }
-  return null;
+  return (
+    <>
+      <MobileOnly>
+        {databaseIsSetup && sqlite && (
+          <DatabaseContext.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
+            {props.children}
+          </DatabaseContext.Provider>
+        )}
+      </MobileOnly>
+      <WebOnly>{props.children}</WebOnly>
+    </>
+  );
 };
 
 export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
@@ -278,6 +308,7 @@ export enum UpsertType {
   MOBILE_ACTIVITY_PATCH = 'patch mobile activity',
   RAW_SQL = 'raw sql'
 }
+
 export interface IUpsert {
   type?: UpsertType; // placeholder - might use to dictate what db
   ID?: string;
@@ -290,8 +321,9 @@ export interface IUpsert {
   trip_ID?: number; //todo - give a trip number for handling cache management
 }
 
-const getConnection = async (databaseName?: string) => {
+const getConnection = async () => {
   const dbname = 'localInvasivesBC';
+
   let oldConnection;
   let newConnection;
 
@@ -349,86 +381,83 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   batchUpdate = '';
   const everythingElse = upsertConfigs.filter((e) => e.type !== UpsertType.DOC_TYPE_AND_ID);
   for (const upsertConfig of everythingElse) {
-    if (MOBILE) {
-      // initialize the connection
-      // ret = db.execute(`select load_extension('json1');`); // not yet working
 
-      switch (upsertConfig.type) {
-        // full override update/upsert - json is replaced with new json
-        /*   case UpsertType.DOC_TYPE_AND_ID:
-          //the linter formatted this not me
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (id,json) values ('` +
-            upsertConfig.ID +
-            `','` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json=excluded.json;\n`;
-          break;
-          */
-        // json patch upsert:
-        case UpsertType.MOBILE_ACTIVITY_CREATE:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (id, json, activity_subtype, sync_status) values ('` +
-            upsertConfig.ID +
-            `','` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            `','` +
-            upsertConfig.activity_subtype +
-            `','` +
-            upsertConfig.sync_status +
-            `');\n`;
-          break;
-        case UpsertType.MOBILE_ACTIVITY_PATCH:
-          let sql =
-            `update ` +
-            upsertConfig.docType +
-            ` set sync_status='${upsertConfig.sync_status}', json='${JSON.stringify(upsertConfig.json)
-              .split(`'`)
-              .join(`''`)}` +
-            `' where id='${upsertConfig.ID}';\n`;
-          console.log('SQL: ', sql);
-          batchUpdate += sql;
-          break;
-        case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
-          break;
-        case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (id,json) values ('` +
-            upsertConfig.ID +
-            `','` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
-          break;
-        // no ID present therefore these are inserts
-        case UpsertType.DOC_TYPE_AND_ID_DELETE:
-          batchUpdate += `delete from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID;
-          break;
-        case UpsertType.DOC_TYPE:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (json) values ('` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            `')\n;`;
-          break;
-        // raw sql.
-        case UpsertType.RAW_SQL:
-          batchUpdate += upsertConfig.sql;
-          break;
-        default:
-          alert(
-            'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
-              JSON.stringify(upsertConfig)
-          );
-      }
+    switch (upsertConfig.type) {
+      // full override update/upsert - json is replaced with new json
+      /*   case UpsertType.DOC_TYPE_AND_ID:
+        //the linter formatted this not me
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (id,json) values ('` +
+          upsertConfig.ID +
+          `','` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          //JSON.stringify(upsertConfig.json) +
+          `') on conflict(id) do update set json=excluded.json;\n`;
+        break;
+        */
+      // json patch upsert:
+      case UpsertType.MOBILE_ACTIVITY_CREATE:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (id, json, activity_subtype, sync_status) values ('` +
+          upsertConfig.ID +
+          `','` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          `','` +
+          upsertConfig.activity_subtype +
+          `','` +
+          upsertConfig.sync_status +
+          `');\n`;
+        break;
+      case UpsertType.MOBILE_ACTIVITY_PATCH:
+        let sql =
+          `update ` +
+          upsertConfig.docType +
+          ` set sync_status='${upsertConfig.sync_status}', json='${JSON.stringify(upsertConfig.json)
+            .split(`'`)
+            .join(`''`)}` +
+          `' where id='${upsertConfig.ID}';\n`;
+        console.log('SQL: ', sql);
+        batchUpdate += sql;
+        break;
+      case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
+        break;
+      case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (id,json) values ('` +
+          upsertConfig.ID +
+          `','` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          //JSON.stringify(upsertConfig.json) +
+          `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
+        break;
+      // no ID present therefore these are inserts
+      case UpsertType.DOC_TYPE_AND_ID_DELETE:
+        batchUpdate += `delete
+                        from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID;
+        break;
+      case UpsertType.DOC_TYPE:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (json) values ('` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          `')\n;`;
+        break;
+      // raw sql.
+      case UpsertType.RAW_SQL:
+        batchUpdate += upsertConfig.sql;
+        break;
+      default:
+        alert(
+          'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
+          JSON.stringify(upsertConfig)
+        );
     }
   }
   ret = await handleExecute(batchUpdate, db);
@@ -548,7 +577,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
       }
     }
 
-    //finally update them all:
+    //finally, update them all:
     if (batchUpdate !== '') {
       ret = db.execute(batchUpdate);
     }
@@ -580,63 +609,56 @@ const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) => {
 };
 
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
-  try {
-    if (!databaseContext.sqliteDB) {
-      return;
-    }
-  } catch (e) {
-    alert('crashing checking if db in context');
-    alert(JSON.stringify(e));
+
+  if (!databaseContext.sqliteDB) {
+    return;
   }
-  //alert(JSON.stringify(databaseContext));
 
-  if (MOBILE) {
-    let ret;
-    let db = await getConnection();
+  let ret;
+  let db = await getConnection();
 
-    switch (queryConfig.type) {
-      case QueryType.DOC_TYPE_AND_ID:
-        if (
-          [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
-            queryConfig.docType
-          )
-        ) {
-          //if ID is string
-          ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
-        } else {
-          //if ID is number
-          ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
-        }
+  switch (queryConfig.type) {
+    case QueryType.DOC_TYPE_AND_ID:
+      if (
+        [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+          queryConfig.docType
+        )
+      ) {
+        //if ID is string
+        ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
+      } else {
+        //if ID is number
+        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+      }
 
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.DOC_TYPE:
-        ret = await db.query(
-          'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
-        );
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.RAW_SQL:
-        ret = await db.query(queryConfig.sql);
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
-        return getByDocTypeAndBoudingPoly(queryConfig, db);
-      default:
-        alert(
-          'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
-            JSON.stringify(queryConfig)
-        );
-        return;
-    }
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.DOC_TYPE:
+      ret = await db.query(
+        'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
+      );
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.RAW_SQL:
+      ret = await db.query(queryConfig.sql);
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
+      return getByDocTypeAndBoudingPoly(queryConfig, db);
+    default:
+      alert(
+        'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
+        JSON.stringify(queryConfig)
+      );
+      return;
   }
 };

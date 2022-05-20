@@ -1,4 +1,3 @@
-import {Capacitor} from '@capacitor/core';
 import {IonAlert} from '@ionic/react';
 import {
   AppBar,
@@ -9,7 +8,6 @@ import {
   Drawer,
   FormControlLabel,
   Grid,
-  Hidden,
   IconButton,
   List,
   Container,
@@ -23,7 +21,6 @@ import {
   Tabs,
   Theme,
   Toolbar,
-  Typography,
   Box
 } from '@mui/material';
 import {makeStyles} from '@mui/styles';
@@ -50,6 +47,7 @@ import {useSelector} from "../../state/utilities/use_selector";
 import {selectAuth} from "../../state/reducers/auth";
 import {selectUserInfo} from "../../state/reducers/userInfo";
 import {selectConfiguration} from "../../state/reducers/configuration";
+import {MobileOnly} from "../common/MobileOnly";
 
 const drawerWidth = 240;
 
@@ -144,10 +142,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [showAlert, setShowAlert] = useState(false);
   const dispatch = useDispatch();
 
-  const {displayName, roles, authenticated} = useSelector(selectAuth);
+  const { displayName, roles, authenticated } = useSelector(selectAuth);
 
-  const {loaded: userInfoLoaded, activated} = useSelector(selectUserInfo);
-  const {MOBILE, FEATURE_GATE} = useSelector(selectConfiguration);
+  const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+  const { FEATURE_GATE } = useSelector(selectConfiguration);
 
   const [showLoggedInTabs, setShowLoggedInTabs] = useState(userInfoLoaded && activated);
   useEffect(() => {
@@ -174,12 +172,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const logoutUser = async () => {
     history.push('/home/landing');
-    dispatch({type: 'AUTH_SIGNOUT_REQUEST'});
+    dispatch({ type: 'AUTH_SIGNOUT_REQUEST' });
     handleClose();
   };
 
   const loginUser = async () => {
-    dispatch({type: AUTH_SIGNIN_REQUEST});
+    dispatch({ type: AUTH_SIGNIN_REQUEST });
     handleClose();
   };
 
@@ -247,9 +245,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
   const themeContext = useContext(ThemeContext);
-  const {themeType, setThemeType} = themeContext;
+  const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);
-  const {connected, setConnected} = networkContext;
+  const { connected, setConnected } = networkContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
@@ -266,14 +264,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         tabsUserHasAccessTo.push({
           label: 'Home',
           path: '/home/landing',
-          icon: <Home fontSize={'small'}/>
+          icon: <Home fontSize={'small'} />
         });
 
         if (!showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Map',
             path: '/home/map',
-            icon: <Map fontSize={'small'}/>
+            icon: <Map fontSize={'small'} />
           });
         }
 
@@ -281,7 +279,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Recorded Activities',
             path: '/home/activities',
-            icon: <HomeWork fontSize={'small'}/>
+            icon: <HomeWork fontSize={'small'} />
           });
         }
 
@@ -289,7 +287,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
-            icon: <Explore fontSize={'small'}/>
+            icon: <Explore fontSize={'small'} />
           });
         }
 
@@ -297,7 +295,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
-            icon: <Assignment fontSize={'small'}/>
+            icon: <Assignment fontSize={'small'} />
           });
         }
 
@@ -308,7 +306,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: (
               <img
                 src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
-                style={{maxWidth: '3.8rem', marginBottom: '6px'}}
+                style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
               />
             )
           });
@@ -318,7 +316,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Admin',
             path: '/admin/useraccess',
-            icon: <AdminPanelSettingsIcon fontSize={'small'}/>
+            icon: <AdminPanelSettingsIcon fontSize={'small'} />
           });
         }
 
@@ -326,7 +324,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Reports',
             path: '/home/reports',
-            icon: <AssessmentIcon fontSize={'small'}/>
+            icon: <AssessmentIcon fontSize={'small'} />
           });
         }
         return tabsUserHasAccessTo;
@@ -336,7 +334,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }, []);
 
   if (!tabConfig || !tabConfig.length) {
-    return <CircularProgress/>;
+    return <CircularProgress />;
   }
 
   return (
@@ -365,26 +363,30 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         ]}
       />
 
-      <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters style={{display: 'flex'}}>
-            <Hidden mdUp>
+      <AppBar
+        className={open ? classes.appBarShift : classes.appBar}
+        position='static'>
+        <Container maxWidth='xl'>
+          <Toolbar
+            disableGutters
+            style={{ display: 'flex' }}>
+            <Box sx={{ display: { md: 'none', xs: 'block' } }}>
               <IconButton
-                color="inherit"
-                aria-label="open drawer"
+                color='inherit'
+                aria-label='open drawer'
                 onClick={handleDrawerOpen}
-                edge="start"
+                edge='start'
                 className={clsx(classes.menuButton, {
                   [classes.hide]: open
                 })}>
-                <MenuIcon/>
+                <MenuIcon />
               </IconButton>
-            </Hidden>
+            </Box>
             <Box
               sx={{
                 flexGrow: 1,
                 display: 'flex',
-                flexDirection: {xs: 'column', md: 'row'},
+                flexDirection: { xs: 'column', md: 'row' },
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
@@ -398,109 +400,109 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   padding: 4,
                   borderRadius: 4
                 }}
-                height="60"
-                width="60"
-                alt="B.C. Government Logo"
+                height='60'
+                width='60'
+                alt='B.C. Government Logo'
                 onClick={() => history.push('/')}
               />
               <b>InvasivesBC</b>
             </Box>
-            <Hidden mdDown>
-              <Box sx={{flexGrow: 1, width: '100%', display: {xs: 'none', md: 'flex'}, justifyContent: 'center'}}>
-                <Tabs
-                  indicatorColor="secondary"
-                  textColor="inherit"
-                  value={activeTab}
-                  color="primary"
-                  centered
-                  style={{width: '80%', color: '#fff'}}
-                  onChange={handleChange}>
-                  {tabConfig.map((tab) => (
-                    <Tab
-                      style={{fontSize: '.7rem', fontWeight: 'bold'}}
-                      color="primary"
-                      label={tab.label}
-                      key={tab.label.split(' ').join('_')}
-                      icon={tab.icon}
-                      onClick={() => history.push(tab.path)}
-                    />
-                  ))}
-                </Tabs>
-              </Box>
-              <Box sx={{flexGrow: 0}}>
-                <IconButton onClick={handleClick} size="small">
-                  <Avatar></Avatar>
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleClose}
-                  PaperProps={{
-                    elevation: 3
-                  }}
-                  transformOrigin={{horizontal: 'right', vertical: 'top'}}>
-                  {MOBILE && (
-                    <MenuItem>
-                      <Switch
-                        color="secondary"
-                        checked={connected}
-                        checkedIcon={connected ? <Brightness2Icon/> : <WbSunnyIcon/>}
-                        onChange={() => {
-                          setConnected(!connected);
-                        }}
-                      />
-                      Network Online
-                    </MenuItem>
-                  )}
+            <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              <Tabs
+                indicatorColor='secondary'
+                textColor='inherit'
+                value={activeTab}
+                color='primary'
+                centered
+                style={{ width: '80%', color: '#fff' }}
+                onChange={handleChange}>
+                {tabConfig.map((tab) => (
+                  <Tab
+                    style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                    color='primary'
+                    label={tab.label}
+                    key={tab.label.split(' ').join('_')}
+                    icon={tab.icon}
+                    onClick={() => history.push(tab.path)}
+                  />
+                ))}
+              </Tabs>
+            </Box>
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton
+                onClick={handleClick}
+                size='small'>
+                <Avatar></Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 3
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                <MobileOnly>
                   <MenuItem>
                     <Switch
-                      color="secondary"
-                      checked={themeType}
-                      checkedIcon={themeType ? <Brightness2Icon/> : <WbSunnyIcon/>}
+                      color='secondary'
+                      checked={connected}
+                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
                       onChange={() => {
-                        setThemeType(!themeType);
+                        setConnected(!connected);
                       }}
                     />
-                    Theme
+                    Network Online
                   </MenuItem>
-                  {showLoggedInTabs && (
-                    <MenuItem onClick={navToUpdateRequest}>
-                      <ListItemIcon>
-                        <AssignmentIndIcon/>
-                      </ListItemIcon>
-                      Update My Info
-                    </MenuItem>
-                  )}
-                  {isAdmin && (
-                    <MenuItem onClick={navToAdmin}>
-                      <ListItemIcon>
-                        <AdminPanelSettingsIcon/>
-                      </ListItemIcon>
-                      Admin
-                    </MenuItem>
-                  )}
-                  {authenticated ? (
-                    <MenuItem onClick={logoutUser}>
-                      <ListItemIcon>
-                        <LogoutIcon/>
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  ) : (
-                    <MenuItem onClick={loginUser}>
-                      <ListItemIcon>
-                        <LoginIcon/>
-                      </ListItemIcon>
-                      Log In
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Box>
-            </Hidden>
+                </MobileOnly>
+                <MenuItem>
+                  <Switch
+                    color='secondary'
+                    checked={themeType}
+                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      setThemeType(!themeType);
+                    }}
+                  />
+                  Theme
+                </MenuItem>
+                {showLoggedInTabs && (
+                  <MenuItem onClick={navToUpdateRequest}>
+                    <ListItemIcon>
+                      <AssignmentIndIcon />
+                    </ListItemIcon>
+                    Update My Info
+                  </MenuItem>
+                )}
+                {isAdmin && (
+                  <MenuItem onClick={navToAdmin}>
+                    <ListItemIcon>
+                      <AdminPanelSettingsIcon />
+                    </ListItemIcon>
+                    Admin
+                  </MenuItem>
+                )}
+                {authenticated ? (
+                  <MenuItem onClick={logoutUser}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={loginUser}>
+                    <ListItemIcon>
+                      <LoginIcon />
+                    </ListItemIcon>
+                    Log In
+                  </MenuItem>
+                )}
+              </Menu>
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
-      <Hidden mdUp>
+      <Box sx={{ display: { md: 'none', xs: 'block' } }}>
         <Drawer
           className={clsx(classes.drawer, {
             [classes.drawerOpen]: open,
@@ -512,19 +514,26 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               [classes.drawerClose]: !open
             })
           }}
-          variant="permanent">
+          variant='permanent'>
           <div className={classes.toolbar}>
-            <Grid xs={1} container justifyContent="center" alignItems="center" item>
-              <IconButton onClick={handleClick} size="small">
+            <Grid
+              xs={1}
+              container
+              justifyContent='center'
+              alignItems='center'
+              item>
+              <IconButton
+                onClick={handleClick}
+                size='small'>
                 <>
                   {authenticated ? (<Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar>) : (
-                    <Avatar/>
+                    <Avatar />
                   )}
                 </>
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon/>
+              <ChevronLeftIcon />
             </IconButton>
           </div>
           {networkContext.connected ? (
@@ -532,68 +541,76 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               {authenticated ? (
                 <MenuItem onClick={showLogoutAlert}>
                   <ListItemIcon>
-                    <LogoutIcon/>
+                    <LogoutIcon />
                   </ListItemIcon>
                   Logout
                 </MenuItem>
               ) : (
                 <MenuItem onClick={loginUser}>
                   <ListItemIcon>
-                    <LoginIcon/>
+                    <LoginIcon />
                   </ListItemIcon>
                   Log In
                 </MenuItem>
               )}
             </div>
           ) : (
-            <Chip className={classes.chip} color="primary" label="Offline Mode"/>
+            <Chip
+              className={classes.chip}
+              color='primary'
+              label='Offline Mode' />
           )}
-          <Divider/>
+          <Divider />
           <List>
             {tabConfig.map((tab) => (
-              <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
+              <ListItem
+                button
+                onClick={() => history.push(tab.path)}
+                key={tab.label.split(' ').join('_')}>
                 <ListItemIcon>{tab.icon}</ListItemIcon>
-                <ListItemText primary={tab.label}/>
+                <ListItemText primary={tab.label} />
               </ListItem>
             ))}
           </List>
-          <Divider/>
-          <Grid container justifyContent="center" alignItems="center">
+          <Divider />
+          <Grid
+            container
+            justifyContent='center'
+            alignItems='center'>
             <FormControlLabel
               control={
                 <Switch
                   checked={themeType}
-                  checkedIcon={themeType ? <Brightness2Icon/> : <WbSunnyIcon/>}
+                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
                   onChange={() => {
                     setThemeType(!themeType);
                   }}
                 />
               }
-              label="Theme Mode"
+              label='Theme Mode'
             />
           </Grid>
-          {MOBILE ? (
-            <Grid container justifyContent="center" alignItems="center">
+          <MobileOnly>
+            <Grid
+              container
+              justifyContent='center'
+              alignItems='center'>
               <FormControlLabel
                 control={
                   <Switch
                     checked={connected}
-                    checkedIcon={connected ? <Brightness2Icon/> : <WbSunnyIcon/>}
+                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      console.log('on click');
-                      console.dir(connected);
                       setConnected(!connected);
                     }}
                   />
                 }
-                label="Network Mode"
+                label='Network Mode'
               />
             </Grid>
-          ) : (
-            <></>
-          )}
+          </MobileOnly>
         </Drawer>
-      </Hidden>
+      </Box>
     </>
   );
 };

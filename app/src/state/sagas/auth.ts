@@ -66,7 +66,7 @@ function* refreshRoles() {
       method: 'GET',
       url: configuration.API_BASE + `/api/user-access`,
       headers: {
-        'Authorization': authHeaders.authorization,
+        Authorization: authHeaders.authorization,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       }

@@ -1,8 +1,8 @@
 import { ActivityStatus } from 'constants/activities';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useState, useEffect, useContext } from 'react';
-import {useSelector} from "../state/utilities/use_selector";
-import {selectAuth} from "../state/reducers/auth";
+import { useSelector } from "../state/utilities/use_selector";
+import { selectAuth } from "../state/reducers/auth";
 
 // Where state is managed for all the sets of records, updates localstorage as it happens.
 // Everything that uses this context needs a memo that adequately checks dependencies, and none of them

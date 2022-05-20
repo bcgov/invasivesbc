@@ -65,7 +65,7 @@ export const JumpToTrip = (props) => {
     let tripObjects;
     //mobile only
     if (MOBILE) {
-      const queryResults = await dataAccess.getTrips(databaseContext);
+      const queryResults = await dataAccess.getTrips();
       if (!queryResults.length) {
         return;
       }

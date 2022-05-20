@@ -10,9 +10,9 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { ActivitySyncStatus, ActivityType } from 'constants/activities';
-import { DocType } from 'constants/database';
-import React, { useContext, useEffect, useState } from 'react';
+import {ActivitySyncStatus, ActivityType} from 'constants/activities';
+import {DocType} from 'constants/database';
+import React, {useContext, useEffect, useState} from 'react';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
 import {
   MyAnimalActivitiesTable,
@@ -27,14 +27,15 @@ import {
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import Sync from '@mui/icons-material/Sync';
-import { IonAlert } from '@ionic/react';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import {IonAlert} from '@ionic/react';
+import {useDataAccess} from 'hooks/useDataAccess';
+import {NetworkContext} from 'contexts/NetworkContext';
+import {useInvasivesApi} from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
-import { PointsOfInterestTable } from 'components/common/IAPPRecordTables';
-import { useSelector } from '../../state/utilities/use_selector';
-import { selectConfiguration } from '../../state/reducers/configuration';
+import {PointsOfInterestTable} from 'components/common/IAPPRecordTables';
+import {useSelector} from '../../state/utilities/use_selector';
+import {selectConfiguration} from '../../state/reducers/configuration';
+import {MobileOnly} from "../common/MobileOnly";
 
 const useStyles = makeStyles((theme: any) => ({
   newActivityButtonsRow: {
@@ -124,7 +125,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
-      <Divider flexItem={true} orientation="vertical" />
+      <Divider flexItem={true} orientation="vertical"/>
       <Grid item md={2}>
         <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activitySubtype.split('_')[2]}>
           <Typography className={classes.activitiyListItem_Typography}>Subtype</Typography>
@@ -133,7 +134,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       </Grid>
       {species && (
         <>
-          <Divider flexItem={true} orientation="vertical" />
+          <Divider flexItem={true} orientation="vertical"/>
           <Grid item md={2}>
             <Box overflow="hidden" textOverflow="ellipsis" title={species}>
               <Typography className={classes.activitiyListItem_Typography}>Species</Typography>
@@ -142,20 +143,20 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
           </Grid>
         </>
       )}
-      <Divider flexItem={true} orientation="vertical" />
+      <Divider flexItem={true} orientation="vertical"/>
       <Grid item md={1}>
         <Typography variant="h6" className={classes.activitiyListItem_Typography}>
           Form Status
         </Typography>
         {props.activity.formStatus}
       </Grid>
-      <Divider flexItem={true} orientation="vertical" />
+      <Divider flexItem={true} orientation="vertical"/>
       <Grid item md={species ? 1 : 2}>
         <Typography className={classes.activitiyListItem_Typography}>Save Status</Typography>
         {props.activity.sync.status}
       </Grid>
-      <ActivityListDate classes={classes} activity={props.activity} />
-      <Divider flexItem={true} orientation="vertical" />
+      <ActivityListDate classes={classes} activity={props.activity}/>
+      <Divider flexItem={true} orientation="vertical"/>
       <Grid item md={species ? 1 : 2}>
         <Typography className={classes.activitiyListItem_Typography}>Reviewed</Typography>
         <Checkbox
@@ -182,8 +183,6 @@ const ActivitiesList: React.FC<IActivityList> = () => {
 
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
   const [showAlert, setShowAlert] = useState(false);
-  const networkContext = useContext(NetworkContext);
-  const { MOBILE } = useSelector(selectConfiguration);
 
   const syncCachedActivities = async () => {
     try {
@@ -213,7 +212,8 @@ const ActivitiesList: React.FC<IActivityList> = () => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {}
+            handler: () => {
+            }
           },
           {
             text: 'Okay',
@@ -237,52 +237,52 @@ const ActivitiesList: React.FC<IActivityList> = () => {
               <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
-          {MOBILE && networkContext.connected && (
-            <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
+          <MobileOnly networkRequirement={'connected'}>
+            <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync/>}>
               Sync Cached Records
             </Button>
-          )}
+          </MobileOnly>
         </Box>
         <Box>
           {workflowFunction === 'Plant' && (
             <Box>
-              <MyObservationsTable />
-              <MyPlantTreatmentsTable />
-              <MyBiocontrolTable />
-              <MyPlantMonitoringTable />
+              <MyObservationsTable/>
+              <MyPlantTreatmentsTable/>
+              <MyBiocontrolTable/>
+              <MyPlantMonitoringTable/>
               {/* <MyTransectsTable /> TODO: Re-enable when transects back online */}
             </Box>
           )}
           {workflowFunction === 'Animal' && (
             <Box>
-              <MyAnimalActivitiesTable />
-              <MyAnimalTreatmentsTable />
-              <MyAnimalMonitoringTable />
+              <MyAnimalActivitiesTable/>
+              <MyAnimalTreatmentsTable/>
+              <MyAnimalMonitoringTable/>
             </Box>
           )}
           {workflowFunction === 'Review' && (
             <Box>
-              <ReviewActivitiesTable />
+              <ReviewActivitiesTable/>
             </Box>
           )}
           {workflowFunction === 'FREP' && (
             <Box>
-              <MyFREPTable />
+              <MyFREPTable/>
             </Box>
           )}
           {workflowFunction === 'Past Activities' && (
             <Box>
-              <MyPastActivitiesTable />
+              <MyPastActivitiesTable/>
             </Box>
           )}
           {workflowFunction === 'Batch Upload' && (
             <Box>
-              <BatchUpload />
+              <BatchUpload/>
             </Box>
           )}
           {workflowFunction === 'IAPP Data' && (
             <Box>
-              <PointsOfInterestTable />
+              <PointsOfInterestTable/>
             </Box>
           )}
         </Box>

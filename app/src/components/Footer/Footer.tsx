@@ -36,7 +36,7 @@ const Footer: React.FC<IFooterProps> = () => {
   }, [networkContext]);
 
   return (
-    <AppBar position="static">
+    <AppBar position='static'>
       <Toolbar
         style={{
           position: 'relative',
@@ -46,14 +46,14 @@ const Footer: React.FC<IFooterProps> = () => {
           justifyContent: 'flex-start'
         }}>
         <img
-          alt="bcLogo"
+          alt='bcLogo'
           src={sunriseLogo}
-          width="60px"
+          width='60px'
           style={{ objectFit: 'cover', cursor: 'pointer' }}
-          height="28px"
+          height='28px'
           onClick={() => history.push('/')}
         />
-        <Tabs indicatorColor="secondary" textColor="inherit" value={false}>
+        <Tabs indicatorColor='secondary' textColor='inherit' value={false}>
           {tabs.map((tab) => (
             <Tab label={tab.label} sx={{ fontSize: '0.6rem' }} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}

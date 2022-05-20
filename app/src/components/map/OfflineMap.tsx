@@ -1,10 +1,8 @@
-import { Capacitor } from '@capacitor/core';
 import Spinner from 'components/spinner/Spinner';
 import React, { useEffect, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import * as L from 'leaflet';
-import {useSelector} from "../../state/utilities/use_selector";
-import {selectConfiguration} from "../../state/reducers/configuration";
+import { MobileOnly } from '../common/MobileOnly';
 
 // Style the image inside the download button
 const iconStyle = {
@@ -67,7 +65,6 @@ const OfflineMap = (props) => {
   }, [props.cacheMapTilesFlag]);
 
   const [offlineing, setOfflineing] = useState(false);
-  const { MOBILE } = useSelector(selectConfiguration);
 
   const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
     zoomlevels: [13, 14, 15, 16, 17],
@@ -92,7 +89,7 @@ const OfflineMap = (props) => {
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-      {MOBILE ? (
+      <MobileOnly>
         <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
           {offlineing ? (
             <Spinner></Spinner>
@@ -100,9 +97,7 @@ const OfflineMap = (props) => {
             <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
           )}
         </div>
-      ) : (
-        <></>
-      )}
+      </MobileOnly>
     </>
   );
 };

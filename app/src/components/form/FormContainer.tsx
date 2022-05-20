@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import {
   Box,
   Button,
@@ -369,6 +368,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
   } else {
+    // @ts-ignore
+    // @ts-ignore
     return (
       <Box width="100%">
         <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
