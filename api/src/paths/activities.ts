@@ -291,7 +291,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  * @return {RequestHandler}
  */
 function deleteActivitiesByIds(): RequestHandler {
-  return async (req, res) => {
+  return async (req: any, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
     const ids = Object.values(req.query.id) as string[];
@@ -302,6 +302,18 @@ function deleteActivitiesByIds(): RequestHandler {
         .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
     }
 
+    const createdBy = Object.values(req?.query?.createdBy) as string[];
+
+    for (var i = 0; i < createdBy.length; i++) {
+      if (createdBy[i] !== req?.authContext?.preferredUsername) {
+        return res.status(401).json({
+          message: 'Invalid request, user is not authorized to delete this record', // better message
+          request: req.body,
+          namespcae: 'activities',
+          code: 401
+        });
+      }
+    }
     const connection = await getDBConnection();
     if (!connection) {
       return res

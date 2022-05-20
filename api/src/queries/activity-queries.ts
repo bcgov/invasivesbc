@@ -372,10 +372,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     if (searchCriteria.user_roles) {
       sqlStatement.append(SQL` OR ${roles} @> array[1])`);
     } else {
-      */
-  //sqlStatement.append(SQL`)`);
-  //}
-  // */
+      sqlStatement.append(SQL`)`);
+    }
+  */
   if (searchCriteria.created_by && searchCriteria.created_by.length) {
     sqlStatement.append(SQL` AND created_by IN (`);
     sqlStatement.append(SQL`${searchCriteria.created_by[0]}`);
