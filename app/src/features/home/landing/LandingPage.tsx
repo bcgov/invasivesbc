@@ -1,26 +1,19 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
   Container,
   Divider,
   Grid,
   Theme,
   Typography
 } from '@mui/material';
-import {makeStyles} from '@mui/styles';
-import {NetworkContext} from 'contexts/NetworkContext';
-import {useInvasivesApi} from 'hooks/useInvasivesApi';
-import React, {useContext, useEffect} from 'react';
-import {useHistory} from 'react-router-dom';
-import {selectAuth} from "../../../state/reducers/auth";
-import {useSelector} from "../../../state/utilities/use_selector";
-import {selectUserInfo} from "../../../state/reducers/userInfo";
+import { makeStyles } from '@mui/styles';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { selectAuth } from "../../../state/reducers/auth";
+import { useSelector } from "../../../state/utilities/use_selector";
+import { selectUserInfo } from "../../../state/reducers/userInfo";
+import { selectNetworkConnected } from '../../../state/reducers/network';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -53,11 +46,10 @@ interface ILandingPage {
 const LandingPage: React.FC<ILandingPage> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const networkContext = useContext(NetworkContext);
-  const api = useInvasivesApi();
+  const connected = useSelector(selectNetworkConnected);
 
-  const {authenticated, bestName, email, displayName, roles} = useSelector(selectAuth);
-  const {loaded: userInfoLoaded, activated, accessRequested} = useSelector(selectUserInfo);
+  const { authenticated, bestName, email, displayName, roles } = useSelector(selectAuth);
+  const { loaded: userInfoLoaded, activated, accessRequested } = useSelector(selectUserInfo);
 
 
   const requestAccess = async () => {
@@ -115,7 +107,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <>
           <Box mt={2}>
             <Typography variant="h5">User Information</Typography>
-            <br/>
+            <br />
             <Grid className={classes.userInfoItemGrid} container spacing={2}>
               <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
@@ -125,7 +117,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   {displayName}
                 </Box>
               </Grid>
-              <Divider flexItem={true} orientation="vertical"/>
+              <Divider flexItem={true} orientation="vertical" />
               <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
                   <Typography>
@@ -134,7 +126,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   {email}
                 </Box>
               </Grid>
-              <Divider flexItem={true} orientation="vertical"/>
+              <Divider flexItem={true} orientation="vertical" />
               <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
                   <Typography>
@@ -155,7 +147,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   {activated ? 'Activated' : 'Not Activated'}
                 </Box>
               </Grid>
-              <Divider flexItem={true} orientation="vertical"/>
+              <Divider flexItem={true} orientation="vertical" />
               <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
                   <Typography>
@@ -164,7 +156,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   {accessRequested ? 'Yes' : 'No'}
                 </Box>
               </Grid>
-              <Divider flexItem={true} orientation="vertical"/>
+              <Divider flexItem={true} orientation="vertical" />
               {roles.length > 0 && (
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
@@ -180,7 +172,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             </Grid>
           </Box>
           <Box mt={8}>
-            <Divider/>
+            <Divider />
           </Box>
           <Box mt={10}>
             <u>
@@ -232,11 +224,11 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       )}
       {roles.length == 0 && (
         <Typography variant="h5">
-          <br/>
+          <br />
           <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
         </Typography>
       )}
-      {networkContext.connected && (
+      {connected && (
         <>
           {!accessRequested ? (
             <Box mt={2} paddingBottom={'50px'}>
@@ -255,7 +247,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       {!authenticated && (
         <>
           <Box mt={8}>
-            <Divider/>
+            <Divider />
           </Box>
           <Box mt={8}>
             <strong>

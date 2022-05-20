@@ -23,9 +23,9 @@ import LayersIcon from '@mui/icons-material/Layers';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 import SortableListContainer from './Sorting/SortableListContainer';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { NetworkContext } from 'contexts/NetworkContext';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
+import { selectNetworkConnected } from '../../../state/reducers/network';
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -34,7 +34,7 @@ export const LayerPicker = React.memo(
     const toolClass = toolStyles();
     const divref = useRef();
 
-    const networkContext = useContext(NetworkContext);
+    const connected = useSelector(selectNetworkConnected);
     const invasivesApi = useInvasivesApi();
 
     const { userId } = useSelector(selectAuth);
@@ -56,7 +56,7 @@ export const LayerPicker = React.memo(
                   geoJSON: layer.geojson,
                   source: 'INVASIVESBC',
                   layer_code: 'ADMIN_UPLOADS',
-                  layer_mode: networkContext ? 'wfs_online' : 'wfs_offline',
+                  layer_mode: connected ? 'wfs_online' : 'wfs_offline',
                   color_code: '#000',
                   order: index,
                   opacity: 0.3,

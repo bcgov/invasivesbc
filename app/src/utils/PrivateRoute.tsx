@@ -1,11 +1,10 @@
-import {Capacitor} from '@capacitor/core';
-import React, {useContext, useEffect} from 'react';
-import {Redirect, Route, RouteProps} from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Route, RouteProps } from 'react-router-dom';
 import AccessDenied from '../pages/misc/AccessDenied';
-import {ErrorContext} from 'contexts/ErrorContext';
-import {ErrorBanner} from '../components/error/ErrorBanner';
-import {useSelector} from "../state/utilities/use_selector";
-import {selectAuth} from "../state/reducers/auth";
+import { ErrorContext } from 'contexts/ErrorContext';
+import { ErrorBanner } from '../components/error/ErrorBanner';
+import { useSelector } from "../state/utilities/use_selector";
+import { selectAuth } from "../state/reducers/auth";
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -25,8 +24,8 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   const errorContext = useContext(ErrorContext);
   const [hasErrors, setHasErrors] = React.useState(false);
 
-  let {component: Component, layout: Layout, ...rest} = props;
-  const {authenticated} = useSelector(selectAuth);
+  let { component: Component, layout: Layout, ...rest } = props;
+  const { authenticated } = useSelector(selectAuth);
 
   document.title = props.title;
 
@@ -60,7 +59,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
                 <Component {...renderProps} {...props.componentProps} />
               </Layout>
             )}
-            {!authenticated && <AccessDenied/>}
+            {!authenticated && <AccessDenied />}
           </>
         );
       }}

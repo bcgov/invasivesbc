@@ -4,16 +4,16 @@ import { createAuthReducer } from './auth';
 import { AppConfig } from '../config';
 
 import { createConfigurationReducerWithDefaultState } from './configuration';
-import {createUserInfoReducer} from "./userInfo";
+import { createUserInfoReducer } from './userInfo';
+import { createNetworkReducer } from './network';
 
 function createRootReducer(config: AppConfig) {
-  const rootReducer = combineReducers({
+  return combineReducers({
     Configuration: createConfigurationReducerWithDefaultState(config),
     Auth: createAuthReducer(config),
-    UserInfo: createUserInfoReducer({loaded: true, accessRequested: false, activated: true})
+    UserInfo: createUserInfoReducer({ loaded: true, accessRequested: false, activated: true }),
+    Network: createNetworkReducer({ connected: true })
   });
-
-  return rootReducer;
 }
 
 export { createRootReducer };

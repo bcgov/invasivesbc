@@ -14,6 +14,6 @@ function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
   };
 }
 
-const selectConfiguration = (state) => state.Configuration.current;
+const selectConfiguration: (state) => AppConfig = (state) => state.Configuration.current;
 
 export { createConfigurationReducerWithDefaultState, selectConfiguration };

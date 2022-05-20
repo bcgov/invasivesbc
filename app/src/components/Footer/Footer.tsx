@@ -1,20 +1,23 @@
 import { AppBar, Tab, Tabs, Toolbar } from '@mui/material';
-import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import sunriseLogo from '../../bcGovSunriseLogo.png';
+import { selectNetworkConnected } from '../../state/reducers/network';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectConfiguration } from '../../state/reducers/configuration';
 
 interface IFooterProps {
   classes?: any;
 }
 
 const Footer: React.FC<IFooterProps> = () => {
-  const networkContext = useContext(NetworkContext);
   const history = useHistory();
+  const connected = useSelector(selectNetworkConnected);
+  const [networkStatusString, setNetworkStatusString] = useState(connected ? 'Online' : 'Offline');
 
-  const defaultConnectionStatusString = (!window['cordova'] && 'Online') || '';
-
-  const [networkStatusString, setNetworkStatusString] = useState(defaultConnectionStatusString);
+  useEffect(() => {
+    setNetworkStatusString(connected ? 'Online' : 'Offline');
+  }, [connected]);
 
   const tabs = [
     { label: `Network Status: ${networkStatusString}`, url: '/' },
@@ -24,19 +27,8 @@ const Footer: React.FC<IFooterProps> = () => {
     { label: 'Accessibility', url: 'https://www2.gov.bc.ca/gov/content/home/accessible-government' }
   ];
 
-  useEffect(() => {
-    if (!networkContext) {
-      return;
-    }
-
-    const connectionStatus = (networkContext.connected && 'Online') || 'Offline';
-    //const connectionStatusString = `${connectionStatus} (type: ${networkContext.connectionType})`;
-
-    setNetworkStatusString(connectionStatus);
-  }, [networkContext]);
-
   return (
-    <AppBar position='static'>
+    <AppBar position="static">
       <Toolbar
         style={{
           position: 'relative',
@@ -46,14 +38,14 @@ const Footer: React.FC<IFooterProps> = () => {
           justifyContent: 'flex-start'
         }}>
         <img
-          alt='bcLogo'
+          alt="bcLogo"
           src={sunriseLogo}
-          width='60px'
+          width="60px"
           style={{ objectFit: 'cover', cursor: 'pointer' }}
-          height='28px'
+          height="28px"
           onClick={() => history.push('/')}
         />
-        <Tabs indicatorColor='secondary' textColor='inherit' value={false}>
+        <Tabs indicatorColor="secondary" textColor="inherit" value={false}>
           {tabs.map((tab) => (
             <Tab label={tab.label} sx={{ fontSize: '0.6rem' }} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}

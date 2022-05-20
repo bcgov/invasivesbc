@@ -1,4 +1,4 @@
-import {IonAlert} from '@ionic/react';
+import { IonAlert } from '@ionic/react';
 import {
   AppBar,
   Avatar,
@@ -23,8 +23,8 @@ import {
   Toolbar,
   Box
 } from '@mui/material';
-import {makeStyles} from '@mui/styles';
-import {Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search} from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
+import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
@@ -35,19 +35,19 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
-import {NetworkContext} from 'contexts/NetworkContext';
-import {ThemeContext} from 'utils/CustomThemeProvider';
-import React, {useContext, useEffect, useState} from 'react';
-import {useHistory} from 'react-router-dom';
+import { ThemeContext } from 'utils/CustomThemeProvider';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
-import {useDispatch} from "react-redux";
-import {AUTH_SIGNIN_REQUEST} from "../../state/actions";
-import {useSelector} from "../../state/utilities/use_selector";
-import {selectAuth} from "../../state/reducers/auth";
-import {selectUserInfo} from "../../state/reducers/userInfo";
-import {selectConfiguration} from "../../state/reducers/configuration";
-import {MobileOnly} from "../common/MobileOnly";
+import { useDispatch } from 'react-redux';
+import { AUTH_SIGNIN_REQUEST, NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../../state/actions';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
+import { selectUserInfo } from '../../state/reducers/userInfo';
+import { selectConfiguration } from '../../state/reducers/configuration';
+import { MobileOnly } from '../common/MobileOnly';
+import { selectNetworkConnected } from '../../state/reducers/network';
 
 const drawerWidth = 240;
 
@@ -146,16 +146,17 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   const { FEATURE_GATE } = useSelector(selectConfiguration);
+  const connected = useSelector(selectNetworkConnected);
 
   const [showLoggedInTabs, setShowLoggedInTabs] = useState(userInfoLoaded && activated);
   useEffect(() => {
-    setShowLoggedInTabs(userInfoLoaded && activated)
+    setShowLoggedInTabs(userInfoLoaded && activated);
   }, [userInfoLoaded, activated]);
 
   const [isAdmin, setIsAdmin] = useState(authenticated && roles.includes('master_administrator'));
 
   useEffect(() => {
-    setIsAdmin(authenticated && roles.includes('master_administrator'))
+    setIsAdmin(authenticated && roles.includes('master_administrator'));
   }, [authenticated]);
 
   const handleClose = () => {
@@ -246,8 +247,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
-  const networkContext = useContext(NetworkContext);
-  const { connected, setConnected } = networkContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
@@ -363,19 +362,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         ]}
       />
 
-      <AppBar
-        className={open ? classes.appBarShift : classes.appBar}
-        position='static'>
-        <Container maxWidth='xl'>
-          <Toolbar
-            disableGutters
-            style={{ display: 'flex' }}>
+      <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters style={{ display: 'flex' }}>
             <Box sx={{ display: { md: 'none', xs: 'block' } }}>
               <IconButton
-                color='inherit'
-                aria-label='open drawer'
+                color="inherit"
+                aria-label="open drawer"
                 onClick={handleDrawerOpen}
-                edge='start'
+                edge="start"
                 className={clsx(classes.menuButton, {
                   [classes.hide]: open
                 })}>
@@ -400,26 +395,26 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   padding: 4,
                   borderRadius: 4
                 }}
-                height='60'
-                width='60'
-                alt='B.C. Government Logo'
+                height="60"
+                width="60"
+                alt="B.C. Government Logo"
                 onClick={() => history.push('/')}
               />
               <b>InvasivesBC</b>
             </Box>
             <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
               <Tabs
-                indicatorColor='secondary'
-                textColor='inherit'
+                indicatorColor="secondary"
+                textColor="inherit"
                 value={activeTab}
-                color='primary'
+                color="primary"
                 centered
                 style={{ width: '80%', color: '#fff' }}
                 onChange={handleChange}>
                 {tabConfig.map((tab) => (
                   <Tab
                     style={{ fontSize: '.7rem', fontWeight: 'bold' }}
-                    color='primary'
+                    color="primary"
                     label={tab.label}
                     key={tab.label.split(' ').join('_')}
                     icon={tab.icon}
@@ -429,9 +424,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </Tabs>
             </Box>
             <Box sx={{ flexGrow: 0 }}>
-              <IconButton
-                onClick={handleClick}
-                size='small'>
+              <IconButton onClick={handleClick} size="small">
                 <Avatar></Avatar>
               </IconButton>
               <Menu
@@ -442,22 +435,22 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   elevation: 3
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                <MobileOnly>
-                  <MenuItem>
-                    <Switch
-                      color='secondary'
-                      checked={connected}
-                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
-                      onChange={() => {
-                        setConnected(!connected);
-                      }}
-                    />
-                    Network Online
-                  </MenuItem>
-                </MobileOnly>
+                {/*<MobileOnly>*/}
                 <MenuItem>
                   <Switch
-                    color='secondary'
+                    color="secondary"
+                    checked={connected}
+                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                    }}
+                  />
+                  Network Online
+                </MenuItem>
+                {/*</MobileOnly>*/}
+                <MenuItem>
+                  <Switch
+                    color="secondary"
                     checked={themeType}
                     checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
@@ -514,29 +507,18 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               [classes.drawerClose]: !open
             })
           }}
-          variant='permanent'>
+          variant="permanent">
           <div className={classes.toolbar}>
-            <Grid
-              xs={1}
-              container
-              justifyContent='center'
-              alignItems='center'
-              item>
-              <IconButton
-                onClick={handleClick}
-                size='small'>
-                <>
-                  {authenticated ? (<Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar>) : (
-                    <Avatar />
-                  )}
-                </>
+            <Grid xs={1} container justifyContent="center" alignItems="center" item>
+              <IconButton onClick={handleClick} size="small">
+                <>{authenticated ? <Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar> : <Avatar />}</>
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {networkContext.connected ? (
+          {connected ? (
             <div>
               {authenticated ? (
                 <MenuItem onClick={showLogoutAlert}>
@@ -555,28 +537,19 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               )}
             </div>
           ) : (
-            <Chip
-              className={classes.chip}
-              color='primary'
-              label='Offline Mode' />
+            <Chip className={classes.chip} color="primary" label="Offline Mode" />
           )}
           <Divider />
           <List>
             {tabConfig.map((tab) => (
-              <ListItem
-                button
-                onClick={() => history.push(tab.path)}
-                key={tab.label.split(' ').join('_')}>
+              <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
                 <ListItemIcon>{tab.icon}</ListItemIcon>
                 <ListItemText primary={tab.label} />
               </ListItem>
             ))}
           </List>
           <Divider />
-          <Grid
-            container
-            justifyContent='center'
-            alignItems='center'>
+          <Grid container justifyContent="center" alignItems="center">
             <FormControlLabel
               control={
                 <Switch
@@ -587,25 +560,22 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   }}
                 />
               }
-              label='Theme Mode'
+              label="Theme Mode"
             />
           </Grid>
           <MobileOnly>
-            <Grid
-              container
-              justifyContent='center'
-              alignItems='center'>
+            <Grid container justifyContent="center" alignItems="center">
               <FormControlLabel
                 control={
                   <Switch
                     checked={connected}
                     checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      setConnected(!connected);
+                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
                     }}
                   />
                 }
-                label='Network Mode'
+                label="Network Mode"
               />
             </Grid>
           </MobileOnly>

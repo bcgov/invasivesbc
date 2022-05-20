@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
@@ -52,10 +51,11 @@ import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../uti
 import './scrollbar.css';
 import { useHistory } from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
-import { NetworkContext } from 'contexts/NetworkContext';
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
-import {useSelector} from "../../../state/utilities/use_selector";
-import {selectAuth} from "../../../state/reducers/auth";
+import { useSelector } from "../../../state/utilities/use_selector";
+import { selectAuth } from "../../../state/reducers/auth";
+import { selectNetworkConnected } from '../../../state/reducers/network';
+import { selectConfiguration } from '../../../state/reducers/configuration';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -93,6 +93,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
   const { extendedInfo, displayName, authorizations } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
@@ -106,8 +107,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const history = useHistory();
   const [doc, setDoc] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
-  const networkContext = useContext(NetworkContext);
-  const { connected } = networkContext;
+  const connected = useSelector(selectNetworkConnected);
   const [applicationUsers, setApplicationUsers] = useState([]);
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -331,8 +331,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         psnInject = extendedInfo.pac_service_number_1
           ? extendedInfo.pac_service_number_1
           : extendedInfo.pac_service_number_2
-          ? extendedInfo.pac_service_number_2
-          : '';
+            ? extendedInfo.pac_service_number_2
+            : '';
       }
     }
 
@@ -367,13 +367,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         employer_code: employerNeedsInsert
           ? employerInject
           : activity_data?.employer_code
-          ? activity_data.employer_code
-          : '',
+            ? activity_data.employer_code
+            : '',
         invasive_species_agency_code: agenciesNeedInsert
           ? agenciesInject
           : activity_data?.invasive_species_agency_code
-          ? activity_data.invasive_species_agency_code
-          : '',
+            ? activity_data.invasive_species_agency_code
+            : '',
         reported_area: calculateGeometryArea(activity.geometry)
       },
       activity_type_data: {
@@ -482,7 +482,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   /**
-  /**
+   /**
    * Save the form when it is submitted.
    *
    * @param {*} event the form submit event

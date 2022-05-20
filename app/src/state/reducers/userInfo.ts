@@ -14,6 +14,6 @@ function createUserInfoReducer(userInfo: UserInfo) {
   };
 }
 
-const selectUserInfo = (state) => state.UserInfo;
+const selectUserInfo: (state) => UserInfo = (state) => state.UserInfo;
 
 export { selectUserInfo, createUserInfoReducer };

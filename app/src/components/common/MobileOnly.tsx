@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode, useContext, useEffect, useState } from 'react';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectConfiguration } from '../../state/reducers/configuration';
-import { NetworkContext } from '../../contexts/NetworkContext';
+import { selectNetworkConnected } from '../../state/reducers/network';
 
 interface MobileOnlyProps extends PropsWithChildren<any> {
   networkRequirement?: 'connected' | 'disconnected' | 'either';
@@ -9,21 +9,21 @@ interface MobileOnlyProps extends PropsWithChildren<any> {
 
 const MobileOnly = ({ children, networkRequirement = 'either' }: MobileOnlyProps) => {
   const { MOBILE } = useSelector(selectConfiguration);
-  const networkContext = useContext(NetworkContext);
+  const connected = useSelector(selectNetworkConnected);
 
   const [networkPredicate, setNetworkPredicate] = useState(true);
 
   useEffect(() => {
-    if (networkRequirement === 'connected' && !networkContext.connected) {
+    if (networkRequirement === 'connected' && !connected) {
       setNetworkPredicate(false);
       return;
     }
-    if (networkRequirement === 'disconnected' && networkContext.connected) {
+    if (networkRequirement === 'disconnected' && connected) {
       setNetworkPredicate(false);
       return;
     }
     setNetworkPredicate(true);
-  }, [networkContext.connected, networkRequirement]);
+  }, [connected, networkRequirement]);
 
   if (MOBILE && networkPredicate) {
     return children;

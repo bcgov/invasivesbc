@@ -15,11 +15,12 @@ import { AppConfig } from '../config';
 class AuthState {
   initialized: boolean;
   error: boolean;
-  authenticated: true;
+  authenticated: boolean;
 
   bestName: string;
   email: string;
   displayName: string;
+  userId: 'notImplemented';
 
   requestHeaders: {
     authorization: string;
@@ -137,7 +138,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
   };
 }
 
-const selectAuthHeaders = (state) => state.Auth.requestHeaders;
-const selectAuth = (state) => state.Auth;
+const selectAuthHeaders: (state) => { authorization: any } = (state) => state.Auth.requestHeaders;
+const selectAuth: (state) => (AuthState) = (state) => state.Auth;
 
 export { createAuthReducer, selectAuthHeaders, selectAuth };
