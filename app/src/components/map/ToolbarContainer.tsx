@@ -15,6 +15,8 @@ import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
+import {useSelector} from "../../state/utilities/use_selector";
+import {selectConfiguration} from "../../state/reducers/configuration";
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -61,6 +63,7 @@ export const ToolbarContainer = (props) => {
   const classes = useToolbarContainerStyles();
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const handleExpand = () => {
     setExpanded((prev) => {
@@ -97,7 +100,7 @@ export const ToolbarContainer = (props) => {
             measureToolContainerOpen={measureToolContainerOpen}
           />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          {MOBILE ? <JumpToTrip /> : <></>}
           {/* <NewRecord />
         <EditRecord />
         <MultiSelectOrEdit />

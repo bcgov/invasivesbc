@@ -9,6 +9,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
+import {useSelector} from "../../../../../state/utilities/use_selector";
+import {selectConfiguration} from "../../../../../state/reducers/configuration";
 
 export const JumpToTrip = (props) => {
   // style
@@ -20,6 +22,7 @@ export const JumpToTrip = (props) => {
   // DB: MOBILE ONLY!
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const flyToContext = useFlyToAndFadeContext();
 
@@ -61,7 +64,7 @@ export const JumpToTrip = (props) => {
   const getTripGeosAndInitialPosition = async () => {
     let tripObjects;
     //mobile only
-    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+    if (MOBILE) {
       const queryResults = await dataAccess.getTrips(databaseContext);
       if (!queryResults.length) {
         return;

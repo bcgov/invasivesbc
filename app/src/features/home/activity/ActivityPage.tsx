@@ -580,7 +580,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     let activityResults;
-    if (Capacitor.getPlatform() === 'web') {
+    if (!MOBILE) {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
         false

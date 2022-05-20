@@ -17,6 +17,8 @@ import { TripStatusCode } from '../../../components/trip/TripStepStatus';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import {useSelector} from "../../../state/utilities/use_selector";
+import {selectConfiguration} from "../../../state/reducers/configuration";
 
 interface IPlanPageProps {
   classes?: any;
@@ -187,7 +189,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     });
     return results.length > 0 ? results[0].id : 0;
   };
-
+  const { MOBILE } = useSelector(selectConfiguration);
   // initial fetch
   useEffect(() => {
     const getTrips = async () => {
@@ -195,13 +197,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       //todo:  try to wrap this all in db context so we don't need to reference both dbs here
       let results: any; //sqlite db response
 
-      if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+      if (MOBILE) {
         results = await dataAccess.getTrips();
       } else {
         return;
       }
 
-      if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
+      if (MOBILE && results) {
         results.map((adoc) => {
           try {
             const doc = JSON.parse(adoc.json);

@@ -33,7 +33,6 @@ export const useInvasivesApi = () => {
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
-    console.dir(requestHeaders);
     return {
       baseUrl: API_BASE,
       headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
@@ -838,7 +837,7 @@ export const useInvasivesApi = () => {
 
     return data.result;
   };
-
+  const { MOBILE } = useSelector(selectConfiguration);
   /**
    * Fetch the api json-schema spec and save it in the local database.
    * If the request fails (due to lack of internet connection, etc), then return the cached copy of the api spec.
@@ -848,7 +847,7 @@ export const useInvasivesApi = () => {
   const getCachedApiSpec = async (): Promise<any> => {
     try {
       // on mobile - think there is internet:
-      if (Capacitor.getPlatform() !== 'web') {
+      if (MOBILE) {
         // try to cache spec, then return it:
         try {
           const webResponse = await getApiSpec();

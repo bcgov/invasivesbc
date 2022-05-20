@@ -4,6 +4,8 @@ import { DocType } from 'constants/database';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
+import {useSelector} from "../state/utilities/use_selector";
+import {selectConfiguration} from "../state/reducers/configuration";
 // Singleton SQLite Hook
 export let sqlite: any;
 // Existing Connections Store
@@ -48,7 +50,7 @@ export const DatabaseContextProvider = (props) => {
       message.current = message.current.concat(`${progress}\n`);
     }
   };
-
+  const { MOBILE } = useSelector(selectConfiguration);
   const {
     echo,
     getPlatform,
@@ -95,7 +97,7 @@ export const DatabaseContextProvider = (props) => {
     };
     isJsonListeners = { jsonListeners: jsonListeners, setJsonListeners: setJsonListeners };
     // open connnection, make tables, set db in context
-    if (Capacitor.getPlatform() !== 'web') createSqliteTables(sqlite);
+    if (MOBILE) createSqliteTables(sqlite);
     // a bunch of one time stuff
   }, []);
 
@@ -240,7 +242,7 @@ export const DatabaseContextProvider = (props) => {
 
   try {
     //if web just be a null context and return children
-    if (['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
+    if (!MOBILE) {
       return (
         <>
           {databaseIsSetup && sqlite ? (
@@ -347,7 +349,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   batchUpdate = '';
   const everythingElse = upsertConfigs.filter((e) => e.type !== UpsertType.DOC_TYPE_AND_ID);
   for (const upsertConfig of everythingElse) {
-    if (Capacitor.getPlatform() !== 'web') {
+    if (MOBILE) {
       // initialize the connection
       // ret = db.execute(`select load_extension('json1');`); // not yet working
 
@@ -587,7 +589,8 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     alert(JSON.stringify(e));
   }
   //alert(JSON.stringify(databaseContext));
-  if (Capacitor.getPlatform() !== 'web') {
+
+  if (MOBILE) {
     let ret;
     let db = await getConnection();
 

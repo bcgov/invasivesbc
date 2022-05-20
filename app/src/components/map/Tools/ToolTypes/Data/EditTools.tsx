@@ -320,7 +320,7 @@ const EditTools = (props: any) => {
 
   return (
     <div style={{}}>
-      {Capacitor.getPlatform() === 'ios' && (
+      {MOBILE && (
         <>
           <MobilePolylineDrawButton
             convertLineStringToPoly={convertLineStringToPoly}

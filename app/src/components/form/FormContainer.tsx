@@ -33,6 +33,7 @@ import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/Chemica
 import PasteButtonComponent from './PasteButtonComponent';
 import {useSelector} from "../../state/utilities/use_selector";
 import {selectAuth} from "../../state/reducers/auth";
+import {selectConfiguration} from "../../state/reducers/configuration";
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -78,6 +79,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
   const { roles, authenticated } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
 
 
   useEffect(() => {
@@ -272,7 +274,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
-          if (Capacitor.getPlatform() !== 'web') {
+          if (MOBILE) {
             uiSchema = {
               ...uiSchema,
               activity_type_data: {
@@ -360,7 +362,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activitySubtype, authenticated, props.activity.activity_subtype]);
+  }, [props.activity.activitySubtype, authenticated, props.activity.activity_subtype, MOBILE]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 

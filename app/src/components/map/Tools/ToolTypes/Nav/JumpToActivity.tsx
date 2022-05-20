@@ -72,7 +72,7 @@ export const JumpToActivity = (props) => {
       let items = new Array<IFlyToAndFadeItem>();
 
       //then add activitys as geometries to show
-      if (Capacitor.getPlatform() == 'web') {
+      if (MOBILE) {
         console.log('got to web ');
         if (activityObject.activity_payload.geometry?.length > 0) {
           items.push({

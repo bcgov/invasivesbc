@@ -572,7 +572,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               label="Theme Mode"
             />
           </Grid>
-          {Capacitor.getPlatform() !== 'web' ? (
+          {MOBILE ? (
             <Grid container justifyContent="center" alignItems="center">
               <FormControlLabel
                 control={
