@@ -18,6 +18,9 @@ import {NetworkContext} from 'contexts/NetworkContext';
 import {useInvasivesApi} from 'hooks/useInvasivesApi';
 import React, {useContext, useEffect} from 'react';
 import {useHistory} from 'react-router-dom';
+import {selectAuth} from "../../../state/reducers/auth";
+import {useSelector} from "../../../state/utilities/use_selector";
+import {selectUserInfo} from "../../../state/reducers/userInfo";
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -52,6 +55,10 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const history = useHistory();
   const networkContext = useContext(NetworkContext);
   const api = useInvasivesApi();
+
+  const {authenticated, bestName, email, displayName, roles} = useSelector(selectAuth);
+  const {loaded: userInfoLoaded, activated, accessRequested} = useSelector(selectUserInfo);
+
 
   const requestAccess = async () => {
     history.push('/home/access-request');
@@ -110,14 +117,14 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
             <Typography variant="h5">User Information</Typography>
             <br/>
             <Grid className={classes.userInfoItemGrid} container spacing={2}>
-                <Grid item md={3}>
-                  <Box overflow="hidden" textOverflow="ellipsis">
-                    <Typography>
-                      <strong>Name</strong>
-                    </Typography>
-                    {displayName}
-                  </Box>
-                </Grid>
+              <Grid item md={3}>
+                <Box overflow="hidden" textOverflow="ellipsis">
+                  <Typography>
+                    <strong>Name</strong>
+                  </Typography>
+                  {displayName}
+                </Box>
+              </Grid>
               <Divider flexItem={true} orientation="vertical"/>
               <Grid item md={3}>
                 <Box overflow="hidden" textOverflow="ellipsis">
@@ -145,7 +152,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   <Typography>
                     <strong>Activation Status</strong>
                   </Typography>
-                  {activationStatus.isActivated ? 'Activated' : 'Not Activated'}
+                  {activated ? 'Activated' : 'Not Activated'}
                 </Box>
               </Grid>
               <Divider flexItem={true} orientation="vertical"/>
@@ -154,7 +161,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   <Typography>
                     <strong>Access Requested</strong>
                   </Typography>
-                  {activationStatus.accessRequested ? 'Yes' : 'No'}
+                  {accessRequested ? 'Yes' : 'No'}
                 </Box>
               </Grid>
               <Divider flexItem={true} orientation="vertical"/>
@@ -238,7 +245,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
               </Button>
             </Box>
           ) : (
-            !isUserActivated() &&
+            !activated() &&
             accessRequested && (
               <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
             )

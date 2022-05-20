@@ -30,12 +30,13 @@ export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
   const { API_BASE, DEBUG } = useSelector(selectConfiguration);
-  const { authorization } = useSelector(selectAuthHeaders);
+  const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
+    console.dir(requestHeaders);
     return {
       baseUrl: API_BASE,
-      headers: { 'Access-Control-Allow-Origin': '*', Authorization: authorization }
+      headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
     };
   };
 

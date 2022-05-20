@@ -18,6 +18,9 @@ class AuthState {
   authenticated: true;
 
   bestName: string;
+  email: string;
+  displayName: string;
+
   requestHeaders: {
     authorization: string;
   };
@@ -51,19 +54,25 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
     }
   }
   let username = null;
+  let displayName = 'User';
+  let email = '';
 
   if (keycloakInstance.idTokenParsed) {
     username = keycloakInstance.idTokenParsed['preferred_username'];
+    displayName = `${keycloakInstance.idTokenParsed['first_name']} ${keycloakInstance.idTokenParsed['last_name']}`;
+    email = keycloakInstance.idTokenParsed['email'];
   }
 
-  const headers = {
+  const requestHeaders = {
     authorization: `Bearer ${keycloakInstance.idToken}`
   };
 
   return {
     bestName,
-    headers,
-    username
+    requestHeaders,
+    username,
+    displayName,
+    email
   };
 }
 

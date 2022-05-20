@@ -2,7 +2,6 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import App from 'App';
 import { default as React, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import * as serviceWorker from 'serviceWorker';
 import { setupStore } from './state/store';
 import { Device } from '@capacitor/device';
 
@@ -13,7 +12,6 @@ const startApp = (info) => {
   import(/* webpackChunkName: "app_config" */ 'state/config').then(({ CONFIG }) => {
     const store = setupStore(CONFIG);
     ReactDOM.render(<App deviceInfo={info} store={store} />, document.getElementById('root'));
-    serviceWorker.unregister();
   });
 };
 

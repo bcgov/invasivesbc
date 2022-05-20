@@ -10,6 +10,12 @@ export interface AppConfig {
   KEYCLOAK_ADAPTER: string;
 
   REDIRECT_URI: string;
+
+  // to easily disable features not ready for prod-use (or disable them on mobile/web)
+  FEATURE_GATE: {
+    PLAN_MY_TRIP: boolean;
+    EMBEDDED_REPORTS: boolean;
+  };
 }
 
 /* global CONFIGURATION_SOURCE */
@@ -36,7 +42,11 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_REALM: '{{env "KEYCLOAK_REALM"}}',
       KEYCLOAK_URL: '{{env "KEYCLOAK_URL"}}',
       KEYCLOAK_ADAPTER: '{{env "KEYCLOAK_ADAPTER"}}',
-      REDIRECT_URI: '{{env "REDIRECT_URI"}}'
+      REDIRECT_URI: '{{env "REDIRECT_URI"}}',
+      FEATURE_GATE: {
+        PLAN_MY_TRIP: true,
+        EMBEDDED_REPORTS: true
+      }
     };
     break;
   case 'Webpack':
@@ -48,7 +58,11 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_REALM: CONFIGURATION_KEYCLOAK_REALM,
       KEYCLOAK_URL: CONFIGURATION_KEYCLOAK_URL,
       KEYCLOAK_ADAPTER: CONFIGURATION_KEYCLOAK_ADAPTER,
-      REDIRECT_URI: CONFIGURATION_REDIRECT_URI
+      REDIRECT_URI: CONFIGURATION_REDIRECT_URI,
+      FEATURE_GATE: {
+        PLAN_MY_TRIP: true,
+        EMBEDDED_REPORTS: true
+      }
     };
     break;
   case 'Hardcoded':
@@ -61,7 +75,11 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_REALM: 'onestopauth-business',
       KEYCLOAK_URL: 'https://dev.oidc.gov.bc.ca/auth',
       KEYCLOAK_ADAPTER: 'web',
-      REDIRECT_URI: 'http://localhost:300/home/landing'
+      REDIRECT_URI: 'http://localhost:3000/home/landing',
+      FEATURE_GATE: {
+        PLAN_MY_TRIP: true,
+        EMBEDDED_REPORTS: true
+      }
     };
     break;
 }

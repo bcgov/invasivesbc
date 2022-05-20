@@ -48,6 +48,8 @@ import {useDispatch} from "react-redux";
 import {AUTH_SIGNIN_REQUEST} from "../../state/actions";
 import {useSelector} from "../../state/utilities/use_selector";
 import {selectAuth} from "../../state/reducers/auth";
+import {selectUserInfo} from "../../state/reducers/userInfo";
+import {selectConfiguration} from "../../state/reducers/configuration";
 
 const drawerWidth = 240;
 
@@ -141,7 +143,22 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const dispatch = useDispatch();
-  const { displayName, roles, hasRole, authenticated } = useSelector(selectAuth);
+
+  const {displayName, roles, authenticated} = useSelector(selectAuth);
+
+  const {loaded: userInfoLoaded, activated} = useSelector(selectUserInfo);
+  const {MOBILE, FEATURE_GATE} = useSelector(selectConfiguration);
+
+  const [showLoggedInTabs, setShowLoggedInTabs] = useState(userInfoLoaded && activated);
+  useEffect(() => {
+    setShowLoggedInTabs(userInfoLoaded && activated)
+  }, [userInfoLoaded, activated]);
+
+  const [isAdmin, setIsAdmin] = useState(authenticated && roles.includes('master_administrator'));
+
+  useEffect(() => {
+    setIsAdmin(authenticated && roles.includes('master_administrator'))
+  }, [authenticated]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -157,12 +174,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const logoutUser = async () => {
     history.push('/home/landing');
-    dispatch({ type: 'AUTH_SIGNOUT_REQUEST'});
+    dispatch({type: 'AUTH_SIGNOUT_REQUEST'});
     handleClose();
   };
 
   const loginUser = async () => {
-    dispatch({ type: AUTH_SIGNIN_REQUEST });
+    dispatch({type: AUTH_SIGNIN_REQUEST});
     handleClose();
   };
 
@@ -234,6 +251,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const networkContext = useContext(NetworkContext);
   const {connected, setConnected} = networkContext;
 
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname, getActiveTab]);
@@ -248,7 +269,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Home fontSize={'small'}/>
         });
 
-        if (!isAuthorized()) {
+        if (!showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Map',
             path: '/home/map',
@@ -256,7 +277,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Recorded Activities',
             path: '/home/activities',
@@ -264,7 +285,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && FEATURE_GATE.PLAN_MY_TRIP) {
+        if (showLoggedInTabs && FEATURE_GATE.PLAN_MY_TRIP) {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -272,7 +293,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -280,7 +301,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Current IAPP Site',
             path: '/home/iapp/',
@@ -293,18 +314,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        /*
-        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-          tabsUserHasAccessTo.push({
-            label: 'Cached Records',
-            path: '/home/references',
-            childPaths: ['/home/references/activity'],
-            icon: <Bookmarks fontSize={'small'} />
-          });
-        }
-        */
-
-        if (isAdmin()) {
+        if (isAdmin) {
           tabsUserHasAccessTo.push({
             label: 'Admin',
             path: '/admin/useraccess',
@@ -312,7 +322,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && FEATURE_GATE.EMBEDDED_REPORTS) {
+        if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
           tabsUserHasAccessTo.push({
             label: 'Reports',
             path: '/home/reports',
@@ -453,7 +463,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     />
                     Theme
                   </MenuItem>
-                  {isAuthorized() && (
+                  {showLoggedInTabs && (
                     <MenuItem onClick={navToUpdateRequest}>
                       <ListItemIcon>
                         <AssignmentIndIcon/>
@@ -461,7 +471,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                       Update My Info
                     </MenuItem>
                   )}
-                  {isAdmin() && (
+                  {isAdmin && (
                     <MenuItem onClick={navToAdmin}>
                       <ListItemIcon>
                         <AdminPanelSettingsIcon/>
@@ -509,7 +519,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <>
                   {authenticated ? (<Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar>) : (
                     <Avatar/>
-                    )}
+                  )}
                 </>
               </IconButton>
             </Grid>

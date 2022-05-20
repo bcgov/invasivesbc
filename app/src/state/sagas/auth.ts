@@ -15,7 +15,7 @@ import {
 import { AppConfig } from '../config';
 import { default as axios } from 'axios';
 import {selectConfiguration} from "../reducers/configuration";
-import {selectAuthHeaders} from "../reducers/auth";
+import {selectAuth, selectAuthHeaders} from "../reducers/auth";
 
 const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for atleast this long at all times
 const GRACE_PERIOD = 10; // get a new one with this much time to spare
@@ -23,17 +23,17 @@ const GRACE_PERIOD = 10; // get a new one with this much time to spare
 let keycloakInstance = null;
 
 function* refreshRoles() {
-  const configuration = yield select(selectConfiguration);
-  const authHeaders = yield select(selectAuthHeaders);
-  try {
-    const result = yield axios.get(`${configuration.API_BASE}/users/me`, {
-      headers: authHeaders
-    });
-    yield put({ type: AUTH_REFRESH_ROLES_COMPLETE, payload: { roles: result.data.roles } });
-  } catch (err) {
-    console.dir(err);
-    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
-  }
+  // const configuration = yield select(selectConfiguration);
+  // const authHeaders = yield select(selectAuthHeaders);
+  // try {
+  //   const result = yield axios.get(`${configuration.API_BASE}/users/me`, {
+  //     headers: authHeaders
+  //   });
+  //   yield put({ type: AUTH_REFRESH_ROLES_COMPLETE, payload: { roles: result.data.roles } });
+  // } catch (err) {
+  //   console.dir(err);
+  //   yield put({ type: AUTH_REFRESH_ROLES_ERROR });
+  // }
 }
 
 function* keepTokenFresh() {
@@ -48,7 +48,20 @@ function* keepTokenFresh() {
   yield put({ type: AUTH_REFRESH_TOKEN });
 }
 
-function* initializeAuthentication() {
+
+function* handleSigninRequest(action) {
+  try {
+    yield keycloakInstance.login();
+
+    yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
+    yield put({ type: AUTH_REFRESH_TOKEN });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: AUTH_REQUEST_ERROR });
+  }
+}
+
+function* authenticationSaga() {
   const config: AppConfig = yield select(selectConfiguration);
 
   keycloakInstance = Keycloak({
@@ -79,22 +92,8 @@ function* initializeAuthentication() {
     // load roles
     yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
   }
-}
 
-function* handleSigninRequest(action) {
-  try {
-    yield keycloakInstance.login();
-
-    yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
-    yield put({ type: AUTH_REFRESH_TOKEN });
-  } catch (e) {
-    yield put({ type: AUTH_REQUEST_ERROR });
-  }
-}
-
-function* authenticationSaga() {
   yield all([
-    takeLatest(AUTH_INITIALIZE_REQUEST, initializeAuthentication),
     takeLatest(AUTH_SIGNIN_REQUEST, handleSigninRequest),
     takeLatest(AUTH_REFRESH_TOKEN, keepTokenFresh),
     takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles)

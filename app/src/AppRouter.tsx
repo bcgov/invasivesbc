@@ -1,28 +1,32 @@
-import {Network} from '@capacitor/network';
-import CircularProgress from '@mui/material/CircularProgress';
 import AdminRouter from 'features/admin/AdminRouter';
-import React, {useContext, useEffect, useState} from 'react';
-import {Redirect, Switch} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Redirect, Switch, useHistory} from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import PublicLayout from './layouts/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import {NotFoundPage} from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
+import {useSelector} from "./state/utilities/use_selector";
+import {selectConfiguration} from "./state/reducers/configuration";
+
 
 interface IAppRouterProps {
   deviceInfo: any;
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const [layout, setLayout] = useState<React.FC<any>>(null);
+  const {DEBUG} = useSelector(selectConfiguration);
+  const {location} = useHistory();
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
 
-  if (!layout) {
-    return <CircularProgress/>;
-  }
+  useEffect(() => {
+    if (DEBUG) {
+      console.log(`Route: ${location.pathname}${location.search}, State: ${JSON.stringify(location.state)}`);
+    }
+  }, [location.pathname, location.search, location.state, DEBUG]);
 
   return (
     <Switch>
