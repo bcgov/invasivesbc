@@ -3,9 +3,10 @@ import { Box, Button, Theme, Typography } from '@mui/material';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import { DropzoneDialog } from 'mui-file-dropzone';
 import makeStyles from '@mui/styles/makeStyles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import UploadedItem from './UploadedItem';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -30,12 +31,11 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const classes = useStyles();
   const [uploadRequests, setUploadRequests] = useState([]);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const { userInfo } = useContext(AuthStateContext);
-  const { user_id } = userInfo;
   const mapRequestContext = useContext(MapRequestContext);
   const { setUploadLayersFlag } = mapRequestContext;
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
+  const { userId, authenticated } = useSelector(selectAuth);
 
   const doUpload = async () => {
     let response;
@@ -94,7 +94,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
           newRequest.push({
             type: fileType,
             data: encodedString,
-            user_id: user_id,
+            user_id: userId,
             title: defaultTitle,
             status: status
           });
@@ -116,7 +116,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     });
   };
 
-  if (!user_id) {
+  if (!authenticated) {
     return (
       <Box className={classes.componentContainer}>
         <Typography color="error" style={{ textAlign: 'center' }}>

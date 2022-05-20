@@ -1,9 +1,11 @@
 import React, { useEffect, useContext } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
-import { Capacitor } from '@capacitor/core';
 import AccessDenied from '../pages/misc/AccessDenied';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { ErrorBanner } from '../components/error/ErrorBanner';
+import { useSelector } from '../state/utilities/use_selector';
+import { selectAuth } from '../state/reducers/auth';
+
 interface IAdminRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
@@ -21,10 +23,11 @@ interface IAdminRouteProps extends RouteProps {
 const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
   const errorContext = useContext(ErrorContext);
   const [hasErrors, setHasErrors] = React.useState(false);
-  const [isAuthorized, setIsAuthorized] = React.useState(false);
+
+  //@todo check role
+  const { authenticated } = useSelector(selectAuth);
 
   let { component: Component, layout: Layout, ...rest } = props;
-  const { userInfoLoaded, keycloak, userRoles } = props.componentProps;
 
   useEffect(() => {
     if (errorContext.hasErrors) {
@@ -36,31 +39,13 @@ const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
 
   document.title = props.title;
 
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
-
-  useEffect(() => {
-    const isAuthenticated = () => {
-      return (isMobile() && userInfoLoaded) || keycloak?.obj?.authenticated;
-    };
-
-    if (userInfoLoaded) {
-      if (userRoles.length > 0 && isAuthenticated()) {
-        setIsAuthorized(true);
-      } else {
-        setIsAuthorized(false);
-      }
-    }
-  }, [userInfoLoaded, userRoles.length, keycloak?.obj?.authenticated]);
-
   return (
     <Route
       {...rest}
       render={(renderProps) => {
         return (
           <>
-            {isAuthorized && (
+            {authenticated && (
               <Layout>
                 {hasErrors &&
                   errorContext.errorArray.map((error: any) => {
@@ -76,7 +61,7 @@ const AdminRoute: React.FC<IAdminRouteProps> = (props) => {
                 <Component {...renderProps} {...props.componentProps} />
               </Layout>
             )}
-            {!isAuthorized && <AccessDenied />}
+            {!authenticated && <AccessDenied />}
           </>
         );
       }}

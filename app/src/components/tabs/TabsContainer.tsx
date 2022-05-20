@@ -1,5 +1,5 @@
-import { Capacitor } from '@capacitor/core';
-import { IonAlert } from '@ionic/react';
+import {Capacitor} from '@capacitor/core';
+import {IonAlert} from '@ionic/react';
 import {
   AppBar,
   Avatar,
@@ -26,8 +26,8 @@ import {
   Typography,
   Box
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
+import {makeStyles} from '@mui/styles';
+import {Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search} from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
@@ -38,14 +38,16 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import {NetworkContext} from 'contexts/NetworkContext';
+import {ThemeContext} from 'utils/CustomThemeProvider';
+import React, {useContext, useEffect, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
+import {useDispatch} from "react-redux";
+import {AUTH_SIGNIN_REQUEST} from "../../state/actions";
+import {useSelector} from "../../state/utilities/use_selector";
+import {selectAuth} from "../../state/reducers/auth";
 
 const drawerWidth = 240;
 
@@ -129,27 +131,23 @@ export interface ITabConfig {
 }
 
 export interface ITabsContainerProps {
-  isMobileNoNetwork: boolean;
 }
 
-//const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-//const invbclogo = require('InvasivesBC_Icon.svg');
-
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-  const authContext = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const { userInfo, userInfoLoaded } = useContext(AuthStateContext);
+  const dispatch = useDispatch();
+  const { displayName, roles, hasRole, authenticated } = useSelector(selectAuth);
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('keycloak: ', authContext.keycloak);
     setAnchorEl(event.currentTarget);
   };
 
@@ -157,18 +155,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setShowAlert(true);
   };
 
-  // loadUserFromCache();
-  /*
-    Function to logout current user by wiping their keycloak access token
-  */
   const logoutUser = async () => {
     history.push('/home/landing');
-    await authContext.logoutUser();
+    dispatch({ type: 'AUTH_SIGNOUT_REQUEST'});
     handleClose();
   };
 
   const loginUser = async () => {
-    await authContext.loginUser();
+    dispatch({ type: AUTH_SIGNIN_REQUEST });
     handleClose();
   };
 
@@ -193,6 +187,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     function handleResize() {
       setOpen(false);
     }
+
     window.scrollTo(0, 0);
 
     window.addEventListener('resize', handleResize);
@@ -234,28 +229,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
-
-  const isAuthorized = () => {
-    return userInfoLoaded && authContext.userRoles.length > 0;
-  };
-
-  const isAdmin = (): boolean => {
-    if (isAuthorized()) {
-      return authContext.hasRole('master_administrator');
-    } else return false;
-  };
-
   const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
+  const {themeType, setThemeType} = themeContext;
   const networkContext = useContext(NetworkContext);
-  const { connected, setConnected } = networkContext;
+  const {connected, setConnected} = networkContext;
 
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
@@ -268,14 +245,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         tabsUserHasAccessTo.push({
           label: 'Home',
           path: '/home/landing',
-          icon: <Home fontSize={'small'} />
+          icon: <Home fontSize={'small'}/>
         });
 
         if (!isAuthorized()) {
           tabsUserHasAccessTo.push({
             label: 'Map',
             path: '/home/map',
-            icon: <Map fontSize={'small'} />
+            icon: <Map fontSize={'small'}/>
           });
         }
 
@@ -283,15 +260,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Recorded Activities',
             path: '/home/activities',
-            icon: <HomeWork fontSize={'small'} />
+            icon: <HomeWork fontSize={'small'}/>
           });
         }
 
-        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (isAuthorized() && FEATURE_GATE.PLAN_MY_TRIP) {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
-            icon: <Explore fontSize={'small'} />
+            icon: <Explore fontSize={'small'}/>
           });
         }
 
@@ -299,7 +276,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
-            icon: <Assignment fontSize={'small'} />
+            icon: <Assignment fontSize={'small'}/>
           });
         }
 
@@ -310,7 +287,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: (
               <img
                 src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
-                style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
+                style={{maxWidth: '3.8rem', marginBottom: '6px'}}
               />
             )
           });
@@ -331,25 +308,25 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           tabsUserHasAccessTo.push({
             label: 'Admin',
             path: '/admin/useraccess',
-            icon: <AdminPanelSettingsIcon fontSize={'small'} />
+            icon: <AdminPanelSettingsIcon fontSize={'small'}/>
           });
         }
 
-        if (isAuthorized() && !isMobile()) {
+        if (isAuthorized() && FEATURE_GATE.EMBEDDED_REPORTS) {
           tabsUserHasAccessTo.push({
             label: 'Reports',
             path: '/home/reports',
-            icon: <AssessmentIcon fontSize={'small'} />
+            icon: <AssessmentIcon fontSize={'small'}/>
           });
         }
         return tabsUserHasAccessTo;
       });
     };
     setTabConfigBasedOnRoles();
-  }, [authContext.keycloak, userInfo, userInfoLoaded]);
+  }, []);
 
   if (!tabConfig || !tabConfig.length) {
-    return <CircularProgress />;
+    return <CircularProgress/>;
   }
 
   return (
@@ -366,7 +343,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {}
+            handler: () => {
+            }
           },
           {
             text: 'Okay',
@@ -379,7 +357,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
       <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
         <Container maxWidth="xl">
-          <Toolbar disableGutters style={{ display: 'flex' }}>
+          <Toolbar disableGutters style={{display: 'flex'}}>
             <Hidden mdUp>
               <IconButton
                 color="inherit"
@@ -389,14 +367,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 className={clsx(classes.menuButton, {
                   [classes.hide]: open
                 })}>
-                <MenuIcon />
+                <MenuIcon/>
               </IconButton>
             </Hidden>
             <Box
               sx={{
                 flexGrow: 1,
                 display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
+                flexDirection: {xs: 'column', md: 'row'},
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
@@ -418,18 +396,18 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <b>InvasivesBC</b>
             </Box>
             <Hidden mdDown>
-              <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              <Box sx={{flexGrow: 1, width: '100%', display: {xs: 'none', md: 'flex'}, justifyContent: 'center'}}>
                 <Tabs
                   indicatorColor="secondary"
                   textColor="inherit"
                   value={activeTab}
                   color="primary"
                   centered
-                  style={{ width: '80%', color: '#fff' }}
+                  style={{width: '80%', color: '#fff'}}
                   onChange={handleChange}>
                   {tabConfig.map((tab) => (
                     <Tab
-                      style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                      style={{fontSize: '.7rem', fontWeight: 'bold'}}
                       color="primary"
                       label={tab.label}
                       key={tab.label.split(' ').join('_')}
@@ -439,7 +417,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   ))}
                 </Tabs>
               </Box>
-              <Box sx={{ flexGrow: 0 }}>
+              <Box sx={{flexGrow: 0}}>
                 <IconButton onClick={handleClick} size="small">
                   <Avatar></Avatar>
                 </IconButton>
@@ -450,13 +428,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   PaperProps={{
                     elevation: 3
                   }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                  {isMobile() && (
+                  transformOrigin={{horizontal: 'right', vertical: 'top'}}>
+                  {MOBILE && (
                     <MenuItem>
                       <Switch
                         color="secondary"
                         checked={connected}
-                        checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                        checkedIcon={connected ? <Brightness2Icon/> : <WbSunnyIcon/>}
                         onChange={() => {
                           setConnected(!connected);
                         }}
@@ -468,7 +446,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     <Switch
                       color="secondary"
                       checked={themeType}
-                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      checkedIcon={themeType ? <Brightness2Icon/> : <WbSunnyIcon/>}
                       onChange={() => {
                         setThemeType(!themeType);
                       }}
@@ -478,7 +456,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   {isAuthorized() && (
                     <MenuItem onClick={navToUpdateRequest}>
                       <ListItemIcon>
-                        <AssignmentIndIcon />
+                        <AssignmentIndIcon/>
                       </ListItemIcon>
                       Update My Info
                     </MenuItem>
@@ -486,22 +464,22 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   {isAdmin() && (
                     <MenuItem onClick={navToAdmin}>
                       <ListItemIcon>
-                        <AdminPanelSettingsIcon />
+                        <AdminPanelSettingsIcon/>
                       </ListItemIcon>
                       Admin
                     </MenuItem>
                   )}
-                  {authContext.keycloak.obj?.authenticated ? (
+                  {authenticated ? (
                     <MenuItem onClick={logoutUser}>
                       <ListItemIcon>
-                        <LogoutIcon />
+                        <LogoutIcon/>
                       </ListItemIcon>
                       Logout
                     </MenuItem>
                   ) : (
                     <MenuItem onClick={loginUser}>
                       <ListItemIcon>
-                        <LoginIcon />
+                        <LoginIcon/>
                       </ListItemIcon>
                       Log In
                     </MenuItem>
@@ -529,60 +507,53 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
                 <>
-                  {userInfoLoaded ? (
-                    () => {
-                      if (userInfo.displayName) {
-                        return <Avatar>{userInfo.displayName?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      } else return <></>;
-                    }
-                  ) : (
-                    <Avatar></Avatar>
-                  )}
+                  {authenticated ? (<Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar>) : (
+                    <Avatar/>
+                    )}
                 </>
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
+              <ChevronLeftIcon/>
             </IconButton>
           </div>
-          {authContext.keycloak?.obj?.token ? <p>Keycloak token is present</p> : <></>}
           {networkContext.connected ? (
             <div>
-              {userInfoLoaded ? (
+              {authenticated ? (
                 <MenuItem onClick={showLogoutAlert}>
                   <ListItemIcon>
-                    <LogoutIcon />
+                    <LogoutIcon/>
                   </ListItemIcon>
                   Logout
                 </MenuItem>
               ) : (
                 <MenuItem onClick={loginUser}>
                   <ListItemIcon>
-                    <LoginIcon />
+                    <LoginIcon/>
                   </ListItemIcon>
                   Log In
                 </MenuItem>
               )}
             </div>
           ) : (
-            <Chip className={classes.chip} color="primary" label="Offline Mode" />
+            <Chip className={classes.chip} color="primary" label="Offline Mode"/>
           )}
-          <Divider />
+          <Divider/>
           <List>
             {tabConfig.map((tab) => (
               <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
                 <ListItemIcon>{tab.icon}</ListItemIcon>
-                <ListItemText primary={tab.label} />
+                <ListItemText primary={tab.label}/>
               </ListItem>
             ))}
           </List>
-          <Divider />
+          <Divider/>
           <Grid container justifyContent="center" alignItems="center">
             <FormControlLabel
               control={
                 <Switch
                   checked={themeType}
-                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                  checkedIcon={themeType ? <Brightness2Icon/> : <WbSunnyIcon/>}
                   onChange={() => {
                     setThemeType(!themeType);
                   }}
@@ -597,7 +568,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 control={
                   <Switch
                     checked={connected}
-                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checkedIcon={connected ? <Brightness2Icon/> : <WbSunnyIcon/>}
                     onChange={() => {
                       console.log('on click');
                       console.dir(connected);

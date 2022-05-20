@@ -1,6 +1,5 @@
 import { Http } from '@capacitor-community/http';
 import { Capacitor } from '@capacitor/core';
-import { AuthStateContext } from 'contexts/authStateContext';
 import qs from 'qs';
 import { useContext } from 'react';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
@@ -17,42 +16,10 @@ import {
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
-import { useKeycloak } from '@react-keycloak/web';
+import { useSelector } from 'state/utilities/use_selector';
+import {selectConfiguration} from "../state/reducers/configuration";
+import {selectAuthHeaders} from "../state/reducers/auth";
 
-const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
-const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
-
-const API_HOST = REACT_APP_API_HOST;
-const API_PORT = REACT_APP_API_PORT;
-
-// Set this variable to true to enable debugging of the API calls
-const LOGVERBOSE = false;
-
-// If NODE_ENV is set, it will take precedence.
-// If no node env is set, you get react env vars.
-// If no react env vars are set, you get the default docker URL.
-
-// This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
-
-let API_URL;
-// you can't actually use NODE_ENV becuase you can't override it.
-switch (process.env.REACT_APP_REAL_NODE_ENV) {
-  case 'development':
-    API_URL = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
-    break;
-  case 'test':
-    API_URL = 'https://api-test-invasivesbci.apps.silver.devops.gov.bc.ca';
-    break;
-  case 'production':
-    API_URL = 'https://api-invasivesbci.apps.silver.devops.gov.bc.ca';
-    break;
-  default:
-    API_URL = 'http://localhost:7080';
-    break;
-}
-// This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
-// console.dir(process.env);
-// console.log('API_URL', API_URL);
 
 /**
  * Returns a set of supported api methods.
@@ -62,16 +29,13 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
 export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
-  const [keycloakObject, keycloakReady] = useKeycloak();
+  const { API_BASE, DEBUG } = useSelector(selectConfiguration);
+  const { authorization } = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
-    if (!keycloakObject) {
-      console.error('Network request while keycloak object is not ready');
-    }
-
     return {
-      baseUrl: API_URL,
-      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloakObject.token}` }
+      baseUrl: API_BASE,
+      headers: { 'Access-Control-Allow-Origin': '*', Authorization: authorization }
     };
   };
 
@@ -103,7 +67,7 @@ export const useInvasivesApi = () => {
     });
 
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getActivities', data);
     }
 
@@ -146,7 +110,7 @@ export const useInvasivesApi = () => {
       data: activitiesSearchCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getActivitiesLean', data);
     }
     return data.result;
@@ -167,7 +131,7 @@ export const useInvasivesApi = () => {
       data: jurisdictionsSearchCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getJurisdictions', data);
     }
     return data.result;
@@ -188,7 +152,7 @@ export const useInvasivesApi = () => {
       data: risoSearchCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getRISOs', data);
     }
 
@@ -209,7 +173,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('deleteActivities', data);
     }
 
@@ -230,7 +194,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('undeleteActivities', data);
     }
 
@@ -253,7 +217,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getRoles', data);
     }
 
@@ -276,7 +240,7 @@ export const useInvasivesApi = () => {
       data: pointsOfInterestSearchCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getPointsOfInterest', data);
     }
 
@@ -314,7 +278,7 @@ export const useInvasivesApi = () => {
       data: accessRequest
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getAccessRequestData', data);
     }
 
@@ -330,7 +294,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getAccessRequests', data);
     }
 
@@ -347,7 +311,7 @@ export const useInvasivesApi = () => {
       data: { approvedAccessRequests: accessRequests }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('approveAccessRequests', data);
     }
 
@@ -363,7 +327,7 @@ export const useInvasivesApi = () => {
       data: { declinedAccessRequest: accessRequest }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('declineAccessRequest', data);
     }
 
@@ -379,7 +343,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('revokeRoleFromUser', data);
     }
 
@@ -397,7 +361,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getRolesForUser', data);
     }
 
@@ -412,7 +376,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getUsersForRole', data);
     }
 
@@ -428,7 +392,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('batchGrantRoleToUser', data);
     }
 
@@ -444,7 +408,7 @@ export const useInvasivesApi = () => {
       data: { newAccessRequest: accessRequest }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('submitAccessRequest', data);
     }
 
@@ -460,7 +424,7 @@ export const useInvasivesApi = () => {
       data: { newUpdateRequest: updateRequest }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('submitUpdateRequest', data);
     }
 
@@ -475,7 +439,7 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getUpdateRequests', data);
     }
 
@@ -491,7 +455,7 @@ export const useInvasivesApi = () => {
       data: { declinedUpdateRequest: updateRequest }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('declineUpdateRequest', data);
     }
 
@@ -507,7 +471,7 @@ export const useInvasivesApi = () => {
       data: { approvedUpdateRequests: updateRequest }
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('approveUpdateRequests', data);
     }
 
@@ -522,7 +486,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/agency_codes`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getFundingAgencies', data);
     }
 
@@ -537,7 +501,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/employer_codes`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getEmployers', data);
     }
 
@@ -561,7 +525,7 @@ export const useInvasivesApi = () => {
       data: pointsOfInterestSearchCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getPointsOfInterestLean', data);
     }
 
@@ -623,7 +587,7 @@ export const useInvasivesApi = () => {
       data: metabaseQueriesCreateCriteria
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('createMetabaseQuery', data);
     }
 
@@ -643,7 +607,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/metabase-query`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getMetabaseQueryOptions', data);
     }
 
@@ -667,7 +631,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/bc-grid/bcGrid`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getGridItemsThatOverlapPolygon', data);
     }
 
@@ -688,7 +652,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activity/${activityId}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getActivityById', data);
     }
 
@@ -709,7 +673,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getMedia', data);
     }
 
@@ -729,7 +693,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/application-user`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getApplicationUsers', data);
     }
 
@@ -744,7 +708,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/application-user/renew?userId=${id}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('renewUser', data);
     }
 
@@ -762,7 +726,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/application-user?idir=${idir_userid}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getUserByIDIR', data);
     }
 
@@ -780,7 +744,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getUserByBCEID', data);
     }
 
@@ -802,7 +766,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + '/api/activity'
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('createActivity', data);
     }
 
@@ -827,7 +791,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + '/api/activity'
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('updateActivity', data);
     }
 
@@ -847,7 +811,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/api-docs/`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getApiSpec', data);
     }
 
@@ -867,7 +831,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/map-shaper?url=${url}&percentage=${percentage}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getSimplifiedGeoJSON', data);
     }
 
@@ -1041,7 +1005,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/species?` + qs.stringify({ key: species })
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getSpeciesDetails', data);
     }
 
@@ -1063,7 +1027,7 @@ export const useInvasivesApi = () => {
       url: `${options.baseUrl}/api/batch/new_upload`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('postBatchUpload', data);
     }
 
@@ -1079,7 +1043,7 @@ export const useInvasivesApi = () => {
       url: `${options.baseUrl}/api/batch/upload`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getBatchUploads', data);
     }
 
@@ -1094,7 +1058,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + '/api/batch/new_template'
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('downloadTemplate', data);
     }
 
@@ -1109,7 +1073,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + '/api/code_tables'
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('listCodeTables', data);
     }
 
@@ -1124,7 +1088,7 @@ export const useInvasivesApi = () => {
       url: `${options.baseUrl}/api/code_tables/${codeHeaderName}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('fetchCodeTable', data);
     }
 
@@ -1145,7 +1109,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/admin-defined-shapes?user_id=${user_id}`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('getAdminUploadGeoJSONLayer', data);
     }
 
@@ -1167,7 +1131,7 @@ export const useInvasivesApi = () => {
       url: `${options.baseUrl}/api/admin-defined-shapes`
     });
     checkForErrors(data);
-    if (LOGVERBOSE) {
+    if (DEBUG) {
       console.log('postAdminUploadShape', data);
     }
 

@@ -14,23 +14,23 @@ import AddIcon from '@mui/icons-material/Add';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { Autocomplete } from '@mui/material';
 import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { generateDBActivityPayload, sanitizeRecord } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import {useSelector} from "../../../../../state/utilities/use_selector";
+import {selectAuth} from "../../../../../state/reducers/auth";
 
 export const NewRecord = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
-  const history = useHistory();
+  const { bestName } = useSelector(selectAuth);
 
   // Is this needed? Copied from DisplayPosition
 
@@ -41,7 +41,6 @@ export const NewRecord = (props) => {
   }
   const [recordCategory, setRecordCategory] = useState(recordCategoryTypes.plant);
   const [recordType, setRecordType] = useState(ActivitySubtypeShortLabels.Activity_Observation_PlantTerrestrial);
-  const { userInfo } = useContext(AuthStateContext);
   const [isDroppingMarker, setIsDroppingMarker] = useState(false);
   const mapRecordsContext = useContext(MapRecordsContext);
 
@@ -186,7 +185,7 @@ export const NewRecord = (props) => {
   */
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-    dbActivity.created_by = (userInfo as any)?.preferred_username;
+    dbActivity.created_by = bestName;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
@@ -196,7 +195,7 @@ export const NewRecord = (props) => {
     }
     return dbActivity.activity_id;
     /* setTimeout(() => {
-      
+
       history.push({ pathname: `/home/activity` });
     }, 1000);
     */

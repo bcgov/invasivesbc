@@ -10,7 +10,6 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
 import React, { useContext, useEffect, useState } from 'react';
@@ -27,15 +26,15 @@ import {
   MyPlantTreatmentsTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
-import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
 import Sync from '@mui/icons-material/Sync';
 import { IonAlert } from '@ionic/react';
-import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityListDate from './ActivityListDate';
 import { PointsOfInterestTable } from 'components/common/IAPPRecordTables';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectConfiguration } from '../../state/reducers/configuration';
 
 const useStyles = makeStyles((theme: any) => ({
   newActivityButtonsRow: {
@@ -181,36 +180,10 @@ const ActivitiesList: React.FC<IActivityList> = () => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
 
-  // let hasPlantAccess = false;
-  // let hasAnimalAccess = false;
-
-  const databaseContext = useContext(DatabaseContext);
-  const { keycloak } = useKeycloak();
-  // let accessLevel = GetUserAccessLevel();
-  // if (accessLevel.hasPlantAccess) {
-  //   hasPlantAccess = true;
-  // }
-  // if (accessLevel.hasAnimalAccess) {
-  //   hasAnimalAccess = true;
-  // }
-  useEffect(() => {
-    const userId = async () => {
-      const userInfo: any = keycloak
-        ? keycloak?.userInfo
-        : await databaseContext.asyncQueue({
-            asyncTask: () => {
-              return query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext);
-            }
-          });
-
-      return userInfo?.preferred_username;
-    };
-    if (!userId) throw new Error("Keycloak error: can not get current user's username");
-  }, [databaseContext, keycloak]);
-
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
   const [showAlert, setShowAlert] = useState(false);
   const networkContext = useContext(NetworkContext);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const syncCachedActivities = async () => {
     try {
@@ -223,76 +196,6 @@ const ActivitiesList: React.FC<IActivityList> = () => {
   const showPrompt = () => {
     setShowAlert(true);
   };
-
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
-
-  // const syncActivities = async () => {
-  //   setIsDisable(true);
-  //   setSyncing(true);
-
-  //   // fetch all activity documents that are ready to sync
-  //   const activityResult = await databaseContext.database.find({
-  //     selector: {
-  //       docType: DocType.ACTIVITY,
-  //       formStatus: FormValidationStatus.VALID,
-  //       'sync.ready': true,
-  //       'sync.status': { $ne: ActivitySyncStatus.SAVE_SUCCESSFUL }
-  //     },
-  //     use_index: 'formStatusIndex'
-  //   });
-
-  //   let errorMessages = [];
-
-  //   // sync each activity one-by-one
-  //   for (const activity of activityResult.docs) {
-  //     try {
-  //       await invasivesApi.createActivity({
-  //         activity_id: activity.activityId,
-  //         created_timestamp: activity.dateCreated,
-  //         activity_type: activity.activityType,
-  //         activity_subtype: activity.activitySubtype,
-  //         geometry: activity.geometry,
-  //         media:
-  //           activity.photos &&
-  //           activity.photos.map((photo) => {
-  //             return { file_name: photo.filepath, encoded_file: photo.dataUrl, description: photo.description };
-  //           }),
-  //         form_data: activity.formData
-  //       });
-
-  //       notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
-
-  //       await databaseContext.database.upsert(activity._id, (activityDoc) => {
-  //         return {
-  //           ...activityDoc,
-  //           sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_SUCCESSFUL, error: null }
-  //         };
-  //       });
-  //     } catch (error) {
-  //       notifyError(databaseContext, JSON.stringify(error));
-  //       alert(JSON.stringify(error));
-  //       const errorMessage = getErrorMessages(error.response.status, 'formSync');
-
-  //       errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
-
-  //       await databaseContext.database.upsert(activity._id, (activityDoc) => {
-  //         return {
-  //           ...activityDoc,
-  //           sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_FAILED, error: error.message }
-  //         };
-  //       });
-  //     }
-  //   }
-
-  //   errorMessages.forEach((err: string) => {
-  //     notifyError(databaseContext, err);
-  //   });
-
-  //   setSyncing(false);
-  //   setIsDisable(false);
-  // };
 
   const handleWorkflowFunctionChange = (event: any) => {
     setWorkflowFunction(event.target.value);
@@ -334,7 +237,7 @@ const ActivitiesList: React.FC<IActivityList> = () => {
               <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
-          {isMobile() && networkContext.connected && (
+          {MOBILE && networkContext.connected && (
             <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
               Sync Cached Records
             </Button>

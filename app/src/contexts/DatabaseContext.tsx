@@ -4,7 +4,6 @@ import { DocType } from 'constants/database';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
-import { AuthStateContext } from './authStateContext';
 // Singleton SQLite Hook
 export let sqlite: any;
 // Existing Connections Store
@@ -26,7 +25,6 @@ export const DatabaseContext = React.createContext({
 });
 
 export const DatabaseContextProvider = (props) => {
-  const { keycloak } = useContext(AuthStateContext);
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
   const dbRequestQueue = new PQueue({ concurrency: 1 });
@@ -101,32 +99,32 @@ export const DatabaseContextProvider = (props) => {
     // a bunch of one time stuff
   }, []);
 
-  useEffect(() => {
-    const saveUserInfo = async () => {
-      const user = keycloak?.userInfo;
-      if (!user) {
-        return;
-      }
-      if (Capacitor.getPlatform() !== 'web' && databaseIsSetup && sqlite) {
-        await processRequest({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-                  docType: DocType.KEYCLOAK,
-                  ID: '1',
-                  json: user
-                }
-              ],
-              DatabaseContext
-            );
-          }
-        });
-      }
-    };
-    saveUserInfo();
-  }, [keycloak?.obj, keycloak?.userInfo, processRequest, databaseIsSetup]);
+  // useEffect(() => {
+  //   const saveUserInfo = async () => {
+  //     const user = keycloak?.userInfo;
+  //     if (!user) {
+  //       return;
+  //     }
+  //     if (Capacitor.getPlatform() !== 'web' && databaseIsSetup && sqlite) {
+  //       await processRequest({
+  //         asyncTask: () => {
+  //           return upsert(
+  //             [
+  //               {
+  //                 type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+  //                 docType: DocType.KEYCLOAK,
+  //                 ID: '1',
+  //                 json: user
+  //               }
+  //             ],
+  //             DatabaseContext
+  //           );
+  //         }
+  //       });
+  //     }
+  //   };
+  //   saveUserInfo();
+  // }, [keycloak?.obj, keycloak?.userInfo, processRequest, databaseIsSetup]);
 
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
@@ -143,16 +141,16 @@ export const DatabaseContextProvider = (props) => {
     for (const value of enumKeys(DocType)) {
       switch (value) {
         case 'CODE_TABLE':
-          setupSQL += `create table if not exists  
-            ${DocType[value]} 
+          setupSQL += `create table if not exists
+            ${DocType[value]}
              (
               id TEXT PRIMARY KEY,
               json TEXT
             );`;
           break;
         case 'SMALL_GRID_LAYER_DATA':
-          setupSQL += `create table if not exists  
-            ${DocType[value]} 
+          setupSQL += `create table if not exists
+            ${DocType[value]}
              (
               id INTEGER,
               featureArea TEXT,
@@ -162,16 +160,16 @@ export const DatabaseContextProvider = (props) => {
             );create unique index IF NOT EXISTS idx_smallGrid_id_layerName on SMALL_GRID_LAYER_DATA (id, layerName);\n`;
           break;
         case 'LARGE_GRID_LAYER_DATA':
-          setupSQL += `create table if not exists  
-            ${DocType[value]} 
+          setupSQL += `create table if not exists
+            ${DocType[value]}
              (
               id INTEGER UNIQUE,
               featureArea TEXT
             );`;
           break;
         case 'TRIP':
-          setupSQL += `create table if not exists 
-            ${DocType[value]} 
+          setupSQL += `create table if not exists
+            ${DocType[value]}
              (
               id INTEGER PRIMARY KEY,
               json TEXT,
@@ -179,8 +177,8 @@ export const DatabaseContextProvider = (props) => {
             );\n`;
           break;
         case 'REFERENCE_ACTIVITY':
-          setupSQL += `create table if not exists 
-            ${DocType[value]} 
+          setupSQL += `create table if not exists
+            ${DocType[value]}
              (
               id TEXT PRIMARY KEY,
               json TEXT,
@@ -188,7 +186,7 @@ export const DatabaseContextProvider = (props) => {
             );\n`;
           break;
         case 'ACTIVITY':
-          setupSQL += `create table if not exists  
+          setupSQL += `create table if not exists
             ${DocType[value]}
              (
               id TEXT PRIMARY KEY,
@@ -198,21 +196,21 @@ export const DatabaseContextProvider = (props) => {
             );\n`;
           break;
         case 'REFERENCE_POINT_OF_INTEREST':
-          setupSQL += `create table if not exists ${DocType[value]} 
+          setupSQL += `create table if not exists ${DocType[value]}
              (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
           break;
         case 'LAYER_STYLES':
-          setupSQL += `create table if not exists ${DocType[value]} 
+          setupSQL += `create table if not exists ${DocType[value]}
              (
               layerName TEXT UNIQUE,
               json TEXT
             );\n`;
           break;
         default:
-          setupSQL += `create table if not exists ${DocType[value]} 
+          setupSQL += `create table if not exists ${DocType[value]}
              (
               id INTEGER PRIMARY KEY,
               json TEXT

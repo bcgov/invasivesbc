@@ -30,8 +30,9 @@ import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplet
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
-import { AuthStateContext } from 'contexts/authStateContext';
 import PasteButtonComponent from './PasteButtonComponent';
+import {useSelector} from "../../state/utilities/use_selector";
+import {selectAuth} from "../../state/reducers/auth";
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -76,7 +77,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const { rolesUserHasAccessTo, keycloak } = useContext(AuthStateContext);
+  const { roles, authenticated } = useSelector(selectAuth);
+
 
   useEffect(() => {
     if (!props.activity?.formData) {
@@ -309,7 +311,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               activity_type: ['Treatment', 'Biocontrol'],
               activity_subtype: linkedActivitySubtypes,
               order: ['created_timestamp'],
-              user_roles: rolesUserHasAccessTo
+              user_roles: roles
             });
             const treatments = treatments_response.rows.map((treatment, i) => {
               const shortActID = getShortActivityID(treatment);
@@ -355,10 +357,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         uiSchema: uiSchema
       });
     };
-    if (keycloak?.obj?.authenticated) {
+    if (authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activitySubtype, keycloak?.obj?.authenticated, props.activity.activity_subtype]);
+  }, [props.activity.activitySubtype, authenticated, props.activity.activity_subtype]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 

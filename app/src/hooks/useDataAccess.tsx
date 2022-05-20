@@ -1,7 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 import { ActivitySyncStatus } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useContext, useEffect } from 'react';
 import { DocType } from '../constants/database';
@@ -26,12 +25,7 @@ export const useDataAccess = () => {
   const databaseContext = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
-  const authContext = useContext(AuthStateContext);
-  const keycloak = authContext.keycloak; //useKeycloak();
 
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
 
   /**
    * Fetch points of interest by search criteria.
@@ -276,7 +270,7 @@ export const useDataAccess = () => {
   };
 
   const cacheApplicationUsers = async () => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE) {
       const users = await api.getApplicationUsers();
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -289,9 +283,9 @@ export const useDataAccess = () => {
     }
   };
 
-  useEffect(() => {
-    if (keycloak?.obj?.token) cacheApplicationUsers();
-  }, [networkContext.connected, keycloak?.obj?.authenticated]);
+  // useEffect(() => {
+  //   if (authorization) cacheApplicationUsers();
+  // }, [networkContext.connected, authenticated]);
 
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
@@ -334,7 +328,7 @@ export const useDataAccess = () => {
   };
 
   const cacheEmployers = async () => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE) {
       const employers = await api.getEmployers();
       console.log('employers', employers);
       return databaseContext.asyncQueue({
@@ -349,7 +343,7 @@ export const useDataAccess = () => {
   };
 
   const cacheFundingAgencies = async () => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const agencies = await api.getFundingAgencies();
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -363,7 +357,7 @@ export const useDataAccess = () => {
   };
 
   const cacheRolesForUser = async (userId) => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const userRoles = await api.getRolesForUser(userId);
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -377,7 +371,7 @@ export const useDataAccess = () => {
   };
 
   const cacheAllRoles = async () => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const roles = await api.getRoles();
       if (!roles) {
         return;
@@ -395,7 +389,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCurrentUserBCEID = async (bceid_userid) => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const user = await api.getUserByBCEID(bceid_userid);
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -409,7 +403,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCurrentUserIDIR = async (idir_userid) => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const user = await api.getUserByIDIR(idir_userid);
 
       return databaseContext.asyncQueue({
@@ -768,7 +762,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCodeTables = async (): Promise<any> => {
-    if (networkContext.connected && isMobile()) {
+    if (networkContext.connected && MOBILE()) {
       const codeTables = await api.listCodeTables();
       console.log('Attempting to cache code tables...');
       if (codeTables && codeTables.length > 0) {

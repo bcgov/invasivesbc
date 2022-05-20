@@ -13,7 +13,6 @@ import PrivateRoute from 'utils/PrivateRoute';
 import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
-import { AuthStateContext } from '../../contexts/authStateContext';
 import LandingPage from './landing/LandingPage';
 import {EmbeddedReportsPage} from "./reports/EmbeddedReportsPage";
 import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
@@ -23,7 +22,6 @@ interface IHomeRouterProps {
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
-  const authContext = React.useContext(AuthStateContext);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };

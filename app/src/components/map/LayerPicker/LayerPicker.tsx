@@ -23,8 +23,9 @@ import LayersIcon from '@mui/icons-material/Layers';
 import { KMLShapesUpload } from '../../map-buddy-components/KMLShapesUpload';
 import SortableListContainer from './Sorting/SortableListContainer';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -33,17 +34,17 @@ export const LayerPicker = React.memo(
     const toolClass = toolStyles();
     const divref = useRef();
 
-    const { userInfo } = useContext(AuthStateContext);
     const networkContext = useContext(NetworkContext);
-    const { user_id } = userInfo;
     const invasivesApi = useInvasivesApi();
 
+    const { userId } = useSelector(selectAuth);
+
     useEffect(() => {
-      if (!layers || !user_id) {
+      if (!layers || !userId) {
         return;
       }
       const fetchUploadedLayers = () => {
-        invasivesApi.getAdminUploadGeoJSONLayers(user_id).then((data) => {
+        invasivesApi.getAdminUploadGeoJSONLayers(userId).then((data) => {
           if (data.length > 0) {
             setLayers((prev: any) => {
               let newLayers = [...prev];
