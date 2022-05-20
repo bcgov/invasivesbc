@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Box, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Button, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { ListItemButton } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -12,6 +12,7 @@ import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 
 import CheckIcon from '@mui/icons-material/Check';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditTools from '../Data/EditTools';
 /*
 
@@ -22,10 +23,10 @@ import EditTools from '../Data/EditTools';
 */
 
 interface Boundary {
-  id: Number,
-  name: String,
+  id: number,
+  name: string,
   geos: [],
-  server_id: Number
+  server_id: number
 }
 
 export const JumpToTrip = (props) => {
@@ -55,6 +56,7 @@ export const JumpToTrip = (props) => {
   const [index, setIndex] = useState<number>(0);
   const [edit, setEdit] = useState(false);
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
+  const [idCount, setIdCount] = useState(0);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
@@ -77,13 +79,6 @@ export const JumpToTrip = (props) => {
       flyToContext.go([IFlyToAndFadeItems[index]]);
     }
   }, [index]);
-
-  const getBoundaries = async () => {
-    const results = await dataAccess.getBoundaries();
-    if (results) {
-      setBoundaries([results]);
-    }
-  };
 
   // can be replaced with a menu (later):
   const getTripGeosAndInitialPosition = async () => {
@@ -148,14 +143,33 @@ export const JumpToTrip = (props) => {
     setIFlyToAndFadeItems([...items]);
   };
 
-  const updateBoundary = (() => {
+  const setBoundaryIdCount = (() => {
+    if (boundaries && boundaries.length > 0) {
+      //ensures id is not repeated on client side
+      const max = Math.max(...boundaries.map(b => b.id));
+      setIdCount(max + 1);
+    }
+  });
+
+  useEffect(() => {
+    setBoundaryIdCount();
+  }, [boundaries]);
+
+  const getBoundaries = async () => {
+    const results = await dataAccess.getBoundaries();
+    if (results) {
+      setBoundaries(results);
+    }
+  };
+
+  const createBoundary = (() => {
     const dowe = window.confirm('Create new named boundary?');
     if (dowe) {
       const name = prompt('Name:');
       setEdit(true);
 
       const tempBoundary: Boundary = {
-        id: null,
+        id: idCount,
         name: name,
         geos: [],
         server_id: null
@@ -166,11 +180,16 @@ export const JumpToTrip = (props) => {
     }
   });
 
+  const deleteBoundary = async (id: number) => {
+    await dataAccess.deleteBoundary(id);
+    getBoundaries();
+  }
+
   return (
     <Box>
       <ListItem disableGutters>
         <ListItemButton
-          onClick={updateBoundary}
+          onClick={createBoundary}
           ref={divRef}
           aria-label="Jump To Location"
           style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
@@ -195,6 +214,11 @@ export const JumpToTrip = (props) => {
           </ListItemText>
           <ListItemIcon>
             <CheckIcon />
+          </ListItemIcon>
+          <ListItemIcon>
+            <Button onClick={() => deleteBoundary(boundary.id)}>
+              <DeleteIcon />
+            </Button>
           </ListItemIcon>
         </ListItem>
       ))}

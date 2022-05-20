@@ -277,16 +277,15 @@ export const useDataAccess = () => {
         //no reject for now so it fails gracefully and returns a null to be handled in jumptotrip
       });
     }
-    
   };
-  
+
   /**
-   * Add new boundary object (triip currenntly) record
+   * Add new boundary object (trip currently) record
    *
    * @param {any} newBoundaryObj
    * @return {*}  {Promise<any>}
    */
-  const addBoundary = async (newBoundaryObj: any) => {
+   const addBoundary = async (newBoundaryObj: any) => {
     if (isMobile()) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -297,10 +296,34 @@ export const useDataAccess = () => {
       //cache in localStorage
       const boundaries = [];
       const currBoundaries = await getBoundaries();
+
       if (currBoundaries) boundaries.push(...currBoundaries);
       boundaries.push(newBoundaryObj);
 
       localStorage.setItem("boundaries", JSON.stringify(boundaries));
+    }
+  };
+
+  /**
+   * Delete boundary object (trip currently) record
+   *
+   * @param {any} id
+   * @return {*}  {Promise<any>}
+   */
+   const deleteBoundary = async (id) => {
+    if (isMobile()) {
+      // return databaseContext.asyncQueue({
+      //   asyncTask: () => {
+      //     return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newBoundaryObj }], databaseContext);
+      //   }
+      // });
+    } else {
+      const boundaries = await getBoundaries();
+      const newBoundaries = boundaries.filter((b) => {
+        return b.id !== id;
+      });
+
+      localStorage.setItem("boundaries", JSON.stringify(newBoundaries));
     }
   };
 
@@ -905,6 +928,7 @@ export const useDataAccess = () => {
     addTrip,
     getBoundaries,
     addBoundary,
+    deleteBoundary,
     getActivities,
     getActivitiesLean,
     createActivity,
