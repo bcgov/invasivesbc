@@ -24,10 +24,9 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const [open, setOpen] = React.useState(false);
 
   const deleteRecord = () => {
-    history.push('/home/activities');
     const activityIds = [props.activity.activityId];
-    const createdBy = [props.activity.createdBy];
-    dataAccess.deleteActivities(activityIds, createdBy);
+    dataAccess.deleteActivities(activityIds);
+    history.push('/home/activities');
   };
 
   const DeleteDialog = () => {
