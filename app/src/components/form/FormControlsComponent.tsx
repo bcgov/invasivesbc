@@ -25,10 +25,6 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const [open, setOpen] = React.useState(false);
   const { userInfo } = React.useContext(AuthStateContext);
 
-  React.useEffect(() => {
-    console.log(props);
-  }, [userInfo]);
-
   const deleteRecord = () => {
     const activityIds = [props.activity.activityId];
     dataAccess.deleteActivities(activityIds);
