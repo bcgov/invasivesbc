@@ -291,34 +291,57 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  * @return {RequestHandler}
  */
 function deleteActivitiesByIds(): RequestHandler {
-  return async (req: any, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
+    const sanitizedSearchCriteria = new ActivitySearchCriteria({
+      keycloakToken: req.keycloakToken
+    });
+
+    const isAdmin = false; // Determines if user can delete other peoples records
+    const preferred_username = [req.authContext.user['preferred_username']];
     const ids = Object.values(req.query.id) as string[];
+    sanitizedSearchCriteria.activity_ids = ids;
 
-    if (!ids || !ids.length) {
-      return res
-        .status(400)
-        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
-    }
-
-    const createdBy = Object.values(req?.query?.createdBy) as string[];
-
-    for (var i = 0; i < createdBy.length; i++) {
-      if (createdBy[i] !== req?.authContext?.preferredUsername) {
-        return res.status(401).json({
-          message: 'Invalid request, user is not authorized to delete this record', // better message
-          request: req.body,
-          namespcae: 'activities',
-          code: 401
-        });
-      }
-    }
     const connection = await getDBConnection();
     if (!connection) {
       return res
         .status(503)
         .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
+    }
+
+    if (isAdmin === false) {
+      const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria);
+
+      if (!sqlStatement) {
+        return res
+          .status(500)
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      // response.rows.forEach((activity) => {
+      for (var i in response.rows) {
+        if (response.rows[i].created_by !== preferred_username[0]) {
+          console.log('====================== activities.ts 327', response.rows[i], preferred_username);
+          return res.status(401).json({
+            message: 'Invalid request, user is not authorized to delete this record', // better message
+            request: req.body,
+            namespace: 'activities',
+            code: 401
+          });
+        }
+      }
+      // });
+    } else {
+      // dont need to check for preferred username
+    }
+
+    if (!ids || !ids.length) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
     }
 
     try {
