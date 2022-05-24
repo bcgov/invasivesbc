@@ -17,9 +17,6 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import { AuthStateContext } from 'contexts/authStateContext';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
