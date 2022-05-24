@@ -77,7 +77,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                 <Button
                   variant="contained"
                   color="primary"
-                  // disabled={userInfo.preferred_username !== props.activity.createdBy}
+                  disabled={userInfo.preferred_username !== props.activity.createdBy}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
