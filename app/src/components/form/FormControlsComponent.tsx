@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogTitle, Grid, Tooltip, Zoom } from '@mui/material';
+import { AuthStateContext } from 'contexts/authStateContext';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -22,6 +23,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
+  const { userInfo } = React.useContext(AuthStateContext);
+
+  React.useEffect(() => {
+    console.log(props);
+  }, [userInfo]);
 
   const deleteRecord = () => {
     const activityIds = [props.activity.activityId];
@@ -75,7 +81,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                 <Button
                   variant="contained"
                   color="primary"
-                  // disabled={props.isAlreadySubmitted()}
+                  // disabled={userInfo.preferred_username !== props.activity.createdBy}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
