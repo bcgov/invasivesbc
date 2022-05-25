@@ -82,7 +82,7 @@ export const useInvasivesApi = () => {
           ? response.message
           : "We're not sure what happened there. Try again in a few minutes.",
         code: response.code ? response.code : 500,
-        namespace: response.namespace ? response.namespace : 'Something went wrong...'
+        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && API_URL
       });
     }
   };
