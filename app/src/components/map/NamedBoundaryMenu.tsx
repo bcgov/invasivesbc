@@ -10,12 +10,15 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
+import ExploreIcon from '@mui/icons-material/Explore';
 import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { ListItem, ListItemButton, ListItemIcon, ListItemText, Theme, Typography } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 import TabUnselectedIcon from '@mui/icons-material/TabUnselected';
+import { toolStyles } from './Tools/Helpers/ToolStyles';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -55,13 +58,25 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+interface Boundary {
+  id: number,
+  name: string,
+  geos: [],
+  server_id: number
+}
+
 export const NamedBoundaryMenu = (props) => {
+  const dataAccess = useDataAccess();
+  // style
+  const toolClass = toolStyles();
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
 
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
   const classes = useToolbarContainerStyles();
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
+  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
+  const [idCount, setIdCount] = useState(0);
 
   const handleExpand = () => {
     setExpanded((prev) => {
@@ -72,7 +87,50 @@ export const NamedBoundaryMenu = (props) => {
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
+    getBoundaries();
+  }, []);
+
+  const setBoundaryIdCount = (() => {
+    if (boundaries && boundaries.length > 0) {
+      //ensures id is not repeated on client side
+      const max = Math.max(...boundaries.map(b => b.id));
+      setIdCount(max + 1);
+    }
   });
+
+  useEffect(() => {
+    setBoundaryIdCount();
+  }, [boundaries]);
+
+  const getBoundaries = async () => {
+    const results = await dataAccess.getBoundaries();
+    if (results) {
+      setBoundaries(results);
+    }
+  };
+
+  const createBoundary = (() => {
+    const dowe = window.confirm('Create new named boundary?');
+    if (dowe) {
+      const name = prompt('Name:');
+      // setEdit(true);
+
+      const tempBoundary: Boundary = {
+        id: idCount,
+        name: name,
+        geos: [],
+        server_id: null
+      };
+
+      dataAccess.addBoundary(tempBoundary);
+      setBoundaries([...boundaries, tempBoundary]);
+    }
+  });
+
+  const deleteBoundary = async (id: number) => {
+    await dataAccess.deleteBoundary(id);
+    getBoundaries();
+  }
 
   return (
     <>
@@ -91,7 +149,23 @@ export const NamedBoundaryMenu = (props) => {
           className={classes.innerToolBarContainer + ' leaflet-control'}
           style={{ transform: expanded ? 'translateX(5%)' : 'translateX(-110%)' }}>
           <Divider />
-          <JumpToTrip />
+          <ListItem disableGutters>
+            <ListItemButton
+              onClick={createBoundary}
+              ref={divRef}
+              aria-label="Jump To Location"
+              style={{ padding: 10, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
+              <ListItemIcon>
+                <ExploreIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography className={toolClass.Font}>New Boundary</Typography>
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
+          {boundaries.map((b, index) => (
+            <JumpToTrip id={b.id} name={b.name} key={index} deleteBoundary={deleteBoundary}/>
+          ))}
         </List>
       </div>
     </>
