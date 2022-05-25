@@ -242,7 +242,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-    sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
+    // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
 
     const connection = await getDBConnection();
     if (!connection) {
