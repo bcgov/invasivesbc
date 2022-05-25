@@ -83,6 +83,7 @@ const PageContainer = (props) => {
   const history = useHistory();
   const recordStateContext = useContext(RecordSetContext);
   const [geometry, setGeometry] = useState<any[]>([]);
+  const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
   const classes = useStyles();
   const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
@@ -217,7 +218,8 @@ const PageContainer = (props) => {
         <MapRecordsContextProvider>
           <MapContainer
             classes={classes}
-            showDrawControls={false}
+            showDrawControls={showDrawControls}
+            setShowDrawControls={setShowDrawControls}
             center={[55, -128]}
             zoom={5}
             mapId={'mainMap'}

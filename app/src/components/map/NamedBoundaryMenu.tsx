@@ -112,20 +112,29 @@ export const NamedBoundaryMenu = (props) => {
   const createBoundary = (() => {
     const dowe = window.confirm('Create new named boundary?');
     if (dowe) {
-      const name = prompt('Name:');
-      // setEdit(true);
-
-      const tempBoundary: Boundary = {
-        id: idCount,
-        name: name,
-        geos: [],
-        server_id: null
-      };
-
-      dataAccess.addBoundary(tempBoundary);
-      setBoundaries([...boundaries, tempBoundary]);
+      props.setShowDrawControls(true);
     }
   });
+
+  const addBoundary = ((geoArray) => {
+    const name = prompt('Name:');
+
+    const tempBoundary: Boundary = {
+      id: idCount,
+      name: name,
+      geos: geoArray,
+      server_id: null
+    };
+
+    dataAccess.addBoundary(tempBoundary);
+    setBoundaries([...boundaries, tempBoundary]);
+  });
+
+  useEffect(() => {
+    if (props?.geometryState?.geometry?.length > 0) {
+      addBoundary(props?.geometryState?.geometry);
+    }
+  }, [props?.geometryState?.geometry]);
 
   const deleteBoundary = async (id: number) => {
     await dataAccess.deleteBoundary(id);
@@ -164,7 +173,7 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {boundaries.map((b, index) => (
-            <JumpToTrip id={b.id} name={b.name} key={index} deleteBoundary={deleteBoundary}/>
+            <JumpToTrip id={b.id} name={b.name} geos={b.geos} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
       </div>

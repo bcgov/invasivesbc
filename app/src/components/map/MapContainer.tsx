@@ -108,6 +108,7 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   showDrawControls: boolean;
+  setShowDrawControls: React.Dispatch<boolean>;
   zoom?: any;
   center?: any;
   isPlanPage?: boolean;
@@ -244,6 +245,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
             <NamedBoundaryMenu
+              {...props}
               position="topleft"
               id={props.activityId}
               map={map}
