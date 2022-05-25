@@ -10,7 +10,7 @@ export interface IHomeLayoutProps {
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   return (
     <Box width="100%" height="100%" display="flex" flex="1" flexDirection="column">
-      <Box height="80px">
+      <Box height="1vh - 80">
         <TabsContainer isMobileNoNetwork={props?.children.props?.isMobileNoNetwork} />
       </Box>
       <Box height="100%" width="100%" overflow="auto">

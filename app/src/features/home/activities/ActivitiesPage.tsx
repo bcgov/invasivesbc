@@ -86,9 +86,14 @@ const PageContainer = (props) => {
   const classes = useStyles();
   const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
+  const [height, setHeight] = React.useState(window.innerHeight);
 
   const updateWidth = () => {
     setWidth(window.innerWidth);
+  };
+
+  const updateHeight = () => {
+    setHeight(window.innerHeight);
   };
 
   const handleNewRecordDialogClose = () => {
@@ -108,7 +113,11 @@ const PageContainer = (props) => {
   });
 
   useEffect(() => {
-    window.addEventListener('resize', updateWidth);
+    const updateDimensions = () => {
+      updateWidth();
+      // updateHeight();
+    };
+    window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateWidth);
   });
 
@@ -198,7 +207,7 @@ const PageContainer = (props) => {
   }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
 
   const recordsClosedHeight = () => {
-    return width > 415 ? 'calc(100% - 50px)' : 'calc(100% - 30px)';
+    return width > 900 ? 'calc(100% - 5vh)' : 'calc(100vh - env(safe-area-inset-bottom) - 12.5vh)';
   };
 
   /* set up main menu bar options: */
