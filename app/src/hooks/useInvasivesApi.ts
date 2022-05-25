@@ -76,7 +76,7 @@ export const useInvasivesApi = () => {
   };
 
   const checkForErrors = (response: any) => {
-    if (response.status && response.status > 201) {
+    if (response.code > 201) {
       errorContext.pushError({
         message: response.message
           ? response.message
