@@ -646,7 +646,7 @@ const ActivityGrid = (props) => {
                 className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
                 // rows={filteredRows}
                 rows={filters.enabled ? filteredRowsDynamic : sortedRows}
-                defaultColumnOptions={{ sortable: true }}
+                defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}
                 //columns={columns}
                 onRowClick={(r) => {
                   props.setType === 'POI' ? setPoiSelected(r) : setActivitiesSelected(r);

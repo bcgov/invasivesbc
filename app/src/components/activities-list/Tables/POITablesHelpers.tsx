@@ -51,8 +51,12 @@ export const point_of_interest_iapp_default_headers = [
   {
     key: 'monitored',
     name: 'Monitored'
-  },
+  }
 ];
+
+const checkIfTheresArray = (treatments: any) => {
+  return treatments?.length ? 'Yes' : 'No';
+};
 
 export const mapPOI_IAPP_ToDataGridRows = (activities) => {
   if (!activities) {
@@ -68,10 +72,10 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let species = new Set();
 
     // releases and dispersals
-    const bioRelease = record?.point_of_interest_payload?.form_data?.biological_treatments?.length ? "Yes" : "No";
-    const chemTreatment = record?.point_of_interest_payload?.form_data?.chemical_treatments?.length ? "Yes" : "No";
-    const mechTreatment = record?.point_of_interest_payload?.form_data?.mechanical_treatments?.length ? "Yes" : "No";
-    const bioDispersal = record?.point_of_interest_payload?.form_data?.biological_dispersals?.length ? "Yes" : "No";
+    const bioRelease = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_treatments);
+    const chemTreatment = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.chemical_treatments);
+    const mechTreatment = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.mechanical_treatments);
+    const bioDispersal = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_dispersals);
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {
@@ -86,11 +90,15 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       species.add(survey?.species);
     }
 
+    const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
+
     return {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
-      jurisdictions: record?.point_of_interest_payload?.jurisdictions.join(', '),
-      date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created).toISOString().substring(0, 10),
+      jurisdictions: jurisdictions ? jurisdictions.join(', ') : null,
+      date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created)
+        .toISOString()
+        .substring(0, 10),
       species_on_site: Array.from(species).join(', '),
       date_last_surveyed: lastSurveyed.toISOString().substring(0, 10),
       agencies: Array.from(agencies).join(', '),

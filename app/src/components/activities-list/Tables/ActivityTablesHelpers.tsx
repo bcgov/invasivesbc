@@ -88,7 +88,6 @@ export const activites_default_headers = [
 ];
 
 export const mapActivitiesToDataGridRows = (activities) => {
-  console.log('ActivityTablesHelpers 91', activities);
   if (!activities || activities.count === undefined) {
     return [];
   }
