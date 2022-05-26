@@ -298,8 +298,8 @@ function deleteActivitiesByIds(): RequestHandler {
       keycloakToken: req.keycloakToken
     });
 
-    const isAdmin = false; // Determines if user can delete other peoples records
-    const preferred_username = [req.authContext.user['preferred_username']];
+    const isAdmin = (req as any)?.authContext?.roles[0]?.role_id === 18 ? true : false; // Determines if user can delete other peoples records
+    const preferred_username = [req.authContext.user['user_roles']];
     const ids = Object.values(req.query.id) as string[];
     sanitizedSearchCriteria.activity_ids = ids;
 
@@ -321,20 +321,25 @@ function deleteActivitiesByIds(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      // response.rows.forEach((activity) => {
-      for (var i in response.rows) {
-        if (response.rows[i].created_by !== preferred_username[0]) {
-          return res.status(401).json({
-            message: 'Invalid request, user is not authorized to delete this record', // better message
-            request: req.body,
-            namespace: 'activities',
-            code: 401
-          });
+      if (response.rows.length > 0) {
+        for (var i in response.rows) {
+          if (response.rows[i].created_by !== preferred_username[0]) {
+            return res.status(401).json({
+              message: 'Invalid request, user is not authorized to delete this record', // better message
+              request: req.body,
+              namespace: 'activities',
+              code: 401
+            });
+          }
         }
+      } else {
+        return res.status(500).json({
+          message: 'Unable to get response',
+          request: req.body,
+          namespace: 'activities',
+          code: 500
+        });
       }
-      // });
-    } else {
-      // dont need to check for preferred username
     }
 
     if (!ids || !ids.length) {
