@@ -146,13 +146,13 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     if (!activityType || !activityCategory || !activitySubType) {
       return;
     }
-    const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
-    dbActivity.created_by = userInfo?.preferred_username;
-    dbActivity.user_role = userRoles?.map((role) => role.role_id);
-    await dataAccess.createActivity(dbActivity, databaseContext);
-    dbActivity.created_by = (userInfo as any)?.preferred_username;
     try {
+      //    await dataAccess.createActivity(dbActivity, databaseContext);
+      const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
+      dbActivity.created_by = userInfo?.preferred_username;
+      dbActivity.user_role = userRoles?.map((role) => role.role_id);
       await dataAccess.createActivity(dbActivity, databaseContext);
+      dbActivity.created_by = (userInfo as any)?.preferred_username;
       await dataAccess.setAppState({
         activeActivity: dbActivity.activity_id,
         newActivityChoices: {

@@ -347,7 +347,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`)`);
   }
 
-  if (searchCriteria.user_roles) {
+  if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     sqlStatement.append(
       SQL` AND ${roles} @> ARRAY(select array_agg(x)::int[] || array[]::int[] from jsonb_array_elements_text(activity_payload->'user_role') t(x))`
@@ -372,10 +372,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     if (searchCriteria.user_roles) {
       sqlStatement.append(SQL` OR ${roles} @> array[1])`);
     } else {
-      */
-  //sqlStatement.append(SQL`)`);
-  //}
-  // */
+      sqlStatement.append(SQL`)`);
+    }
+  */
   if (searchCriteria.created_by && searchCriteria.created_by.length) {
     sqlStatement.append(SQL` AND created_by IN (`);
     sqlStatement.append(SQL`${searchCriteria.created_by[0]}`);

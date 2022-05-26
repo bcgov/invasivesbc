@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogTitle, Grid, Tooltip, Zoom } from '@mui/material';
+import { AuthStateContext } from 'contexts/authStateContext';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -17,27 +18,57 @@ export interface IFormControlsComponentProps {
   canBeSubmittedWithoutErrors?: () => boolean;
 }
 
-const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
+const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any) => {
   const dataAccess = useInvasivesApi();
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
-
-  const deleteRecord = (activityID) => {
+  const { userInfo, rolesUserHasAccessTo } = React.useContext(AuthStateContext);
+  const deleteRecord = () => {
+    const activityIds = [props.activity.activityId];
+    dataAccess.deleteActivities(activityIds);
     history.push('/home/activities');
-    dataAccess.deleteActivities([activityID]);
+  };
+
+  const checkIfNotAuthorized = () => {
+    for (let role of rolesUserHasAccessTo) {
+      if (role.role_id === 18) {
+        return false;
+      }
+    }
+    if (userInfo.preferred_username !== props.activity.createdBy) {
+      return true;
+    }
+    return false;
+  };
+
+  const deleteTooltipString = () => {
+    if (!props.isAlreadySubmitted()) {
+      return 'Able to delete the draft record';
+    }
+    if (checkIfNotAuthorized()) {
+      return 'Unauthorized to delete submitted record';
+    }
+    return 'Able to delete the submitted record';
+  };
+
+  const submitTooltipString = () => {
+    if (props.isAlreadySubmitted()) {
+      return 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.';
+    }
+    if (!props.canBeSubmittedWithoutErrors()) {
+      return 'Save form without errors first, to be able to submit.';
+    }
+    return 'Ready to submit, form is validated and has no issues.';
   };
 
   const DeleteDialog = () => {
     return (
       <Dialog open={open}>
-        <DialogTitle>Are you sure you want to delete this Record?</DialogTitle>
+        <DialogTitle>Are you sure you want to delete this {props.activity.formStatus} Record?</DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            aria-label="Delete Record"
-            onClick={() => deleteRecord((props as any)?.activity?.activityId)}>
+          <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
             Yes
           </Button>
         </DialogActions>
@@ -67,17 +98,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             )}
           </Grid>
           <Grid item>
-            <Tooltip
-              title={
-                props.isAlreadySubmitted()
-                  ? 'Cannot delete a record that has been submitted'
-                  : 'Able to delete the draft record'
-              }>
+            <Tooltip placement="top" title={deleteTooltipString()}>
               <span>
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={props.isAlreadySubmitted()}
+                  disabled={checkIfNotAuthorized()}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
@@ -86,14 +112,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (
-              <Tooltip
-                title={
-                  props.isAlreadySubmitted()
-                    ? 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.'
-                    : !props.canBeSubmittedWithoutErrors()
-                    ? 'Save form without errors first, to be able to submit.'
-                    : 'Ready to submit, form is validated and has no issues.'
-                }>
+              <Tooltip placement="top" title={submitTooltipString()}>
                 <span>
                   <Button
                     disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}

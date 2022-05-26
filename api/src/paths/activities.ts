@@ -9,7 +9,7 @@ import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
-import {InvasivesRequest} from "../utils/auth-utils";
+import { InvasivesRequest } from '../utils/auth-utils';
 
 const defaultLog = getLogger('activity');
 
@@ -242,7 +242,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-    sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
+    // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
 
     const connection = await getDBConnection();
     if (!connection) {
@@ -291,22 +291,61 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  * @return {RequestHandler}
  */
 function deleteActivitiesByIds(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id) as string[];
+    const sanitizedSearchCriteria = new ActivitySearchCriteria({
+      keycloakToken: req.keycloakToken
+    });
 
-    if (!ids || !ids.length) {
-      return res
-        .status(400)
-        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
-    }
+    const isAdmin = (req as any)?.authContext?.roles[0]?.role_id === 18 ? true : false; // Determines if user can delete other peoples records
+    const preferred_username = [req.authContext.user['user_roles']];
+    const ids = Object.values(req.query.id) as string[];
+    sanitizedSearchCriteria.activity_ids = ids;
 
     const connection = await getDBConnection();
     if (!connection) {
       return res
         .status(503)
         .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
+    }
+
+    if (isAdmin === false) {
+      const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria);
+
+      if (!sqlStatement) {
+        return res
+          .status(500)
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      if (response.rows.length > 0) {
+        for (var i in response.rows) {
+          if (response.rows[i].created_by !== preferred_username[0]) {
+            return res.status(401).json({
+              message: 'Invalid request, user is not authorized to delete this record', // better message
+              request: req.body,
+              namespace: 'activities',
+              code: 401
+            });
+          }
+        }
+      } else {
+        return res.status(500).json({
+          message: 'Unable to get response',
+          request: req.body,
+          namespace: 'activities',
+          code: 500
+        });
+      }
+    }
+
+    if (!ids || !ids.length) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
     }
 
     try {

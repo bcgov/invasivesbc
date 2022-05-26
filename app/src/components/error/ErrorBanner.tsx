@@ -14,12 +14,12 @@ export const ErrorBanner = (props: IErrorBanner) => {
     });
   };
 
+  const message = process.env.REACT_APP_REAL_NODE_ENV !== 'production' && props.code + ' - ' + props.namespace;
+
   return (
     <Box margin={2}>
       <Alert variant="filled" severity="error" onClose={triggerOnClose}>
-        <AlertTitle>
-          {props.code} - {props.namespace}
-        </AlertTitle>
+        <AlertTitle>{message}</AlertTitle>
         {props.message}
       </Alert>
     </Box>

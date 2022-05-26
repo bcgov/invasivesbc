@@ -76,13 +76,13 @@ export const useInvasivesApi = () => {
   };
 
   const checkForErrors = (response: any) => {
-    if (response.status && response.status > 201) {
+    if (response.code > 201) {
       errorContext.pushError({
         message: response.message
           ? response.message
           : "We're not sure what happened there. Try again in a few minutes.",
         code: response.code ? response.code : 500,
-        namespace: response.namespace ? response.namespace : 'Something went wrong...'
+        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && API_URL
       });
     }
   };
