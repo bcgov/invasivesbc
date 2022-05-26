@@ -30,6 +30,38 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     history.push('/home/activities');
   };
 
+  const checkIfNotAuthorized = () => {
+    for (let role of rolesUserHasAccessTo) {
+      if (role.role_id === 18) {
+        return false;
+      }
+    }
+    if (userInfo.preferred_username !== props.activity.createdBy) {
+      return true;
+    }
+    return false;
+  };
+
+  const deleteTooltipString = () => {
+    if (!props.isAlreadySubmitted()) {
+      return 'Able to delete the draft record';
+    }
+    if (checkIfNotAuthorized()) {
+      return 'Unauthorized to delete submitted record';
+    }
+    return 'Able to delete the submitted record';
+  };
+
+  const submitTooltipString = () => {
+    if (props.isAlreadySubmitted()) {
+      return 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.';
+    }
+    if (!props.canBeSubmittedWithoutErrors()) {
+      return 'Save form without errors first, to be able to submit.';
+    }
+    return 'Ready to submit, form is validated and has no issues.';
+  };
+
   const DeleteDialog = () => {
     return (
       <Dialog open={open}>
@@ -42,18 +74,6 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         </DialogActions>
       </Dialog>
     );
-  };
-
-  const checkIfAuthorized = () => {
-    for (let role of rolesUserHasAccessTo) {
-      if (role.role_id === 18) {
-        return false;
-      }
-    }
-    if (userInfo.preferred_username !== props.activity.createdBy) {
-      return true;
-    }
-    return false;
   };
 
   return (
@@ -78,17 +98,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
             )}
           </Grid>
           <Grid item>
-            <Tooltip
-              title={
-                props.isAlreadySubmitted()
-                  ? 'Cannot delete a record that has been submitted'
-                  : 'Able to delete the draft record'
-              }>
+            <Tooltip placement="top" title={deleteTooltipString()}>
               <span>
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={checkIfAuthorized()}
+                  disabled={checkIfNotAuthorized()}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
@@ -97,14 +112,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (
-              <Tooltip
-                title={
-                  props.isAlreadySubmitted()
-                    ? 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.'
-                    : !props.canBeSubmittedWithoutErrors()
-                    ? 'Save form without errors first, to be able to submit.'
-                    : 'Ready to submit, form is validated and has no issues.'
-                }>
+              <Tooltip placement="top" title={submitTooltipString()}>
                 <span>
                   <Button
                     disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
