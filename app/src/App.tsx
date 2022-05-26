@@ -155,7 +155,7 @@ const App: React.FC<IAppProps> = (props) => {
   );
 
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden">
+    <Box height="100vh" width="100vw" display="flex" overflow="hidden" justifyContent="center" alignContent="center">
       {deviceInfo !== null ? (
         <ErrorContextProvider>
           <NetworkContextProvider>
