@@ -119,15 +119,17 @@ export const NamedBoundaryMenu = (props) => {
   const addBoundary = ((geoArray) => {
     const name = prompt('Name:');
 
-    const tempBoundary: Boundary = {
-      id: idCount,
-      name: name,
-      geos: geoArray,
-      server_id: null
-    };
-
-    dataAccess.addBoundary(tempBoundary);
-    setBoundaries([...boundaries, tempBoundary]);
+    if (name) {
+      const tempBoundary: Boundary = {
+        id: idCount,
+        name: name,
+        geos: geoArray,
+        server_id: null
+      };
+  
+      dataAccess.addBoundary(tempBoundary);
+      setBoundaries([...boundaries, tempBoundary]);
+    }
   });
 
   useEffect(() => {
@@ -173,7 +175,7 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {boundaries.map((b, index) => (
-            <JumpToTrip id={b.id} name={b.name} geos={b.geos} key={index} deleteBoundary={deleteBoundary}/>
+            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
       </div>

@@ -26,109 +26,51 @@ export const JumpToTrip = (props) => {
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);
 
-  // DB: MOBILE ONLY!
-  const databaseContext = useContext(DatabaseContext);
-  const dataAccess = useDataAccess();
-
   const flyToContext = useFlyToAndFadeContext();
 
   // initial setup & events to block:
   useEffect(() => {
     // L.DomEvent.disableClickPropagation(divRef?.current);
     // L.DomEvent.disableScrollPropagation(divRef?.current);
-    // getTripGeosAndInitialPosition();
+    getTripGeosAndInitialPosition();
   }, []);
 
-  // What the button cycles through.
-
-  const [IFlyToAndFadeItems, setIFlyToAndFadeItems] = useState<Array<IFlyToAndFadeItem>>([]);
-  const [index, setIndex] = useState<number>(0);
-  const [edit, setEdit] = useState(false);
+  const [flyToAndFadeItem, setFlyToAndFadeItem] = useState<IFlyToAndFadeItem>(null);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
-    // getTripGeosAndInitialPosition();
+    getTripGeosAndInitialPosition();
   });
 
   //onclick:
   const jump = () => {
-    // cycle through trips for now, later we can do a popup menu
-    const next = index == IFlyToAndFadeItems.length - 1 ? 0 : index + 1;
-    setIndex(next);
-  };
-
-  //
-  useEffect(() => {
-    if (!(IFlyToAndFadeItems.length > 0)) {
+    // popup menu style
+    if (!flyToAndFadeItem) {
       return;
     }
-    if (IFlyToAndFadeItems[index]?.geometries) {
-      flyToContext.go([IFlyToAndFadeItems[index]]);
+
+    if (flyToAndFadeItem.geometries) {
+      flyToContext.go([flyToAndFadeItem]);
     }
-  }, [index]);
 
-  // can be replaced with a menu (later):
-  // const getTripGeosAndInitialPosition = async () => {
-  //   let tripObjects;
-  //   //mobile only
-  //   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-  //     const queryResults = await dataAccess.getTrips();
-  //     if (!queryResults.length) {
-  //       return;
-  //     }
-  //     tripObjects = queryResults.map((rawRecord) => {
-  //       return JSON.parse(rawRecord.json);
-  //     });
-  //   } else {
-  //     tripObjects = [
-  //       {
-  //         id: 1,
-  //         name: 'trip a',
-  //         geometry: [
-  //           {
-  //             type: 'Feature',
-  //             properties: {},
-  //             geometry: {
-  //               type: 'Polygon',
-  //               coordinates: [
-  //                 [
-  //                   [-126.826171875, 51.876490970614775],
-  //                   [-123.70605468750001, 51.876490970614775],
-  //                   [-123.70605468750001, 53.68369534495075],
-  //                   [-126.826171875, 53.68369534495075],
-  //                   [-126.826171875, 51.876490970614775]
-  //                 ]
-  //               ]
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ];
-  //   }
+  };
 
-  //   let items = new Array<IFlyToAndFadeItem>();
+  const getTripGeosAndInitialPosition = async () => {
+    const trip = await props?.boundary;
 
-  //   //add current position as bounds to zoom to
-  //   items.push({
-  //     name: 'Original Position',
-  //     bounds: map.getBounds(),
-  //     colour: 'red',
-  //     transitionType: FlyToAndFadeItemTransitionType.zoomToBounds
-  //   });
-  //   //then add trips as geometries to show
-  //   for (const trip of tripObjects.sort((a, b) => (a.id < b.id ? 1 : -1))) {
-  //     if (trip.geometry.length > 0) {
-  //       items.push({
-  //         name: 'TRIP: ' + trip.name,
-  //         geometries: trip.geometry,
-  //         colour: 'red',
-  //         transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
-  //       });
-  //     }
-  //   }
+    if (!trip || !trip?.geos?.length) {
+      return;
+    }
 
-  //   setIFlyToAndFadeItems([...items]);
-  // };
+    const item : IFlyToAndFadeItem = {
+      name: 'TRIP: ' + trip.name,
+      geometries: trip.geos,
+      colour: 'red',
+      transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
+    };
+
+    setFlyToAndFadeItem(item);
+  };
 
 
   return (
@@ -153,20 +95,3 @@ export const JumpToTrip = (props) => {
 };
 
 export default JumpToTrip;
-
-
-/* 
-just for reference until a later commit 
-
-<ListItem
-  onClick={() => {
-    jump();
-  }}
-  disableGutters>
-  <ListItemText>
-    <Typography className={toolClass.Font}>Sunny infested areas</Typography>
-  </ListItemText>
-  <ListItemIcon>
-    <CheckIcon />
-  </ListItemIcon>
-</ListItem> */
