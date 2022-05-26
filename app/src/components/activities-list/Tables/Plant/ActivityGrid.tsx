@@ -459,7 +459,9 @@ const ActivityGrid = (props) => {
       let tests = rowKeys.map((k) => {
         if (filters[k] && r[k]) {
           // this only works for strings
-          if (r[k].includes(filters[k])) {
+          let field = r[k];
+          if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
+          if (field.includes(filters[k])) {
             return true;
           } else return false;
         }
