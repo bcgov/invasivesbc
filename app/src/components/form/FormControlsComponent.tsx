@@ -23,7 +23,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
-  const { userInfo } = React.useContext(AuthStateContext);
+  const { userInfo, rolesUserHasAccessTo } = React.useContext(AuthStateContext);
   const deleteRecord = () => {
     const activityIds = [props.activity.activityId];
     dataAccess.deleteActivities(activityIds);
@@ -42,6 +42,18 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         </DialogActions>
       </Dialog>
     );
+  };
+
+  const checkIfAuthorized = () => {
+    for (let role of rolesUserHasAccessTo) {
+      if (role.role_id === 18) {
+        return false;
+      }
+    }
+    if (userInfo.preferred_username !== props.activity.createdBy) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -76,7 +88,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={userInfo.preferred_username !== props.activity.createdBy}
+                  disabled={checkIfAuthorized()}
                   onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
