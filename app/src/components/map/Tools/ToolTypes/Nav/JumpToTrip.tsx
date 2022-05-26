@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Button, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Button, ClickAwayListener, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
@@ -36,6 +36,7 @@ export const JumpToTrip = (props) => {
   }, []);
 
   const [flyToAndFadeItem, setFlyToAndFadeItem] = useState<IFlyToAndFadeItem>(null);
+  const [checked, setChecked] = useState<boolean>(false);
 
   // map Event subcriptions:
   const map = useMapEvent('dragend', () => {
@@ -72,25 +73,32 @@ export const JumpToTrip = (props) => {
     setFlyToAndFadeItem(item);
   };
 
+  const unCheck = () => {
+    setChecked(false);
+  }
+
 
   return (
-    <ListItem
-      onClick={() => {
-        jump();
-      }}
-      disableGutters>
-      <ListItemText>
-        <Typography className={toolClass.Font}>{props.name}</Typography>
-      </ListItemText>
-      <ListItemIcon>
-        <CheckIcon />
-      </ListItemIcon>
-      <ListItemIcon>
-        <Button onClick={() => props.deleteBoundary(props.id)}>
-          <DeleteIcon />
-        </Button>
-      </ListItemIcon>
-    </ListItem>
+    <ClickAwayListener onClickAway={unCheck}>
+      <ListItem
+        onClick={() => {
+          jump();
+          setChecked(true);
+        }}
+        disableGutters>
+        <ListItemText>
+          <Typography className={toolClass.Font}>{props.name}</Typography>
+        </ListItemText>
+        <ListItemIcon>
+          {checked && <CheckIcon />}
+        </ListItemIcon>
+        <ListItemIcon>
+          <Button onClick={() => props.deleteBoundary(props.id)}>
+            <DeleteIcon />
+          </Button>
+        </ListItemIcon>
+      </ListItem>
+    </ClickAwayListener>
   );
 };
 
