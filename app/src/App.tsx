@@ -2,17 +2,11 @@ import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
 import Box from '@mui/material/Box';
 import { ErrorContextProvider } from 'contexts/ErrorContext';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
-import { Provider, useDispatch } from "react-redux";
-import { select } from "redux-saga/effects";
-import { selectAuth } from "./state/reducers/auth";
-import { useSelector } from "./state/utilities/use_selector";
-import { init } from "cjs-module-lexer";
-import { AUTH_INITIALIZE_REQUEST } from "./state/actions";
+import { Provider } from 'react-redux';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -20,7 +14,6 @@ interface IAppProps {
 }
 
 const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
-
   const appRouterProps = {
     deviceInfo
   };
