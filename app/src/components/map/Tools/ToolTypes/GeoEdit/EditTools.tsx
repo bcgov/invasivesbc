@@ -89,7 +89,7 @@ export const DrawButtonList = (props) => {
         );
       }
     },
-    {
+    /*  {
       label: 'circle_draw',
       button: (props) => {
         return (
@@ -108,7 +108,7 @@ export const DrawButtonList = (props) => {
           />
         );
       }
-    },
+    },*/
     {
       label: 'polyline_draw',
       button: (props) => {

@@ -298,6 +298,8 @@ const EditTools = (props: any) => {
     const options = {
       draw: {
         circlemarker: false,
+
+        circle: false,
         polyline: {
           disabled: true
         },
