@@ -58,13 +58,6 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface Boundary {
-  id: number,
-  name: string,
-  geos: [],
-  server_id: number
-}
-
 export const NamedBoundaryMenu = (props) => {
   const dataAccess = useDataAccess();
   // style
