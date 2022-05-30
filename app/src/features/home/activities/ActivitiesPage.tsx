@@ -206,17 +206,13 @@ const PageContainer = (props) => {
     ]);
   }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
 
-  const recordsClosedHeight = () => {
-    return width > 900 ? 'calc(100% - 5vh)' : 'calc(100vh - env(safe-area-inset-bottom) - 12.5vh)';
-  };
-
   /* set up main menu bar options: */
   return (
     <>
       {/*the main list of record sets:*/}
       <Box
         style={{
-          height: recordsExpanded ? 'calc(100% - 400px)' : recordsClosedHeight()
+          height: recordsExpanded ? 'calc(100% - 400px)' : '91.5%'
         }}>
         <MapRecordsContextProvider>
           <MapContainer
