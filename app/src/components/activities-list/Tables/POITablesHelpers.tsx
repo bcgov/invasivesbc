@@ -92,8 +92,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       species.add(survey?.species);
     }
 
-    const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
-
     return {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
