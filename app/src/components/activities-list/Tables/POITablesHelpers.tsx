@@ -95,7 +95,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     return {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
-      jurisdictions: jurisdictions ? jurisdictions.join(', ') : null,
+      jurisdictions: jurisdictions ? jurisdictions : null,
       date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created)
         .toISOString()
         .substring(0, 10),
