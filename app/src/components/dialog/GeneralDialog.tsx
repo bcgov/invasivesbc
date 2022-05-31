@@ -1,7 +1,8 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export interface IGeneralDialog {
+  children?: ReactNode;
   dialogTitle: String;
   dialogContentText?: String;
   dialogOpen: boolean;
@@ -47,6 +48,7 @@ export const GeneralDialog = (props: IGeneralDialog) => {
           }
         })}
       </DialogActions>
+      {props.children}
     </Dialog>
   );
 };

@@ -14,11 +14,13 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
-import { ListItem, ListItemButton, ListItemIcon, ListItemText, Theme, Typography } from '@mui/material';
+import { Accordion, AccordionSummary, Box, ListItem, ListItemButton, ListItemIcon, ListItemText, Theme, Typography } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 import TabUnselectedIcon from '@mui/icons-material/TabUnselected';
 import { toolStyles } from './Tools/Helpers/ToolStyles';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
+import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -70,6 +72,14 @@ export const NamedBoundaryMenu = (props) => {
   const divRef = useRef();
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
+  const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);
+
+  const [newBoundaryDialog, setNewBoundaryDialog] = useState<IGeneralDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
 
   const handleExpand = () => {
     setExpanded((prev) => {
@@ -103,10 +113,46 @@ export const NamedBoundaryMenu = (props) => {
   };
 
   const createBoundary = (() => {
-    const dowe = window.confirm('Create new named boundary?');
-    if (dowe) {
-      props.setShowDrawControls(true);
-    }
+    setShowKMLUpload(false);
+    setNewBoundaryDialog({
+      dialogOpen: true,
+      dialogTitle: 'Create New User Boundary',
+      dialogContentText: 'How would you like to create a new user boundary?',
+      dialogActions: [
+        {
+          actionName: 'Draw Shape',
+          actionOnClick: async () => {
+            props.setShowDrawControls(true);
+
+            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
+          }
+        },
+        {
+          actionName: 'Upload KML',
+          actionOnClick: async () => {
+            // setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
+
+            setShowKMLUpload(true);
+          }
+        },
+        {
+          actionName: 'Select KML',
+          actionOnClick: async () => {
+            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
+            // recordStateContext.add('Activity');
+            alert("third class");
+          }
+        },
+        {
+          actionName: 'Cancel',
+          actionOnClick: async () => {
+            setShowKMLUpload(false);
+            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
+          },
+          autoFocus: true
+        }
+      ]
+    });
   });
 
   const addBoundary = ((geoArray) => {
@@ -172,6 +218,20 @@ export const NamedBoundaryMenu = (props) => {
           ))}
         </List>
       </div>
+
+      <GeneralDialog
+        dialogOpen={newBoundaryDialog.dialogOpen}
+        dialogTitle={newBoundaryDialog.dialogTitle}
+        dialogActions={newBoundaryDialog.dialogActions}
+        dialogContentText={newBoundaryDialog.dialogContentText}
+      >
+        {showKMLUpload &&
+          <Box>
+            <Typography>Shape Upload (KML/KMZ)</Typography>
+            <KMLShapesUpload />
+          </Box>
+        }
+      </GeneralDialog>
     </>
   );
 };
