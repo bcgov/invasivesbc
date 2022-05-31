@@ -45,6 +45,25 @@ export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const authHeader = req.header('Authorization');
+  // console.log('=========================== auth-utils.ts', authHeader);
+
+  //  if lean endpoint
+  //      dont throw 401, but update req.isPublicView
+  //      return new Promise<void>()
+  //        => resolve ()
+
+  if (req.originalUrl === '/api/activities-lean/' || req.originalUrl === '/api/points-of-interest-lean/') {
+    if (authHeader.includes('undefined')) {
+      return new Promise<void>((resolve: any) => {
+        req.authContext = {
+          preferredUsername: null,
+          user: null,
+          roles: []
+        };
+        resolve();
+      });
+    }
+  }
 
   if (!authHeader) {
     throw {

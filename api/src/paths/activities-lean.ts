@@ -3,6 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
@@ -198,14 +199,21 @@ DELETE.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({
       label: 'activity',
       message: 'getActivitiesBySearchFilterCriteria',
       body: req.body
     });
 
-    const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    let sanitizedSearchCriteria;
+
+    if (req.authContext.roles.length > 0) {
+      sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    } else {
+      req.body.activity_subtype = ['Activity_Observation_PlantTerrestrial', 'Activity_Observation_PlantAquatic'];
+      sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    }
     const connection = await getDBConnection();
 
     if (!connection) {
