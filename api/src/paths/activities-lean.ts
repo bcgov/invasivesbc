@@ -207,8 +207,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     });
 
     let sanitizedSearchCriteria;
+    const roleId = (req as any).authContext.roles[0]?.role_id;
 
-    if (req.authContext.roles.length > 0) {
+    if (roleId === 1 || roleId === 4 || roleId === 5 || roleId === 18) {
       sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
     } else {
       req.body.activity_subtype = ['Activity_Observation_PlantTerrestrial', 'Activity_Observation_PlantAquatic'];
