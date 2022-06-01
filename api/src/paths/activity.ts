@@ -394,7 +394,7 @@ function updateActivity(): RequestHandler {
       });
     }
 
-    if (isAdmin) {
+    if (!isAdmin) {
       const sanitizedSearchCriteria: string = data._id;
       const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
 
@@ -409,7 +409,7 @@ function updateActivity(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      if (preferred_username === response.rows[0].activity_payload.created_by) {
+      if (preferred_username !== response.rows[0].activity_payload.created_by) {
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record', // better message
           request: req.body,
