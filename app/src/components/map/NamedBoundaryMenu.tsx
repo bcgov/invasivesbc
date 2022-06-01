@@ -214,7 +214,7 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {boundaries.map((b, index) => (
-            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} key={index} deleteBoundary={deleteBoundary}/>
+            <JumpToTrip id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
       </div>

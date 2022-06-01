@@ -1137,12 +1137,12 @@ export const useInvasivesApi = () => {
    * @param {string[]} species
    * @return {*}  {Promise<any>}
    */
-  const getAdminUploadGeoJSONLayers = async (user_id: string): Promise<any> => {
+  const getAdminUploadGeoJSONLayers = async (): Promise<any> => {
     const options = await getRequestOptions();
     const { data } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
-      url: options.baseUrl + `/api/admin-defined-shapes?user_id=${user_id}`
+      url: options.baseUrl + `/api/admin-defined-shapes`
     });
     checkForErrors(data);
     if (LOGVERBOSE) {

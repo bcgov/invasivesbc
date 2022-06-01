@@ -10,6 +10,8 @@ import { atob } from 'js-base64';
 import { QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
+import {InvasivesRequest} from "../utils/auth-utils";
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -18,6 +20,13 @@ export const POST: Operation = [uploadShape()];
 
 GET.apiDoc = {
   description: 'Fetches a GeoJSON object to display boundaries of administratively-defined shapes (KML uploads)',
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   responses: {
     200: {
       description: 'GeoJSON FeatureCollection',
@@ -84,8 +93,10 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 function getAdministrativelyDefinedShapes(): RequestHandler {
-  return async (req, res) => {
-    const user_id = req.query.user_id.toString();
+  return async (req: InvasivesRequest, res) => {
+    const user_id = req.authContext.user.user_id;
+    console.log(user_id);
+    console.log("req with invasives", [req.authContext]);
 
     const connection = await getDBConnection();
 

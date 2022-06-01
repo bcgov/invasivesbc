@@ -87,7 +87,8 @@ export const JumpToTrip = (props) => {
         }}
         disableGutters>
         <ListItemText>
-          <Typography className={toolClass.Font}>{props.name}</Typography>
+          
+          <Typography className={toolClass.Font}>{props.name}{props.server_id && <span> (kml)</span>}</Typography>
         </ListItemText>
         <ListItemIcon>
           {checked && <CheckIcon />}
