@@ -378,6 +378,8 @@ function updateActivity(): RequestHandler {
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
 
+    const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
+    const preferred_username = req.authContext.preferredUsername;
     const sanitizedActivityData = new ActivityPostRequestBody(data);
     sanitizedActivityData.created_by = req.authContext?.preferredUsername;
 
@@ -390,6 +392,31 @@ function updateActivity(): RequestHandler {
         namespace: 'activity',
         code: 503
       });
+    }
+
+    if (isAdmin) {
+      const sanitizedSearchCriteria: string = data._id;
+      const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
+
+      if (!sqlStatement) {
+        return res.status(500).json({
+          message: 'Failed to build SQL statement.',
+          request: req.body,
+          namespace: 'activity',
+          code: 500
+        });
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      if (preferred_username === response.rows[0].activity_payload.created_by) {
+        return res.status(401).json({
+          message: 'Invalid request, user is not authorized to update this record', // better message
+          request: req.body,
+          namespace: 'activities',
+          code: 401
+        });
+      }
     }
 
     try {
