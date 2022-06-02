@@ -256,7 +256,7 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {boundaries.map((b, index) => (
-            <JumpToTrip id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
+            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
       </div>
@@ -270,7 +270,7 @@ export const NamedBoundaryMenu = (props) => {
         {showKMLUpload &&
           <Box>
             <Typography>Shape Upload (KML/KMZ)</Typography>
-            <KMLShapesUpload />
+            <KMLShapesUpload callback={getKMLs}/>
           </Box>
         }
       </GeneralDialog>
