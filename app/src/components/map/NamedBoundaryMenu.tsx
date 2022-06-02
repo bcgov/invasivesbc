@@ -14,13 +14,15 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
-import { Accordion, AccordionSummary, Box, ListItem, ListItemButton, ListItemIcon, ListItemText, Theme, Typography } from '@mui/material';
+import { Accordion, AccordionSummary, Box, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, Theme, Typography } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 import TabUnselectedIcon from '@mui/icons-material/TabUnselected';
 import { toolStyles } from './Tools/Helpers/ToolStyles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
 import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -62,6 +64,7 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
 
 export const NamedBoundaryMenu = (props) => {
   const dataAccess = useDataAccess();
+  const api = useInvasivesApi();
   // style
   const toolClass = toolStyles();
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
@@ -71,6 +74,7 @@ export const NamedBoundaryMenu = (props) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
+  const [KMLs, setKMLs] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
   const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);
 
@@ -78,6 +82,12 @@ export const NamedBoundaryMenu = (props) => {
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
+    dialogContentText: null
+  });
+  const [selectKMLDialog, setSelectKMLDialog] = useState<IGeneralDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: 'Select which KML to add: ',
     dialogContentText: null
   });
 
@@ -91,6 +101,7 @@ export const NamedBoundaryMenu = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
     getBoundaries();
+    getKMLs();
   }, []);
 
   const setBoundaryIdCount = (() => {
@@ -106,11 +117,39 @@ export const NamedBoundaryMenu = (props) => {
   }, [boundaries]);
 
   const getBoundaries = async () => {
-    const results = await dataAccess.getBoundaries();
-    if (results) {
-      setBoundaries(results);
-    }
+    const boundaryResults = await dataAccess.getBoundaries();
+    setBoundaries(boundaryResults);
   };
+
+  const getKMLs = async () => {
+    const KMLResults = await api.getAdminUploadGeoJSONLayers();
+
+    // map to match boundaries
+    let KMLToBoundary = [];
+    if (KMLResults) {
+      KMLToBoundary = KMLResults.map((kml) => {
+        const geos = kml.geojson.features.map((feature) => {
+          return {
+            "type": "Feature",
+            "geometry": {
+              "coordinates": feature.coordinates,
+              "type": feature.type
+            },
+            "properties": {}
+          }
+        });
+
+        return {
+          id: null, //doesn't need atm (how would this interact with )
+          name: kml.title,
+          geos: geos,
+          server_id: kml.id
+        };
+      });
+    }
+
+    setKMLs(KMLToBoundary);
+  }
 
   const createBoundary = (() => {
     setShowKMLUpload(false);
@@ -130,17 +169,20 @@ export const NamedBoundaryMenu = (props) => {
         {
           actionName: 'Upload KML',
           actionOnClick: async () => {
-            // setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
-
             setShowKMLUpload(true);
           }
         },
         {
           actionName: 'Select KML',
           actionOnClick: async () => {
-            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
-            // recordStateContext.add('Activity');
-            alert("third class");
+            setSelectKMLDialog({...selectKMLDialog, dialogOpen: true, dialogActions: [
+              {
+                actionName: 'Cancel',
+                actionOnClick: async () => {
+                  setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
+                }
+              }
+            ]})
           }
         },
         {
@@ -231,6 +273,38 @@ export const NamedBoundaryMenu = (props) => {
             <KMLShapesUpload />
           </Box>
         }
+      </GeneralDialog>
+      <GeneralDialog
+        dialogOpen={selectKMLDialog.dialogOpen}
+        dialogTitle={selectKMLDialog.dialogTitle}
+        dialogActions={selectKMLDialog.dialogActions}
+        dialogContentText={selectKMLDialog.dialogContentText}
+      >
+        <Select
+          // sx={{ minWidth: 150, mt: 3, mb: 3 }}
+          onChange={(e) => {
+            const kmlToUpload = KMLs.find((kml) => {
+              return (kml.server_id === e.target.value);
+            });
+
+            const boundaryFromKML: Boundary = {
+              // id: kmlToUpload.id ? kmlToUpload.id : idCount,     ***Maybe id needs a bit of rethinking when dealing with the caching
+              id: idCount,
+              name: kmlToUpload.name,
+              geos: kmlToUpload.geos,
+              server_id: kmlToUpload.server_id
+            }
+
+            dataAccess.addBoundary(boundaryFromKML);
+            setBoundaries([...boundaries, boundaryFromKML]);
+            setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
+            setNewBoundaryDialog({...newBoundaryDialog, dialogOpen: false });
+          }}
+        >
+          {KMLs.map((kml) => {
+            return <MenuItem key={kml.server_id} value={kml.server_id}>{kml.name}</MenuItem>
+          })}
+        </Select>
       </GeneralDialog>
     </>
   );
