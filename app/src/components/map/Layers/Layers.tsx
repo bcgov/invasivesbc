@@ -5,10 +5,13 @@ import IAPPLayers from './IAPPLayers';
 import InvasivesBCRecordsLayers from './InvasivesBCRecordsLayers';
 import TerrestrialLayers from './TerrestrialLayers';
 import UserUploadedLayers from './UserUploadedLayers';
+import Donut from '../Donut';
+import { DonutLayer } from '../LayerLoaderHelpers/DonutLayer';
 
 const Layers = (props: any) => {
   return (
     <>
+      <DonutLayer/>
       <AdminBoundriesLayers inputGeo={props.inputGeo} />
       <AquaticLayers inputGeo={props.inputGeo} />
       <IAPPLayers inputGeo={props.inputGeo} />
