@@ -59,8 +59,9 @@ export const authenticate = async (req: InvasivesRequest) => {
     }
   }
 
-  if (!authHeader) {
+  if (authHeader.includes('undefined')) {
     throw {
+      status: 401,
       code: 401,
       message: 'Missing Authorization header',
       namespace: 'auth-utils'
@@ -71,6 +72,7 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   if (!token) {
     throw {
+      status: 401,
       code: 401,
       message: 'Authorization header parse failure',
       namespace: 'auth-utils'
@@ -82,6 +84,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       if (error) {
         defaultLog.error(error);
         reject({
+          status: 401,
           code: 401,
           message: 'Token decode failure',
           namespace: 'auth-utils'
@@ -100,6 +103,7 @@ export const authenticate = async (req: InvasivesRequest) => {
         id = decoded.bceid_userid;
       } else {
         throw {
+          status: 401,
           code: 401,
           message: 'Invalid token - missing idir_userid or bceid_userid',
           namespace: 'auth-utils'
