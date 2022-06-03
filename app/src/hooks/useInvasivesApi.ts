@@ -275,7 +275,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/points-of-interest/`,
       data: pointsOfInterestSearchCriteria
     });
-    // console.dir(data);
+
     checkForErrors(data, status, url);
 
     if (LOGVERBOSE) {
@@ -580,7 +580,7 @@ export const useInvasivesApi = () => {
     const options = await getRequestOptions();
     let activities, points_of_interest;
     try {
-      const { data, status, url } = await Http.request({
+      const { data } = await Http.request({
         headers: { ...options.headers },
         method: 'GET',
         url: options.baseUrl + `/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`
@@ -1184,7 +1184,7 @@ export const useInvasivesApi = () => {
    */
   const getEmbeddedMetabaseReport = async (reportId: string): Promise<any> => {
     const options = await getRequestOptions();
-    const { data, status, url } = await Http.request({
+    const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: `${options.baseUrl}/api/embedded-report/${reportId}`
@@ -1199,7 +1199,7 @@ export const useInvasivesApi = () => {
    */
   const listEmbeddedMetabaseReports = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data, status, url } = await Http.request({
+    const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: `${options.baseUrl}/api/embedded-report`
@@ -1214,7 +1214,7 @@ export const useInvasivesApi = () => {
    */
   const getIappJurisdictions = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data, status, url } = await Http.request({
+    const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: `${options.baseUrl}/api/iapp-jurisdictions`
