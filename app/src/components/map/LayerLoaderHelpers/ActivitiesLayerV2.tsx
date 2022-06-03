@@ -103,6 +103,11 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
             }
+            if (a?.geometry?.type === 'Point') {
+              const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
+
+              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+            }
           })}
         </MarkerClusterGroup>
       );
