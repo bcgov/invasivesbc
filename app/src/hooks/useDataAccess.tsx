@@ -307,16 +307,16 @@ export const useDataAccess = () => {
   /**
    * Delete boundary object (trip currently) record
    *
-   * @param {any} id
+   * @param {number} id
    * @return {*}  {Promise<any>}
    */
-   const deleteBoundary = async (id) => {
+   const deleteBoundary = async (id: number) => {
     if (isMobile()) {
-      // return databaseContext.asyncQueue({
-      //   asyncTask: () => {
-      //     return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newBoundaryObj }], databaseContext);
-      //   }
-      // });
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID_DELETE, docType: DocType.TRIP, ID: String(id) }], databaseContext);
+        }
+      });
     } else {
       const boundaries = await getBoundaries();
       const newBoundaries = boundaries.filter((b) => {

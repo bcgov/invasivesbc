@@ -87,7 +87,7 @@ export const NamedBoundaryMenu = (props) => {
   const [selectKMLDialog, setSelectKMLDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
-    dialogTitle: 'Select which KML to add: ',
+    dialogTitle: 'Select which uploaded KML to add: ',
     dialogContentText: null
   });
 
@@ -118,7 +118,22 @@ export const NamedBoundaryMenu = (props) => {
 
   const getBoundaries = async () => {
     const boundaryResults = await dataAccess.getBoundaries();
-    setBoundaries(boundaryResults);
+    
+    if (Capacitor.getPlatform() !== 'web') {
+      const mappedBoundaries = boundaryResults.map((boundary) => {
+        const jsonObject = JSON.parse(boundary.json);
+        return {
+          id: boundary.id,
+          name: jsonObject.name,
+          geos: jsonObject.geos,
+          server_id: null
+        }
+      });
+
+      setBoundaries(mappedBoundaries);
+    } else {
+      setBoundaries(boundaryResults);
+    }
   };
 
   const getKMLs = async () => {
@@ -197,7 +212,7 @@ export const NamedBoundaryMenu = (props) => {
     });
   });
 
-  const addBoundary = ((geoArray) => {
+  const addBoundary = (async (geoArray) => {
     const name = prompt('Name:');
 
     if (name) {
@@ -208,8 +223,9 @@ export const NamedBoundaryMenu = (props) => {
         server_id: null
       };
   
-      dataAccess.addBoundary(tempBoundary);
-      setBoundaries([...boundaries, tempBoundary]);
+      await dataAccess.addBoundary(tempBoundary);
+      // setBoundaries([...boundaries, tempBoundary]);
+      getBoundaries();
     }
   });
 

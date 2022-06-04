@@ -409,7 +409,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
           break;
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE_AND_ID_DELETE:
-          batchUpdate += `delete from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID;
+          batchUpdate += `delete from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID + `;\n`;
           break;
         case UpsertType.DOC_TYPE:
           batchUpdate +=
