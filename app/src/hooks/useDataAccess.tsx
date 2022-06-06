@@ -78,7 +78,7 @@ export const useDataAccess = () => {
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
     if (platform === 'web') {
-      const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      const response = await api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
       return response;
     } else {
       if (!networkContext.connected) {

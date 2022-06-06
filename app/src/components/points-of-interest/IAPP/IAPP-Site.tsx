@@ -39,6 +39,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
   const jurisdictions: any = getJurisdictions(surveys);
+  const date_created = site.date_created.substring(0, site.date_created.indexOf('T'));
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -55,7 +56,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Created
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.date_created)}
+              {ifApplicable(date_created)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Slope

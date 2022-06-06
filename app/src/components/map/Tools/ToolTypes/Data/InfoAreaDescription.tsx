@@ -197,7 +197,7 @@ function SetPointOnClick({ map }: any) {
       } else {
         // just click to create invisible small box
         const temp = e.latlng;
-        const val = 0.003;
+        const val = 0.001;
         const latlng1 = [temp.lng + val, temp.lat - val / 2];
         const latlng3 = [temp.lng - val, temp.lat + val / 2];
         const latlng2 = [temp.lng + val, temp.lat + val / 2];
