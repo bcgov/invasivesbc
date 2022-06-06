@@ -95,30 +95,32 @@ export const PoisLayer = (props) => {
       point_of_interest_type: props.poi_type
     });
 
-    const poisFeatureArray = [];
-    poisData?.rows?.forEach((row) => {
-      if (row.geom) {
-        const object = {
-          geometry: row.geom.geometry,
-          properties: {
-            point_of_interest_id: row.point_of_interest_id,
-            point_of_interest_payload: row.point_of_interest_payload,
-            point_of_interest_subtype: row.point_of_interest_subtype,
-            species_on_site: row.species_on_site
-          },
-          type: row.geom.type
-        };
-        poisFeatureArray.push(object);
-      }
-    });
+    // For non-lean endpoint:
+    // const poisFeatureArray = [];
+    // poisData?.rows?.forEach((row) => {
+    //   if (row.geom) {
+    //     const object = {
+    //       geometry: row.geom.geometry,
+    //       properties: {
+    //         point_of_interest_id: row.point_of_interest_id,
+    //         point_of_interest_payload: row.point_of_interest_payload,
+    //         point_of_interest_subtype: row.point_of_interest_subtype,
+    //         species_on_site: row.species_on_site
+    //       },
+    //       type: row.geom.type
+    //     };
+    //     poisFeatureArray.push(object);
+    //   }
+    // });
 
-    setPois({ type: 'FeatureCollection', features: poisFeatureArray });
+    // it was (..., features: poisFeatureArray)
+    setPois({ type: 'FeatureCollection', features: poisData });
     const poiArr = poisData?.rows?.map((row) => {
       return {
-        id: row.point_of_interest_id,
-        type: row.point_of_interest_type,
-        subtype: row.point_of_interest_subtype,
-        species_positive: row.species_on_site
+        id: row.properties.site_id,
+        type: row.point_of_interest_type || null,
+        subtype: row.point_of_interest_subtype || null,
+        species_positive: row.properties.species_on_site
       };
     });
     setCurrentRecords((prev) => {
@@ -159,7 +161,7 @@ export const PoisLayer = (props) => {
             return (
               <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
                 <Tooltip permanent direction="top">
-                  SiteID: {feature.properties.point_of_interest_id}
+                  SiteID: {feature.properties.site_id}
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
