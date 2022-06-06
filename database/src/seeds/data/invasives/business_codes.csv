@@ -89,8 +89,8 @@ biological_agent_presence_code,ST,Stem Feeding Damage,11
 biological_agent_presence_code,FE,Feeding,12
 biological_agent_presence_code,FR,Frass,13
 biological_agent_presence_code,GA,In Gall,14
-biological_agent_presence_code, PY, Previous Year Evidence, 15
-biological_agent_presence_code, CY, Current Year Evidence, 16
+biological_agent_presence_code, PY, Previous Year Evidence,15
+biological_agent_presence_code, CY, Current Year Evidence,16
 classified_area_code,X,unknown,1
 classified_area_code,C,Collection,2
 classified_area_code,R,Research,3
@@ -105,14 +105,14 @@ proposed_treatment_code,BM,Biological monitoring,8
 proposed_treatment_code,BD,Biological dispersal survey,9
 precautionary_statement_code,2W,No entry for 2 weeks,1
 precautionary_statement_code,DRY,No entry until herbicide is dry,2
-precautionary_statement_code,IRR,Irrigation restrictions,3  
+precautionary_statement_code,IRR,Irrigation restrictions,3
 precautionary_statement_code,COM,More information in comments,4
 management_efficacy_code,1M,1 0%-19%,1
 management_efficacy_code,2M,2 20%-29%,2  
 management_efficacy_code,3M,3 30%-39%,3  
 management_efficacy_code,4M,4 40%-49%,4  
 management_efficacy_code,5M,5 50%-59%,5  
-management_efficacy_code,6M,6 60%-69%,6 
+management_efficacy_code,6M,6 60%-69%,6
 management_efficacy_code,7M,7 70%-79%,7  
 management_efficacy_code,8M,8 80%-89%,8  
 management_efficacy_code,9M,9 90%-99%,9  
@@ -777,27 +777,27 @@ biological_agent_code,UROPSOL,UROPSOL [Urophora solstitialus],89
 biological_agent_code,UROPSPP,UROPSPP [Urophora species],90
 biological_agent_code,UROPSTY,UROPSTY [Urophora stylata],91
 biological_agent_code,ZEUXGIA,ZEUXGIA [Zeuxidiplosis giardi],92
-invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada, 1
-invasive_species_agency_code,APO,Apollo Forest Products Ltd., 2
-invasive_species_agency_code,ATCO,ATCO Wood Products Ltd., 3
-invasive_species_agency_code,HYDR,BC Hydro and Power Authority, 4
-invasive_species_agency_code,OGC,BC Oil and Gas Commission, 5
+invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada,1
+invasive_species_agency_code,APO,Apollo Forest Products Ltd.,2
+invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,3
+invasive_species_agency_code,BCH,BC Hydro and Power Authority,4
+invasive_species_agency_code,OGC,BC Oil and Gas Commission,5
 invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,6
 invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,7
 invasive_species_agency_code,CAN,Canfor,8
 invasive_species_agency_code,CAR,Carrier Lumber Ltd.,9
 invasive_species_agency_code,CPR,CP Rail,10
 invasive_species_agency_code,DND,Department of National Defense,11
-invasive_species_agency_code,DHC,Diamond Head Consulting Ltd, 12
-invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada, 13
-invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin, 14
+invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,12
+invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,13
+invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,14
 invasive_species_agency_code,FRS,FortisBC Inc.,15
-invasive_species_agency_code,GIBR,Gibraltar Mines Ltd., 16
-invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd., 17
-invasive_species_agency_code,KMC,Kinder Morgan Canada, 18
-invasive_species_agency_code,LM,Lakeland Mills Ltd., 19
-invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd., 20
-invasive_species_agency_code,LKB,Lower Kootenay Band, 21
+invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,16
+invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,17
+invasive_species_agency_code,KMC,Kinder Morgan Canada,18
+invasive_species_agency_code,LM,Lakeland Mills Ltd.,19
+invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,20
+invasive_species_agency_code,LKB,Lower Kootenay Band,21
 invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,22
 invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,23
 invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,24
@@ -818,23 +818,23 @@ invasive_species_agency_code,NTBC,The Nature Trust of BC,38
 invasive_species_agency_code,TRU,Thompson Rivers University,39
 invasive_species_agency_code,TNIPMC, Thompson Nicola Invasive Plant Management Committee,40
 invasive_species_agency_code,TPIB,Tobacco Plains Indian Band,41
-invasive_species_agency_code, TIL, Tolko Industries Ltd., 42
+invasive_species_agency_code, TIL, Tolko Industries Ltd.,42
 invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,43
 invasive_species_agency_code,UBC,University of British Columbia,44
 invasive_species_agency_code, WFM, West Fraser Mills Ltd.,45
 invasive_species_agency_code,WFP,Western Forest Products Inc.,46
 invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,47
 invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,48
-invasive_species_agency_code,AGRI,BC Ministry of Agriculture and Food, 49
+invasive_species_agency_code,AGRI,BC Ministry of Agriculture and Food,49
 invasive_species_agency_code,CITZ,BC Ministry of Citizens' Services,50
 invasive_species_agency_code,EDU,BC Ministry of Education,51
-invasive_species_agency_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation, 52
+invasive_species_agency_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation,52
 invasive_species_agency_code,MOE,BC Ministry of Environment & Climate Change Strategy,53
 invasive_species_agency_code,MOF,BC Ministry of Forests,54
 invasive_species_agency_code,MOH,BC Ministry of Health,55
 invasive_species_agency_code,MIRR,BC Ministry of Indigenous Relations & Reconciliation,56
 invasive_species_agency_code,JERI,BC Ministry of Jobs Economic Recovery and Innovation,57
-invasive_species_agency_code,TACS,BC Ministry of Tourism Arts Culture and Sport, 58
+invasive_species_agency_code,TACS,BC Ministry of Tourism Arts Culture and Sport,58
 invasive_species_agency_code,MOTI,BC Ministry of Transportation & Infrastructure,59
 invasive_species_agency_code,LWRS, BC Ministry of Land Water Resource Stewardship,60
 invasive_species_agency_code,BCPARKS, BC Parks,61
@@ -972,72 +972,72 @@ invasive_species_agency_code,TOSMI,Town of Smithers,191
 invasive_species_agency_code,DOSOO,District of Sooke,192
 invasive_species_agency_code,TOSPA,Township of Spallumcheen,193
 invasive_species_agency_code,DOSPA,District of Sparwood,194
-invasive_species_agency_code,DOSQU,District of Squamish, 195
-invasive_species_agency_code,DOSTE,District of Stewart, 196
-invasive_species_agency_code,DOSUM,District of Summerland, 197
-invasive_species_agency_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks, 198
-invasive_species_agency_code,COSUR,City of Surrey, 199
-invasive_species_agency_code,VOTAH,Village of Tahsis, 200
-invasive_species_agency_code,DOTAY,District of Taylor, 201
-invasive_species_agency_code,VOTEL,Village of Telkwa, 202
-invasive_species_agency_code,COTER,City of Terrace, 203
-invasive_species_agency_code,DOTOF,District of Tofino, 204
-invasive_species_agency_code,COTRA,City of Trail, 205
-invasive_species_agency_code,DOTUM,District of Tumbler Ridge, 206
-invasive_species_agency_code,DOUCL,District of Ucluelet, 207
-invasive_species_agency_code,VOVAL,Village of Valemount, 208
-invasive_species_agency_code,COVAN,City of Vancouver, 209
-invasive_species_agency_code,DOVAN,District of Vanderhoof, 210
-invasive_species_agency_code,COVER,City of Vernon, 211
-invasive_species_agency_code,COVIC,City of Victoria, 212
-invasive_species_agency_code,TOVIE,Town of View Royal, 213
-invasive_species_agency_code,VOWAR,Village of Warfield, 214
-invasive_species_agency_code,COWES,City of West Kelowna, 215
-invasive_species_agency_code,DOWES,District of West Vancouver, 216
-invasive_species_agency_code,ROOF ,Resort Municipality of Whistler, 217
-invasive_species_agency_code,COWHI,City of White Rock, 218
-invasive_species_agency_code,COWIL,City of Williams Lake, 219
-invasive_species_agency_code,VOZEB,Village of Zeballos, 220
-invasive_species_agency_code,BISS,Boundary Invasive Species Society, 221
-invasive_species_agency_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society, 222
-invasive_species_agency_code,CKISS,Central Kootenay Invasive Species Society, 223
-invasive_species_agency_code,CISC,Coastal Invasive Species Committee Society, 224
-invasive_species_agency_code,CSISC,Columbia Shuswap Invasive Species Society, 225
-invasive_species_agency_code,EKISC,East Kootenay Invasive Species Council, 226
-invasive_species_agency_code,FVISS,Fraser Valley Invasive Species Society, 227
-invasive_species_agency_code,ISCBC,Invasive Species Council of British Columbia Society, 228
-invasive_species_agency_code,ISCMV,Invasive Species Council of Metro Vancouver Society, 229
-invasive_species_agency_code,LRISS,Lillooet Regional Invasive Species Society, 230
-invasive_species_agency_code,NWIPC,Northwest Invasive Plant Council, 231
-invasive_species_agency_code,OASISS,Okanagan and Similkameen Invasive Species Society, 232
-invasive_species_agency_code,SSISC,Sea to Sky Invasive Species Council, 233
-invasive_species_agency_code, CRD, Capital Regional District, 234
-invasive_species_agency_code, CARD, Cariboo Regional District, 235
-invasive_species_agency_code, CVRD, Cowichan Valley Regional District, 236
-invasive_species_agency_code, RDMW, Regional District of Mount Waddington, 237
-invasive_species_agency_code, SCRD, Sunshine Coast Regional District, 238
-invasive_species_agency_code, MVRD, Metro Vancouver Regional District, 239
-invasive_species_agency_code, TNRD, Thompson Nicola Regional District, 240
-invasive_species_agency_code, CSRD, Columbia Shuswap Regional District, 241
-invasive_species_agency_code, PRRD, Peace River Regional District, 242
-invasive_species_agency_code, FVRD, Fraser Valley Regional District, 243
-invasive_species_agency_code, RDNO, Regional District North Okanagan, 244
-invasive_species_agency_code, KBRD, Kootenay Boundary Regional District, 245
-invasive_species_agency_code, RDCO, Regional District of Central Okanagan, 246
-invasive_species_agency_code, ACRD, Alberni-Clayoquot Regional District, 247
-invasive_species_agency_code, RDBN, Regional District of Bulkley-Nechako, 248
-invasive_species_agency_code, CCRD, Central Coast Regional District, 249
-invasive_species_agency_code, RDCK, Regional District of Central Kootenay, 250
-invasive_species_agency_code, RDEK, Regional District of East Kootenay, 251
-invasive_species_agency_code, RDFFG, Regional District of Fraser-Fort George, 252
-invasive_species_agency_code, RDKS, Regional District of Kitimat-Stikine, 253
-invasive_species_agency_code, RDN, Regional District of Nanaimo, 254
-invasive_species_agency_code, NCRD, North Coast Regional District, 255
-invasive_species_agency_code, RDOS, Regional District of Okanagan-Similkameen, 256
-invasive_species_agency_code, qRD, qathet Regional District, 257
-invasive_species_agency_code, SLRD, Squamish-Lillooet Regional District, 258
-invasive_species_agency_code, SRD, Strathcona Regional District, 259
-invasive_species_agency, AAFC, Agriculture and Agri-Food Canada, 260
+invasive_species_agency_code,DOSQU,District of Squamish,195
+invasive_species_agency_code,DOSTE,District of Stewart,196
+invasive_species_agency_code,DOSUM,District of Summerland,197
+invasive_species_agency_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,198
+invasive_species_agency_code,COSUR,City of Surrey,199
+invasive_species_agency_code,VOTAH,Village of Tahsis,200
+invasive_species_agency_code,DOTAY,District of Taylor,201
+invasive_species_agency_code,VOTEL,Village of Telkwa,202
+invasive_species_agency_code,COTER,City of Terrace,203
+invasive_species_agency_code,DOTOF,District of Tofino,204
+invasive_species_agency_code,COTRA,City of Trail,205
+invasive_species_agency_code,DOTUM,District of Tumbler Ridge,206
+invasive_species_agency_code,DOUCL,District of Ucluelet,207
+invasive_species_agency_code,VOVAL,Village of Valemount,208
+invasive_species_agency_code,COVAN,City of Vancouver,209
+invasive_species_agency_code,DOVAN,District of Vanderhoof,210
+invasive_species_agency_code,COVER,City of Vernon,211
+invasive_species_agency_code,COVIC,City of Victoria,212
+invasive_species_agency_code,TOVIE,Town of View Royal,213
+invasive_species_agency_code,VOWAR,Village of Warfield,214
+invasive_species_agency_code,COWES,City of West Kelowna,215
+invasive_species_agency_code,DOWES,District of West Vancouver,216
+invasive_species_agency_code,ROOF ,Resort Municipality of Whistler,217
+invasive_species_agency_code,COWHI,City of White Rock,218
+invasive_species_agency_code,COWIL,City of Williams Lake,219
+invasive_species_agency_code,VOZEB,Village of Zeballos,220
+invasive_species_agency_code,BISS,Boundary Invasive Species Society,221
+invasive_species_agency_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,222
+invasive_species_agency_code,CKISS,Central Kootenay Invasive Species Society,223
+invasive_species_agency_code,CISC,Coastal Invasive Species Committee Society,224
+invasive_species_agency_code,CSISS,Columbia Shuswap Invasive Species Society,225
+invasive_species_agency_code,EKISC,East Kootenay Invasive Species Council,226
+invasive_species_agency_code,FVISS,Fraser Valley Invasive Species Society,227
+invasive_species_agency_code,ISCBC,Invasive Species Council of British Columbia Society,228
+invasive_species_agency_code,ISCMV,Invasive Species Council of Metro Vancouver Society,229
+invasive_species_agency_code,LRISS,Lillooet Regional Invasive Species Society,230
+invasive_species_agency_code,NWIPC,Northwest Invasive Plant Council,231
+invasive_species_agency_code,OASISS,Okanagan and Similkameen Invasive Species Society,232
+invasive_species_agency_code,SSISC,Sea to Sky Invasive Species Council,233
+invasive_species_agency_code, CRD, Capital Regional District,234
+invasive_species_agency_code, CARD, Cariboo Regional District,235
+invasive_species_agency_code, CVRD, Cowichan Valley Regional District,236
+invasive_species_agency_code, RDMW, Regional District of Mount Waddington,237
+invasive_species_agency_code, SCRD, Sunshine Coast Regional District,238
+invasive_species_agency_code, MVRD, Metro Vancouver Regional District,239
+invasive_species_agency_code, TNRD, Thompson Nicola Regional District,240
+invasive_species_agency_code, CSRD, Columbia Shuswap Regional District,241
+invasive_species_agency_code, PRRD, Peace River Regional District,242
+invasive_species_agency_code, FVRD, Fraser Valley Regional District,243
+invasive_species_agency_code, RDNO, Regional District North Okanagan,244
+invasive_species_agency_code, KBRD, Kootenay Boundary Regional District,245
+invasive_species_agency_code, RDCO, Regional District of Central Okanagan,246
+invasive_species_agency_code, ACRD, Alberni-Clayoquot Regional District,247
+invasive_species_agency_code, RDBN, Regional District of Bulkley-Nechako,248
+invasive_species_agency_code, CCRD, Central Coast Regional District,249
+invasive_species_agency_code, RDCK, Regional District of Central Kootenay,250
+invasive_species_agency_code, RDEK, Regional District of East Kootenay,251
+invasive_species_agency_code, RDFFG, Regional District of Fraser-Fort George,252
+invasive_species_agency_code, RDKS, Regional District of Kitimat-Stikine,253
+invasive_species_agency_code, RDN, Regional District of Nanaimo,254
+invasive_species_agency_code, NCRD, North Coast Regional District,255
+invasive_species_agency_code, RDOS, Regional District of Okanagan-Similkameen,256
+invasive_species_agency_code, qRD, qathet Regional District,257
+invasive_species_agency_code, SLRD, Squamish-Lillooet Regional District,258
+invasive_species_agency_code, SRD, Strathcona Regional District,259
+invasive_species_agency_code,ENB,Enbridge Inc.,260
 jurisdiction_code,MOF,Ministry of Forests,1
 jurisdiction_code,MOTI,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
@@ -1068,8 +1068,8 @@ jurisdiction_code,MRD,Regional District owned land,27
 jurisdiction_code,PIPE,Oil and Gas Companies,28
 jurisdiction_code,PNG,Pacific Northern Gas,29
 jurisdiction_code,TRP,TransCanada Pipelines,30
-jurisdiction_code, LWRS, Ministry of Land Water Resource Stewardship, 31
-jurisdiction_code, AAFC, Agriculture and Agri-Food Canada, 32
+jurisdiction_code, LWRS, Ministry of Land Water Resource Stewardship,31
+jurisdiction_code, AAFC, Agriculture and Agri-Food Canada,32
 service_license_code,0,00000 BC Government Ministries,1
 service_license_code,19603,19603 A.R.M. CONTRACTORS,2
 service_license_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,3
@@ -1189,43 +1189,43 @@ liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
 liquid_herbicide_code,9528,"AM500b [2,4-D 2,4-D Amine 500] 9528",2
 liquid_herbicide_code,5931,"AM600a [2,4-D 2,4-D Amine 600] 5931",3
 liquid_herbicide_code,14726,"AM600b [2,4-D 2,4-D Amine 600] 14726",4
-liquid_herbicide_code,23713,"Arsenal [imazapyr] 23713",5
+liquid_herbicide_code,23713,Arsenal [imazapyr] 23713,5
 liquid_herbicide_code,31641,"Aspect [picloram/2,4-D] 31641",6
-liquid_herbicide_code,23957,"Banvel II [dicamba] 23957",7
-liquid_herbicide_code,29249,"BanvelVM [dicamba] 29249",8
-liquid_herbicide_code,33590,"BioLink [Caprylic Acid/Capric Acid] 33590",9
-liquid_herbicide_code,29888,"Credit Xtreme [glyphosate] 29888",10
+liquid_herbicide_code,23957,Banvel II [dicamba] 23957,7
+liquid_herbicide_code,29249,BanvelVM [dicamba] 29249,8
+liquid_herbicide_code,33590,BioLink [Caprylic Acid/Capric Acid] 33590,9
+liquid_herbicide_code,29888,Credit Xtreme [glyphosate] 29888,10
 liquid_herbicide_code,27856,"Dyvel DSP [dicamba/2,4-D/mecoprop-p] 27856",11
-liquid_herbicide_code,21053,"Garlon4 [triclopyr] 21053",12
-liquid_herbicide_code,29334,"GarlonRTU [triclopyr] 29334",13
-liquid_herbicide_code,28945,"GarlonXRT [triclopyr] 28945",14
+liquid_herbicide_code,21053,Garlon4 [triclopyr] 21053,12
+liquid_herbicide_code,29334,GarlonRTU [triclopyr] 29334,13
+liquid_herbicide_code,28945,GarlonXRT [triclopyr] 28945,14
 liquid_herbicide_code,27634,"Grazon [2,4-D] 27634",15
-liquid_herbicide_code,31642,"GrazonXC [picloram] 31642",16
-liquid_herbicide_code,32374,"Habitat Aqua [imazapyr] 32374",17
-liquid_herbicide_code,30264,"Kerb SC [Propyzamide] 30264",18
+liquid_herbicide_code,31642,GrazonXC [picloram] 31642,16
+liquid_herbicide_code,32374,Habitat Aqua [imazapyr] 32374,17
+liquid_herbicide_code,30264,Kerb SC [Propyzamide] 30264,18
 liquid_herbicide_code,27801,"Killex [2,4-D/mecoprop-p/dicamba] 27801",19
-liquid_herbicide_code,23545,"Lontrel360 [clopyralid] 23545",20
-liquid_herbicide_code,32957,"Method240SL [aminocyclopyrachlor] 32957",21
-liquid_herbicide_code,28517,"Milestone [aminopyralid] 28517",22
-liquid_herbicide_code,26722,"Oracle [dicamba] 26722",23
+liquid_herbicide_code,23545,Lontrel360 [clopyralid] 23545,20
+liquid_herbicide_code,32957,Method240SL [aminocyclopyrachlor] 32957,21
+liquid_herbicide_code,28517,Milestone [aminopyralid] 28517,22
+liquid_herbicide_code,26722,Oracle [dicamba] 26722,23
 liquid_herbicide_code,27884,"ParIII [mecoprop-p/2,4-D/dicamba] 27884",24
-liquid_herbicide_code,30203,"Arsenal Powerline [imazapyr] 30203",25
+liquid_herbicide_code,30203,Arsenal Powerline [imazapyr] 30203,25
 liquid_herbicide_code,30063,"Reclaim II B [2,4-D] 30063",26
-liquid_herbicide_code,28551,"RestoreA [Aminopyralid] 28551",27
+liquid_herbicide_code,28551,RestoreA [Aminopyralid] 28551,27
 liquid_herbicide_code,28552,"RestoreB [2,4-D] 28552",28
-liquid_herbicide_code,26271,"Reward [diquat] 26271",29
-liquid_herbicide_code,22759,"Roundup Super Concentrate [glyphosate] 22759",30
-liquid_herbicide_code,28198,"Roundup Transorb [glyphosate] 28198",31
-liquid_herbicide_code,27487,"Roundup Weathermax [glyohsate] 27487",32
-liquid_herbicide_code,33653,"Roundup WeatherPro [glyphosate] 33653",33
-liquid_herbicide_code,29498,"StartUp [glyphosate] 29498",34
-liquid_herbicide_code,9007,"Tordon101 [picloram] 9007",35
-liquid_herbicide_code,9005,"Tordon22K [picloram] 9005",36
+liquid_herbicide_code,26271,Reward [diquat] 26271,29
+liquid_herbicide_code,22759,Roundup Super Concentrate [glyphosate] 22759,30
+liquid_herbicide_code,28198,Roundup Transorb [glyphosate] 28198,31
+liquid_herbicide_code,27487,Roundup Weathermax [glyohsate] 27487,32
+liquid_herbicide_code,33653,Roundup WeatherPro [glyphosate] 33653,33
+liquid_herbicide_code,29498,StartUp [glyphosate] 29498,34
+liquid_herbicide_code,9007,Tordon101 [picloram] 9007,35
+liquid_herbicide_code,9005,Tordon22K [picloram] 9005,36
 liquid_herbicide_code,27972,"Trillion [2,4-D/mecoprop-p/dicamba] 27972",37
-liquid_herbicide_code,26980,"Vanquish [dicamba] 26980",38
-liquid_herbicide_code,27615,"Vantage Plus Max [glypohsate] 27615",39
-liquid_herbicide_code,29994,"VantageXRT [glyphosate] 29994",40
-liquid_herbicide_code,28840,"VP480 [glyphosate] 28840",41
+liquid_herbicide_code,26980,Vanquish [dicamba] 26980,38
+liquid_herbicide_code,27615,Vantage Plus Max [glypohsate] 27615,39
+liquid_herbicide_code,29994,VantageXRT [glyphosate] 29994,40
+liquid_herbicide_code,28840,VP480 [glyphosate] 28840,41
 granular_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl] 29752,1
 granular_herbicide_code,23005,Escort [metsulfuron methyl] 23005,2
 granular_herbicide_code,33128,LongRun [flazasulfuron] 33128,3
@@ -1536,7 +1536,7 @@ employer_code,SDPR,BC Ministry of Social Development & Poverty Reduction,18
 employer_code,TACS,BC Ministry of Tourism Arts Culture and Sport,19
 employer_code,MOTI,BC Ministry of Transportation & Infrastructure,20
 employer_code,LWRS,BC Ministry of Land Water and Resource Stewardship,21
-employer_code,BCPARKS, BC Parks, 22
+employer_code,BCPARKS, BC Parks,22
 employer_code,DOHMH,District of 100 Mile House,21
 employer_code,COABB,City of Abbotsford,22
 employer_code,VOALE,Village of Alert Bay,23
@@ -1701,7 +1701,7 @@ employer_code,BISS,Boundary Invasive Species Society,181
 employer_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,182
 employer_code,CKISS,Central Kootenay Invasive Species Society,183
 employer_code,CISC,Coastal Invasive Species Committee Society,184
-employer_code,CCISC,Columbia Shuswap Invasive Species Society,185
+employer_code,CSISS,Columbia Shuswap Invasive Species Society,185
 employer_code,EKISS,East Kootenay Invasive Species Council,186
 employer_code,FVISS,Fraser Valley Invasive Species Society,187
 employer_code,ISCBC,Invasive Species Council of British Columbia Society,188
@@ -1733,7 +1733,7 @@ employer_code,TRU,Thompson Rivers University,213
 employer_code,WFP,Western Forest Products Inc.,214
 employer_code,SIF,Slocan Integral Forestry Cooperative,215
 employer_code,TIB,Tobacco Plains Indian Band,216
-employer_code,NBC,The Nature Trust of BC,217
+employer_code,NTBC,The Nature Trust of BC,217
 employer_code,AAFC,Agriculture and Agri-Food Canada,218
 employer_code,CFGP,Cortes Forestry General Partnership,219
 employer_code,ARC,A Rocha Canada,220
@@ -1787,6 +1787,18 @@ employer_code,EEC,Ecoscape Environmental Consultants Ltd.,267
 employer_code,KGM,Kootenay Ground Maintenance,268
 employer_code,ECCC,Environment and Climate Change Canada,269
 employer_code,TS,Trailmark Systems Inc.,270
+employer_code,FRS,FortisBC Inc.,271
+employer_code,CPR,CP Rail,272
+employer_code,DND,Department of National Defense,273
+employer_code,KMC,Kinder Morgan Canada,274
+employer_code,ASP,Asplundh Canada ULC,275
+employer_code,CRE,CoastRange Environmental Ltd.,276
+employer_code,MLMC,McLeod Lake Mackenzie Community Forest,277
+employer_code,CVWMA,Creston Valley Wildlife Management Area,278
+employer_code,HC,Hatfield Consultants,279
+employer_code,WSPG,WSP Global Inc.,280
+employer_code,GFS,Generous Forest Services,281
+employer_code,MSI,Matrix Solutions Inc.,282
 waterbody_use_code,R,Recreation,1
 waterbody_use_code,F,Fishing,2
 waterbody_use_code,B,Boating,3
@@ -1989,14 +2001,14 @@ BEC_phase_code,c,Cold Air Phase,3
 BEC_phase_code,d,Dry Phase,4
 BEC_phase_code,n,Northern Phase,5
 BEC_phase_code,w,Warm Phase ,6
-site_series_code,01,Mesic,1
-site_series_code,02,Xeric-Subxeric,2
-site_series_code,03,Subxeric,3
-site_series_code,04,Submesic,4
-site_series_code,05,Submesic-Subhygric,5
-site_series_code,06,Mesic-Subhygric,6
-site_series_code,07,Subhygric,7
-site_series_code,08,Subhydric,8
+site_series_code,1,Mesic,1
+site_series_code,2,Xeric-Subxeric,2
+site_series_code,3,Subxeric,3
+site_series_code,4,Submesic,4
+site_series_code,5,Submesic-Subhygric,5
+site_series_code,6,Mesic-Subhygric,6
+site_series_code,7,Subhygric,7
+site_series_code,8,Subhydric,8
 stratum_consistent_code,Yes,Yes,1
 stratum_consistent_code,No,No,2
 stratum_consistent_code,Not Mapped,Not mapped,3
@@ -2159,9 +2171,9 @@ reserve_constraints_recreation_code,9,81-90%,10
 reserve_constraints_recreation_code,10,91-100%,11
 ecological_anchors_none_code,Yes,Yes,1
 ecological_anchors_none_code,No,No,2
-ecological_anchors_vet_trees_code,1-5,1-5 trees/ha,1
-ecological_anchors_vet_trees_code,6-10,6-10 trees/ha,2
-ecological_anchors_vet_trees_code,11-20,11-20 trees/ha,3
+ecological_anchors_vet_trees_code,05-Jan,1-5 trees/ha,1
+ecological_anchors_vet_trees_code,10-Jun,6-10 trees/ha,2
+ecological_anchors_vet_trees_code,20-Nov,11-20 trees/ha,3
 ecological_anchors_vet_trees_code,>20,>20 trees/ha,4
 ecological_anchors_karst_features_code,Y,Yes,1
 ecological_anchors_karst_features_code,N,No ,2
