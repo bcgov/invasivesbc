@@ -141,17 +141,18 @@ export const NamedBoundaryMenu = (props) => {
 
     // map to match boundaries
     let KMLToBoundary = [];
-    if (KMLResults) {
+    if (KMLResults && KMLResults.length > 0) {
+      console.log('here');
       KMLToBoundary = KMLResults.map((kml) => {
-        const geos = kml.geojson.features.map((feature) => {
+        const geos = kml?.geojson?.features?.map((feature) => {
           return {
-            "type": "Feature",
-            "geometry": {
-              "coordinates": feature.coordinates,
-              "type": feature.type
+            type: 'Feature',
+            geometry: {
+              coordinates: feature.coordinates,
+              type: feature.type
             },
-            "properties": {}
-          }
+            properties: {}
+          };
         });
 
         return {
@@ -271,8 +272,16 @@ export const NamedBoundaryMenu = (props) => {
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          {boundaries.map((b, index) => (
-            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
+          {boundaries?.map((b, index) => (
+            <JumpToTrip
+              boundary={b}
+              id={b.id}
+              name={b.name}
+              geos={b.geos}
+              server_id={b.server_id}
+              key={index}
+              deleteBoundary={deleteBoundary}
+            />
           ))}
         </List>
       </div>
@@ -309,16 +318,19 @@ export const NamedBoundaryMenu = (props) => {
               name: kmlToUpload.name,
               geos: kmlToUpload.geos,
               server_id: kmlToUpload.server_id
-            }
+            };
 
             dataAccess.addBoundary(boundaryFromKML);
             setBoundaries([...boundaries, boundaryFromKML]);
             setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
-            setNewBoundaryDialog({...newBoundaryDialog, dialogOpen: false });
-          }}
-        >
-          {KMLs.map((kml) => {
-            return <MenuItem key={kml.server_id} value={kml.server_id}>{kml.name}</MenuItem>
+            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
+          }}>
+          {KMLs?.map((kml) => {
+            return (
+              <MenuItem key={kml.server_id} value={kml.server_id}>
+                {kml.name}
+              </MenuItem>
+            );
           })}
         </Select>
       </GeneralDialog>
