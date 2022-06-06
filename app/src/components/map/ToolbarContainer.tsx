@@ -97,7 +97,7 @@ export const ToolbarContainer = (props) => {
             measureToolContainerOpen={measureToolContainerOpen}
           />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          <JumpToTrip />
           {/* <NewRecord />
         <EditRecord />
         <MultiSelectOrEdit />

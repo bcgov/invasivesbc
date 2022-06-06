@@ -59,6 +59,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
       setUploadLayersFlag(Math.random());
       setTimeout(() => {
         setResultMessage('');
+        if (props?.callback) props.callback();
       }, 2000);
     } catch (err) {
       setUploadRequests([]);
