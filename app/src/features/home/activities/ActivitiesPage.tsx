@@ -297,11 +297,14 @@ const PageContainer = (props) => {
         }
       }
       try {
-        numberActivitiesFetched += await databaseContext.asyncQueue({
+        const activitiesCached = await databaseContext.asyncQueue({
           asyncTask: () => {
             return upsert(upserts, databaseContext);
           }
         });
+        if (!isNaN(activitiesCached)) {
+          numberActivitiesFetched += activitiesCached;
+        }
         console.log(`Cached ${numberActivitiesFetched} activities.`);
       } catch (error) {
         console.log('Error with inserting Activities into database: ', error);
