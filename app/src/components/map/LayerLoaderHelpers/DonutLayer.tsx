@@ -1,8 +1,7 @@
 import React from 'react';
-import { useMap } from 'react-leaflet';
 import Donut from '../Donut';
 
-export const DonutLayer = (props) => {
+export const DonutLayer = () => {
 
   return (
     <>

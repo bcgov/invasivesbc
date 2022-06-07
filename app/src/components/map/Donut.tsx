@@ -1,8 +1,7 @@
-import { Feature, GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 import { useLeafletContext } from '@react-leaflet/core';
-import React, { useEffect, useRef, useState } from 'react';
-import { LatLng, LatLngExpression, PointExpression } from 'leaflet';
+import React, { useEffect, useRef } from 'react';
+import { LatLngExpression } from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
 import '../../styles/donuts.scss';
 
@@ -74,13 +73,13 @@ const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 })
 
   const sum = sortedData.reduce((prev, current) => prev + current.count, 0.0);
   let startingBin = 0;
-  for (let i = 0; i < sortedData.length; i++) {
-    sortedData[i].startBin = startingBin;
-    sortedData[i].endBin = startingBin + Math.floor((sortedData[i].count / sum) * bins);
-    if (sortedData[i].endBin >= bins) {
-      sortedData[i].endBin = bins - 1;
+  for (const item of sortedData) {
+    item.startBin = startingBin;
+    item.endBin = startingBin + Math.floor((item.count / sum) * bins);
+    if (item.endBin >= bins) {
+      item.endBin = bins - 1;
     }
-    startingBin = sortedData[i].endBin;
+    startingBin = item.endBin;
     startingBin++;
   }
 
