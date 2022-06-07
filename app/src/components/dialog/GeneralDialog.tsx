@@ -25,7 +25,7 @@ export const GeneralDialog = (props: IGeneralDialog) => {
   }, [props.dialogOpen]);
 
   return (
-    <Dialog open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+    <Dialog onClick={(e) => e.stopPropagation()} open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
       {props.dialogContentText && (
         <DialogContent>

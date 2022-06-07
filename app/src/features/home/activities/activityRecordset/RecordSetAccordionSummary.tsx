@@ -8,6 +8,8 @@ import {
   Checkbox,
   Container,
   IconButton,
+  MenuItem,
+  Select,
   TextField,
   Typography
 } from '@mui/material';
@@ -22,6 +24,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
 import GrassIcon from '@mui/icons-material/Grass';
+import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
 
 const OrderSelector = (props) => {
   return (
@@ -54,8 +57,24 @@ const OrderSelector = (props) => {
 };
 
 const RecordSetAccordionSummary = (props) => {
+  const recordSetContext = useContext(RecordSetContext);
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
+
+  const [boundaryFilterDialog, setBoundaryFilterDialog] = useState<IGeneralDialog>({
+    dialogActions: [
+      {
+        actionName: 'Cancel',
+        actionOnClick: async () => {
+          setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
+        }
+      }
+    ],
+    dialogOpen: false,
+    dialogTitle: 'Select boundary to filter: ',
+    dialogContentText: null
+  });
+
   // return useMemo(() => {
   return (
     <AccordionSummary>
@@ -122,6 +141,15 @@ const RecordSetAccordionSummary = (props) => {
         )}
       </Box>
       <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
+      <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
+          }}
+          variant="outlined">
+          Filter by boundary shape
+          <ArrowDropDownIcon />
+        </Button>
         <Button
           //className={classes.mainHeader}
           onClick={(e) => {
@@ -188,6 +216,25 @@ const RecordSetAccordionSummary = (props) => {
           <></>
         )}
       </AccordionActions>
+      <GeneralDialog
+        dialogOpen={boundaryFilterDialog.dialogOpen}
+        dialogTitle={boundaryFilterDialog.dialogTitle}
+        dialogActions={boundaryFilterDialog.dialogActions}
+        dialogContentText={boundaryFilterDialog.dialogContentText}
+      >
+        <Select
+          sx={{ minWidth: 150, mt: 3, mb: 3 }}
+          onChange={(e) => {
+            e.stopPropagation();
+            //add to the recordset filters
+            recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
+          }}
+        >
+          {recordSetContext.boundaries?.map((boundary) => {
+            return <MenuItem key={boundary.id} value={boundary}>{boundary.name}</MenuItem>
+          })}
+        </Select>
+      </GeneralDialog>
     </AccordionSummary>
   );
   // }, [JSON.stringify({ expanded: expanded, mapToggle: mapToggle, colour: colour, recordSetName: recordSetName })]);

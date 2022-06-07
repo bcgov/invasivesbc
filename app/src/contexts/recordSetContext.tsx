@@ -10,6 +10,7 @@ export const RecordSetContext = React.createContext(null);
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
   const { userInfo } = useContext(AuthStateContext);
 
@@ -81,6 +82,24 @@ export const RecordSetProvider = (props) => {
     });
   };
 
+  const addBoundaryToSet = async (boundary: Boundary, setName: string) => {
+    const oldState = dataAccess.getAppState();
+    const recordSets = oldState?.recordSets;
+    const currentSet = recordSets[setName];
+
+    // add search boundary ID to given record set if doesn't exist
+    if (currentSet.searchBoundaryID) {
+      if (!currentSet.searchBoundaryID.includes(boundary.id)) {
+        currentSet.searchBoundaryID = [...currentSet.searchBoundaryID, boundary.id];
+      }
+    } else {
+      // create if not exists
+      currentSet.searchBoundaryID = [boundary.id];
+    }
+
+    dataAccess.setAppState({ recordSets: { ...recordSets } });
+  }
+
   useEffect(() => {
     getInitialState();
   }, []);
@@ -119,7 +138,10 @@ export const RecordSetProvider = (props) => {
           recordSetState: recordSetState,
           setRecordSetState: setRecordSetState,
           add: add,
-          remove: remove
+          remove: remove,
+          boundaries: boundaries,
+          setBoundaries: setBoundaries,
+          addBoundaryToSet: addBoundaryToSet
         }}>
         {props.children}
       </RecordSetContext.Provider>

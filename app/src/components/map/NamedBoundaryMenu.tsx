@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
@@ -34,6 +34,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
 import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { RecordSetContext } from 'contexts/recordSetContext';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -84,7 +85,8 @@ export const NamedBoundaryMenu = (props) => {
   const classes = useToolbarContainerStyles();
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
-  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
+  // const [boundaries, setBoundaries] = useState<Boundary[]>([]);
+  const recordSetContext = useContext(RecordSetContext);
   const [KMLs, setKMLs] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
   const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);
@@ -115,17 +117,17 @@ export const NamedBoundaryMenu = (props) => {
     getKMLs();
   }, []);
 
-  const setBoundaryIdCount = () => {
-    if (boundaries && boundaries.length > 0) {
+  const setBoundaryIdCount = (() => {
+    if (recordSetContext.boundaries && recordSetContext.boundaries.length > 0) {
       //ensures id is not repeated on client side
-      const max = Math.max(...boundaries.map((b) => b.id));
+      const max = Math.max(...recordSetContext.boundaries.map(b => b.id));
       setIdCount(max + 1);
     }
-  };
+  });
 
   useEffect(() => {
     setBoundaryIdCount();
-  }, [boundaries]);
+  }, [recordSetContext.boundaries]);
 
   const getBoundaries = async () => {
     const boundaryResults = await dataAccess.getBoundaries();
@@ -141,9 +143,9 @@ export const NamedBoundaryMenu = (props) => {
         };
       });
 
-      setBoundaries(mappedBoundaries);
+      recordSetContext.setBoundaries(mappedBoundaries);
     } else {
-      if (boundaryResults) setBoundaries(boundaryResults);
+      recordSetContext.setBoundaries(boundaryResults);
     }
   };
 
@@ -287,16 +289,8 @@ export const NamedBoundaryMenu = (props) => {
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          {boundaries?.map((b, index) => (
-            <JumpToTrip
-              boundary={b}
-              id={b.id}
-              name={b.name}
-              geos={b.geos}
-              server_id={b.server_id}
-              key={index}
-              deleteBoundary={deleteBoundary}
-            />
+          {recordSetContext.boundaries?.map((b, index) => (
+            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
       </div>
@@ -334,7 +328,7 @@ export const NamedBoundaryMenu = (props) => {
             };
 
             dataAccess.addBoundary(boundaryFromKML);
-            setBoundaries([...boundaries, boundaryFromKML]);
+            recordSetContext.setBoundaries([...recordSetContext.boundaries, boundaryFromKML]);
             setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
             setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
           }}>
