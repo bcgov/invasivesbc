@@ -6,6 +6,9 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
+import { createDataUTM } from '../Tools/Helpers/StyledTable';
+import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
+import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
@@ -100,13 +103,33 @@ export const ActivitiesLayerV2 = (props: any) => {
           {activities.features.map((a) => {
             if (a?.geometry?.type === 'Polygon') {
               const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+              const utmResult = calc_utm(position[0], position[1]);
+              const utmArr: any = [
+                createDataUTM('Zone', utmResult[0]),
+                createDataUTM('Easting', utmResult[1]),
+                createDataUTM('Northing', utmResult[2])
+              ];
 
-              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+              return (
+                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
+                  <GeneratePopup utmRows={utmArr} map={map} bufferedGeo={a} setRecordGeo={null} setClickMode={null} />
+                </Marker>
+              );
             }
             if (a?.geometry?.type === 'Point') {
               const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
+              const utmResult = calc_utm(position[0], position[1]);
+              const utmArr: any = [
+                createDataUTM('Zone', utmResult[0]),
+                createDataUTM('Easting', utmResult[1]),
+                createDataUTM('Northing', utmResult[2])
+              ];
 
-              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+              return (
+                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
+                  <GeneratePopup utmRows={utmArr} map={map} bufferedGeo={a} setRecordGeo={null} setClickMode={null} />
+                </Marker>
+              );
             }
           })}
         </MarkerClusterGroup>
