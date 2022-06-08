@@ -133,6 +133,7 @@ export class ActivitySearchCriteria {
   jurisdiction: string[];
 
   order: string[];
+  hideTreatmentsAndMonitoring: any;
 
   /**
    * Creates an instance of ActivitySearchCriteria.
@@ -171,6 +172,7 @@ export class ActivitySearchCriteria {
     this.jurisdiction = obj?.jurisdiction || [];
 
     this.order = (obj && obj.order) || [];
+    this.hideTreatmentsAndMonitoring = (obj && obj.hideTreatmentsAndMonitoring) || true;
   }
 
   setPage(page: number): number {

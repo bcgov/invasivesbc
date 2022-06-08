@@ -206,7 +206,14 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       body: req.body
     });
 
+    const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+
+    if (!roleName || !roleName.includes('plant') && !roleName.includes('admin')) {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
+    } else {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
+    }
 
     const connection = await getDBConnection();
 
@@ -222,6 +229,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria, req);
 
+      // Check for sql and role:
+      // console.log('========================= activities-lean.ts 232', sqlStatement.text);
+      // console.log('========================= activities-lean.ts 232 roleName', roleName);
+      
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Error generating SQL statement',

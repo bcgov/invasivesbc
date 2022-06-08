@@ -145,8 +145,6 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  */
 //NOSONAR
 export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria, req?: InvasivesRequest): SQLStatement => {
-  const roleName = (req as any).authContext.roles[0]?.role_name;
-
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   sqlStatement.append(SQL`
@@ -254,7 +252,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria, req
     sqlStatement.append(SQL`)`);
   }
 
-  if (!roleName || !roleName.includes('plant') && !roleName.includes('admin')) {
+  if (searchCriteria.hideTreatmentsAndMonitoring) {
     sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
   }
 
