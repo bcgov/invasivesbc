@@ -117,6 +117,11 @@ export const getSearchCriteriaFromFilters = (
   }
   */
 
+  //search_feature
+  if (recordSetContext.recordSetState[setName]?.searchBoundary) {
+    filter.search_feature = recordSetContext.recordSetState[setName]?.searchBoundary.geos[0];
+  }
+
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {
     const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
     const jurisdictions = [];

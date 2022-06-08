@@ -87,17 +87,21 @@ export const RecordSetProvider = (props) => {
     const recordSets = oldState?.recordSets;
     const currentSet = recordSets[setName];
 
-    // add search boundary ID to given record set if doesn't exist
-    if (currentSet.searchBoundaryID) {
-      if (!currentSet.searchBoundaryID.includes(boundary.id)) {
-        currentSet.searchBoundaryID = [...currentSet.searchBoundaryID, boundary.id];
-      }
-    } else {
-      // create if not exists
-      currentSet.searchBoundaryID = [boundary.id];
-    }
+    // add search boundary to given record set if doesn't exist
+    // if (currentSet.searchBoundary) {
+    //   if (!currentSet.searchBoundary.includes(boundary)) {
+    //     currentSet.searchBoundary = [...currentSet.searchBoundary, boundary];
+    //   }
+    // } else {
+    //   // create if not exists
+    //   currentSet.searchBoundary = [boundary];
+    // }
 
-    dataAccess.setAppState({ recordSets: { ...recordSets } });
+    // seems like only one geometry can be intersected at one time
+    currentSet.searchBoundary = boundary;
+
+    setRecordSetState({ ...recordSets });
+    // dataAccess.setAppState({ recordSets: { ...recordSets } });
   }
 
   useEffect(() => {
