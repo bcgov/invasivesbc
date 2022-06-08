@@ -206,15 +206,8 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       body: req.body
     });
 
-    let sanitizedSearchCriteria;
-    const roleId = (req as any).authContext.roles[0]?.role_id;
+    const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
 
-    if (roleId === 1 || roleId === 4 || roleId === 5 || roleId === 18) {
-      sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-    } else {
-      req.body.activity_subtype = ['Activity_Observation_PlantTerrestrial', 'Activity_Observation_PlantAquatic'];
-      sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-    }
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -227,7 +220,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria);
+      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria, req);
 
       if (!sqlStatement) {
         return res.status(500).json({
