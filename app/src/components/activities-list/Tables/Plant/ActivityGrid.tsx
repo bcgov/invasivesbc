@@ -622,6 +622,20 @@ const ActivityGrid = (props) => {
                     );
                   }
                 })}
+              {recordSetContext?.recordSetState[props.setName]?.searchBoundary &&
+                <Chip
+                  label={`Boundary = ${recordSetContext?.recordSetState[props.setName]?.searchBoundary.name}`}
+                  variant="outlined"
+                  color="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onDelete={(e) => {
+                    e.stopPropagation();
+                    recordSetContext.removeBoundaryFromSet(props.setName);
+                  }}
+                />
+              }
             </List>
             <Box
               sx={{

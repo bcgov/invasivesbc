@@ -223,11 +223,12 @@ const RecordSetAccordionSummary = (props) => {
         dialogContentText={boundaryFilterDialog.dialogContentText}
       >
         <Select
-          sx={{ minWidth: 150, mt: 3, mb: 3 }}
+          sx={{ minWidth: 150, m: 3}}
           onChange={(e) => {
             e.stopPropagation();
             //add to the recordset filters
             recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
+            setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
           }}
         >
           {recordSetContext.boundaries?.map((boundary) => {

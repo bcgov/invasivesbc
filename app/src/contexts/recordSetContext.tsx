@@ -104,6 +104,13 @@ export const RecordSetProvider = (props) => {
     // dataAccess.setAppState({ recordSets: { ...recordSets } });
   }
 
+  const removeBoundaryFromSet = async (setName: string) => {
+    const oldState = dataAccess.getAppState();
+    delete oldState.recordSets[setName].searchBoundary;
+
+    setRecordSetState({ ...oldState.recordSets})
+  }
+
   useEffect(() => {
     getInitialState();
   }, []);
@@ -145,7 +152,8 @@ export const RecordSetProvider = (props) => {
           remove: remove,
           boundaries: boundaries,
           setBoundaries: setBoundaries,
-          addBoundaryToSet: addBoundaryToSet
+          addBoundaryToSet: addBoundaryToSet,
+          removeBoundaryFromSet: removeBoundaryFromSet
         }}>
         {props.children}
       </RecordSetContext.Provider>
