@@ -1,14 +1,11 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import L, { LatLngExpression } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
-import { createDataUTM } from '../Tools/Helpers/StyledTable';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
-import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
@@ -66,7 +63,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.color]);
 
   const filters: IActivitySearchCriteria = props.filters;
-  //  console.log('filters for api');
+  // console.log('filters for api');
   // console.dir(filters);
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({
@@ -103,31 +100,19 @@ export const ActivitiesLayerV2 = (props: any) => {
           {activities.features.map((a) => {
             if (a?.geometry?.type === 'Polygon') {
               const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
-              const utmResult = calc_utm(position[0], position[1]);
-              const utmArr: any = [
-                createDataUTM('Zone', utmResult[0]),
-                createDataUTM('Easting', utmResult[1]),
-                createDataUTM('Northing', utmResult[2])
-              ];
 
               return (
                 <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup utmRows={utmArr} map={map} bufferedGeo={a} setRecordGeo={null} setClickMode={null} />
+                  <GeneratePopup position={[position[1], position[0]]} map={map} bufferedGeo={a} />
                 </Marker>
               );
             }
             if (a?.geometry?.type === 'Point') {
               const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
-              const utmResult = calc_utm(position[0], position[1]);
-              const utmArr: any = [
-                createDataUTM('Zone', utmResult[0]),
-                createDataUTM('Easting', utmResult[1]),
-                createDataUTM('Northing', utmResult[2])
-              ];
 
               return (
-                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup utmRows={utmArr} map={map} bufferedGeo={a} setRecordGeo={null} setClickMode={null} />
+                <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
+                  <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={a} />
                 </Marker>
               );
             }
@@ -147,13 +132,28 @@ export const ActivitiesLayerV2 = (props: any) => {
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
-            <GeoJSON
-              key={'activities_layer_v2_geojson' + props.zIndex}
-              // opacity={props.opacity}
-              data={activities}
-              //zIndex={props.zIndex}
-              style={options.style}
-            />
+            <>
+              {activities.features.map((a) => {
+                if (a?.geometry?.type === 'Polygon') {
+                  const position = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+
+                  return (
+                    <GeoJSON data={a} options={options}>
+                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                    </GeoJSON>
+                  );
+                }
+                if (a?.geometry?.type === 'Point') {
+                  const position = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
+
+                  return (
+                    <GeoJSON data={a} options={options}>
+                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                    </GeoJSON>
+                  );
+                }
+              })}
+            </>
           );
           break;
 

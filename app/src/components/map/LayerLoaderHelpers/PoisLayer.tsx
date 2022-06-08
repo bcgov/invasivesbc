@@ -141,32 +141,26 @@ export const PoisLayer = (props) => {
       {map.getZoom() > 14 && (
         <>
           {pois?.features?.map((feature) => {
-            const coords = feature.geometry.coordinates;
+            const position = feature.geometry.coordinates;
             const val = 0.003;
-            const utmResult = calc_utm(coords[0], coords[1]);
-            const utmArr: any = [
-              createDataUTM('Zone', utmResult[0]),
-              createDataUTM('Easting', utmResult[1]),
-              createDataUTM('Northing', utmResult[2])
-            ];
             const bufferedGeo = polygon([
               [
-                [coords[0] + val, coords[1] - val / 2],
-                [coords[0] + val, coords[1] + val / 2],
-                [coords[0] - val, coords[1] + val / 2],
-                [coords[0] - val, coords[1] - val / 2],
-                [coords[0] + val, coords[1] - val / 2]
+                [position[0] + val, position[1] - val / 2],
+                [position[0] + val, position[1] + val / 2],
+                [position[0] - val, position[1] + val / 2],
+                [position[0] - val, position[1] - val / 2],
+                [position[0] + val, position[1] - val / 2]
               ]
             ]);
             return (
-              <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
+              <Marker icon={IAPPSite} position={[position[1], position[0]]}>
                 <Tooltip permanent direction="top">
                   SiteID: {feature.properties.site_id}
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
                 <GeneratePopup
-                  utmRows={utmArr}
+                  position={[position[0], position[1]]}
                   map={map}
                   bufferedGeo={bufferedGeo}
                   setRecordGeo={null}
