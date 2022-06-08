@@ -110,6 +110,7 @@ export interface IMapContainerProps {
   showDrawControls: boolean;
   setShowDrawControls: React.Dispatch<boolean>;
   showBoundaryMenu?: boolean;
+  setBoundaryMenu?: React.Dispatch<boolean>;
   zoom?: any;
   center?: any;
   isPlanPage?: boolean;

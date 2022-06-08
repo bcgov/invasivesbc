@@ -118,16 +118,18 @@ export const NamedBoundaryMenu = (props) => {
   }, []);
 
   const setBoundaryIdCount = (() => {
-    if (recordSetContext.boundaries && recordSetContext.boundaries.length > 0) {
+    if (recordSetContext?.boundaries && recordSetContext?.boundaries?.length > 0) {
       //ensures id is not repeated on client side
       const max = Math.max(...recordSetContext.boundaries.map(b => b.id));
       setIdCount(max + 1);
+    } else {
+      setIdCount(idCount + 1);
     }
   });
 
   useEffect(() => {
     setBoundaryIdCount();
-  }, [recordSetContext.boundaries]);
+  }, [recordSetContext?.boundaries]);
 
   const getBoundaries = async () => {
     const boundaryResults = await dataAccess.getBoundaries();
@@ -289,7 +291,7 @@ export const NamedBoundaryMenu = (props) => {
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          {recordSetContext.boundaries?.map((b, index) => (
+          {recordSetContext?.boundaries?.map((b, index) => (
             <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
           ))}
         </List>
