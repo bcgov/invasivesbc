@@ -220,6 +220,7 @@ const PageContainer = (props) => {
             classes={classes}
             showDrawControls={showDrawControls}
             setShowDrawControls={setShowDrawControls}
+            showBoundaryMenu={true}
             center={[55, -128]}
             zoom={5}
             mapId={'mainMap'}
