@@ -268,6 +268,7 @@ chemical_method_code,CSP,Cut Stump / Cut and Paint,6
 chemical_method_code,FBO,Fixed Boom,7
 chemical_method_code,HGU,Hand Gun,8
 chemical_method_code,WCK,Wick,9
+chemical_method_code,ATV,ATV,10
 efficacy_code,1,90% - 100%,1
 efficacy_code,2,80% - 89%,2
 efficacy_code,3,70% - 79%,3
@@ -2001,14 +2002,14 @@ BEC_phase_code,c,Cold Air Phase,3
 BEC_phase_code,d,Dry Phase,4
 BEC_phase_code,n,Northern Phase,5
 BEC_phase_code,w,Warm Phase ,6
-site_series_code,1,Mesic,1
-site_series_code,2,Xeric-Subxeric,2
-site_series_code,3,Subxeric,3
-site_series_code,4,Submesic,4
-site_series_code,5,Submesic-Subhygric,5
-site_series_code,6,Mesic-Subhygric,6
-site_series_code,7,Subhygric,7
-site_series_code,8,Subhydric,8
+site_series_code,01,Mesic,1
+site_series_code,02,Xeric-Subxeric,2
+site_series_code,03,Subxeric,3
+site_series_code,04,Submesic,4
+site_series_code,05,Submesic-Subhygric,5
+site_series_code,06,Mesic-Subhygric,6
+site_series_code,07,Subhygric,7
+site_series_code,08,Subhydric,8
 stratum_consistent_code,Yes,Yes,1
 stratum_consistent_code,No,No,2
 stratum_consistent_code,Not Mapped,Not mapped,3
@@ -2171,9 +2172,9 @@ reserve_constraints_recreation_code,9,81-90%,10
 reserve_constraints_recreation_code,10,91-100%,11
 ecological_anchors_none_code,Yes,Yes,1
 ecological_anchors_none_code,No,No,2
-ecological_anchors_vet_trees_code,05-Jan,1-5 trees/ha,1
-ecological_anchors_vet_trees_code,10-Jun,6-10 trees/ha,2
-ecological_anchors_vet_trees_code,20-Nov,11-20 trees/ha,3
+ecological_anchors_vet_trees_code,1-5,1-5 trees/ha,1
+ecological_anchors_vet_trees_code,6-10,6-10 trees/ha,2
+ecological_anchors_vet_trees_code,11-20,11-20 trees/ha,3
 ecological_anchors_vet_trees_code,>20,>20 trees/ha,4
 ecological_anchors_karst_features_code,Y,Yes,1
 ecological_anchors_karst_features_code,N,No ,2
