@@ -194,26 +194,27 @@ function SetPointOnClick({ map }: any) {
           setClickMode(false);
           setDrawnOpacity(null);
         }
-      } else {
-        // just click to create invisible small box
-        const temp = e.latlng;
-        const val = 0.001;
-        const latlng1 = [temp.lng + val, temp.lat - val / 2];
-        const latlng3 = [temp.lng - val, temp.lat + val / 2];
-        const latlng2 = [temp.lng + val, temp.lat + val / 2];
-        const latlng4 = [temp.lng - val, temp.lat - val / 2];
-        setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-        const result = calc_utm(temp.lng, temp.lat);
-        setUTM([
-          createDataUTM('Zone', result[0]),
-          createDataUTM('Easting', result[1]),
-          createDataUTM('Northing', result[2])
-        ]);
-        setDrawnOpacity({
-          opacity: 0,
-          fillOpacity: 0
-        });
       }
+      // else {
+      //   // just click to create invisible small box
+      //   const temp = e.latlng;
+      //   const val = 0.001;
+      //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
+      //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
+      //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
+      //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
+      //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+      //   const result = calc_utm(temp.lng, temp.lat);
+      //   setUTM([
+      //     createDataUTM('Zone', result[0]),
+      //     createDataUTM('Easting', result[1]),
+      //     createDataUTM('Northing', result[2])
+      //   ]);
+      //   setDrawnOpacity({
+      //     opacity: 0,
+      //     fillOpacity: 0
+      //   });
+      // }
     } catch (_e) {
       console.log('Info Area Description click error', _e);
     }

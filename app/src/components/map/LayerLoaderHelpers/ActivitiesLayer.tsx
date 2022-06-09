@@ -1,6 +1,5 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
@@ -12,7 +11,6 @@ export const ActivitiesLayer = (props) => {
   const { setCurrentRecords } = mapRequestContext;
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
-  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const options = {
     maxZoom: 24,

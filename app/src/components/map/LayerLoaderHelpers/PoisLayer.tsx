@@ -95,7 +95,7 @@ export const PoisLayer = (props) => {
       point_of_interest_type: props.poi_type
     });
 
-    // For non-lean endpoint:
+    // Removed for now (was for when we were pulling from non-lean endpoint):
     // const poisFeatureArray = [];
     // poisData?.rows?.forEach((row) => {
     //   if (row.geom) {

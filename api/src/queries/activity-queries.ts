@@ -1,4 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity';
 
@@ -183,9 +184,9 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL` AND activity_type IN (`);
 
     // add the first activity type, which does not get a comma prefix
-    //sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
+    sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
 
-    for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
+      for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
       // add all subsequent activity types, which do get a comma prefix
       sqlStatement.append(SQL`, ${searchCriteria.activity_type[idx]}`);
     }
@@ -251,6 +252,10 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL`)`);
   }
 
+  if (searchCriteria.hideTreatmentsAndMonitoring) {
+    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
+  }
+
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
@@ -278,6 +283,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   if (searchCriteria.page && searchCriteria.limit) {
     sqlStatement.append(SQL` OFFSET ${searchCriteria.page * searchCriteria.limit}`);
   }
+
 
   sqlStatement.append(SQL`;`);
   const defaultLog = getLogger('acitivies-lean');
@@ -441,6 +447,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     for (let idx = 1; idx < searchCriteria.jurisdiction.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.jurisdiction[idx]}`);
     sqlStatement.append(SQL`]::varchar[] && a.jurisdiction`);
+  }
+
+  if (searchCriteria.hideTreatmentsAndMonitoring) {
+    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
   }
 
   if (searchCriteria.search_feature) {

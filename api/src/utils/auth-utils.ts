@@ -46,7 +46,20 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   const authHeader = req.header('Authorization');
 
-  if (!authHeader) {
+  if (req.originalUrl === '/api/activities-lean/' || req.originalUrl === '/api/points-of-interest-lean/') {
+    if (authHeader.includes('undefined')) {
+      return new Promise<void>((resolve: any) => {
+        req.authContext = {
+          preferredUsername: null,
+          user: null,
+          roles: []
+        };
+        resolve();
+      });
+    }
+  }
+
+  if (authHeader.includes('undefined')) {
     throw {
       code: 401,
       message: 'Missing Authorization header',

@@ -70,6 +70,8 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
     let species = new Set();
+    const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
+    const surveys = record?.point_of_interest_payload?.form_data?.surveys;
 
     // releases and dispersals
     const bioRelease = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_treatments);
@@ -78,7 +80,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const bioDispersal = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_dispersals);
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
-    for (const survey of record?.point_of_interest_payload?.form_data?.surveys) {
+    for (const survey of surveys) {
       // last survey date
       const survey_date = new Date(survey?.survey_date);
       if (survey_date > lastSurveyed) lastSurveyed = survey_date;
@@ -90,12 +92,10 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       species.add(survey?.species);
     }
 
-    const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
-
     return {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
-      jurisdictions: jurisdictions ? jurisdictions.join(', ') : null,
+      jurisdictions: jurisdictions ? jurisdictions : null,
       date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created)
         .toISOString()
         .substring(0, 10),
