@@ -10,8 +10,6 @@ import {
   Typography
 } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
-import { ActivitySubtypeShortLabels } from 'constants/activities';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -168,7 +166,9 @@ export const RenderTableActivity = (props: any) => {
   const updateActivityRecords = React.useCallback(async () => {
     try {
       const activities = await dataAccess.getActivities({
-        limit: 10
+        search_feature: bufferedGeo,
+        limit: 500,
+        page: 0
       });
 
       const tempArr = [];
@@ -193,13 +193,13 @@ export const RenderTableActivity = (props: any) => {
             species_code.push(s);
           });
         }
-        const geometry = a.activity_payload.geometry;
+        const geometry = a.activity_payload.geometry[0];
 
         tempArr.push({
           id: activity_id,
           short_id: short_id,
           activity_type: activity_type,
-          reported_area: reported_area,
+          reported_area: (reported_area ? reported_area : 0) + ' Ha',
           jurisdiction_code: jurisdiction_code,
           species_code: species_code,
           geometry: geometry
