@@ -131,8 +131,22 @@ export const PoisLayer = (props) => {
       {map.getZoom() > 8 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois?.features?.map((feature) => {
-            const coords = feature.geometry.coordinates;
-            return <Marker position={[coords[1], coords[0]]} icon={IAPPSite}></Marker>;
+            const position = feature.geometry.coordinates;
+            const val = 0.003;
+            const bufferedGeo = polygon([
+              [
+                [position[0] + val, position[1] - val / 2],
+                [position[0] + val, position[1] + val / 2],
+                [position[0] - val, position[1] + val / 2],
+                [position[0] - val, position[1] - val / 2],
+                [position[0] + val, position[1] - val / 2]
+              ]
+            ]);
+            return (
+              <Marker position={[position[1], position[0]]} icon={IAPPSite}>
+                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
+              </Marker>
+            );
           })}
         </MarkerClusterGroup>
       )}
@@ -157,13 +171,7 @@ export const PoisLayer = (props) => {
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
-                <GeneratePopup
-                  position={[position[0], position[1]]}
-                  map={map}
-                  bufferedGeo={bufferedGeo}
-                  setRecordGeo={null}
-                  setClickMode={null}
-                />
+                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}
