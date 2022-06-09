@@ -90,6 +90,12 @@ objects:
           name: '${NAME}:${VERSION}'
       postCommit: {}
       resources:
+        limits:
+          cpu: "0"
+          memory: "0"
+        requests:
+          cpu: "0"
+          memory: "0"
       runPolicy: SerialLatestOnly
       source:
         contextDir: '${SOURCE_CONTEXT_DIR}'
