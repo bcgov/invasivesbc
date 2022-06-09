@@ -241,8 +241,15 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
 
+    const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
+
+    if (!roleName || roleName.includes('animal')) {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
+    } else {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
+    }
 
     const connection = await getDBConnection();
     if (!connection) {

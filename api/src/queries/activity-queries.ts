@@ -449,6 +449,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`]::varchar[] && a.jurisdiction`);
   }
 
+  if (searchCriteria.hideTreatmentsAndMonitoring) {
+    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
+  }
+
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
