@@ -6,8 +6,6 @@ import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
-import { createDataUTM } from '../Tools/Helpers/StyledTable';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { polygon } from '@turf/helpers';
 import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR

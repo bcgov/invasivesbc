@@ -214,7 +214,7 @@ export const RenderTableActivity = (props: any) => {
   }, [bufferedGeo, dataAccess]);
 
   const activityPage = async (params) => {
-    var id = params.row.id;
+    const id = params.row.id;
     await dataAccess.setAppState({ activeActivity: id });
     history.push({ pathname: `/home/activity` });
   };
@@ -229,7 +229,7 @@ export const RenderTableActivity = (props: any) => {
         rowsPerPageOptions={[5]}
         rowHeight={30}
         headerHeight={30}
-        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           activityPage(params);
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
