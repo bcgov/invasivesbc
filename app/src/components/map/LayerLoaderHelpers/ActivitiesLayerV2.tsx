@@ -1,11 +1,11 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import L, { LatLngExpression } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
+import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
@@ -63,7 +63,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.color]);
 
   const filters: IActivitySearchCriteria = props.filters;
-  //  console.log('filters for api');
+  // console.log('filters for api');
   // console.dir(filters);
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({
@@ -101,12 +101,20 @@ export const ActivitiesLayerV2 = (props: any) => {
             if (a?.geometry?.type === 'Polygon') {
               const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
 
-              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+              return (
+                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
+                  <GeneratePopup position={[position[1], position[0]]} map={map} bufferedGeo={a} />
+                </Marker>
+              );
             }
             if (a?.geometry?.type === 'Point') {
               const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
 
-              return <Marker position={position} key={'activity_marker' + a.properties.activity_id} />;
+              return (
+                <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
+                  <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={a} />
+                </Marker>
+              );
             }
           })}
         </MarkerClusterGroup>
@@ -124,13 +132,28 @@ export const ActivitiesLayerV2 = (props: any) => {
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
-            <GeoJSON
-              key={'activities_layer_v2_geojson' + props.zIndex}
-              // opacity={props.opacity}
-              data={activities}
-              //zIndex={props.zIndex}
-              style={options.style}
-            />
+            <>
+              {activities.features.map((a) => {
+                if (a?.geometry?.type === 'Polygon') {
+                  const position = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+
+                  return (
+                    <GeoJSON data={a} options={options}>
+                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                    </GeoJSON>
+                  );
+                }
+                if (a?.geometry?.type === 'Point') {
+                  const position = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
+
+                  return (
+                    <GeoJSON data={a} options={options}>
+                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                    </GeoJSON>
+                  );
+                }
+              })}
+            </>
           );
           break;
 

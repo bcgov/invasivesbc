@@ -6,8 +6,6 @@ import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from '../Icons/POImarker.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
-import { createDataUTM } from '../Tools/Helpers/StyledTable';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { polygon } from '@turf/helpers';
 import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR
@@ -133,45 +131,47 @@ export const PoisLayer = (props) => {
       {map.getZoom() > 8 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois?.features?.map((feature) => {
-            const coords = feature.geometry.coordinates;
-            return <Marker position={[coords[1], coords[0]]} icon={IAPPSite}></Marker>;
+            const position = feature.geometry.coordinates;
+            const val = 0.003;
+            const bufferedGeo = polygon([
+              [
+                [position[0] + val, position[1] - val / 2],
+                [position[0] + val, position[1] + val / 2],
+                [position[0] - val, position[1] + val / 2],
+                [position[0] - val, position[1] - val / 2],
+                [position[0] + val, position[1] - val / 2]
+              ]
+            ]);
+            return (
+              <Marker position={[position[1], position[0]]} icon={IAPPSite}>
+                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
+              </Marker>
+            );
           })}
         </MarkerClusterGroup>
       )}
       {map.getZoom() > 14 && (
         <>
           {pois?.features?.map((feature) => {
-            const coords = feature.geometry.coordinates;
+            const position = feature.geometry.coordinates;
             const val = 0.003;
-            const utmResult = calc_utm(coords[0], coords[1]);
-            const utmArr: any = [
-              createDataUTM('Zone', utmResult[0]),
-              createDataUTM('Easting', utmResult[1]),
-              createDataUTM('Northing', utmResult[2])
-            ];
             const bufferedGeo = polygon([
               [
-                [coords[0] + val, coords[1] - val / 2],
-                [coords[0] + val, coords[1] + val / 2],
-                [coords[0] - val, coords[1] + val / 2],
-                [coords[0] - val, coords[1] - val / 2],
-                [coords[0] + val, coords[1] - val / 2]
+                [position[0] + val, position[1] - val / 2],
+                [position[0] + val, position[1] + val / 2],
+                [position[0] - val, position[1] + val / 2],
+                [position[0] - val, position[1] - val / 2],
+                [position[0] + val, position[1] - val / 2]
               ]
             ]);
             return (
-              <Marker icon={IAPPSite} position={[coords[1], coords[0]]}>
+              <Marker icon={IAPPSite} position={[position[1], position[0]]}>
                 <Tooltip permanent direction="top">
                   SiteID: {feature.properties.site_id}
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
-                <GeneratePopup
-                  utmRows={utmArr}
-                  map={map}
-                  bufferedGeo={bufferedGeo}
-                  setRecordGeo={null}
-                  setClickMode={null}
-                />
+                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}
