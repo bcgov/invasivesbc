@@ -144,7 +144,7 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  * @returns {SQLStatement} sql query object
  */
 //NOSONAR
-export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria, req?: InvasivesRequest): SQLStatement => {
+export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   sqlStatement.append(SQL`

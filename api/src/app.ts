@@ -70,7 +70,7 @@ initialize({
       defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
     }
 
-    res.status(error.status || 500).json(error);
+    res.status(error.status || error.code || 500).json(error);
   }
 });
 

@@ -209,7 +209,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
 
-    if (!roleName || !roleName.includes('plant') && !roleName.includes('admin')) {
+    if (!roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
@@ -227,7 +227,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria, req);
+      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria);
 
       // Check for sql and role:
       // console.log('========================= activities-lean.ts 232', sqlStatement.text);
