@@ -133,7 +133,7 @@ export class ActivitySearchCriteria {
   jurisdiction: string[];
 
   order: string[];
-  hideTreatmentsAndMonitoring: any;
+  hideTreatmentsAndMonitoring: boolean;
 
   /**
    * Creates an instance of ActivitySearchCriteria.
