@@ -214,7 +214,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "happypack": "^5.0.1",
     "pg": "^8.7.3",
-    "prettier": "^2.3.1",
+    "prettier": "^2.6.2",
     "react": "^17.0.2",
     "react-error-overlay": "6.0.9",
     "react-leaflet-editable": "^0.2.2",
