@@ -380,8 +380,12 @@ function updateActivity(): RequestHandler {
 
     const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
     const preferred_username = req.authContext.preferredUsername;
+    // change activity downstream stuff
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by = req.authContext?.preferredUsername;
+    // populate with db query 
+    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
+    // search up database trigger for pg
+    // fires before or after trigger (e.g. delete, insert)
 
     const connection = await getDBConnection();
 
@@ -394,21 +398,25 @@ function updateActivity(): RequestHandler {
       });
     }
 
+
+    // Get activity
+    const sanitizedSearchCriteria: string = data._id;
+    const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
+
+    if (!sqlStatement) {
+      return res.status(500).json({
+        message: 'Failed to build SQL statement.',
+        request: req.body,
+        namespace: 'activity',
+        code: 500
+      });
+    }
+
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    sanitizedActivityData.created_by = response.rows[0].activity_payload.created_by;
+
     if (!isAdmin) {
-      const sanitizedSearchCriteria: string = data._id;
-      const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
-
-      if (!sqlStatement) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement.',
-          request: req.body,
-          namespace: 'activity',
-          code: 500
-        });
-      }
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
       if (preferred_username !== response.rows[0].activity_payload.created_by) {
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record', // better message
@@ -452,7 +460,7 @@ function updateActivity(): RequestHandler {
       }
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
-
+      
       // kick off asynchronous context collection activities
       if (req.body.form_data?.activity_data?.latitude) commitContext(result, req);
 

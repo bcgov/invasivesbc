@@ -222,6 +222,14 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL`)`);
   }
 
+  if (searchCriteria.updated_by) {
+    sqlStatement.append(SQL` AND updated_by IN (`);
+
+    sqlStatement.append(SQL`${searchCriteria.updated_by}`);
+
+    sqlStatement.append(SQL`)`);
+  }
+
   /*  if (searchCriteria.created_by) {
     sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
   }*/
