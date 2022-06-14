@@ -173,7 +173,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   return (
     <MapRecordsContextProvider>
       <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls='panel-map-content' id='panel-map-header'>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -187,14 +187,14 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               spacing={'space-evenly'}
               xs={3}
               item>
-              <Button disabled={false} variant='contained' color='primary' onClick={manualUTMEntry}>
+              <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
                 Enter UTM Manually
               </Button>
               <Button
-                id='drop-pin-button'
+                id="drop-pin-button"
                 disabled={false}
-                variant='contained'
-                color='primary'
+                variant="contained"
+                color="primary"
                 onClick={() => setDialog(true)}>
                 Drop Pin
               </Button>

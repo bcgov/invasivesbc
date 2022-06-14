@@ -1,6 +1,7 @@
 export enum DocType {
   APPSTATE = 'appstate',
   ACTIVITY = 'activity',
+  KEYCLOAK = 'keycloak',
   API_SPEC = 'api_spec',
   TRIP = 'trip',
   JURISDICTIONS = 'jurisdictions',

@@ -35,7 +35,7 @@ export const SpeciesTree = () => {
 
   return (
     <>
-      <TextField label='Species' />
+      <TextField label="Species" />
       <TreeView defaultCollapseIcon={<ExpandMore />} defaultExpandIcon={<ChevronRight />}>
         {renderTree(data)}
       </TreeView>

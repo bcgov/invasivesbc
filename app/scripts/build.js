@@ -48,16 +48,7 @@ const argv = process.argv.slice(2);
 const writeStatsJson = argv.indexOf('--stats') !== -1;
 
 // Generate configuration
-const config = configFactory('production', {
-  CONFIGURATION_SOURCE: 'Caddy',
-  CONFIGURATION_API_BASE: null,
-  CONFIGURATION_KEYCLOAK_CLIENT_ID: null,
-  CONFIGURATION_KEYCLOAK_REALM: null,
-  CONFIGURATION_KEYCLOAK_URL: null,
-  CONFIGURATION_KEYCLOAK_ADAPTER: null,
-  CONFIGURATION_REDIRECT_URI: null,
-  CONFIGURATION_IS_MOBILE: null
-});
+const config = configFactory('production');
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.

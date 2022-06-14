@@ -13,7 +13,7 @@ const AdminLayout: React.FC<IAdminLayoutProps> = (props: any) => {
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
       <Box height="80px">
-        <TabsContainer/>
+        <TabsContainer isMobileNoNetwork={false} />
       </Box>
       <Collapse timeout={50} in={isOpen}></Collapse>
       <Box height="100%" width="inherit" overflow="auto">

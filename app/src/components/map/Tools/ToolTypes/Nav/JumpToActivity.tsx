@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { ListItemButton } from '@mui/material';
@@ -8,8 +9,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
-import {useSelector} from "../../../../../state/utilities/use_selector";
-import {selectConfiguration} from "../../../../../state/reducers/configuration";
 
 export const JumpToActivity = (props) => {
   // style
@@ -21,7 +20,6 @@ export const JumpToActivity = (props) => {
   // DB: MOBILE ONLY!
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const { MOBILE } = useSelector(selectConfiguration);
 
   const flyToContext = useFlyToAndFadeContext();
 
@@ -70,11 +68,11 @@ export const JumpToActivity = (props) => {
   const getTripGeosAndInitialPosition = async () => {
     if (props.id !== null) {
       //mobile only
-      const activityObject = await dataAccess.getActivityById(props.id, false, true);
+      const activityObject = await dataAccess.getActivityById(props.id, databaseContext, true);
       let items = new Array<IFlyToAndFadeItem>();
 
       //then add activitys as geometries to show
-      if (MOBILE) {
+      if (Capacitor.getPlatform() == 'web') {
         console.log('got to web ');
         if (activityObject.activity_payload.geometry?.length > 0) {
           items.push({

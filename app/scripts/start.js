@@ -67,7 +67,7 @@ if (process.env.HOST) {
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
-const {checkBrowsers} = require('react-dev-utils/browsersHelper');
+const { checkBrowsers } = require('react-dev-utils/browsersHelper');
 checkBrowsers(paths.appPath, isInteractive)
   .then(() => {
     // We attempt to use the default port but if it is busy, we offer the user to
@@ -80,17 +80,7 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const config = configFactory('development', {
-      CONFIGURATION_SOURCE: 'Hardcoded',
-      CONFIGURATION_API_BASE: null,
-      CONFIGURATION_KEYCLOAK_CLIENT_ID: null,
-      CONFIGURATION_KEYCLOAK_REALM: null,
-      CONFIGURATION_KEYCLOAK_URL: null,
-      CONFIGURATION_KEYCLOAK_ADAPTER: null,
-      CONFIGURATION_REDIRECT_URI: null,
-      CONFIGURATION_IS_MOBILE: null
-    });
-
+    const config = configFactory('development');
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
 

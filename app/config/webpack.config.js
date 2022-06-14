@@ -76,7 +76,7 @@ const hasJsxRuntime = (() => {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function (webpackEnv, invasivesConfig) {
+module.exports = function (webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
@@ -102,7 +102,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
         // css is located in `static/css`, use '../../' to locate index.html folder
         // in production `paths.publicUrlOrPath` can be a relative path
         options: paths.publicUrlOrPath.startsWith('.')
-          ? {publicPath: '../../'}
+          ? { publicPath: '../../' }
           : {},
       },
       {
@@ -581,18 +581,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
       // It is absolutely essential that NODE_ENV is set to production
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
-      new webpack.DefinePlugin({
-          CONFIGURATION_SOURCE: JSON.stringify(invasivesConfig.CONFIGURATION_SOURCE),
-          CONFIGURATION_API_BASE: JSON.stringify(invasivesConfig.CONFIGURATION_API_BASE),
-          CONFIGURATION_KEYCLOAK_CLIENT_ID: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_CLIENT_ID),
-          CONFIGURATION_KEYCLOAK_REALM: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_REALM),
-          CONFIGURATION_KEYCLOAK_URL: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_URL),
-          CONFIGURATION_KEYCLOAK_ADAPTER: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_ADAPTER),
-          CONFIGURATION_REDIRECT_URI: JSON.stringify(invasivesConfig.CONFIGURATION_REDIRECT_URI),
-          CONFIGURATION_IS_MOBILE: JSON.stringify(invasivesConfig.CONFIGURATION_IS_MOBILE),
-          ...env.stringified
-        }
-      ),
+      new webpack.DefinePlugin(env.stringified),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
       // Experimental hot reloading for React .

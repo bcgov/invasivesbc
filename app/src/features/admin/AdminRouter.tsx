@@ -1,3 +1,4 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AdminRoute from 'utils/AdminRoute';
@@ -10,6 +11,7 @@ interface IAdminRouterProps {
 }
 
 const AdminRouter: React.FC<IAdminRouterProps> = (props) => {
+  const authContext = React.useContext(AuthStateContext);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
@@ -19,6 +21,7 @@ const AdminRouter: React.FC<IAdminRouterProps> = (props) => {
       <Redirect exact from="/admin" to="/admin/useraccess" />
       <AdminRoute
         exact
+        roles={authContext.userRoles}
         layout={AdminLayout}
         path="/admin/useraccess"
         title={getTitle('User Access')}

@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
@@ -14,7 +15,6 @@ import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
-import {MobileOnly} from "../common/MobileOnly";
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -97,7 +97,7 @@ export const ToolbarContainer = (props) => {
             measureToolContainerOpen={measureToolContainerOpen}
           />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          <MobileOnly><JumpToTrip/></MobileOnly>
+          <JumpToTrip />
           {/* <NewRecord />
         <EditRecord />
         <MultiSelectOrEdit />
