@@ -22,6 +22,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
 import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
+import { Capacitor } from '@capacitor/core';
 interface IStatusPageProps {
   classes?: any;
 }
@@ -98,6 +99,10 @@ const PageContainer = (props) => {
   const { rolesUserHasAccessTo } = useContext(AuthStateContext);
 
   const databaseContext = useContext(DatabaseContext);
+
+  const isMobile = (): boolean => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   const updateWidth = () => {
     setWidth(window.innerWidth);
@@ -232,7 +237,7 @@ const PageContainer = (props) => {
       {
         name: 'Save Selected Records',
         icon: SaveIcon,
-        hidden: selectedRecordSets.length === 0,
+        hidden: selectedRecordSets.length === 0 || isMobile,
         onClick: async () => {
           console.log('Saving selected records');
           try {

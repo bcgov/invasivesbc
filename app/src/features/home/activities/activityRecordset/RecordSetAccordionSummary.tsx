@@ -31,10 +31,10 @@ import RecordSetDeleteDialog from './RecordSetDeleteDialog';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { getSearchCriteriaFromFilters } from '../../../../components/activities-list/Tables/Plant/ActivityGrid';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { Capacitor } from '@capacitor/core';
 
 const isMobile = () => {
-  // return Capacitor.getPlatform() !== 'web';
-  return true;
+  return Capacitor.getPlatform() !== 'web';
 };
 
 const OrderSelector = (props) => {
@@ -145,6 +145,7 @@ const RecordSetAccordionSummary = (props) => {
   return (
     <>
       <RecordSetDeleteDialog
+        platform={isMobile ? 'mobile' : 'web'}
         isOpen={recordSetDeleteDialogOpen}
         isLoading={recordSetDeleteDialogLoading}
         handleClose={async () => {
@@ -167,13 +168,11 @@ const RecordSetAccordionSummary = (props) => {
               variant="outlined"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log('Saving...');
               }}>
               <Checkbox
                 checked={props.isSelected}
                 onChange={(e) => {
                   e.stopPropagation();
-                  console.log('Checkbox set to: ', e.target.checked);
                   props.setIsSelected(e.target.checked);
                 }}
               />

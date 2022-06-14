@@ -3,10 +3,12 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Capacitor } from '@capacitor/core';
 
 interface IRecordSetDeleteDialog {
   isOpen: boolean;
   isLoading: boolean;
+  platform: 'mobile' | 'web';
   handleClose: Function;
   handleFilterSetDelete: Function;
   handleCachedActivityDelete: Function;
@@ -15,6 +17,7 @@ interface IRecordSetDeleteDialog {
 
 const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
   const { isOpen, handleClose, handleFilterSetDelete, handleCachedActivityDelete, recordSets, isLoading } = props;
+
   return (
     <Dialog
       open={isOpen}
@@ -30,11 +33,20 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
           </DialogTitle>
           <Divider />
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              You are about to delete the following record sets or cached activities. This action cannot be undone.
-              Either delete the cached records on this device attributed to the set of filters, or simply delete the set
-              of filters. Activities saved to the database will not be lost but will be unavailable for offline use.
-            </DialogContentText>
+            {props.platform === 'mobile' ? (
+              <DialogContentText id="alert-dialog-description">
+                You are about to delete the following record sets or cached activities. This action cannot be undone.
+                Either delete the cached records on this device attributed to the set of filters, or simply delete the
+                set of filters. Activities saved to the database will not be lost but will be unavailable for offline
+                use.
+              </DialogContentText>
+            ) : (
+              <DialogContentText id="alert-dialog-description">
+                The following record sets will be deleted. The activities in this record set will remain saved, but the
+                filters that define the record set will be gone. This action cannot be undone.
+              </DialogContentText>
+            )}
+
             {recordSets.map((recordSet) => {
               return (
                 <div key={recordSet.recordSetName}>
@@ -48,9 +60,15 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
             <br />
             <Divider />
             <br />
-            <DialogContentText id="alert-dialog-confirmation">
-              Do you want to delete these filter sets or delete the cached activities determined by the filter sets?
-            </DialogContentText>
+            {props.platform === 'mobile' ? (
+              <DialogContentText id="alert-dialog-confirmation">
+                Do you want to delete these filter sets or delete the cached activities determined by the filter sets?
+              </DialogContentText>
+            ) : (
+              <DialogContentText id="alert-dialog-confirmation">
+                Do you want to delete these record sets?
+              </DialogContentText>
+            )}
           </DialogContent>
           <DialogActions>
             <Grid container spacing={2} justifyContent={'space-between'}>
@@ -75,15 +93,17 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
                   autoFocus>
                   Delete Filters
                 </Button>
-                <Button
-                  style={{ marginLeft: '10px' }}
-                  variant="contained"
-                  color="error"
-                  onClick={() => {
-                    handleCachedActivityDelete();
-                  }}>
-                  Delete Cached Records
-                </Button>
+                {props.platform === 'mobile' && (
+                  <Button
+                    style={{ marginLeft: '10px' }}
+                    variant="contained"
+                    color="error"
+                    onClick={() => {
+                      handleCachedActivityDelete();
+                    }}>
+                    Delete Cached Records
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </DialogActions>
