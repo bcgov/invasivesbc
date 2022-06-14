@@ -22,6 +22,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       created_timestamp,
       received_timestamp,
       created_by,
+      updated_by
       sync_status,
       form_status,
       review_status,
@@ -40,6 +41,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       ${activity.created_timestamp},
       ${activity.received_timestamp},
       ${activity.created_by},
+      ${activity.updated_by},
       ${activity.sync_status},
       ${activity.form_status},
       ${activity.review_status},
@@ -222,7 +224,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     sqlStatement.append(SQL`)`);
   }
 
-  if (searchCriteria.updated_by) {
+  if (searchCriteria.updated_by && searchCriteria.updated_by.length) {
     sqlStatement.append(SQL` AND updated_by IN (`);
 
     sqlStatement.append(SQL`${searchCriteria.updated_by}`);
