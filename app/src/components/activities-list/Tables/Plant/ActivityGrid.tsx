@@ -465,7 +465,7 @@ const ActivityGrid = (props) => {
         if (filters[k] && r[k]) {
           // this only works for strings
           let field = r[k];
-          if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
+          if (typeof r[k] === 'number') field = field.toString(); //convert to string if type is number
           if (field.includes(filters[k])) {
             return true;
           } else return false;
