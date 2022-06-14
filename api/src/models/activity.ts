@@ -122,7 +122,7 @@ export class ActivitySearchCriteria {
   column_names: string[];
 
   created_by: string[];
-  updated_by: string[];
+  updated_by?: string[];
 
   review_status: string[];
 
