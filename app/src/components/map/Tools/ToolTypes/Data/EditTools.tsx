@@ -1,5 +1,5 @@
-import { Capacitor } from '@capacitor/core';
-import { useLeafletContext } from '@react-leaflet/core';
+import {Capacitor} from '@capacitor/core';
+import {useLeafletContext} from '@react-leaflet/core';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import centroid from '@turf/centroid';
@@ -7,13 +7,14 @@ import * as turf from '@turf/helpers';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import React, { useEffect, useRef, useState } from 'react';
-import { useMapEvent } from 'react-leaflet';
-import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
+import React, {useEffect, useRef, useState} from 'react';
+import {useMapEvent} from 'react-leaflet';
+import {MobilePolylineDrawButton} from '../../Helpers/MobileDrawBtns';
+import {MobileOnly} from "../../../../common/MobileOnly";
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
-    return L.circle(latLng, { radius: feature.properties.radius });
+    return L.circle(latLng, {radius: feature.properties.radius});
   } else {
     return L.circleMarker(latLng, markerStyle);
   }
@@ -87,7 +88,7 @@ const EditTools = (props: any) => {
 
     let aGeo = newLayer.toGeoJSON();
     if (e.layerType === 'circle') {
-      aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: newLayer.getRadius() } };
+      aGeo = {...aGeo, properties: {...aGeo.properties, radius: newLayer.getRadius()}};
     }
     aGeo = convertLineStringToPoly(aGeo);
 
@@ -107,7 +108,7 @@ const EditTools = (props: any) => {
     (context.layerContainer as any).eachLayer((layer) => {
       let aGeo = layer.toGeoJSON();
       if (layer.feature.properties.radius) {
-        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
+        aGeo = {...aGeo, properties: {...aGeo.properties, radius: layer._mRadius}};
       }
       aGeo = convertLineStringToPoly(aGeo);
 
@@ -145,10 +146,10 @@ const EditTools = (props: any) => {
   const convertLineStringToPoly = (aGeo: any) => {
     if (aGeo?.geometry.type === 'LineString') {
       const buffer2 = prompt('Enter buffer width (total) in meters', '1');
-      const buffered = buffer(aGeo.geometry, parseInt(buffer2, 10) / 1000, { units: 'kilometers', steps: 1 });
+      const buffered = buffer(aGeo.geometry, parseInt(buffer2, 10) / 1000, {units: 'kilometers', steps: 1});
       const result = turf.featureCollection([buffered, aGeo.geometry]);
 
-      return { ...aGeo, geometry: result.features[0].geometry };
+      return {...aGeo, geometry: result.features[0].geometry};
     }
 
     return aGeo;
@@ -182,7 +183,7 @@ const EditTools = (props: any) => {
   const updateMapOnGeometryChange = () => {
     // upload from geometrystate props
     // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
-    const newGeoKeys = { ...geoKeys };
+    const newGeoKeys = {...geoKeys};
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
@@ -322,15 +323,14 @@ const EditTools = (props: any) => {
 
   return (
     <div style={{}}>
-      {Capacitor.getPlatform() === 'ios' && (
-        <>
-          <MobilePolylineDrawButton
-            convertLineStringToPoly={convertLineStringToPoly}
-            setGeometry={props.geometryState.setGeometry}
-            context={context.layerContainer}
-          />
-        </>
-      )}
+      <MobileOnly>
+        <MobilePolylineDrawButton
+          convertLineStringToPoly={convertLineStringToPoly}
+          setGeometry={props.geometryState.setGeometry}
+          context={context.layerContainer}
+        />
+      </MobileOnly>
+
       {/*<IconButton
         //ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}

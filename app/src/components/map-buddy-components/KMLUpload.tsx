@@ -141,7 +141,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile && Capacitor.getPlatform() === 'web') {
+    if (aFile && !MOBILE) {
       if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
         saveKML(aFile);
       }

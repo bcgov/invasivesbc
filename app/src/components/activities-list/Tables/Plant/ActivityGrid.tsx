@@ -1,10 +1,7 @@
-import EditIcon from '@mui/icons-material/Edit';
-
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect, useMemo, createContext } from 'react';
 import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
@@ -19,13 +16,15 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { Chip, List, ListItem } from '@mui/material';
+import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
-
 import SaveIcon from '@mui/icons-material/Save';
 import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { ActivityStatus } from 'constants/activities';
+import { useSelector } from '../../../../state/utilities/use_selector';
+import { selectAuth } from '../../../../state/reducers/auth';
+
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
     display: 'flex',
@@ -193,7 +192,6 @@ const ActivityGrid = (props) => {
   });
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  const { userInfo, rolesUserHasAccessTo } = useContext(AuthStateContext);
   const [activities, setActivities] = useState(undefined);
   const [POIs, setPOIs] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
@@ -203,6 +201,8 @@ const ActivityGrid = (props) => {
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
+
+  const { roles } = useSelector(selectAuth);
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -290,7 +290,7 @@ const ActivityGrid = (props) => {
   const getActivities = async () => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
-      rolesUserHasAccessTo,
+      roles,
       recordSetContext,
       props.setName,
       false,
@@ -315,7 +315,7 @@ const ActivityGrid = (props) => {
   const getPOIs = async () => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
-      rolesUserHasAccessTo,
+      roles,
       recordSetContext,
       props.setName,
       true,

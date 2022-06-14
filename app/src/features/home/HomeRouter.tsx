@@ -13,7 +13,6 @@ import PrivateRoute from 'utils/PrivateRoute';
 import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
-import { AuthStateContext } from '../../contexts/authStateContext';
 import LandingPage from './landing/LandingPage';
 import {EmbeddedReportsPage} from "./reports/EmbeddedReportsPage";
 import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
@@ -23,7 +22,6 @@ interface IHomeRouterProps {
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
-  const authContext = React.useContext(AuthStateContext);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
@@ -68,7 +66,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
-        roles={authContext.userRoles}
         component={BulkEditActivitiesPage}
         componentProps={props}
       />
@@ -77,7 +74,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity/observation"
         title={getTitle('Create Observation')}
-        roles={authContext.userRoles}
         component={ObservationCreationStepperPage}
         componentProps={props}
       />
@@ -86,7 +82,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/plan"
         title={getTitle('Plan')}
-        roles={authContext.userRoles}
         component={PlanPage}
         componentProps={props}
       />
@@ -95,7 +90,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/references"
         title={getTitle('Reference')}
-        roles={authContext.userRoles}
         component={ReferencesPage}
         componentProps={props}
       />
@@ -104,7 +98,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activities"
         title={getTitle('Activities')}
-        roles={authContext.userRoles}
         component={ActivitiesPage}
         componentProps={props}
       />
@@ -113,7 +106,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity"
         title={getTitle('Activity')}
-        roles={authContext.userRoles}
         component={ActivityPage}
         componentProps={props}
       />
@@ -122,7 +114,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/reports"
         title={getTitle('Reports')}
-        roles={authContext.userRoles}
         component={EmbeddedReportsPage}
         componentProps={props}
       />
@@ -131,7 +122,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/iapp/:id?"
         title={getTitle('IAPP Site')}
-        roles={authContext.userRoles}
         component={ReferenceIAPPSitePage}
         componentProps={props}
       />

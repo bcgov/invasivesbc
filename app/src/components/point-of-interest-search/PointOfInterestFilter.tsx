@@ -21,6 +21,8 @@ import { DatePicker } from '@mui/lab';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
+import {useSelector} from "../../state/utilities/use_selector";
+import {selectConfiguration} from "../../state/reducers/configuration";
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -48,7 +50,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const [iappSelected, setIappSelected] = useState(false);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    if (Capacitor.getPlatform() !== 'web') {
+    if (MOBILE) {
       let queryResults = await databaseContext.asyncQueue({
         asyncTask: () => {
           return query({ type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP }, databaseContext);
@@ -63,6 +65,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       }
     }
   };
+const {MOBILE} = useSelector(selectConfiguration);
 
   //change this to only look for changes that are relevant
   useEffect(() => {
@@ -74,7 +77,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
 
   const saveChoices = async (newPointOfInterestChoices) => {
     //sqlite
-    if (Capacitor.getPlatform() !== 'web') {
+    if (MOBILE) {
       const tripID: string = props.trip_ID;
       let result = await databaseContext.asyncQueue({
         asyncTask: () => {

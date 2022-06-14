@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { layersJSON } from 'components/map/LayerPicker/JSON/layers';
 import { actions } from 'components/map/LayerPicker/JSON/actions';
-import { NetworkContext } from './NetworkContext';
+import { useSelector } from '../state/utilities/use_selector';
+import { selectNetworkConnected } from '../state/reducers/network';
 
 interface IMapExtentLayersContext {
   layers: IParentLayer[];
@@ -66,20 +67,20 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
-  const networkContext = React.useContext(NetworkContext);
+  const connected = useSelector(selectNetworkConnected);
   const [mapZoom, setMapZoom] = React.useState<number>(5);
-  const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected, mapZoom));
+  const [layers, setLayers] = React.useState<IParentLayer[]>(layersJSON(connected, mapZoom));
   const [layersActions, setLayersActions] = React.useState<any[]>(actions());
   const [currentRecords, setCurrentRecords] = React.useState<any>({ activities: [], pois: [] });
   const [uploadLayersFlag, setUploadLayersFlag] = React.useState<number>(0);
 
   React.useEffect(() => {
     if (layers) {
-      setLayers(layersJSON(networkContext.connected, mapZoom, layers));
+      setLayers(layersJSON(connected, mapZoom, layers));
     } else {
-      setLayers(layersJSON(networkContext.connected, mapZoom));
+      setLayers(layersJSON(connected, mapZoom));
     }
-  }, [networkContext, mapZoom]);
+  }, [connected, mapZoom]);
 
   return (
     <MapRequestContext.Provider

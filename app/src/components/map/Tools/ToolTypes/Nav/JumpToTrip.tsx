@@ -8,6 +8,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
+import {useSelector} from "../../../../../state/utilities/use_selector";
+import {selectConfiguration} from "../../../../../state/reducers/configuration";
 
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,7 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 - [ ] add ui button to let user add shapes
 - [ ]  shapes persist - where?
 - [ ] or view existing in list
-- [ ] 
+- [ ]
 */
 
 export const JumpToTrip = (props) => {
@@ -87,7 +89,7 @@ export const JumpToTrip = (props) => {
         }}
         disableGutters>
         <ListItemText>
-          
+
           <Typography className={toolClass.Font}>{props.name}{props.server_id && <span> (kml)</span>}</Typography>
         </ListItemText>
         <ListItemIcon>

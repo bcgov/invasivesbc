@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -21,6 +20,8 @@ import {
   getLatestReportedArea,
   getReportedAreaOutput
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
+import {useSelector} from "../../../../state/utilities/use_selector";
+import {selectAuth} from "../../../../state/reducers/auth";
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -110,7 +111,7 @@ export const RenderTableActivity = (props: any) => {
   const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { keycloak } = useContext(AuthStateContext);
+  const { authenticated } = useSelector(selectAuth);
 
   const columns = [
     {
@@ -158,10 +159,10 @@ export const RenderTableActivity = (props: any) => {
     const getApiSpec = async () => {
       setResponse(await invasivesAccess.getCachedApiSpec());
     };
-    if (keycloak?.obj?.authenticated) {
+    if (authenticated) {
       getApiSpec();
     }
-  }, [rows, keycloak?.obj?.authenticated]);
+  }, [rows, authenticated]);
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
