@@ -17,7 +17,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
         {props.children}
       </Box>
       <Box
-        style={{ zIndex: 99999999999 }}
+        style={{ zIndex: 1 }}
         position="fixed"
         bottom="0px"
         left="0"

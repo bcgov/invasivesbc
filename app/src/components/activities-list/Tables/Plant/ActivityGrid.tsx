@@ -117,6 +117,11 @@ export const getSearchCriteriaFromFilters = (
   }
   */
 
+  //search_feature
+  if (recordSetContext.recordSetState[setName]?.searchBoundary) {
+    filter.search_feature = recordSetContext.recordSetState[setName]?.searchBoundary.geos[0];
+  }
+
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {
     const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
     const jurisdictions = [];
@@ -617,6 +622,20 @@ const ActivityGrid = (props) => {
                     );
                   }
                 })}
+              {recordSetContext?.recordSetState[props.setName]?.searchBoundary &&
+                <Chip
+                  label={`Boundary = ${recordSetContext?.recordSetState[props.setName]?.searchBoundary.name}`}
+                  variant="outlined"
+                  color="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onDelete={(e) => {
+                    e.stopPropagation();
+                    recordSetContext.removeBoundaryFromSet(props.setName);
+                  }}
+                />
+              }
             </List>
             <Box
               sx={{

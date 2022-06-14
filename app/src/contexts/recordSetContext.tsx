@@ -10,6 +10,7 @@ export const RecordSetContext = React.createContext(null);
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
   const { userInfo } = useContext(AuthStateContext);
 
@@ -81,6 +82,35 @@ export const RecordSetProvider = (props) => {
     });
   };
 
+  const addBoundaryToSet = async (boundary: Boundary, setName: string) => {
+    const oldState = dataAccess.getAppState();
+    const recordSets = oldState?.recordSets;
+    const currentSet = recordSets[setName];
+
+    // add search boundary to given record set if doesn't exist
+    // if (currentSet.searchBoundary) {
+    //   if (!currentSet.searchBoundary.includes(boundary)) {
+    //     currentSet.searchBoundary = [...currentSet.searchBoundary, boundary];
+    //   }
+    // } else {
+    //   // create if not exists
+    //   currentSet.searchBoundary = [boundary];
+    // }
+
+    // seems like only one geometry can be intersected at one time
+    currentSet.searchBoundary = boundary;
+
+    setRecordSetState({ ...recordSets });
+    // dataAccess.setAppState({ recordSets: { ...recordSets } });
+  }
+
+  const removeBoundaryFromSet = async (setName: string) => {
+    const oldState = dataAccess.getAppState();
+    delete oldState.recordSets[setName].searchBoundary;
+
+    setRecordSetState({ ...oldState.recordSets})
+  }
+
   useEffect(() => {
     getInitialState();
   }, []);
@@ -119,7 +149,11 @@ export const RecordSetProvider = (props) => {
           recordSetState: recordSetState,
           setRecordSetState: setRecordSetState,
           add: add,
-          remove: remove
+          remove: remove,
+          boundaries: boundaries,
+          setBoundaries: setBoundaries,
+          addBoundaryToSet: addBoundaryToSet,
+          removeBoundaryFromSet: removeBoundaryFromSet
         }}>
         {props.children}
       </RecordSetContext.Provider>
