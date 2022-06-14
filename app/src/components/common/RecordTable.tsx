@@ -29,8 +29,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import Spinner from '../../components/spinner/Spinner';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
-import {useSelector} from "../../state/utilities/use_selector";
-import {selectAuth} from "../../state/reducers/auth";
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s
@@ -294,7 +293,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
   const loadBuffer = 2;
-  const { authenticated } = useSelector(selectAuth);
+
+  const { keycloak } = useContext(AuthStateContext);
 
   useEffect(() => {
     setRows(Array.isArray(props.rows) ? props.rows : []);
@@ -429,10 +429,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   );
 
   useEffect(() => {
-    if (authenticated) {
+    if (keycloak?.obj?.authenticated) {
       getApiSpec(tableSchemaType);
     }
-  }, [tableSchemaType, authenticated]);
+  }, [tableSchemaType, keycloak?.obj?.authenticated]);
 
   useEffect(() => {
     setSelected(props.selected || []);

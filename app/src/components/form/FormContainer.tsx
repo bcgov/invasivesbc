@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import {
   Box,
   Button,
@@ -29,10 +30,8 @@ import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplet
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
+import { AuthStateContext } from 'contexts/authStateContext';
 import PasteButtonComponent from './PasteButtonComponent';
-import {useSelector} from "../../state/utilities/use_selector";
-import {selectAuth} from "../../state/reducers/auth";
-import {selectConfiguration} from "../../state/reducers/configuration";
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -77,9 +76,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const { roles, authenticated } = useSelector(selectAuth);
-  const { MOBILE } = useSelector(selectConfiguration);
-
+  const { rolesUserHasAccessTo, keycloak } = useContext(AuthStateContext);
 
   useEffect(() => {
     if (!props.activity?.formData) {
@@ -273,7 +270,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
-          if (MOBILE) {
+          if (Capacitor.getPlatform() !== 'web') {
             uiSchema = {
               ...uiSchema,
               activity_type_data: {
@@ -312,7 +309,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               activity_type: ['Treatment', 'Biocontrol'],
               activity_subtype: linkedActivitySubtypes,
               order: ['created_timestamp'],
-              user_roles: roles
+              user_roles: rolesUserHasAccessTo
             });
             const treatments = treatments_response.rows.map((treatment, i) => {
               const shortActID = getShortActivityID(treatment);
@@ -358,18 +355,16 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         uiSchema: uiSchema
       });
     };
-    if (authenticated) {
+    if (keycloak?.obj?.authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activitySubtype, authenticated, props.activity.activity_subtype, MOBILE]);
+  }, [props.activity.activitySubtype, keycloak?.obj?.authenticated, props.activity.activity_subtype]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
   } else {
-    // @ts-ignore
-    // @ts-ignore
     return (
       <Box width="100%">
         <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>

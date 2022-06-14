@@ -151,7 +151,7 @@ DELETE.apiDoc = {
 };
 
 // Returns a function that will be used as a middleware for the GET request
-// Returns 400 if both parameters are provided
+// Returns 400 if neither or both parameters are provided (only one parameter is permitted)
 function decideGET() {
   return async (req, res, next) => {
     const roleId = req.query.roleId;
@@ -170,7 +170,12 @@ function decideGET() {
     if (userId) {
       return await getRolesForUser(req, res, next, userId);
     }
-    return await getRolesForSelf(req, res, next);
+    return res.status(400).json({
+      error: 'At least one of roleId or userId must be provided',
+      request: req.body,
+      namespace: 'user-access',
+      code: 400
+    });
   };
 }
 
@@ -326,50 +331,6 @@ async function getRolesForUser(req, res, next, userId) {
   }
   try {
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
-    if (!sqlStatement) {
-      return res.status(500).json({
-        message: 'Failed to generate SQL statement',
-        request: req.body,
-        namespace: 'user-access',
-        code: 500
-      });
-    }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    return res.status(200).json({
-      message: 'Successfully retrieved roles for user',
-      request: req.body,
-      result: response.rows,
-      count: response.rowCount,
-      namespace: 'user-access',
-      code: 200
-    });
-  } catch (error) {
-    defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
-    return res.status(500).json({
-      message: 'Failed to retrieve roles for user',
-      request: req.body,
-      error: error,
-      namespace: 'user-access',
-      code: 500
-    });
-  } finally {
-    connection.release();
-  }
-}
-
-async function getRolesForSelf(req, res, next) {
-  defaultLog.debug({ label: '{userId}', message: 'getRolesForSelf', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'user-access',
-      code: 503
-    });
-  }
-  try {
-    const sqlStatement: SQLStatement = getRolesForUserSQL(req.user.user_id);
     if (!sqlStatement) {
       return res.status(500).json({
         message: 'Failed to generate SQL statement',

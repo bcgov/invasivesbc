@@ -1,3 +1,4 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -37,6 +38,7 @@ interface IAccessRequestPage {
 const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
+  const authState = useContext(AuthStateContext);
   const classes = useStyles();
   const [transferAccess, setTransferAccess] = useState('');
   const [accountType, setAccountType] = useState('');

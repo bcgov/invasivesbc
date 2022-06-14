@@ -1,7 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 import { ActivitySyncStatus } from 'constants/activities';
-import { useContext } from 'react';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useContext, useEffect } from 'react';
 import { DocType } from '../constants/database';
 import { DatabaseContext, DBRequest, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
@@ -12,9 +14,6 @@ import {
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { useSelector } from '../state/utilities/use_selector';
-import { selectConfiguration } from '../state/reducers/configuration';
-import { selectNetworkConnected } from '../state/reducers/network';
 
 /**
  * Returns a set of supported api methods.
@@ -25,8 +24,14 @@ import { selectNetworkConnected } from '../state/reducers/network';
 export const useDataAccess = () => {
   const api = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
-  const { MOBILE } = useSelector(selectConfiguration);
-  const connected = useSelector(selectNetworkConnected);
+  const platform = Capacitor.getPlatform();
+  const networkContext = useContext(NetworkContext);
+  const authContext = useContext(AuthStateContext);
+  const keycloak = authContext.keycloak; //useKeycloak();
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   /**
    * Fetch points of interest by search criteria.
@@ -38,11 +43,11 @@ export const useDataAccess = () => {
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
     forceCache = false
   ): Promise<any> => {
-    if (!MOBILE) {
+    if (platform === 'web') {
       const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
       return response;
     } else {
-      if (forceCache === true || !connected) {
+      if (forceCache === true || !networkContext.connected) {
         return databaseContext.asyncQueue({
           asyncTask: () => {
             return query(
@@ -72,11 +77,11 @@ export const useDataAccess = () => {
   const getPointsOfInterestLean = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
-    if (!MOBILE) {
+    if (platform === 'web') {
       const response = await api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
       return response;
     } else {
-      if (!connected) {
+      if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
           'LEAN_POI',
           pointsOfInterestSearchCriteria.search_feature,
@@ -100,11 +105,11 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getJurisdictions = async (jurisdictionSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
-    if (!MOBILE) {
+    if (platform === 'web') {
       const response = await api.getJurisdictions(jurisdictionSearchCriteria);
       return response;
     } else {
-      if (!connected) {
+      if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
           'JURISDICTIONS',
           jurisdictionSearchCriteria.search_feature,
@@ -129,11 +134,11 @@ export const useDataAccess = () => {
    * @returns {*} {Promise<any>}
    */
   const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
-    if (!MOBILE) {
+    if (platform === 'web') {
       const response = await api.getRISOs(risoSearchCriteria);
       return response;
     } else {
-      if (!connected) {
+      if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal('RISOS', risoSearchCriteria.search_feature, context);
 
         return {
@@ -155,11 +160,11 @@ export const useDataAccess = () => {
    */
   const getActivityById = async (activityId: string, forceCache?: boolean, referenceData = false): Promise<any> => {
     try {
-      if (!MOBILE) {
+      if (Capacitor.getPlatform() === 'web') {
         const response = await api.getActivityById(activityId);
         return response;
       } else {
-        if (forceCache === true || !connected) {
+        if (forceCache === true || !networkContext.connected) {
           // Removed for now due to not being able to open cached activity
           const res = await databaseContext.asyncQueue({
             asyncTask: async () => {
@@ -197,7 +202,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       //TODO: implement getting old version from server and making new with overwritten props
       // IN USEINVASIVES API
       return await api.updateActivity(activity);
@@ -280,7 +285,7 @@ export const useDataAccess = () => {
    * @param {any} newBoundaryObj
    * @return {*}  {Promise<any>}
    */
-  const addBoundary = async (newBoundaryObj: any) => {
+   const addBoundary = async (newBoundaryObj: any) => {
     if (isMobile()) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -305,15 +310,11 @@ export const useDataAccess = () => {
    * @param {number} id
    * @return {*}  {Promise<any>}
    */
-  const deleteBoundary = async (id: number) => {
+   const deleteBoundary = async (id: number) => {
     if (isMobile()) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{
-            type: UpsertType.DOC_TYPE_AND_ID_DELETE,
-            docType: DocType.TRIP,
-            ID: String(id)
-          }], databaseContext);
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID_DELETE, docType: DocType.TRIP, ID: String(id) }], databaseContext);
         }
       });
     } else {
@@ -344,7 +345,7 @@ export const useDataAccess = () => {
   };
 
   const cacheApplicationUsers = async () => {
-    if (connected && MOBILE) {
+    if (networkContext.connected && isMobile()) {
       const users = await api.getApplicationUsers();
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -357,6 +358,9 @@ export const useDataAccess = () => {
     }
   };
 
+  useEffect(() => {
+    if (keycloak?.obj?.token) cacheApplicationUsers();
+  }, [networkContext.connected, keycloak?.obj?.authenticated]);
 
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
@@ -370,19 +374,16 @@ export const useDataAccess = () => {
 
       const typeClause = activitiesSearchCriteria.activity_type
         ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
-          activitiesSearchCriteria.activity_type
-        ).replace(/[\[\]']+/g, '')})`
+            activitiesSearchCriteria.activity_type
+          ).replace(/[\[\]']+/g, '')})`
         : '';
       const subTypeClause = activitiesSearchCriteria.activity_subtype
         ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-          activitiesSearchCriteria.activity_subtype
-        ).replace(/[\[\]']+/g, '')})`
+            activitiesSearchCriteria.activity_subtype
+          ).replace(/[\[\]']+/g, '')})`
         : '';
 
-      const sql = `select *
-                   from activity
-                   where 1 = 1
-                     and sync_status = '${ActivitySyncStatus.NOT_SAVED}' ${typeClause} ${subTypeClause}`;
+      const sql = `select * from activity where 1=1 and sync_status='${ActivitySyncStatus.NOT_SAVED}' ${typeClause} ${subTypeClause}`;
       const asyncReturnVal = await dbContext.asyncQueue({
         asyncTask: () => {
           return query(
@@ -402,7 +403,7 @@ export const useDataAccess = () => {
   };
 
   const cacheEmployers = async () => {
-    if (connected && MOBILE) {
+    if (networkContext.connected && isMobile()) {
       const employers = await api.getEmployers();
       console.log('employers', employers);
       return databaseContext.asyncQueue({
@@ -417,7 +418,7 @@ export const useDataAccess = () => {
   };
 
   const cacheFundingAgencies = async () => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const agencies = await api.getFundingAgencies();
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -431,7 +432,7 @@ export const useDataAccess = () => {
   };
 
   const cacheRolesForUser = async (userId) => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const userRoles = await api.getRolesForUser(userId);
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -445,7 +446,7 @@ export const useDataAccess = () => {
   };
 
   const cacheAllRoles = async () => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const roles = await api.getRoles();
       if (!roles) {
         return;
@@ -463,7 +464,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCurrentUserBCEID = async (bceid_userid) => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const user = await api.getUserByBCEID(bceid_userid);
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -477,7 +478,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCurrentUserIDIR = async (idir_userid) => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const user = await api.getUserByIDIR(idir_userid);
 
       return databaseContext.asyncQueue({
@@ -587,26 +588,24 @@ export const useDataAccess = () => {
     forceCache = false,
     referenceCache = false
   ): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       return await api.getActivities(activitiesSearchCriteria);
     } else {
-      if (forceCache === true || !connected) {
+      if (forceCache === true || !networkContext.connected) {
         const dbcontext = databaseContext;
         const table = referenceCache ? 'reference_activity' : 'activity';
         const typeClause = activitiesSearchCriteria.activity_type
           ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
-            activitiesSearchCriteria.activity_type
-          ).replace(/[\[\]']+/g, '')})`
+              activitiesSearchCriteria.activity_type
+            ).replace(/[\[\]']+/g, '')})`
           : '';
         const subTypeClause = activitiesSearchCriteria.activity_subtype
           ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-            activitiesSearchCriteria.activity_subtype
-          ).replace(/[\[\]']+/g, '')})`
+              activitiesSearchCriteria.activity_subtype
+            ).replace(/[\[\]']+/g, '')})`
           : '';
 
-        const sql = `select *
-                     from ${table}
-                     where 1 = 1 ${typeClause} ${subTypeClause}`;
+        const sql = `select * from ${table} where 1=1 ${typeClause} ${subTypeClause}`;
 
         const asyncReturnVal = await dbcontext.asyncQueue({
           asyncTask: () => {
@@ -637,11 +636,11 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       const response = await api.getActivitiesLean(activitiesSearchCriteria);
       return response;
     } else {
-      if (!connected) {
+      if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
           'LEAN_ACTIVITIES',
           activitiesSearchCriteria.search_feature,
@@ -669,7 +668,7 @@ export const useDataAccess = () => {
     activity: ICreateOrUpdateActivity,
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       return await api.createActivity(activity);
     } else {
       return databaseContext.asyncQueue({
@@ -698,15 +697,13 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       return await api.deleteActivities(activityIds);
     } else {
       return databaseContext.asyncQueue({
         asyncTask: () => {
           const idsForSQL = JSON.stringify(activityIds).replace(/[\[\]']+/g, '');
-          const sql = `DELETE
-                       FROM Activity
-                       WHERE id IN ${'(' + idsForSQL + ')'}`;
+          const sql = `DELETE FROM Activity WHERE id IN ${'(' + idsForSQL + ')'}`;
           return upsert(
             [
               {
@@ -763,7 +760,7 @@ export const useDataAccess = () => {
    */
   const syncCachedRecords = async (): Promise<any> => {
     // Only callable on mobile
-    if (MOBILE && connected) {
+    if (Capacitor.getPlatform() !== 'web' && networkContext.connected) {
       await getActivitiesForMobileSync({ activity_type: ['Observation', 'Treatment', 'Monitoring'] }).then(
         (res: any) => {
           if (res.count > 0) {
@@ -791,7 +788,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const setAppState = async (newState: any): Promise<any> => {
-    if (!MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       const old = getAppState();
       if (old) {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
@@ -822,7 +819,7 @@ export const useDataAccess = () => {
   };
 
   const listCodeTables = async (): Promise<any> => {
-    if (!MOBILE || connected) {
+    if (Capacitor.getPlatform() === 'web' || networkContext.connected) {
       return await api.listCodeTables();
     } else {
       return databaseContext.asyncQueue({
@@ -840,7 +837,7 @@ export const useDataAccess = () => {
   };
 
   const cacheCodeTables = async (): Promise<any> => {
-    if (connected && MOBILE()) {
+    if (networkContext.connected && isMobile()) {
       const codeTables = await api.listCodeTables();
       console.log('Attempting to cache code tables...');
       if (codeTables && codeTables.length > 0) {
@@ -868,7 +865,7 @@ export const useDataAccess = () => {
   };
 
   const fetchCodeTable = async (codeHeaderName, csv = false) => {
-    if (MOBILE) {
+    if (Capacitor.getPlatform() === 'web') {
       return await api.fetchCodeTable(codeHeaderName, csv);
     } else {
       const data = await databaseContext.asyncQueue({
@@ -888,55 +885,76 @@ export const useDataAccess = () => {
     }
   };
 
-  /**
+    /**
    * Fetch iapp jurisdictions.
    *
    * @return {*}  {Promise<any>}
    */
-  const getIappJurisdictions = async (forceCache = false): Promise<any> => {
-    const response = await api.getIappJurisdictions();
-    return response;
+     const getIappJurisdictions = async (
+      forceCache = false
+    ): Promise<any> => {
+      if (platform === 'web') {
+        const response = await api.getIappJurisdictions();
+        return response;
+      } else {
+        if (forceCache === true || !networkContext.connected) {
+          // return databaseContext.asyncQueue({
+          //   asyncTask: () => {
+          //     return query(
+          //       {
+          //         type: QueryType.DOC_TYPE,
+          //         docType: DocType.REFERENCE_POINT_OF_INTEREST,
+          //         limit: pointsOfInterestSearchCriteria.limit,
+          //         offset: pointsOfInterestSearchCriteria.page
+          //       },
+          //       databaseContext
+          //     );
+          //   }
+          // });
+        } else {
+          const response = await api.getIappJurisdictions();
+          return response;
+        }
+      }
+    };
+
+  return {
+    ...api,
+    getPointsOfInterest,
+    getPointsOfInterestLean,
+    getActivityById,
+    updateActivity,
+    getTrips,
+    addTrip,
+    getBoundaries,
+    addBoundary,
+    deleteBoundary,
+    getActivities,
+    getActivitiesLean,
+    createActivity,
+    deleteActivities,
+    getAppState,
+    setAppState,
+    getJurisdictions,
+    getRISOs,
+    syncCachedRecords,
+    getApplicationUsers,
+    cacheApplicationUsers,
+    getRoles,
+    getRolesForUser,
+    getEmployers,
+    getFundingAgencies,
+    cacheEmployers,
+    cacheFundingAgencies,
+    cacheAllRoles,
+    cacheRolesForUser,
+    cacheCurrentUserBCEID,
+    cacheCurrentUserIDIR,
+    getCurrentUser,
+    createUser,
+    listCodeTables,
+    fetchCodeTable,
+    cacheCodeTables,
+    getIappJurisdictions
   };
 };
-
-return {
-  ...api,
-  getPointsOfInterest,
-  getPointsOfInterestLean,
-  getActivityById,
-  updateActivity,
-  getTrips,
-  addTrip,
-  getBoundaries,
-  addBoundary,
-  deleteBoundary,
-  getActivities,
-  getActivitiesLean,
-  createActivity,
-  deleteActivities,
-  getAppState,
-  setAppState,
-  getJurisdictions,
-  getRISOs,
-  syncCachedRecords,
-  getApplicationUsers,
-  cacheApplicationUsers,
-  getRoles,
-  getRolesForUser,
-  getEmployers,
-  getFundingAgencies,
-  cacheEmployers,
-  cacheFundingAgencies,
-  cacheAllRoles,
-  cacheRolesForUser,
-  cacheCurrentUserBCEID,
-  cacheCurrentUserIDIR,
-  getCurrentUser,
-  createUser,
-  listCodeTables,
-  fetchCodeTable,
-  cacheCodeTables,
-  getIappJurisdictions
-};
-}
-;

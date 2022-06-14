@@ -1,11 +1,10 @@
+import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
 import { RISOLayer } from './RISOLayer';
 import { AdminUploadsLayer } from './AdminUploadsLayer';
-import { selectNetworkConnected } from "../../../state/reducers/network";
-import { useSelector } from "../../../state/utilities/use_selector";
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
@@ -17,7 +16,7 @@ export enum IndependentLayers {
 }
 
 export const IndependentLayer = (props) => {
-  const connected = useSelector(selectNetworkConnected);
+  const networkContext = useContext(NetworkContext);
 
   if (!props.enabled) {
     return <></>;
@@ -29,7 +28,7 @@ export const IndependentLayer = (props) => {
           <ActivitiesLayer
             activity_subtype={props.activity_subtype}
             color_code={props.color_code}
-            online={connected}
+            online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
@@ -39,7 +38,7 @@ export const IndependentLayer = (props) => {
           <PoisLayer
             poi_type={props.poi_type}
             color_code={props.color_code}
-            online={connected}
+            online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
@@ -48,7 +47,7 @@ export const IndependentLayer = (props) => {
         return (
           <JurisdictionsLayer
             color_code={props.color_code}
-            online={connected}
+            online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
@@ -57,7 +56,7 @@ export const IndependentLayer = (props) => {
         return (
           <RISOLayer
             color_code={props.color_code}
-            online={connected}
+            online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
@@ -67,7 +66,7 @@ export const IndependentLayer = (props) => {
           <AdminUploadsLayer
             color_code={props.color_code}
             geoJSON={props.geoJSON}
-            online={connected}
+            online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
