@@ -15,7 +15,7 @@ const PlantTransectsTable = () => {
   const dataAccess = useDataAccess();
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
-  const { bestName, roles } = useSelector(selectAuth);
+  const { displayName, roles } = useSelector(selectAuth);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -23,7 +23,7 @@ const PlantTransectsTable = () => {
 
   const getActivities = async () => {
     const act_list = await dataAccess.getActivities({
-      created_by: bestName,
+      created_by: displayName,
       user_roles: roles,
       activity_type: ['Monitoring']
     });

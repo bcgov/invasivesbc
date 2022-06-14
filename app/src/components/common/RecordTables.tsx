@@ -1,6 +1,6 @@
-import {Add, Check, Clear, Delete, Edit, FindInPage, Sync} from '@mui/icons-material';
-import RecordTable, {IRecordTable} from 'components/common/RecordTable';
-import {IGeneralDialog, GeneralDialog} from 'components/dialog/GeneralDialog';
+import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@mui/icons-material';
+import RecordTable, { IRecordTable } from 'components/common/RecordTable';
+import { IGeneralDialog, GeneralDialog } from 'components/dialog/GeneralDialog';
 import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
@@ -8,16 +8,16 @@ import {
   FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
-import {DEFAULT_PAGE_SIZE, DocType} from 'constants/database';
-import {useDataAccess} from 'hooks/useDataAccess';
-import {IActivitySearchCriteria} from 'interfaces/useInvasivesApi-interfaces';
+import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import moment from 'moment';
-import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {useHistory} from 'react-router-dom';
-import {generateDBActivityPayload, getShortActivityID, sanitizeRecord} from 'utils/addActivity';
-import {DatabaseContext} from '../../contexts/DatabaseContext';
-import {selectAuth} from '../../state/reducers/auth';
-import {useSelector} from '../../state/utilities/use_selector';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { generateDBActivityPayload, getShortActivityID, sanitizeRecord } from 'utils/addActivity';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
+import { selectAuth } from '../../state/reducers/auth';
+import { useSelector } from '../../state/utilities/use_selector';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -116,7 +116,7 @@ export const defaultActivitiesFetch =
      review_status = [],
      linked_id = undefined
    }) =>
-    async ({page, rowsPerPage, order}) => {
+    async ({ page, rowsPerPage, order }) => {
       // Fetches fresh from the API (web).  TODO fetch from SQLite
       let dbPageSize = DEFAULT_PAGE_SIZE;
       if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
@@ -204,7 +204,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const {bestName, roles, hasRole} = useSelector(selectAuth);
+  const { displayName, roles } = useSelector(selectAuth);
 
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -229,15 +229,15 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-      dbActivity.created_by = bestName;
+      dbActivity.created_by = displayName;
       dbActivity.user_role = roles.map((role) => role.role_id);
       await dataAccess.createActivity(dbActivity, databaseContext);
-      await dataAccess.setAppState({activeActivity: dbActivity.activity_id});
+      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id });
       setTimeout(() => {
-        history.push({pathname: `/home/activity`});
+        history.push({ pathname: `/home/activity` });
       }, 500);
     },
-    icon: <Add/>,
+    icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
     bulkAction: false,
     rowAction: false,
@@ -298,23 +298,23 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     const selectedIds = allSelectedRows.map((row) => row[keyField]);
                     if (selectedIds.length === 1) {
                       const appState = props.referenceData
-                        ? {activeActivity: selectedIds[0], referenceData: true}
-                        : {activeActivity: selectedIds[0], referenceData: false};
+                        ? { activeActivity: selectedIds[0], referenceData: true }
+                        : { activeActivity: selectedIds[0], referenceData: false };
                       await dataAccess.setAppState(appState);
                       setTimeout(() => {
-                        history.push({pathname: `/home/activity`});
+                        history.push({ pathname: `/home/activity` });
                       }, 500);
                       // TODO switch by activity type, I guess...
                     } else {
                       history.push({
                         pathname: `/home/search/bulkedit`,
                         search: '?activities=' + selectedIds.join(','),
-                        state: {activityIdsToEdit: selectedIds}
+                        state: { activityIdsToEdit: selectedIds }
                       });
                     }
                   },
                   label: 'Edit',
-                  icon: <Edit/>,
+                  icon: <Edit />,
                   bulkAction: true,
                   rowAction: true,
                   bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
@@ -323,7 +323,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   rowCondition: (row) => {
                     if (row && row.activity_payload) {
                       const createdBy = row.activity_payload.created_by;
-                      return createdBy === bestName || hasRole('master_administrator');
+                      return createdBy === displayName || hasRole('master_administrator');
                     }
                   },
                   displayInvalid: 'error',
@@ -342,13 +342,13 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                         {
                           actionName: 'No',
                           actionOnClick: async () => {
-                            setWarningDialog({...warningDialog, dialogOpen: false});
+                            setWarningDialog({ ...warningDialog, dialogOpen: false });
                           }
                         },
                         {
                           actionName: 'Yes',
                           actionOnClick: async () => {
-                            setWarningDialog({...warningDialog, dialogOpen: false});
+                            setWarningDialog({ ...warningDialog, dialogOpen: false });
 
                             const selectedIds = allSelectedRows.map((row) => row[keyField]);
                             if (selectedIds.length) {
@@ -361,7 +361,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     });
                   },
                   label: 'Delete',
-                  icon: <Delete/>,
+                  icon: <Delete />,
                   bulkAction: true,
                   rowAction: true,
                   bulkCondition: undefined, // TODO admin or author only
@@ -410,7 +410,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       console.log(error);
                     }
                   },
-                  icon: <Sync/>,
+                  icon: <Sync />,
                   ...actions?.sync
                 },
                 submit: {
@@ -458,7 +458,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       // notifyError(databaseContext, JSON.stringify(error));
                     }
                   },
-                  icon: <FindInPage/>,
+                  icon: <FindInPage />,
                   ...actions?.submit
                 },
                 approve: {
@@ -497,7 +497,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           sanitizeRecord({
                             ...dbActivity,
                             review_status: ReviewStatus.APPROVED,
-                            reviewed_by: bestName, // latest reviewer
+                            reviewed_by: displayName, // latest reviewer
                             reviewed_at: moment(new Date()).format()
                           })
                         );
@@ -508,7 +508,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       // notifyError(databaseContext, JSON.stringify(error));
                     }
                   },
-                  icon: <Check/>,
+                  icon: <Check />,
                   ...actions?.approve
                 },
                 disapprove: {
@@ -547,7 +547,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           sanitizeRecord({
                             ...dbActivity,
                             review_status: ReviewStatus.DISAPPROVED,
-                            reviewed_by: bestName, // latest reviewer
+                            reviewed_by: displayName, // latest reviewer
                             reviewed_at: moment(new Date()).format()
                           })
                         );
@@ -558,7 +558,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       // notifyError(databaseContext, JSON.stringify(error));
                     }
                   },
-                  icon: <Clear/>,
+                  icon: <Clear />,
                   ...actions?.disapprove
                 },
                 ...createActions
@@ -579,8 +579,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -588,7 +588,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status', ...activitesDefaultHeaders]}
-        created_by={bestName}
+        created_by={displayName}
         {...otherProps}
       />
     );
@@ -596,7 +596,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const FREPActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, ...otherProps} = props;
+  const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable
       tableName="FREP Forms"
@@ -608,7 +608,7 @@ export const FREPActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyFREPTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, ...otherProps} = props;
+  const { tableSchemaType, ...otherProps } = props;
   return useMemo(() => {
     return (
       <MyActivitiesTable
@@ -622,7 +622,7 @@ export const MyFREPTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, ...otherProps} = props;
+  const { tableSchemaType, ...otherProps } = props;
   return useMemo(() => {
     return (
       <MyActivitiesTable
@@ -642,7 +642,7 @@ export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 
 export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const {tableSchemaType, actions, headers = [], ...otherProps} = props;
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -670,7 +670,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
                   history.push({
                     pathname: `/home/activity/treatment`,
                     search: '?observations=' + ids.join(','),
-                    state: {observations: ids}
+                    state: { observations: ids }
                   });
                 },
                 label: 'Create Treatment',
@@ -699,8 +699,8 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -708,7 +708,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -719,9 +719,9 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const {roles} = useSelector(selectAuth);
+  const { roles } = useSelector(selectAuth);
 
-  const {tableSchemaType, headers = [], ...otherProps} = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -836,8 +836,8 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -845,7 +845,7 @@ export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -856,9 +856,9 @@ export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const {roles} = useSelector(selectAuth);
+  const { roles } = useSelector(selectAuth);
 
-  const {tableSchemaType, headers = [], ...otherProps} = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
 
   return useMemo(() => {
     return (
@@ -966,8 +966,8 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -975,7 +975,7 @@ export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -984,7 +984,7 @@ export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, headers = [], ...otherProps} = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1043,8 +1043,8 @@ export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -1052,7 +1052,7 @@ export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1061,7 +1061,7 @@ export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, headers = [], ...otherProps} = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1119,8 +1119,8 @@ export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -1128,7 +1128,7 @@ export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1153,7 +1153,7 @@ export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props)
 };
 
 export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers, ...otherProps} = props;
+  const { headers, ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1171,8 +1171,8 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { bestName: displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -1180,7 +1180,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1189,7 +1189,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
-  const {tableSchemaType, actions, headers = [], ...otherProps} = props;
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1267,8 +1267,8 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
-  const {headers = [], ...otherProps} = props;
-  const {bestName} = useSelector(selectAuth);
+  const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -1276,7 +1276,7 @@ export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={bestName}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1285,7 +1285,7 @@ export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
-  const {tableSchemaType, actions, ...otherProps} = props;
+  const { tableSchemaType, actions, ...otherProps } = props;
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   return useMemo(() => {
@@ -1320,7 +1320,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={async ({page, rowsPerPage, order}) => {
+        rows={async ({ page, rowsPerPage, order }) => {
           // Fetches fresh from the API (web).  TODO fetch from SQLite
           let dbPageSize = DEFAULT_PAGE_SIZE;
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
@@ -1365,7 +1365,7 @@ export const IAPPTable: React.FC<IRecordTable> = (props) => (
 );
 
 export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
-  const {tableSchemaType, rows, ...otherProps} = props;
+  const { tableSchemaType, rows, ...otherProps } = props;
   return useMemo(() => {
     return (
       <IAPPTable
@@ -1419,7 +1419,7 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
 // TODO convert tables below to easily modifiable (otherProps) versions:
 
 export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1458,7 +1458,7 @@ export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
 };
 
 export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1496,14 +1496,14 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
               project_code_label: row.project_code[0].description
             }))
         }
-        dropdown={(row) => (!row.monitoring?.length ? undefined : <IAPPMonitoringTable rows={row.monitoring}/>)}
+        dropdown={(row) => (!row.monitoring?.length ? undefined : <IAPPMonitoringTable rows={row.monitoring} />)}
       />
     );
   }, [rows?.length]);
 };
 
 export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1583,7 +1583,7 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
               rows={[row]} // singleton expanded table
               enableFiltering={false}
             />
-            {row.monitoring.length > 0 && <IAPPMonitoringTable rows={row.monitoring}/>}
+            {row.monitoring.length > 0 && <IAPPMonitoringTable rows={row.monitoring} />}
           </React.Fragment>
         )}
       />
@@ -1592,7 +1592,7 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
 };
 
 export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1636,7 +1636,7 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
             }))
         }
         dropdown={(row) =>
-          !row.monitoring?.length ? undefined : <IAPPBiologicalTreatmentsMonitoringTable rows={row.monitoring}/>
+          !row.monitoring?.length ? undefined : <IAPPBiologicalTreatmentsMonitoringTable rows={row.monitoring} />
         }
       />
     );
@@ -1644,7 +1644,7 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
 };
 
 export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1697,7 +1697,7 @@ export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) => 
 };
 
 export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (props) => {
-  const {rows} = props;
+  const { rows } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -1748,10 +1748,10 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 };
 
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const {rows, headers = [], ...otherProps} = props;
+  const { rows, headers = [], ...otherProps } = props;
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const {roles} = useSelector(selectAuth);
+  const { roles } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (

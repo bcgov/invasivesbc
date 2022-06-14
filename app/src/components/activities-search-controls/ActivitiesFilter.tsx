@@ -110,10 +110,10 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                 <Grid xs={8} container spacing={3}>
                   <Grid item xs={4}>
                     <div>
-                      <InputLabel id='demo-simple-select-label'>Activity Type</InputLabel>
+                      <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
                       <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
                         value={activityChoice.activityType}
                         onChange={(e) => {
                           updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
@@ -128,7 +128,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={4}>
                     <InputLabel>Photos</InputLabel>
                     <Switch
-                      color='primary'
+                      color="primary"
                       checked={activityChoice.includePhotos}
                       value={activityChoice.includePhotos}
                       onChange={() => {
@@ -142,7 +142,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={4}>
                     <InputLabel>Forms</InputLabel>
                     <Switch
-                      color='primary'
+                      color="primary"
                       checked={activityChoice.includeForms}
                       value={activityChoice.includeForms}
                       onChange={() => {
@@ -153,7 +153,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={6}>
                     <DatePicker
                       renderInput={(params) => <TextField {...params} />}
-                      label='Earliest Date'
+                      label="Earliest Date"
                       value={activityChoice.startDate}
                       onChange={(e) => {
                         updateActivityChoice({ ...activityChoice, startDate: e }, index);
@@ -163,16 +163,16 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={6}>
                     <DatePicker
                       renderInput={(params) => <TextField {...params} />}
-                      label='Latest Date'
+                      label="Latest Date"
                       value={activityChoice.endDate}
                       onChange={(e) => {
                         updateActivityChoice({ ...activityChoice, endDate: e }, index);
                       }}
                     />
                   </Grid>
-                  <Grid container item justifyContent='flex-end'>
+                  <Grid container item justifyContent="flex-end">
                     <Button
-                      variant='contained'
+                      variant="contained"
                       startIcon={<DeleteForever />}
                       onClick={() => deleteActivityChoice(index)}>
                       Remove
@@ -186,8 +186,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
       </List>
       <Box>
         <Button
-          variant='contained'
-          color='primary'
+          variant="contained"
+          color="primary"
           startIcon={<Add />}
           onClick={() => {
             addActivityChoice({

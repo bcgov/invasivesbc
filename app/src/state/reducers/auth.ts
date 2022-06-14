@@ -17,7 +17,6 @@ class AuthState {
   error: boolean;
   authenticated: boolean;
 
-  bestName: string;
   email: string;
   displayName: string;
   userId: 'notImplemented';
@@ -39,7 +38,7 @@ class AuthState {
 const initialState = new AuthState();
 
 function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfig): object {
-  let bestName = 'User';
+  let displayName = 'User';
   const preferenceOrder = ['preferred_username', 'name', 'given_name', 'sub'];
 
   for (const p of preferenceOrder) {
@@ -49,13 +48,12 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
         keycloakInstance.idTokenParsed[p] !== null &&
         keycloakInstance.idTokenParsed[p].length > 0
       ) {
-        bestName = keycloakInstance.idTokenParsed[p];
+        displayName = keycloakInstance.idTokenParsed[p];
         break;
       }
     }
   }
   let username = null;
-  let displayName = 'User';
   let email = '';
 
   if (keycloakInstance.idTokenParsed) {
@@ -69,10 +67,9 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   };
 
   return {
-    bestName,
+    displayName,
     requestHeaders,
     username,
-    displayName,
     email
   };
 }

@@ -62,7 +62,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const { bestName, roles } = useSelector(selectAuth);
+  const { displayName, roles } = useSelector(selectAuth);
 
   useEffect(() => {
     let userAccessDict = {};
@@ -142,10 +142,10 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       return;
     }
     const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
-    dbActivity.created_by = bestName;
+    dbActivity.created_by = displayName;
     dbActivity.user_role = roles.map((role) => role.role_id);
     await dataAccess.createActivity(dbActivity, databaseContext);
-    dbActivity.created_by = bestName;
+    dbActivity.created_by = displayName;
     await dataAccess.setAppState({
       activeActivity: dbActivity.activity_id,
       newActivityChoices: {

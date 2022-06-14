@@ -280,7 +280,7 @@ export const useDataAccess = () => {
    * @param {any} newBoundaryObj
    * @return {*}  {Promise<any>}
    */
-   const addBoundary = async (newBoundaryObj: any) => {
+  const addBoundary = async (newBoundaryObj: any) => {
     if (isMobile()) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
@@ -305,11 +305,15 @@ export const useDataAccess = () => {
    * @param {number} id
    * @return {*}  {Promise<any>}
    */
-   const deleteBoundary = async (id: number) => {
+  const deleteBoundary = async (id: number) => {
     if (isMobile()) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID_DELETE, docType: DocType.TRIP, ID: String(id) }], databaseContext);
+          return upsert([{
+            type: UpsertType.DOC_TYPE_AND_ID_DELETE,
+            docType: DocType.TRIP,
+            ID: String(id)
+          }], databaseContext);
         }
       });
     } else {
@@ -353,9 +357,6 @@ export const useDataAccess = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (authorization) cacheApplicationUsers();
-  // }, [connected, authenticated]);
 
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
@@ -893,68 +894,49 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getIappJurisdictions = async (forceCache = false): Promise<any> => {
-    if (!MOBILE) {
-      const response = await api.getIappJurisdictions();
-      return response;
-    } else {
-      if (forceCache === true || !connected) {
-        // return databaseContext.asyncQueue({
-        //   asyncTask: () => {
-        //     return query(
-        //       {
-        //         type: QueryType.DOC_TYPE,
-        //         docType: DocType.REFERENCE_POINT_OF_INTEREST,
-        //         limit: pointsOfInterestSearchCriteria.limit,
-        //         offset: pointsOfInterestSearchCriteria.page
-        //       },
-        //       databaseContext
-        //     );
-        //   }
-        // });
-      } else {
-        const response = await api.getIappJurisdictions();
-        return response;
-      }
-    }
-  };
-
-  return {
-    ...api,
-    getPointsOfInterest,
-    getPointsOfInterestLean,
-    getActivityById,
-    updateActivity,
-    getTrips,
-    addTrip,
-    getBoundaries,
-    addBoundary,
-    deleteBoundary,
-    getActivities,
-    getActivitiesLean,
-    createActivity,
-    deleteActivities,
-    getAppState,
-    setAppState,
-    getJurisdictions,
-    getRISOs,
-    syncCachedRecords,
-    getApplicationUsers,
-    cacheApplicationUsers,
-    getRoles,
-    getRolesForUser,
-    getEmployers,
-    getFundingAgencies,
-    cacheEmployers,
-    cacheFundingAgencies,
-    cacheAllRoles,
-    cacheRolesForUser,
-    cacheCurrentUserBCEID,
-    cacheCurrentUserIDIR,
-    getCurrentUser,
-    createUser,
-    listCodeTables,
-    fetchCodeTable,
-    cacheCodeTables,
-    getIappJurisdictions
+    const response = await api.getIappJurisdictions();
+    return response;
   };
 };
+
+return {
+  ...api,
+  getPointsOfInterest,
+  getPointsOfInterestLean,
+  getActivityById,
+  updateActivity,
+  getTrips,
+  addTrip,
+  getBoundaries,
+  addBoundary,
+  deleteBoundary,
+  getActivities,
+  getActivitiesLean,
+  createActivity,
+  deleteActivities,
+  getAppState,
+  setAppState,
+  getJurisdictions,
+  getRISOs,
+  syncCachedRecords,
+  getApplicationUsers,
+  cacheApplicationUsers,
+  getRoles,
+  getRolesForUser,
+  getEmployers,
+  getFundingAgencies,
+  cacheEmployers,
+  cacheFundingAgencies,
+  cacheAllRoles,
+  cacheRolesForUser,
+  cacheCurrentUserBCEID,
+  cacheCurrentUserIDIR,
+  getCurrentUser,
+  createUser,
+  listCodeTables,
+  fetchCodeTable,
+  cacheCodeTables,
+  getIappJurisdictions
+};
+}
+;

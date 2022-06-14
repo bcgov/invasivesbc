@@ -11,7 +11,7 @@ export const RecordSetContext = React.createContext(null);
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const { bestName } = useSelector(selectAuth);
+  const { displayName } = useSelector(selectAuth);
   const dataAccess = useDataAccess();
 
   const getInitialState = async () => {
@@ -27,8 +27,8 @@ export const RecordSetProvider = (props) => {
             advancedFilters: [
               {
                 filterField: 'created_by',
-                filterValue: bestName,
-                filterKey: 'created_by' + bestName
+                filterValue: displayName,
+                filterKey: 'created_by' + displayName
               },
               {
                 filterField: 'record_status',

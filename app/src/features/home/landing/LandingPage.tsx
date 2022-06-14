@@ -48,7 +48,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const history = useHistory();
   const connected = useSelector(selectNetworkConnected);
 
-  const { authenticated, bestName, email, displayName, roles } = useSelector(selectAuth);
+  const { authenticated, displayName, email, displayName, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated, accessRequested } = useSelector(selectUserInfo);
 
 
@@ -132,7 +132,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                   <Typography>
                     <strong>Username</strong>
                   </Typography>
-                  {bestName}
+                  {displayName}
                 </Box>
               </Grid>
             </Grid>

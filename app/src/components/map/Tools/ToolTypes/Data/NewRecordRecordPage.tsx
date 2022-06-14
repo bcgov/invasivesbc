@@ -32,10 +32,10 @@ export const NewRecordRecordPagae = (props) => {
     const subtype = props.subType || ActivitySubtype.Observation_PlantTerrestrial;
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-    dbActivity.created_by = bestName;
+    dbActivity.created_by = displayName;
     dbActivity.user_role = roles.map((role) => role.role_id);
     await dataAccess.createActivity(dbActivity, databaseContext);
-    dbActivity.created_by = bestName;
+    dbActivity.created_by = displayName;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);

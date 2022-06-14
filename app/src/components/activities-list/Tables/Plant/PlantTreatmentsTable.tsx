@@ -20,11 +20,11 @@ const PlantTreatmentsTable = () => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const { bestName, roles } = useSelector(selectAuth);
+  const { displayName, roles } = useSelector(selectAuth);
 
   const getActivities = async () => {
     const act_list = await dataAccess.getActivities({
-      created_by: bestName,
+      created_by: displayName,
       user_roles: roles,
       activity_type: ['Monitoring']
     });

@@ -30,7 +30,7 @@ export const NewRecord = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
-  const { bestName } = useSelector(selectAuth);
+  const { displayName } = useSelector(selectAuth);
 
   // Is this needed? Copied from DisplayPosition
 
@@ -185,7 +185,7 @@ export const NewRecord = (props) => {
   */
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-    dbActivity.created_by = bestName;
+    dbActivity.created_by = displayName;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
