@@ -31,7 +31,7 @@ export class ActivityPostRequestBody {
   form_status: string;
   sync_status: string;
   created_by: string;
-  updated_by: string;
+  updated_by?: string;
 
   review_status: string;
   reviewed_by: string;
@@ -83,8 +83,6 @@ export class ActivityPostRequestBody {
 
     this.mediaKeys = (obj && obj.mediaKeys) || null;
 
-    this.updated_by = (obj && obj.updated_by) || null;
-
     this.form_status = (obj && obj.form_status) || null;
     this.sync_status = (obj && obj.sync_status) || null;
 
@@ -124,7 +122,6 @@ export class ActivitySearchCriteria {
   column_names: string[];
 
   created_by: string[];
-  updated_by: string[];
 
   review_status: string[];
 
@@ -165,7 +162,6 @@ export class ActivitySearchCriteria {
     this.column_names = (obj && obj.column_names) || [];
 
     this.created_by = (obj && obj.created_by) || [];
-    this.updated_by = (obj && obj.updated_by) || [];
 
     this.form_status = (obj && obj.form_status) || [];
 

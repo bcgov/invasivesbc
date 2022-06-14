@@ -22,7 +22,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       created_timestamp,
       received_timestamp,
       created_by,
-      updated_by
+      updated_by,
       sync_status,
       form_status,
       review_status,
@@ -188,7 +188,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     // add the first activity type, which does not get a comma prefix
     sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
 
-      for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
+    for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
       // add all subsequent activity types, which do get a comma prefix
       sqlStatement.append(SQL`, ${searchCriteria.activity_type[idx]}`);
     }
@@ -293,7 +293,6 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
   if (searchCriteria.page && searchCriteria.limit) {
     sqlStatement.append(SQL` OFFSET ${searchCriteria.page * searchCriteria.limit}`);
   }
-
 
   sqlStatement.append(SQL`;`);
   const defaultLog = getLogger('acitivies-lean');

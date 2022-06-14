@@ -275,6 +275,7 @@ function createActivity(): RequestHandler {
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
     sanitizedActivityData.created_by = req.authContext?.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
@@ -398,7 +399,6 @@ function updateActivity(): RequestHandler {
       });
     }
 
-
     // Get activity
     const sanitizedSearchCriteria: string = data._id;
     const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
@@ -414,10 +414,10 @@ function updateActivity(): RequestHandler {
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    sanitizedActivityData.created_by = response.rows[0].activity_payload.created_by;
+    // sanitizedActivityData.created_by = response.rows[0].activity_payload.created_by;
 
     if (!isAdmin) {
-      if (preferred_username !== response.rows[0].activity_payload.created_by) {
+      if (preferred_username !== response.rows[0].created_by) {
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record', // better message
           request: req.body,
@@ -460,7 +460,7 @@ function updateActivity(): RequestHandler {
       }
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
-      
+
       // kick off asynchronous context collection activities
       if (req.body.form_data?.activity_data?.latitude) commitContext(result, req);
 
