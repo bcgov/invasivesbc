@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "strict": false,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "types": ["cypress"],
     "typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true

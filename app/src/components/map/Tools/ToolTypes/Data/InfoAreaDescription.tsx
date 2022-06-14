@@ -47,7 +47,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { utmRows, map, bufferedGeo, setRecordGeo, setClickMode } = props;
+  const { position, map, bufferedGeo } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -57,6 +57,13 @@ export const GeneratePopup = (props) => {
   // const [databc, setDataBC] = useState(null); // NOSONAR
   // const [radius, setRadius] = useState(3);
   const popupElRef = useRef(null);
+
+  const utmResult = calc_utm(position[0], position[1]);
+  const utmRows = [
+    createDataUTM('Zone', utmResult[0]),
+    createDataUTM('Easting', utmResult[1]),
+    createDataUTM('Northing', utmResult[2])
+  ];
 
   useEffect(() => {
     if (popupElRef?.current) {
@@ -81,10 +88,6 @@ export const GeneratePopup = (props) => {
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
     map.closePopup();
-    if (setRecordGeo) setRecordGeo(null);
-    if (setClickMode) {
-      setClickMode(false);
-    }
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -97,11 +100,9 @@ export const GeneratePopup = (props) => {
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
-            {section == 'invasivesbc' && (
-              <RenderTableActivity bufferedGeo={bufferedGeo} map={map} setActivityGeo={setRecordGeo} />
-            )}
+            {section == 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} setPoiMarker={setRecordGeo} />}
+            {section == 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -151,10 +152,10 @@ function SetPointOnClick({ map }: any) {
     opacity: 0,
     fillOpacity: 0
   });
-  const [recordGeo, setRecordGeo] = useState(null);
   const [utm, setUTM] = useState(null);
   const drawnGeoKey = Math.random(); // NOSONAR
-  const recordGeoKey = Math.random(); // NOSONAR
+  // Removed for redundancy
+  // const recordGeoKey = Math.random(); // NOSONAR
   const divRef = useRef();
   const toolClass = toolStyles();
 
@@ -194,26 +195,27 @@ function SetPointOnClick({ map }: any) {
           setClickMode(false);
           setDrawnOpacity(null);
         }
-      } else {
-        // just click to create invisible small box
-        const temp = e.latlng;
-        const val = 0.003;
-        const latlng1 = [temp.lng + val, temp.lat - val / 2];
-        const latlng3 = [temp.lng - val, temp.lat + val / 2];
-        const latlng2 = [temp.lng + val, temp.lat + val / 2];
-        const latlng4 = [temp.lng - val, temp.lat - val / 2];
-        setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-        const result = calc_utm(temp.lng, temp.lat);
-        setUTM([
-          createDataUTM('Zone', result[0]),
-          createDataUTM('Easting', result[1]),
-          createDataUTM('Northing', result[2])
-        ]);
-        setDrawnOpacity({
-          opacity: 0,
-          fillOpacity: 0
-        });
       }
+      // else {
+      //   // just click to create invisible small box
+      //   const temp = e.latlng;
+      //   const val = 0.001;
+      //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
+      //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
+      //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
+      //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
+      //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+      //   const result = calc_utm(temp.lng, temp.lat);
+      //   setUTM([
+      //     createDataUTM('Zone', result[0]),
+      //     createDataUTM('Easting', result[1]),
+      //     createDataUTM('Northing', result[2])
+      //   ]);
+      //   setDrawnOpacity({
+      //     opacity: 0,
+      //     fillOpacity: 0
+      //   });
+      // }
     } catch (_e) {
       console.log('Info Area Description click error', _e);
     }
@@ -235,8 +237,6 @@ function SetPointOnClick({ map }: any) {
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
-      {recordGeo && <GeoJSON data={recordGeo} key={recordGeoKey} />}
-
       <ListItemButton
         ref={divRef}
         onClick={() => {
@@ -265,15 +265,7 @@ function SetPointOnClick({ map }: any) {
       </ListItemButton>
       {drawnGeo && (
         <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
-          {!clickMode && (
-            <GeneratePopup
-              utmRows={utm}
-              map={map}
-              bufferedGeo={drawnGeo}
-              setRecordGeo={setRecordGeo}
-              setClickMode={setClickMode}
-            />
-          )}
+          {!clickMode && <GeneratePopup utmRows={utm} map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
         </GeoJSON>
       )}
     </ListItem>

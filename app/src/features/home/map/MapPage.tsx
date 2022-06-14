@@ -1,12 +1,16 @@
-import { Box, Button, Container, Grid, Theme } from '@mui/material';
+import { Box, Button, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
 import MapContainer from 'components/map/MapContainer';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
-import { Feature, GeoJsonObject } from 'geojson';
-import React, { useEffect, useState } from 'react';
+import { Feature } from 'geojson';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
+import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+// Removed for now:
+// import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -89,20 +93,36 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
 
 const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
-  //TODO:  check if used
-  const [extent, setExtent] = useState(null);
   //TODO: consolidate with new context
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
-  const [showPopOut, setShowPopOut] = useState(false);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+  // Removed For now:
+  // const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
+  // const [showPopOut, setShowPopOut] = useState(false);
+  // TODO:  check if used
+  // const [extent, setExtent] = useState(null);
+
+  const authContext = useContext(AuthStateContext);
+  const { userInfoLoaded } = useContext(AuthStateContext);
+  const history = useHistory();
+
+  const isAuthorized = () => {
+    return userInfoLoaded && authContext.userRoles.length > 0;
+  };
+
+  useEffect(() => {
+    if (isAuthorized()) {
+      history.push('/home/landing');
+    }
+  }, [userInfoLoaded]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
+  // Removed for now:
   // const handleGeoClick = async (geo: any) => {
   //   setShowPopOut(true);
   // };
@@ -159,7 +179,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
   return (
     <Box height="inherit" width="inherit" paddingBottom={'50px'}>
       <MapRecordsContextProvider>
-        <Grid className={classes.mainGrid} container>
+        {/* Old MapContainer Render (may need as reference for the future) */}
+        {/* <Grid className={classes.mainGrid} container>
           <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
             <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
               <MapContainer
@@ -175,7 +196,25 @@ const MapPage: React.FC<IMapProps> = (props) => {
               </MapContainer>
             </Container>
           </Grid>
-        </Grid>
+        </Grid> */}
+        <MapContainer
+          classes={classes}
+          showDrawControls={false}
+          center={[55, -128]}
+          zoom={5}
+          mapId={'mainMap'}
+          geometryState={{ geometry, setGeometry }}>
+          {/* <RecordSetLayersRenderer /> */}
+          <MapUrlListener />
+          <ActivitiesLayerV2
+            filters={{
+              activity_subtype: ['Activity_Observation_PlantTerrestrial', 'Activity_Observation_PlantAquatic']
+            }}
+            color={'#000'}
+            opacity={1}
+            zIndex={5000}
+          />
+        </MapContainer>
         <MapContextMenu
           contextMenuState={{ state: contextMenuState, setContextMenuState }}
           handleClose={handleContextMenuClose}

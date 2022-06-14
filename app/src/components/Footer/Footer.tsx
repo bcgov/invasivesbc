@@ -32,8 +32,8 @@ const Footer: React.FC<IFooterProps> = () => {
       <Toolbar
         style={{
           position: 'relative',
-          minHeight: '2.5vh',
-          maxHeight: '5vh',
+          minHeight: '50px',
+          maxHeight: '50px',
           fontSize: '1rem',
           justifyContent: 'flex-start'
         }}>

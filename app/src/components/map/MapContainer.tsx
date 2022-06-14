@@ -32,6 +32,7 @@ import OfflineMap from './OfflineMap';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
+import { NamedBoundaryMenu } from './NamedBoundaryMenu';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -107,6 +108,8 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   showDrawControls: boolean;
+  setShowDrawControls: React.Dispatch<boolean>;
+  showBoundaryMenu?: boolean;
   zoom?: any;
   center?: any;
   isPlanPage?: boolean;
@@ -143,7 +146,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const MapResizer = () => {
     const mapResizer = useMap();
     setTimeout(() => {
-      mapResizer.invalidateSize();
+      try {
+        mapResizer.invalidateSize();
+      } catch (e) {
+        console.log('setTimeout error');
+      }
     }, 100);
     return null;
   };
@@ -242,6 +249,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 />
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
+            {props?.showBoundaryMenu && (
+              <NamedBoundaryMenu
+                {...props}
+                position="topleft"
+                id={props.activityId}
+                map={map}
+                inputGeo={props.geometryState.geometry}
+              />
+            )}
 
             <MapResizer />
             {/* <MapRecordsDataGrid /> */}

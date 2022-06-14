@@ -31,9 +31,6 @@ const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
 
-// Source maps are resource heavy and can cause out of memory issue for large source files.
-const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
-
 const webpackDevClientEntry = require.resolve(
   'react-dev-utils/webpackHotDevClient'
 );
@@ -79,7 +76,7 @@ const hasJsxRuntime = (() => {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function (webpackEnv, invasivesConfig) {
+module.exports = function (webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
@@ -105,7 +102,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
         // css is located in `static/css`, use '../../' to locate index.html folder
         // in production `paths.publicUrlOrPath` can be a relative path
         options: paths.publicUrlOrPath.startsWith('.')
-          ? {publicPath: '../../'}
+          ? { publicPath: '../../' }
           : {},
       },
       {
@@ -134,7 +131,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
             // which in turn let's users customize the target behavior as per their needs.
             postcssNormalize(),
           ],
-          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+          sourceMap: true
         },
       },
     ].filter(Boolean);
@@ -143,7 +140,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
         {
           loader: require.resolve('resolve-url-loader'),
           options: {
-            sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+            sourceMap: true,
             root: paths.appSrc,
           },
         },
@@ -162,11 +159,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
-    devtool: isEnvProduction
-      ? shouldUseSourceMap
-        ? 'source-map'
-        : false
-      : isEnvDevelopment && 'cheap-module-source-map',
+    devtool: 'inline-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry:
@@ -217,11 +210,11 @@ module.exports = function (webpackEnv, invasivesConfig) {
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
         ? info =>
-          path
-            .relative(paths.appSrc, info.absoluteResourcePath)
-            .replace(/\\/g, '/')
+            path
+              .relative(paths.appSrc, info.absoluteResourcePath)
+              .replace(/\\/g, '/')
         : isEnvDevelopment &&
-        (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
       // Prevents conflicts when multiple webpack runtimes (from different apps)
       // are used on the same page.
       jsonpFunction: `webpackJsonp${appPackageJson.name}`,
@@ -271,25 +264,21 @@ module.exports = function (webpackEnv, invasivesConfig) {
               ascii_only: true,
             },
           },
-          sourceMap: shouldUseSourceMap,
+          sourceMap: true,
         }),
         // This is only used in production mode
         new OptimizeCSSAssetsPlugin({
           cssProcessorOptions: {
             parser: safePostCssParser,
-            map: shouldUseSourceMap
-              ? {
-                // `inline: false` forces the sourcemap to be output into a
-                // separate file
-                inline: false,
-                // `annotation: true` appends the sourceMappingURL to the end of
-                // the css file, helping the browser find the sourcemap
-                annotation: true,
-              }
-              : false,
+            map: {
+              inline: true,
+              // `annotation: true` appends the sourceMappingURL to the end of
+              // the css file, helping the browser find the sourcemap
+              annotation: true,
+            },
           },
           cssProcessorPluginOptions: {
-            preset: ['default', {minifyFontValues: {removeQuotes: false}}],
+            preset: ['default', { minifyFontValues: { removeQuotes: false } }],
           },
         }),
       ],
@@ -361,7 +350,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
       strictExportPresence: true,
       rules: [
         // Disable require.ensure as it's not a standard language feature.
-        {parser: {requireEnsure: false}},
+        { parser: { requireEnsure: false } },
         {
           // "oneOf" will traverse all following loaders until one will
           // match the requirements. When no loader matches it will fall
@@ -420,17 +409,14 @@ module.exports = function (webpackEnv, invasivesConfig) {
                       },
                     },
                   ],
-                  isEnvDevelopment &&
-                  shouldUseReactRefresh &&
-                  require.resolve('react-refresh/babel'),
                 ].filter(Boolean),
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
                 // directory for faster rebuilds.
-                cacheDirectory: true,
+                cacheDirectory: false,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
-                compact: isEnvProduction,
+                compact: false,
               },
             },
             // Process any JS outside of the app with Babel.
@@ -446,7 +432,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
                 presets: [
                   [
                     require.resolve('babel-preset-react-app/dependencies'),
-                    {helpers: true},
+                    { helpers: true },
                   ],
                 ],
                 cacheDirectory: true,
@@ -456,8 +442,8 @@ module.exports = function (webpackEnv, invasivesConfig) {
                 // Babel sourcemaps are needed for debugging into node_modules
                 // code.  Without the options below, debuggers like VSCode
                 // show incorrect code and set breakpoints on the wrong lines.
-                sourceMaps: shouldUseSourceMap,
-                inputSourceMap: shouldUseSourceMap,
+                sourceMaps: true,
+                inputSourceMap: true,
               },
             },
             // "postcss" loader applies autoprefixer to our CSS.
@@ -472,9 +458,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
               exclude: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction
-                  ? shouldUseSourceMap
-                  : isEnvDevelopment,
+                sourceMap: true,
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -488,9 +472,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
               test: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction
-                  ? shouldUseSourceMap
-                  : isEnvDevelopment,
+                sourceMap: true,
                 modules: {
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
@@ -505,9 +487,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  sourceMap: isEnvProduction
-                    ? shouldUseSourceMap
-                    : isEnvDevelopment,
+                  sourceMap: true,
                 },
                 'sass-loader'
               ),
@@ -524,9 +504,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  sourceMap: isEnvProduction
-                    ? shouldUseSourceMap
-                    : isEnvDevelopment,
+                  sourceMap: true,
                   modules: {
                     getLocalIdent: getCSSModuleLocalIdent,
                   },
@@ -603,18 +581,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
       // It is absolutely essential that NODE_ENV is set to production
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
-      new webpack.DefinePlugin({
-          CONFIGURATION_SOURCE: JSON.stringify(invasivesConfig.CONFIGURATION_SOURCE),
-          CONFIGURATION_API_BASE: JSON.stringify(invasivesConfig.CONFIGURATION_API_BASE),
-          CONFIGURATION_KEYCLOAK_CLIENT_ID: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_CLIENT_ID),
-          CONFIGURATION_KEYCLOAK_REALM: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_REALM),
-          CONFIGURATION_KEYCLOAK_URL: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_URL),
-          CONFIGURATION_KEYCLOAK_ADAPTER: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_ADAPTER),
-          CONFIGURATION_REDIRECT_URI: JSON.stringify(invasivesConfig.CONFIGURATION_REDIRECT_URI),
-          CONFIGURATION_IS_MOBILE: JSON.stringify(invasivesConfig.CONFIGURATION_IS_MOBILE),
-          ...env.stringified
-        }
-      ),
+      new webpack.DefinePlugin(env.stringified),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
       // Experimental hot reloading for React .

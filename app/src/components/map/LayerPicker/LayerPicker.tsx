@@ -44,7 +44,7 @@ export const LayerPicker = React.memo(
         return;
       }
       const fetchUploadedLayers = () => {
-        invasivesApi.getAdminUploadGeoJSONLayers(userId).then((data) => {
+        invasivesApi.getAdminUploadGeoJSONLayers().then((data) => {
           if (data.length > 0) {
             setLayers((prev: any) => {
               let newLayers = [...prev];
@@ -148,10 +148,6 @@ export const LayerPicker = React.memo(
             }}>
             Load
           </Button>
-          <Accordion id="admin-shape-upload-accordion">
-            <AccordionSummary>Shape Upload (KML/KMZ)</AccordionSummary>
-            <KMLShapesUpload />
-          </Accordion>
         </Popover>
         <ListItem disableGutters>
           <ListItemButton id="layer-picker-btn" onClick={handlePopoverClick}>

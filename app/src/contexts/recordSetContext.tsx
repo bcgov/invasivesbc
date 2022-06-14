@@ -38,8 +38,14 @@ export const RecordSetProvider = (props) => {
             ]
           },
           ['2']: {
-            recordSetType: 'Activity',
-            recordSetName: 'All Data'
+            recordSetType: "Activity",
+            recordSetName: 'All InvasivesBC Activities',
+            advancedFilters: []
+          },
+          ['3']: {
+            recordSetType: "POI",
+            recordSetName: 'All IAPP Records',
+            advancedFilters: []
           }
         }
       };

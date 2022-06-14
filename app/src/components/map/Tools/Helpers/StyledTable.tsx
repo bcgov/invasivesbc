@@ -1,5 +1,4 @@
 import {
-  ClickAwayListener,
   Table,
   TableBody,
   TableCell,
@@ -8,15 +7,9 @@ import {
   TablePagination,
   TableRow,
   Theme,
-  Tooltip,
   Typography
 } from '@mui/material';
-import area from '@turf/area';
-import center from '@turf/center';
 import { createStyles, withStyles } from '@mui/styles';
-import * as turf from '@turf/helpers';
-import { ActivitySubtypeShortLabels } from 'constants/activities';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
@@ -71,169 +64,6 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
   );
 };
 
-const getPlantName = (subtype, invasivePlantCode, response) => {
-  try {
-    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment:')
-      subtype = subtype.substring(0, subtype.length - 1);
-    var plantType;
-    switch (subtype) {
-      case 'Plant Terrestrial':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      case 'Plant Aquatic':
-        plantType = response.components.schemas.AquaticPlants;
-        break;
-      case 'Terrestrial Invasive Plant Chemical Treatment':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      case 'Aquatic Invasive Plant Chemical Treatment':
-        plantType = response.components.schemas.AquaticPlants;
-        break;
-      case 'Terrestrial Invasive Plant Mechanical Treatment':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      case 'Aquatic Invasive Plant Mechanical Treatment':
-        plantType = response.components.schemas.AquaticPlants;
-        break;
-      case 'Chemical':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      case 'Mechanical':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      case 'Biocontrol Release Monitoring':
-        plantType = response.components.schemas.TerrestrialPlants;
-        break;
-      default:
-        plantType = null;
-        break;
-    }
-    if (plantType) {
-      var plants = plantType.properties.invasive_plant_code.anyOf;
-      for (let i in plants) {
-        if (plants[i].enum[0] === invasivePlantCode) {
-          return plants[i].title.split('(')[0];
-        }
-      }
-    } else return null;
-  } catch (error) {
-    throw new error('Parameter not read');
-  }
-};
-
-const getPlantCodes = (obj) => {
-  var plantCodeList = [];
-  if (obj.species_positive) {
-    obj.species_positive.forEach((code) => {
-      plantCodeList.push(code);
-    });
-  }
-  if (obj.species_negative) {
-    obj.species_negative.forEach((code) => {
-      plantCodeList.push(code);
-    });
-  }
-  return plantCodeList;
-};
-
-const getArea = (shape) => {
-  if (shape.geometry.type === 'Polygon') {
-    var polygon = turf.polygon(shape.geometry.coordinates);
-    return area(polygon);
-  } else {
-    return Math.PI * shape.properties?.radius;
-  }
-};
-
-const getCenter = (shape) => {
-  if (shape.geometry.type === 'Polygon') {
-    var polygon = turf.polygon(shape.geometry.coordinates);
-    return center(polygon).geometry.coordinates;
-  } else {
-    return shape.geometry.coordinates;
-  }
-};
-
-const CreateAccordionTable = ({ map, row, response, setActivityGeo }) => {
-  const [open, setOpen] = useState(false);
-  const handleTooltipClose = () => {
-    setOpen(false);
-  };
-  const handleTooltipOpen = () => {
-    setOpen(true);
-  };
-  // Shortcuts
-  var activity_payload = row.obj.activity_payload;
-  var form_data = activity_payload.form_data;
-  var shape = activity_payload.geometry[0];
-  // Variables for table
-  // for species name
-  var codes = getPlantCodes(activity_payload);
-  var area = getArea(shape);
-  var center = getCenter(shape);
-  var jurisdictions = form_data.activity_data.jurisdictions;
-  var subtype = ActivitySubtypeShortLabels[row.obj.activity_subtype];
-
-  return (
-    <>
-      <StyledTableRow>
-        <StyledTableCell>Created Date</StyledTableCell>
-        <StyledTableCell>{activity_payload.date_created}</StyledTableCell>
-      </StyledTableRow>
-      <StyledTableRow>
-        <StyledTableCell>Subtype</StyledTableCell>
-        <StyledTableCell>{subtype}</StyledTableCell>
-      </StyledTableRow>
-      {jurisdictions && (
-        <StyledTableRow>
-          <StyledTableCell>Jurisdiction</StyledTableCell>
-          <StyledTableCell>
-            {jurisdictions.map((j) => (
-              <>{j.jurisdiction_code} </>
-            ))}
-          </StyledTableCell>
-        </StyledTableRow>
-      )}
-      {codes && (
-        <StyledTableRow>
-          <StyledTableCell>Invasive Plant</StyledTableCell>
-          <StyledTableCell>
-            {codes.map((code) => (
-              <ClickAwayListener onClickAway={handleTooltipClose}>
-                <Tooltip
-                  onClose={handleTooltipClose}
-                  open={open}
-                  disableFocusListener
-                  disableHoverListener
-                  disableTouchListener
-                  title={getPlantName(subtype, code, response)}>
-                  <span onClick={handleTooltipOpen}>{code}</span>
-                </Tooltip>
-              </ClickAwayListener>
-            ))}
-          </StyledTableCell>
-        </StyledTableRow>
-      )}
-      <StyledTableRow>
-        <StyledTableCell>Area</StyledTableCell>
-        <StyledTableCell>
-          {area || area > 0 ? (
-            <span
-              onClick={() => {
-                setActivityGeo(shape);
-                map.flyTo([center[1], center[0]], 17);
-              }}>
-              {area.toFixed(2)}
-            </span>
-          ) : (
-            <>NWF</>
-          )}
-        </StyledTableCell>
-      </StyledTableRow>
-    </>
-  );
-};
-
 export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
     body: {
@@ -276,7 +106,6 @@ export const RenderTablePosition = ({ rows }) => {
 
 export const RenderTableActivity = (props: any) => {
   const { bufferedGeo } = props;
-  const dbContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
@@ -284,7 +113,43 @@ export const RenderTableActivity = (props: any) => {
   const history = useHistory();
   const { authenticated } = useSelector(selectAuth);
 
-  // Removed for now: const labels = ['ID', 'Species'];
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'Activity ID',
+      hide: true
+    },
+    {
+      field: 'short_id',
+      headerName: 'Activity ID',
+      minWidth: 80
+    },
+    {
+      field: 'activity_type',
+      headerName: 'Activity Type',
+      minWidth: 110
+    },
+    {
+      field: 'reported_area',
+      headerName: 'Reported Area',
+      minWidth: 130
+    },
+    {
+      field: 'jurisdiction_code',
+      headerName: 'Jurisdiction Code',
+      width: 200
+    },
+    {
+      field: 'species_code',
+      headerName: 'Species Code',
+      width: 200
+    },
+    {
+      field: 'geometry',
+      headerName: 'Geometry',
+      hide: true
+    }
+  ];
 
   useEffect(() => {
     updateActivityRecords();
@@ -299,57 +164,65 @@ export const RenderTableActivity = (props: any) => {
     }
   }, [rows, authenticated]);
 
-  const activityPage = async (row) => {
-    var id = row.obj.activity_id;
-    await dataAccess.setAppState({ activeActivity: id });
-    history.push({ pathname: `/home/activity` });
-  };
-
-  const updateRow = (row, fieldsToUpdate: Object) => {
-    var arrLen = rows.length;
-    if (arrLen > 0) {
-      var index;
-      for (let i in rows) {
-        if (rows[i].obj.activity_id === row.obj.activity_id) {
-          index = i;
-        }
-      }
-      const rowsBefore = [...rows.slice(0, index)];
-      const rowsAfter = [...rows.slice(index)];
-      const oldRow = rows[index];
-      const updatedRow = { ...oldRow, ...fieldsToUpdate };
-      rowsAfter[0] = updatedRow;
-      setRows([...rowsBefore, ...rowsAfter]);
-    }
-  };
-
   const updateActivityRecords = React.useCallback(async () => {
     try {
       const activities = await dataAccess.getActivities({
-        limit: 10
+        search_feature: bufferedGeo,
+        limit: 500,
+        page: 0
       });
-      console.log(activities);
-      var tempArr = [];
-      for (let i in activities) {
-        if (activities[i]) {
-          var obj = activities.rows[i];
-          tempArr.push({
-            obj,
-            open: false
+
+      const tempArr = [];
+
+      activities?.rows?.forEach((a) => {
+        const activity_id = a.activity_id;
+        const short_id = a.activity_payload.short_id;
+        const activity_type = a.activity_payload.activity_type;
+        const reported_area = a.activity_payload.form_data.reported_area;
+        const jurisdiction_code = [];
+        a.activity_payload.form_data?.jurisdictions?.forEach((item) => {
+          jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+        });
+        const species_code = [];
+        if (a?.species_positive?.length > 0) {
+          a.species_positive.forEach((s) => {
+            species_code.push(s);
           });
         }
-      }
+        if (a?.species_negative?.length > 0) {
+          a.species_negative.forEach((s) => {
+            species_code.push(s);
+          });
+        }
+        const geometry = a.activity_payload.geometry[0];
+
+        tempArr.push({
+          id: activity_id,
+          short_id: short_id,
+          activity_type: activity_type,
+          reported_area: (reported_area ? reported_area : 0) + ' Ha',
+          jurisdiction_code: jurisdiction_code,
+          species_code: species_code,
+          geometry: geometry
+        });
+      });
+
       setRows(tempArr);
     } catch (e) {
       console.log('Activities error', e);
       setRows([]);
     }
-  }, [bufferedGeo, dataAccess, dbContext]);
+  }, [bufferedGeo, dataAccess]);
+
+  const activityPage = async (params) => {
+    const id = params.row.id;
+    await dataAccess.setAppState({ activeActivity: id });
+    history.push({ pathname: `/home/activity` });
+  };
 
   return (
     <div style={{ height: 300, minWidth: '100%' }}>
       <Typography>Work in progress</Typography>
-      {/* Removed for now:
       <DataGrid
         columns={columns}
         rows={rows}
@@ -357,13 +230,13 @@ export const RenderTableActivity = (props: any) => {
         rowsPerPageOptions={[5]}
         rowHeight={30}
         headerHeight={30}
-        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-          history.push(`/home/iapp/${params.id}`);
+        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+          activityPage(params);
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
         //   console.log('params', params);
         // }}
-      /> */}
+      />
     </div>
   );
 };
@@ -423,6 +296,12 @@ export const RenderTablePOI = (props: any) => {
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
+  const authContext = useContext(AuthStateContext);
+  const { userInfoLoaded } = useContext(AuthStateContext);
+
+  const isAuthorized = () => {
+    return userInfoLoaded && authContext.userRoles.length > 0;
+  };
 
   const columns = [
     {
@@ -463,7 +342,7 @@ export const RenderTablePOI = (props: any) => {
 
   const updatePOIRecords = React.useCallback(async () => {
     try {
-      var pointsofinterest = await dataAccess.getPointsOfInterest({
+      const pointsofinterest = await dataAccess.getPointsOfInterest({
         search_feature: bufferedGeo,
         isIAPP: true,
         limit: 500,
@@ -484,16 +363,14 @@ export const RenderTablePOI = (props: any) => {
         newArr.forEach((item) => {
           arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
-
-        var row = {
+        tempArr.push({
           id: poi.point_of_interest_id,
           site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
           jurisdiction_code: arrJurisdictions,
           species_code: poi.species_on_site,
           geometry: poi.point_of_interest_payload.geometry,
           reported_area: getReportedAreaOutput(tempSurveyArea)
-        };
-        tempArr.push(row);
+        });
       });
       setRows(tempArr);
     } catch (e) {
@@ -511,7 +388,9 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-          history.push(`/home/iapp/${params.id}`);
+          if (isAuthorized()) {
+            history.push(`/home/iapp/${params.id}`);
+          }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
         //   console.log('params', params);

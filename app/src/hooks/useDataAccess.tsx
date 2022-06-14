@@ -73,7 +73,7 @@ export const useDataAccess = () => {
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
     if (!MOBILE) {
-      const response = await api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      const response = await api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
       return response;
     } else {
       if (!connected) {
@@ -251,6 +251,75 @@ export const useDataAccess = () => {
         return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], databaseContext);
       }
     });
+  };
+
+  /**
+   * Get all the boundary (trip currently) records
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getBoundaries = async () => {
+    if (isMobile()) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+        }
+      });
+    } else {
+      const result = localStorage.getItem("boundaries");
+      return new Promise((resolve, reject) => {
+        resolve(JSON.parse(result));
+        //no reject for now so it fails gracefully and returns a null to be handled in jumptotrip
+      });
+    }
+  };
+
+  /**
+   * Add new boundary object (trip currently) record
+   *
+   * @param {any} newBoundaryObj
+   * @return {*}  {Promise<any>}
+   */
+   const addBoundary = async (newBoundaryObj: any) => {
+    if (isMobile()) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newBoundaryObj }], databaseContext);
+        }
+      });
+    } else {
+      //cache in localStorage
+      const boundaries = [];
+      const currBoundaries = await getBoundaries();
+
+      if (currBoundaries) boundaries.push(...currBoundaries);
+      boundaries.push(newBoundaryObj);
+
+      localStorage.setItem("boundaries", JSON.stringify(boundaries));
+    }
+  };
+
+  /**
+   * Delete boundary object (trip currently) record
+   *
+   * @param {number} id
+   * @return {*}  {Promise<any>}
+   */
+   const deleteBoundary = async (id: number) => {
+    if (isMobile()) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert([{ type: UpsertType.DOC_TYPE_AND_ID_DELETE, docType: DocType.TRIP, ID: String(id) }], databaseContext);
+        }
+      });
+    } else {
+      const boundaries = await getBoundaries();
+      const newBoundaries = boundaries.filter((b) => {
+        return b.id !== id;
+      });
+
+      localStorage.setItem("boundaries", JSON.stringify(newBoundaries));
+    }
   };
 
   const getApplicationUsers = async (): Promise<any> => {
@@ -857,6 +926,9 @@ export const useDataAccess = () => {
     updateActivity,
     getTrips,
     addTrip,
+    getBoundaries,
+    addBoundary,
+    deleteBoundary,
     getActivities,
     getActivitiesLean,
     createActivity,

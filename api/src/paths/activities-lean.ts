@@ -3,6 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
@@ -198,14 +199,22 @@ DELETE.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     defaultLog.debug({
       label: 'activity',
       message: 'getActivitiesBySearchFilterCriteria',
       body: req.body
     });
 
+    const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+
+    if (!roleName || roleName.includes('animal')) {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
+    } else {
+      sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
+    }
+
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -220,6 +229,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria);
 
+      // Check for sql and role:
+      // console.log('========================= activities-lean.ts 232', sqlStatement.text);
+      // console.log('========================= activities-lean.ts 232 roleName', roleName);
+      
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Error generating SQL statement',

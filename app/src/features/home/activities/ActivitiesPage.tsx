@@ -83,6 +83,7 @@ const PageContainer = (props) => {
   const history = useHistory();
   const recordStateContext = useContext(RecordSetContext);
   const [geometry, setGeometry] = useState<any[]>([]);
+  const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
   const classes = useStyles();
   const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
@@ -206,22 +207,20 @@ const PageContainer = (props) => {
     ]);
   }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
 
-  const recordsClosedHeight = () => {
-    return width > 900 ? 'calc(100% - 5vh)' : 'calc(100vh - env(safe-area-inset-bottom) - 12.5vh)';
-  };
-
   /* set up main menu bar options: */
   return (
     <>
       {/*the main list of record sets:*/}
       <Box
         style={{
-          height: recordsExpanded ? 'calc(100% - 400px)' : recordsClosedHeight()
+          height: recordsExpanded ? 'calc(100% - 400px)' : '91.5%'
         }}>
         <MapRecordsContextProvider>
           <MapContainer
             classes={classes}
-            showDrawControls={false}
+            showDrawControls={showDrawControls}
+            setShowDrawControls={setShowDrawControls}
+            showBoundaryMenu={true}
             center={[55, -128]}
             zoom={5}
             mapId={'mainMap'}

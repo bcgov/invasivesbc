@@ -73,8 +73,7 @@ POST.apiDoc = {
             },
             jurisdiction: {
               type: 'array',
-              description:
-                'A list of jurisdictions to search for.  Results will match any in the list.',
+              description: 'A list of jurisdictions to search for.  Results will match any in the list.',
               items: {
                 type: 'string'
               }

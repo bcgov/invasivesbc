@@ -39,14 +39,14 @@ export const useInvasivesApi = () => {
     };
   };
 
-  const checkForErrors = (response: any) => {
+  const checkForErrors = (response: any, status?: any, url?: any) => {
     if (response.code > 201) {
       errorContext.pushError({
         message: response.message
           ? response.message
           : "We're not sure what happened there. Try again in a few minutes.",
-        code: response.code ? response.code : 500,
-        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && API_URL
+        code: status ? status : 500,
+        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && url
       });
     }
   };
@@ -59,15 +59,15 @@ export const useInvasivesApi = () => {
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities/`,
       data: activitiesSearchCriteria
     });
 
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getActivities', data);
     }
 
@@ -103,14 +103,14 @@ export const useInvasivesApi = () => {
    */
   const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities-lean/`,
       data: activitiesSearchCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getActivitiesLean', data);
     }
     return data.result;
@@ -124,14 +124,14 @@ export const useInvasivesApi = () => {
    */
   const getJurisdictions = async (jurisdictionsSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/jurisdictions/`,
       data: jurisdictionsSearchCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getJurisdictions', data);
     }
     return data.result;
@@ -145,14 +145,14 @@ export const useInvasivesApi = () => {
    */
   const getRISOs = async (risoSearchCriteria: IRisoSearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/riso/`,
       data: risoSearchCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getRISOs', data);
     }
 
@@ -167,13 +167,13 @@ export const useInvasivesApi = () => {
    */
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('deleteActivities', data);
     }
 
@@ -188,13 +188,13 @@ export const useInvasivesApi = () => {
    */
   const undeleteActivities = async (activityIds: string[]): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/deleted/activities?` + qs.stringify({ id: activityIds }),
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('undeleteActivities', data);
     }
 
@@ -211,13 +211,13 @@ export const useInvasivesApi = () => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/roles/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getRoles', data);
     }
 
@@ -233,14 +233,16 @@ export const useInvasivesApi = () => {
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
 
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest/`,
       data: pointsOfInterestSearchCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+
+    checkForErrors(data, status, url);
+
+    if (LOGVERBOSE) {
       console.log('getPointsOfInterest', data);
     }
 
@@ -271,14 +273,14 @@ export const useInvasivesApi = () => {
   const getAccessRequestData = async (accessRequest: any): Promise<any> => {
     const options = await getRequestOptions();
 
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request-read`,
       data: accessRequest
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getAccessRequestData', data);
     }
 
@@ -288,13 +290,13 @@ export const useInvasivesApi = () => {
   const getAccessRequests = async (): Promise<any> => {
     const options = await getRequestOptions();
 
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/access-request/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getAccessRequests', data);
     }
 
@@ -304,14 +306,14 @@ export const useInvasivesApi = () => {
   const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
     const options = await getRequestOptions();
 
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request`,
       data: { approvedAccessRequests: accessRequests }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('approveAccessRequests', data);
     }
 
@@ -320,14 +322,14 @@ export const useInvasivesApi = () => {
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request`,
       data: { declinedAccessRequest: accessRequest }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('declineAccessRequest', data);
     }
 
@@ -336,14 +338,14 @@ export const useInvasivesApi = () => {
 
   const revokeRoleFromUser = async (userId: number, roleId: number): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'DELETE',
       url: options.baseUrl + `/api/user-access`,
       data: { userId: userId, roleId: roleId },
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('revokeRoleFromUser', data);
     }
 
@@ -355,13 +357,13 @@ export const useInvasivesApi = () => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?userId=${userId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getRolesForUser', data);
     }
 
@@ -370,13 +372,13 @@ export const useInvasivesApi = () => {
 
   const getUsersForRole = async (roleId: string): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/user-access?roleId=${roleId}`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getUsersForRole', data);
     }
 
@@ -385,14 +387,14 @@ export const useInvasivesApi = () => {
 
   const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/user-access`,
       data: { userIds: userIds, roleId: roleId },
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('batchGrantRoleToUser', data);
     }
 
@@ -401,14 +403,14 @@ export const useInvasivesApi = () => {
 
   const submitAccessRequest = async (accessRequest: any): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/access-request`,
       data: { newAccessRequest: accessRequest }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('submitAccessRequest', data);
     }
 
@@ -417,14 +419,14 @@ export const useInvasivesApi = () => {
 
   const submitUpdateRequest = async (updateRequest: any): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/update-request`,
       data: { newUpdateRequest: updateRequest }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('submitUpdateRequest', data);
     }
 
@@ -433,13 +435,13 @@ export const useInvasivesApi = () => {
 
   const getUpdateRequests = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       url: options.baseUrl + `/api/update-request/`,
       headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getUpdateRequests', data);
     }
 
@@ -448,12 +450,14 @@ export const useInvasivesApi = () => {
 
   const declineUpdateRequest = async (updateRequest) => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/update-request`,
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: { declinedUpdateRequest: updateRequest }
     });
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
     checkForErrors(data);
     if (DEBUG) {
       console.log('declineUpdateRequest', data);
@@ -464,14 +468,14 @@ export const useInvasivesApi = () => {
 
   const approveUpdateRequests = async (updateRequest) => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       url: options.baseUrl + `/api/update-request`,
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: { approvedUpdateRequests: updateRequest }
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('approveUpdateRequests', data);
     }
 
@@ -480,13 +484,13 @@ export const useInvasivesApi = () => {
 
   const getFundingAgencies = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
       url: options.baseUrl + `/api/agency_codes`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getFundingAgencies', data);
     }
 
@@ -495,13 +499,13 @@ export const useInvasivesApi = () => {
 
   const getEmployers = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
       url: options.baseUrl + `/api/employer_codes`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getEmployers', data);
     }
 
@@ -518,14 +522,14 @@ export const useInvasivesApi = () => {
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
   ): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getPointsOfInterestLean', data);
     }
 
@@ -580,14 +584,14 @@ export const useInvasivesApi = () => {
    */
   const createMetabaseQuery = async (metabaseQueriesCreateCriteria: ICreateMetabaseQuery): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/metabase-query`,
       data: metabaseQueriesCreateCriteria
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('createMetabaseQuery', data);
     }
 
@@ -601,13 +605,13 @@ export const useInvasivesApi = () => {
    */
   const getMetabaseQueryOptions = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/metabase-query`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getMetabaseQueryOptions', data);
     }
 
@@ -620,7 +624,7 @@ export const useInvasivesApi = () => {
     largeGrid_item_ids?: number[]
   ): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'POST',
       data: {
@@ -630,8 +634,8 @@ export const useInvasivesApi = () => {
       },
       url: options.baseUrl + `/api/bc-grid/bcGrid`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getGridItemsThatOverlapPolygon', data);
     }
 
@@ -646,13 +650,13 @@ export const useInvasivesApi = () => {
    */
   const getActivityById = async (activityId: string): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/activity/${activityId}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getActivityById', data);
     }
 
@@ -667,13 +671,13 @@ export const useInvasivesApi = () => {
    */
   const getMedia = async (mediaKeys: string[]): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getMedia', data);
     }
 
@@ -687,13 +691,13 @@ export const useInvasivesApi = () => {
    */
   const getApplicationUsers = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getApplicationUsers', data);
     }
 
@@ -702,13 +706,13 @@ export const useInvasivesApi = () => {
 
   const renewUser = async (id): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'POST',
       url: options.baseUrl + `/api/application-user/renew?userId=${id}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('renewUser', data);
     }
 
@@ -720,13 +724,13 @@ export const useInvasivesApi = () => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user?idir=${idir_userid}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getUserByIDIR', data);
     }
 
@@ -738,13 +742,13 @@ export const useInvasivesApi = () => {
     if (bearer) {
       options.headers.Authorization = `Bearer ${bearer}`;
     }
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       method: 'GET',
       url: options.baseUrl + `/application-user?bceid=${bceid_userid}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getUserByBCEID', data);
     }
 
@@ -759,14 +763,14 @@ export const useInvasivesApi = () => {
    */
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('createActivity', data);
     }
 
@@ -784,14 +788,14 @@ export const useInvasivesApi = () => {
     // Not sure who is using this... But its smelling
     // const oldActivity = await getActivityById(activity.activity_id);
 
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'PUT',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: activity,
       url: options.baseUrl + '/api/activity'
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('updateActivity', data);
     }
 
@@ -805,13 +809,13 @@ export const useInvasivesApi = () => {
    */
   const getApiSpec = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/api-docs/`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getApiSpec', data);
     }
 
@@ -823,15 +827,15 @@ export const useInvasivesApi = () => {
    *
    * @return {*}  {Promise<any>}
    */
-  const getSimplifiedGeoJSON = async (url: string, percentage: string): Promise<any> => {
+  const getSimplifiedGeoJSON = async (url_geo: string, percentage: string): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
-      url: options.baseUrl + `/api/map-shaper?url=${url}&percentage=${percentage}`
+      url: options.baseUrl + `/api/map-shaper?url=${url_geo}&percentage=${percentage}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getSimplifiedGeoJSON', data);
     }
 
@@ -999,13 +1003,13 @@ export const useInvasivesApi = () => {
    */
   const getSpeciesDetails = async (species: string[]): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/species?` + qs.stringify({ key: species })
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getSpeciesDetails', data);
     }
 
@@ -1020,14 +1024,14 @@ export const useInvasivesApi = () => {
    */
   const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: uploadRequest,
       url: `${options.baseUrl}/api/batch/new_upload`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('postBatchUpload', data);
     }
 
@@ -1037,13 +1041,13 @@ export const useInvasivesApi = () => {
   const getBatchUploads = async (): Promise<any> => {
     const options = await getRequestOptions();
     console.dir(options.headers);
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
       url: `${options.baseUrl}/api/batch/upload`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getBatchUploads', data);
     }
 
@@ -1052,13 +1056,13 @@ export const useInvasivesApi = () => {
 
   const downloadTemplate = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
       url: options.baseUrl + '/api/batch/new_template'
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('downloadTemplate', data);
     }
 
@@ -1067,13 +1071,13 @@ export const useInvasivesApi = () => {
 
   const listCodeTables = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
       url: options.baseUrl + '/api/code_tables'
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('listCodeTables', data);
     }
 
@@ -1082,13 +1086,13 @@ export const useInvasivesApi = () => {
 
   const fetchCodeTable = async (codeHeaderName, csv = false): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
       url: `${options.baseUrl}/api/code_tables/${codeHeaderName}`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('fetchCodeTable', data);
     }
 
@@ -1101,15 +1105,15 @@ export const useInvasivesApi = () => {
    * @param {string[]} species
    * @return {*}  {Promise<any>}
    */
-  const getAdminUploadGeoJSONLayers = async (user_id: string): Promise<any> => {
+  const getAdminUploadGeoJSONLayers = async (): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
-      url: options.baseUrl + `/api/admin-defined-shapes?user_id=${user_id}`
+      url: options.baseUrl + `/api/admin-defined-shapes`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('getAdminUploadGeoJSONLayer', data);
     }
 
@@ -1124,14 +1128,14 @@ export const useInvasivesApi = () => {
    */
   const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
     const options = await getRequestOptions();
-    const { data } = await Http.request({
+    const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: uploadRequest,
       url: `${options.baseUrl}/api/admin-defined-shapes`
     });
-    checkForErrors(data);
-    if (DEBUG) {
+    checkForErrors(data, status, url);
+    if (LOGVERBOSE) {
       console.log('postAdminUploadShape', data);
     }
 
