@@ -47,7 +47,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { position, map, bufferedGeo } = props;
+  const { map, bufferedGeo } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -58,6 +58,7 @@ export const GeneratePopup = (props) => {
   // const [radius, setRadius] = useState(3);
   const popupElRef = useRef(null);
 
+  const position = center(bufferedGeo).geometry.coordinates;
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -152,7 +153,6 @@ function SetPointOnClick({ map }: any) {
     opacity: 0,
     fillOpacity: 0
   });
-  const [utm, setUTM] = useState(null);
   const drawnGeoKey = Math.random(); // NOSONAR
   // Removed for redundancy
   // const recordGeoKey = Math.random(); // NOSONAR
@@ -184,14 +184,7 @@ function SetPointOnClick({ map }: any) {
           setPositionOne(e.latlng);
           setDrawnOpacity(null);
         } else {
-          const coords = center(drawnGeo).geometry.coordinates;
-          const result = calc_utm(coords[0], coords[1]);
           setPositionOne(null);
-          setUTM([
-            createDataUTM('Zone', result[0]),
-            createDataUTM('Easting', result[1]),
-            createDataUTM('Northing', result[2])
-          ]);
           setClickMode(false);
           setDrawnOpacity(null);
         }
@@ -265,7 +258,7 @@ function SetPointOnClick({ map }: any) {
       </ListItemButton>
       {drawnGeo && (
         <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
-          {!clickMode && <GeneratePopup utmRows={utm} map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
+          {!clickMode && <GeneratePopup map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
         </GeoJSON>
       )}
     </ListItem>

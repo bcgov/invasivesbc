@@ -221,7 +221,6 @@ export const RenderTableActivity = (props: any) => {
 
   return (
     <div style={{ height: 300, minWidth: '100%' }}>
-      <Typography>Work in progress</Typography>
       <DataGrid
         columns={columns}
         rows={rows}
