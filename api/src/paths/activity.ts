@@ -381,12 +381,8 @@ function updateActivity(): RequestHandler {
 
     const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
     const preferred_username = req.authContext.preferredUsername;
-    // change activity downstream stuff
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    // populate with db query 
     sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
-    // search up database trigger for pg
-    // fires before or after trigger (e.g. delete, insert)
 
     const connection = await getDBConnection();
 
@@ -399,11 +395,11 @@ function updateActivity(): RequestHandler {
       });
     }
 
-    // Get activity
+    // Get activity to check if created by is equal to authcontext username
     const sanitizedSearchCriteria: string = data._id;
-    const sqlStatement = getActivitySQL(sanitizedSearchCriteria);
+    const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
 
-    if (!sqlStatement) {
+    if (!sqlStatementForCheck) {
       return res.status(500).json({
         message: 'Failed to build SQL statement.',
         request: req.body,
@@ -412,10 +408,12 @@ function updateActivity(): RequestHandler {
       });
     }
 
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
 
-    // sanitizedActivityData.created_by = response.rows[0].activity_payload.created_by;
+    // Activity to be checked
+    sanitizedActivityData.created_by = response.rows[0].activity_payload.created_by;
 
+    // If user is not admin then check if the created_by and auth username are the same
     if (!isAdmin) {
       if (preferred_username !== response.rows[0].created_by) {
         return res.status(401).json({
