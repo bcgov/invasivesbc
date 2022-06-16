@@ -44,13 +44,13 @@ const OfflineMap = (props) => {
         subdomains: 'abc',
         maxZoom: mapMaxZoom,
         zIndex: 3000,
-        maxNativeZoom: props.maxNativeZoom,
+        maxNativeZoom: props.mapMaxNativeZoom,
         crossOrigin: true
       }
     );
     aOfflineLayer.addTo(mapOffline);
     setOfflineLayer(aOfflineLayer);
-  }, []);
+  }, [props.mapMaxNativeZoom]);
 
   useEffect(() => {
     const cacheMapTiles = async () => {
@@ -89,7 +89,7 @@ const OfflineMap = (props) => {
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-      {Capacitor.getPlatform() !== 'web' ? (
+      {Capacitor.getPlatform() !== 'web' && props.mapMaxNativeZoom? (
         <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
           {offlineing ? (
             <Spinner></Spinner>
@@ -97,7 +97,7 @@ const OfflineMap = (props) => {
             <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
           )}
         </div>
-      ) : (
+      ) : ( 
         <></>
       )}
     </>

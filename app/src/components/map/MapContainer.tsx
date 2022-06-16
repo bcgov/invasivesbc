@@ -33,6 +33,7 @@ import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
 import { NamedBoundaryMenu } from './NamedBoundaryMenu';
+import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -235,7 +236,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {/* Offline component */}
-            <OfflineMap {...props} maxNativeZoom={mapMaxNativeZoom} map={map} />
+            {useMemo(() => (<OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />),[mapMaxNativeZoom])}
 
             {/* List of functions is located in this component */}
             {useMemo(() => {
@@ -247,7 +248,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   inputGeo={props.geometryState.geometry}
                   mapMaxNativeZoom={mapMaxNativeZoom}
                   setMapMaxNativeZoom={setMapMaxNativeZoom}
-                />
+                >
+
+          <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
+                  </ToolbarContainer>
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
             {props?.showBoundaryMenu && (
