@@ -103,7 +103,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               return (
                 <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup position={[position[1], position[0]]} map={map} bufferedGeo={a} />
+                  <GeneratePopup map={map} bufferedGeo={a} />
                 </Marker>
               );
             }
@@ -112,7 +112,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               return (
                 <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={a} />
+                  <GeneratePopup map={map} bufferedGeo={a} />
                 </Marker>
               );
             }
@@ -135,20 +135,16 @@ export const ActivitiesLayerV2 = (props: any) => {
             <>
               {activities.features.map((a) => {
                 if (a?.geometry?.type === 'Polygon') {
-                  const position = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
-
                   return (
                     <GeoJSON data={a} options={options}>
-                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                      <GeneratePopup map={map} bufferedGeo={a} />
                     </GeoJSON>
                   );
                 }
                 if (a?.geometry?.type === 'Point') {
-                  const position = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
-
                   return (
                     <GeoJSON data={a} options={options}>
-                      <GeneratePopup position={position} map={map} bufferedGeo={a} />
+                      <GeneratePopup map={map} bufferedGeo={a} />
                     </GeoJSON>
                   );
                 }

@@ -144,7 +144,7 @@ export const PoisLayer = (props) => {
             ]);
             return (
               <Marker position={[position[1], position[0]]} icon={IAPPSite}>
-                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
+                <GeneratePopup map={map} bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}
@@ -171,7 +171,7 @@ export const PoisLayer = (props) => {
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
-                <GeneratePopup position={[position[0], position[1]]} map={map} bufferedGeo={bufferedGeo} />
+                <GeneratePopup map={map} bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}

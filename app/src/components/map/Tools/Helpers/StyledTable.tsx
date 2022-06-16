@@ -1,14 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Theme,
-  Typography
-} from '@mui/material';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Theme } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -221,7 +211,6 @@ export const RenderTableActivity = (props: any) => {
 
   return (
     <div style={{ height: 300, minWidth: '100%' }}>
-      <Typography>Work in progress</Typography>
       <DataGrid
         columns={columns}
         rows={rows}
