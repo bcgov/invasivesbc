@@ -53,6 +53,7 @@ export const GeneratePopup = (props) => {
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
   const map = useMap();
+  const position = center(bufferedGeo).geometry.coordinates;
   // const [showRadius, setShowRadius] = useState(false); // NOSONAR
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
@@ -168,31 +169,30 @@ function SetPointOnClick() {
 
   const BoxDrawStartOnClick = () => {
     setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
-
-    setTimeout(() => {
-      setUserGeo({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-129.00146484375, 49.96535590991311],
-                  [-125.24414062499999, 49.96535590991311],
-                  [-125.24414062499999, 50.972264889367494],
-                  [-129.00146484375, 50.972264889367494],
-                  [-129.00146484375, 49.96535590991311]
-                ]
-              ]
-            }
-          }
-        ]
-      });
-    }, 4000);
   };
+
+  const boxDrawDoneCallback = (layer) => {
+    const geo = layer;
+    setUserGeo(geo);
+  };
+
+  useMapEvent('draw:created' as any, (e) => {
+    setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
+    boxDrawDoneCallback(e.layer.toGeoJSON());
+  });
+
+  useEffect(() => {
+    switch (workflowStep) {
+      case workflowStepEnum.BOX_DRAW_START:
+        new (L as any).Draw.Rectangle(map).enable();
+        break;
+      case workflowStepEnum.BOX_DRAW_DONE:
+        break;
+      case workflowStepEnum.NOT_STARTED:
+        setUserGeo(null);
+        break;
+    }
+  });
 
   useEffect(() => {
     if (userGeo !== null) {
@@ -230,11 +230,7 @@ function SetPointOnClick() {
       {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
         <Marker
           position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
-          <GeneratePopup
-            position={[center(userGeo).geometry.coordinates[1], center(userGeo).geometry.coordinates[0]]}
-            map={map}
-            bufferedGeo={userGeo}
-          />
+          <GeneratePopup bufferedGeo={userGeo} />
         </Marker>
       ) : (
         <></>
