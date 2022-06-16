@@ -22,7 +22,7 @@ import { ThemeContext } from 'utils/CustomThemeProvider';
 import L, { DomEvent } from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 // Leaflet and React-Leaflet
-import { GeoJSON, Popup, useMapEvent } from 'react-leaflet';
+import { GeoJSON, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import binoculars from '../../../Icons/binoculars.png';
 import {
   createDataUTM,
@@ -47,11 +47,12 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { map, bufferedGeo } = props;
+  const { position, bufferedGeo } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
+  const map = useMap();
   // const [showRadius, setShowRadius] = useState(false); // NOSONAR
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
@@ -67,9 +68,11 @@ export const GeneratePopup = (props) => {
   ];
 
   useEffect(() => {
-    if (popupElRef?.current) {
+    if (popupElRef?.current && position.length > 0) {
       DomEvent.disableClickPropagation(popupElRef?.current);
       DomEvent.disableScrollPropagation(popupElRef?.current);
+
+      //crash here      popupElRef?.current.openOn(map)
     }
   }, []);
 
@@ -144,102 +147,70 @@ export const GeneratePopup = (props) => {
   );
 };
 
-function SetPointOnClick({ map }: any) {
-  const themeContext = useContext(ThemeContext);
-  const [positionOne, setPositionOne] = useState(null);
-  const [drawnGeo, setDrawnGeo] = useState(null);
-  const [clickMode, setClickMode] = useState(false);
-  const [drawnOpacity, setDrawnOpacity] = useState({
-    opacity: 0,
-    fillOpacity: 0
-  });
-  const drawnGeoKey = Math.random(); // NOSONAR
-  // Removed for redundancy
-  // const recordGeoKey = Math.random(); // NOSONAR
-  const divRef = useRef();
-  const toolClass = toolStyles();
+enum workflowStepEnum {
+  NOT_STARTED = 'NOT_STARTED',
+  BOX_DRAW_START = 'BOX_DRAW_START',
+  BOX_DRAW_DONE = 'BOX_DRAW_DONE'
+}
 
-  useEffect(() => {
+function SetPointOnClick() {
+  const [workflowStep, setWorkflowStep] = React.useState(workflowStepEnum.NOT_STARTED);
+  const [userGeo, setUserGeo] = React.useState(null);
+  const map = useMap();
+  const toolClass = toolStyles();
+  const themeContext = React.useContext(ThemeContext);
+  const divRef = React.useRef();
+
+  React.useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
 
-  // useEffect(() => {
-  //   if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
-  //     const result = calc_utm(position?.lng as number, position?.lat as number);
-  //     setUTM([
-  //       createDataUTM('UTM', result[0]),
-  //       createDataUTM('Easting', result[1]),
-  //       createDataUTM('Northing', result[2])
-  //     ]);
-  //     generateGeo(position.lat, position.lng, { setGeoPoint });
-  //   }
-  // }, [position]);
+  const BoxDrawStartOnClick = () => {
+    setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
 
-  useMapEvent('click', (e) => {
-    try {
-      // Start drawing a box
-      if (clickMode) {
-        if (positionOne === null) {
-          setPositionOne(e.latlng);
-          setDrawnOpacity(null);
-        } else {
-          setPositionOne(null);
-          setClickMode(false);
-          setDrawnOpacity(null);
-        }
-      }
-      // else {
-      //   // just click to create invisible small box
-      //   const temp = e.latlng;
-      //   const val = 0.001;
-      //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
-      //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
-      //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
-      //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
-      //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-      //   const result = calc_utm(temp.lng, temp.lat);
-      //   setUTM([
-      //     createDataUTM('Zone', result[0]),
-      //     createDataUTM('Easting', result[1]),
-      //     createDataUTM('Northing', result[2])
-      //   ]);
-      //   setDrawnOpacity({
-      //     opacity: 0,
-      //     fillOpacity: 0
-      //   });
-      // }
-    } catch (_e) {
-      console.log('Info Area Description click error', _e);
-    }
-  });
+    setTimeout(() => {
+      setUserGeo({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-129.00146484375, 49.96535590991311],
+                  [-125.24414062499999, 49.96535590991311],
+                  [-125.24414062499999, 50.972264889367494],
+                  [-129.00146484375, 50.972264889367494],
+                  [-129.00146484375, 49.96535590991311]
+                ]
+              ]
+            }
+          }
+        ]
+      });
+    }, 4000);
+  };
 
-  // get mouse location on map to draw temporary geometry
-  useMapEvent('mousemove', (e) => {
-    if (positionOne && clickMode) {
-      const temp = e.latlng;
-      const latlng1 = [positionOne.lng, positionOne.lat];
-      const latlng3 = [temp.lng, temp.lat];
-      const latDiff = positionOne.lat - temp.lat;
-      const lngDiff = positionOne.lng - temp.lng;
-      const latlng2 = [positionOne.lng, positionOne.lat - latDiff];
-      const latlng4 = [positionOne.lng - lngDiff, positionOne.lat];
-      setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+  useEffect(() => {
+    if (userGeo !== null) {
+      setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
     }
-  });
+  }, [userGeo]);
+
+  useEffect(() => {
+    console.log('workflow step', workflowStep);
+  }, [workflowStep]);
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
       <ListItemButton
+        onClick={BoxDrawStartOnClick}
         ref={divRef}
-        onClick={() => {
-          if (!clickMode) {
-            setDrawnGeo(null);
-          }
-          setClickMode(!clickMode);
-        }}
         style={{
-          backgroundColor: clickMode ? 'lightgray' : null,
+          backgroundColor: false ? 'lightgray' : null,
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           marginTop: 5
@@ -256,11 +227,23 @@ function SetPointOnClick({ map }: any) {
           <Typography className={toolClass.Font}>What's here?</Typography>
         </ListItemText>
       </ListItemButton>
-      {drawnGeo && (
+      {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
+        <Marker
+          position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
+          <GeneratePopup
+            position={[center(userGeo).geometry.coordinates[1], center(userGeo).geometry.coordinates[0]]}
+            map={map}
+            bufferedGeo={userGeo}
+          />
+        </Marker>
+      ) : (
+        <></>
+      )}
+      {/*drawnGeo && (
         <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
           {!clickMode && <GeneratePopup map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
         </GeoJSON>
-      )}
+      )*/}
     </ListItem>
   );
 }
