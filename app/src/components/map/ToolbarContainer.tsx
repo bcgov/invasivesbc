@@ -96,7 +96,6 @@ export const ToolbarContainer = (props) => {
             setMeasureToolContainerOpen={setMeasureToolContainerOpen}
             measureToolContainerOpen={measureToolContainerOpen}
           />
-          <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           <JumpToTrip />
           {/* <NewRecord />
         <EditRecord />
@@ -104,6 +103,7 @@ export const ToolbarContainer = (props) => {
         <DrawButtonList /> */}
 
           <JumpToActivity id={props.id} />
+          {props.children}
         </List>
       </div>
       <MeasureToolContainer measureToolContainerOpen={measureToolContainerOpen} />
