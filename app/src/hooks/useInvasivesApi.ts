@@ -47,7 +47,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://api-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = 'http://localhost:7080';
+    API_URL = 'http://localhost:6005';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
