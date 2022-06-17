@@ -47,7 +47,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { bufferedGeo, onCloseCallback } = props;
+  const { bufferedGeo, onCloseCallback = null } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -93,7 +93,7 @@ export const GeneratePopup = (props) => {
   const hideElement = () => {
     // if (!popupElRef?.current || !map) return;
     map.closePopup();
-    if (onCloseCallback !== undefined) {
+    if (onCloseCallback) {
       setTimeout(() => {
         onCloseCallback();
       }, 500);
@@ -230,7 +230,6 @@ function SetPointOnClick() {
 
   useMapEvent('draw:created' as any, (e) => {
     boxDrawDoneCallback(e.layer.toGeoJSON());
-    console.log(e);
     coolguy.disable();
   });
 
