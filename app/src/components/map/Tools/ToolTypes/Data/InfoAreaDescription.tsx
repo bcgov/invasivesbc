@@ -93,9 +93,11 @@ export const GeneratePopup = (props) => {
   const hideElement = () => {
     // if (!popupElRef?.current || !map) return;
     map.closePopup();
-    setTimeout(() => {
-      onCloseCallback();
-    }, [500]);
+    if (onCloseCallback) {
+      setTimeout(() => {
+        onCloseCallback();
+      }, 500);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
