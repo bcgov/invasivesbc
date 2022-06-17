@@ -1,4 +1,3 @@
-//Material UI
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -19,10 +18,9 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import * as turf from '@turf/helpers';
 import buffer from '@turf/buffer';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import L, { DomEvent } from 'leaflet';
+import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-// Leaflet and React-Leaflet
-import { GeoJSON, Popup, useMapEvent } from 'react-leaflet';
+import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import binoculars from '../../../Icons/binoculars.png';
 import {
   createDataUTM,
@@ -33,9 +31,7 @@ import {
   RenderTablePosition
 } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
-// App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
-import { polygon } from '@turf/helpers';
 import center from '@turf/center';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -52,11 +48,11 @@ export const GeneratePopup = (props) => {
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
-  // const [showRadius, setShowRadius] = useState(false); // NOSONAR
+  const map = useMap();
+  const position = center(bufferedGeo).geometry.coordinates;
+
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
-  // const [radius, setRadius] = useState(3);
-  const popupElRef = useRef(null);
 
   const position = center(bufferedGeo).geometry.coordinates;
   const utmResult = calc_utm(position[0], position[1]);
@@ -66,32 +62,11 @@ export const GeneratePopup = (props) => {
     createDataUTM('Northing', utmResult[2])
   ];
 
-  useEffect(() => {
-    if (popupElRef?.current) {
-      DomEvent.disableClickPropagation(popupElRef?.current);
-      DomEvent.disableScrollPropagation(popupElRef?.current);
-    }
-  }, []);
-
-  // Removed for now:
-  // useEffect(() => {
-  //   if (bufferedGeo) {
-  //     getDataFromDataBC(
-  //       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-  //       bufferedGeo,
-  //       invasivesApi.getSimplifiedGeoJSON
-  //     ).then((returnVal) => {
-  //       setDataBC(returnVal);
-  //     }, []);
-  //   }
-  // }, [bufferedGeo]);
-
   const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
     map.closePopup();
   };
 
-  const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
+  const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
     setSection(newSection);
   };
 
@@ -117,23 +92,6 @@ export const GeneratePopup = (props) => {
             </BottomNavigation>
           </Grid>
           <Grid container>
-            {/* <Stack direction="row" spacing={1} style={{ width: 500 }} alignItems="center">
-              <Typography
-                className={assignPointModeTheme(!pointMode, themeType)}
-                style={assignPtDefaultTheme(pointMode, themeType)}>
-                Within Radius
-              </Typography>
-              <Switch
-                checked={pointMode}
-                onChange={(event: any) => setPointMode(event.target.checked)}
-                color="primary"
-              />
-              <Typography
-                className={assignPointModeTheme(pointMode, themeType)}
-                style={assignPtDefaultTheme(!pointMode, themeType)}>
-                Just This Point
-              </Typography>
-            </Stack> */}
             <Grid item>
               <Button onClick={hideElement}>Close</Button>
             </Grid>
@@ -256,10 +214,20 @@ function SetPointOnClick({ map }: any) {
           <Typography className={toolClass.Font}>What's here?</Typography>
         </ListItemText>
       </ListItemButton>
-      {drawnGeo && (
-        <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
-          {!clickMode && <GeneratePopup map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
-        </GeoJSON>
+      {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
+        <Marker
+          ref={markerRef}
+          position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
+          <GeneratePopup
+            onCloseCallback={() => {
+              setWorkflowStep(workflowStepEnum.NOT_STARTED);
+              setUserGeo(null);
+            }}
+            bufferedGeo={userGeo}
+          />
+        </Marker>
+      ) : (
+        <></>
       )}
     </ListItem>
   );
