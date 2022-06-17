@@ -47,7 +47,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { position, bufferedGeo } = props;
+  const { bufferedGeo, onCloseCallback } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -61,7 +61,6 @@ export const GeneratePopup = (props) => {
   // const [databc, setDataBC] = useState(null); // NOSONAR
   // const [radius, setRadius] = useState(3);
 
-  const position = center(bufferedGeo).geometry.coordinates;
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -92,9 +91,11 @@ export const GeneratePopup = (props) => {
   // }, [bufferedGeo]);
 
   const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
+    // if (!popupElRef?.current || !map) return;
     map.closePopup();
-    props.onCloseCallback();
+    setTimeout(() => {
+      onCloseCallback();
+    }, [500]);
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -166,39 +167,27 @@ function SetPointOnClick() {
   const markerRef = useRef(null);
   const [coolguy, setCoolGuy] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('workflow step', workflowStep);
+  }, [workflowStep]);
+
+  useEffect(() => {
     if (userGeo !== null) {
       setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
     }
   }, [userGeo]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
     const aCoolguy = new (L as any).Draw.Rectangle(map);
     setCoolGuy(aCoolguy);
   }, []);
 
-  const BoxDrawStartOnClick = () => {
-    setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
-  };
-
-  const boxDrawDoneCallback = (layer) => {
-    const geo = layer;
-    setUserGeo(geo);
-  };
-
-  useMapEvent('draw:created' as any, (e) => {
-    boxDrawDoneCallback(e.layer.toGeoJSON());
-    console.log(e);
-    // e.layer.disableEdit();
-  });
-
   useEffect(() => {
     const marker = markerRef.current;
     switch (workflowStep) {
       case workflowStepEnum.BOX_DRAW_START:
-        console.log('coool guy');
         if (!userGeo) {
           coolguy.enable();
         }
@@ -208,7 +197,6 @@ function SetPointOnClick() {
         if (marker) {
           marker.openPopup();
         }
-        // coolguy.disable();
         break;
       case workflowStepEnum.NOT_STARTED:
         setUserGeo(null);
@@ -219,15 +207,30 @@ function SetPointOnClick() {
     }
   });
 
-  useEffect(() => {
-    if (userGeo !== null) {
-      setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
+  const BoxDrawStartOnClick = () => {
+    switch (workflowStep) {
+      case workflowStepEnum.NOT_STARTED:
+        setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
+        break;
+      case workflowStepEnum.BOX_DRAW_START:
+        setWorkflowStep(workflowStepEnum.NOT_STARTED);
+        break;
+      case workflowStepEnum.BOX_DRAW_DONE:
+        setWorkflowStep(workflowStepEnum.NOT_STARTED);
+        break;
     }
-  }, [userGeo]);
+  };
 
-  useEffect(() => {
-    console.log('workflow step', workflowStep);
-  }, [workflowStep]);
+  const boxDrawDoneCallback = (layer) => {
+    const geo = layer;
+    setUserGeo(geo);
+  };
+
+  useMapEvent('draw:created' as any, (e) => {
+    boxDrawDoneCallback(e.layer.toGeoJSON());
+    console.log(e);
+    coolguy.disable();
+  });
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
@@ -235,7 +238,10 @@ function SetPointOnClick() {
         onClick={BoxDrawStartOnClick}
         ref={divRef}
         style={{
-          backgroundColor: false ? 'lightgray' : null,
+          backgroundColor:
+            workflowStep === workflowStepEnum.BOX_DRAW_START || workflowStep === workflowStepEnum.BOX_DRAW_DONE
+              ? 'lightgray'
+              : null,
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           marginTop: 5
@@ -259,6 +265,7 @@ function SetPointOnClick() {
           <GeneratePopup
             onCloseCallback={() => {
               setWorkflowStep(workflowStepEnum.NOT_STARTED);
+              setUserGeo(null);
             }}
             bufferedGeo={userGeo}
           />
