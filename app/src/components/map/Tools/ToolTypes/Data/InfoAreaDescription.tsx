@@ -54,11 +54,12 @@ export const GeneratePopup = (props) => {
   const [section, setSection] = useState('position');
   const map = useMap();
   const position = center(bufferedGeo).geometry.coordinates;
+  const popupElRef = useRef(null);
+
   // const [showRadius, setShowRadius] = useState(false); // NOSONAR
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
   // const [radius, setRadius] = useState(3);
-  const popupElRef = useRef(null);
 
   const position = center(bufferedGeo).geometry.coordinates;
   const utmResult = calc_utm(position[0], position[1]);
@@ -93,6 +94,7 @@ export const GeneratePopup = (props) => {
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
     map.closePopup();
+    props.onCloseCallback();
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -101,7 +103,7 @@ export const GeneratePopup = (props) => {
 
   return (
     <>
-      <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+      <Popup className={theme} autoClose={false} closeOnClick={true} closeButton={false}>
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
@@ -161,11 +163,21 @@ function SetPointOnClick() {
   const toolClass = toolStyles();
   const themeContext = React.useContext(ThemeContext);
   const divRef = React.useRef();
+  const markerRef = useRef(null);
+  const [coolguy, setCoolGuy] = useState(null);
+
+  React.useEffect(() => {
+    if (userGeo !== null) {
+      setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
+    }
+  }, [userGeo]);
 
   React.useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
+    const aCoolguy = new (L as any).Draw.Rectangle(map);
+    setCoolGuy(aCoolguy);
+  }, []);
 
   const BoxDrawStartOnClick = () => {
     setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
@@ -177,19 +189,32 @@ function SetPointOnClick() {
   };
 
   useMapEvent('draw:created' as any, (e) => {
-    setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
     boxDrawDoneCallback(e.layer.toGeoJSON());
+    console.log(e);
+    // e.layer.disableEdit();
   });
 
   useEffect(() => {
+    const marker = markerRef.current;
     switch (workflowStep) {
       case workflowStepEnum.BOX_DRAW_START:
-        new (L as any).Draw.Rectangle(map).enable();
+        console.log('coool guy');
+        if (!userGeo) {
+          coolguy.enable();
+        }
+
         break;
       case workflowStepEnum.BOX_DRAW_DONE:
+        if (marker) {
+          marker.openPopup();
+        }
+        // coolguy.disable();
         break;
       case workflowStepEnum.NOT_STARTED:
         setUserGeo(null);
+        if (marker) {
+          marker.closePopup();
+        }
         break;
     }
   });
@@ -229,8 +254,14 @@ function SetPointOnClick() {
       </ListItemButton>
       {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
         <Marker
+          ref={markerRef}
           position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
-          <GeneratePopup bufferedGeo={userGeo} />
+          <GeneratePopup
+            onCloseCallback={() => {
+              setWorkflowStep(workflowStepEnum.NOT_STARTED);
+            }}
+            bufferedGeo={userGeo}
+          />
         </Marker>
       ) : (
         <></>
