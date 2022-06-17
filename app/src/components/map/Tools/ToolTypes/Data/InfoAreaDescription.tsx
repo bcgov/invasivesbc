@@ -197,7 +197,9 @@ function SetPointOnClick() {
         break;
       case workflowStepEnum.BOX_DRAW_DONE:
         if (marker) {
-          marker.openPopup();
+          setTimeout(() => {
+            marker.openPopup();
+          }, 250);
         }
         break;
       case workflowStepEnum.NOT_STARTED:
