@@ -26,42 +26,13 @@ class AuthState {
   };
 
   roles: string[];
-  accessRoles: string[];
   rolesInitialized: false;
 
   constructor() {
     this.initialized = false;
     this.roles = [];
-    this.accessRoles = [];
     this.rolesInitialized = false;
   }
-}
-
-function computeAccessRoles(all_roles: { role_name: string }[], roles: string[]): string[] {
-  const accessRoles = [];
-
-  for (const role of roles) {
-    accessRoles.push(role);
-
-    if (role === 'master_administrator') {
-      accessRoles.push(...all_roles.map(r => r.role_name));
-    }
-    if (role === 'indigenous_riso_manager_both') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso')).map(r => r.role_name));
-    }
-    if (role === 'indigenous_riso_manager_plants') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso_staff_plants')).map(r => r.role_name));
-    }
-    if (role === 'administrator_plants') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('plants')).map(r => r.role_name));
-    }
-  }
-  const uniqueArray = accessRoles.filter((thing, index, self) => {
-    return index === self.findIndex((t) => t.role_name === thing.role_name);
-  });
-  return uniqueArray.sort((a, b) => {
-    return a.role_id < b.role_id ? -1 : a.role_id > b.role_id ? 1 : 0;
-  });
 }
 
 const initialState = new AuthState();
@@ -133,7 +104,6 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         return {
           ...state,
           roles: [],
-          accessRoles: [],
           rolesInitialized: false
         };
       }
@@ -141,16 +111,14 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         return {
           ...state,
           roles: [],
-          accessRoles: [],
           rolesInitialized: false
         };
       }
       case AUTH_REFRESH_ROLES_COMPLETE: {
-        const { all_roles, roles } = action.payload;
+        const { roles } = action.payload;
         return {
           ...state,
           roles,
-          accessRoles: computeAccessRoles(all_roles, roles),
           rolesInitialized: true
         };
       }
@@ -158,7 +126,6 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         return {
           ...state,
           roles: [],
-          accessRoles: [],
           rolesInitialized: false
         };
       }
