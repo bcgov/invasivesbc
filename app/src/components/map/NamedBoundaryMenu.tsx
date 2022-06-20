@@ -157,24 +157,13 @@ export const NamedBoundaryMenu = (props) => {
     // map to match boundaries
     let KMLToBoundary = [];
     if (KMLResults && KMLResults.length > 0) {
-      console.log('here');
       KMLToBoundary = KMLResults.map((kml) => {
-        const geos = kml?.geojson?.features?.map((feature) => {
-          return {
-            type: 'Feature',
-            geometry: {
-              coordinates: feature.coordinates,
-              type: feature.type
-            },
-            properties: {}
-          };
-        });
 
         return {
-          id: null, //doesn't need atm (how would this interact with )
-          name: kml.title,
-          geos: geos,
-          server_id: kml.id
+          id: null,
+          name: kml?.title,
+          geos: kml?.geojson?.features,
+          server_id: kml?.id
         };
       });
     }

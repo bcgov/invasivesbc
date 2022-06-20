@@ -95,8 +95,6 @@ POST.apiDoc = {
 function getAdministrativelyDefinedShapes(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
-    console.log(user_id);
-    console.log("req with invasives", [req.authContext]);
 
     const connection = await getDBConnection();
 
@@ -125,6 +123,26 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
 
       // parse the rows from the response
       const rows: any[] = (response && response.rows) || [];
+
+      // terrible nesting, but returned KMLs should be a small set so should be fine for now
+      for (const row of rows) {
+        let newFeatureArr = [];
+        for (const feature of row.geojson.features) {
+          for (const multipolygon of feature.coordinates) {
+            let convertedFeature = {
+              'type': 'Feature',
+              "properties": {},
+              "geometry": {
+                "type": 'Polygon',
+                'coordinates' : multipolygon
+              }
+            };
+
+            newFeatureArr.push(convertedFeature);
+          }
+        }
+        row.geojson.features = newFeatureArr;
+      }
 
       return res.status(200).json({
         message: 'Got administratively defined shapes',
@@ -203,13 +221,10 @@ function uploadShape(): RequestHandler {
         // Perform both get and create operations as a single transaction
         await connection.query('BEGIN');
 
-        for (const feature of geoJSON.features) {
-          const response: QueryResult = await connection.query(
-            `insert into admin_defined_shapes (geog, created_by, title)
-             values (ST_Force2D(ST_GeomFromGeoJSON($1)), $2, $3) returning id`,
-            [JSON.stringify(feature.geometry), user_id, title]
-          );
-        }
+        const response: QueryResult = await connection.query(`insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
+          SELECT ST_COLLECT(array_agg(
+            ST_GeomFromGeoJSON(feat->>'geometry') )) AS geog, $2, $3 FROM (
+              SELECT json_array_elements($1::json->'features') AS feat) AS f;`, [JSON.stringify(geoJSON), user_id, title]);
 
         await connection.query('COMMIT');
 
