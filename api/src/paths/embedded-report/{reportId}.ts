@@ -20,10 +20,10 @@ GET.apiDoc = {
   tags: ['metabase'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -104,14 +104,16 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         });
       }
 
+      const metabaseResource = response.rows[0].metabase_resource;
+
       const payload = {
-        resource: { question: response.rows[0].id },
+        resource: { [metabaseResource]: response.rows[0].metabase_id },
         params: {},
         exp: Math.round(Date.now() / 1000) + 600
       };
       const token = sign(payload, EMBEDDING_KEY);
 
-      const embeddedUrl = `${METABASE_URL}/embed/question/${token}#bordered=true&titled=true`;
+      const embeddedUrl = `${METABASE_URL}/embed/${metabaseResource}/${token}#bordered=true&titled=true`;
 
       return res.status(200).json({
         embeddedUrl
