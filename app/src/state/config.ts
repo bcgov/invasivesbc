@@ -70,8 +70,7 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       DEBUG: true,
       MOBILE: false,
-      //API_BASE: 'http://localhost:6005',
-      API_BASE: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
+      API_BASE: 'http://localhost:6005',
       KEYCLOAK_CLIENT_ID: 'invasives-bc-1849',
       KEYCLOAK_REALM: 'onestopauth-business',
       KEYCLOAK_URL: 'https://dev.oidc.gov.bc.ca/auth',
