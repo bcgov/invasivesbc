@@ -1,8 +1,10 @@
 import { Button, Dialog, DialogActions, DialogTitle, Grid, Tooltip, Zoom } from '@mui/material';
-import { AuthStateContext } from 'contexts/authStateContext';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
+
 export interface IFormControlsComponentProps {
   classes?: any;
   isDisabled?: boolean;
@@ -23,7 +25,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
-  const { userInfo, rolesUserHasAccessTo } = React.useContext(AuthStateContext);
+  const { accessRoles, displayName } = useSelector(selectAuth);
   const deleteRecord = () => {
     const activityIds = [props.activity.activityId];
     dataAccess.deleteActivities(activityIds);
@@ -31,12 +33,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   };
 
   const checkIfNotAuthorized = () => {
-    for (let role of rolesUserHasAccessTo) {
+    for (let role of accessRoles) {
       if (role.role_id === 18) {
         return false;
       }
     }
-    if (userInfo.preferred_username !== props.activity.createdBy) {
+    if (displayName !== props.activity.createdBy) {
       return true;
     }
     return false;

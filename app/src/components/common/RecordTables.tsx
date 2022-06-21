@@ -1,5 +1,4 @@
 import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@mui/icons-material';
-import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { IGeneralDialog, GeneralDialog } from 'components/dialog/GeneralDialog';
 import {
@@ -10,14 +9,15 @@ import {
   ReviewStatus
 } from 'constants/activities';
 import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import moment from 'moment';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { generateDBActivityPayload, getShortActivityID, sanitizeRecord } from 'utils/addActivity';
 import { DatabaseContext } from '../../contexts/DatabaseContext';
+import { selectAuth } from '../../state/reducers/auth';
+import { useSelector } from '../../state/utilities/use_selector';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -204,7 +204,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
+  const { displayName, roles, accessRoles } = useSelector(selectAuth);
+
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -228,10 +229,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-      dbActivity.created_by = userInfo?.preferred_username;
-      dbActivity.user_role = userRoles?.map((role) => role.role_id);
+      dbActivity.created_by = displayName;
+      dbActivity.user_role = roles.map((role) => role.role_id);
       await dataAccess.createActivity(dbActivity, databaseContext);
-      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
+      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id });
       setTimeout(() => {
         history.push({ pathname: `/home/activity` });
       }, 500);
@@ -265,7 +266,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       dataAccess,
       activitySubtypes: arrayWrap(activitySubtypes),
       created_by,
-      user_roles: rolesUserHasAccessTo,
+      user_roles: accessRoles,
       review_status: review_status
     });
   }
@@ -582,15 +583,16 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <ActivitiesTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status', ...activitesDefaultHeaders]}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         {...otherProps}
       />
     );
@@ -701,15 +703,16 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <ObservationsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -720,7 +723,8 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
-  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  const { accessRoles } = useSelector(selectAuth);
+
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -816,7 +820,7 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               rows={defaultActivitiesFetch({
                 databaseContext,
                 dataAccess,
-                user_roles: rolesUserHasAccessTo,
+                user_roles: accessRoles,
                 linked_id: row._id
               })}
               hideEmpty
@@ -836,15 +840,16 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <PlantTreatmentsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -855,8 +860,9 @@ export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
+  const { accessRoles } = useSelector(selectAuth);
+
   const { tableSchemaType, headers = [], ...otherProps } = props;
-  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
 
   return useMemo(() => {
     return (
@@ -944,7 +950,7 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               rows={defaultActivitiesFetch({
                 databaseContext,
                 dataAccess,
-                user_roles: rolesUserHasAccessTo,
+                user_roles: accessRoles,
                 linked_id: row._id
               })}
               hideEmpty
@@ -964,16 +970,16 @@ export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <AnimalTreatmentsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1041,15 +1047,16 @@ export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <PlantMonitoringTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1116,15 +1123,16 @@ export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <AnimalMonitoringTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1167,15 +1175,16 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { bestName: displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <TransectsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1248,10 +1257,10 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
               actions === false
                 ? false
                 : {
-                    sync: {
-                      enabled: false
-                    }
+                  sync: {
+                    enabled: false
                   }
+                }
             }
           />
         )}
@@ -1262,16 +1271,16 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
+  const { displayName } = useSelector(selectAuth);
+
   return useMemo(() => {
     return (
       <BiocontrolTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[...headers, 'form_status']}
-        created_by={userInfo?.preferred_username}
+        created_by={displayName}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
@@ -1326,8 +1335,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
               page: Math.floor((page * rowsPerPage) / dbPageSize),
               limit: dbPageSize,
               order: order
-            },
-            databaseContext
+            }
           );
           console.log('RES: ', response);
           return {
@@ -1339,16 +1347,16 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           actions === false
             ? false
             : {
-                ...actions,
-                delete: {
-                  enabled: false,
-                  ...actions?.delete
-                },
-                edit: {
-                  enabled: false,
-                  ...actions?.edit
-                }
+              ...actions,
+              delete: {
+                enabled: false,
+                ...actions?.delete
+              },
+              edit: {
+                enabled: false,
+                ...actions?.edit
               }
+            }
         }
         {...otherProps}
       />
@@ -1399,11 +1407,11 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
             (!rows?.length
               ? []
               : rows.map((row) => ({
-                  ...row,
-                  density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
-                  distribution:
-                    row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
-                })))) ||
+                ...row,
+                density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+                distribution:
+                  row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+              })))) ||
           rows
         }
         {...otherProps}
@@ -1444,9 +1452,9 @@ export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
           !rows.length
             ? []
             : rows.map((monitor, j) => ({
-                ...monitor,
-                project_code_label: monitor.project_code[0].description
-              }))
+              ...monitor,
+              project_code_label: monitor.project_code[0].description
+            }))
         }
       />
     );
@@ -1488,9 +1496,9 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
           !rows.length
             ? []
             : rows.map((row) => ({
-                ...row,
-                project_code_label: row.project_code[0].description
-              }))
+              ...row,
+              project_code_label: row.project_code[0].description
+            }))
         }
         dropdown={(row) => (!row.monitoring?.length ? undefined : <IAPPMonitoringTable rows={row.monitoring} />)}
       />
@@ -1533,9 +1541,9 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
           !rows.length
             ? []
             : rows.map((row) => ({
-                ...row,
-                project_code_label: row.project_code[0].description
-              }))
+              ...row,
+              project_code_label: row.project_code[0].description
+            }))
         }
         dropdown={(row) => (
           <React.Fragment key={row.treatment_id + '_expanded'}>
@@ -1747,7 +1755,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
-  const { rolesUserHasAccessTo } = useContext(AuthStateContext);
+  const { accessRoles } = useSelector(selectAuth);
 
   return useMemo(() => {
     return (
@@ -1761,7 +1769,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           defaultActivitiesFetch({
             databaseContext,
             dataAccess,
-            user_roles: rolesUserHasAccessTo,
+            user_roles: accessRoles,
             activitySubtypes: Object.values(ActivitySubtype),
             review_status: [ReviewStatus.UNDER_REVIEW]
           })

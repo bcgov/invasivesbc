@@ -48,7 +48,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const history = useHistory();
   const connected = useSelector(selectNetworkConnected);
 
-  const { authenticated, email, displayName, roles } = useSelector(selectAuth);
+  const { authenticated, displayName, email, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated, accessRequested } = useSelector(selectUserInfo);
 
 

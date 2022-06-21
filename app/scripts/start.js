@@ -80,7 +80,17 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const config = configFactory('development');
+    const config = configFactory('development', {
+      CONFIGURATION_SOURCE: 'Hardcoded',
+      CONFIGURATION_API_BASE: null,
+      CONFIGURATION_KEYCLOAK_CLIENT_ID: null,
+      CONFIGURATION_KEYCLOAK_REALM: null,
+      CONFIGURATION_KEYCLOAK_URL: null,
+      CONFIGURATION_KEYCLOAK_ADAPTER: null,
+      CONFIGURATION_REDIRECT_URI: null,
+      CONFIGURATION_IS_MOBILE: null
+    });
+
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
 

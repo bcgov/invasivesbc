@@ -8,10 +8,11 @@ import {
   Typography
 } from '@mui/material';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 import { updateChild } from './Sorting/SortLayerOrder';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectNetworkConnected } from '../../../state/reducers/network';
 
 const getIndex = (childId, layers) => {
   var index = -1;
@@ -71,7 +72,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
 };
 
 export const LayersSelector = ({ parent, child }) => {
-  const networkContext = useContext(NetworkContext);
+  const connected = useSelector(selectNetworkConnected);
   const mapLayersContext = useContext(MapRequestContext);
   const { layers, setLayers } = mapLayersContext;
   const { layersActions } = mapLayersContext;
@@ -89,7 +90,7 @@ export const LayersSelector = ({ parent, child }) => {
   return (
     <>
       {/* Server Accordion */}
-      {networkContext.connected && (
+      {connected && (
         <Accordion id="server-accordion" expanded={serverExpanded} onChange={onServerAccordionChange}>
           <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
