@@ -7,6 +7,9 @@ module.exports = (settings) => {
   const options = settings.options;
   const phase = 'build';
 
+  // temporary hack
+  const targetEnv = phases[phase].branch || 'dev';
+
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
@@ -19,12 +22,12 @@ module.exports = (settings) => {
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
-        REACT_APP_API_HOST: phases[phase].apiHost,
+        REACT_APP_API_HOST: phases[targetEnv].apiHost,
         ENVIRONMENT: phases[phase].env || 'dev',
-        SSO_URL: phases[phase].sso.url,
-        SSO_CLIENT_ID: phases[phase].sso.clientId,
-        SSO_REALM: phases[phase].sso.realm,
-        REDIRECT_URI: phases[phase].sso.redirect,
+        SSO_URL: phases[targetEnv].sso.url,
+        SSO_CLIENT_ID: phases[targetEnv].sso.clientId,
+        SSO_REALM: phases[targetEnv].sso.realm,
+        REDIRECT_URI: phases[targetEnv].sso.redirect,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }
