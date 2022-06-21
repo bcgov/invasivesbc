@@ -13,27 +13,18 @@ module.exports = (settings) => {
 
   let objects = [];
 
-  let real_node_env;
-  switch (phases[phase].branch) {
-    case 'dev':
-      real_node_env = 'development';
-      break;
-    case 'test':
-      real_node_env = 'test';
-      break;
-    case 'prod':
-      real_node_env = 'production';
-      break;
-    default:
-      real_node_env = 'development';
-  }
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/app.bc.yaml`, {
       param: {
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
-        REACT_APP_REAL_NODE_ENV: real_node_env,
+        REACT_APP_API_HOST: phases[phase].apiHost,
+        ENVIRONMENT: phases[phase].env || 'dev',
+        SSO_URL: phases[phase].sso.url,
+        SSO_CLIENT_ID: phases[phase].sso.clientId,
+        SSO_REALM: phases[phase].sso.realm,
+        REDIRECT_URI: phases[phase].sso.redirect,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }

@@ -37,17 +37,20 @@
     "dev": {
       "url": "https://dev.oidc.gov.bc.ca",
       "clientId": "invasives-bc-1849",
-      "realm": "onestopauth-business"
+      "realm": "onestopauth-business",
+      "redirect": "https://dev-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing"
     },
     "test": {
       "url": "https://test.oidc.gov.bc.ca",
       "clientId": "invasives-bc-1849",
-      "realm": "onestopauth-business"
+      "realm": "onestopauth-business",
+      "redirect": "https://test-invasivesbci.apps.silver.devops.gov.bc.ca/home/landing"
     },
     "prod": {
       "url": "https://oidc.gov.bc.ca",
       "clientId": "invasives-bc-1849",
-      "realm": "onestopauth-business"
+      "realm": "onestopauth-business",
+      "redirect": "https://invasivesbci.apps.silver.devops.gov.bc.ca/home/landing"
     }
   }
 }

@@ -49,14 +49,14 @@ const writeStatsJson = argv.indexOf('--stats') !== -1;
 
 // Generate configuration
 const config = configFactory('production', {
-  CONFIGURATION_SOURCE: 'Caddy',
-  CONFIGURATION_API_BASE: null,
-  CONFIGURATION_KEYCLOAK_CLIENT_ID: null,
-  CONFIGURATION_KEYCLOAK_REALM: null,
-  CONFIGURATION_KEYCLOAK_URL: null,
-  CONFIGURATION_KEYCLOAK_ADAPTER: null,
-  CONFIGURATION_REDIRECT_URI: null,
-  CONFIGURATION_IS_MOBILE: null
+  CONFIGURATION_SOURCE: 'Webpack',
+  CONFIGURATION_API_BASE: process.env['REACT_APP_API_HOST'],
+  CONFIGURATION_KEYCLOAK_CLIENT_ID: process.env['SSO_CLIENT_ID'],
+  CONFIGURATION_KEYCLOAK_REALM: process.env['SSO_REALM'],
+  CONFIGURATION_KEYCLOAK_URL: process.env['SSO_URL'],
+  CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
+  CONFIGURATION_REDIRECT_URI: process.env['REDIRECT_URI'],
+  CONFIGURATION_IS_MOBILE: false
 });
 
 // We require that you explicitly set browsers and do not fall back to
@@ -84,13 +84,13 @@ checkBrowsers(paths.appPath, isInteractive)
         console.log(warnings.join('\n\n'));
         console.log(
           '\nSearch for the ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' to learn more about each warning.'
+          chalk.underline(chalk.yellow('keywords')) +
+          ' to learn more about each warning.'
         );
         console.log(
           'To ignore, add ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
+          chalk.cyan('// eslint-disable-next-line') +
+          ' to the line before.\n'
         );
       } else {
         console.log(chalk.green('Compiled successfully.\n'));
@@ -189,7 +189,7 @@ function build(previousFileSizes) {
         console.log(
           chalk.yellow(
             '\nTreating warnings as errors because process.env.CI = true.\n' +
-              'Most CI servers set it automatically.\n'
+            'Most CI servers set it automatically.\n'
           )
         );
         return reject(new Error(messages.warnings.join('\n\n')));
