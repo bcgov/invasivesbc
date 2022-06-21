@@ -23,7 +23,6 @@ module.exports = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         REACT_APP_API_HOST: phases[targetEnv].apiHost,
-        ENVIRONMENT: phases[phase].env || 'dev',
         SSO_URL: phases[targetEnv].sso.url,
         SSO_CLIENT_ID: phases[targetEnv].sso.clientId,
         SSO_REALM: phases[targetEnv].sso.realm,
