@@ -1,9 +1,0 @@
-{
-  "confidential-port": 0,
-  "auth-server-url": "https://dev.oidc.gov.bc.ca/auth",
-  "realm": "onestopauth-business",
-  "ssl-required": "external",
-  "public-client": true,
-  "enable-cors": true,
-  "resource": "invasives-bc-1849"
-}

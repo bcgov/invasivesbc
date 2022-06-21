@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { IonAlert } from '@ionic/react';
 import {
   AppBar,
@@ -9,7 +8,6 @@ import {
   Drawer,
   FormControlLabel,
   Grid,
-  Hidden,
   IconButton,
   List,
   Container,
@@ -23,7 +21,6 @@ import {
   Tabs,
   Theme,
   Toolbar,
-  Typography,
   Box
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -38,14 +35,19 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { NetworkContext } from 'contexts/NetworkContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
+import { useDispatch } from 'react-redux';
+import { AUTH_SIGNIN_REQUEST, NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../../state/actions';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
+import { selectUserInfo } from '../../state/reducers/userInfo';
+import { selectConfiguration } from '../../state/reducers/configuration';
+import { MobileOnly } from '../common/MobileOnly';
+import { selectNetworkConnected } from '../../state/reducers/network';
 
 const drawerWidth = 240;
 
@@ -129,27 +131,39 @@ export interface ITabConfig {
 }
 
 export interface ITabsContainerProps {
-  isMobileNoNetwork: boolean;
 }
 
-//const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-//const invbclogo = require('InvasivesBC_Icon.svg');
-
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-  const authContext = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const { userInfo, userInfoLoaded } = useContext(AuthStateContext);
+  const dispatch = useDispatch();
+
+  const { displayName, roles, authenticated } = useSelector(selectAuth);
+
+  const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+  const { FEATURE_GATE } = useSelector(selectConfiguration);
+  const connected = useSelector(selectNetworkConnected);
+
+  const [showLoggedInTabs, setShowLoggedInTabs] = useState(userInfoLoaded && activated);
+  useEffect(() => {
+    setShowLoggedInTabs(userInfoLoaded && activated);
+  }, [userInfoLoaded, activated]);
+
+  const [isAdmin, setIsAdmin] = useState(authenticated && roles.includes('master_administrator'));
+
+  useEffect(() => {
+    setIsAdmin(authenticated && roles.includes('master_administrator'));
+  }, [authenticated]);
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('keycloak: ', authContext.keycloak);
     setAnchorEl(event.currentTarget);
   };
 
@@ -157,18 +171,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setShowAlert(true);
   };
 
-  // loadUserFromCache();
-  /*
-    Function to logout current user by wiping their keycloak access token
-  */
   const logoutUser = async () => {
     history.push('/home/landing');
-    await authContext.logoutUser();
+    dispatch({ type: 'AUTH_SIGNOUT_REQUEST' });
     handleClose();
   };
 
   const loginUser = async () => {
-    await authContext.loginUser();
+    dispatch({ type: AUTH_SIGNIN_REQUEST });
     handleClose();
   };
 
@@ -193,6 +203,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     function handleResize() {
       setOpen(false);
     }
+
     window.scrollTo(0, 0);
 
     window.addEventListener('resize', handleResize);
@@ -234,28 +245,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
+  const themeContext = useContext(ThemeContext);
+  const { themeType, setThemeType } = themeContext;
+
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
   };
-
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
-
-  const isAuthorized = () => {
-    return userInfoLoaded && authContext.userRoles.length > 0;
-  };
-
-  const isAdmin = (): boolean => {
-    if (isAuthorized()) {
-      return authContext.hasRole('master_administrator');
-    } else return false;
-  };
-
-  const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
-  const networkContext = useContext(NetworkContext);
-  const { connected, setConnected } = networkContext;
 
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
@@ -271,7 +266,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Home fontSize={'small'} />
         });
 
-        if (!isAuthorized()) {
+        if (!showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Map',
             path: '/home/map',
@@ -279,7 +274,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Recorded Activities',
             path: '/home/activities',
@@ -287,7 +282,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (showLoggedInTabs && FEATURE_GATE.PLAN_MY_TRIP) {
           tabsUserHasAccessTo.push({
             label: 'Plan My Trip',
             path: '/home/plan',
@@ -295,7 +290,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',
             path: '/home/activity',
@@ -303,7 +298,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized()) {
+        if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Current IAPP Site',
             path: '/home/iapp/',
@@ -316,18 +311,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        /*
-        if (isAuthorized() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-          tabsUserHasAccessTo.push({
-            label: 'Cached Records',
-            path: '/home/references',
-            childPaths: ['/home/references/activity'],
-            icon: <Bookmarks fontSize={'small'} />
-          });
-        }
-        */
-
-        if (isAdmin()) {
+        if (isAdmin) {
           tabsUserHasAccessTo.push({
             label: 'Admin',
             path: '/admin/useraccess',
@@ -335,7 +319,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (isAuthorized() && !isMobile()) {
+        if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
           tabsUserHasAccessTo.push({
             label: 'Reports',
             path: '/home/reports',
@@ -346,7 +330,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-  }, [authContext.keycloak, userInfo, userInfoLoaded]);
+  }, []);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
@@ -366,7 +350,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {}
+            handler: () => {
+            }
           },
           {
             text: 'Okay',
@@ -380,7 +365,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters style={{ display: 'flex' }}>
-            <Hidden mdUp>
+            <Box sx={{ display: { md: 'none', xs: 'block' } }}>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -391,7 +376,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 })}>
                 <MenuIcon />
               </IconButton>
-            </Hidden>
+            </Box>
             <Box
               sx={{
                 flexGrow: 1,
@@ -417,102 +402,100 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               />
               <b>InvasivesBC</b>
             </Box>
-            <Hidden mdDown>
-              <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-                <Tabs
-                  indicatorColor="secondary"
-                  textColor="inherit"
-                  value={activeTab}
-                  color="primary"
-                  centered
-                  style={{ width: '80%', color: '#fff' }}
-                  onChange={handleChange}>
-                  {tabConfig.map((tab) => (
-                    <Tab
-                      style={{ fontSize: '.7rem', fontWeight: 'bold' }}
-                      color="primary"
-                      label={tab.label}
-                      key={tab.label.split(' ').join('_')}
-                      icon={tab.icon}
-                      onClick={() => history.push(tab.path)}
-                    />
-                  ))}
-                </Tabs>
-              </Box>
-              <Box sx={{ flexGrow: 0 }}>
-                <IconButton onClick={handleClick} size="small">
-                  <Avatar></Avatar>
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleClose}
-                  PaperProps={{
-                    elevation: 3
-                  }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                  {isMobile() && (
-                    <MenuItem>
-                      <Switch
-                        color="secondary"
-                        checked={connected}
-                        checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
-                        onChange={() => {
-                          setConnected(!connected);
-                        }}
-                      />
-                      Network Online
-                    </MenuItem>
-                  )}
-                  <MenuItem>
-                    <Switch
-                      color="secondary"
-                      checked={themeType}
-                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
-                      onChange={() => {
-                        setThemeType(!themeType);
-                      }}
-                    />
-                    Theme
+            <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              <Tabs
+                indicatorColor="secondary"
+                textColor="inherit"
+                value={activeTab}
+                color="primary"
+                centered
+                style={{ width: '80%', color: '#fff' }}
+                onChange={handleChange}>
+                {tabConfig.map((tab) => (
+                  <Tab
+                    style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                    color="primary"
+                    label={tab.label}
+                    key={tab.label.split(' ').join('_')}
+                    icon={tab.icon}
+                    onClick={() => history.push(tab.path)}
+                  />
+                ))}
+              </Tabs>
+            </Box>
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton onClick={handleClick} size="small">
+                <Avatar></Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 3
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                {/*<MobileOnly>*/}
+                <MenuItem>
+                  <Switch
+                    color="secondary"
+                    checked={connected}
+                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                    }}
+                  />
+                  Network Online
+                </MenuItem>
+                {/*</MobileOnly>*/}
+                <MenuItem>
+                  <Switch
+                    color="secondary"
+                    checked={themeType}
+                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      setThemeType(!themeType);
+                    }}
+                  />
+                  Theme
+                </MenuItem>
+                {showLoggedInTabs && (
+                  <MenuItem onClick={navToUpdateRequest}>
+                    <ListItemIcon>
+                      <AssignmentIndIcon />
+                    </ListItemIcon>
+                    Update My Info
                   </MenuItem>
-                  {isAuthorized() && (
-                    <MenuItem onClick={navToUpdateRequest}>
-                      <ListItemIcon>
-                        <AssignmentIndIcon />
-                      </ListItemIcon>
-                      Update My Info
-                    </MenuItem>
-                  )}
-                  {isAdmin() && (
-                    <MenuItem onClick={navToAdmin}>
-                      <ListItemIcon>
-                        <AdminPanelSettingsIcon />
-                      </ListItemIcon>
-                      Admin
-                    </MenuItem>
-                  )}
-                  {authContext.keycloak.obj?.authenticated ? (
-                    <MenuItem onClick={logoutUser}>
-                      <ListItemIcon>
-                        <LogoutIcon />
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  ) : (
-                    <MenuItem onClick={loginUser}>
-                      <ListItemIcon>
-                        <LoginIcon />
-                      </ListItemIcon>
-                      Log In
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Box>
-            </Hidden>
+                )}
+                {isAdmin && (
+                  <MenuItem onClick={navToAdmin}>
+                    <ListItemIcon>
+                      <AdminPanelSettingsIcon />
+                    </ListItemIcon>
+                    Admin
+                  </MenuItem>
+                )}
+                {authenticated ? (
+                  <MenuItem onClick={logoutUser}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={loginUser}>
+                    <ListItemIcon>
+                      <LoginIcon />
+                    </ListItemIcon>
+                    Log In
+                  </MenuItem>
+                )}
+              </Menu>
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
-      <Hidden mdUp>
+      <Box sx={{ display: { md: 'none', xs: 'block' } }}>
         <Drawer
           className={clsx(classes.drawer, {
             [classes.drawerOpen]: open,
@@ -528,27 +511,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
-                <>
-                  {userInfoLoaded ? (
-                    () => {
-                      if (userInfo.displayName) {
-                        return <Avatar>{userInfo.displayName?.match(/\b(\w)/g)?.join('')}</Avatar>;
-                      } else return <></>;
-                    }
-                  ) : (
-                    <Avatar></Avatar>
-                  )}
-                </>
+                <>{authenticated ? <Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar> : <Avatar />}</>
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {authContext.keycloak?.obj?.token ? <p>Keycloak token is present</p> : <></>}
-          {networkContext.connected ? (
+          {connected ? (
             <div>
-              {userInfoLoaded ? (
+              {authenticated ? (
                 <MenuItem onClick={showLogoutAlert}>
                   <ListItemIcon>
                     <LogoutIcon />
@@ -591,7 +563,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               label="Theme Mode"
             />
           </Grid>
-          {Capacitor.getPlatform() !== 'web' ? (
+          <MobileOnly>
             <Grid container justifyContent="center" alignItems="center">
               <FormControlLabel
                 control={
@@ -599,20 +571,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     checked={connected}
                     checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      console.log('on click');
-                      console.dir(connected);
-                      setConnected(!connected);
+                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
                     }}
                   />
                 }
                 label="Network Mode"
               />
             </Grid>
-          ) : (
-            <></>
-          )}
+          </MobileOnly>
         </Drawer>
-      </Hidden>
+      </Box>
     </>
   );
 };

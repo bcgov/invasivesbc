@@ -15,22 +15,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface IPublicLayoutProps {
-  keycloak?: any;
-  keycloakConfig?: any;
-  isMobileNoNetwork?: boolean;
-}
+interface IPublicLayoutProps {}
 
 const PublicLayout: React.FC<IPublicLayoutProps> = (props) => {
   const classes = useStyles();
-  const { isMobileNoNetwork } = props;
 
   return (
     <Box mb={2} height="inherit" width="inherit" display="flex" flexDirection="column">
       <CssBaseline />
       <main className={classes.mainContent}>
         {React.Children.map(props.children, (child: any) => {
-          return React.cloneElement(child, { classes: classes, isMobileNoNetwork: isMobileNoNetwork });
+          return React.cloneElement(child, { classes: classes });
         })}
       </main>
     </Box>
