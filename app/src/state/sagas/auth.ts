@@ -83,7 +83,13 @@ function* refreshRoles() {
       }
     });
 
-    yield put({ type: AUTH_REFRESH_ROLES_COMPLETE, payload: { all_roles: rolesData.rows, roles: userData.roles } });
+    yield put({
+      type: AUTH_REFRESH_ROLES_COMPLETE, payload: {
+        all_roles: rolesData.result,
+        roles: userData.result.roles,
+        extendedInfo: userData.result.extendedInfo
+      }
+    });
   } catch (err) {
     console.dir(err);
     yield put({ type: AUTH_REFRESH_ROLES_ERROR });

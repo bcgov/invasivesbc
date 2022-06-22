@@ -11,7 +11,7 @@ export const RecordSetContext = React.createContext(null);
 export const RecordSetProvider = (props) => {
   const [recordSetState, setRecordSetState] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const { displayName } = useSelector(selectAuth);
+  const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
 
   const getInitialState = async () => {

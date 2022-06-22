@@ -3,8 +3,8 @@ import { Route, RouteProps } from 'react-router-dom';
 import AccessDenied from '../pages/misc/AccessDenied';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { ErrorBanner } from '../components/error/ErrorBanner';
-import { useSelector } from "../state/utilities/use_selector";
-import { selectAuth } from "../state/reducers/auth";
+import { useSelector } from '../state/utilities/use_selector';
+import { selectAuth } from '../state/reducers/auth';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;

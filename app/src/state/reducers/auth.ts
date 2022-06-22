@@ -19,48 +19,65 @@ class AuthState {
 
   email: string;
   displayName: string;
+  username: string;
   userId: 'notImplemented';
 
   requestHeaders: {
     authorization: string;
   };
 
-  roles: string[];
-  accessRoles: string[];
+  roles: { role_id: number; role_name: string }[];
+  accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: false;
+
+  extendedInfo: {
+    user_id: number;
+    account_status: number;
+    activation_status: number;
+    work_phone_number: string | null;
+    funding_agencies: any[];
+    employer: string | null;
+    pac_number: string | null;
+    pac_service_number_1: string | null;
+    pac_service_number_2: string | null;
+  };
 
   constructor() {
     this.initialized = false;
     this.roles = [];
     this.accessRoles = [];
     this.rolesInitialized = false;
+    this.extendedInfo = null;
   }
 }
 
-function computeAccessRoles(all_roles: { role_name: string }[], roles: string[]): string[] {
+function computeAccessRoles(
+  all_roles: { role_id: number; role_name: string }[],
+  roles: { role_id: number; role_name: string }[]
+): { role_id: number; role_name: string }[] {
   const accessRoles = [];
 
   for (const role of roles) {
     accessRoles.push(role);
 
-    if (role === 'master_administrator') {
-      accessRoles.push(...all_roles.map(r => r.role_name));
+    if (role.role_name === 'master_administrator') {
+      accessRoles.push(...all_roles);
     }
-    if (role === 'indigenous_riso_manager_both') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso')).map(r => r.role_name));
+    if (role.role_name === 'indigenous_riso_manager_both') {
+      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso')));
     }
-    if (role === 'indigenous_riso_manager_plants') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso_staff_plants')).map(r => r.role_name));
+    if (role.role_name === 'indigenous_riso_manager_plants') {
+      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('indigenous_riso_staff_plants')));
     }
-    if (role === 'administrator_plants') {
-      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('plants')).map(r => r.role_name));
+    if (role.role_name === 'administrator_plants') {
+      accessRoles.push(...all_roles.filter((r) => r.role_name.includes('plants')));
     }
   }
-  const uniqueArray = accessRoles.filter((thing, index, self) => {
-    return index === self.findIndex((t) => t.role_name === thing.role_name);
+  const uniqueArray: { role_id: number; role_name: string }[] = accessRoles.filter((value, index, self) => {
+    return self.indexOf(value) === index;
   });
   return uniqueArray.sort((a, b) => {
-    return a.role_id < b.role_id ? -1 : a.role_id > b.role_id ? 1 : 0;
+    return a.role_id - b.role_id;
   });
 }
 
@@ -87,7 +104,7 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
 
   if (keycloakInstance.idTokenParsed) {
     username = keycloakInstance.idTokenParsed['preferred_username'];
-    displayName = `${keycloakInstance.idTokenParsed['first_name']} ${keycloakInstance.idTokenParsed['last_name']}`;
+    displayName = `${keycloakInstance.idTokenParsed['given_name']} ${keycloakInstance.idTokenParsed['family_name']}`;
     email = keycloakInstance.idTokenParsed['email'];
   }
 
@@ -134,6 +151,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           ...state,
           roles: [],
           accessRoles: [],
+          extendedInfo: null,
           rolesInitialized: false
         };
       }
@@ -142,15 +160,17 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           ...state,
           roles: [],
           accessRoles: [],
+          extendedInfo: null,
           rolesInitialized: false
         };
       }
       case AUTH_REFRESH_ROLES_COMPLETE: {
-        const { all_roles, roles } = action.payload;
+        const { all_roles, roles, extendedInfo } = action.payload;
         return {
           ...state,
           roles,
           accessRoles: computeAccessRoles(all_roles, roles),
+          extendedInfo,
           rolesInitialized: true
         };
       }
@@ -159,6 +179,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           ...state,
           roles: [],
           accessRoles: [],
+          extendedInfo: null,
           rolesInitialized: false
         };
       }
@@ -169,6 +190,6 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
 }
 
 const selectAuthHeaders: (state) => { authorization: any } = (state) => state.Auth.requestHeaders;
-const selectAuth: (state) => (AuthState) = (state) => state.Auth;
+const selectAuth: (state) => AuthState = (state) => state.Auth;
 
 export { createAuthReducer, selectAuthHeaders, selectAuth };

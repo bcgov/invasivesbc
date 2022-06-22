@@ -298,7 +298,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity_type_data?.activity_persons[0].applicator_license === '')
       ) {
         pacNeedsInsert = true;
-        if (extendedInfo.pac_number) {
+        if (extendedInfo?.pac_number) {
           applicatorLicenseInject = extendedInfo.pac_number;
         }
       }
