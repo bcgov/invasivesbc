@@ -1,11 +1,21 @@
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Theme } from '@mui/material';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Theme
+} from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
+import { Link, useHistory } from 'react-router-dom';
+import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
   getJurisdictions,
   getLatestReportedArea,
@@ -291,6 +301,33 @@ export const RenderTablePOI = (props: any) => {
     return userInfoLoaded && authContext.userRoles.length > 0;
   };
 
+  /**
+   * [Unfinished]
+   * Cells get cut off in data grid. This function (conceptually)
+   * will make it so you can see the cut off values. However,
+   * currently extends horizontally instead of vertically.
+   * Link:
+   *   https://mui.com/x/react-data-grid/rows/
+   * NOTE: Should look into getting jurisdiction letters instead
+   * of full name
+   * @param param0
+   * @returns
+   */
+  const ExpandableCell = ({ value }: GridRenderCellParams) => {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+      <Box>
+        {expanded ? value : value.slice(0, 11)}&nbsp;
+        {value.length > 11 && (
+          <Link type="button" component="button" sx={{ fontSize: 'inherit' }} onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'view less' : 'view more'}
+          </Link>
+        )}
+      </Box>
+    );
+  };
+
   const columns = [
     {
       field: 'id',
@@ -310,12 +347,13 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
-      width: 200
+      width: 250
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
-      width: 200
+      width: 170
+      // renderCell: (params: GridRenderCellParams) => <ExpandableCell {...params} />
     },
     {
       field: 'geometry',
@@ -330,7 +368,7 @@ export const RenderTablePOI = (props: any) => {
 
   const updatePOIRecords = React.useCallback(async () => {
     try {
-      const pointsofinterest = await dataAccess.getPointsOfInterest({
+      const pointsofinterest = await dataAccess.getPointsOfInterestLean({
         search_feature: bufferedGeo,
         isIAPP: true,
         limit: 500,
@@ -343,21 +381,17 @@ export const RenderTablePOI = (props: any) => {
 
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
-      pointsofinterest.rows.forEach((poi) => {
-        const surveys = poi.point_of_interest_payload.form_data.surveys;
-        const tempSurveyArea = getLatestReportedArea(surveys);
-        const newArr: any = getJurisdictions(surveys);
-        const arrJurisdictions = [];
-        newArr.forEach((item) => {
-          arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
-        });
+      pointsofinterest.forEach((poi) => {
+        const { site_id, reported_area } = poi.properties;
+        const jurisdictions: string = poi.properties.jurisdictions.toString();
+        const species: string[] = poi.properties.species_on_site;
         tempArr.push({
-          id: poi.point_of_interest_id,
-          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
-          jurisdiction_code: arrJurisdictions,
-          species_code: poi.species_on_site,
-          geometry: poi.point_of_interest_payload.geometry,
-          reported_area: getReportedAreaOutput(tempSurveyArea)
+          id: site_id,
+          site_id: site_id,
+          jurisdiction_code: jurisdictions,
+          species_code: species.join(' '),
+          geometry: poi,
+          reported_area: reported_area
         });
       });
       setRows(tempArr);
@@ -375,7 +409,7 @@ export const RenderTablePOI = (props: any) => {
         rowsPerPageOptions={[5]}
         rowHeight={30}
         headerHeight={30}
-        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (isAuthorized()) {
             history.push(`/home/iapp/${params.id}`);
           }
