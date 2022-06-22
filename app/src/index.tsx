@@ -1,22 +1,18 @@
-import { Plugins } from '@capacitor/core';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import App from 'App';
-import { default as React } from 'react';
+import { default as React, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import * as serviceWorker from 'serviceWorker';
-
-const { Device } = Plugins;
+import { setupStore } from './state/store';
+import { Device } from '@capacitor/device';
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
 
 const startApp = (info) => {
-  ReactDOM.render(<App deviceInfo={info} />, document.getElementById('root'));
-
-  // If you want your app to work offline and load faster, you can change
-  // unregister() to register() below. Note this comes with some pitfalls.
-  // Learn more about service workers: https://bit.ly/CRA-PWA
-  serviceWorker.unregister();
+  import(/* webpackChunkName: "app_config" */ 'state/config').then(({ CONFIG }) => {
+    const store = setupStore(CONFIG);
+    ReactDOM.render(<App deviceInfo={info} store={store} />, document.getElementById('root'));
+  });
 };
 
 if (window['cordova']) {

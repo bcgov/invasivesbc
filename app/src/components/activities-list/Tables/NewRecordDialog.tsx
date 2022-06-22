@@ -13,10 +13,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { ActivitySubtypeShortLabels, ActivityCategory, ActivitySubtypeRelations } from 'constants/activities';
 import { generateDBActivityPayload } from 'utils/addActivity';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useKeycloak } from '@react-keycloak/web';
 import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
 import { UserRolesAccess } from 'constants/roles';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -51,12 +51,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const history = useHistory();
-  const { keycloak } = useKeycloak();
 
   const databaseContext = useContext(DatabaseContext);
-  const authStateContext = useContext(AuthStateContext);
-
-  const { userInfo, userRoles } = authStateContext;
 
   const [activityCategory, setActivityCategory] = useState('');
   const [activityType, setActivityType] = useState('');
@@ -66,17 +62,16 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
+  const { displayName, roles } = useSelector(selectAuth);
+
   useEffect(() => {
-    if (!userRoles || !userRoles?.length || userRoles?.length < 1) {
-      throw new Error('Something went wrong');
-    }
     let userAccessDict = {};
 
-    userRoles.forEach((role) => {
-      if (Object.keys(userAccessDict).includes(userAccessDict[UserRolesAccess[role.role_name]])) {
+    roles.forEach((role) => {
+      if (Object.keys(userAccessDict).includes(userAccessDict[UserRolesAccess[role]])) {
         return;
       } else {
-        userAccessDict[UserRolesAccess[role.role_name]] = true;
+        userAccessDict[UserRolesAccess[role]] = true;
       }
     });
 
@@ -146,25 +141,20 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     if (!activityType || !activityCategory || !activitySubType) {
       return;
     }
-    try {
-      //    await dataAccess.createActivity(dbActivity, databaseContext);
-      const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
-      dbActivity.created_by = userInfo?.preferred_username;
-      dbActivity.user_role = userRoles?.map((role) => role.role_id);
-      await dataAccess.createActivity(dbActivity, databaseContext);
-      dbActivity.created_by = (userInfo as any)?.preferred_username;
-      await dataAccess.setAppState({
-        activeActivity: dbActivity.activity_id,
-        newActivityChoices: {
-          category: activityCategory,
-          type: activityType,
-          subType: activitySubType
-        }
-      });
-    } catch (e) {
-      console.log('unable to http ');
-      console.log(e);
-    }
+    const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
+    dbActivity.created_by = displayName;
+    dbActivity.user_role = roles.map((role) => role.role_id);
+    await dataAccess.createActivity(dbActivity, databaseContext);
+    dbActivity.created_by = displayName;
+    await dataAccess.setAppState({
+      activeActivity: dbActivity.activity_id,
+      newActivityChoices: {
+        category: activityCategory,
+        type: activityType,
+        subType: activitySubType
+      }
+    });
+
     //return dbActivity.activity_id;
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });

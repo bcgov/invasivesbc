@@ -1,7 +1,6 @@
 import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Theme } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -11,6 +10,8 @@ import {
   getLatestReportedArea,
   getReportedAreaOutput
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
+import { useSelector } from '../../../../state/utilities/use_selector';
+import { selectAuth } from '../../../../state/reducers/auth';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -100,7 +101,7 @@ export const RenderTableActivity = (props: any) => {
   const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { keycloak } = useContext(AuthStateContext);
+  const { authenticated } = useSelector(selectAuth);
 
   const columns = [
     {
@@ -148,10 +149,10 @@ export const RenderTableActivity = (props: any) => {
     const getApiSpec = async () => {
       setResponse(await invasivesAccess.getCachedApiSpec());
     };
-    if (keycloak?.obj?.authenticated) {
+    if (authenticated) {
       getApiSpec();
     }
-  }, [rows, keycloak?.obj?.authenticated]);
+  }, [rows, authenticated]);
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
@@ -284,12 +285,7 @@ export const RenderTablePOI = (props: any) => {
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const authContext = useContext(AuthStateContext);
-  const { userInfoLoaded } = useContext(AuthStateContext);
-
-  const isAuthorized = () => {
-    return userInfoLoaded && authContext.userRoles.length > 0;
-  };
+  const { roles } = useSelector(selectAuth);
 
   const columns = [
     {
@@ -376,7 +372,7 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-          if (isAuthorized()) {
+          if (roles.length == 0) {
             history.push(`/home/iapp/${params.id}`);
           }
         }}
