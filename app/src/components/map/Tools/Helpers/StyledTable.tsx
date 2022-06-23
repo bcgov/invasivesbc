@@ -1,17 +1,26 @@
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Theme } from '@mui/material';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Theme
+} from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
   getJurisdictions,
   getLatestReportedArea,
   getReportedAreaOutput
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
-import { getShortActivityID } from 'utils/addActivity';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -103,6 +112,10 @@ export const RenderTableActivity = (props: any) => {
   const history = useHistory();
   const { keycloak } = useContext(AuthStateContext);
 
+  const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
+    return <Box>{value} m&#178;</Box>;
+  };
+
   const columns = [
     {
       field: 'id',
@@ -122,7 +135,8 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'reported_area',
       headerName: 'Reported Area',
-      minWidth: 130
+      minWidth: 130,
+      renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
     },
     {
       field: 'jurisdiction_code',
