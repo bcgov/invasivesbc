@@ -167,7 +167,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       SELECT json_array_elements('${searchCriteria.search_feature}'::json->'features') AS array_features
     ) AS anything) `);
   }
-
+  
+  sqlStatement.append(SQL`SELECT`);
+    
   // Build lean object
   if (lean) {
     sqlStatement.append(SQL`
@@ -198,7 +200,6 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     ) as "geojson"
   `);
 
-  sqlStatement.append(SQL`SELECT`);
   if (searchCriteria.column_names && searchCriteria.column_names.length) {
     // do not include the `SQL` template string prefix, as column names can not be parameterized
     const newColumnNames = searchCriteria.column_names.map((name) => {
