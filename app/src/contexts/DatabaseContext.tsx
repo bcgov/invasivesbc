@@ -568,6 +568,7 @@ const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) => {
 };
 
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
+  console.dir(queryConfig);
   try {
     if (!databaseContext.sqliteDB) {
       return;

@@ -167,7 +167,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       SELECT json_array_elements('${searchCriteria.search_feature}'::json->'features') AS array_features
     ) AS anything) `);
   }
-  
+
   sqlStatement.append(SQL`SELECT`);
     
   // Build lean object

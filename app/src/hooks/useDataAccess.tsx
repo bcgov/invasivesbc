@@ -748,9 +748,32 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getAppState = (): any => {
-    const raw_old = localStorage.getItem('appstate-invasivesbc');
-    if (raw_old) {
-      return JSON.parse(raw_old);
+    if (Capacitor.getPlatform() === 'web') {
+      const raw_old = localStorage.getItem('appstate-invasivesbc');
+      if (raw_old) {
+        return JSON.parse(raw_old);
+      }
+    } else {
+      const dbcontext = databaseContext;
+      console.log(dbcontext);
+
+      try {
+        return dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE_AND_ID,
+                docType: DocType.APPSTATE,
+                ID: '1'
+              },
+              dbcontext
+            );
+          }
+        });
+      } catch (err) {
+        console.log("Thrown error in get app state", err);
+        console.dir(err);
+      }
     }
   };
 
@@ -802,16 +825,17 @@ export const useDataAccess = () => {
       const dbcontext = databaseContext;
 
       const appStateDoc = getAppState();
+      console.dir(appStateDoc);
 
       return dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [
               {
-                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                type: UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH,
                 docType: DocType.APPSTATE,
                 ID: '1',
-                json: { ...appStateDoc, ...newState }
+                json: appStateDoc ? { ...appStateDoc, ...newState } : { ...newState }
               }
             ],
             dbcontext
