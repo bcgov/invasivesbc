@@ -391,7 +391,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             ` (id,json) values ('` +
             upsertConfig.ID +
             `','` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            JSON.stringify(upsertConfig.json) + //.split(`'`).join(`''`) +
             //JSON.stringify(upsertConfig.json) +
             `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
           break;
@@ -434,7 +434,17 @@ const handleExecute = async (input: string, db: any) => {
   let ret: any;
   let batchUpdate = input;
   if (batchUpdate !== '') {
+    try
+    {
+
     ret = await db.execute(batchUpdate);
+    }
+    catch(e)
+    {
+      console.log('error executing sql')
+      console.log(e)
+      throw(e)
+    }
     if (!ret.changes) {
       return false;
     } else {
