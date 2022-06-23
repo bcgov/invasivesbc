@@ -52,8 +52,8 @@ import './scrollbar.css';
 import { useHistory } from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
-import { useSelector } from "../../../state/utilities/use_selector";
-import { selectAuth } from "../../../state/reducers/auth";
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 
@@ -281,7 +281,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let psnInject = '';
 
     if (activity_type_data?.activity_persons) {
-      // ALL RECORDS: Auto fill first user's name based on their name in authStateContext
       if (
         activity_type_data?.activity_persons.length > 0 &&
         (activity_type_data?.activity_persons[0].person_name === undefined ||
@@ -290,7 +289,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         nameNeedsInsert = true;
 
         userNameInject = displayName;
-
       }
       if (
         activity_type_data?.activity_persons.length > 0 &&
@@ -331,8 +329,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         psnInject = extendedInfo.pac_service_number_1
           ? extendedInfo.pac_service_number_1
           : extendedInfo.pac_service_number_2
-            ? extendedInfo.pac_service_number_2
-            : '';
+          ? extendedInfo.pac_service_number_2
+          : '';
       }
     }
 
@@ -367,13 +365,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         employer_code: employerNeedsInsert
           ? employerInject
           : activity_data?.employer_code
-            ? activity_data.employer_code
-            : '',
+          ? activity_data.employer_code
+          : '',
         invasive_species_agency_code: agenciesNeedInsert
           ? agenciesInject
           : activity_data?.invasive_species_agency_code
-            ? activity_data.invasive_species_agency_code
-            : '',
+          ? activity_data.invasive_species_agency_code
+          : '',
         reported_area: calculateGeometryArea(activity.geometry)
       },
       activity_type_data: {
