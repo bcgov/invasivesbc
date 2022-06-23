@@ -159,7 +159,14 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  */
 //NOSONAR
 export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT`;
+  const sqlStatement: SQLStatement = SQL``;
+
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
+    FROM (
+      SELECT json_array_elements('${searchCriteria.search_feature}'::json->'features') AS array_features
+    ) AS anything) `);
+  }
 
   // Build lean object
   if (lean) {
@@ -190,7 +197,14 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson"
   `);
-    // Build full object
+
+  sqlStatement.append(SQL`SELECT`);
+  if (searchCriteria.column_names && searchCriteria.column_names.length) {
+    // do not include the `SQL` template string prefix, as column names can not be parameterized
+    const newColumnNames = searchCriteria.column_names.map((name) => {
+      return 'a.' + name;
+    });
+    sqlStatement.append(` ${newColumnNames.join(', ')}`);
   } else {
     if (searchCriteria.column_names && searchCriteria.column_names.length) {
       // do not include the `SQL` template string prefix, as column names can not be parameterized
@@ -321,15 +335,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
-        geog,
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-              4326
-            )
-          )
-        )
+        a.geog,
+        (SELECT geog FROM multi_polygon_cte)
       )
     `);
   }
