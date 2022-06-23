@@ -393,7 +393,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             `','` +
             JSON.stringify(upsertConfig.json) + //.split(`'`).join(`''`) +
             //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
+            `') on conflict(id) do update set json=json_patch(json,excluded.json);\n`;
           break;
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE_AND_ID_DELETE:
