@@ -10,7 +10,6 @@ import { toolStyles } from './Helpers/ToolStyles';
 
 export const ToggleDisplayButtons = (props) => {
   //const history = useHistory();
-  //const { userInfo } = useContext(AuthStateContext); // style
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
 
