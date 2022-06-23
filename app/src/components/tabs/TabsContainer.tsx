@@ -130,8 +130,7 @@ export interface ITabConfig {
   icon: React.ReactElement;
 }
 
-export interface ITabsContainerProps {
-}
+export interface ITabsContainerProps {}
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const classes = useStyles();
@@ -153,10 +152,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setShowLoggedInTabs(userInfoLoaded && activated);
   }, [userInfoLoaded, activated]);
 
-  const [isAdmin, setIsAdmin] = useState(authenticated && roles.includes('master_administrator'));
+  const [isAdmin, setIsAdmin] = useState(
+    authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' })
+  );
 
   useEffect(() => {
-    setIsAdmin(authenticated && roles.includes('master_administrator'));
+    setIsAdmin(authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' }));
   }, [authenticated]);
 
   const handleClose = () => {
@@ -173,7 +174,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const logoutUser = async () => {
     history.push('/home/landing');
-    dispatch({ type: 'AUTH_SIGNOUT_REQUEST' });
+    dispatch({ type: 'AUTH_SIGNOUT_REQUEST' }); // FIXME: NOT WORKING
     handleClose();
   };
 
@@ -304,6 +305,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             path: '/home/iapp/',
             icon: (
               <img
+                alt="iapp logo"
                 src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
                 style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
               />
@@ -350,8 +352,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {
-            }
+            handler: () => {}
           },
           {
             text: 'Okay',
