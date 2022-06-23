@@ -1,5 +1,5 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Button,
@@ -22,6 +22,8 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { SelectChangeEvent } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -40,31 +42,20 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const classes = useStyles();
   const [transferAccess, setTransferAccess] = useState('');
   const [accountType, setAccountType] = useState('');
-  const [idir, setIdir] = useState(
-    authState.keycloak?.obj?.tokenParsed?.preferred_username
-      ? authState.keycloak?.obj?.tokenParsed?.preferred_username
-      : ''
-  );
-  const [bceid, setBceid] = useState(
-    authState.keycloak?.obj?.tokenParsed?.preferred_username
-      ? authState.keycloak?.obj?.tokenParsed?.preferred_username
-      : ''
-  );
+
+  const authState = useSelector(selectAuth);
+
+  const [idir, setIdir] = useState(authState.username ? authState.username : '');
+  const [bceid, setBceid] = useState(authState.username ? authState.username : '');
   const [firstName, setFirstName] = React.useState(
-    authState.keycloak?.obj?.tokenParsed?.given_name ? authState.keycloak?.obj?.tokenParsed?.given_name : ''
+    authState.displayName.split(' ', 2)[0] ? authState.displayName.split(' ', 2)[0] : ''
   );
   const [lastName, setLastName] = React.useState(
-    authState.keycloak?.obj?.tokenParsed?.family_name ? authState.keycloak?.obj?.tokenParsed?.family_name : ''
+    authState.displayName.split(' ', 2)[1] ? authState.displayName.split(' ', 2)[1] : ''
   );
-  const [email, setEmail] = React.useState(
-    authState.keycloak?.obj?.tokenParsed?.email ? authState.keycloak?.obj?.tokenParsed?.email : ''
-  );
-  const idir_userid = authState.keycloak?.obj?.tokenParsed?.idir_userid
-    ? authState.keycloak?.obj?.tokenParsed?.idir_userid
-    : '';
-  const bceid_userid = authState.keycloak?.obj?.tokenParsed?.bceid_userid
-    ? authState.keycloak?.obj?.tokenParsed?.bceid_userid
-    : '';
+  const [email, setEmail] = React.useState(authState.email ? authState.email : '');
+  const idir_userid = authState.userId ? authState.userId : ''; // FIXME: Find a way to grab IDIR user id if we still need it
+  const bceid_userid = authState.userId ? authState.userId : ''; // FIXME: Find a way to grab BCEID user id if we still need it
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -184,7 +175,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   }, [userInfo]);
 
   useEffect(() => {
-    const userName = authState.keycloak?.obj?.userInfo?.preferred_username;
+    const userName = authState.username;
     const fetchFundingAgencies = async () => {
       const response = await api.getFundingAgencies();
       setFundingAgenciesList(response);
