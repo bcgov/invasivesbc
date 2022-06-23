@@ -164,13 +164,9 @@ export const RenderTableActivity = (props: any) => {
 
       const tempArr = [];
 
-      console.log(activities);
-
       activities?.rows?.forEach((a) => {
         const id = a.geojson.properties.id;
-        console.log(id);
-        const short_id = getShortActivityID(id);
-        console.log(short_id);
+        const short_id = a.geojson.properties.short_id;
         const jurisdiction_code = [];
         const activity_type = a.geojson.properties.type;
         const reported_area = a.geojson.properties.reported_area;
@@ -194,7 +190,7 @@ export const RenderTableActivity = (props: any) => {
           id: id,
           short_id: short_id,
           activity_type: activity_type,
-          reported_area: (reported_area ? reported_area : 0) + ' Ha',
+          reported_area: reported_area ? reported_area : 0,
           jurisdiction_code: jurisdiction_code,
           species_code: species_code,
           geometry: geometry
