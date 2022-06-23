@@ -15,7 +15,6 @@ import AddIcon from '@mui/icons-material/Add';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { Autocomplete } from '@mui/material';
 import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'utils/CustomThemeProvider';
@@ -25,6 +24,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { generateDBActivityPayload, sanitizeRecord } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
 
 export const NewRecordRecordPagae = (props) => {
   const dataAccess = useDataAccess();
@@ -32,7 +33,8 @@ export const NewRecordRecordPagae = (props) => {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const history = useHistory();
-  const { userInfo, hasRole, rolesUserHasAccessTo, userRoles } = useContext(AuthStateContext);
+
+  const authState = useSelector(selectAuth);
 
   // Is this needed? Copied from DisplayPosition
 
@@ -50,10 +52,10 @@ export const NewRecordRecordPagae = (props) => {
     const subtype = props.subType || ActivitySubtype.Observation_PlantTerrestrial;
 
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-    dbActivity.created_by = userInfo?.preferred_username;
-    dbActivity.user_role = userRoles?.map((role) => role.role_id);
+    dbActivity.created_by = authState.username;
+    dbActivity.user_role = authState.roles?.map((role) => role.role_id);
     await dataAccess.createActivity(dbActivity, databaseContext);
-    dbActivity.created_by = (userInfo as any)?.preferred_username;
+    dbActivity.created_by = authState.username;
     try {
       await dataAccess.createActivity(dbActivity, databaseContext);
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
