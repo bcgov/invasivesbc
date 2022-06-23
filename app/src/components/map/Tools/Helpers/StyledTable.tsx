@@ -11,6 +11,7 @@ import {
   getLatestReportedArea,
   getReportedAreaOutput
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
+import { getShortActivityID } from 'utils/addActivity';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -155,7 +156,7 @@ export const RenderTableActivity = (props: any) => {
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
-      const activities = await dataAccess.getActivities({
+      const activities = await dataAccess.getActivitiesLean({
         search_feature: bufferedGeo,
         limit: 500,
         page: 0
@@ -163,30 +164,34 @@ export const RenderTableActivity = (props: any) => {
 
       const tempArr = [];
 
+      console.log(activities);
+
       activities?.rows?.forEach((a) => {
-        const activity_id = a.activity_id;
-        const short_id = a.activity_payload.short_id;
-        const activity_type = a.activity_payload.activity_type;
-        const reported_area = a.activity_payload.form_data.reported_area;
+        const id = a.geojson.properties.id;
+        console.log(id);
+        const short_id = getShortActivityID(id);
+        console.log(short_id);
         const jurisdiction_code = [];
-        a.activity_payload.form_data?.jurisdictions?.forEach((item) => {
+        const activity_type = a.geojson.properties.type;
+        const reported_area = a.geojson.properties.reported_area;
+        a.geojson.properties.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
         const species_code = [];
-        if (a?.species_positive?.length > 0) {
-          a.species_positive.forEach((s) => {
+        if (a?.geojson.properties.species_positive?.length > 0) {
+          a.geojson.properties.species_positive.forEach((s) => {
             species_code.push(s);
           });
         }
-        if (a?.species_negative?.length > 0) {
-          a.species_negative.forEach((s) => {
+        if (a?.geojson.properties.species_negative?.length > 0) {
+          a.geojson.properties.species_negative.forEach((s) => {
             species_code.push(s);
           });
         }
-        const geometry = a.activity_payload.geometry[0];
+        const geometry = a.geojson;
 
         tempArr.push({
-          id: activity_id,
+          id: id,
           short_id: short_id,
           activity_type: activity_type,
           reported_area: (reported_area ? reported_area : 0) + ' Ha',
