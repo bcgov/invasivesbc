@@ -13,6 +13,7 @@ export const RecordSetProvider = (props) => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
+  const { displayName, accessRoles } = useSelector(selectAuth);
 
   const getInitialState = async () => {
     const oldState = dataAccess.getAppState();
