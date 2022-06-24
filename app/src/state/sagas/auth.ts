@@ -9,8 +9,8 @@ import {
   AUTH_REFRESH_TOKEN,
   AUTH_REQUEST_COMPLETE,
   AUTH_REQUEST_ERROR,
-  AUTH_SIGNIN_REQUEST,
-  AUTH_UPDATE_TOKEN_STATE
+  AUTH_SIGNIN_REQUEST, AUTH_SIGNOUT_COMPLETE, AUTH_SIGNOUT_REQUEST,
+  AUTH_UPDATE_TOKEN_STATE, USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -68,8 +68,7 @@ function* refreshRoles() {
       url: configuration.API_BASE + `/api/user-access`,
       headers: {
         Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/json'
       }
     });
 
@@ -78,8 +77,7 @@ function* refreshRoles() {
       url: configuration.API_BASE + `/api/roles`,
       headers: {
         Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/json'
       }
     });
 
@@ -88,6 +86,13 @@ function* refreshRoles() {
         all_roles: rolesData.result,
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo
+      }
+    });
+
+    yield put({
+      type: USERINFO_LOAD_COMPLETE,
+      payload: {
+        userInfo: userData.result.extendedInfo
       }
     });
   } catch (err) {
@@ -120,10 +125,23 @@ function* handleSigninRequest(action) {
   }
 }
 
+function* handleSignoutRequest(action) {
+  try {
+    yield keycloakInstance.logout();
+    yield put({ type: AUTH_SIGNOUT_COMPLETE });
+    yield put({ type: USERINFO_CLEAR_REQUEST });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: AUTH_REQUEST_ERROR });
+  }
+}
+
+
 function* authenticationSaga() {
   yield all([
     takeLatest(AUTH_INITIALIZE_REQUEST, initializeAuthentication),
     takeLatest(AUTH_SIGNIN_REQUEST, handleSigninRequest),
+    takeLatest(AUTH_SIGNOUT_REQUEST, handleSignoutRequest),
     takeLatest(AUTH_REFRESH_TOKEN, keepTokenFresh),
     takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles)
   ]);

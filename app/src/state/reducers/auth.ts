@@ -6,7 +6,7 @@ import {
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_REQUEST_COMPLETE,
+  AUTH_REQUEST_COMPLETE, AUTH_SIGNOUT_COMPLETE,
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 
@@ -20,7 +20,6 @@ class AuthState {
   email: string;
   displayName: string;
   username: string;
-  userId: 'notImplemented';
 
   requestHeaders: {
     authorization: string;
@@ -123,6 +122,20 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
 function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => AuthState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case AUTH_SIGNOUT_COMPLETE: {
+        return {
+          ...state,
+          initialized: true,
+          authenticated: false,
+          roles: [],
+          accessRoles: [],
+          rolesInitialized: false,
+          extendedInfo: null,
+          displayName: null,
+          email: null,
+          username: 'loggedOut'
+        };
+      }
       case AUTH_INITIALIZE_COMPLETE: {
         const { authenticated } = action.payload;
         return {

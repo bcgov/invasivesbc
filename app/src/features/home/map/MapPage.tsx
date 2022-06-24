@@ -105,17 +105,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
   // TODO:  check if used
   // const [extent, setExtent] = useState(null);
 
-  const { authenticated, roles } = useSelector(selectAuth);
-
-  const history = useHistory();
-
-
-  useEffect(() => {
-    if (roles.length === 0) {
-      history.push('/home/landing');
-    }
-  }, [authenticated, roles]);
-
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };

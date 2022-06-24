@@ -56,12 +56,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     history.push('/home/access-request');
   };
 
-  // const isUserActivated = () => {
-  //   if (!userInfoLoaded) {
-  //     return false;
-  //   }
-  //   return userInfo?.activation_status === 1;
-  // };
 
   const redirectToAgreement = (e) => {
     e.preventDefault();

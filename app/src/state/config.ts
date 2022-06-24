@@ -77,7 +77,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_ADAPTER: 'web',
       REDIRECT_URI: 'http://localhost:3000/home/landing',
       FEATURE_GATE: {
-        PLAN_MY_TRIP: true,
+        PLAN_MY_TRIP: false,
         EMBEDDED_REPORTS: true
       }
     };

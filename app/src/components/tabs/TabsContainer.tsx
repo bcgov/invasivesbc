@@ -41,7 +41,13 @@ import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
 import { useDispatch } from 'react-redux';
-import { AUTH_SIGNIN_REQUEST, NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../../state/actions';
+import {
+  AUTH_SIGNIN_REQUEST,
+  AUTH_SIGNOUT_COMPLETE,
+  AUTH_SIGNOUT_REQUEST,
+  NETWORK_GO_OFFLINE,
+  NETWORK_GO_ONLINE
+} from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
 import { selectUserInfo } from '../../state/reducers/userInfo';
@@ -142,15 +148,16 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const dispatch = useDispatch();
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
-
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+
   const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
 
-  const [showLoggedInTabs, setShowLoggedInTabs] = useState(userInfoLoaded && activated);
+  const [showLoggedInTabs, setShowLoggedInTabs] = useState(authenticated && activated && userInfoLoaded);
+
   useEffect(() => {
-    setShowLoggedInTabs(userInfoLoaded && activated);
-  }, [userInfoLoaded, activated]);
+    setShowLoggedInTabs(authenticated && userInfoLoaded && activated);
+  }, [authenticated, activated, userInfoLoaded]);
 
   const [isAdmin, setIsAdmin] = useState(
     authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' })
@@ -158,7 +165,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   useEffect(() => {
     setIsAdmin(authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' }));
-  }, [authenticated]);
+  }, [authenticated, roles]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -174,7 +181,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const logoutUser = async () => {
     history.push('/home/landing');
-    dispatch({ type: 'AUTH_SIGNOUT_REQUEST' }); // FIXME: NOT WORKING
+    dispatch({ type: AUTH_SIGNOUT_REQUEST});
     handleClose();
   };
 
@@ -332,7 +339,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-  }, []);
+  }, [showLoggedInTabs]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;

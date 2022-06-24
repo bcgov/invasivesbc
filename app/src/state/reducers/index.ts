@@ -11,7 +11,7 @@ function createRootReducer(config: AppConfig) {
   return combineReducers({
     Configuration: createConfigurationReducerWithDefaultState(config),
     Auth: createAuthReducer(config),
-    UserInfo: createUserInfoReducer({ loaded: true, accessRequested: false, activated: true }),
+    UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
     Network: createNetworkReducer({ connected: true })
   });
 }

@@ -1,3 +1,6 @@
+import { USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE } from '../actions';
+import { briefcaseSharp } from 'ionicons/icons';
+
 interface UserInfo {
   loaded: boolean;
   activated: boolean;
@@ -10,6 +13,21 @@ function createUserInfoReducer(userInfo: UserInfo) {
   };
 
   return (state = initialState, action) => {
+    switch (action.type) {
+      case USERINFO_CLEAR_REQUEST:
+        return {
+          ...state,
+          loaded: false,
+          activated: false,
+          accessRequested: false
+        };
+      case USERINFO_LOAD_COMPLETE:
+        return {
+          ...state,
+          loaded: true,
+          activated: action.payload.userInfo.activation_status === 1
+        };
+    }
     return state;
   };
 }
