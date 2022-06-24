@@ -30,7 +30,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     }
     if (zoom >= 15) {
       setZoomType(ZoomTypes.HIGH);
-      return;
     }
   });
 
@@ -61,8 +60,6 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.color]);
 
   const filters: IActivitySearchCriteria = props.filters;
-  // console.log('filters for api');
-  // console.dir(filters);
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({
       ...filters
@@ -101,7 +98,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               return (
                 <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup map={map} bufferedGeo={a} />
+                  <GeneratePopup bufferedGeo={a} />
                 </Marker>
               );
             }
@@ -110,7 +107,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               return (
                 <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup map={map} bufferedGeo={a} />
+                  <GeneratePopup bufferedGeo={a} />
                 </Marker>
               );
             }
@@ -135,14 +132,14 @@ export const ActivitiesLayerV2 = (props: any) => {
                 if (a?.geometry?.type === 'Polygon') {
                   return (
                     <GeoJSON data={a} options={options}>
-                      <GeneratePopup map={map} bufferedGeo={a} />
+                      <GeneratePopup bufferedGeo={a} />
                     </GeoJSON>
                   );
                 }
                 if (a?.geometry?.type === 'Point') {
                   return (
                     <GeoJSON data={a} options={options}>
-                      <GeneratePopup map={map} bufferedGeo={a} />
+                      <GeneratePopup bufferedGeo={a} />
                     </GeoJSON>
                   );
                 }

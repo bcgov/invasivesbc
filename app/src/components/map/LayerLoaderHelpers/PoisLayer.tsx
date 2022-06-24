@@ -9,7 +9,6 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { polygon } from '@turf/helpers';
 import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR
-// import { GeoTIFFLayer } from '../GeoTIFFs/GeoTIFFLayer';
 
 var parseGeoraster = require('georaster');
 var GeoRasterLayer = require('georaster-layer-for-leaflet');
@@ -93,25 +92,6 @@ export const PoisLayer = (props) => {
       point_of_interest_type: props.poi_type
     });
 
-    // Removed for now (was for when we were pulling from non-lean endpoint):
-    // const poisFeatureArray = [];
-    // poisData?.rows?.forEach((row) => {
-    //   if (row.geom) {
-    //     const object = {
-    //       geometry: row.geom.geometry,
-    //       properties: {
-    //         point_of_interest_id: row.point_of_interest_id,
-    //         point_of_interest_payload: row.point_of_interest_payload,
-    //         point_of_interest_subtype: row.point_of_interest_subtype,
-    //         species_on_site: row.species_on_site
-    //       },
-    //       type: row.geom.type
-    //     };
-    //     poisFeatureArray.push(object);
-    //   }
-    // });
-
-    // it was (..., features: poisFeatureArray)
     setPois({ type: 'FeatureCollection', features: poisData });
     const poiArr = poisData?.rows?.map((row) => {
       return {
@@ -132,21 +112,7 @@ export const PoisLayer = (props) => {
         <MarkerClusterGroup chunkedLoading>
           {pois?.features?.map((feature) => {
             const position = feature.geometry.coordinates;
-            const val = 0.003;
-            const bufferedGeo = polygon([
-              [
-                [position[0] + val, position[1] - val / 2],
-                [position[0] + val, position[1] + val / 2],
-                [position[0] - val, position[1] + val / 2],
-                [position[0] - val, position[1] - val / 2],
-                [position[0] + val, position[1] - val / 2]
-              ]
-            ]);
-            return (
-              <Marker position={[position[1], position[0]]} icon={IAPPSite}>
-                <GeneratePopup map={map} bufferedGeo={bufferedGeo} />
-              </Marker>
-            );
+            return <Marker position={[position[1], position[0]]} icon={IAPPSite} />;
           })}
         </MarkerClusterGroup>
       )}
@@ -171,7 +137,7 @@ export const PoisLayer = (props) => {
                   <br />
                   {feature.properties.species_on_site.toString()}
                 </Tooltip>
-                <GeneratePopup map={map} bufferedGeo={bufferedGeo} />
+                <GeneratePopup bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}

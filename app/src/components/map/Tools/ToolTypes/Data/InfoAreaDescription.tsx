@@ -1,4 +1,3 @@
-//Material UI
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -19,10 +18,9 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import * as turf from '@turf/helpers';
 import buffer from '@turf/buffer';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import L, { DomEvent } from 'leaflet';
+import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-// Leaflet and React-Leaflet
-import { GeoJSON, Popup, useMapEvent } from 'react-leaflet';
+import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import binoculars from '../../../Icons/binoculars.png';
 import {
   createDataUTM,
@@ -33,9 +31,7 @@ import {
   RenderTablePosition
 } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
-// App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
-import { polygon } from '@turf/helpers';
 import center from '@turf/center';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -47,18 +43,17 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = (props) => {
-  const { map, bufferedGeo } = props;
+  const { bufferedGeo, onCloseCallback = null } = props;
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
-  // const [showRadius, setShowRadius] = useState(false); // NOSONAR
+  const map = useMap();
+  const position = center(bufferedGeo).geometry.coordinates;
+
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
-  // const [radius, setRadius] = useState(3);
-  const popupElRef = useRef(null);
 
-  const position = center(bufferedGeo).geometry.coordinates;
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -66,38 +61,22 @@ export const GeneratePopup = (props) => {
     createDataUTM('Northing', utmResult[2])
   ];
 
-  useEffect(() => {
-    if (popupElRef?.current) {
-      DomEvent.disableClickPropagation(popupElRef?.current);
-      DomEvent.disableScrollPropagation(popupElRef?.current);
-    }
-  }, []);
-
-  // Removed for now:
-  // useEffect(() => {
-  //   if (bufferedGeo) {
-  //     getDataFromDataBC(
-  //       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-  //       bufferedGeo,
-  //       invasivesApi.getSimplifiedGeoJSON
-  //     ).then((returnVal) => {
-  //       setDataBC(returnVal);
-  //     }, []);
-  //   }
-  // }, [bufferedGeo]);
-
   const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
     map.closePopup();
+    if (onCloseCallback) {
+      setTimeout(() => {
+        onCloseCallback();
+      }, 500);
+    }
   };
 
-  const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
+  const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
     setSection(newSection);
   };
 
   return (
     <>
-      <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+      <Popup className={theme} autoClose={false} closeOnClick={true} closeButton={false}>
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
@@ -117,23 +96,6 @@ export const GeneratePopup = (props) => {
             </BottomNavigation>
           </Grid>
           <Grid container>
-            {/* <Stack direction="row" spacing={1} style={{ width: 500 }} alignItems="center">
-              <Typography
-                className={assignPointModeTheme(!pointMode, themeType)}
-                style={assignPtDefaultTheme(pointMode, themeType)}>
-                Within Radius
-              </Typography>
-              <Switch
-                checked={pointMode}
-                onChange={(event: any) => setPointMode(event.target.checked)}
-                color="primary"
-              />
-              <Typography
-                className={assignPointModeTheme(pointMode, themeType)}
-                style={assignPtDefaultTheme(!pointMode, themeType)}>
-                Just This Point
-              </Typography>
-            </Stack> */}
             <Grid item>
               <Button onClick={hideElement}>Close</Button>
             </Grid>
@@ -144,102 +106,98 @@ export const GeneratePopup = (props) => {
   );
 };
 
-function SetPointOnClick({ map }: any) {
-  const themeContext = useContext(ThemeContext);
-  const [positionOne, setPositionOne] = useState(null);
-  const [drawnGeo, setDrawnGeo] = useState(null);
-  const [clickMode, setClickMode] = useState(false);
-  const [drawnOpacity, setDrawnOpacity] = useState({
-    opacity: 0,
-    fillOpacity: 0
-  });
-  const drawnGeoKey = Math.random(); // NOSONAR
-  // Removed for redundancy
-  // const recordGeoKey = Math.random(); // NOSONAR
-  const divRef = useRef();
+enum workflowStepEnum {
+  NOT_STARTED = 'NOT_STARTED',
+  BOX_DRAW_START = 'BOX_DRAW_START',
+  BOX_DRAW_DONE = 'BOX_DRAW_DONE'
+}
+
+function SetPointOnClick() {
+  const [workflowStep, setWorkflowStep] = React.useState(workflowStepEnum.NOT_STARTED);
+  const [userGeo, setUserGeo] = React.useState(null);
+  const map = useMap();
   const toolClass = toolStyles();
+  const themeContext = React.useContext(ThemeContext);
+  const divRef = React.useRef();
+  const markerRef = useRef(null);
+  const [coolguy, setCoolGuy] = useState(null);
+
+  useEffect(() => {
+    console.log('workflow step', workflowStep);
+  }, [workflowStep]);
+
+  useEffect(() => {
+    if (userGeo !== null) {
+      setWorkflowStep(workflowStepEnum.BOX_DRAW_DONE);
+    }
+  }, [userGeo]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
+    const aCoolguy = new (L as any).Draw.Rectangle(map);
+    setCoolGuy(aCoolguy);
+  }, []);
 
-  // useEffect(() => {
-  //   if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
-  //     const result = calc_utm(position?.lng as number, position?.lat as number);
-  //     setUTM([
-  //       createDataUTM('UTM', result[0]),
-  //       createDataUTM('Easting', result[1]),
-  //       createDataUTM('Northing', result[2])
-  //     ]);
-  //     generateGeo(position.lat, position.lng, { setGeoPoint });
-  //   }
-  // }, [position]);
-
-  useMapEvent('click', (e) => {
-    try {
-      // Start drawing a box
-      if (clickMode) {
-        if (positionOne === null) {
-          setPositionOne(e.latlng);
-          setDrawnOpacity(null);
-        } else {
-          setPositionOne(null);
-          setClickMode(false);
-          setDrawnOpacity(null);
+  useEffect(() => {
+    const marker = markerRef.current;
+    switch (workflowStep) {
+      case workflowStepEnum.BOX_DRAW_START:
+        if (!userGeo) {
+          coolguy.enable();
         }
-      }
-      // else {
-      //   // just click to create invisible small box
-      //   const temp = e.latlng;
-      //   const val = 0.001;
-      //   const latlng1 = [temp.lng + val, temp.lat - val / 2];
-      //   const latlng3 = [temp.lng - val, temp.lat + val / 2];
-      //   const latlng2 = [temp.lng + val, temp.lat + val / 2];
-      //   const latlng4 = [temp.lng - val, temp.lat - val / 2];
-      //   setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
-      //   const result = calc_utm(temp.lng, temp.lat);
-      //   setUTM([
-      //     createDataUTM('Zone', result[0]),
-      //     createDataUTM('Easting', result[1]),
-      //     createDataUTM('Northing', result[2])
-      //   ]);
-      //   setDrawnOpacity({
-      //     opacity: 0,
-      //     fillOpacity: 0
-      //   });
-      // }
-    } catch (_e) {
-      console.log('Info Area Description click error', _e);
+
+        break;
+      case workflowStepEnum.BOX_DRAW_DONE:
+        if (marker) {
+          setTimeout(() => {
+            marker.openPopup();
+          }, 250);
+        }
+        break;
+      case workflowStepEnum.NOT_STARTED:
+        setUserGeo(null);
+        if (marker) {
+          marker.closePopup();
+        }
+        break;
     }
   });
 
-  // get mouse location on map to draw temporary geometry
-  useMapEvent('mousemove', (e) => {
-    if (positionOne && clickMode) {
-      const temp = e.latlng;
-      const latlng1 = [positionOne.lng, positionOne.lat];
-      const latlng3 = [temp.lng, temp.lat];
-      const latDiff = positionOne.lat - temp.lat;
-      const lngDiff = positionOne.lng - temp.lng;
-      const latlng2 = [positionOne.lng, positionOne.lat - latDiff];
-      const latlng4 = [positionOne.lng - lngDiff, positionOne.lat];
-      setDrawnGeo(polygon([[latlng1, latlng2, latlng3, latlng4, latlng1]]));
+  const BoxDrawStartOnClick = () => {
+    switch (workflowStep) {
+      case workflowStepEnum.NOT_STARTED:
+        setWorkflowStep(workflowStepEnum.BOX_DRAW_START);
+        break;
+      case workflowStepEnum.BOX_DRAW_START:
+        setWorkflowStep(workflowStepEnum.NOT_STARTED);
+        break;
+      case workflowStepEnum.BOX_DRAW_DONE:
+        setWorkflowStep(workflowStepEnum.NOT_STARTED);
+        break;
     }
+  };
+
+  const boxDrawDoneCallback = (layer) => {
+    const geo = layer;
+    setUserGeo(geo);
+  };
+
+  useMapEvent('draw:created' as any, (e) => {
+    boxDrawDoneCallback(e.layer.toGeoJSON());
+    coolguy.disable();
   });
 
   return (
     <ListItem disableGutters className={toolClass.listItem}>
       <ListItemButton
+        onClick={BoxDrawStartOnClick}
         ref={divRef}
-        onClick={() => {
-          if (!clickMode) {
-            setDrawnGeo(null);
-          }
-          setClickMode(!clickMode);
-        }}
         style={{
-          backgroundColor: clickMode ? 'lightgray' : null,
+          backgroundColor:
+            workflowStep === workflowStepEnum.BOX_DRAW_START || workflowStep === workflowStepEnum.BOX_DRAW_DONE
+              ? 'lightgray'
+              : null,
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           marginTop: 5
@@ -256,10 +214,20 @@ function SetPointOnClick({ map }: any) {
           <Typography className={toolClass.Font}>What's here?</Typography>
         </ListItemText>
       </ListItemButton>
-      {drawnGeo && (
-        <GeoJSON style={() => drawnOpacity} data={drawnGeo} key={drawnGeoKey}>
-          {!clickMode && <GeneratePopup map={map} bufferedGeo={drawnGeo} setClickMode={setClickMode} />}
-        </GeoJSON>
+      {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
+        <Marker
+          ref={markerRef}
+          position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
+          <GeneratePopup
+            onCloseCallback={() => {
+              setWorkflowStep(workflowStepEnum.NOT_STARTED);
+              setUserGeo(null);
+            }}
+            bufferedGeo={userGeo}
+          />
+        </Marker>
+      ) : (
+        <></>
       )}
     </ListItem>
   );
