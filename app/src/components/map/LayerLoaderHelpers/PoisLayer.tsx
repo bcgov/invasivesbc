@@ -133,20 +133,18 @@ export const PoisLayer = (props) => {
           {pois?.features?.map((feature) => {
             const position = feature.geometry.coordinates;
             const val = 0.003;
-            // Removed for now:
-            // const bufferedGeo = polygon([
-            //   [
-            //     [position[0] + val, position[1] - val / 2],
-            //     [position[0] + val, position[1] + val / 2],
-            //     [position[0] - val, position[1] + val / 2],
-            //     [position[0] - val, position[1] - val / 2],
-            //     [position[0] + val, position[1] - val / 2]
-            //   ]
-            // ]);
+            const bufferedGeo = polygon([
+              [
+                [position[0] + val, position[1] - val / 2],
+                [position[0] + val, position[1] + val / 2],
+                [position[0] - val, position[1] + val / 2],
+                [position[0] - val, position[1] - val / 2],
+                [position[0] + val, position[1] - val / 2]
+              ]
+            ]);
             return (
               <Marker position={[position[1], position[0]]} icon={IAPPSite}>
-                {/* 
-                  Loads component <GeneratePopup map={map} bufferedGeo={bufferedGeo} /> */}
+                <GeneratePopup map={map} bufferedGeo={bufferedGeo} />
               </Marker>
             );
           })}

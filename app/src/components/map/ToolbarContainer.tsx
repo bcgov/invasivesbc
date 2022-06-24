@@ -91,7 +91,7 @@ export const ToolbarContainer = (props) => {
           style={{ transform: expanded ? 'translateX(5%)' : 'translateX(110%)' }}>
           <LayerPicker inputGeo={props.inputGeo} />
           <Divider />
-          <SetPointOnClick />
+          <SetPointOnClick map={props.map} />
           <MeasureTool
             setMeasureToolContainerOpen={setMeasureToolContainerOpen}
             measureToolContainerOpen={measureToolContainerOpen}

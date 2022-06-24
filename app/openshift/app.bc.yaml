@@ -37,9 +37,20 @@ parameters:
   - name: SOURCE_IMAGE_TAG
     required: true
     value: latest
-  - name: REACT_APP_REAL_NODE_ENV
-    description: temp - second env var - will consolidate after
-    value: 'development'
+  - name: SSO_URL
+    description: Key clock login url
+    value: 'https://oidc.gov.bc.ca'
+  - name: SSO_CLIENT_ID
+    description: Client Id for application
+    value: 'invasives-bc-1849'
+  - name: SSO_REALM
+    description: Realm identifier or name
+    value: onestopauth-business
+  - name: REACT_APP_API_HOST
+    description: API host for application backend
+    value: ''
+  - name: REDIRECT_URI
+    value: ''
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -109,10 +120,16 @@ objects:
             kind: ImageStreamTag
             name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
           env:
-            - name: "GENERATE_SOURCEMAP"
-              value: "false"
-            - name: "REACT_APP_REAL_NODE_ENV"
-              value: "${REACT_APP_REAL_NODE_ENV}"
+            - name: REACT_APP_API_HOST
+              value: ${REACT_APP_API_HOST}
+            - name: REDIRECT_URI
+              value: ${REDIRECT_URI}
+            - name: SSO_URL
+              value: ${SSO_URL}
+            - name: SSO_CLIENT_ID
+              value: ${SSO_CLIENT_ID}
+            - name: SSO_REALM
+              value: ${SSO_REALM}
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:

@@ -24,10 +24,10 @@ GET.apiDoc = {
   tags: ['user-access'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -151,7 +151,7 @@ DELETE.apiDoc = {
 };
 
 // Returns a function that will be used as a middleware for the GET request
-// Returns 400 if neither or both parameters are provided (only one parameter is permitted)
+// Returns 400 if both parameters are provided
 function decideGET() {
   return async (req, res, next) => {
     const roleId = req.query.roleId;
@@ -170,12 +170,7 @@ function decideGET() {
     if (userId) {
       return await getRolesForUser(req, res, next, userId);
     }
-    return res.status(400).json({
-      error: 'At least one of roleId or userId must be provided',
-      request: req.body,
-      namespace: 'user-access',
-      code: 400
-    });
+    return await getRolesForSelf(req, res, next);
   };
 }
 
@@ -360,4 +355,28 @@ async function getRolesForUser(req, res, next, userId) {
   } finally {
     connection.release();
   }
+}
+
+async function getRolesForSelf(req, res, next) {
+  return res.status(200).json({
+    message: 'Successfully retrieved roles for self',
+    request: req.body,
+    result: {
+      roles: req.authContext.roles,
+      extendedInfo: {
+        user_id: req.authContext.user.user_id,
+        account_status: req.authContext.user.account_status,
+        activation_status: req.authContext.user.activation_status,
+        work_phone_number: req.authContext.user.work_phone_number,
+        funding_agencies: req.authContext.user.funding_agencies,
+        employer: req.authContext.user.employer,
+        pac_number: req.authContext.user.pac_number,
+        pac_service_number_1: req.authContext.user.pac_service_number_1,
+        pac_service_number_2: req.authContext.user.pac_service_number_2
+      }
+    },
+    count: 1,
+    namespace: 'user-access',
+    code: 200
+  });
 }

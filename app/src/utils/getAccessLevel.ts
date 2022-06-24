@@ -1,5 +1,5 @@
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
 
 export enum recordLevel {
   OWN = 'own',
@@ -10,11 +10,13 @@ export enum recordLevel {
 }
 
 export const GetUserAccessLevel = function (organizationId?, agencyId?) {
-  const { userRoles } = useContext(AuthStateContext);
   let hasAnimalAccess = false;
   let hasPlantAccess = false;
-  if (userRoles) {
-    userRoles.forEach((role) => {
+
+  const authState = useSelector(selectAuth);
+
+  if (authState.roles) {
+    authState.roles.forEach((role) => {
       if (
         role.role_name.includes('animals') ||
         role.role_name.includes('both') ||

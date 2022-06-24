@@ -10,7 +10,7 @@ interface IPublicRouteProps extends RouteProps {
 }
 
 /**
- * A PublicRoute only allows a user who is authenticated and has the appropriate role(s).
+ * A PublicRoute does not restrict based on authentication status.
  *
  * @param {*} props properties {component, layout, ...rest}
  * @return {*}

@@ -2,13 +2,14 @@ import { Box, Button, Grid, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { ActivitiesLayerV2 } from 'components/map/LayerLoaderHelpers/ActivitiesLayerV2';
 import MapContainer from 'components/map/MapContainer';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useHistory } from 'react-router';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
 // Removed for now:
 // import clsx from 'clsx';
 
@@ -103,20 +104,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
   // const [showPopOut, setShowPopOut] = useState(false);
   // TODO:  check if used
   // const [extent, setExtent] = useState(null);
-
-  const authContext = useContext(AuthStateContext);
-  const { userInfoLoaded } = useContext(AuthStateContext);
-  const history = useHistory();
-
-  const isAuthorized = () => {
-    return userInfoLoaded && authContext.userRoles.length > 0;
-  };
-
-  useEffect(() => {
-    if (isAuthorized()) {
-      history.push('/home/landing');
-    }
-  }, [userInfoLoaded]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });

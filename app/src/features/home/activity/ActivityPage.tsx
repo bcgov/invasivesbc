@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
@@ -49,12 +48,14 @@ import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '.
 import { debounced } from '../../../utils/FunctionUtils';
 import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
-import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 import { useHistory } from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
-import { NetworkContext } from 'contexts/NetworkContext';
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
+import { selectNetworkConnected } from '../../../state/reducers/network';
+import { selectConfiguration } from '../../../state/reducers/configuration';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -89,13 +90,14 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  const authStateContext = useContext(AuthStateContext);
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
+  const { extendedInfo, displayName, authorizations } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
+
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const invasivesApi = useInvasivesApi();
   const [extent, setExtent] = useState(null);
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
@@ -105,8 +107,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const history = useHistory();
   const [doc, setDoc] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
-  const networkContext = useContext(NetworkContext);
-  const { connected } = networkContext;
+  const connected = useSelector(selectNetworkConnected);
   const [applicationUsers, setApplicationUsers] = useState([]);
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -114,9 +115,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     dialogTitle: '',
     dialogContentText: null
   });
-  const isMobile = () => {
-    return Capacitor.getPlatform() !== 'web';
-  };
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
   /**
@@ -275,7 +273,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let employerNeedsInsert = false;
     let agenciesNeedInsert = false;
     let psnNeedsInsert = false;
-    let isGovernmentWorker = false;
 
     let userNameInject = '';
     let applicatorLicenseInject = '';
@@ -283,25 +280,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let agenciesInject = '';
     let psnInject = '';
 
-    // Check if user is govt worker
-    if (
-      authStateContext.hasRole('bcgov_staff_animals') ||
-      authStateContext.hasRole('bcgov_staff_plants') ||
-      authStateContext.hasRole('bcgov_staff_both')
-    ) {
-      isGovernmentWorker = true;
-    }
     if (activity_type_data?.activity_persons) {
-      // ALL RECORDS: Auto fill first user's name based on their name in authStateContext
       if (
         activity_type_data?.activity_persons.length > 0 &&
         (activity_type_data?.activity_persons[0].person_name === undefined ||
           activity_type_data?.activity_persons[0].person_name === '')
       ) {
         nameNeedsInsert = true;
-        if (authStateContext.userInfo.first_name && authStateContext.userInfo.last_name) {
-          userNameInject = authStateContext.userInfo?.first_name + ' ' + authStateContext.userInfo.last_name;
-        }
+
+        userNameInject = displayName;
       }
       if (
         activity_type_data?.activity_persons.length > 0 &&
@@ -309,8 +296,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity_type_data?.activity_persons[0].applicator_license === '')
       ) {
         pacNeedsInsert = true;
-        if (authStateContext.userInfo.pac_number) {
-          applicatorLicenseInject = authStateContext.userInfo?.pac_number;
+        if (extendedInfo?.pac_number) {
+          applicatorLicenseInject = extendedInfo.pac_number;
         }
       }
     }
@@ -318,16 +305,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     // ALL RECORDS: Auto fill user's employer
     if (!activity_data?.employer_code || activity_data?.employer_code === '') {
       employerNeedsInsert = true;
-      employerInject = authStateContext.userInfo.employer;
+      employerInject = extendedInfo.employer;
     }
 
     console.log('employerNeedsInsert', employerNeedsInsert);
     console.log('employerInject', employerInject);
-    console.log(authStateContext.userInfo);
 
     if (!activity_data?.invasive_species_agency_code || activity_data?.invasive_species_agency_code === '') {
       agenciesNeedInsert = true;
-      agenciesInject = authStateContext.userInfo.funding_agencies;
+      agenciesInject = extendedInfo.funding_agencies;
     }
 
     // // If chemical treatment, auto fill service license number
@@ -340,10 +326,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         activity_subtype_data.Treatment_ChemicalPlant_Information?.pesticide_employer_code === ''
       ) {
         psnNeedsInsert = true;
-        psnInject = authStateContext.userInfo.pac_service_number_1
-          ? authStateContext.userInfo.pac_service_number_1
-          : authStateContext.userInfo.pac_service_number_2
-          ? authStateContext.userInfo.pac_service_number_2
+        psnInject = extendedInfo.pac_service_number_1
+          ? extendedInfo.pac_service_number_1
+          : extendedInfo.pac_service_number_2
+          ? extendedInfo.pac_service_number_2
           : '';
       }
     }
@@ -354,7 +340,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ...activity_subtype_data,
         Treatment_ChemicalPlant_Information: {
           // if government user, auto fill as 000000
-          pesticide_employer_code: isGovernmentWorker ? '0' : psnInject.replace(/^0+(\d)/, '')
+          pesticide_employer_code: authorizations.isGovernment ? '0' : psnInject.replace(/^0+(\d)/, '')
         }
       };
     } else {
@@ -494,7 +480,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   /**
-  /**
+   /**
    * Save the form when it is submitted.
    *
    * @param {*} event the form submit event
@@ -592,7 +578,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     let activityResults;
-    if (Capacitor.getPlatform() === 'web') {
+    if (!MOBILE) {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
         false
@@ -669,7 +655,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   //sets well id and proximity if there are any
   const setClosestWells = async (incomingActivityDoc) => {
-    let closestWells = await getClosestWells(geometry, databaseContext, invasivesApi, true, connected);
+    let closestWells = await getClosestWells(geometry, databaseContext, api, true, connected);
 
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
@@ -877,7 +863,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    if (isMobile()) {
+    if (MOBILE) {
       // Load users from cache
       dataAccess.getApplicationUsers().then((res) => {
         setApplicationUsers(res);
