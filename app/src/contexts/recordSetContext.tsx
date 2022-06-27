@@ -107,10 +107,9 @@ export const RecordSetProvider = (props) => {
   }
 
   const removeBoundaryFromSet = async (setName: string) => {
-    const oldState = dataAccess.getAppState();
+    const oldState = await dataAccess.getAppState();
     delete oldState.recordSets[setName].searchBoundary;
-
-    setRecordSetState({ ...oldState.recordSets})
+    setRecordSetState({ ...oldState.recordSets});
   }
 
   useEffect(() => {
