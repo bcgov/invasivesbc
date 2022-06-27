@@ -747,7 +747,7 @@ export const useDataAccess = () => {
    * @param {any} selector
    * @return {*}  {Promise<any>}
    */
-  const getAppState = (): any => {
+  const getAppState = async (): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       const raw_old = localStorage.getItem('appstate-invasivesbc');
       if (raw_old) {
@@ -758,7 +758,7 @@ export const useDataAccess = () => {
       console.log(dbcontext);
 
       try {
-        return dbcontext.asyncQueue({
+        const result = await dbcontext.asyncQueue({
           asyncTask: () => {
             return query(
               {
@@ -770,6 +770,7 @@ export const useDataAccess = () => {
             );
           }
         });
+        return JSON.parse(result[0].json);
       } catch (err) {
         console.log("Thrown error in get app state", err);
         console.dir(err);
