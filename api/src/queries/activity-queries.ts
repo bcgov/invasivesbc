@@ -33,6 +33,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       media_keys,
       species_positive,
       species_negative,
+      species_treated,
       jurisdiction
     ) VALUES (
       ${activity.activity_id},
@@ -93,6 +94,16 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   if (activity.species_negative?.length) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_negative}::text, '{', '['), '}', ']')::jsonb
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,'null'
+    `);
+  }
+
+  if (activity.species_treated?.length) {
+    sqlStatement.append(SQL`
+      ,replace(replace(${activity.species_treated}::text,'{', '['), '}', ']')::jsonb
     `);
   } else {
     sqlStatement.append(SQL`

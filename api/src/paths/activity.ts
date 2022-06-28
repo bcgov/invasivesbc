@@ -323,6 +323,7 @@ function createActivity(): RequestHandler {
             code: 409
           });
         }
+
         createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
 
         await connection.query('COMMIT');

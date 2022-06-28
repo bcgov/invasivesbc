@@ -477,6 +477,7 @@ export async function createLinkedActivity(
 export function populateSpeciesArrays(record) {
   let species_positive = [];
   let species_negative = [];
+  let species_treated = [];
   const subtypeData = record?.formData?.activity_subtype_data;
 
   switch (record.activitySubtype) {
@@ -496,28 +497,26 @@ export function populateSpeciesArrays(record) {
         plant.observation_type?.includes('Negative')
       ).map((plant) => plant.invasive_plant_code);
       break;
-
     case ActivitySubtype.Activity_AnimalTerrestrial:
       // no species selection currently
       break;
     case ActivitySubtype.Activity_AnimalAquatic:
-      species_positive = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
+      species_treated = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
       break;
-
     case ActivitySubtype.Treatment_ChemicalPlant:
-      species_positive = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
+      species_treated = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
         (plant) => plant.invasive_plant_code
       );
       break;
     case ActivitySubtype.Treatment_MechanicalPlant:
+      species_treated = subtypeData?.Treatment_MechanicalPlant_Information?.map((plant) => plant.invasive_plant_code);
+      break;
     case ActivitySubtype.Treatment_BiologicalPlant:
-    case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
+      species_treated = [subtypeData?.Biocontrol_Release_Information?.invasive_plant_code];
+      break;
     case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
     case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
     case ActivitySubtype.Monitoring_BiologicalDispersal:
-      species_positive = [subtypeData?.invasive_plant_code];
-      break;
-
     case ActivitySubtype.Transect_FireMonitoring:
       species_positive = subtypeData?.fire_monitoring_transect_lines
         ?.map((line) =>
@@ -557,6 +556,10 @@ export function populateSpeciesArrays(record) {
         .sort() || [],
     species_negative:
       Array.from(new Set(species_negative || []))
+        ?.filter((code) => typeof code === 'string')
+        .sort() || [],
+    species_treated:
+      Array.from(new Set(species_treated || []))
         ?.filter((code) => typeof code === 'string')
         .sort() || []
   };

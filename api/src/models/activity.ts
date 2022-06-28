@@ -39,6 +39,7 @@ export class ActivityPostRequestBody {
 
   species_positive: string[];
   species_negative: string[];
+  species_treated: string[];
 
   jurisdiction: string[];
 
@@ -92,6 +93,7 @@ export class ActivityPostRequestBody {
 
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
+    this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
   }
