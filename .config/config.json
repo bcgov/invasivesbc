@@ -24,9 +24,9 @@
     "prod": "invasivesbci.apps.silver.devops.gov.bc.ca"
   },
   "staticUrlsAPI": {
-    "dev": "api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
-    "test": "api-test-invasivesbci.apps.silver.devops.gov.bc.ca",
-    "prod": "api-invasivesbci.apps.silver.devops.gov.bc.ca"
+    "dev": "https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "https://api-test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "https://api-invasivesbci.apps.silver.devops.gov.bc.ca"
   },
   "certificateURL": {
     "dev": "https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs",
