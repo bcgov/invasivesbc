@@ -19,9 +19,9 @@
     "prod"
   ],
   "staticUrls": {
-    "dev": "dev-invasivesbci.apps.silver.devops.gov.bc.ca",
-    "test": "test-invasivesbci.apps.silver.devops.gov.bc.ca",
-    "prod": "invasivesbci.apps.silver.devops.gov.bc.ca"
+    "dev": "https://dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "https://test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "https://invasivesbci.apps.silver.devops.gov.bc.ca"
   },
   "staticUrlsAPI": {
     "dev": "https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
