@@ -8,13 +8,7 @@ export type IAppRouteProps = RouteProps & {
   props?: any;
 };
 
-const AppRoute: React.FC<IAppRouteProps> = ({
-  component: Component,
-  layout,
-  title,
-  props,
-  ...rest
-}) => {
+const AppRoute: React.FC<IAppRouteProps> = ({ component: Component, layout, title, props, ...rest }) => {
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
   document.title = title;
   return (
