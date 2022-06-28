@@ -107,13 +107,17 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
     setActivityCategorySelectOptions(categories);
 
-    const cachedCategory = dataAccess.getAppState()?.newActivityChoices?.category || undefined;
+    const fetchAndSetCategory = async () => {
+      const result = await dataAccess.getAppState();
+      const cachedCategory = result?.newActivityChoices?.category || undefined;
 
-    if (!cachedCategory) {
-      setActivityCategory('');
-    } else {
-      setActivityCategory(cachedCategory);
+      if (!cachedCategory) {
+        setActivityCategory('');
+      } else {
+        setActivityCategory(cachedCategory);
+      }
     }
+    fetchAndSetCategory();
   }, []);
 
   useEffect(() => {
@@ -126,12 +130,17 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         types.push(key);
       });
       setActivityTypeSelectOptions(types);
-      const cachedType = dataAccess.getAppState()?.newActivityChoices?.type || undefined;
-      if (!cachedType) {
-        setActivityType('');
-      } else {
-        setActivityType(cachedType);
+
+      const fetchAndCacheType = async () => {
+        const result = await dataAccess.getAppState();
+        const cachedType = result?.newActivityChoices?.type || undefined;
+        if (!cachedType) {
+          setActivityType('');
+        } else {
+          setActivityType(cachedType);
+        }
       }
+      fetchAndCacheType();
     }
   }, [activityCategory]);
 
@@ -143,13 +152,17 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       const subTypes = ActivitySubtypeRelations[activityCategory][activityType];
       setActivitySubTypeSelectOptions(subTypes);
 
-      const cachedSubType = dataAccess.getAppState()?.newActivityChoices?.subType || undefined;
+      const fetchAndCacheSubtype = async () => {
+        const result = await dataAccess.getAppState();
+        const cachedSubType = result?.newActivityChoices?.subType || undefined;
 
-      if (!cachedSubType) {
-        setActivitySubType('');
-      } else {
-        setActivitySubType(cachedSubType);
+        if (!cachedSubType) {
+          setActivitySubType('');
+        } else {
+          setActivitySubType(cachedSubType);
+        }
       }
+      fetchAndCacheSubtype();
     }
   }, [activityType]);
 
