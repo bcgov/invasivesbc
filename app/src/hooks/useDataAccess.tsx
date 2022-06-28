@@ -744,6 +744,23 @@ export const useDataAccess = () => {
     }
   };
 
+  const getCachedActivityByID = async (activityId: string) => {
+    if (Capacitor.getPlatform() !== 'web') {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE_AND_ID,
+              docType: DocType.REFERENCE_ACTIVITY,
+              ID: activityId
+            },
+            databaseContext
+          );
+        }
+      });
+    }
+  };
+
   const createUser = async (context?: {
     asyncQueue: (request: DBRequest) => Promise<any>;
     ready: boolean;
@@ -959,6 +976,7 @@ export const useDataAccess = () => {
     fetchCodeTable,
     cacheCodeTables,
     getIappJurisdictions,
-    deleteActivityFromCache
+    deleteActivityFromCache,
+    getCachedActivityByID
   };
 };
