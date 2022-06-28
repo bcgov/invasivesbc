@@ -1,5 +1,6 @@
 import { ActivitySubtypeShortLabels } from 'constants/activities';
-
+import { Capacitor } from '@capacitor/core';
+import { useDataAccess } from 'hooks/useDataAccess';
 export interface ActivityRow {
   activity_id: string;
   short_id: string;
@@ -15,10 +16,11 @@ export interface ActivityRow {
   regional_districts: string;
   biogeoclimatic_zones: string;
   elevation: string;
+  status?: string;
   // date_modified: string; // Not on csv from crystals outline
 }
 
-export const activites_default_headers = [
+const headers = [
   {
     key: 'short_id',
     name: 'Activity ID'
@@ -68,26 +70,25 @@ export const activites_default_headers = [
     key: 'elevation',
     name: 'Elevation'
   }
-  // {  // Not on csv from crystals outline
-  //   key: 'reported_area',
-  //   name: 'Area (m\u00B2)'
-  // },
-  // {  // Not on csv from crystals outline
-  //   key: 'latitude',
-  //   name: 'Latitude'
-  // },
-  // {  // Not on csv from crystals outline
-  //   key: 'longitude',
-  //   name: 'Longitude'
-  // },
-
-  // { // Not on csv from crystals outline
-  //   key: 'date_modified',
-  //   name: 'Date Modified'
-  // }
 ];
 
-export const mapActivitiesToDataGridRows = (activities) => {
+if (Capacitor.getPlatform() !== 'web') {
+  headers.push({
+    key: 'status',
+    name: 'Status'
+  });
+}
+
+export const activites_default_headers = headers;
+
+const checkIfActivityCached = async (activityId: string, dataAccess: any) => {
+  console.log('checking if activity ' + activityId + ' is cached');
+  const cached = await dataAccess.getCachedActivityByID(activityId);
+  console.log('Cached: ' + cached);
+  return cached ? 'Cached' : 'Not Cached';
+};
+
+export const MapActivitiesToDataGridRows = (activities, dataAccess: any) => {
   if (!activities || activities.count === undefined) {
     return [];
   }
@@ -96,8 +97,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((activity, index) => {
-    return {
-      // id: index,
+    let columns: any = {
       activity_id: activity?.activity_id,
       short_id: activity?.activity_payload?.short_id,
       type: activity?.activity_payload?.activity_type,
@@ -108,16 +108,21 @@ export const mapActivitiesToDataGridRows = (activities) => {
       species_positive: activity?.activity_payload?.species_positive,
       species_negative: activity?.activity_payload?.species_negative,
       created_by: activity?.created_by,
-      agency: null, // Not in payload atm
+      agency: null,
       regional_invasive_species_organization_areas:
         activity?.activity_payload?.regional_invasive_species_organization_areas,
       regional_districts: activity?.activity_payload?.regional_districts,
       biogeoclimatic_zones: activity?.activity_payload?.biogeoclimatic_zones,
       elevation: activity?.elevation
-      // date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
-      // reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
-      // latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
-      // longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
     };
+    if (Capacitor.getPlatform() !== 'web') {
+      // append status to columns
+      columns = {
+        ...columns,
+        status: checkIfActivityCached(activity?.activity_id, dataAccess)
+      };
+    }
+
+    return columns;
   });
 };

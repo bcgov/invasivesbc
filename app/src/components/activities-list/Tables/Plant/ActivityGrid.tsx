@@ -7,14 +7,14 @@ import React, { useContext, useState, useEffect, useMemo, createContext } from '
 import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
-import { activites_default_headers, ActivityRow, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { activites_default_headers, ActivityRow, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { point_of_interest_iapp_default_headers, POI_IAPP_Row, mapPOI_IAPP_ToDataGridRows } from '../POITablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { FilterAltOff } from '@mui/icons-material';
+import { CheckCircle, FilterAltOff } from '@mui/icons-material';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
@@ -497,7 +497,7 @@ const ActivityGrid = (props) => {
   ///SORT STUFF:
 
   useEffect(() => {
-    const newrows = mapActivitiesToDataGridRows(activities);
+    const newrows = MapActivitiesToDataGridRows(activities, dataAccess);
     setRows(newrows);
   }, [activities]);
 
@@ -538,6 +538,12 @@ const ActivityGrid = (props) => {
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
+    console.log('ROW RENDER PROPS: ', props);
+    const color = props.row.cached === 'Cached' ? 'green' : 'red';
+    if (props.row.cached === 'Cached') {
+      console.log('ROW CACEHD');
+    }
+    console.log('Color: ', color);
     return <Row className="xRow" {...props} />;
   };
 

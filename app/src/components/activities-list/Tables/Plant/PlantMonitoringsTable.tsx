@@ -7,9 +7,9 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { CircularProgress } from '@mui/material';
-import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { activites_default_headers, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 
 const PlantMonitoringsTable = () => {
   const dataAccess = useDataAccess();
@@ -48,7 +48,7 @@ const PlantMonitoringsTable = () => {
           <CircularProgress />
         ) : (
           <DataGrid
-            rows={mapActivitiesToDataGridRows(activities)}
+            rows={MapActivitiesToDataGridRows(activities, dataAccess)}
             columns={activites_default_headers}
             autoHeight
             checkboxSelection
