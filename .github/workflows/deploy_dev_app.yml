@@ -9,6 +9,7 @@ on:
       - dev
     paths:
       - 'app/**'
+      - '.config/**'
 
 concurrency:
   group: db_app-${{ github.ref }}
