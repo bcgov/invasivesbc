@@ -65,30 +65,46 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const { displayName, accessRoles } = useSelector(selectAuth);
 
   useEffect(() => {
-    let userAccessDict = {};
-
-    accessRoles.map(r=> r.role_name).forEach((role) => {
-      if (Object.keys(userAccessDict).includes(userAccessDict[UserRolesAccess[role]])) {
-        return;
-      } else {
-        userAccessDict[UserRolesAccess[role]] = true;
-      }
-    });
-
     const categories = [];
-    if (userAccessDict['both']) {
-      Object.keys(ActivityCategory).forEach((key) => {
-        categories.push(ActivityCategory[key]);
-      });
-    } else if (userAccessDict['animals']) {
-      Object.keys(ActivityCategory).forEach((key) => {
-        if (key !== 'Plant') categories.push(ActivityCategory[key]);
-      });
-    } else if (userAccessDict['plants']) {
-      Object.keys(ActivityCategory).forEach((key) => {
-        if (key !== 'Animal') categories.push(ActivityCategory[key]);
-      });
+    if (
+      accessRoles.some((role) => {
+        return role.role_name.includes('plant');
+      })
+    ) {
+      categories.push('Plant');
+    } else if (
+      accessRoles.some((role) => {
+        return role.role_name === 'frep';
+      })
+    ) {
+      categories.push('FREP');
     }
+    // let userAccessDict = {};
+
+    // accessRoles
+    //   .map((r) => r.role_name)
+    //   .forEach((role) => {
+    //     if (Object.keys(userAccessDict).includes(userAccessDict[UserRolesAccess[role]])) {
+    //       return;
+    //     } else {
+    //       userAccessDict[UserRolesAccess[role]] = true;
+    //     }x`
+    //   });
+
+    // if (userAccessDict['both']) {
+    //   Object.keys(ActivityCategory).forEach((key) => {
+    //     categories.push(ActivityCategory[key]);
+    //   });
+    // } else if (userAccessDict['animals']) {
+    //   Object.keys(ActivityCategory).forEach((key) => {
+    //     if (key !== 'Plant') categories.push(ActivityCategory[key]);
+    //   });
+    // } else if (userAccessDict['plants']) {
+    //   Object.keys(ActivityCategory).forEach((key) => {
+    //     if (key !== 'Animal') categories.push(ActivityCategory[key]);
+    //   });
+    // }
+
     setActivityCategorySelectOptions(categories);
 
     const cachedCategory = dataAccess.getAppState()?.newActivityChoices?.category || undefined;
