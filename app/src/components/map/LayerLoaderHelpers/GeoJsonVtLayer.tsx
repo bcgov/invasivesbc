@@ -2,7 +2,6 @@ import { createTileLayerComponent, LayerProps, updateGridLayer, withPane } from 
 import geojsonvt from 'geojson-vt';
 import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 // eslint-disable-next-line import/first
-import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';
 import { isFilterSatisfied } from './AdditionalHelperFunctions';
 
 (window as any).geojsonvt = geojsonvt;
@@ -167,7 +166,7 @@ export const GeoJSONVtLayer = createTileLayerComponent<LeafletTileLayer, TileLay
   context
 ) {
   return {
-    instance: (L.gridLayer as any).geoJson.vt(geoJSON, withPane(options, context)),
+    instance: (L.gridLayer as any).geoJson(geoJSON, withPane(options, context)),
     context
   };
 },
