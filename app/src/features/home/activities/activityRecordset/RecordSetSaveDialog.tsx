@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,16 +14,6 @@ interface IRecordSetSaveDialog {
 
 const RecordSetSaveDialog: React.FC<IRecordSetSaveDialog> = (props) => {
   const { isOpen, handleAgree, handleDisagree, recordSets, isLoading } = props;
-
-  const numRecords = recordSets.reduce((acc: number, curr: number) => acc + curr.activities.count, 0);
-  console.log('Total records:' + numRecords);
-
-  useEffect(() => {
-    if (isLoading) {
-      // Set a 3 second timeout
-      const timer = setTimeout(() => {}, 3000);
-    }
-  }, [isLoading]);
 
   // User sees how many records in IAPP sets as well
   // User sees total area on map for layers cached

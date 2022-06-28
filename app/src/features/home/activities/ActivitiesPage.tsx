@@ -1,8 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Button, Container, Theme } from '@mui/material';
+import { Box, Button, Theme } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -23,8 +22,6 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
 import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
-
-// not sure what we're using this for?
 interface IStatusPageProps {
   classes?: any;
 }
@@ -248,11 +245,10 @@ const PageContainer = (props) => {
                 recordStateContext,
                 selectedSet.recordSetName,
                 false,
-                1,
+                0,
                 1000
               );
               const activityList = await dataAccess.getActivities(filter);
-              console.log('activity list: ', activityList);
               recordSets.push({
                 recordSetName: selectedSet.recordSetName,
                 activities: activityList
@@ -271,7 +267,6 @@ const PageContainer = (props) => {
 
   const handleRecordSetSaveDialogAgree = async () => {
     setRecordSetSaveDialogLoading(true);
-    let numberActivitiesFetched = 0;
     try {
       const upserts = [];
       // Cache selected recordsets
@@ -302,10 +297,6 @@ const PageContainer = (props) => {
             return upsert(upserts, databaseContext);
           }
         });
-        if (!isNaN(activitiesCached)) {
-          numberActivitiesFetched += activitiesCached;
-        }
-        console.log(`Cached ${numberActivitiesFetched} activities.`);
       } catch (error) {
         console.log('Error with inserting Activities into database: ', error);
       }
