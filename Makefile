@@ -102,6 +102,12 @@ run-ios: ## Runs the app for mobile
 	@echo "==============================================="
 	@cd app && npx cap sync ios && npx cap open ios && cd ..
 
+log-all: 
+	@echo "==============================================="
+	@echo "Make: log-all - logging all containers"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.local.yml logs -f
+
 ios: | build-ios run-ios ## Builds and runs the app for mobile
 
 help:	## Display this help screen.

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
 // Commented out due to module not being found, not sure what this is supposed to be
 // import Reorderer from 'reorderer';
@@ -25,6 +25,13 @@ import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
 import GrassIcon from '@mui/icons-material/Grass';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
+import { Capacitor } from '@capacitor/core';
+import SaveIcon from '@mui/icons-material/Save';
+
+const isMobile = () => {
+  // return Capacitor.getPlatform() !== 'web';
+  return true;
+};
 
 const OrderSelector = (props) => {
   return (
@@ -79,11 +86,30 @@ const RecordSetAccordionSummary = (props) => {
   return (
     <AccordionSummary>
       <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-      {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
-        {props.recordSetType === 'POI' ?
-          <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{maxWidth: '4rem', margin: '0 0.5rem'}} /> :
-          <GrassIcon style={{margin: '0 0.5rem'}}/>
-        }
+        {isMobile() && props.recordSetName !== 'My Drafts' && (
+          <Button
+            sx={{ mr: 2 }}
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Saving...');
+            }}>
+            <Checkbox
+              checked={props.isSelected}
+              onChange={(e) => {
+                e.stopPropagation();
+                console.log('Checkbox set to: ', e.target.checked);
+                props.setIsSelected(e.target.checked);
+              }}
+            />
+          </Button>
+        )}
+        {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+        {props.recordSetType === 'POI' ? (
+          <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{ maxWidth: '4rem', margin: '0 0.5rem' }} />
+        ) : (
+          <GrassIcon style={{ margin: '0 0.5rem' }} />
+        )}
         {!nameEdit && (
           <>
             <Typography>{props.recordSetName}</Typography>
@@ -141,7 +167,7 @@ const RecordSetAccordionSummary = (props) => {
         )}
       </Box>
       <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
-      <Button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
@@ -220,19 +246,21 @@ const RecordSetAccordionSummary = (props) => {
         dialogOpen={boundaryFilterDialog.dialogOpen}
         dialogTitle={boundaryFilterDialog.dialogTitle}
         dialogActions={boundaryFilterDialog.dialogActions}
-        dialogContentText={boundaryFilterDialog.dialogContentText}
-      >
+        dialogContentText={boundaryFilterDialog.dialogContentText}>
         <Select
-          sx={{ minWidth: 150, m: 3}}
+          sx={{ minWidth: 150, m: 3 }}
           onChange={(e) => {
             e.stopPropagation();
             //add to the recordset filters
             recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
             setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
-          }}
-        >
+          }}>
           {recordSetContext.boundaries?.map((boundary) => {
-            return <MenuItem key={boundary.id} value={boundary}>{boundary.name}</MenuItem>
+            return (
+              <MenuItem key={boundary.id} value={boundary}>
+                {boundary.name}
+              </MenuItem>
+            );
           })}
         </Select>
       </GeneralDialog>

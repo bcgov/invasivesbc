@@ -32,6 +32,7 @@ export const RecordSet = (props) => {
   const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState(null);
   const [advancedFilters, setAdvancedFilters] = useState([]);
+  const [isSelected, setIsSelected] = useState(false);
   const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const recordSetContext = useContext(RecordSetContext);
   const { remove, recordSetState } = recordSetContext;
@@ -59,6 +60,9 @@ export const RecordSet = (props) => {
           break;
         case 'color':
           setColor(initial);
+          break;
+        case 'isSelected':
+          setIsSelected(initial);
           break;
         case 'recordSetType':
           setRecordSetType(initial);
@@ -98,6 +102,9 @@ export const RecordSet = (props) => {
           case 'color':
             newState['color'] = color;
             break;
+          case 'isSelected':
+            newState['isSelected'] = isSelected;
+            break;
           case 'recordSetName':
             newState['recordSetName'] = recordSetName;
             break;
@@ -122,11 +129,20 @@ export const RecordSet = (props) => {
     getInitialPropertyState('recordSetType');
     getInitialPropertyState('recordSetName');
     getInitialPropertyState('advancedFilters');
+    getInitialPropertyState('isSelected');
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters', 'drawOrder']);
-  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder]);
+    updatePropertyStates([
+      'expanded',
+      'mapToggle',
+      'color',
+      'recordSetName',
+      'advancedFilters',
+      'drawOrder',
+      'isSelected'
+    ]);
+  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder, isSelected]);
 
   return useMemo(
     () => (
@@ -147,6 +163,8 @@ export const RecordSet = (props) => {
             mapToggle={mapToggle}
             setMapToggle={setMapToggle}
             drawOrder={drawOrder}
+            isSelected={isSelected}
+            setIsSelected={setIsSelected}
             moveUp={() => {
               setDrawOrder(drawOrder + 1);
             }}

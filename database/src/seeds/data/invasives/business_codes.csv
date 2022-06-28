@@ -2347,11 +2347,8 @@ location_agents_found_code,EE,Edge Effects,12
 site_surface_code,ssh,Hollow,1
 site_surface_code,ssr,Rounded ,2
 site_surface_code,ssl,Linear,3
-biocontrol_monitoring_methods_code,As,Aspirate,1
-biocontrol_monitoring_methods_code,Hp,Hand pick,2
-biocontrol_monitoring_methods_code,Cl,Clipping,3
-biocontrol_monitoring_methods_code,S,Sweep,4
-biocontrol_monitoring_methods_code,Tt,Tap and tray,5
-biocontrol_monitoring_methods_code,Tp,Transplant,6
-biocontrol_monitoring_methods_code,Ex,Excavate,7
-biocontrol_monitoring_methods_code,Ob,Observe,8
+biocontrol_monitoring_methods_code,Cl,Clipping,2
+biocontrol_monitoring_methods_code,S,Sweep,3
+biocontrol_monitoring_methods_code,Tt,Tap and tray,4
+biocontrol_monitoring_methods_code,Ex,Excavate,5
+biocontrol_monitoring_methods_code,Ob,Observe,6
