@@ -35,10 +35,11 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
           <DialogContent>
             {props.platform === 'mobile' ? (
               <DialogContentText id="alert-dialog-description">
-                You are about to delete the following record sets or cached activities. This action cannot be undone.
-                Either delete the cached records on this device attributed to the set of filters, or simply delete the
-                set of filters. Activities saved to the database will not be lost but will be unavailable for offline
-                use.
+                Do you want to delete the following set of filters <strong>OR</strong> remove those cached records from
+                your device?
+                <br />
+                <strong>NOTE:</strong> This action cannot be undone - submitted records will not be deleted from the
+                database, but they will no longer be available on your device for offline use.
               </DialogContentText>
             ) : (
               <DialogContentText id="alert-dialog-description">
@@ -62,11 +63,12 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
             <br />
             {props.platform === 'mobile' ? (
               <DialogContentText id="alert-dialog-confirmation">
-                Do you want to delete these filter sets or delete the cached activities determined by the filter sets?
+                Do you want to delete these filter sets <strong>OR</strong> delete the cached activities determined by
+                the filter sets?
               </DialogContentText>
             ) : (
               <DialogContentText id="alert-dialog-confirmation">
-                Do you want to delete these record sets?
+                Do you want to delete this record set?
               </DialogContentText>
             )}
           </DialogContent>
