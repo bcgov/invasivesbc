@@ -76,7 +76,7 @@ const phases = {
       (isStaticDeployment && (staticUrls.dev || defaultHost)) ||
       `${name}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
-      (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
+      (isStaticDeployment && (`https://${staticUrlsAPI.dev}` || defaultHostAPI)) ||
       `${apiName}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
     sso: sso.dev,
