@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
   set search_path = invasivesbc,public;
 
   ALTER TABLE invasivesbc.activity_incoming_data
-  ADD COLUMN updated_by VARCHAR(100)
+  ADD COLUMN updated_by VARCHAR(100),
   ADD COLUMN species_treated VARCHAR(100);
 
   DROP TRIGGER IF EXISTS update_created_by_on_activity_updates on invasivesbc.activity_incoming_data;
