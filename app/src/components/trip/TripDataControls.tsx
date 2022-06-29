@@ -629,7 +629,6 @@ export const TripDataControls: React.FC<any> = (props) => {
           switch (layerName) {
             case 'LEAN_POI':
               const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: newBounds });
-              console.log("poiResponse ini trip data controls", poiRes);
               if (poiRes) {
                 const filteredArr = poiRes.map((res) => {
                   return res.geojson;

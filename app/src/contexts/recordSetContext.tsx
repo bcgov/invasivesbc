@@ -17,7 +17,6 @@ export const RecordSetProvider = (props) => {
 
   const getInitialState = async () => {
     const oldState = await dataAccess.getAppState();
-    console.dir(oldState);
     if (oldState?.recordSets) {
       setRecordSetState({ ...oldState.recordSets });
     } else {
@@ -118,7 +117,6 @@ export const RecordSetProvider = (props) => {
 
   const updateState = async () => {
     const oldState = await dataAccess.getAppState();
-    console.dir(oldState);
     const oldRecordSets = oldState?.recordSets;
     if (
       oldRecordSets &&

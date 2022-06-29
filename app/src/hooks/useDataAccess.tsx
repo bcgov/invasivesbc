@@ -755,7 +755,6 @@ export const useDataAccess = () => {
       }
     } else {
       const dbcontext = databaseContext;
-      console.log(dbcontext);
 
       try {
         const result = await dbcontext.asyncQueue({
