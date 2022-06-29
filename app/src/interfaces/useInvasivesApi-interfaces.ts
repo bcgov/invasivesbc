@@ -71,10 +71,10 @@ export interface IActivitySearchCriteria {
   /**
    * GeoJSON feature (of type polygon) to search in.
    *
-   * @type {Feature}
+   * @type {FeatureCollection}
    * @memberof IActivitySearchCriteria
    */
-  search_feature?: Feature;
+  search_feature?: FeatureCollection;
   /**
    * Activity requested return order.
    *

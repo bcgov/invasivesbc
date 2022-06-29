@@ -200,6 +200,158 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     ) as "geojson"
   `);
 
+<<<<<<< HEAD
+=======
+  // include the total count of results that would be returned if the limit and offset constraints weren't applied
+  // sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+
+  sqlStatement.append(
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id where 1=1`
+  );
+
+  if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
+    sqlStatement.append(SQL` AND activity_type IN (`);
+
+    // add the first activity type, which does not get a comma prefix
+    sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
+
+      for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
+      // add all subsequent activity types, which do get a comma prefix
+      sqlStatement.append(SQL`, ${searchCriteria.activity_type[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
+    sqlStatement.append(SQL` AND activity_subtype IN (`);
+
+    // add the first activity subtype, which does not get a comma prefix
+    sqlStatement.append(SQL`${searchCriteria.activity_subtype[0]}`);
+
+    for (let idx = 1; idx < searchCriteria.activity_subtype.length; idx++) {
+      // add all subsequent activity subtypes, which do get a comma prefix
+      sqlStatement.append(SQL`, ${searchCriteria.activity_subtype[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.created_by && searchCriteria.created_by.length) {
+    sqlStatement.append(SQL` AND created_by IN (`);
+
+    // add the first activity subtype, which does not get a comma prefix
+    sqlStatement.append(SQL`${searchCriteria.created_by[0]}`);
+
+    for (let idx = 1; idx < searchCriteria.created_by.length; idx++) {
+      // add all subsequent activity subtypes, which do get a comma prefix
+      sqlStatement.append(SQL`, ${searchCriteria.created_by[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
+  }
+
+  /*  if (searchCriteria.created_by) {
+    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
+  }*/
+
+  if (searchCriteria.date_range_start) {
+    sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
+  }
+
+  if (searchCriteria.date_range_end) {
+    sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+  }
+
+  /* if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
+    sqlStatement.append(SQL` AND a.activity_id IN (`);
+    sqlStatement.append(SQL`${searchCriteria.activity_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.activity_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.activity_ids[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+  */
+  if (searchCriteria.form_status && searchCriteria.form_status.length) {
+    sqlStatement.append(SQL` AND form_status IN (`);
+    sqlStatement.append(SQL`${searchCriteria.form_status[0]}`);
+    for (let idx = 1; idx < searchCriteria.form_status.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.form_status[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.hideTreatmentsAndMonitoring) {
+    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
+  }
+
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`
+      AND public.ST_INTERSECTS(
+        a.geog,
+        (SELECT geog FROM multi_polygon_cte)
+      )
+    `);
+  }
+
+  if (searchCriteria.order?.length) {
+    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  }
+
+  if (searchCriteria.limit) {
+    sqlStatement.append(SQL` LIMIT ${searchCriteria.limit}`);
+  }
+
+  if (searchCriteria.page && searchCriteria.limit) {
+    sqlStatement.append(SQL` OFFSET ${searchCriteria.page * searchCriteria.limit}`);
+  }
+
+
+  sqlStatement.append(SQL`;`);
+  // const defaultLog = getLogger('acitivies-lean');
+  // defaultLog.info({
+  //   label: 'acitivies-lean',
+  //   message: 'sql',
+  //   body: sqlStatement.sql
+  // });
+  // defaultLog.info({
+  //   label: 'acitivies-lean',
+  //   message: 'values',
+  //   body: sqlStatement.values
+  // });
+  // defaultLog.info({
+  //   label: 'acitivies-lean',
+  //   message: 'text',
+  //   body: sqlStatement.text
+  // });
+  // defaultLog.info({
+  //   label: 'acitivies-lean',
+  //   message: 'jsonstr',
+  //   body: JSON.stringify(sqlStatement)
+  // });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to fetch activity records based on search criteria.
+ *
+ * @param {ActivitySearchCriteria} searchCriteria
+ * @returns {SQLStatement} sql query object
+ */
+//NOSONAR
+export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLStatement => {
+  const sqlStatement: SQLStatement = SQL``;
+
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
+    FROM (
+      SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
+    ) AS anything) `);
+  }
+
+  sqlStatement.append(SQL`SELECT`);
+>>>>>>> 6024fecdf (Sets up spatial filter for activities-lean)
   if (searchCriteria.column_names && searchCriteria.column_names.length) {
     // do not include the `SQL` template string prefix, as column names can not be parameterized
     const newColumnNames = searchCriteria.column_names.map((name) => {
