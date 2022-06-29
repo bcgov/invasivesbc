@@ -825,9 +825,6 @@ export const useDataAccess = () => {
     } else {
       const dbcontext = databaseContext;
 
-      const appStateDoc = getAppState();
-      console.dir(appStateDoc);
-
       return dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
@@ -836,7 +833,7 @@ export const useDataAccess = () => {
                 type: UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH,
                 docType: DocType.APPSTATE,
                 ID: '1',
-                json: appStateDoc ? { ...appStateDoc, ...newState } : { ...newState }
+                json: { ...newState }
               }
             ],
             dbcontext
