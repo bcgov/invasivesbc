@@ -47,6 +47,10 @@ export const activites_default_headers = [
     key: 'species_negative',
     name: 'Species Negative'
   },
+  {
+    key: 'species_treated',
+    name: 'Species Treated'
+  },
   { key: 'created_by', name: 'Created By' },
   { key: 'updated_by', name: 'Updated By' },
   {
@@ -108,6 +112,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
       jurisdiction: activity?.activity_payload?.jurisdiction,
       species_positive: activity?.activity_payload?.species_positive,
       species_negative: activity?.activity_payload?.species_negative,
+      species_treated: activity?.activity_payload?.species_treated,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by || null,
       agency: null, // Not in payload atm
