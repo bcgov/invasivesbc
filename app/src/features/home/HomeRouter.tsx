@@ -45,7 +45,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         component={LandingPage}
         componentProps={props}
       />
-      <PublicRoute
+      <PrivateRoute
         exact
         layout={HomeLayout}
         path="/home/access-request"
