@@ -86,8 +86,13 @@ export const PoisLayer = (props) => {
   });
 
   const fetchData = async () => {
+    // to match the feature collection spatial filtering 
+    const newBounds = {
+      type: 'FeatureCollection',
+      features: [mapBounds]
+    }
     const poisData = await dataAccess.getPointsOfInterestLean({
-      search_feature: mapBounds,
+      search_feature: newBounds,
       isIAPP: true,
       point_of_interest_type: props.poi_type
     });
