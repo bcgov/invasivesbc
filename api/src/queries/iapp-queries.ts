@@ -11,9 +11,16 @@ const defaultLog = getLogger('point-of-interest');
  */
 //NOSONAR
 export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT`;
+  const sqlStatement: SQLStatement = SQL``;
 
-  sqlStatement.append(SQL` *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
+    FROM (
+      SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
+    ) AS anything) `);
+  }
+
+  sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
@@ -99,14 +106,11 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     }
   }
     
-  if (searchCriteria.search_feature?.geometry) {
-    sqlStatement.append(SQL` AND  public.ST_INTERSECTS(
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`
+      AND public.ST_INTERSECTS(
         geog,
-        public.geography(
-              	public.geography( public.ST_Force2D(  
-				    public.ST_SetSRID(  
-				        public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),  4326  ) ) )
-        )
+        (SELECT geog FROM multi_polygon_cte)
       )
     `);
   }

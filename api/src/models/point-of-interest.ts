@@ -88,7 +88,7 @@ export class PointOfInterestSearchCriteria {
 
   point_of_interest_ids: string[];
 
-  search_feature: GeoJSON.Feature;
+  search_feature: GeoJSON.FeatureCollection;
 
   column_names: string[];
 
