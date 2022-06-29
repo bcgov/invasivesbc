@@ -38,7 +38,7 @@ parameters:
     required: true
     value: latest
   - name: SSO_URL
-    description: Key clock login url
+    description: Key cloak login url
     value: 'https://oidc.gov.bc.ca'
   - name: SSO_CLIENT_ID
     description: Client Id for application
