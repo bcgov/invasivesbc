@@ -624,7 +624,12 @@ export const TripDataControls: React.FC<any> = (props) => {
           //If there are custom api endpoints, use them, if not, use WFS consumer.
           switch (layerName) {
             case 'LEAN_POI':
-              const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
+              const newBounds = {
+                type: 'FeatureCollection',
+                features: [bufferedGeo]
+              }
+              const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: newBounds });
+              console.log("poiResponse ini trip data controls", poiRes);
               if (poiRes) {
                 const filteredArr = poiRes.map((res) => {
                   return res.geojson;
