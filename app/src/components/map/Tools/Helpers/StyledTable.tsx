@@ -101,7 +101,7 @@ export const RenderTableActivity = (props: any) => {
   const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { authenticated } = useSelector(selectAuth);
+  const { authenticated, roles } = useSelector(selectAuth);
 
   const columns = [
     {
@@ -220,7 +220,11 @@ export const RenderTableActivity = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          activityPage(params);
+          roles.forEach((role) => {
+            if (!role.role_name.includes('animal')) {
+              activityPage(params);
+            }
+          });
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
         //   console.log('params', params);
@@ -372,7 +376,7 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-          if (roles.length == 0) {
+          if (roles.length > 0) {
             history.push(`/home/iapp/${params.id}`);
           }
         }}
