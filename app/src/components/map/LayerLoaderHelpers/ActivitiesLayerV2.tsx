@@ -1,7 +1,7 @@
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import L from 'leaflet';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
+import { Marker, useMap, useMapEvent, GeoJSON, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
@@ -125,13 +125,19 @@ export const ActivitiesLayerV2 = (props: any) => {
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
+                      <Tooltip permanent direction="top">
+                        {a.properties.short_id}
+                        <br />
+                        {a?.properties?.species_positive ? a?.properties?.species_positive : ''}
+                        {a?.properteis?.species_negative ? a?.properties?.species_negative : ''}
+                        {a?.properteis?.species_treated ? a?.properties?.species_treated : ''}
+                      </Tooltip>
                     </GeoJSON>
                   );
                 }
               })}
             </>
           );
-          break;
 
         case ZoomTypes.MEDIUM:
           return (
@@ -143,7 +149,6 @@ export const ActivitiesLayerV2 = (props: any) => {
               options={options}
             />
           );
-          break;
         case ZoomTypes.LOW:
           return MarkerMemo;
       }
