@@ -6,6 +6,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import center from '@turf/center';
 
 export const ActivitiesLayerV2 = (props: any) => {
   // use this use state var to only rerender when necessary
@@ -92,21 +93,12 @@ export const ActivitiesLayerV2 = (props: any) => {
       };
       return (
         <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
-          {activities.features.map((a) => {
-            if (a?.geometry?.type === 'Polygon') {
-              const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+          {activities?.features?.map((a) => {
+            if (a?.geometry?.type) {
+              const position = center(a)?.geometry?.coordinates;
 
               return (
-                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup bufferedGeo={a} />
-                </Marker>
-              );
-            }
-            if (a?.geometry?.type === 'Point') {
-              const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
-
-              return (
-                <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
+                <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
                   <GeneratePopup bufferedGeo={a} />
                 </Marker>
               );
@@ -129,14 +121,7 @@ export const ActivitiesLayerV2 = (props: any) => {
           return (
             <>
               {activities.features.map((a) => {
-                if (a?.geometry?.type === 'Polygon') {
-                  return (
-                    <GeoJSON data={a} options={options}>
-                      <GeneratePopup bufferedGeo={a} />
-                    </GeoJSON>
-                  );
-                }
-                if (a?.geometry?.type === 'Point') {
+                if (a?.geometry?.type) {
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
