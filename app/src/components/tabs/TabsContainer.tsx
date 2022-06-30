@@ -164,7 +164,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   );
 
   useEffect(() => {
-    setIsAdmin(authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' }));
+    setIsAdmin(authenticated && roles.filter((role) => role.role_id === 18).length > 0);
   }, [authenticated, roles]);
 
   const handleClose = () => {
@@ -339,7 +339,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-  }, [showLoggedInTabs]);
+  }, [showLoggedInTabs, isAdmin]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
