@@ -344,12 +344,12 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
-      width: 200
+      width: 250
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
-      width: 200
+      width: 170
     },
     {
       field: 'geometry',
@@ -364,7 +364,7 @@ export const RenderTablePOI = (props: any) => {
 
   const updatePOIRecords = React.useCallback(async () => {
     try {
-      const pointsofinterest = await dataAccess.getPointsOfInterest({
+      const pointsofinterest = await dataAccess.getPointsOfInterestLean({
         search_feature: bufferedGeo,
         isIAPP: true,
         limit: 500,
@@ -377,21 +377,17 @@ export const RenderTablePOI = (props: any) => {
 
       // Removed for now: setPoisObj(pointsofinterest);
       const tempArr = [];
-      pointsofinterest.rows.forEach((poi) => {
-        const surveys = poi.point_of_interest_payload.form_data.surveys;
-        const tempSurveyArea = getLatestReportedArea(surveys);
-        const newArr: any = getJurisdictions(surveys);
-        const arrJurisdictions = [];
-        newArr.forEach((item) => {
-          arrJurisdictions.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
-        });
+      pointsofinterest.forEach((poi) => {
+        const { site_id, reported_area } = poi.properties;
+        const jurisdictions: string = poi.properties.jurisdictions.join(' ');
+        const species: string[] = poi.properties.species_on_site.join(' ');
         tempArr.push({
-          id: poi.point_of_interest_id,
-          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
-          jurisdiction_code: arrJurisdictions,
-          species_code: poi.species_on_site,
-          geometry: poi.point_of_interest_payload.geometry,
-          reported_area: getReportedAreaOutput(tempSurveyArea)
+          id: site_id,
+          site_id: site_id,
+          jurisdiction_code: jurisdictions,
+          species_code: species,
+          geometry: poi,
+          reported_area: reported_area
         });
       });
       setRows(tempArr);
@@ -409,7 +405,7 @@ export const RenderTablePOI = (props: any) => {
         rowsPerPageOptions={[5]}
         rowHeight={30}
         headerHeight={30}
-        onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (roles.length == 0) {
             history.push(`/home/iapp/${params.id}`);
           }
