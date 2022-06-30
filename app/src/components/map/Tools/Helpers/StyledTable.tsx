@@ -176,16 +176,17 @@ export const RenderTableActivity = (props: any) => {
         limit: 500,
         page: 0
       });
+      console.log(activities);
 
       const tempArr = [];
 
       activities?.rows?.forEach((a) => {
-        const activity_id = a.geojson.properties.activity_id;
-        const short_id = a.geojson.properties.short_id;
-        const activity_type = a.geojson.properties.activity_type;
-        const reported_area = a.geojson.properties.form_data.reported_area;
+        const id = a?.geojson?.properties?.id;
+        const short_id = a?.geojson?.properties?.short_id;
+        const activity_type = a?.geojson?.properties?.type;
+        const reported_area = a?.geojson?.properties?.reported_area;
         const jurisdiction_code = [];
-        a.geojson.properties.jurisdictions?.forEach((item) => {
+        a?.geojson?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
         const species_code = [];
@@ -206,10 +207,10 @@ export const RenderTableActivity = (props: any) => {
           case 'Monitoring':
             break;
         }
-        const geometry = a.geojson;
+        const geometry = a?.geojson;
 
         tempArr.push({
-          id: activity_id,
+          id: id,
           short_id: short_id,
           activity_type: activity_type,
           reported_area: reported_area ? reported_area : 0,
