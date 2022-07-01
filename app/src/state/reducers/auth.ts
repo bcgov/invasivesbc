@@ -84,8 +84,6 @@ const initialState = new AuthState();
 
 function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfig): object {
   let displayName = 'User';
-  const preferenceOrder = ['display_name', 'given_name', 'sub'];
-
   let username = null;
   let email = '';
 
