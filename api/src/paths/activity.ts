@@ -275,6 +275,7 @@ function createActivity(): RequestHandler {
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
     sanitizedActivityData.created_by = req.authContext?.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
@@ -378,8 +379,10 @@ function updateActivity(): RequestHandler {
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
 
+    const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
+    const preferredUsername = req.authContext?.preferredUsername;
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by = req.authContext?.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
@@ -390,6 +393,31 @@ function updateActivity(): RequestHandler {
         namespace: 'activity',
         code: 503
       });
+    }
+
+    const sanitizedSearchCriteria: string = data._id;
+    const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
+
+    if (!sqlStatementForCheck) { 
+      return res.status(500).json({
+        message: 'Failed to build SQL statement.',
+        request: req.body,
+        namespace: 'activity',
+        code: 500
+      });
+    }
+
+    const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+
+    if (!isAdmin) {
+      if (preferredUsername !== response.rows[0].created_by) {
+        return res.status(401).json({
+          message: 'Invalid request, user is not authorized to update this record',
+          request: req.body,
+          namespace: 'activity',
+          code: 401
+        })
+      }
     }
 
     try {
