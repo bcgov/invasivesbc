@@ -84,26 +84,19 @@ const initialState = new AuthState();
 
 function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfig): object {
   let displayName = 'User';
-  const preferenceOrder = ['preferred_username', 'name', 'given_name', 'sub'];
-
-  for (const p of preferenceOrder) {
-    if (keycloakInstance.idTokenParsed) {
-      if (
-        p in keycloakInstance.idTokenParsed &&
-        keycloakInstance.idTokenParsed[p] !== null &&
-        keycloakInstance.idTokenParsed[p].length > 0
-      ) {
-        displayName = keycloakInstance.idTokenParsed[p];
-        break;
-      }
-    }
-  }
   let username = null;
   let email = '';
 
   if (keycloakInstance.idTokenParsed) {
     username = keycloakInstance.idTokenParsed['preferred_username'];
-    displayName = `${keycloakInstance.idTokenParsed['given_name']} ${keycloakInstance.idTokenParsed['family_name']}`;
+    if ('display_name' in keycloakInstance.idTokenParsed &&
+      keycloakInstance.idTokenParsed['display_name'] !== null &&
+      keycloakInstance.idTokenParsed['display_name'].length > 0) {
+      // BCEid token has this attribute set
+      displayName = keycloakInstance.idTokenParsed['display_name'];
+    } else {
+      displayName = `${keycloakInstance.idTokenParsed['given_name']} ${keycloakInstance.idTokenParsed['family_name']}`;
+    }
     email = keycloakInstance.idTokenParsed['email'];
   }
 
