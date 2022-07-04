@@ -9,7 +9,9 @@ export interface ActivityRow {
   jurisdiction: string[];
   species_positive: string[];
   species_negative: string[];
+  species_treated: string[];
   created_by: string;
+  updated_by: string;
   agency: string;
   regional_invasive_species_organization_areas: string;
   regional_districts: string;
@@ -47,7 +49,12 @@ export const activites_default_headers = [
     key: 'species_negative',
     name: 'Species Negative'
   },
+  {
+    key: 'species_treated',
+    name: 'Species Treated'
+  },
   { key: 'created_by', name: 'Created By' },
+  { key: 'updated_by', name: 'Updated By' },
   {
     key: 'agency',
     name: 'Agency'
@@ -107,7 +114,9 @@ export const mapActivitiesToDataGridRows = (activities) => {
       jurisdiction: activity?.activity_payload?.jurisdiction,
       species_positive: activity?.activity_payload?.species_positive,
       species_negative: activity?.activity_payload?.species_negative,
+      species_treated: activity?.activity_payload?.species_treated,
       created_by: activity?.created_by,
+      updated_by: activity?.updated_by,
       agency: null, // Not in payload atm
       regional_invasive_species_organization_areas:
         activity?.activity_payload?.regional_invasive_species_organization_areas,
