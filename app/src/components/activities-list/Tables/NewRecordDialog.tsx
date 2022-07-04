@@ -62,7 +62,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const { displayName, accessRoles } = useSelector(selectAuth);
+  const { displayName,  accessRoles ,username} = useSelector(selectAuth);
 
   useEffect(() => {
     const categories = [];
@@ -158,10 +158,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       return;
     }
     const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
-    dbActivity.created_by = displayName;
+    dbActivity.created_by = username
     dbActivity.user_role = accessRoles.map((role) => role.role_id);
     await dataAccess.createActivity(dbActivity, databaseContext);
-    dbActivity.created_by = displayName;
     await dataAccess.setAppState({
       activeActivity: dbActivity.activity_id,
       newActivityChoices: {
