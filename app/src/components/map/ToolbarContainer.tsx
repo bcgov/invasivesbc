@@ -96,11 +96,6 @@ export const ToolbarContainer = (props) => {
             setMeasureToolContainerOpen={setMeasureToolContainerOpen}
             measureToolContainerOpen={measureToolContainerOpen}
           />
-          <JumpToTrip />
-          {/* <NewRecord />
-        <EditRecord />
-        <MultiSelectOrEdit />
-        <DrawButtonList /> */}
 
           <JumpToActivity id={props.id} />
           {props.children}
