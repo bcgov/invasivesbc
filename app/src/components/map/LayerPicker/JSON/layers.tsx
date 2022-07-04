@@ -477,7 +477,7 @@ export const layersJSON = (networkContext: boolean, zoomLevel: number, existingL
           color_code: '#000',
           order: 4,
           opacity: 0.4,
-          zIndex: 10,
+          zIndex: 100,
           loaded: 70,
           enabled: false,
           dataBCAcceptsGeometry: true
