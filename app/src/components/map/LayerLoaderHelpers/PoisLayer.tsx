@@ -97,7 +97,11 @@ export const PoisLayer = (props) => {
       point_of_interest_type: props.poi_type
     });
 
-    setPois({ type: 'FeatureCollection', features: poisData });
+    const poisToSet= poisData.filter((row) => {
+      return row?.geometry?.coordinates !== undefined;
+    })
+
+    setPois({ type: 'FeatureCollection', features: poisToSet });
     const poiArr = poisData?.rows?.map((row) => {
       return {
         id: row.properties.site_id,
@@ -116,7 +120,7 @@ export const PoisLayer = (props) => {
       {map.getZoom() > 8 && map.getZoom() < 15 && (
         <MarkerClusterGroup chunkedLoading>
           {pois?.features?.map((feature) => {
-            const position = feature.geometry.coordinates;
+            const position = feature?.geometry?.coordinates;
             return <Marker position={[position[1], position[0]]} icon={IAPPSite} />;
           })}
         </MarkerClusterGroup>

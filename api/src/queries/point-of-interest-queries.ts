@@ -240,21 +240,21 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     sqlStatement.append(SQL`]::varchar[] && species_positive`);
   }
 
-  if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`
-      AND public.ST_INTERSECTS(
-        geog,
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-              4326
-            )
-          )
-        )
-      )
-    `);
-  }
+  // if (searchCriteria.search_feature) {     doesn't appear to be used, see iapp-queries.ts
+  //   sqlStatement.append(SQL`
+  //     AND public.ST_INTERSECTS(
+  //       geog,
+  //       public.geography(
+  //         public.ST_Force2D(
+  //           public.ST_SetSRID(
+  //             public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
+  //             4326
+  //           )
+  //         )
+  //       )
+  //     )
+  //   `);
+  // }
 
   if (searchCriteria.order?.length) {
     sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
@@ -291,28 +291,29 @@ export const getPointOfInterestSQL = (point_of_interestId: number): SQLStatement
  * @returns Postgres data object
  */
 export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT`;
+  const sqlStatement: SQLStatement = SQL``;
 
-  sqlStatement.append(SQL`
-    jsonb_build_object (
-      'type', 'Feature',
-      'properties', json_build_object(
-        'point_of_interest_id', point_of_interest_id,
-        'point_of_interest_type', point_of_interest_type,
-        'point_of_interest_subtype', point_of_interest_subtype
-      ),
-      'geometry', public.st_asGeoJSON(geog)::jsonb
-    ) as "geojson",
-    COUNT(*) OVER() AS "total_rows_count"
-  `);
-
-  if (searchCriteria.iappType) {
-    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_and_geojson ON
-    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary_and_geojson.id WHERE 1 = 1
-    `);
-  } else {
-    sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`WITH 
+    multi_polygon_cte AS 
+      (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
+        FROM (
+          SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
+        ) AS anything), 
+    not_null_issag AS (SELECT site_id, geojson FROM iapp_site_summary_and_geojson WHERE (geojson->'geometry')::text != 'null'),
+    intersections as (
+      select 
+        site_id, 
+        ( public.ST_INTERSECTS( 
+            public.geography( public.ST_Force2D( public.ST_SetSRID( ( public.ST_GeomFromGeoJSON( ( (geojson -> 'geometry'):: text))), 4326))), 
+            ( SELECT geog FROM multi_polygon_cte))) as intersects 
+      from 
+        not_null_issag
+    )
+   `);
   }
+
+  sqlStatement.append(SQL`SELECT a.site_id, b.intersects, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`);
 
   enum PoiType {
     Sites = 'Sites',
@@ -361,13 +362,13 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
     }
   }
 
-  if (searchCriteria.pointOfInterest_subtype) {
-    sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
-  }
+  // if (searchCriteria.pointOfInterest_subtype) {
+  //   sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
+  // }
 
   if (searchCriteria.iappType) {
     if (searchCriteria.iappSiteID) {
-      sqlStatement.append(SQL` AND iapp_site_summary_and_geojson.id = ${searchCriteria.iappSiteID}`);
+      sqlStatement.append(SQL` AND site_id = ${searchCriteria.iappSiteID}`);
     }
     if (searchCriteria.date_range_start) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -410,17 +411,7 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
 
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
-      AND public.ST_INTERSECTS(
-        geog,
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-              4326
-            )
-          )
-        )
-      )
+      AND b.intersects IS TRUE 
     `);
   }
 
