@@ -231,6 +231,10 @@ const ActivityGrid = (props) => {
     }
 
     setSave(Math.random());
+    //Hacky solution to prevent wrong activity grid
+    setTimeout(() => {
+      setSave(Math.random());
+    }, 1000);
   }, []);
 
   //update state in main context and localstorage:
@@ -286,7 +290,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [save]);
+  }, [save, JSON.stringify(recordSetContext?.recordSetState?.[props.setName])]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -657,7 +661,7 @@ const ActivityGrid = (props) => {
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
             <div id={'xDataGrid_' + props.setName}>
-              <DataGrid
+              <DataGrid key={props.setName + 'datagrid'}
                 //TODO THEME MODE
                 //style={{ color: 'white', backgroundColor: 'white' }o
 
