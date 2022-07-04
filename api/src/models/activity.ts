@@ -31,6 +31,7 @@ export class ActivityPostRequestBody {
   form_status: string;
   sync_status: string;
   created_by: string;
+  updated_by: string;
 
   review_status: string;
   reviewed_by: string;
@@ -38,6 +39,7 @@ export class ActivityPostRequestBody {
 
   species_positive: string[];
   species_negative: string[];
+  species_treated: string[];
 
   jurisdiction: string[];
 
@@ -91,6 +93,7 @@ export class ActivityPostRequestBody {
 
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
+    this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
   }
@@ -121,6 +124,7 @@ export class ActivitySearchCriteria {
   column_names: string[];
 
   created_by: string[];
+  updated_by: string[];
 
   review_status: string[];
 
@@ -128,6 +132,7 @@ export class ActivitySearchCriteria {
 
   species_positive: string[];
   species_negative: string[];
+  species_treated: string[];
   form_status: string[];
 
   jurisdiction: string[];
@@ -161,6 +166,7 @@ export class ActivitySearchCriteria {
     this.column_names = (obj && obj.column_names) || [];
 
     this.created_by = (obj && obj.created_by) || [];
+    this.updated_by = (obj && obj.updated_by) || [];
 
     this.form_status = (obj && obj.form_status) || [];
 
@@ -168,6 +174,7 @@ export class ActivitySearchCriteria {
 
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
+    this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
 
