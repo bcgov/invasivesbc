@@ -290,14 +290,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           });
         }
 
-        if (showLoggedInTabs && FEATURE_GATE.PLAN_MY_TRIP) {
-          tabsUserHasAccessTo.push({
-            label: 'Plan My Trip',
-            path: '/home/plan',
-            icon: <Explore fontSize={'small'} />
-          });
-        }
-
         if (showLoggedInTabs) {
           tabsUserHasAccessTo.push({
             label: 'Current Activity',

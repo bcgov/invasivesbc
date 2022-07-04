@@ -13,7 +13,7 @@ export const RecordSetProvider = (props) => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
-  const { displayName, accessRoles } = useSelector(selectAuth);
+  const { username, accessRoles } = useSelector(selectAuth);
 
   const getInitialState = async () => {
     const oldState = dataAccess.getAppState();
@@ -28,8 +28,8 @@ export const RecordSetProvider = (props) => {
             advancedFilters: [
               {
                 filterField: 'created_by',
-                filterValue: displayName,
-                filterKey: 'created_by' + displayName
+                filterValue: username,
+                filterKey: 'created_by' + username
               },
               {
                 filterField: 'record_status',

@@ -29,7 +29,7 @@ export const RecordSetRenderer = (props) => {
         {sets.map((recordSetName, index) => {
           return (
             <RecordSet
-              key={recordSetName}
+              key={recordSetName + index + 'Record Set'}
               canRemove={['1', '2'].includes(recordSetName) ? false : true}
               setName={recordSetName}
             />

@@ -160,6 +160,7 @@ export const RecordSet = (props) => {
           <AccordionDetails>
             <Grid sx={{ pt: 2 }} xs={12} item>
               <ActivityGrid
+                key={props.setName + 'ActivityGrid'}
                 setType={recordSetType}
                 setName={props.setName}
                 advancedFilters={advancedFilters}
@@ -175,7 +176,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [JSON.stringify(recordSetState?.[props.setName]), JSON.stringify(recordSetName)]
+    [JSON.stringify(recordSetState?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters)]
   );
 };
 export default RecordSet;
