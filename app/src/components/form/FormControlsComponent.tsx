@@ -85,7 +85,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           <Grid item>
             {!props.hideCheckFormForErrors && (
               <Button
-                disabled={isDisabled}
+                disabled={isDisabled || checkIfNotAuthorized()}
                 variant="contained"
                 color="primary"
                 onClick={() => {
