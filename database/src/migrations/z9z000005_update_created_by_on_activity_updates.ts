@@ -53,5 +53,8 @@ export async function down(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
     DROP TRIGGER IF EXISTS update_created_by_on_activity_updates on invasivesbc.activity_incoming_data;
+    ALTER TABLE invasivesbc.activity_incoming_data
+    DROP COLUMN updated_by VARCHAR(100),
+    DROP COLUMN species_treated VARCHAR(100);
   `);
 }
