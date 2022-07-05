@@ -147,7 +147,7 @@ const RecordSetAccordionSummary = (props) => {
             setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
           }}
           variant="outlined">
-          Filter by boundary shape
+          Boundary Filter
           <ArrowDropDownIcon />
         </Button>
         <Button
