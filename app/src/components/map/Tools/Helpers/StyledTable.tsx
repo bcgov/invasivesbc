@@ -22,6 +22,7 @@ import {
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { ErrorContext } from 'contexts/ErrorContext';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -112,6 +113,7 @@ export const RenderTableActivity = (props: any) => {
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated } = useSelector(selectAuth);
+  const errorContext = useContext(ErrorContext);
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
     return <Box>{value} m&#178;</Box>;
@@ -243,7 +245,15 @@ export const RenderTableActivity = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          activityPage(params);
+          if (authenticated) {
+            activityPage(params);
+          } else {
+            errorContext.pushError({
+              message: 'You need InvasivesBC access to open this record.',
+              code: 401,
+              namespace: ''
+            });
+          }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
         //   console.log('params', params);
