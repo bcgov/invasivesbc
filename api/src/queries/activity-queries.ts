@@ -22,6 +22,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       created_timestamp,
       received_timestamp,
       created_by,
+      updated_by,
       sync_status,
       form_status,
       review_status,
@@ -32,6 +33,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       media_keys,
       species_positive,
       species_negative,
+      species_treated,
       jurisdiction
     ) VALUES (
       ${activity.activity_id},
@@ -40,6 +42,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       ${activity.created_timestamp},
       ${activity.received_timestamp},
       ${activity.created_by},
+      ${activity.updated_by},
       ${activity.sync_status},
       ${activity.form_status},
       ${activity.review_status},
@@ -91,6 +94,16 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   if (activity.species_negative?.length) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_negative}::text, '{', '['), '}', ']')::jsonb
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,'null'
+    `);
+  }
+
+  if (activity.species_treated?.length) {
+    sqlStatement.append(SQL`
+      ,replace(replace(${activity.species_treated}::text, '{', '['), '}', ']')::jsonb
     `);
   } else {
     sqlStatement.append(SQL`
@@ -186,7 +199,7 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
     // add the first activity type, which does not get a comma prefix
     sqlStatement.append(SQL`${searchCriteria.activity_type[0]}`);
 
-      for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
+    for (let idx = 1; idx < searchCriteria.activity_type.length; idx++) {
       // add all subsequent activity types, which do get a comma prefix
       sqlStatement.append(SQL`, ${searchCriteria.activity_type[idx]}`);
     }
@@ -218,6 +231,14 @@ export const getActivitiesLeanSQL = (searchCriteria: ActivitySearchCriteria): SQ
       // add all subsequent activity subtypes, which do get a comma prefix
       sqlStatement.append(SQL`, ${searchCriteria.created_by[idx]}`);
     }
+
+    sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.updated_by && searchCriteria.updated_by.length) {
+    sqlStatement.append(SQL` AND updated_by IN (`);
+
+    sqlStatement.append(SQL`${searchCriteria.updated_by}`);
 
     sqlStatement.append(SQL`)`);
   }
