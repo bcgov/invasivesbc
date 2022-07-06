@@ -367,7 +367,10 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     if (!position) {
       await findMe();
     }
-    map.setView(position, 15);
+    if(position)
+    {
+      map.setView(position, 15);
+    }
   };
 
   /**
@@ -403,16 +406,20 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @description Starts timer when the map is ready and attempts to find initial position
    * @returns {void}
    */
-  useEffect(() => {
+   useEffect(() => {
     // If initial load (if isLoading is true), find user's current position and start timer before interacting with controls
     if (isLoading) {
       setInitialTime(2);
       setStartTimer(true);
 
-      findMe().then(() => {
-        // Stop loading once location found
+      // findMe().then(() => {
+      //   // Stop loading once location found
+      //   setIsLoading(false);
+      // });
+
+      setTimeout(() => {
         setIsLoading(false);
-      });
+      }, 1000);
     }
   }, []);
 
