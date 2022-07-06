@@ -323,7 +323,8 @@ export const RenderTablePOI = (props: any) => {
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { roles } = useSelector(selectAuth);
+  const { authenticated } = useSelector(selectAuth);
+  const errorContext = useContext(ErrorContext);
 
   const columns = [
     {
@@ -406,8 +407,14 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (roles.length == 0) {
+          if (authenticated) {
             history.push(`/home/iapp/${params.id}`);
+          } else {
+            errorContext.pushError({
+              message: 'You need InvasivesBC access to open this record.',
+              code: 401,
+              namespace: ''
+            });
           }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
