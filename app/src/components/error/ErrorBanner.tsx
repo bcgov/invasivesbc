@@ -1,7 +1,7 @@
 import React from 'react';
 import { IErrorBanner, ErrorContext } from 'contexts/ErrorContext';
 import { Alert, AlertTitle, Box } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 export const ErrorBanner = (props: IErrorBanner) => {
   const errorContext = useContext(ErrorContext);
@@ -13,6 +13,14 @@ export const ErrorBanner = (props: IErrorBanner) => {
       namespace: props.namespace
     });
   };
+
+  useEffect(() => {
+    if (errorContext) {
+      setTimeout(() => {
+        triggerOnClose();
+      }, 5000);
+    }
+  }, [errorContext]);
 
   const message = process.env.REACT_APP_REAL_NODE_ENV !== 'production' && props.code + ' - ' + props.namespace;
 
