@@ -46,17 +46,31 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 
 const argv = process.argv.slice(2);
 const writeStatsJson = argv.indexOf('--stats') !== -1;
+const buildingForMobile = argv.indexOf('--mobile') !== -1;
+
+const platformConfig = (isMobile) => {
+  if (isMobile) {
+    return {
+      CONFIGURATION_IS_MOBILE: false,
+      CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
+      CONFIGURATION_SOURCE: 'Webpack'
+    };
+  }
+  return {
+    CONFIGURATION_IS_MOBILE: true,
+    CONFIGURATION_KEYCLOAK_ADAPTER: 'capacitor',
+    CONFIGURATION_SOURCE: 'Webpack'
+  };
+};
 
 // Generate configuration
 const config = configFactory('production', {
-  CONFIGURATION_SOURCE: 'Webpack',
   CONFIGURATION_API_BASE: process.env['REACT_APP_API_HOST'],
   CONFIGURATION_KEYCLOAK_CLIENT_ID: process.env['SSO_CLIENT_ID'],
   CONFIGURATION_KEYCLOAK_REALM: process.env['SSO_REALM'],
   CONFIGURATION_KEYCLOAK_URL: process.env['SSO_URL'],
-  CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
   CONFIGURATION_REDIRECT_URI: process.env['REDIRECT_URI'],
-  CONFIGURATION_IS_MOBILE: false
+  ...platformConfig(buildingForMobile)
 });
 
 // We require that you explicitly set browsers and do not fall back to
