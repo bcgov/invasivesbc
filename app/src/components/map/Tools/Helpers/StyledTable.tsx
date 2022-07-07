@@ -193,7 +193,7 @@ export const RenderTableActivity = (props: any) => {
         });
         const species_code = [];
         switch (activity_type) {
-          case 'Observations':
+          case 'Observation':
             a?.geojson?.properties?.species_positive?.forEach((s) => {
               species_code.push(s);
             });
@@ -201,8 +201,9 @@ export const RenderTableActivity = (props: any) => {
               species_code.push(s);
             });
             break;
-          case 'Treatments':
-            a?.geojson?.properties?.species_treated?.forEach((s) => {
+          case 'Treatment':
+            const stTemp = JSON.parse(a.geojson.properties.species_treated);
+            stTemp.forEach((s) => {
               species_code.push(s);
             });
             break;

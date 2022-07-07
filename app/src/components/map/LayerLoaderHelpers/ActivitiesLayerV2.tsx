@@ -111,10 +111,11 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   return useMemo(() => {
     if (activities && activities.features && props.color) {
-      console.log('color from inside activities 2:');
-      console.log(props.color.toUpperCase());
-      console.log('activities: ' + activities.features.length);
-      console.dir(activities);
+      // Removed for now:
+      // console.log('color from inside activities 2:');
+      // console.log(props.color.toUpperCase());
+      // console.log('activities: ' + activities.features.length);
+      // console.dir(activities);
 
       switch (zoomType) {
         case ZoomTypes.HIGH:
@@ -122,15 +123,32 @@ export const ActivitiesLayerV2 = (props: any) => {
             <>
               {activities.features.map((a) => {
                 if (a?.geometry?.type) {
+                  const species_code = [];
+                  switch (a.properties.type) {
+                    case 'Observation':
+                      a?.geojson?.properties?.species_positive?.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      a?.geojson?.properties?.species_negative?.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      break;
+                    case 'Treatment':
+                      const stTemp = JSON.parse(a.properties.species_treated);
+                      stTemp.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      break;
+                    case 'Monitoring':
+                      break;
+                  }
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
-                      <Tooltip permanent direction="top">
+                      <Tooltip permanent direction="top" opacity={0.25}>
                         {a.properties.short_id}
                         <br />
-                        {a?.properties?.species_positive ? a?.properties?.species_positive : ''}
-                        {a?.properteis?.species_negative ? a?.properties?.species_negative : ''}
-                        {a?.properteis?.species_treated ? a?.properties?.species_treated : ''}
+                        {species_code ? species_code : ''}
                       </Tooltip>
                     </GeoJSON>
                   );
