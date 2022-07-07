@@ -144,7 +144,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
-                      <Tooltip permanent direction="top" opacity={0.25}>
+                      <Tooltip permanent direction="top" opacity={0.3}>
                         {a.properties.short_id}
                         <br />
                         {species_code ? species_code : ''}
