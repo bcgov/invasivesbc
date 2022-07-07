@@ -202,12 +202,11 @@ export const RenderTableActivity = (props: any) => {
             });
             break;
           case 'Treatment':
-            const stTemp = JSON.parse(a.geojson.properties.species_treated);
-            stTemp.forEach((s) => {
+          case 'Monitoring':
+            const tempArr = JSON.parse(a.geojson.properties.species_treated);
+            tempArr.forEach((s) => {
               species_code.push(s);
             });
-            break;
-          case 'Monitoring':
             break;
         }
         const geometry = a?.geojson;

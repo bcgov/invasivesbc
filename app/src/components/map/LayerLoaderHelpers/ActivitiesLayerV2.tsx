@@ -126,20 +126,19 @@ export const ActivitiesLayerV2 = (props: any) => {
                   const species_code = [];
                   switch (a.properties.type) {
                     case 'Observation':
-                      a?.geojson?.properties?.species_positive?.forEach((s) => {
+                      a?.properties?.species_positive?.forEach((s) => {
                         species_code.push(s);
                       });
-                      a?.geojson?.properties?.species_negative?.forEach((s) => {
+                      a?.properties?.species_negative?.forEach((s) => {
                         species_code.push(s);
                       });
                       break;
                     case 'Treatment':
-                      const stTemp = JSON.parse(a.properties.species_treated);
-                      stTemp.forEach((s) => {
+                    case 'Monitoring':
+                      const tempArr = JSON.parse(a?.properties?.species_treated);
+                      tempArr?.forEach((s) => {
                         species_code.push(s);
                       });
-                      break;
-                    case 'Monitoring':
                       break;
                   }
                   return (
