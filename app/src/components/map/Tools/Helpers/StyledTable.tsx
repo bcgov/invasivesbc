@@ -202,9 +202,14 @@ export const RenderTableActivity = (props: any) => {
             });
             break;
           case 'Treatment':
+            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
+            treatmentTemp.forEach((s) => {
+              species_code.push(s);
+            });
+            break;
           case 'Monitoring':
-            const tempArr = JSON.parse(a.geojson.properties.species_treated);
-            tempArr.forEach((s) => {
+            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
+            monitoringTemp.forEach((s) => {
               species_code.push(s);
             });
             break;

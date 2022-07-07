@@ -102,11 +102,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           <Grid item>
             <Tooltip placement="top" title={deleteTooltipString()}>
               <span>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={checkIfNotAuthorized()}
-                  onClick={() => setOpen(true)}>
+                <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
               </span>
