@@ -1,4 +1,4 @@
-import { all, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import Keycloak from 'keycloak-js';
 import {
   AUTH_INITIALIZE_COMPLETE,
@@ -31,7 +31,7 @@ function* initializeAuthentication() {
     url: config.KEYCLOAK_URL
   });
 
-  const authStatus = yield keycloakInstance.init({
+  yield call(keycloakInstance.init, {
     checkLoginIframe: false,
     adapter: config.KEYCLOAK_ADAPTER,
     redirectUri: config.REDIRECT_URI,
@@ -41,20 +41,15 @@ function* initializeAuthentication() {
 
   yield put({
     type: AUTH_INITIALIZE_COMPLETE,
-    payload: {
-      authenticated: authStatus
-    }
+    payload: {}
   });
 
-  if (authStatus) {
+  if (keycloakInstance.authenticated) {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
 
     yield put({ type: AUTH_REFRESH_TOKEN });
-
-    // load roles
-    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
   }
 }
 
@@ -105,6 +100,9 @@ function* keepTokenFresh() {
   yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
   yield put({ type: AUTH_UPDATE_TOKEN_STATE });
 
+  // load roles
+  yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+
   const expiresIn =
     keycloakInstance.tokenParsed['exp'] - Math.ceil(new Date().getTime() / 1000) + keycloakInstance.timeSkew;
 
@@ -115,7 +113,7 @@ function* keepTokenFresh() {
 
 function* handleSigninRequest(action) {
   try {
-    yield keycloakInstance.login();
+    yield call(keycloakInstance.login);
 
     yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
     yield put({ type: AUTH_REFRESH_TOKEN });

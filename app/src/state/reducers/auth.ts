@@ -43,6 +43,7 @@ class AuthState {
 
   constructor() {
     this.initialized = false;
+    this.authenticated = false;
     this.roles = [];
     this.accessRoles = [];
     this.rolesInitialized = false;
@@ -87,6 +88,8 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   let username = null;
   let email = '';
 
+  const authenticated = keycloakInstance.authenticated;
+
   if (keycloakInstance.idTokenParsed) {
     username = keycloakInstance.idTokenParsed['preferred_username'];
     if ('display_name' in keycloakInstance.idTokenParsed &&
@@ -105,6 +108,7 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   };
 
   return {
+    authenticated,
     displayName,
     requestHeaders,
     username,
@@ -130,19 +134,15 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         };
       }
       case AUTH_INITIALIZE_COMPLETE: {
-        const { authenticated } = action.payload;
         return {
           ...state,
           initialized: true,
-          authenticated,
           ...loadCurrentStateFromKeycloak(state, configuration)
         };
       }
       case AUTH_REQUEST_COMPLETE: {
-        const { authenticated } = action.payload;
         return {
           ...state,
-          authenticated,
           ...loadCurrentStateFromKeycloak(state, configuration)
         };
       }
