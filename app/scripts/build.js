@@ -51,14 +51,14 @@ const buildingForMobile = argv.indexOf('--mobile') !== -1;
 const platformConfig = (isMobile) => {
   if (isMobile) {
     return {
-      CONFIGURATION_IS_MOBILE: false,
-      CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
+      CONFIGURATION_IS_MOBILE: true,
+      CONFIGURATION_KEYCLOAK_ADAPTER: 'capacitor',
       CONFIGURATION_SOURCE: 'Webpack'
     };
   }
   return {
-    CONFIGURATION_IS_MOBILE: true,
-    CONFIGURATION_KEYCLOAK_ADAPTER: 'capacitor',
+    CONFIGURATION_IS_MOBILE: false,
+    CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
     CONFIGURATION_SOURCE: 'Webpack'
   };
 };
