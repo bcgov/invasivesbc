@@ -522,7 +522,6 @@ export function populateSpeciesArrays(record) {
       species_treated = [subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.invasive_plant_code];
       break;
     case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
-      species_treated = [subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information.invasive_plant_code];
       break;
     case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
       // DOn't know the path record borked
