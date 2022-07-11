@@ -128,17 +128,19 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
       for (const row of rows) {
         let newFeatureArr = [];
         for (const feature of row.geojson.features) {
-          for (const multipolygon of feature.coordinates) {
-            let convertedFeature = {
-              'type': 'Feature',
-              "properties": {},
-              "geometry": {
-                "type": 'Polygon',
-                'coordinates' : multipolygon
-              }
-            };
+          if (feature !== null && feature.coordinates !== null) {
+            for (const multipolygon of feature.coordinates) {
+              let convertedFeature = {
+                'type': 'Feature',
+                "properties": {},
+                "geometry": {
+                  "type": 'Polygon',
+                  'coordinates' : multipolygon
+                }
+              };
 
-            newFeatureArr.push(convertedFeature);
+              newFeatureArr.push(convertedFeature);
+            }
           }
         }
         row.geojson.features = newFeatureArr;
@@ -223,7 +225,7 @@ function uploadShape(): RequestHandler {
 
         const response: QueryResult = await connection.query(`insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
           SELECT ST_COLLECT(array_agg(
-            ST_GeomFromGeoJSON(feat->>'geometry') ))::geography AS geog, $2, $3 FROM (
+            ST_Force2D(ST_GeomFromGeoJSON(feat->>'geometry') )) )::geography AS geog, $2, $3 FROM (
               SELECT json_array_elements($1::json->'features') AS feat) AS f;`, [JSON.stringify(geoJSON), user_id, title]);
 
         await connection.query('COMMIT');

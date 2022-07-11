@@ -69,6 +69,11 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
     }
   }
 
+  //if empty
+  if (filteredData.features.length < 1) {
+    throw new Error(`Invalid geometry types, sanitized collection is empty`);
+  }
+
   return filteredData;
 }
 
