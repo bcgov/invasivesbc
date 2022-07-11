@@ -8,7 +8,7 @@ import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesLeanSQL, deleteActivitiesSQL } from '../queries/activity-queries';
+import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -227,12 +227,12 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria);
+      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true);
 
       // Check for sql and role:
       // console.log('========================= activities-lean.ts 232', sqlStatement.text);
       // console.log('========================= activities-lean.ts 232 roleName', roleName);
-      
+
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Error generating SQL statement',

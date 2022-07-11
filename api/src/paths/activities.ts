@@ -260,7 +260,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria);
+      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
 
       if (!sqlStatement) {
         return res
@@ -318,7 +318,7 @@ function deleteActivitiesByIds(): RequestHandler {
     }
 
     if (isAdmin === false) {
-      const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria);
+      const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
 
       if (!sqlStatement) {
         return res
