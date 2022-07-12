@@ -112,7 +112,7 @@ export const RenderTableActivity = (props: any) => {
   const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { authenticated } = useSelector(selectAuth);
+  const { authenticated, roles } = useSelector(selectAuth);
   const errorContext = useContext(ErrorContext);
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
@@ -250,7 +250,7 @@ export const RenderTableActivity = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (authenticated) {
+          if (authenticated && roles.length > 0) {
             activityPage(params);
           } else {
             errorContext.pushError({
