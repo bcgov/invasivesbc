@@ -117,9 +117,8 @@ export const mapActivitiesToDataGridRows = (activities) => {
       species_treated: activity?.activity_payload?.species_treated,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
-      agency: null, // Not in payload atm
-      regional_invasive_species_organization_areas:
-        activity?.activity_payload?.regional_invasive_species_organization_areas,
+      agency: activity?.activity_payload?.form_data?.activity_data?.invasive_species_agency_code, // Not in payload atm
+      regional_invasive_species_organization_areas: activity?.regional_invasive_species_organization_areas,
       regional_districts: activity?.activity_payload?.regional_districts,
       biogeoclimatic_zones: activity?.activity_payload?.biogeoclimatic_zones,
       elevation: activity?.elevation
