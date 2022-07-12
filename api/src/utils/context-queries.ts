@@ -187,7 +187,7 @@ const saveElevation = (id: any, req: any) => {
   axios
     .get(url, config)
     .then(async (response) => {
-      const elevation = response.data.elevation;
+      const elevation = response.data.result;
       const connection = await getDBConnection();
       const sql = `
         update activity_incoming_data
