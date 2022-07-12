@@ -119,8 +119,8 @@ export const mapActivitiesToDataGridRows = (activities) => {
       updated_by: activity?.updated_by,
       agency: activity?.activity_payload?.form_data?.activity_data?.invasive_species_agency_code, // Not in payload atm
       regional_invasive_species_organization_areas: activity?.regional_invasive_species_organization_areas,
-      regional_districts: activity?.activity_payload?.regional_districts,
-      biogeoclimatic_zones: activity?.activity_payload?.biogeoclimatic_zones,
+      regional_districts: activity?.regional_districts,
+      biogeoclimatic_zones: activity?.biogeoclimatic_zones,
       elevation: activity?.elevation
       // date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
       // reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,

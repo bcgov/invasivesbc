@@ -1111,7 +1111,7 @@ export const AquaticPlant = {
           },
 
           required: [
-            'edna_sample',
+            // 'edna_sample',
             'invasive_plant_density_code',
             'voucher_specimen_collected',
             'plant_life_stage_code',

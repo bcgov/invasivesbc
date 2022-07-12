@@ -62,7 +62,7 @@ const saveBCGW = async (id: any, req: any) => {
     await axios
       .get(url, config)
       .then(async (response) => {
-        const attribute = response.data.target[layer.targetAttribute];
+        const attribute = response.data.result[layer.targetAttribute];
         const column = layer.targetColumn;
         sqlStatement.append(`
           update activity_incoming_data
