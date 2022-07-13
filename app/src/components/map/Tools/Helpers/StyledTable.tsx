@@ -1,5 +1,8 @@
 import {
   Box,
+  IconButton,
+  Paper,
+  Popper,
   Table,
   TableBody,
   TableCell,
@@ -7,12 +10,13 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Theme
+  Theme,
+  Typography
 } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
@@ -23,6 +27,7 @@ import {
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
+import CloseIcon from '@mui/icons-material/Close';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -108,8 +113,9 @@ export const RenderTablePosition = ({ rows }) => {
 export const RenderTableActivity = (props: any) => {
   const { bufferedGeo } = props;
   const dataAccess = useDataAccess();
-  const invasivesAccess = useInvasivesApi();
-  const [response, setResponse] = useState(null);
+  // Removed for now:
+  // const invasivesAccess = useInvasivesApi();
+  // const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
@@ -162,14 +168,16 @@ export const RenderTableActivity = (props: any) => {
     updateActivityRecords();
   }, [bufferedGeo]);
 
-  useEffect(() => {
-    const getApiSpec = async () => {
-      setResponse(await invasivesAccess.getCachedApiSpec());
-    };
-    if (authenticated) {
-      getApiSpec();
-    }
-  }, [rows, authenticated]);
+  // Don't know if needed anymore?
+  // Maybe associated with mobile?
+  // useEffect(() => {
+  //   const getApiSpec = async () => {
+  //     setResponse(await invasivesAccess.getCachedApiSpec());
+  //   };
+  //   if (authenticated) {
+  //     getApiSpec();
+  //   }
+  // }, [rows, authenticated]);
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
@@ -322,9 +330,18 @@ export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
+  const [speciesAnchorEl, setSpeciesAnchorEl] = useState<null | HTMLElement>(null);
+  const speciesDiv = useRef(null);
+  const [speciesPopper, setSpeciesPopper] = useState(false);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
   const errorContext = useContext(ErrorContext);
+
+  useEffect(() => {
+    if (speciesDiv && speciesPopper) {
+      setSpeciesAnchorEl(speciesDiv.current);
+    }
+  }, [speciesDiv, speciesPopper, setSpeciesAnchorEl]);
 
   const columns = [
     {
@@ -335,12 +352,12 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'site_id',
       headerName: 'IAPP ID',
-      minWidth: 80
+      width: 70
     },
     {
       field: 'reported_area',
       headerName: 'Reported Area',
-      minWidth: 130
+      minWidth: 115
     },
     {
       field: 'jurisdiction_code',
@@ -350,7 +367,33 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'species_code',
       headerName: 'Species Code',
-      width: 170
+      width: 105,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Box>
+            <Box
+              ref={speciesDiv}
+              style={{
+                width: 115
+              }}>
+              {params.value}
+            </Box>
+            {speciesPopper && (
+              <Popper open={speciesPopper} anchorEl={speciesAnchorEl} style={{ zIndex: 9999 }}>
+                <Paper
+                  elevation={4}
+                  style={{
+                    width: 105
+                  }}>
+                  <Typography variant="body2" style={{ padding: 8 }}>
+                    {params.value}
+                  </Typography>
+                </Paper>
+              </Popper>
+            )}
+          </Box>
+        );
+      }
     },
     {
       field: 'geometry',
@@ -407,14 +450,22 @@ export const RenderTablePOI = (props: any) => {
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (authenticated && roles.length > 0) {
-            history.push(`/home/iapp/${params.id}`);
-          } else {
-            errorContext.pushError({
-              message: 'You need InvasivesBC access to open this record.',
-              code: 401,
-              namespace: ''
-            });
+          if (params.field === 'site_id') {
+            if (authenticated && roles.length > 0) {
+              history.push(`/home/iapp/${params.id}`);
+            } else {
+              errorContext.pushError({
+                message: 'You need InvasivesBC access to open this record.',
+                code: 401,
+                namespace: ''
+              });
+              if (roles.length > 0) {
+                history.push(`/home/iapp/${params.id}`);
+              }
+            }
+          }
+          if (params.field === 'species_code') {
+            setSpeciesPopper(!speciesPopper);
           }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {

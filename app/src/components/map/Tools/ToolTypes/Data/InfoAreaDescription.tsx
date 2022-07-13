@@ -55,6 +55,7 @@ export const GeneratePopup = (props) => {
 
   const hideElement = () => {
     map.closePopup();
+    setSection('position');
     if (onCloseCallback) {
       setTimeout(() => {
         onCloseCallback();
