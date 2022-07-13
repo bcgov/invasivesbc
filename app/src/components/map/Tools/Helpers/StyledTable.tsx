@@ -380,7 +380,7 @@ export const RenderTablePOI = (props: any) => {
       const tempArr = [];
       pointsofinterest.forEach((poi) => {
         const { site_id, reported_area } = poi.properties;
-        const jurisdictions: string = poi.properties.jurisdictions.join(' ');
+        const jurisdictions: string = poi.properties.jurisdictions.join('\n');
         const species: string[] = poi.properties.species_on_site.join(' ');
         tempArr.push({
           id: site_id,
@@ -404,7 +404,7 @@ export const RenderTablePOI = (props: any) => {
         rows={rows}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        rowHeight={30}
+        getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (authenticated && roles.length > 0) {
