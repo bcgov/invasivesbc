@@ -156,7 +156,6 @@ export const ActivitiesLayerV2 = (props: any) => {
               })}
             </>
           );
-
         case ZoomTypes.MEDIUM:
           return (
             <GeoJSONVtLayer
