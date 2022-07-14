@@ -255,7 +255,7 @@ export const RenderTableActivity = (props: any) => {
         rows={rows}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        rowHeight={30}
+        getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (authenticated && roles.length > 0) {
@@ -330,18 +330,9 @@ export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
-  const [speciesAnchorEl, setSpeciesAnchorEl] = useState<null | HTMLElement>(null);
-  const speciesDiv = useRef(null);
-  const [speciesPopper, setSpeciesPopper] = useState(false);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
   const errorContext = useContext(ErrorContext);
-
-  useEffect(() => {
-    if (speciesDiv && speciesPopper) {
-      setSpeciesAnchorEl(speciesDiv.current);
-    }
-  }, [speciesDiv, speciesPopper, setSpeciesAnchorEl]);
 
   const columns = [
     {
@@ -361,39 +352,13 @@ export const RenderTablePOI = (props: any) => {
     },
     {
       field: 'jurisdiction_code',
-      headerName: 'Jurisdiction Code',
-      width: 250
+      headerName: 'Jurisdictions',
+      width: 200
     },
     {
       field: 'species_code',
-      headerName: 'Species Code',
-      width: 105,
-      renderCell: (params: GridRenderCellParams) => {
-        return (
-          <Box>
-            <Box
-              ref={speciesDiv}
-              style={{
-                width: 115
-              }}>
-              {params.value}
-            </Box>
-            {speciesPopper && (
-              <Popper open={speciesPopper} anchorEl={speciesAnchorEl} style={{ zIndex: 9999 }}>
-                <Paper
-                  elevation={4}
-                  style={{
-                    width: 105
-                  }}>
-                  <Typography variant="body2" style={{ padding: 8 }}>
-                    {params.value}
-                  </Typography>
-                </Paper>
-              </Popper>
-            )}
-          </Box>
-        );
-      }
+      headerName: 'Species',
+      width: 120
     },
     {
       field: 'geometry',
@@ -463,9 +428,6 @@ export const RenderTablePOI = (props: any) => {
                 history.push(`/home/iapp/${params.id}`);
               }
             }
-          }
-          if (params.field === 'species_code') {
-            setSpeciesPopper(!speciesPopper);
           }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
