@@ -92,7 +92,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
-  const { extendedInfo, displayName, authorizations } = useSelector(selectAuth);
+  const { extendedInfo, displayName, roles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -251,6 +251,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return doc.form_status === ActivityStatus.SUBMITTED || doc.formStatus === ActivityStatus.SUBMITTED;
   };
 
+  const hasRole = (role: string) => {
+    if (roles.some((r) => r.role_name === role)) {
+      return true;
+    }
+    return false;
+  };
+
+  const isGov = () => {
+    if (hasRole('bcgov_staff_animals') || hasRole('bcgov_staff_plants') || hasRole('bcgov_staff_both')) {
+      return true;
+    }
+    return false;
+  };
+
   /**
    * Set the default form data values
    *
@@ -340,7 +354,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ...activity_subtype_data,
         Treatment_ChemicalPlant_Information: {
           // if government user, auto fill as 000000
-          pesticide_employer_code: authorizations.isGovernment ? '0' : psnInject.replace(/^0+(\d)/, '')
+          pesticide_employer_code: isGov() ? '0' : psnInject.replace(/^0+(\d)/, '')
         }
       };
     } else {
