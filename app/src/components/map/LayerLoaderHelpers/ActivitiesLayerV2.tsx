@@ -1,11 +1,12 @@
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import L from 'leaflet';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
+import { Marker, useMap, useMapEvent, GeoJSON, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import center from '@turf/center';
 
 export const ActivitiesLayerV2 = (props: any) => {
   // use this use state var to only rerender when necessary
@@ -92,21 +93,12 @@ export const ActivitiesLayerV2 = (props: any) => {
       };
       return (
         <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
-          {activities.features.map((a) => {
-            if (a?.geometry?.type === 'Polygon') {
-              const position: [number, number] = [a.geometry.coordinates[0][0][1], a.geometry.coordinates[0][0][0]];
+          {activities?.features?.map((a) => {
+            if (a?.geometry?.type) {
+              const position = center(a)?.geometry?.coordinates;
 
               return (
-                <Marker position={position} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup bufferedGeo={a} />
-                </Marker>
-              );
-            }
-            if (a?.geometry?.type === 'Point') {
-              const position: [number, number] = [a.geometry.coordinates[1], a.geometry.coordinates[0]];
-
-              return (
-                <Marker position={[position[0], position[1]]} key={'activity_marker' + a.properties.activity_id}>
+                <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
                   <GeneratePopup bufferedGeo={a} />
                 </Marker>
               );
@@ -119,34 +111,50 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   return useMemo(() => {
     if (activities && activities.features && props.color) {
-      console.log('color from inside activities 2:');
-      console.log(props.color.toUpperCase());
-      console.log('activities: ' + activities.features.length);
-      console.dir(activities);
+      // Removed for now:
+      // console.log('color from inside activities 2:');
+      // console.log(props.color.toUpperCase());
+      // console.log('activities: ' + activities.features.length);
+      // console.dir(activities);
 
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
             <>
               {activities.features.map((a) => {
-                if (a?.geometry?.type === 'Polygon') {
+                if (a?.geometry?.type) {
+                  const species_code = [];
+                  switch (a.properties.type) {
+                    case 'Observation':
+                      a?.properties?.species_positive?.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      a?.properties?.species_negative?.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      break;
+                    case 'Treatment':
+                    case 'Monitoring':
+                      const tempArr = JSON.parse(a?.properties?.species_treated);
+                      tempArr?.forEach((s) => {
+                        species_code.push(s);
+                      });
+                      break;
+                  }
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
-                    </GeoJSON>
-                  );
-                }
-                if (a?.geometry?.type === 'Point') {
-                  return (
-                    <GeoJSON data={a} options={options}>
-                      <GeneratePopup bufferedGeo={a} />
+                      <Tooltip permanent direction="top" opacity={0.3}>
+                        {a.properties.short_id}
+                        <br />
+                        {species_code ? species_code : ''}
+                      </Tooltip>
                     </GeoJSON>
                   );
                 }
               })}
             </>
           );
-          break;
 
         case ZoomTypes.MEDIUM:
           return (
@@ -158,7 +166,6 @@ export const ActivitiesLayerV2 = (props: any) => {
               options={options}
             />
           );
-          break;
         case ZoomTypes.LOW:
           return MarkerMemo;
       }

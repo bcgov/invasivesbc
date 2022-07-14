@@ -1,10 +1,20 @@
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Theme } from '@mui/material';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Theme
+} from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
   getJurisdictions,
   getLatestReportedArea,
@@ -12,6 +22,7 @@ import {
 } from 'components/points-of-interest/IAPP/IAPP-Functions';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { ErrorContext } from 'contexts/ErrorContext';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -101,7 +112,12 @@ export const RenderTableActivity = (props: any) => {
   const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { authenticated } = useSelector(selectAuth);
+  const { authenticated, roles } = useSelector(selectAuth);
+  const errorContext = useContext(ErrorContext);
+
+  const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
+    return <Box>{value} m&#178;</Box>;
+  };
 
   const columns = [
     {
@@ -122,7 +138,8 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'reported_area',
       headerName: 'Reported Area',
-      minWidth: 130
+      minWidth: 130,
+      renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
     },
     {
       field: 'jurisdiction_code',
@@ -156,41 +173,54 @@ export const RenderTableActivity = (props: any) => {
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
-      const activities = await dataAccess.getActivities({
+      const activities = await dataAccess.getActivitiesLean({
         search_feature: bufferedGeo,
         limit: 500,
         page: 0
       });
+      console.log(activities);
 
       const tempArr = [];
 
       activities?.rows?.forEach((a) => {
-        const activity_id = a.activity_id;
-        const short_id = a.activity_payload.short_id;
-        const activity_type = a.activity_payload.activity_type;
-        const reported_area = a.activity_payload.form_data.reported_area;
+        const id = a?.geojson?.properties?.id;
+        const short_id = a?.geojson?.properties?.short_id;
+        const activity_type = a?.geojson?.properties?.type;
+        const reported_area = a?.geojson?.properties?.reported_area;
         const jurisdiction_code = [];
-        a.activity_payload.form_data?.jurisdictions?.forEach((item) => {
+        a?.geojson?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
         const species_code = [];
-        if (a?.species_positive?.length > 0) {
-          a.species_positive.forEach((s) => {
-            species_code.push(s);
-          });
+        switch (activity_type) {
+          case 'Observation':
+            a?.geojson?.properties?.species_positive?.forEach((s) => {
+              species_code.push(s);
+            });
+            a?.geojson?.properties?.species_negative?.forEach((s) => {
+              species_code.push(s);
+            });
+            break;
+          case 'Treatment':
+            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
+            treatmentTemp.forEach((s) => {
+              species_code.push(s);
+            });
+            break;
+          case 'Monitoring':
+            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
+            monitoringTemp.forEach((s) => {
+              species_code.push(s);
+            });
+            break;
         }
-        if (a?.species_negative?.length > 0) {
-          a.species_negative.forEach((s) => {
-            species_code.push(s);
-          });
-        }
-        const geometry = a.activity_payload.geometry[0];
+        const geometry = a?.geojson;
 
         tempArr.push({
-          id: activity_id,
+          id: id,
           short_id: short_id,
           activity_type: activity_type,
-          reported_area: (reported_area ? reported_area : 0) + ' Ha',
+          reported_area: reported_area ? reported_area : 0,
           jurisdiction_code: jurisdiction_code,
           species_code: species_code,
           geometry: geometry
@@ -220,7 +250,15 @@ export const RenderTableActivity = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          activityPage(params);
+          if (authenticated && roles.length > 0) {
+            activityPage(params);
+          } else {
+            errorContext.pushError({
+              message: 'You need InvasivesBC access to open this record.',
+              code: 401,
+              namespace: ''
+            });
+          }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
         //   console.log('params', params);

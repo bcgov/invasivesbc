@@ -15,7 +15,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
-import * as turf from '@turf/helpers';
+import { point } from '@turf/helpers';
 import buffer from '@turf/buffer';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
@@ -33,14 +33,6 @@ import {
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from '../Nav/DisplayPosition';
 import center from '@turf/center';
-
-export const generateGeo = (lat, lng, { setGeoPoint }) => {
-  if (lat && lng) {
-    var point = turf.point([lng, lat]);
-    var buffer2 = buffer(point, 50, { units: 'meters' });
-    setGeoPoint(buffer2);
-  }
-};
 
 export const GeneratePopup = (props) => {
   const { bufferedGeo, onCloseCallback = null } = props;
@@ -121,10 +113,6 @@ function SetPointOnClick() {
   const divRef = React.useRef();
   const markerRef = useRef(null);
   const [coolguy, setCoolGuy] = useState(null);
-
-  useEffect(() => {
-    console.log('workflow step', workflowStep);
-  }, [workflowStep]);
 
   useEffect(() => {
     if (userGeo !== null) {
@@ -214,7 +202,7 @@ function SetPointOnClick() {
           <Typography className={toolClass.Font}>What's here?</Typography>
         </ListItemText>
       </ListItemButton>
-      {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE ? (
+      {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE && (
         <Marker
           ref={markerRef}
           position={{ lat: center(userGeo).geometry.coordinates[1], lng: center(userGeo).geometry.coordinates[0] }}>
@@ -226,8 +214,6 @@ function SetPointOnClick() {
             bufferedGeo={userGeo}
           />
         </Marker>
-      ) : (
-        <></>
       )}
     </ListItem>
   );

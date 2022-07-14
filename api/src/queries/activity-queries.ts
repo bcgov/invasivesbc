@@ -182,7 +182,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         'wellProx', well_proximity,
         'species_positive', species_positive,
         'species_negative', species_negative,
-        'jurisdiction', jurisdiction
+        'species_treated', species_treated,
+        'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
+        'reported_area', a.activity_payload::json->'form_data'->'activity_data'->'reported_area',
+        'short_id', a.activity_payload::json->'short_id'
       ),
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson"

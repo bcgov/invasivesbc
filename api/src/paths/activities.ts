@@ -306,7 +306,7 @@ function deleteActivitiesByIds(): RequestHandler {
     });
 
     const isAdmin = (req as any)?.authContext?.roles[0]?.role_id === 18 ? true : false; // Determines if user can delete other peoples records
-    const preferred_username = [req.authContext.user['user_roles']];
+    const preferred_username = req.authContext.preferredUsername;
     const ids = Object.values(req.query.id) as string[];
     sanitizedSearchCriteria.activity_ids = ids;
 
@@ -330,7 +330,8 @@ function deleteActivitiesByIds(): RequestHandler {
 
       if (response.rows.length > 0) {
         for (var i in response.rows) {
-          if (response.rows[i].created_by !== preferred_username[0]) {
+          if (response.rows[i].created_by !== preferred_username) {
+            console.log(response.rows[i].created_by);
             return res.status(401).json({
               message: 'Invalid request, user is not authorized to delete this record', // better message
               request: req.body,
@@ -339,13 +340,6 @@ function deleteActivitiesByIds(): RequestHandler {
             });
           }
         }
-      } else {
-        return res.status(500).json({
-          message: 'Unable to get response',
-          request: req.body,
-          namespace: 'activities',
-          code: 500
-        });
       }
     }
 
