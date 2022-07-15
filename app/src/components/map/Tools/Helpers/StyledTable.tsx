@@ -323,7 +323,7 @@ export const RenderTablePOI = (props: any) => {
   const dataAccess = useDataAccess();
   const [rows, setRows] = useState([]);
   const history = useHistory();
-  const { authenticated } = useSelector(selectAuth);
+  const { authenticated, roles } = useSelector(selectAuth);
   const errorContext = useContext(ErrorContext);
 
   const columns = [
@@ -407,7 +407,7 @@ export const RenderTablePOI = (props: any) => {
         rowHeight={30}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (authenticated) {
+          if (authenticated && roles.length > 0) {
             history.push(`/home/iapp/${params.id}`);
           } else {
             errorContext.pushError({
