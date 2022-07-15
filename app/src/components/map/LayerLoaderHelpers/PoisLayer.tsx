@@ -141,7 +141,7 @@ export const PoisLayer = (props) => {
             ]);
             return (
               <Marker icon={IAPPSite} position={[position[1], position[0]]}>
-                <Tooltip permanent direction="top">
+                <Tooltip permanent direction="top" opacity={0.1}>
                   SiteID: {feature.properties.site_id}
                   <br />
                   {feature.properties.species_on_site.toString()}
