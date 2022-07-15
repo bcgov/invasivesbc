@@ -1,8 +1,5 @@
 import {
   Box,
-  IconButton,
-  Paper,
-  Popper,
   Table,
   TableBody,
   TableCell,
@@ -10,13 +7,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Theme,
-  Typography
+  Theme
 } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
@@ -27,7 +22,6 @@ import {
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
-import CloseIcon from '@mui/icons-material/Close';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -209,15 +203,11 @@ export const RenderTableActivity = (props: any) => {
               species_code.push(s);
             });
             break;
+          case 'Biocontrol':
           case 'Treatment':
-            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
-            treatmentTemp.forEach((s) => {
-              species_code.push(s);
-            });
-            break;
           case 'Monitoring':
-            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
-            monitoringTemp.forEach((s) => {
+            const speciesTemp = JSON.parse(a.geojson.properties.species_treated);
+            speciesTemp.forEach((s) => {
               species_code.push(s);
             });
             break;

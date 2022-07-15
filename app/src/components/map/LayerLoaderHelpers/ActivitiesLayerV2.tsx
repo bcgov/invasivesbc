@@ -134,6 +134,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                       });
                       break;
                     case 'Treatment':
+                    case 'Biocontrol':
                     case 'Monitoring':
                       const tempArr = JSON.parse(a?.properties?.species_treated);
                       tempArr?.forEach((s) => {
