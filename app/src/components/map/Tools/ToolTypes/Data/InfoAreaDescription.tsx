@@ -73,9 +73,9 @@ export const GeneratePopup = (props) => {
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
-            {section == 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
+            {section == 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} />}
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {section == 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />}
+            {section == 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} />}
           </TableContainer>
           <Grid container>
             <BottomNavigation

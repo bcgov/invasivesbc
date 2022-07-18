@@ -504,8 +504,9 @@ export function populateSpeciesArrays(record) {
     case ActivitySubtype.Activity_AnimalAquatic:
       species_treated = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
       break;
+    case ActivitySubtype.Treatment_ChemicalPlantAquatic:
     case ActivitySubtype.Treatment_ChemicalPlant:
-      species_positive = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
+      species_treated = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
         (plant) => plant.invasive_plant_code
       );
       break;

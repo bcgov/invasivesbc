@@ -206,10 +206,14 @@ export const RenderTableActivity = (props: any) => {
           case 'Biocontrol':
           case 'Treatment':
           case 'Monitoring':
-            const speciesTemp = JSON.parse(a.geojson.properties.species_treated);
-            speciesTemp.forEach((s) => {
-              species_code.push(s);
-            });
+            try {
+              const speciesTemp = JSON.parse(a.geojson.properties.species_treated);
+              speciesTemp.forEach((s) => {
+                species_code.push(s);
+              });
+            } catch (e) {
+              console.log('JSON Parsing error', e);
+            }
             break;
         }
         const geometry = a?.geojson;
