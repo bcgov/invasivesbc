@@ -128,5 +128,10 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         code: 500
       });
     }
+    finally {
+
+      connection.release();
+    }
+
   };
 }
