@@ -409,19 +409,14 @@ export const RenderTablePOI = (props: any) => {
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (params.field === 'site_id') {
-            if (authenticated && roles.length > 0) {
-              history.push(`/home/iapp/${params.id}`);
-            } else {
-              errorContext.pushError({
-                message: 'You need InvasivesBC access to open this record.',
-                code: 401,
-                namespace: ''
-              });
-              if (roles.length > 0) {
-                history.push(`/home/iapp/${params.id}`);
-              }
-            }
+          if (authenticated && roles.length > 0) {
+            history.push(`/home/iapp/${params.id}`);
+          } else {
+            errorContext.pushError({
+              message: 'You need InvasivesBC access to open this record.',
+              code: 401,
+              namespace: ''
+            });
           }
         }}
         // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
