@@ -256,7 +256,8 @@ export const RenderTableActivity = (props: any) => {
             activityPage(params);
           } else {
             errorContext.pushError({
-              message: 'You need InvasivesBC access to open this record.',
+              message:
+                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
               code: 401,
               namespace: ''
             });
@@ -413,7 +414,8 @@ export const RenderTablePOI = (props: any) => {
             history.push(`/home/iapp/${params.id}`);
           } else {
             errorContext.pushError({
-              message: 'You need InvasivesBC access to open this record.',
+              message:
+                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
               code: 401,
               namespace: ''
             });
