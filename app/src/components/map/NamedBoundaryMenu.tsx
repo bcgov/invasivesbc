@@ -295,6 +295,7 @@ export const NamedBoundaryMenu = (props) => {
           <Box>
             <Typography>Shape Upload (KML/KMZ)</Typography>
             <KMLShapesUpload callback={getKMLs} />
+            <Typography variant="h6">Note: File size may effect speed. Lines and points will be removed.</Typography>
           </Box>
         )}
       </GeneralDialog>

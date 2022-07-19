@@ -117,7 +117,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     });
   };
 
-  if (!extendedInfo.user_id) {
+  if (!extendedInfo?.user_id) {
     return (
       <Box className={classes.componentContainer}>
         <Typography color="error" style={{ textAlign: 'center' }}>
