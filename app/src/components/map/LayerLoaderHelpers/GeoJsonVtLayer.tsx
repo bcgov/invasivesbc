@@ -79,7 +79,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
       this.options.layerStyles?.output.name
         .toString()
         .toLowerCase()
-        .includes(feature.tags.layer.toString().toLowerCase())
+        .includes(feature.tags.layer?.toString().toLowerCase())
     ) {
       this.options.layerStyles?.output.rules.forEach((rule) => {
         if (rule.name && feature.tags.type.toString().toLowerCase() === rule.name?.toString().toLowerCase()) {
