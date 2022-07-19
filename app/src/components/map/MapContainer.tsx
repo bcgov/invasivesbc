@@ -1,4 +1,4 @@
-import { Feature, GeoJsonObject } from 'geojson';
+import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -12,7 +12,6 @@ import {
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
-  WMSTileLayer,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
@@ -34,6 +33,7 @@ import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
 import { NamedBoundaryMenu } from './NamedBoundaryMenu';
 import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
+import { OnMapClickListener } from './Tools/ToolTypes/Data/OnMapClickListener';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -268,6 +268,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
+            <OnMapClickListener {...props} />
+
             {/* <MapRecordsDataGrid /> */}
             {useMemo(
               () => (
