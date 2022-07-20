@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import { Knex } from 'knex';
 import parse from 'csv-parse';
 import * as fs from 'fs';
 
@@ -27,7 +27,7 @@ async function _load_category(knex: Knex): Promise<number> {
       ])
   )[0];
 
-  return category_id;
+  return (category_id as any).code_category_id;
 }
 
 async function _load_headers(knex: Knex, category_id: number): Promise<Map<string, number>> {
