@@ -1,5 +1,4 @@
 import { USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE } from '../actions';
-import { briefcaseSharp } from 'ionicons/icons';
 
 interface UserInfo {
   loaded: boolean;
