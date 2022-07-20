@@ -1,19 +1,13 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Grid,
-  Theme,
-  Typography
-} from '@mui/material';
+import { Box, Button, Container, Divider, Grid, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { selectAuth } from "../../../state/reducers/auth";
-import { useSelector } from "../../../state/utilities/use_selector";
-import { selectUserInfo } from "../../../state/reducers/userInfo";
+import { selectAuth } from '../../../state/reducers/auth';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectUserInfo } from '../../../state/reducers/userInfo';
 import { selectNetworkConnected } from '../../../state/reducers/network';
+import { useDispatch } from 'react-redux';
+import { AUTH_SIGNIN_REQUEST } from 'state/actions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -47,15 +41,18 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const connected = useSelector(selectNetworkConnected);
+  const dispatch = useDispatch();
 
   const { authenticated, username, displayName, email, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated, accessRequested } = useSelector(selectUserInfo);
 
-
   const requestAccess = async () => {
-    history.push('/home/access-request');
+    if (connected && !authenticated) {
+      dispatch({ type: AUTH_SIGNIN_REQUEST });
+    } else {
+      history.push('/home/access-request');
+    }
   };
-
 
   const redirectToAgreement = (e) => {
     e.preventDefault();
@@ -151,8 +148,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                 location description that contains an address or a person's name.
               </li>
               <li>
-                InvasivesBC has a drinking well warning system built in that will notify the user if
-                a <u>mapped</u>{' '}
+                InvasivesBC has a drinking well warning system built in that will notify the user if a <u>mapped</u>{' '}
                 well or water license is located within close proximity to the geometry of the record being entered.
                 This tool is to be used for information only, and the absence of a well warning does NOT confirm there
                 are not wells or water licences in close proximity. Many wells and water licences are unmapped in BC. It
@@ -186,27 +182,18 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Box>
         </>
       )}
-      {roles.length == 0 && (
+      {roles.length === 0 && (
         <Typography variant="h5">
           <br />
           <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
         </Typography>
       )}
-      {connected && (
-        <>
-          {!accessRequested ? (
-            <Box mt={2} paddingBottom={'50px'}>
-              <Button variant="outlined" color="primary" onClick={requestAccess}>
-                Request Access
-              </Button>
-            </Box>
-          ) : (
-            !activated &&
-            accessRequested && (
-              <Box mt={2}>Your access request has been submitted. Check back periodically for access.</Box>
-            )
-          )}
-        </>
+      {connected && !activated && (
+        <Box mt={2} paddingBottom={'50px'}>
+          <Button variant="outlined" color="primary" onClick={requestAccess}>
+            Request Access
+          </Button>
+        </Box>
       )}
       {!authenticated && (
         <>
@@ -262,7 +249,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Box>
         </>
       )}
-
     </Container>
   );
 };
