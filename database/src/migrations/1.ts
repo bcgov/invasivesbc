@@ -1297,19 +1297,19 @@ export async function up(knex: Knex) {
     
     -- DROP TABLE invasivesbc.species_ref_raw;
     
-    CREATE TABLE invasivesbc.species_ref_raw (
-      species_id serial4 NOT NULL,
-      common_name varchar(50) NOT NULL,
-      latin_name varchar(50) NOT NULL,
-      genus varchar(4) NOT NULL,
-      species varchar(3) NOT NULL,
-      map_symbol varchar(2) NOT NULL
-    );
+    -- CREATE TABLE invasivesbc.species_ref_raw (
+    --  species_id serial4 NOT NULL,
+    --  common_name varchar(50) NOT NULL,
+    --  latin_name varchar(50) NOT NULL,
+    --  genus varchar(4) NOT NULL,
+    --  species varchar(3) NOT NULL,
+    --  map_symbol varchar(2) NOT NULL
+    -- );
     
     -- Permissions
     
-    ALTER TABLE invasivesbc.species_ref_raw OWNER TO invasivebc;
-    GRANT ALL ON TABLE invasivesbc.species_ref_raw TO invasivebc;
+    -- ALTER TABLE invasivesbc.species_ref_raw OWNER TO invasivebc;
+    -- GRANT ALL ON TABLE invasivesbc.species_ref_raw TO invasivebc;
     
     
     -- invasivesbc.survey_extract definition
@@ -3065,31 +3065,31 @@ export async function up(knex: Knex) {
     
     -- invasivesbc.iapp_species_ref_raw source
     
-    CREATE OR REPLACE VIEW invasivesbc.iapp_species_ref_raw
-    AS WITH all_plant_codes AS (
-            SELECT c_1.code_id,
-                c_1.code_description,
-                c_1.code_name,
-                ch.code_header_name,
-                c_1.code_header_id
-              FROM invasivesbc.code c_1
-                JOIN invasivesbc.code_header ch ON c_1.code_header_id = ch.code_header_id
-              WHERE ch.code_header_name::text = ANY (ARRAY['invasive_plant_code'::character varying, 'invasive_plant_code_withbiocontrol'::character varying, 'invasive_plant_aquatic_code'::character varying]::text[])
-            )
-    SELECT c.code_id,
-        c.code_header_id,
-        n.common_name,
-        n.latin_name,
-        n.genus,
-        n.species,
-        n.map_symbol
-      FROM invasivesbc.species_ref_raw n
-        JOIN all_plant_codes c ON c.code_name::text = n.map_symbol::text;
+    -- CREATE OR REPLACE VIEW invasivesbc.iapp_species_ref_raw
+    -- AS WITH all_plant_codes AS (
+    --        SELECT c_1.code_id,
+    --            c_1.code_description,
+    --            c_1.code_name,
+    --            ch.code_header_name,
+    --            c_1.code_header_id
+    --          FROM invasivesbc.code c_1
+    --            JOIN invasivesbc.code_header ch ON c_1.code_header_id = ch.code_header_id
+    --          WHERE ch.code_header_name::text = ANY (ARRAY['invasive_plant_code'::character varying, 'invasive_plant_code_withbiocontrol'::character varying, 'invasive_plant_aquatic_code'::character varying]::text[])
+    --        )
+    -- SELECT c.code_id,
+    --    c.code_header_id,
+    --    n.common_name,
+    --    n.latin_name,
+    --    n.genus,
+    --    n.species,
+    --    n.map_symbol
+    -- FROM invasivesbc.species_ref_raw n
+    --    JOIN all_plant_codes c ON c.code_name::text = n.map_symbol::text;
     
     -- Permissions
     
-    ALTER TABLE invasivesbc.iapp_species_ref_raw OWNER TO invasivebc;
-    GRANT ALL ON TABLE invasivesbc.iapp_species_ref_raw TO invasivebc;
+    -- ALTER TABLE invasivesbc.iapp_species_ref_raw OWNER TO invasivebc;
+    -- GRANT ALL ON TABLE invasivesbc.iapp_species_ref_raw TO invasivebc;
     
     
     -- invasivesbc.iapp_species_status source

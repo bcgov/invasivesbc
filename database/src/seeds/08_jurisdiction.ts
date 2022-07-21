@@ -33,7 +33,7 @@ export async function seed(knex: Knex): Promise<void> {
 
     const lines = sql.toString().split(/\r?\n/);
     for (const line of lines) {
-      await knex.raw(line);
+      if (line.length > 0) await knex.raw(line);
     }
 
     await knex.raw(`      
@@ -55,6 +55,6 @@ export async function seed(knex: Knex): Promise<void> {
       update public.jurisdiction set code_name='FED' where jurisdictn='Federal';
         `);
   } catch (e) {
-    console.log('failed to build sql', e);
+    console.log('failed to build sql for seed 08', e);
   }
 }
