@@ -12,6 +12,7 @@ import { FeatureCollection } from 'geojson';
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
 import {InvasivesRequest} from "../utils/auth-utils";
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
+import { simplifyGeojson } from  "../utils/map-shaper-util";
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -95,8 +96,6 @@ POST.apiDoc = {
 function getAdministrativelyDefinedShapes(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
-    console.log(user_id);
-    console.log("req with invasives", [req.authContext]);
 
     const connection = await getDBConnection();
 
@@ -125,6 +124,28 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
 
       // parse the rows from the response
       const rows: any[] = (response && response.rows) || [];
+
+      // terrible nesting, but returned KMLs should be a small set so should be fine for now
+      for (const row of rows) {
+        let newFeatureArr = [];
+        for (const feature of row.geojson.features) {
+          if (feature !== null && feature.coordinates !== null) {
+            for (const multipolygon of feature.coordinates) {
+              let convertedFeature = {
+                'type': 'Feature',
+                "properties": {},
+                "geometry": {
+                  "type": 'Polygon',
+                  'coordinates' : multipolygon
+                }
+              };
+
+              newFeatureArr.push(convertedFeature);
+            }
+          }
+        }
+        row.geojson.features = newFeatureArr;
+      }
 
       return res.status(200).json({
         message: 'Got administratively defined shapes',
@@ -164,7 +185,11 @@ function uploadShape(): RequestHandler {
     try {
       switch (data.type) {
         case 'kmz':
-          geoJSON = sanitizeGeoJSON(GeoJSONFromKML(KMZToKML(Buffer.from(data['data'], 'base64'))));
+          const buffer = Buffer.from(data['data'], 'base64');
+          const KML = KMZToKML(buffer);
+          const dirtyGeoJSON = GeoJSONFromKML(KML);
+          geoJSON = sanitizeGeoJSON(dirtyGeoJSON);
+          console.log("sanitized geojson: ", JSON.stringify(geoJSON));
           break;
         case 'kml':
           geoJSON = sanitizeGeoJSON(GeoJSONFromKML(Buffer.from(data['data'], 'base64')));
@@ -198,40 +223,41 @@ function uploadShape(): RequestHandler {
       });
     }
 
-    try {
+    //call the simplify geojson function
+    const simplified = await simplifyGeojson(geoJSON, 0.03, async (data) => {
       try {
-        // Perform both get and create operations as a single transaction
-        await connection.query('BEGIN');
+        try {
+          // Perform both get and create operations as a single transaction
+          await connection.query('BEGIN');
 
-        for (const feature of geoJSON.features) {
-          const response: QueryResult = await connection.query(
-            `insert into admin_defined_shapes (geog, created_by, title)
-             values (ST_Force2D(ST_GeomFromGeoJSON($1)), $2, $3) returning id`,
-            [JSON.stringify(feature.geometry), user_id, title]
-          );
+          const response : QueryResult = await connection.query(`insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
+            SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM             
+              (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM 
+                (SELECT json_array_elements($1::json->'features') AS feat) AS f
+              ) AS geogs;`, [data, user_id, title]);
+  
+          await connection.query('COMMIT');
+
+          return res.status(201).json({
+            message: 'Created administratively defined shape',
+            request: req.body,
+            namespace: 'admin-defined-shapes',
+            code: 201
+          });
+        } catch (error) {
+          await connection.query('ROLLBACK');
+          defaultLog.error(error);
+          return res.status(500).json({
+            message: 'Failed to create administratively defined shape',
+            request: req.body,
+            error: error,
+            namespace: 'admin-defined-shapes',
+            code: 500
+          });
         }
-
-        await connection.query('COMMIT');
-
-        return res.status(201).json({
-          message: 'Created administratively defined shape',
-          request: req.body,
-          namespace: 'admin-defined-shapes',
-          code: 201
-        });
-      } catch (error) {
-        await connection.query('ROLLBACK');
-        defaultLog.error(error);
-        return res.status(500).json({
-          message: 'Failed to create administratively defined shape',
-          request: req.body,
-          error: error,
-          namespace: 'admin-defined-shapes',
-          code: 500
-        });
+      } finally {
+        connection.release();
       }
-    } finally {
-      connection.release();
-    }
+    }); 
   };
 }

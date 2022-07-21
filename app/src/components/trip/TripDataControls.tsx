@@ -622,9 +622,13 @@ export const TripDataControls: React.FC<any> = (props) => {
           //callback function responsible for fetching all the features in area.
           let featuresInArea;
           //If there are custom api endpoints, use them, if not, use WFS consumer.
+          const newBounds = {
+            type: 'FeatureCollection',
+            features: [bufferedGeo]
+          }
           switch (layerName) {
             case 'LEAN_POI':
-              const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
+              const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: newBounds });
               if (poiRes) {
                 const filteredArr = poiRes.map((res) => {
                   return res.geojson;
@@ -635,7 +639,7 @@ export const TripDataControls: React.FC<any> = (props) => {
               }
               break;
             case 'LEAN_ACTIVITIES':
-              const actRes = await invasivesApi.getActivitiesLean({ search_feature: bufferedGeo });
+              const actRes = await invasivesApi.getActivitiesLean({ search_feature: newBounds });
               if (actRes) {
                 const filteredArr = actRes.map((res) => {
                   return res.geojson;

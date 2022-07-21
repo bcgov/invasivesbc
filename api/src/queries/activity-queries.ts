@@ -159,8 +159,17 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  */
 //NOSONAR
 export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT`;
+  const sqlStatement: SQLStatement = SQL``;
 
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
+    FROM (
+      SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
+    ) AS anything) `);
+  }
+
+  sqlStatement.append(SQL`SELECT`);
+    
   // Build lean object
   if (lean) {
     sqlStatement.append(SQL`
@@ -190,8 +199,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       'geometry', public.st_asGeoJSON(geog)::jsonb
     ) as "geojson"
   `);
-    // Build full object
   } else {
+
     if (searchCriteria.column_names && searchCriteria.column_names.length) {
       // do not include the `SQL` template string prefix, as column names can not be parameterized
       const newColumnNames = searchCriteria.column_names.map((name) => {
@@ -199,13 +208,22 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       });
       sqlStatement.append(` ${newColumnNames.join(', ')}`);
     } else {
-      // if no column_names specified, select all
-      sqlStatement.append(SQL` *`);
+      if (searchCriteria.column_names && searchCriteria.column_names.length) {
+        // do not include the `SQL` template string prefix, as column names can not be parameterized
+        const newColumnNames = searchCriteria.column_names.map((name) => {
+          return 'a.' + name;
+        });
+        sqlStatement.append(` ${newColumnNames.join(', ')}`);
+      } else {
+        // if no column_names specified, select all
+        sqlStatement.append(SQL` *`);
+      }
     }
-  }
 
-  // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+    // include the total count of results that would be returned if the limit and offset constraints weren't applied
+    sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+
+  }
 
   sqlStatement.append(
     SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id WHERE 1 = 1`
@@ -321,15 +339,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
-        geog,
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-              4326
-            )
-          )
-        )
+        a.geog,
+        (SELECT geog FROM multi_polygon_cte)
       )
     `);
   }

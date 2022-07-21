@@ -81,7 +81,19 @@ POST.apiDoc = {
               }
             },
             search_feature: {
-              ...(geoJSON_Feature_Schema as any)
+              type: 'object',
+              description: 'Shape feature collection to filter by',
+              properties: {
+                type: {
+                  type: 'string'
+                },
+                features: {
+                  type: 'array',
+                  items: {
+                    ...(geoJSON_Feature_Schema as any)
+                  }
+                }
+              }
             },
             column_names: {
               type: 'array',

@@ -16,7 +16,7 @@ export const RecordSetProvider = (props) => {
   const { username, accessRoles } = useSelector(selectAuth);
 
   const getInitialState = async () => {
-    const oldState = dataAccess.getAppState();
+    const oldState = await dataAccess.getAppState();
     if (oldState?.recordSets) {
       setRecordSetState({ ...oldState.recordSets });
     } else {
@@ -84,7 +84,7 @@ export const RecordSetProvider = (props) => {
   };
 
   const addBoundaryToSet = async (boundary: Boundary, setName: string) => {
-    const oldState = dataAccess.getAppState();
+    const oldState = await dataAccess.getAppState();
     const recordSets = oldState?.recordSets;
     const currentSet = recordSets[setName];
 
@@ -106,10 +106,9 @@ export const RecordSetProvider = (props) => {
   }
 
   const removeBoundaryFromSet = async (setName: string) => {
-    const oldState = dataAccess.getAppState();
-    delete oldState.recordSets[setName].searchBoundary;
-
-    setRecordSetState({ ...oldState.recordSets})
+    const oldState = await dataAccess.getAppState();
+    oldState.recordSets[setName].searchBoundary = null;
+    setRecordSetState({ ...oldState.recordSets});
   }
 
   useEffect(() => {
@@ -117,7 +116,7 @@ export const RecordSetProvider = (props) => {
   }, []);
 
   const updateState = async () => {
-    const oldState = dataAccess.getAppState();
+    const oldState = await dataAccess.getAppState();
     const oldRecordSets = oldState?.recordSets;
     if (
       oldRecordSets &&

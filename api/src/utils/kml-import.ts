@@ -59,14 +59,23 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
   if (data.type !== 'FeatureCollection') {
     throw new Error(`Invalid GeoJSON Type: ${data.type}`);
   }
-
-  const filteredData: FeatureCollection = { type: 'FeatureCollection', features: [] };
-
-  // filter out non-polygon features
-  for (const f of data.features) {
-    if (f.geometry.type === 'Polygon') {
-      filteredData.features.push(f);
+  
+  // filter out non-polygon features (V1)
+  const newFeatures = data.features.map((feature) => {
+    if (feature.geometry.type === 'Polygon') {
+      return {
+        type: feature.type,
+        geometry: feature.geometry,
+        properties: {}
+      }
     }
+  });
+
+  const filteredData: FeatureCollection = { type: 'FeatureCollection', features: newFeatures };
+
+  //if empty
+  if (filteredData.features.length < 1) {
+    throw new Error(`Invalid geometry types, sanitized collection is empty`);
   }
 
   return filteredData;

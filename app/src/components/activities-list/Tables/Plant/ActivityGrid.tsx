@@ -118,7 +118,10 @@ export const getSearchCriteriaFromFilters = (
 
   //search_feature
   if (recordSetContext.recordSetState[setName]?.searchBoundary) {
-    filter.search_feature = recordSetContext.recordSetState[setName]?.searchBoundary.geos[0];
+    filter.search_feature = {
+      "type": "FeatureCollection",
+      "features": recordSetContext.recordSetState[setName]?.searchBoundary.geos
+    }
   }
 
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {

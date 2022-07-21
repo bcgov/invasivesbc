@@ -65,7 +65,19 @@ POST.apiDoc = {
               }
             },
             search_feature: {
-              ...(geoJSON_Feature_Schema as any)
+              type: 'object',
+              description: 'Shape feature collection to filter by',
+              properties: {
+                type: {
+                  type: 'string'
+                },
+                features: {
+                  type: 'array',
+                  items: {
+                    ...(geoJSON_Feature_Schema as any)
+                  }
+                }
+              }
             },
             order: {
               type: 'array',
@@ -147,69 +159,45 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      if (isIAPPrelated(sanitizedSearchCriteria)) {
-        const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(sanitizedSearchCriteria);
-        if (!sqlStatement) {
-          return res.status(500).json({
-            message: 'Unable to generate SQL statement',
-            request: req.body,
-            namespace: 'points-of-interest-lean',
-            code: 500
-          });
-        }
-
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-        const speciesRef = await getSpeciesRef();
-
-        const returnVal = response.rows.map((row) => {
-          const newGeoJSON = row.geojson.geometry;
-          const species_on_site = getSpeciesCodesFromIAPPDescriptionList(row.all_species_on_site, speciesRef);
-
-          return {
-            type: 'Feature',
-            geometry: {
-              ...newGeoJSON
-            },
-            properties: {
-              ...row.geojson.properties,
-              site_id: row.site_id,
-              species_on_site: species_on_site
-            }
-          };
-        });
-
-        return res.status(200).json({
-          message: 'Got points of interest by search filter criteria',
+      const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
+      if (!sqlStatement) {
+        return res.status(500).json({
+          message: 'Unable to generate SQL statement',
           request: req.body,
-          result: returnVal,
-          count: returnVal.length,
           namespace: 'points-of-interest-lean',
-          code: 200
-        });
-      } else {
-        const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
-
-        if (!sqlStatement) {
-          return res.status(400).json({
-            message: 'Unable to generate SQL statement',
-            request: req.body,
-            namespace: 'points-of-interest-lean',
-            code: 400
-          });
-        }
-
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-        return res.status(200).json({
-          message: 'Got points of interest by search filter criteria',
-          request: req.body,
-          result: response.rows,
-          count: response.rows.length,
-          namespace: 'points-of-interest-lean',
-          code: 200
+          code: 500
         });
       }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      const speciesRef = await getSpeciesRef();
+
+      const returnVal = response.rows.map((row) => {
+        const newGeoJSON = row.geojson.geometry;
+        const species_on_site = getSpeciesCodesFromIAPPDescriptionList(row.geojson.properties.species, speciesRef);
+
+        return {
+          type: 'Feature',
+          geometry: {
+            ...newGeoJSON
+          },
+          properties: {
+            ...row.geojson.properties,
+            site_id: row.geojson.properties.site_id,
+            species_on_site: species_on_site
+          }
+        };
+      });
+
+      return res.status(200).json({
+        message: 'Got points of interest by search filter criteria',
+        request: req.body,
+        result: returnVal,
+        count: returnVal.length,
+        namespace: 'points-of-interest-lean',
+        code: 200
+      });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({

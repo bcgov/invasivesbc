@@ -28,8 +28,12 @@ export const ActivitiesLayer = (props) => {
   };
 
   const fetchData = async () => {
+    const newBounds = {
+      type: 'FeatureCollection',
+      features: [mapBounds]
+    }
     const activitiesData = await dataAccess.getActivitiesLean({
-      search_feature: mapBounds,
+      search_feature: newBounds,
       activity_subtype: [props.activity_subtype]
     });
     console.log('ActivitiesData: ', activitiesData);

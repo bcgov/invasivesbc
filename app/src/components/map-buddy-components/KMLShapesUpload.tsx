@@ -31,7 +31,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const classes = useStyles();
   const [uploadRequests, setUploadRequests] = useState([]);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const { userId } = useSelector(selectAuth);
+  const { extendedInfo } = useSelector(selectAuth);
   const mapRequestContext = useContext(MapRequestContext);
   const { setUploadLayersFlag } = mapRequestContext;
   const api = useInvasivesApi();
@@ -95,7 +95,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
           newRequest.push({
             type: fileType,
             data: encodedString,
-            user_id: userId,
+            user_id: extendedInfo.user_id,
             title: defaultTitle,
             status: status
           });
@@ -117,7 +117,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     });
   };
 
-  if (!userId) {
+  if (!extendedInfo?.user_id) {
     return (
       <Box className={classes.componentContainer}>
         <Typography color="error" style={{ textAlign: 'center' }}>

@@ -1,3 +1,4 @@
+import { FeatureCollection } from '@turf/turf';
 import { PointOfInterestSubtype, PointOfInterestType } from 'constants/pointsOfInterest';
 import { Feature } from 'geojson';
 
@@ -70,10 +71,10 @@ export interface IActivitySearchCriteria {
   /**
    * GeoJSON feature (of type polygon) to search in.
    *
-   * @type {Feature}
+   * @type {FeatureCollection}
    * @memberof IActivitySearchCriteria
    */
-  search_feature?: Feature;
+  search_feature?: FeatureCollection;
   /**
    * Activity requested return order.
    *
@@ -292,12 +293,12 @@ export interface IPointOfInterestSearchCriteria {
    */
   point_of_interest_ids?: string[];
   /**
-   * GeoJSON feature (of type polygon) to search in.
+   * GeoJSON feature collection (of types polygon) to search in.
    *
-   * @type {Feature}
+   * @type {FeatureCollection}
    * @memberof IPointOfInterestSearchCriteria
    */
-  search_feature?: Feature;
+  search_feature?: FeatureCollection;
   /**
    * Point of Interest requested return order.
    *

@@ -117,7 +117,7 @@ export class ActivitySearchCriteria {
 
   activity_ids: string[];
 
-  search_feature: GeoJSON.Feature;
+  search_feature: GeoJSON.FeatureCollection;
 
   user_roles: string[];
 
