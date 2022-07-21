@@ -236,7 +236,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {/* Offline component */}
-            {useMemo(() => (<OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />),[mapMaxNativeZoom])}
+            {useMemo(
+              () => (
+                <OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />
+              ),
+              [mapMaxNativeZoom]
+            )}
 
             {/* List of functions is located in this component */}
             {useMemo(() => {
@@ -247,11 +252,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   map={map}
                   inputGeo={props.geometryState.geometry}
                   mapMaxNativeZoom={mapMaxNativeZoom}
-                  setMapMaxNativeZoom={setMapMaxNativeZoom}
-                >
-
-          <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
-                  </ToolbarContainer>
+                  setMapMaxNativeZoom={setMapMaxNativeZoom}>
+                  <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
+                </ToolbarContainer>
               );
             }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
             {props?.showBoundaryMenu && (
