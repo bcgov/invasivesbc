@@ -83,7 +83,6 @@ export const ActivitiesLayerV2 = (props: any) => {
       const createClusterCustomIcon = (cluster) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
-        console.log(markers);
         markers.forEach((obj) => {
           const marker = obj.options.children.props.bufferedGeo;
           if (data.length === 0) {
