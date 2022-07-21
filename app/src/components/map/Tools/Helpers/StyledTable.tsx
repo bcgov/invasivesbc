@@ -11,8 +11,7 @@ import {
 } from '@mui/material';
 import { createStyles, withStyles } from '@mui/styles';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
@@ -108,8 +107,9 @@ export const RenderTablePosition = ({ rows }) => {
 export const RenderTableActivity = (props: any) => {
   const { bufferedGeo } = props;
   const dataAccess = useDataAccess();
-  const invasivesAccess = useInvasivesApi();
-  const [response, setResponse] = useState(null);
+  // Removed for now:
+  // const invasivesAccess = useInvasivesApi();
+  // const [response, setResponse] = useState(null);
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
@@ -162,14 +162,16 @@ export const RenderTableActivity = (props: any) => {
     updateActivityRecords();
   }, [bufferedGeo]);
 
-  useEffect(() => {
-    const getApiSpec = async () => {
-      setResponse(await invasivesAccess.getCachedApiSpec());
-    };
-    if (authenticated) {
-      getApiSpec();
-    }
-  }, [rows, authenticated]);
+  // Don't know if needed anymore?
+  // Maybe associated with mobile?
+  // useEffect(() => {
+  //   const getApiSpec = async () => {
+  //     setResponse(await invasivesAccess.getCachedApiSpec());
+  //   };
+  //   if (authenticated) {
+  //     getApiSpec();
+  //   }
+  // }, [rows, authenticated]);
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
@@ -201,17 +203,17 @@ export const RenderTableActivity = (props: any) => {
               species_code.push(s);
             });
             break;
+          case 'Biocontrol':
           case 'Treatment':
-            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
-            treatmentTemp.forEach((s) => {
-              species_code.push(s);
-            });
-            break;
           case 'Monitoring':
-            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
-            monitoringTemp.forEach((s) => {
-              species_code.push(s);
-            });
+            try {
+              const speciesTemp = JSON.parse(a.geojson.properties.species_treated);
+              speciesTemp.forEach((s) => {
+                species_code.push(s);
+              });
+            } catch (e) {
+              console.log('JSON Parsing error', e);
+            }
             break;
         }
         const geometry = a?.geojson;
@@ -247,14 +249,15 @@ export const RenderTableActivity = (props: any) => {
         rows={rows}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        rowHeight={30}
+        getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (authenticated && roles.length > 0) {
             activityPage(params);
           } else {
             errorContext.pushError({
-              message: 'You need InvasivesBC access to open this record.',
+              message:
+                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
               code: 401,
               namespace: ''
             });
@@ -335,22 +338,22 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'site_id',
       headerName: 'IAPP ID',
-      minWidth: 80
+      width: 70
     },
     {
       field: 'reported_area',
       headerName: 'Reported Area',
-      minWidth: 130
+      minWidth: 115
     },
     {
       field: 'jurisdiction_code',
-      headerName: 'Jurisdiction Code',
-      width: 250
+      headerName: 'Jurisdictions',
+      width: 200
     },
     {
       field: 'species_code',
-      headerName: 'Species Code',
-      width: 170
+      headerName: 'Species',
+      width: 120
     },
     {
       field: 'geometry',
@@ -380,7 +383,7 @@ export const RenderTablePOI = (props: any) => {
       const tempArr = [];
       pointsofinterest.forEach((poi) => {
         const { site_id, reported_area } = poi.properties;
-        const jurisdictions: string = poi.properties.jurisdictions.join(' ');
+        const jurisdictions: string = poi.properties.jurisdictions.join('\n');
         const species: string[] = poi.properties.species_on_site.join(' ');
         tempArr.push({
           id: site_id,
@@ -404,14 +407,15 @@ export const RenderTablePOI = (props: any) => {
         rows={rows}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        rowHeight={30}
+        getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
           if (authenticated && roles.length > 0) {
             history.push(`/home/iapp/${params.id}`);
           } else {
             errorContext.pushError({
-              message: 'You need InvasivesBC access to open this record.',
+              message:
+                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
               code: 401,
               namespace: ''
             });

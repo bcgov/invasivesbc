@@ -617,7 +617,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     the form as an accordion and for population of certain fields later/validation
   */
   const handleRecordLinking = async (formData: any) => {
-    if (doc?.activityType?.includes('Monitoring') && formData?.activity_type_data?.linked_id) {
+    if (doc?.activitySubtype?.includes('Monitoring') && formData?.activity_type_data?.linked_id) {
       await updateDoc({
         formData: {
           activity_type_data: {
@@ -628,7 +628,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       const getLinked = async () => {
         let linkedRecordId: string = null;
-        if (doc?.activityType?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
+        if (doc?.activitySubtype?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
           linkedRecordId = doc.formData.activity_type_data.linked_id;
         }
         if (linkedRecordId) {

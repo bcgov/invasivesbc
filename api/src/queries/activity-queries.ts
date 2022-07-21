@@ -333,7 +333,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   if (searchCriteria.hideTreatmentsAndMonitoring) {
-    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment')`);
+    sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment', 'Biocontrol')`);
   }
 
   if (searchCriteria.search_feature) {

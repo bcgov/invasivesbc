@@ -134,6 +134,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                       });
                       break;
                     case 'Treatment':
+                    case 'Biocontrol':
                     case 'Monitoring':
                       const tempArr = JSON.parse(a?.properties?.species_treated);
                       tempArr?.forEach((s) => {
@@ -144,7 +145,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                   return (
                     <GeoJSON data={a} options={options}>
                       <GeneratePopup bufferedGeo={a} />
-                      <Tooltip permanent direction="top" opacity={0.3}>
+                      <Tooltip permanent direction="top" opacity={0.5}>
                         {a.properties.short_id}
                         <br />
                         {species_code ? species_code : ''}
