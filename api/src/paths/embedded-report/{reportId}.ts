@@ -113,7 +113,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
       };
       const token = sign(payload, EMBEDDING_KEY);
 
-      const embeddedUrl = `${METABASE_URL}/embed/${metabaseResource}/${token}#bordered=true&titled=true`;
+      const embeddedUrl = `${METABASE_URL}/embed/${metabaseResource}/${token}#bordered=false&titled=false`;
 
       return res.status(200).json({
         embeddedUrl
