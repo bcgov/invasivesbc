@@ -23,7 +23,7 @@ all : help
 # 2. Edit the `.env` file
 # 3. Run `make local` or `make local-debug`
 
-local: | setup-docker close-local build-local run-local ## Performs all commands necessary to run api in docker
+local: | setup-docker close-local build-local run-local log ## Performs all commands necessary to run api in docker
 
 local-debug: | setup-docker close-local build-local run-debug ## Performs all commands necessary to run api in docker in debug mode
 
@@ -101,6 +101,12 @@ run-ios: ## Runs the app for mobile
 	@echo "Make: run-mobile - running app for mobile"
 	@echo "==============================================="
 	@cd app && npx cap sync ios && npx cap open ios && cd ..
+
+log: ## Prints the logs of the local development containers
+	@echo "==============================================="
+	@echo "Make: log - printing app logs"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.local.yml logs -f
 
 ios: | build-ios run-ios ## Builds and runs the app for mobile
 

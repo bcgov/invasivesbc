@@ -29,8 +29,8 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import Spinner from '../../components/spinner/Spinner';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
-import {useSelector} from "../../state/utilities/use_selector";
-import {selectAuth} from "../../state/reducers/auth";
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s

@@ -184,7 +184,7 @@ export const RenderTableActivity = (props: any) => {
 
       const tempArr = [];
 
-      activities?.rows?.forEach((a) => {
+      for (const a of activities.rows) {
         const id = a?.geojson?.properties?.id;
         const short_id = a?.geojson?.properties?.short_id;
         const activity_type = a?.geojson?.properties?.type;
@@ -205,14 +205,19 @@ export const RenderTableActivity = (props: any) => {
             break;
           case 'Biocontrol':
           case 'Treatment':
-          case 'Monitoring':
-            try {
-              const speciesTemp = JSON.parse(a.geojson.properties.species_treated);
-              speciesTemp.forEach((s) => {
+            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
+            if (treatmentTemp) {
+              treatmentTemp.forEach((s) => {
                 species_code.push(s);
               });
-            } catch (e) {
-              console.log('JSON Parsing error', e);
+            }
+            break;
+          case 'Monitoring':
+            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
+            if (monitoringTemp) {
+              monitoringTemp.forEach((s) => {
+                species_code.push(s);
+              });
             }
             break;
         }
@@ -227,7 +232,7 @@ export const RenderTableActivity = (props: any) => {
           species_code: species_code,
           geometry: geometry
         });
-      });
+      }
 
       setRows(tempArr);
     } catch (e) {
