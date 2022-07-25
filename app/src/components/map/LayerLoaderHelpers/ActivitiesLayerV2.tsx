@@ -9,6 +9,8 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import center from '@turf/center';
 import SLDParser from 'geostyler-sld-parser';
 import { InvasivesBCSLD } from '../SldStyles/invasivesbc_sld';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { DonutSVG } from '../Donut';
 
 enum ZoomTypes {
   LOW = 'low',
@@ -103,16 +105,31 @@ export const ActivitiesLayerV2 = (props: any) => {
   const MarkerMemo = useMemo(() => {
     if (activities && activities.features && props.color) {
       const createClusterCustomIcon = (cluster) => {
+        const markers = cluster.getAllChildMarkers();
+        const data = [];
+        markers.forEach((obj) => {
+          const marker = obj.options.children.props.bufferedGeo;
+          if (data.length === 0) {
+            data.push({ name: marker.properties.type, count: 1 });
+          } else {
+            let flag = 0;
+            for (let i of data) {
+              if (marker.properties.type === i.name) {
+                flag = 1;
+                i.count += 1;
+                break;
+              }
+            }
+            if (flag === 0) {
+              data.push({ name: marker.properties.type, count: 1 });
+            }
+          }
+        });
         return L.divIcon({
-          html: `<span style="height: 25px;
-      width: 25px;
-      justify-content: center;
-      color: white;
-      background-color: ${props.color};
-      display: inline-block;
-      border-radius: 50%;">${cluster.getChildCount()}</span>`,
-          className: 'marker-cluster-custom',
-          iconSize: L.point(40, 40, true)
+          html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
+          className: '',
+          iconSize: [64, 64],
+          iconAnchor: [32, 32]
         });
       };
       return (
@@ -144,7 +161,6 @@ export const ActivitiesLayerV2 = (props: any) => {
               }
             </>
           );
-
         case ZoomTypes.MEDIUM:
           return MarkerMemo;
         case ZoomTypes.LOW:
