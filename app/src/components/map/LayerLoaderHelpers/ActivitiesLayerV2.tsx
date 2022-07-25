@@ -7,24 +7,50 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import center from '@turf/center';
+import SLDParser from 'geostyler-sld-parser';
+import { InvasivesBCSLD } from '../SldStyles/invasivesbc_sld';
+
+enum ZoomTypes {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high'
+}
 
 export const ActivitiesLayerV2 = (props: any) => {
   // use this use state var to only rerender when necessary
   const map = useMap();
-  enum ZoomTypes {
-    LOW = 'low',
-    MEDIUM = 'medium',
-    HIGH = 'high'
-  }
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
+  const [activities, setActivities] = useState(null);
+  const dataAccess = useDataAccess();
+  const [options, setOptions] = useState({
+    maxZoom: 24,
+    tolerance: 100,
+    debug: 0,
+    extent: 4096, // tile extent (both width and height)
+    buffer: 128, // tile buffer on each side
+    indexMaxPoints: 100000, // max number of points per tile in the index
+    solidChildren: false,
+    layerStyles: {},
+    style: {
+      fillColor: '#00000',
+      color: '#00000',
+      strokeColor: '#00000',
+      stroke: true,
+      strokeOpacity: 1,
+      opacity: props.opacity,
+      fillOpacity: props.opacity / 2,
+      weight: 3,
+      zIndex: props.zIndex
+    }
+  });
+
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
-    console.log('zoom change', zoom);
-    if (zoom < 16) {
+    getActivitiesSLD();
+    if (zoom < 8) {
       setZoomType(ZoomTypes.LOW);
       return;
     }
-    //} else setZoomType(ZoomTypes.HIGH);
     if (zoom >= 8 && zoom < 15) {
       setZoomType(ZoomTypes.MEDIUM);
       return;
@@ -33,32 +59,6 @@ export const ActivitiesLayerV2 = (props: any) => {
       setZoomType(ZoomTypes.HIGH);
     }
   });
-
-  const [activities, setActivities] = useState(null);
-  const dataAccess = useDataAccess();
-  const options = useMemo(() => {
-    return {
-      //maxZoom: 2,
-      tolerance: 1,
-      debug: 1,
-      extent: 4096, // tile extent (both width and height)
-      buffer: 128, // tile buffer on each side
-      indexMaxPoints: 100000, // max number of points per tile in the index
-      solidChildren: false,
-      style: {
-        fillColor: props.color.toUpperCase(),
-        color: props.color.toUpperCase(),
-        strokeColor: props.color.toUpperCase(),
-        stroke: true,
-        strokeOpacity: 1,
-        opacity: props.opacity,
-        //fillOpacity: props.opacity / 2,
-        fillOpacity: props.opacity / 2,
-        weight: 3,
-        zIndex: props.zIndex
-      }
-    };
-  }, [props.color]);
 
   const filters: IActivitySearchCriteria = props.filters;
   const fetchData = async () => {
@@ -75,6 +75,30 @@ export const ActivitiesLayerV2 = (props: any) => {
   useEffect(() => {
     fetchData();
   }, [props.filters]);
+
+  const getSldStylesFromLocalFile = async () => {
+    const sldParser = new SLDParser();
+    let styles = await sldParser.readStyle(InvasivesBCSLD);
+    return styles;
+  };
+
+  const getActivitiesSLD = () => {
+    getSldStylesFromLocalFile().then((res) => {
+      setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
+      fetchData();
+    });
+  };
+
+  useEffect(() => {
+    getActivitiesSLD();
+  }, []);
+
+  useMemo(() => {
+    setOptions((prevOptions) => ({
+      ...prevOptions,
+      style: { ...prevOptions.style, fillColor: props.color.toUpperCase() }
+    }));
+  }, [props.color]);
 
   const MarkerMemo = useMemo(() => {
     if (activities && activities.features && props.color) {
@@ -111,62 +135,18 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   return useMemo(() => {
     if (activities && activities.features && props.color) {
-      // Removed for now:
-      // console.log('color from inside activities 2:');
-      // console.log(props.color.toUpperCase());
-      // console.log('activities: ' + activities.features.length);
-      // console.dir(activities);
-
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
             <>
-              {activities.features.map((a) => {
-                if (a?.geometry?.type) {
-                  const species_code = [];
-                  switch (a.properties.type) {
-                    case 'Observation':
-                      a?.properties?.species_positive?.forEach((s) => {
-                        species_code.push(s);
-                      });
-                      a?.properties?.species_negative?.forEach((s) => {
-                        species_code.push(s);
-                      });
-                      break;
-                    case 'Treatment':
-                    case 'Biocontrol':
-                    case 'Monitoring':
-                      const tempArr = JSON.parse(a?.properties?.species_treated);
-                      tempArr?.forEach((s) => {
-                        species_code.push(s);
-                      });
-                      break;
-                  }
-                  return (
-                    <GeoJSON data={a} options={options}>
-                      <GeneratePopup bufferedGeo={a} />
-                      <Tooltip permanent direction="top" opacity={0.5}>
-                        {a.properties.short_id}
-                        <br />
-                        {species_code ? species_code : ''}
-                      </Tooltip>
-                    </GeoJSON>
-                  );
-                }
-              })}
+              {
+                activities && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={activities} options={options} /> //NOSONAR
+              }
             </>
           );
 
         case ZoomTypes.MEDIUM:
-          return (
-            <GeoJSONVtLayer
-              key={'activities_layer_v2_geojson_vt' + props.zIndex}
-              // opacity={props.opacity}
-              geoJSON={activities}
-              zIndex={props.zIndex}
-              options={options}
-            />
-          );
+          return MarkerMemo;
         case ZoomTypes.LOW:
           return MarkerMemo;
       }
