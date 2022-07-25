@@ -238,7 +238,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
             InvasivesBC Access Request
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{marginBottom: 50}}>
           <Card elevation={8}>
             {!submitted && (
               <CardContent>
