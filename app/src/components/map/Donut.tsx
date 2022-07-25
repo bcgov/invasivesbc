@@ -15,7 +15,7 @@ interface IDonutSVGProps {
   thickness?: number;
 }
 
-const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 }) => {
+export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 }) => {
   const palette = [
     '#67AC39',
     '#A7E2D3',
