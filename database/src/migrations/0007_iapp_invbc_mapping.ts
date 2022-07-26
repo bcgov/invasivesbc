@@ -388,6 +388,7 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set search_path=invasivesbc,public;
     drop table if exists invasivesbc.iapp_invbc_mapping;
-    drop materialized view if exists invasivesbc.iapp_site_summary;
+    drop materialized view invasivesbc.iapp_site_summary_and_geojson;
+    drop materialized view invasivesbc.iapp_site_summary;
   `);
 }
