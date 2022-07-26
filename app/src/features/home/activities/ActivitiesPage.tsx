@@ -127,22 +127,6 @@ const PageContainer = (props) => {
   useEffect(() => {
     setOptions([
       {
-        name: 'Current window only',
-        hidden: false,
-        disabled: false,
-        icon: (props) => {
-          return (
-            <>
-              <FilterListIcon />
-              <MapIcon />
-            </>
-          );
-        },
-        onClick: () => {
-          alert('no');
-        }
-      },
-      {
         name: 'New Record List/Layer',
         hidden: false,
         disabled: false,
