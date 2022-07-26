@@ -137,10 +137,14 @@ export const ActivitiesLayerV2 = (props: any) => {
           {activities?.features?.map((a) => {
             if (a?.geometry?.type) {
               const position = center(a)?.geometry?.coordinates;
+              const bufferedGeo = {
+                type: 'FeatureCollection',
+                features: [a]
+              };
 
               return (
                 <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup bufferedGeo={a} />
+                  <GeneratePopup bufferedGeo={bufferedGeo} />
                 </Marker>
               );
             }

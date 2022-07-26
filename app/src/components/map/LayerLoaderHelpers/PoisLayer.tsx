@@ -86,20 +86,20 @@ export const PoisLayer = (props) => {
   });
 
   const fetchData = async () => {
-    // to match the feature collection spatial filtering 
+    // to match the feature collection spatial filtering
     const newBounds = {
       type: 'FeatureCollection',
       features: [mapBounds]
-    }
+    };
     const poisData = await dataAccess.getPointsOfInterestLean({
       search_feature: newBounds,
       isIAPP: true,
       point_of_interest_type: props.poi_type
     });
 
-    const poisToSet= poisData.filter((row) => {
+    const poisToSet = poisData.filter((row) => {
       return row?.geometry?.coordinates !== undefined;
-    })
+    });
 
     setPois({ type: 'FeatureCollection', features: poisToSet });
     const poiArr = poisData?.rows?.map((row) => {
@@ -130,15 +130,20 @@ export const PoisLayer = (props) => {
           {pois?.features?.map((feature) => {
             const position = feature.geometry.coordinates;
             const val = 0.003;
-            const bufferedGeo = polygon([
-              [
-                [position[0] + val, position[1] - val / 2],
-                [position[0] + val, position[1] + val / 2],
-                [position[0] - val, position[1] + val / 2],
-                [position[0] - val, position[1] - val / 2],
-                [position[0] + val, position[1] - val / 2]
+            const bufferedGeo = {
+              type: 'FeatureCollection',
+              features: [
+                polygon([
+                  [
+                    [position[0] + val, position[1] - val / 2],
+                    [position[0] + val, position[1] + val / 2],
+                    [position[0] - val, position[1] + val / 2],
+                    [position[0] - val, position[1] - val / 2],
+                    [position[0] + val, position[1] - val / 2]
+                  ]
+                ])
               ]
-            ]);
+            };
             return (
               <Marker icon={IAPPSite} position={[position[1], position[0]]}>
                 <Tooltip permanent direction="top" opacity={0.1}>

@@ -19,7 +19,7 @@ export const GeneratePopup = (props) => {
   const [section, setSection] = useState('position');
   const map = useMap();
   const popupRef = useRef(null);
-  const utmResult = calc_utm(position[0], position[1]);
+  const utmResult = calc_utm(position[1], position[0]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
     createDataUTM('Easting', utmResult[1]),

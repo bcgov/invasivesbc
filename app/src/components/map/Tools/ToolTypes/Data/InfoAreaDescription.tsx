@@ -168,7 +168,10 @@ function SetPointOnClick() {
   };
 
   const boxDrawDoneCallback = (layer) => {
-    const geo = layer;
+    const geo = {
+      type: 'FeatureCollection',
+      features: [layer]
+    };
     setUserGeo(geo);
   };
 
