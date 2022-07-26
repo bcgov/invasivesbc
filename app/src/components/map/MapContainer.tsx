@@ -268,7 +268,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
-            <OnMapClickListener {...props} />
+            {/* <OnMapClickListener {...props} /> */}
 
             {/* <MapRecordsDataGrid /> */}
             {useMemo(
