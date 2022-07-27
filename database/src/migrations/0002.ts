@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
     
     -- DROP TABLE if exists regional_invasive_species_organization_areas;
 
-    CREATE TABLE IF NOT EXISTS "public"."regional_invasive_species_organization_areas" (gid serial,
+    CREATE TABLE if not exists "public"."regional_invasive_species_organization_areas" (gid serial,
       "ogc_fid" int4,
       "objectid" int4,
       "agency_cd" varchar(8),
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- DROP TABLE if exists invasive_plant_management_areas;
 
-    CREATE TABLE IF NOT EXISTS "public"."invasive_plant_management_areas" (gid serial,
+    CREATE TABLE if not exists "public"."invasive_plant_management_areas" (gid serial,
       "ogc_fid" int4,
       "objectid" int4,
       "ipma" varchar(50),
@@ -42,7 +42,7 @@ export async function up(knex: Knex): Promise<void> {
     
     -- DROP TABLE if exists aggregate;
 
-    CREATE TABLE IF NOT EXISTS "public"."aggregate" (gid serial,
+    CREATE TABLE if not exists "public"."aggregate" (gid serial,
       "pit_number" varchar(254),
       "pit_name" varchar(254),
       "layer" varchar(100),
@@ -56,7 +56,7 @@ export async function up(knex: Knex): Promise<void> {
     
     -- DROP TABLE if exists "jurisdiction";
 
-    CREATE TABLE IF NOT EXISTS if not exists "public"."jurisdiction" (
+    CREATE TABLE if not exists "public"."jurisdiction" (
       "gid" serial,
       "type" varchar(30),
       "name" varchar(74),
@@ -77,7 +77,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- DROP TABLE if exists public.pest_management_plan_areas;
 
-    CREATE TABLE IF NOT EXISTS "public"."pest_management_plan_areas" (
+    CREATE TABLE if not exists "public"."pest_management_plan_areas" (
       "ogc_fid" SERIAL,
       "geog" geography(POLYGON,4326),
       CONSTRAINT "pest_management_plan_areas_pk" PRIMARY KEY ("ogc_fid"));
@@ -88,7 +88,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- DROP TABLE if exists regional_districts;
 
-    CREATE TABLE IF NOT EXISTS "public"."regional_districts" (gid serial,
+    CREATE TABLE if not exists "public"."regional_districts" (gid serial,
       "agency" varchar(200),
       "agency_cd" varchar(40),
       "dropdown_n" varchar(240),

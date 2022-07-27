@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
 
 -- DROP TABLE invasivesbc.species_ref_raw;
 
-CREATE TABLE  if not exists invasivesbc.species_ref_raw (
+CREATE TABLE if not exists invasivesbc.species_ref_raw (
 	species_id serial4 NOT NULL,
 	common_name varchar(50) NOT NULL,
 	latin_name varchar(50) NOT NULL,
