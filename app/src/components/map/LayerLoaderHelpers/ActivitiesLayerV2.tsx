@@ -108,7 +108,7 @@ export const ActivitiesLayerV2 = (props: any) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
         markers.forEach((obj) => {
-          const marker = obj.options.children.props.bufferedGeo;
+          const marker = obj.options.children.props.bufferedGeo.features[0];
           if (data.length === 0) {
             data.push({ name: marker.properties.type, count: 1 });
           } else {
