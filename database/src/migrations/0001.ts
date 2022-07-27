@@ -3,6 +3,8 @@ import { Knex } from 'knex';
 export async function up(knex: Knex) {
   try {
     await knex.raw(`
+    -- Permissions
+
     -- DROP SCHEMA invasivesbc;
 
     CREATE SCHEMA invasivesbc AUTHORIZATION invasivebc;
