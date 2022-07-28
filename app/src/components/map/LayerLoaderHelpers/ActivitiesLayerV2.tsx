@@ -110,18 +110,18 @@ export const ActivitiesLayerV2 = (props: any) => {
         markers.forEach((obj) => {
           const marker = obj.options.children.props.bufferedGeo.features[0];
           if (data.length === 0) {
-            data.push({ name: marker.properties.type, count: 1 });
+            data.push({ name: marker?.properties?.type, count: 1 });
           } else {
             let flag = 0;
             for (let i of data) {
-              if (marker.properties.type === i.name) {
+              if (marker?.properties?.type === i.name) {
                 flag = 1;
                 i.count += 1;
                 break;
               }
             }
             if (flag === 0) {
-              data.push({ name: marker.properties.type, count: 1 });
+              data.push({ name: marker?.properties?.type, count: 1 });
             }
           }
         });
