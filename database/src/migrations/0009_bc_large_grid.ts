@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import { Knex } from 'knex';
 import * as turf from '@turf/turf';
 
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';

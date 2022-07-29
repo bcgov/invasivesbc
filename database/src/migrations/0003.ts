@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import { Knex } from 'knex';
 
 const DB_SCHEMA = 'public';
 
@@ -34,13 +34,10 @@ export async function up(knex: Knex): Promise<void> {
       alter table "${DB_SCHEMA}"."jurisdiction" drop column "geom";
     `;
     await knex.raw(sql);
-
   } catch (e) {
     console.error('Error migrating context tables', e);
   }
-
 }
-
 
 export async function down(knex: Knex): Promise<void> {
   try {
@@ -78,4 +75,3 @@ export async function down(knex: Knex): Promise<void> {
     console.error('Error rolling back migration of context tables', e);
   }
 }
-

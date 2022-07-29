@@ -1,4 +1,4 @@
-import * as Knex from 'knex';
+import { Knex } from 'knex';
 //For now moving to one consolidated migration for plant reporting.
 
 //Why:  Knex silently failing on view create, making troubleshooting which of the 10+ plant views is failing.
@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
 
 -- DROP TABLE invasivesbc.species_ref_raw;
 
-CREATE TABLE  if not exists invasivesbc.species_ref_raw (
+CREATE TABLE if not exists invasivesbc.species_ref_raw (
 	species_id serial4 NOT NULL,
 	common_name varchar(50) NOT NULL,
 	latin_name varchar(50) NOT NULL,

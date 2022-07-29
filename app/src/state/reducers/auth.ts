@@ -20,6 +20,8 @@ class AuthState {
   email: string;
   displayName: string;
   username: string;
+  idir_userid: string;
+  bceid_userid: string;
 
   requestHeaders: {
     authorization: string;
@@ -87,10 +89,14 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   let displayName = 'User';
   let username = null;
   let email = '';
+  let bceid_userid = '';
+  let idir_userid = '';
 
   const authenticated = keycloakInstance.authenticated;
 
   if (keycloakInstance.idTokenParsed) {
+    if (keycloakInstance.idTokenParsed['idir_userid']) idir_userid = keycloakInstance.idTokenParsed['idir_userid'];
+    if (keycloakInstance.idTokenParsed['bceid_userid']) bceid_userid = keycloakInstance.idTokenParsed['bceid_userid'];
     username = keycloakInstance.idTokenParsed['preferred_username'];
     if ('display_name' in keycloakInstance.idTokenParsed &&
       keycloakInstance.idTokenParsed['display_name'] !== null &&
@@ -112,7 +118,9 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
     displayName,
     requestHeaders,
     username,
-    email
+    email,
+    idir_userid,
+    bceid_userid
   };
 }
 

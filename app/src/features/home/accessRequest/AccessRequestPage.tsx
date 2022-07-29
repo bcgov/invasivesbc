@@ -54,8 +54,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     authState.displayName.split(' ', 2)[1] ? authState.displayName.split(' ', 2)[1] : ''
   );
   const [email, setEmail] = React.useState(authState.email ? authState.email : '');
-  const idir_userid = authState.userId ? authState.userId : ''; // FIXME: Find a way to grab IDIR user id if we still need it
-  const bceid_userid = authState.userId ? authState.userId : ''; // FIXME: Find a way to grab BCEID user id if we still need it
+  const idir_userid = authState?.idir_userid ? authState?.idir_userid : '';
+  const bceid_userid = authState?.bceid_userid ? authState?.bceid_userid : '';
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -238,7 +238,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
             InvasivesBC Access Request
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{marginBottom: 50}}>
           <Card elevation={8}>
             {!submitted && (
               <CardContent>
