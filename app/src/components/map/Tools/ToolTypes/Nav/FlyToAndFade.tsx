@@ -64,7 +64,9 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
               }
             });
             var geosAsOne = union(...reprocessedForCircles);
-            var buffered = buffer(geosAsOne, 25);
+            var buffered = buffer(geosAsOne, 1, {
+              units: 'meters'
+            });
             var aBbox = bbox(buffered);
 
             //@#$%'n circles again:
@@ -87,7 +89,6 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
             const coloured = withCircles.map((geo) => {
               return { ...geo, properties: { ...geo.properties, colour: item.colour } };
             });
-
             map.flyToBounds(bboxToLtlngExpression(aBbox));
             setDisplayPolygons([...coloured]);
           } catch (e) {
