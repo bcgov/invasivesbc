@@ -263,6 +263,93 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
     sqlStatement.append(SQL`)`);
   }
+  console.log('$$$$ BEFORE IF GRID FILTERS STATEMENT, ', searchCriteria);
+  if (searchCriteria.grid_filters) {
+    console.log('$$$$ GRID FILTERS $$$$');
+    console.log(searchCriteria.grid_filters);
+    const gridFilters = searchCriteria.grid_filters;
+    if (gridFilters.enabled) {
+      if (gridFilters.type) {
+        // DONE (Sammy) + confirmed
+        sqlStatement.append(SQL` AND a.activity_type::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.type}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.subtype) {
+        // DONE (Sammy) + confirmed
+        sqlStatement.append(SQL` AND a.activity_subtype::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.subtype}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.created_by) {
+        // DONE (Sammy) + confirmed
+        sqlStatement.append(SQL` AND a.created_by::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.created_by}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.short_id) {
+        // DONE (Sammy) + confirmed
+        sqlStatement.append(SQL` AND a.activity_payload ->> 'short_id' LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.short_id}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.elevation) {
+        // DONE (Sammy) (( NEEDS WORK ))
+        console.log('\n[ELEVATION]: ', gridFilters.elevation, '\n');
+        sqlStatement.append(SQL` AND a.activity_payload ->> 'elevation' LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.elevation}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.agency) {
+        // DONE (Sammy) + confirmed
+        console.log('\n[INVASIVE SPECIES AGENCY CODE]: ', gridFilters.agency, '\n');
+        sqlStatement.append(
+          SQL` AND a.activity_payload::jsonb->'form_data'->'activity_data'->>'invasive_species_agency_code' LIKE '%'||`
+        );
+        sqlStatement.append(SQL`${gridFilters.agency}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.regional_districts) {
+        // format: string array of codes NOT IMPLEMENTED
+        // source: activity_payload.regional_districts
+        console.log('\n[REGIONAL DISTRICTS]: ', gridFilters.regional_districts, '\n');
+      }
+      if (gridFilters.regional_invasive_species_organization_areas) {
+        // Format: string array of codes NOT IMPLEMENTED
+        // source: activity_incoming_data.activity_payload.regional_invasive_species_organization_areas
+        console.log(
+          '\n[REGIONAL INVASIVE SPECIES ORGANIZATION AREAS]: ',
+          gridFilters.regional_invasive_species_organization_areas,
+          '\n'
+        );
+      }
+      if (gridFilters.jurisdiction) {
+        // Note: "Jurisdiction" property of activity_payload is not the source of truth for jurisdiction.
+        // See: activity_payload.form_data.activity_data.jurisdictions for the source of truth.
+        console.log('\n[JURISDICTION]: ', gridFilters.jurisdiction, '\n');
+      }
+      if (gridFilters.received_timestamp) {
+        // format: iso date string NOT IMPLEMENTED
+        // source: activity_incoming_data.received_timestamp
+        console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
+      }
+      if (gridFilters.species_positive) {
+        // format: string array of codes NOT IMPLEMENTED
+        // source: activity_incoming_data.species_positive
+        console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
+      }
+      if (gridFilters.species_negative) {
+        // format: string array of codes NOT IMPLEMENTED
+        // source: activity_incoming_data.species_negative
+        console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
+      }
+      if (gridFilters.biogeoclimatic_zones) {
+        // format: string array of codes NOT IMPLEMENTED
+        // source: activity_incoming_data.biogeoclimatic_zones
+        console.log('\n[BIOGEOCLIMATIC ZONES]: ', gridFilters.biogeoclimatic_zones, '\n');
+      }
+    }
+  }
 
   if (searchCriteria.created_by && searchCriteria.created_by.length) {
     sqlStatement.append(SQL` AND created_by IN (`);

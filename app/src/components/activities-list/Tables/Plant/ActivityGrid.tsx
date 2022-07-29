@@ -92,6 +92,7 @@ export const getSearchCriteriaFromFilters = (
   recordSetContext: any,
   setName: string,
   isIAPP: boolean,
+  gridFilters: any,
   page: number,
   limit: number
   // gridFilters?: any
@@ -115,6 +116,10 @@ export const getSearchCriteriaFromFilters = (
     filter.activity_type = [props.formType];
   }
   */
+ console.log(gridFilters);
+  if (gridFilters && gridFilters.enabled) {
+    filter.grid_filters = gridFilters;
+  }
 
   //search_feature
   if (recordSetContext.recordSetState[setName]?.searchBoundary) {
@@ -144,13 +149,18 @@ export const getSearchCriteriaFromFilters = (
           break;
         }
       }
+
+      if (filter.filterField === 'Species Positive') {
+        speciesPositive.push(Object.keys(filter.filterValue)[0]);
+      }
+      if (filter.filterField === 'Species Negative') {
+        speciesNegative.push(Object.keys(filter.filterValue)[0]);
+      }
     });
 
-    if (isIAPP) {
-      if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
-      if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
-      if (speciesNegative.length > 0) filter.species_negative = speciesNegative;
-    }
+    if (jurisdictions.length > 0) filter.jurisdiction = jurisdictions;
+    if (speciesPositive.length > 0) filter.species_positive = speciesPositive;
+    if (speciesNegative.length > 0) filter.species_negative = speciesNegative;
   }
 
   // is IAPP
@@ -293,7 +303,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(recordSetContext?.recordSetState?.[props.setName])]);
+  }, [save, JSON.stringify(recordSetContext?.recordSetState?.[props.setName]), filters]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -306,9 +316,13 @@ const ActivityGrid = (props) => {
       recordSetContext,
       props.setName,
       false,
+      filters.enabled ? filters : null,
       0,
       20
     );
+    console.log("get activities, gimme the filters enabled and then filters");
+    console.log(filters.enabled);
+    console.log(filters);
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
@@ -331,6 +345,7 @@ const ActivityGrid = (props) => {
       recordSetContext,
       props.setName,
       true,
+      null,
       0,
       20
     );
@@ -463,28 +478,32 @@ const ActivityGrid = (props) => {
   const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
 
   //todo - tests need to take into account type, they're all strings right now
-  const filteredRowsDynamic = useMemo(() => {
-    return rows?.filter((r) => {
-      // grab all keys except enabled
-      let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
-      // build a check for each
-      let tests = rowKeys.map((k) => {
-        if (filters[k] && r[k]) {
-          // this only works for strings
-          let field = r[k];
-          if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
-          if (field.includes(filters[k])) {
-            return true;
-          } else return false;
-        }
-        return true;
-      });
-      // check if they all pass
-      return tests.every((t) => {
-        return t === true;
-      });
-    });
-  }, [rows, filters]);
+  // const filteredRowsDynamic = useMemo(() => {
+  //   return rows?.filter((r) => {
+  //     // grab all keys except enabled
+  //     let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
+  //     // build a check for each
+  //     let tests = rowKeys.map((k) => {
+  //       if (filters[k] && r[k]) {
+  //         // this only works for strings
+  //         let field = r[k];
+  //         if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
+  //         if (field.includes(filters[k])) {
+  //           return true;
+  //         } else return false;
+  //       }
+  //       return true;
+  //     });
+  //     // check if they all pass
+  //     return tests.every((t) => {
+  //       return t === true;
+  //     });
+  //   });
+  // }, [rows, filters]);
+
+  useEffect(() => {
+    console.log("filters updated: ", filters);
+  }, [filters]);
 
   function clearFilters() {
     setFilters({
@@ -673,7 +692,7 @@ const ActivityGrid = (props) => {
                 style={{ height: '100%' }}
                 className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
                 // rows={filteredRows}
-                rows={filters.enabled ? filteredRowsDynamic : sortedRows}
+                rows={sortedRows}
                 defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}
                 //columns={columns}
                 onRowClick={(r) => {
@@ -703,8 +722,7 @@ const ActivityGrid = (props) => {
       filterDialog,
       advancedFilterRows,
       filters,
-      activities,
-      filteredRowsDynamic
+      activities
     ]
   );
 };
