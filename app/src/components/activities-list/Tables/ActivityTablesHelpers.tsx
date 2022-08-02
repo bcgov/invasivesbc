@@ -7,9 +7,9 @@ export interface ActivityRow {
   sub_type: string;
   received_timestamp: string;
   jurisdiction: string[];
-  species_positive: string[];
-  species_negative: string[];
-  species_treated: string[];
+  species_positive: string;
+  species_negative: string;
+  species_treated: string;
   created_by: string;
   updated_by: string;
   agency: string;
@@ -112,9 +112,9 @@ export const mapActivitiesToDataGridRows = (activities) => {
       activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       received_timestamp: new Date(activity?.activity_payload?.received_timestamp).toString(),
       jurisdiction: activity?.activity_payload?.jurisdiction,
-      species_positive: activity?.activity_payload?.species_positive,
-      species_negative: activity?.activity_payload?.species_negative,
-      species_treated: activity?.activity_payload?.species_treated,
+      species_positive: activity?.species_positive_full,
+      species_negative: activity?.species_negative_full,
+      species_treated: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
       agency: activity?.activity_payload?.form_data?.activity_data?.invasive_species_agency_code, // Not in payload atm
