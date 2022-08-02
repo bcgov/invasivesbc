@@ -294,9 +294,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.elevation) {
-        // DONE (Sammy) (( NEEDS WORK ))
+        // DONE
         console.log('\n[ELEVATION]: ', gridFilters.elevation, '\n');
-        sqlStatement.append(SQL` AND a.activity_payload ->> 'elevation' LIKE '%'||`);
+        sqlStatement.append(SQL` AND a.elevation::text LIKE '%'||`);
         sqlStatement.append(SQL`${gridFilters.elevation}`);
         sqlStatement.append(SQL`||'%'`);
       }
