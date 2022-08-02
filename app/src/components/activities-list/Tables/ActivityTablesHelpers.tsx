@@ -119,9 +119,9 @@ export const mapActivitiesToDataGridRows = (activities) => {
               return jurisdiction?.jurisdiction_code + ', ';
             }
           }),
-      species_positive: activity?.activity_payload?.species_positive,
-      species_negative: activity?.activity_payload?.species_negative,
-      species_treated: activity?.activity_payload?.species_treated,
+      species_positive: activity?.species_positive_full,
+      species_negative: activity?.species_negative_full,
+      species_treated: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
       agency: activity?.activity_payload?.form_data?.activity_data?.invasive_species_agency_code, // Not in payload atm

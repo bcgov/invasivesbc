@@ -334,14 +334,25 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
       }
       if (gridFilters.species_positive) {
-        // format: string array of codes NOT IMPLEMENTED
-        // source: activity_incoming_data.species_positive
+        // DONE
         console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
+        sqlStatement.append(SQL` AND a.species_positive_full LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.species_positive}`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.species_negative) {
-        // format: string array of codes NOT IMPLEMENTED
-        // source: activity_incoming_data.species_negative
+        // DONE
         console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
+        sqlStatement.append(SQL` AND a.species_negative_full LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.species_negative}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.species_treated) {
+        // DONE
+        console.log('\n[SPECIES TREATED]: ', gridFilters.species_treated, '\n');
+        sqlStatement.append(SQL` AND a.species_treated_full LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.species_treated}`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.biogeoclimatic_zones) {
         // format: string array of codes NOT IMPLEMENTED
