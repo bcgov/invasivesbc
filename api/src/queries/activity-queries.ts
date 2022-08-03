@@ -269,95 +269,113 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     console.log(searchCriteria.grid_filters);
     const gridFilters = searchCriteria.grid_filters;
     if (gridFilters.enabled) {
+      if (gridFilters.short_id) {
+        // DONE (Sammy) + confirmed + case ins
+        sqlStatement.append(SQL` AND LOWER(a.activity_payload ->> 'short_id') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.short_id})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
       if (gridFilters.type) {
-        // DONE (Sammy) + confirmed
-        sqlStatement.append(SQL` AND a.activity_type::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.type}`);
+        // DONE (Sammy) + confirmed + case ins
+        sqlStatement.append(SQL` AND LOWER(a.activity_type)::text LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.type})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.subtype) {
-        // DONE (Sammy) + confirmed
-        sqlStatement.append(SQL` AND a.activity_subtype::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.subtype}`);
+        // DONE (Sammy) + confirmed + case ins
+        sqlStatement.append(SQL` AND LOWER(a.activity_subtype::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.subtype})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.received_timestamp) {
+        //
+        // @@@@@      Date formatting done in SQL, needs rethinking here       *****&&&&&&*******@@@@@@@@@@
+        //
+        console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.received_timestamp::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.jurisdiction) {
+        // Note: "Jurisdiction" property of activity_payload is not the source of truth for jurisdiction.
+        // See: activity_payload.form_data.activity_data.jurisdictions for the source of truth.
+        // @@@@@@@@@!!    needs a restructure to include it within the activity incoming data   @@@@@@
+        console.log('\n[JURISDICTION]: ', gridFilters.jurisdiction, '\n');
+      }
+      if (gridFilters.species_positive) {
+        // DONE
+        console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.species_positive_full) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.species_positive})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.species_negative) {
+        // DONE
+        console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.species_negative_full) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.species_negative})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.species_treated) {
+        // DONE
+        console.log('\n[SPECIES TREATED]: ', gridFilters.species_treated, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.created_by) {
-        // DONE (Sammy) + confirmed
-        sqlStatement.append(SQL` AND a.created_by::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.created_by}`);
+        // DONE (Sammy) + confirmed + case ins
+        sqlStatement.append(SQL` AND LOWER(a.created_by)::text LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.created_by})`);
         sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.short_id) {
-        // DONE (Sammy) + confirmed
-        sqlStatement.append(SQL` AND a.activity_payload ->> 'short_id' LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.short_id}`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.elevation) {
-        // DONE
-        console.log('\n[ELEVATION]: ', gridFilters.elevation, '\n');
-        sqlStatement.append(SQL` AND a.elevation::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.elevation}`);
+      if (gridFilters.updated_by) {
+        // DONE + confirmed + case ins
+        sqlStatement.append(SQL` AND LOWER(a.updated_by)::text LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.updated_by})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.agency) {
         // DONE (Sammy) + confirmed
         console.log('\n[INVASIVE SPECIES AGENCY CODE]: ', gridFilters.agency, '\n');
         sqlStatement.append(
-          SQL` AND a.activity_payload::jsonb->'form_data'->'activity_data'->>'invasive_species_agency_code' LIKE '%'||`
+          SQL` AND LOWER(a.activity_payload::jsonb->'form_data'->'activity_data'->>'invasive_species_agency_code') LIKE '%'||`
         );
-        sqlStatement.append(SQL`${gridFilters.agency}`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
         sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.regional_districts) {
-        // format: string array of codes NOT IMPLEMENTED
-        // source: activity_payload.regional_districts
-        console.log('\n[REGIONAL DISTRICTS]: ', gridFilters.regional_districts, '\n');
-      }
       if (gridFilters.regional_invasive_species_organization_areas) {
-        // Format: string array of codes NOT IMPLEMENTED
-        // source: activity_incoming_data.activity_payload.regional_invasive_species_organization_areas
+        // DONE
         console.log(
           '\n[REGIONAL INVASIVE SPECIES ORGANIZATION AREAS]: ',
           gridFilters.regional_invasive_species_organization_areas,
           '\n'
         );
-      }
-      if (gridFilters.jurisdiction) {
-        // Note: "Jurisdiction" property of activity_payload is not the source of truth for jurisdiction.
-        // See: activity_payload.form_data.activity_data.jurisdictions for the source of truth.
-        console.log('\n[JURISDICTION]: ', gridFilters.jurisdiction, '\n');
-      }
-      if (gridFilters.received_timestamp) {
-        // format: iso date string NOT IMPLEMENTED
-        // source: activity_incoming_data.received_timestamp
-        console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
-      }
-      if (gridFilters.species_positive) {
-        // DONE
-        console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
-        sqlStatement.append(SQL` AND a.species_positive_full LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.species_positive}`);
+        sqlStatement.append(
+          SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`
+        );
+        sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization_areas})`);
         sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.species_negative) {
+      if (gridFilters.regional_districts) {
         // DONE
-        console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
-        sqlStatement.append(SQL` AND a.species_negative_full LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.species_negative}`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.species_treated) {
-        // DONE
-        console.log('\n[SPECIES TREATED]: ', gridFilters.species_treated, '\n');
-        sqlStatement.append(SQL` AND a.species_treated_full LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.species_treated}`);
+        console.log('\n[REGIONAL DISTRICTS]: ', gridFilters.regional_districts, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.regional_districts) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.regional_districts})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.biogeoclimatic_zones) {
-        // format: string array of codes NOT IMPLEMENTED
-        // source: activity_incoming_data.biogeoclimatic_zones
+        // DONE
         console.log('\n[BIOGEOCLIMATIC ZONES]: ', gridFilters.biogeoclimatic_zones, '\n');
+        sqlStatement.append(SQL` AND LOWER(a.biogeoclimatic_zones) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.biogeoclimatic_zones})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.elevation) {
+        // DONE + case ins unnecessary 
+        sqlStatement.append(SQL` AND a.elevation::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.elevation}`);
+        sqlStatement.append(SQL`||'%'`);
       }
     }
   }
