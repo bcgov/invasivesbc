@@ -1044,33 +1044,31 @@ jurisdiction_code,MOTI,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
 jurisdiction_code,MOE,Ministry of Environment & Climate Change Strategy,4
 jurisdiction_code,MAFF,Ministry of Agriculture and Food,5
-jurisdiction_code,PP,Provincial Parks / BC PARKS,6
+jurisdiction_code,PP,BC Parks,6
 jurisdiction_code,P,Private Land,7
-jurisdiction_code,MOP,Municipality owned land,8
+jurisdiction_code,MUNI,Municipality owned land,8
 jurisdiction_code,PCAN,Parks Canada,9
-jurisdiction_code,GPF,Gravel - MOF,10
-jurisdiction_code,GPM,Gravel - MOTI,11
-jurisdiction_code,CNR,CN Rail,12
-jurisdiction_code,CPR,CP Rail,13
-jurisdiction_code,BCR,BC Rail,14
-jurisdiction_code,RAIL,Other Rail,15
-jurisdiction_code,BCTC,British Columbia Transmission Corporation,16
-jurisdiction_code,TEL,Telus,17
-jurisdiction_code,TER,Terasen Gas Inc.,18
-jurisdiction_code,DFO,Department of Fisheries and Oceans,19
-jurisdiction_code,DND,Department of National Defense,20
-jurisdiction_code,DOT,Department of Transportation / Federal Hwy,21
-jurisdiction_code,DUKE,Enbridge,22
-jurisdiction_code,GL,Grazing Lease,23
-jurisdiction_code,IR,First Nations Reserves,24
-jurisdiction_code,MN,Mining Companies,25
-jurisdiction_code,MR,Military Reserves,26
-jurisdiction_code,MRD,Regional District owned land,27
-jurisdiction_code,PIPE,Oil and Gas Companies,28
-jurisdiction_code,PNG,Pacific Northern Gas,29
-jurisdiction_code,TRP,TransCanada Pipelines,30
-jurisdiction_code, LWRS, Ministry of Land Water Resource Stewardship,31
-jurisdiction_code, AAFC, Agriculture and Agri-Food Canada,32
+jurisdiction_code,CNR,CN Rail,10
+jurisdiction_code,CPR,CP Rail,11
+jurisdiction_code,BCR,BC Rail,12
+jurisdiction_code,RAIL,Other Rail,13
+jurisdiction_code,BCTC,British Columbia Transmission Corporation,14
+jurisdiction_code,TEL,Telus,15
+jurisdiction_code,TER,Terasen Gas Inc.,16
+jurisdiction_code,DFO,Department of Fisheries and Oceans,17
+jurisdiction_code,DND,Department of National Defense,18
+jurisdiction_code,DOT,Department of Transportation / Federal Hwy,19
+jurisdiction_code,ENB,Enbridge,20
+jurisdiction_code,GL,Grazing Lease,21
+jurisdiction_code,IR,First Nations Reserves,22
+jurisdiction_code,MN,Mining Companies,23
+jurisdiction_code,MR,Military Reserves,24
+jurisdiction_code,RD,Regional District owned land,25
+jurisdiction_code,OG,Oil and Gas Companies,26
+jurisdiction_code,PNG,Pacific Northern Gas,27
+jurisdiction_code,TRP,TransCanada Pipelines,28
+jurisdiction_code, LWRS, Ministry of Land Water Resource Stewardship,29
+jurisdiction_code, AAFC, Agriculture and Agri-Food Canada,30
 service_license_code,0,00000 BC Government Ministries,1
 service_license_code,19603,19603 A.R.M. CONTRACTORS,2
 service_license_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,3
