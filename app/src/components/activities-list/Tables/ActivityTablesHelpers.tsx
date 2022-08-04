@@ -109,7 +109,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
       short_id: activity?.activity_payload?.short_id,
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-      received_timestamp: new Date(activity?.activity_payload?.received_timestamp).toString(),
+      received_timestamp: new Date(activity?.received_timestamp).toString(),
       jurisdiction: activity?.activity_payload?.jurisdiction
         ? activity?.activity_payload?.jurisdiction
         : activity?.activity_payload?.form_data?.activity_data?.jurisdictions?.map((jurisdiction, index) => {

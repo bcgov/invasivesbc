@@ -288,11 +288,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.received_timestamp) {
-        //
-        // @@@@@      Date formatting done in SQL, needs rethinking here       *****&&&&&&*******@@@@@@@@@@
-        //
+        // DONE
         console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
-        sqlStatement.append(SQL` AND LOWER(a.received_timestamp::text) LIKE '%'||`);
+        sqlStatement.append(SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy, Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
         sqlStatement.append(SQL`||'%'`);
       }
