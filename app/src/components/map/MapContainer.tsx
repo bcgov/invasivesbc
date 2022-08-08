@@ -33,7 +33,8 @@ import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
 import { NamedBoundaryMenu } from './NamedBoundaryMenu';
 import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
-import { OnMapClickListener } from './Tools/ToolTypes/Data/OnMapClickListener';
+import { OnMapClickDetails } from './Tools/ToolTypes/Data/OnMapClickDetails';
+import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDetailsButton';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -131,6 +132,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const mapMaxZoom: number = 30;
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
+  const [clickDetailsEnabled, setClickDetailsEnabled] = useState<boolean>(false);
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
 
@@ -268,8 +270,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
-            {/* <OnMapClickListener {...props} /> */}
-
+            <ToggleClickDetailsButton
+              clickDetailsEnabled={clickDetailsEnabled}
+              setClickDetailsEnabled={setClickDetailsEnabled}
+            />
+            <OnMapClickDetails clickDetailsEnabled={clickDetailsEnabled} />
             {/* <MapRecordsDataGrid /> */}
             {useMemo(
               () => (
