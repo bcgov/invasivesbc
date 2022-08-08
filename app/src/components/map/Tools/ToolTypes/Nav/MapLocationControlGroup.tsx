@@ -5,7 +5,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.offline';
 import 'leaflet-editable';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { IPointOfInterestSearchCriteria } from '../../../../../interfaces/useInvasivesApi-interfaces';
@@ -121,8 +121,14 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    */
   function FindMeButton() {
     const classes = useStyles();
+    const divRef = useRef();
+    useEffect(() => {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    }, []);
     return (
       <div
+        ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
           bottom: '30px',
@@ -154,8 +160,14 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   function TrackMeButton() {
+    const divRef = useRef();
+    useEffect(() => {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    }, []);
     return (
       <div
+        ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
           bottom: '80px',
@@ -188,8 +200,14 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   function AccuracyButton() {
+    const divRef = useRef();
+    useEffect(() => {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    }, []);
     return (
       <div
+        ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
           bottom: '130px',
@@ -222,8 +240,14 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @returns {void}
    */
   function BaseMapToggleButton() {
+    const divRef = useRef();
+    useEffect(() => {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    }, []);
     return (
       <div
+        ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
           bottom: '180px',
@@ -367,8 +391,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     if (!position) {
       await findMe();
     }
-    if(position)
-    {
+    if (position) {
       map.setView(position, 15);
     }
   };
@@ -406,7 +429,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
    * @description Starts timer when the map is ready and attempts to find initial position
    * @returns {void}
    */
-   useEffect(() => {
+  useEffect(() => {
     // If initial load (if isLoading is true), find user's current position and start timer before interacting with controls
     if (isLoading) {
       setInitialTime(2);
