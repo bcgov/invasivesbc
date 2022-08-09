@@ -291,7 +291,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let userNameInject = '';
     let applicatorLicenseInject = '';
     let employerInject = '';
-    let agenciesInject = '';
+    let agenciesInject = [];
     let psnInject = '';
 
     if (activity_type_data?.activity_persons) {

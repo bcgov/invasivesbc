@@ -337,7 +337,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         // DONE (Sammy) + confirmed
         console.log('\n[INVASIVE SPECIES AGENCY CODE]: ', gridFilters.agency, '\n');
         sqlStatement.append(
-          SQL` AND LOWER(a.activity_payload::jsonb->'form_data'->'activity_data'->>'invasive_species_agency_code') LIKE '%'||`
+          SQL` AND LOWER(a.agency) LIKE '%'||`
         );
         sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
         sqlStatement.append(SQL`||'%'`);
