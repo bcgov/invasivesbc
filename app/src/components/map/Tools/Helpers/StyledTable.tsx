@@ -175,6 +175,7 @@ export const RenderTableActivity = (props: any) => {
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
+      console.log('Getting activities in buffered geo: ', bufferedGeo);
       const activities = await dataAccess.getActivitiesLean({
         search_feature: bufferedGeo,
         limit: 500,
@@ -205,19 +206,31 @@ export const RenderTableActivity = (props: any) => {
             break;
           case 'Biocontrol':
           case 'Treatment':
-            const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
-            if (treatmentTemp) {
-              treatmentTemp.forEach((s) => {
-                species_code.push(s);
-              });
+            if (
+              a.geojson.properties.species_treated &&
+              a.geojson.properties.species_treated.length > 0 &&
+              a.geojson.properties.species_treated[0] !== null
+            ) {
+              const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
+              if (treatmentTemp) {
+                treatmentTemp.forEach((s) => {
+                  species_code.push(s);
+                });
+              }
             }
             break;
           case 'Monitoring':
-            const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
-            if (monitoringTemp) {
-              monitoringTemp.forEach((s) => {
-                species_code.push(s);
-              });
+            if (
+              a.geojson.properties.species_treated &&
+              a.geojson.properties.species_treated.length > 0 &&
+              a.geojson.properties.species_treated[0] !== null
+            ) {
+              const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
+              if (monitoringTemp) {
+                monitoringTemp.forEach((s) => {
+                  species_code.push(s);
+                });
+              }
             }
             break;
         }

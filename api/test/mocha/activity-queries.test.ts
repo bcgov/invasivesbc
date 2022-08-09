@@ -20,6 +20,25 @@ import fake, { JsonSchema } from 'typescript-json-schema-faker';
 import bbox from '@turf/bbox';
 var random = require('geojson-random');
 
+const activityTypes = [
+  {
+    type: 'Observation',
+    subtype: 'Activity_Observation_PlantTerrestrial'
+  },
+  {
+    type: 'Treatment',
+    subtype: 'Activity_Treatment_ChemicalPlantTerrestrial'
+  },
+  {
+    type: 'Biocontrol',
+    subtype: 'Activity_Biocontrol_Collection'
+  },
+  {
+    type: 'Monitoring',
+    subtype: 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant'
+  }
+];
+
 // stuff to put in helpers:
 export const template = {
   _id: '81b3051e-8c8f-41d0-ab5a-1407e6229364',
@@ -63,6 +82,7 @@ export const newRecord = () => {
   const bc_geo = require('../../../app/src/components/map/BC_AREA.json');
   const bc_bbox = bbox(bc_geo);
   const date = new Date().toISOString();
+  const index = Math.floor(Math.random() * activityTypes.length);
 
   // 'normal' size
   const geo_array = random.polygon(1, 20, 0.001, bc_bbox).features;
@@ -78,7 +98,9 @@ export const newRecord = () => {
     date_created: date,
     created_timestamp: date,
     form_data: { activity_data: { activity_date_time: date } },
-    form_status: faker.random.boolean() ? 'Draft' : 'Submitted'
+    form_status: faker.random.boolean() ? 'Draft' : 'Submitted',
+    activity_type: activityTypes[index].type,
+    activity_subtype: activityTypes[index].subtype
   });
 };
 
@@ -90,7 +112,7 @@ describe('can create activities', () => {
   });
 
   it('should be able to make 100 in a hurry', async () => {
-    for (let i = 0; i < 1001; i++) {
+    for (let i = 0; i < 200; i++) {
       const response = await await request(app)
         .post('/activity')
         .set('Content-type', 'application/json')
