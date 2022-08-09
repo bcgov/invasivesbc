@@ -4,17 +4,16 @@ const table_name = 'admin_defined_shapes';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-
-  --      migration     --
-
   set search_path=invasivesbc,public;
 
   -- Add column to pull agencies from
   ALTER TABLE activity_incoming_data DROP COLUMN IF EXISTS agency, ADD COLUMN agency TEXT;
-
+  
   -- Get mapping table of agencies
   WITH codes AS 
-    (SELECT * FROM code WHERE code_header_id = 181),
+    (SELECT * FROM code WHERE code_header_id = (
+      SELECT code_header_id FROM code_header WHERE code_header_description = 'invasive_species_agency_code')
+    ),
   -- Get rows of the listed agencies
   payload AS 
     (SELECT 
@@ -49,7 +48,9 @@ export async function up(knex: Knex): Promise<void> {
     
     -- Get mapping table of agencies
     WITH codes AS 
-      (SELECT * FROM code WHERE code_header_id = 181),
+      (SELECT * FROM code WHERE code_header_id = (
+        SELECT code_header_id FROM code_header WHERE code_header_description = 'invasive_species_agency_code')
+      ),
     -- Get rows of the listed agencies
     payload AS 
       (SELECT 
