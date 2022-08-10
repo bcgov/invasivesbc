@@ -7,7 +7,7 @@ import React, { useContext, useState, useEffect, useMemo, createContext } from '
 import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
-import { activites_default_headers, ActivityRow, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { ActivitiesDefaultHeaders, ActivityRow, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { point_of_interest_iapp_default_headers, POI_IAPP_Row, mapPOI_IAPP_ToDataGridRows } from '../POITablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
@@ -24,6 +24,7 @@ import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -123,9 +124,9 @@ export const getSearchCriteriaFromFilters = (
   //search_feature
   if (recordSetContext.recordSetState[setName]?.searchBoundary) {
     filter.search_feature = {
-      "type": "FeatureCollection",
-      "features": recordSetContext.recordSetState[setName]?.searchBoundary.geos
-    }
+      type: 'FeatureCollection',
+      features: recordSetContext.recordSetState[setName]?.searchBoundary.geos
+    };
   }
 
   if (recordSetContext.recordSetState[setName]?.advancedFilters) {
@@ -470,7 +471,7 @@ const ActivityGrid = (props) => {
 
   // sets columnns based on record set type
   const iappColumns = useColumns(point_of_interest_iapp_default_headers);
-  const actColumns = useColumns(activites_default_headers);
+  const actColumns = useColumns(ActivitiesDefaultHeaders()); // TODO: MAKE SURE THIS WORKS
   const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
 
   //todo - tests need to take into account type, they're all strings right now
@@ -497,6 +498,9 @@ const ActivityGrid = (props) => {
   //   });
   // }, [rows, filters]);
 
+  useEffect(() => {
+    console.log('filters updated: ', filters);
+  }, [filters]);
 
   function clearFilters() {
     setFilters({
@@ -514,10 +518,20 @@ const ActivityGrid = (props) => {
   }
 
   ///SORT STUFF:
+  const { MOBILE } = useSelector(selectConfiguration);
 
   useEffect(() => {
-    const newrows = mapActivitiesToDataGridRows(activities);
-    setRows(newrows);
+    if (MOBILE) {
+      console.log('Getting cached activities...');
+      dataAccess.getCachedActivityIDs().then((res) => {
+        console.log('RES: ', res);
+        const newrows = MapActivitiesToDataGridRows(activities, MOBILE, res);
+        setRows(newrows);
+      });
+    } else {
+      const newrows = MapActivitiesToDataGridRows(activities, true);
+      setRows(newrows);
+    }
   }, [activities]);
 
   useEffect(() => {
@@ -557,6 +571,10 @@ const ActivityGrid = (props) => {
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
+    const color = props.row.cached === 'Cached' ? 'green' : 'red';
+    if (props.row.cached === 'Cached') {
+      console.log('ROW CACEHD');
+    }
     return <Row className="xRow" {...props} />;
   };
 
@@ -641,7 +659,7 @@ const ActivityGrid = (props) => {
                     );
                   }
                 })}
-              {recordSetContext?.recordSetState[props.setName]?.searchBoundary &&
+              {recordSetContext?.recordSetState[props.setName]?.searchBoundary && (
                 <Chip
                   label={`Boundary = ${recordSetContext?.recordSetState[props.setName]?.searchBoundary.name}`}
                   variant="outlined"
@@ -654,7 +672,7 @@ const ActivityGrid = (props) => {
                     recordSetContext.removeBoundaryFromSet(props.setName);
                   }}
                 />
-              }
+              )}
             </List>
             <Box
               sx={{
@@ -676,7 +694,8 @@ const ActivityGrid = (props) => {
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
             <div id={'xDataGrid_' + props.setName}>
-              <DataGrid key={props.setName + 'datagrid'}
+              <DataGrid
+                key={props.setName + 'datagrid'}
                 //TODO THEME MODE
                 //style={{ color: 'white', backgroundColor: 'white' }o
 

@@ -1,5 +1,8 @@
 import { ActivitySubtypeShortLabels } from 'constants/activities';
-
+import { useDataAccess } from 'hooks/useDataAccess';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
+import React, { useEffect, useMemo } from 'react';
 export interface ActivityRow {
   activity_id: string; // activity_incoming_data.activity_id
   short_id: string; // activity_incoming_data.activity_payload.short_id
@@ -19,81 +22,91 @@ export interface ActivityRow {
   elevation: string; // activity_payload.form_data.activity_data.elevation
 }
 
-export const activites_default_headers = [
-  {
-    key: 'short_id',
-    name: 'Activity ID'
-  },
-  {
-    key: 'type',
-    name: 'Activity Type'
-  },
-  {
-    key: 'subtype',
-    name: 'Activity Sub Type'
-  },
-  {
-    key: 'received_timestamp',
-    name: 'Received Timestamp'
-  },
-  {
-    key: 'jurisdiction',
-    name: 'Jurisdiction'
-  },
-  {
-    key: 'species_positive',
-    name: 'Species Positive'
-  },
-  {
-    key: 'species_negative',
-    name: 'Species Negative'
-  },
-  {
-    key: 'species_treated',
-    name: 'Species Treated'
-  },
-  { key: 'created_by', name: 'Created By' },
-  { key: 'updated_by', name: 'Updated By' },
-  {
-    key: 'agency',
-    name: 'Agency'
-  },
-  {
-    key: 'regional_invasive_species_organization_areas',
-    name: 'Regional Invasive Species Organization Areas'
-  },
-  {
-    key: 'regional_districts',
-    name: 'Regional Districts'
-  },
-  {
-    key: 'biogeoclimatic_zones',
-    name: 'Bio Geo Climatic Zones'
-  },
-  {
-    key: 'elevation',
-    name: 'Elevation'
+export const ActivitiesDefaultHeaders = () => {
+  const { MOBILE } = useSelector(selectConfiguration);
+
+  const headers = [
+    {
+      key: 'short_id',
+      name: 'Activity ID'
+    },
+    {
+      key: 'type',
+      name: 'Activity Type'
+    },
+    {
+      key: 'subtype',
+      name: 'Activity Sub Type'
+    },
+    {
+      key: 'received_timestamp',
+      name: 'Received Timestamp'
+    },
+    {
+      key: 'jurisdiction',
+      name: 'Jurisdiction'
+    },
+    {
+      key: 'species_positive',
+      name: 'Species Positive'
+    },
+    {
+      key: 'species_negative',
+      name: 'Species Negative'
+    },
+    {
+      key: 'species_treated',
+      name: 'Species Treated'
+    },
+    { key: 'created_by', name: 'Created By' },
+    { key: 'updated_by', name: 'Updated By' },
+    {
+      key: 'agency',
+      name: 'Agency'
+    },
+    {
+      key: 'regional_invasive_species_organization_areas',
+      name: 'Regional Invasive Species Organization Areas'
+    },
+    {
+      key: 'regional_districts',
+      name: 'Regional Districts'
+    },
+    {
+      key: 'biogeoclimatic_zones',
+      name: 'Bio Geo Climatic Zones'
+    },
+    {
+      key: 'elevation',
+      name: 'Elevation'
+    }
+  ];
+  if (MOBILE) {
+    headers.unshift({
+      key: 'cached',
+      name: 'Cached?'
+    });
+  } else {
+    console.log('NOT PUSHING STATUS HEADER');
   }
-  // {  // Not on csv from crystals outline
-  //   key: 'reported_area',
-  //   name: 'Area (m\u00B2)'
-  // },
-  // {  // Not on csv from crystals outline
-  //   key: 'latitude',
-  //   name: 'Latitude'
-  // },
-  // {  // Not on csv from crystals outline
-  //   key: 'longitude',
-  //   name: 'Longitude'
-  // },
+  return headers;
+};
 
-  // { // Not on csv from crystals outline
-  //   key: 'date_modified',
-  //   name: 'Date Modified'
-  // }
-];
+export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities?) => {
+  const checkIfActivityCached = (activityId: string) => {
+    if (!cachedActivities) {
+      return false;
+    }
+    const activityIds = cachedActivities.map((activity) => activity.id);
+    return activityIds?.includes(activityId);
+  };
 
-export const mapActivitiesToDataGridRows = (activities) => {
+  if (cachedActivities) {
+    console.log('Cached Activity IDs: ', cachedActivities);
+  }
+
+  console.log('Activities: ', activities);
+
   if (!activities || activities.count === undefined) {
     return [];
   }
@@ -102,7 +115,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((activity, index) => {
-    return {
+    let columns: any = {
       // id: index,
       activity_id: activity?.activity_id,
       short_id: activity?.activity_payload?.short_id,
@@ -125,5 +138,16 @@ export const mapActivitiesToDataGridRows = (activities) => {
       // latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
       // longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
     };
+
+    if (MOBILE) {
+      // append status to columns
+      console.log('WE ON MOBILE');
+      columns = {
+        ...columns,
+        status: checkIfActivityCached(activity?.activity_id)
+      };
+    }
+
+    return columns;
   });
 };
