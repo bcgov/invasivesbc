@@ -25,6 +25,13 @@ import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
 import GrassIcon from '@mui/icons-material/Grass';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
+import SaveIcon from '@mui/icons-material/Save';
+import RecordSetDeleteDialog from './RecordSetDeleteDialog';
+import { getSearchCriteriaFromFilters } from '../../../../components/activities-list/Tables/Plant/ActivityGrid';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const OrderSelector = (props) => {
   return (
@@ -61,6 +68,14 @@ const RecordSetAccordionSummary = (props) => {
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
 
+  const [recordSetsToDelete, setRecordSetsToDelete] = useState([]);
+  const [recordSetDeleteDialogOpen, setRecordSetDeleteDialogOpen] = useState(false);
+  const [recordSetDeleteDialogLoading, setRecordSetDeleteDialogLoading] = useState(false);
+  const { accessRoles } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
+  const recordStateContext = useContext(RecordSetContext);
+  const dataAccess = useDataAccess();
+
   const [boundaryFilterDialog, setBoundaryFilterDialog] = useState<IGeneralDialog>({
     dialogActions: [
       {
@@ -75,168 +90,252 @@ const RecordSetAccordionSummary = (props) => {
     dialogContentText: null
   });
 
+  const openDeleteDialog = async () => {
+    const recordSetState = recordStateContext.recordSetState;
+    const recordSet = recordSetState[props.setName];
+    const advancedFilters = recordSet.advancedFilters;
+
+    const recordSets = [];
+    const filter = await getSearchCriteriaFromFilters(
+      advancedFilters,
+      accessRoles,
+      recordStateContext,
+      props.recordSetName,
+      false,
+      0,
+      1000
+    );
+    const activityList = await dataAccess.getActivities(filter);
+    recordSets.push({
+      recordSetName: props.recordSetName,
+      activities: activityList
+    });
+    setRecordSetsToDelete(recordSets);
+    setRecordSetDeleteDialogOpen(true);
+  };
+
+  const handleCachedActivityDelete = async () => {
+    try {
+      for (const activity of recordSetsToDelete[0].activities.rows) {
+        const response = await dataAccess.deleteActivityFromCache(activity.activity_id);
+      }
+    } catch (e) {
+    } finally {
+      setRecordSetDeleteDialogOpen(false);
+    }
+  };
+
+  const handleFilterSetDelete = async (recordSetName: string) => {
+    console.log('Deleting filter set');
+    if (
+      /*eslint-disable*/
+      confirm(
+        'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+      )
+    ) {
+      props.remove(recordSetName);
+      setRecordSetDeleteDialogOpen(false);
+    }
+  };
+
   // return useMemo(() => {
   return (
-    <AccordionSummary>
-      <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-      {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
-        {props.recordSetType === 'POI' ?
-          <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{maxWidth: '4rem', margin: '0 0.5rem'}} /> :
-          <GrassIcon style={{margin: '0 0.5rem'}}/>
-        }
-        {!nameEdit && (
-          <>
-            <Typography>{props.recordSetName}</Typography>
-            {props.canRemove && (
-              <>
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setNameEdit(true);
-                  }}
-                  aria-label="delete">
-                  <EditIcon style={{ paddingLeft: 5, fontSize: 20 }} />
-                </IconButton>
-              </>
-            )}
-          </>
-        )}
-        {nameEdit && (
-          <>
-            <TextField
-              value={newName}
+    <>
+      <RecordSetDeleteDialog
+        platform={MOBILE ? 'mobile' : 'web'}
+        isOpen={recordSetDeleteDialogOpen}
+        isLoading={recordSetDeleteDialogLoading}
+        handleClose={async () => {
+          setRecordSetDeleteDialogOpen(false);
+        }}
+        handleCachedActivityDelete={async () => {
+          handleCachedActivityDelete();
+        }}
+        handleFilterSetDelete={async () => {
+          handleFilterSetDelete(props.setName);
+        }}
+        recordSets={recordSetsToDelete}
+      />
+      <AccordionSummary>
+        <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+          {MOBILE && props.recordSetName !== 'My Drafts' && (
+            <Button
+              sx={{ mr: 2 }}
+              variant="outlined"
               onClick={(e) => {
                 e.stopPropagation();
-              }}
+              }}>
+              <Checkbox
+                checked={props.isSelected}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  props.setIsSelected(e.target.checked);
+                }}
+              />
+            </Button>
+          )}
+          {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+          {props.recordSetType === 'POI' ? (
+            <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{ maxWidth: '4rem', margin: '0 0.5rem' }} />
+          ) : (
+            <GrassIcon style={{ margin: '0 0.5rem' }} />
+          )}
+          {!nameEdit && (
+            <>
+              <Typography>{props.recordSetName}</Typography>
+              {props.canRemove && (
+                <>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setNameEdit(true);
+                    }}
+                    aria-label="delete">
+                    <EditIcon style={{ paddingLeft: 5, fontSize: 20 }} />
+                  </IconButton>
+                </>
+              )}
+            </>
+          )}
+          {nameEdit && (
+            <>
+              <TextField
+                value={newName}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setNewName(e.target.value);
+                }}
+                id="outlined-basic"
+                label="New Record Set Name"
+                variant="outlined"
+              />
+              <Button
+                sx={{ ml: 7 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.setRecordSetName(newName);
+                  setNewName(props.recordSetName);
+                  setNameEdit(false);
+                }}
+                variant="contained">
+                Submit
+              </Button>
+              <Button
+                sx={{ ml: 7 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNewName(props.recordSetName);
+                  setNameEdit(false);
+                }}
+                variant="text">
+                Cancel
+              </Button>
+            </>
+          )}
+        </Box>
+        <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
+            }}
+            variant="outlined">
+            Boundary Filter
+            <ArrowDropDownIcon />
+          </Button>
+          <Button
+            //className={classes.mainHeader}
+            onClick={(e) => {
+              e.stopPropagation();
+              const currentIndex = props.colours.indexOf(props.color);
+              const nextIndex = (currentIndex + 1) % props.colours.length;
+              props.setColor(props.colours[nextIndex]);
+            }}
+            style={{ backgroundColor: props.color }}
+            variant="contained">
+            <ColorLensIcon />
+          </Button>
+          <Button onClick={(e) => e.stopPropagation()} variant="outlined">
+            <LayersIcon />
+            <Checkbox
+              style={{ height: 15 }}
+              checked={props.mapToggle}
               onChange={(e) => {
                 e.stopPropagation();
-                setNewName(e.target.value);
+                props.setMapToggle((prev) => !prev);
               }}
-              id="outlined-basic"
-              label="New Record Set Name"
-              variant="outlined"
             />
+          </Button>
+          <OrderSelector moveUp={props.moveUp} moveDown={props.moveDown} drawOrder={props.drawOrder} />{' '}
+          {props.canRemove ? (
             <Button
-              sx={{ ml: 7 }}
               onClick={(e) => {
                 e.stopPropagation();
-                props.setRecordSetName(newName);
-                setNewName(props.recordSetName);
-                setNameEdit(false);
+                if (
+                  /*eslint-disable*/
+                  confirm(
+                    'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+                  )
+                ) {
+                  props.remove(props.setName);
+                }
               }}
-              variant="contained">
-              Submit
+              style={{ justifySelf: 'end', alignSelf: 'right' }}
+              variant="outlined">
+              <Delete />
             </Button>
+          ) : (
+            <></>
+          )}
+          {props.canRemove ? (
             <Button
-              sx={{ ml: 7 }}
+              disabled={true}
               onClick={(e) => {
                 e.stopPropagation();
-                setNewName(props.recordSetName);
-                setNameEdit(false);
+                if (
+                  /*eslint-disable*/
+                  confirm(
+                    'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
+                  )
+                ) {
+                  props.remove(props.setName);
+                }
               }}
-              variant="text">
-              Cancel
+              style={{ justifySelf: 'end', alignSelf: 'right' }}
+              variant="outlined">
+              <DownloadIcon />
             </Button>
-          </>
-        )}
-      </Box>
-      <AccordionActions sx={{ display: 'flex', justifyContent: 'end' }}>
-      <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
-          }}
-          variant="outlined">
-          Boundary Filter
-          <ArrowDropDownIcon />
-        </Button>
-        <Button
-          //className={classes.mainHeader}
-          onClick={(e) => {
-            e.stopPropagation();
-            const currentIndex = props.colours.indexOf(props.color);
-            const nextIndex = (currentIndex + 1) % props.colours.length;
-            props.setColor(props.colours[nextIndex]);
-          }}
-          style={{ backgroundColor: props.color }}
-          variant="contained">
-          <ColorLensIcon />
-        </Button>
-        <Button onClick={(e) => e.stopPropagation()} variant="outlined">
-          <LayersIcon />
-          <Checkbox
-            style={{ height: 15 }}
-            checked={props.mapToggle}
+          ) : (
+            <></>
+          )}
+        </AccordionActions>
+        <GeneralDialog
+          dialogOpen={boundaryFilterDialog.dialogOpen}
+          dialogTitle={boundaryFilterDialog.dialogTitle}
+          dialogActions={boundaryFilterDialog.dialogActions}
+          dialogContentText={boundaryFilterDialog.dialogContentText}>
+          <Select
+            sx={{ minWidth: 150, m: 3 }}
             onChange={(e) => {
               e.stopPropagation();
-              props.setMapToggle((prev) => !prev);
-            }}
-          />
-        </Button>
-        <OrderSelector moveUp={props.moveUp} moveDown={props.moveDown} drawOrder={props.drawOrder} />{' '}
-        {props.canRemove ? (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (
-                /*eslint-disable*/
-                confirm(
-                  'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
-                )
-              ) {
-                props.remove(props.setName);
-              }
-            }}
-            style={{ justifySelf: 'end', alignSelf: 'right' }}
-            variant="outlined">
-            <Delete />
-          </Button>
-        ) : (
-          <></>
-        )}
-        {props.canRemove ? (
-          <Button
-            disabled={true}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (
-                /*eslint-disable*/
-                confirm(
-                  'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
-                )
-              ) {
-                props.remove(props.setName);
-              }
-            }}
-            style={{ justifySelf: 'end', alignSelf: 'right' }}
-            variant="outlined">
-            <DownloadIcon />
-          </Button>
-        ) : (
-          <></>
-        )}
-      </AccordionActions>
-      <GeneralDialog
-        dialogOpen={boundaryFilterDialog.dialogOpen}
-        dialogTitle={boundaryFilterDialog.dialogTitle}
-        dialogActions={boundaryFilterDialog.dialogActions}
-        dialogContentText={boundaryFilterDialog.dialogContentText}
-      >
-        <Select
-          sx={{ minWidth: 150, m: 3}}
-          onChange={(e) => {
-            e.stopPropagation();
-            //add to the recordset filters
-            recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
-            setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
-          }}
-        >
-          {recordSetContext.boundaries?.map((boundary) => {
-            return <MenuItem key={boundary.id} value={boundary}>{boundary.name}</MenuItem>
-          })}
-        </Select>
-      </GeneralDialog>
-    </AccordionSummary>
+              //add to the recordset filters
+              recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
+              setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
+            }}>
+            {recordSetContext.boundaries?.map((boundary) => {
+              return (
+                <MenuItem key={boundary.id} value={boundary}>
+                  {boundary.name}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </GeneralDialog>
+      </AccordionSummary>
+    </>
   );
   // }, [JSON.stringify({ expanded: expanded, mapToggle: mapToggle, colour: colour, recordSetName: recordSetName })]);
   // }, [newName, setNewName, nameEdit, setNameEdit]); // todo - only check if number of record sets, or one of their header button or properties needs to re render
