@@ -31,6 +31,7 @@ export const RecordSet = (props) => {
   const [color, setColor] = useState(blue[500]);
   const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState(null);
+  const [isSelected, setIsSelected] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const recordSetContext = useContext(RecordSetContext);
@@ -65,6 +66,9 @@ export const RecordSet = (props) => {
           break;
         case 'recordSetName':
           setRecordSetName(initial);
+          break;
+        case 'isSelected':
+          setIsSelected(initial);
           break;
         case 'advancedFilters':
           setAdvancedFilters(initial);
@@ -101,6 +105,9 @@ export const RecordSet = (props) => {
           case 'recordSetName':
             newState['recordSetName'] = recordSetName;
             break;
+          case 'isSelected':
+            newState['isSelected'] = isSelected;
+            break;
           case 'advancedFilters':
             newState['advancedFilters'] = advancedFilters;
             break;
@@ -122,11 +129,20 @@ export const RecordSet = (props) => {
     getInitialPropertyState('recordSetType');
     getInitialPropertyState('recordSetName');
     getInitialPropertyState('advancedFilters');
+    getInitialPropertyState('isSelected');
   }, []);
 
   useEffect(() => {
-    updatePropertyStates(['expanded', 'mapToggle', 'color', 'recordSetName', 'advancedFilters', 'drawOrder']);
-  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder]);
+    updatePropertyStates([
+      'expanded',
+      'mapToggle',
+      'color',
+      'recordSetName',
+      'advancedFilters',
+      'drawOrder',
+      'isSelected'
+    ]);
+  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder, isSelected]);
 
   return useMemo(
     () => (
@@ -165,6 +181,8 @@ export const RecordSet = (props) => {
                 setName={props.setName}
                 advancedFilters={advancedFilters}
                 setAdvancedFilters={setAdvancedFilters}
+                isSelected={isSelected}
+                setIsSelected={setIsSelected}
                 //  formType={formType}
                 // subType={subType}
                 setSelectedRecord={recordSetContext.setSelectedRecord}
