@@ -19,8 +19,14 @@ import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/Recor
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
 import { ACTIVITY_SET_ACTIVE_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
-
-// not sure what we're using this for?
+import SaveIcon from '@mui/icons-material/Save';
+import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
+import { DocType } from 'constants/database';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
+import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 interface IStatusPageProps {
   classes?: any;
 }
@@ -90,6 +96,15 @@ const PageContainer = (props) => {
   const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);
+  const [selectedRecordSets, setSelectedRecordSets] = useState([]);
+  const [recordSetsForSave, setRecordSetsForSave] = useState([]);
+  const [recordSetSaveDialogOpen, setRecordSetSaveDialogOpen] = useState(false);
+  const [recordSetSaveDialogLoading, setRecordSetSaveDialogLoading] = useState(false);
+
+  const { accessRoles } = useSelector(selectAuth);
+
+  const databaseContext = useContext(DatabaseContext);
+  const { MOBILE } = useSelector(selectConfiguration);
   const dispatch = useDispatch();
 
   const updateWidth = () => {
@@ -115,6 +130,21 @@ const PageContainer = (props) => {
     dialogTitle: '',
     dialogContentText: null
   });
+
+  const getSelectedRecordSets = async () => {
+    const recordSets = recordStateContext.recordSetState;
+    const selected = [];
+    for (const recordSet of Object.keys(recordSets)) {
+      if (recordSets[recordSet].recordSetName !== 'My Drafts' && recordSets[recordSet].isSelected) {
+        selected.push(recordSets[recordSet]);
+      }
+    }
+    setSelectedRecordSets(selected);
+  };
+
+  useEffect(() => {
+    getSelectedRecordSets();
+  }, [recordStateContext.recordSetState]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -180,8 +210,9 @@ const PageContainer = (props) => {
             // await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
             dispatch({
               type: ACTIVITY_SET_ACTIVE_REQUEST,
-              payload: recordStateContext?.selectedRecord?.id})
-            console.log("setting up active activity");
+              payload: recordStateContext?.selectedRecord?.id
+            });
+            console.log('setting up active activity');
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
@@ -194,13 +225,100 @@ const PageContainer = (props) => {
             }
           }, 1000);
         }
+      },
+      {
+        name: 'Save Selected Records',
+        icon: SaveIcon,
+        hidden: selectedRecordSets.length === 0 || !MOBILE,
+        onClick: async () => {
+          console.log('Saving selected records');
+          try {
+            const recordSets = [];
+            // Fetch all activities that meet criteria
+            for (const selectedSet of selectedRecordSets) {
+              const filter = await getSearchCriteriaFromFilters(
+                selectedSet.advancedFilters,
+                accessRoles,
+                recordStateContext,
+                selectedSet.recordSetName,
+                false,
+                0,
+                1000
+              );
+              const activityList = await dataAccess.getActivities(filter);
+              recordSets.push({
+                recordSetName: selectedSet.recordSetName,
+                activities: activityList
+              });
+            }
+            setRecordSetsForSave(recordSets);
+            setRecordSetSaveDialogOpen(true);
+          } catch (e) {
+            console.log('Unable to save records');
+            console.log(e);
+          }
+        }
       }
     ]);
-  }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id]);
+  }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id, selectedRecordSets]);
+
+  const handleRecordSetSaveDialogAgree = async () => {
+    setRecordSetSaveDialogLoading(true);
+    try {
+      const upserts = [];
+      // Cache selected recordsets
+      console.log('Attempting to cache: ', recordSetsForSave);
+      for (const recordSet of recordSetsForSave) {
+        for (const activity of recordSet.activities.rows) {
+          console.log('Caching activity: ', activity);
+          const jsonObj = {
+            id: activity.activity_id,
+            docType: DocType.REFERENCE_ACTIVITY,
+            ...activity,
+            formData: activity.activity_payload.form_data,
+            activityType: activity.activity_type,
+            activitySubtype: activity.activity_subtype,
+            geometry: activity.activity_payload.geometry
+          };
+          upserts.push({
+            docType: DocType.REFERENCE_ACTIVITY,
+            ID: activity.activity_id,
+            type: UpsertType.DOC_TYPE_AND_ID,
+            json: jsonObj
+          });
+        }
+      }
+      try {
+        const activitiesCached = await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(upserts, databaseContext);
+          }
+        });
+      } catch (error) {
+        console.log('Error with inserting Activities into database: ', error);
+      }
+    } catch (e) {
+      console.log('Error occurred saving record sets: ', e);
+    } finally {
+      setRecordSetSaveDialogLoading(false);
+      setRecordSetSaveDialogOpen(false);
+    }
+  };
 
   /* set up main menu bar options: */
   return (
     <>
+      <RecordSetSaveDialog
+        isOpen={recordSetSaveDialogOpen}
+        isLoading={recordSetSaveDialogLoading}
+        handleAgree={async () => {
+          handleRecordSetSaveDialogAgree();
+        }}
+        handleDisagree={async () => {
+          setRecordSetSaveDialogOpen(false);
+        }}
+        recordSets={recordSetsForSave}
+      />
       {/*the main list of record sets:*/}
       <Box
         style={{
