@@ -7,15 +7,17 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { CircularProgress } from '@mui/material';
-import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { ActivitiesDefaultHeaders, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const PlantBiocontrolTable = () => {
   const dataAccess = useDataAccess();
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const { displayName, accessRoles } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -48,8 +50,8 @@ const PlantBiocontrolTable = () => {
           <CircularProgress />
         ) : (
           <DataGrid
-            rows={mapActivitiesToDataGridRows(activities)}
-            columns={activites_default_headers}
+            rows={MapActivitiesToDataGridRows(activities, MOBILE)}
+            columns={ActivitiesDefaultHeaders()}
             autoHeight
             checkboxSelection
             pageSize={10}
