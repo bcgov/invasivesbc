@@ -3730,19 +3730,8 @@
       "Monitoring_Biocontrol": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": [
-          "linked_id",
-          "observer_first_name",
-          "observer_last_name",
-          "weather_conditions",
-          "microsite_conditions"
-        ],
+        "required": ["observer_first_name", "observer_last_name", "weather_conditions", "microsite_conditions"],
         "properties": {
-          "linked_id": {
-            "type": "string",
-            "title": "Linked Treatment ID",
-            "x-tooltip-text": "Identifier of linked treatment record"
-          },
           "observer_first_name": {
             "type": "string",
             "title": "First Name"

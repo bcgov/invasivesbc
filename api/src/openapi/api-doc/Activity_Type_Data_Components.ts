@@ -57,13 +57,8 @@ export const Monitoring = {
 export const Monitoring_Biocontrol = {
   title: 'Monitoring Information',
   type: 'object',
-  required: ['linked_id', 'activity_persons'],
+  required: ['activity_persons'],
   properties: {
-    linked_id: {
-      type: 'string',
-      title: 'Linked Biocontrol release ID',
-      'x-tooltip-text': 'Identifier of linked biocontrol release record'
-    },
     legacy_iapp_id: {
       type: 'number',
       maximum: 999999,
