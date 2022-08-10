@@ -1,8 +1,9 @@
-import { Capacitor } from '@capacitor/core';
 import Spinner from 'components/spinner/Spinner';
 import React, { useEffect, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import * as L from 'leaflet';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 // Style the image inside the download button
 const iconStyle = {
@@ -33,6 +34,7 @@ const storeLayersStyle = {
 const OfflineMap = (props) => {
   const [mapMaxZoom] = useState<number>(30);
   const [offlineLayer, setOfflineLayer] = useState(null);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const mapOffline = useMap();
   useEffect(() => {
@@ -89,7 +91,7 @@ const OfflineMap = (props) => {
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-      {Capacitor.getPlatform() !== 'web' && props.mapMaxNativeZoom? (
+      {MOBILE && props.mapMaxNativeZoom ? (
         <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
           {offlineing ? (
             <Spinner></Spinner>
@@ -97,7 +99,7 @@ const OfflineMap = (props) => {
             <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
           )}
         </div>
-      ) : ( 
+      ) : (
         <></>
       )}
     </>

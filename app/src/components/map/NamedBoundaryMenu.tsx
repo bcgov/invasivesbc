@@ -1,12 +1,5 @@
-import { Capacitor } from '@capacitor/core';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { LayerPicker } from './LayerPicker/LayerPicker';
-import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
-import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
-import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
-import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
-import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
@@ -15,8 +8,6 @@ import L from 'leaflet';
 import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import {
-  Accordion,
-  AccordionSummary,
   Box,
   ListItem,
   ListItemButton,
@@ -27,7 +18,6 @@ import {
   Theme,
   Typography
 } from '@mui/material';
-import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 import TabUnselectedIcon from '@mui/icons-material/TabUnselected';
 import { toolStyles } from './Tools/Helpers/ToolStyles';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -35,6 +25,8 @@ import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
 import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { RecordSetContext } from 'contexts/recordSetContext';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -90,6 +82,7 @@ export const NamedBoundaryMenu = (props) => {
   const [KMLs, setKMLs] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
   const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const [newBoundaryDialog, setNewBoundaryDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -117,15 +110,15 @@ export const NamedBoundaryMenu = (props) => {
     getKMLs();
   }, []);
 
-  const setBoundaryIdCount = (() => {
+  const setBoundaryIdCount = () => {
     if (recordSetContext?.boundaries && recordSetContext?.boundaries?.length > 0) {
       //ensures id is not repeated on client side
-      const max = Math.max(...recordSetContext.boundaries.map(b => b.id));
+      const max = Math.max(...recordSetContext.boundaries.map((b) => b.id));
       setIdCount(max + 1);
     } else {
       setIdCount(idCount + 1);
     }
-  });
+  };
 
   useEffect(() => {
     setBoundaryIdCount();
@@ -134,7 +127,7 @@ export const NamedBoundaryMenu = (props) => {
   const getBoundaries = async () => {
     const boundaryResults = await dataAccess.getBoundaries();
 
-    if (Capacitor.getPlatform() !== 'web') {
+    if (MOBILE) {
       const mappedBoundaries = boundaryResults.map((boundary) => {
         const jsonObject = JSON.parse(boundary.json);
         return {
@@ -158,7 +151,6 @@ export const NamedBoundaryMenu = (props) => {
     let KMLToBoundary = [];
     if (KMLResults && KMLResults.length > 0) {
       KMLToBoundary = KMLResults.map((kml) => {
-
         return {
           id: null,
           name: kml?.title,
@@ -281,7 +273,15 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {recordSetContext?.boundaries?.map((b, index) => (
-            <JumpToTrip boundary={b} id={b.id} name={b.name} geos={b.geos} server_id={b.server_id} key={index} deleteBoundary={deleteBoundary}/>
+            <JumpToTrip
+              boundary={b}
+              id={b.id}
+              name={b.name}
+              geos={b.geos}
+              server_id={b.server_id}
+              key={index}
+              deleteBoundary={deleteBoundary}
+            />
           ))}
         </List>
       </div>

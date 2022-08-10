@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { ListItemButton } from '@mui/material';
@@ -9,7 +8,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
-
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 /*
 
 - [ ] add ui button to let user add shapes
@@ -21,6 +21,8 @@ import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeConte
 */
 
 export const JumpToTrip = (props) => {
+  const { MOBILE } = useSelector(selectConfiguration);
+
   // style
   const toolClass = toolStyles();
 
@@ -71,7 +73,7 @@ export const JumpToTrip = (props) => {
   const getTripGeosAndInitialPosition = async () => {
     let tripObjects;
     //mobile only
-    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+    if (MOBILE) {
       const queryResults = await dataAccess.getTrips();
       if (!queryResults.length) {
         return;

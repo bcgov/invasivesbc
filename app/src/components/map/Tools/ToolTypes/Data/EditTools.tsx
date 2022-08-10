@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { useLeafletContext } from '@react-leaflet/core';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
@@ -10,6 +9,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import React, { useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -55,6 +56,7 @@ const formulateTable = (feature) => {
 const EditTools = (props: any) => {
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
+  const { MOBILE } = useSelector(selectConfiguration);
   /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
@@ -322,7 +324,7 @@ const EditTools = (props: any) => {
 
   return (
     <div style={{}}>
-      {Capacitor.getPlatform() === 'ios' && (
+      {MOBILE && (
         <>
           <MobilePolylineDrawButton
             convertLineStringToPoly={convertLineStringToPoly}

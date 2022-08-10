@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
 import { DatabaseContext, upsert, UpsertType } from 'contexts/DatabaseContext';
@@ -6,6 +5,9 @@ import { DatabaseContext, upsert, UpsertType } from 'contexts/DatabaseContext';
 import JSZip from 'jszip';
 import { DropzoneArea } from 'mui-file-dropzone';
 import React, { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
+
 const DOMParser = require('xmldom').DOMParser;
 
 export const KML_TYPES = {
@@ -73,6 +75,7 @@ const get_KMorKML_AsStringArray = async (input: File) => {
 
 export const KMLUpload: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);
@@ -141,7 +144,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile && Capacitor.getPlatform() === 'web') {
+    if (aFile && !MOBILE) {
       if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
         saveKML(aFile);
       }
