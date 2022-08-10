@@ -110,15 +110,7 @@ export const mapActivitiesToDataGridRows = (activities) => {
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       received_timestamp: new Date(activity?.received_timestamp).toString(),
-      jurisdiction: activity?.activity_payload?.jurisdiction
-        ? activity?.activity_payload?.jurisdiction
-        : activity?.activity_payload?.form_data?.activity_data?.jurisdictions?.map((jurisdiction, index) => {
-            if (index === activity?.activity_payload?.form_data?.activity_data?.jurisdictions?.length - 1) {
-              return jurisdiction?.jurisdiction_code;
-            } else {
-              return jurisdiction?.jurisdiction_code + ', ';
-            }
-          }),
+      jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,
       species_treated: activity?.species_treated_full,
