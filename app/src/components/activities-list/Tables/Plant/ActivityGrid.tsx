@@ -320,9 +320,6 @@ const ActivityGrid = (props) => {
       0,
       20
     );
-    console.log("get activities, gimme the filters enabled and then filters");
-    console.log(filters.enabled);
-    console.log(filters);
 
     const act_list = await dataAccess.getActivities(filter);
     if (act_list && !act_list.count) {
@@ -722,7 +719,8 @@ const ActivityGrid = (props) => {
       filterDialog,
       advancedFilterRows,
       filters,
-      activities
+      activities,
+      sortedRows
     ]
   );
 };
