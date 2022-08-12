@@ -162,6 +162,8 @@ export const RecordSet = (props) => {
             setColor={setColor}
             mapToggle={mapToggle}
             setMapToggle={setMapToggle}
+            isSelected={isSelected}
+            setIsSelected={setIsSelected}
             drawOrder={drawOrder}
             moveUp={() => {
               setDrawOrder(drawOrder + 1);
