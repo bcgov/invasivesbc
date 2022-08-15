@@ -5,7 +5,7 @@ metadata:
   labels:
     build: invasivebci-api
   name: invasivebci-api
-  namespace: 7068ad-dev
+  namespace: 7068ad-tools
 parameters:
   - name: NAME
     displayName: Name
