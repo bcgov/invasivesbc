@@ -24,6 +24,7 @@ module.exports = (settings) => {
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.bc.yaml`, {
       param: {
         NAME: name,
+        NAMESPACE: phases.build.namespace,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
