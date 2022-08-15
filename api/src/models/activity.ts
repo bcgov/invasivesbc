@@ -137,6 +137,8 @@ export class ActivitySearchCriteria {
 
   jurisdiction: string[];
 
+  grid_filters: any;
+
   order: string[];
   hideTreatmentsAndMonitoring: boolean;
 
@@ -177,6 +179,8 @@ export class ActivitySearchCriteria {
     this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
+
+    this.grid_filters = obj?.grid_filters || null;
 
     this.order = (obj && obj.order) || [];
     this.hideTreatmentsAndMonitoring = (obj && obj.hideTreatmentsAndMonitoring) || true;

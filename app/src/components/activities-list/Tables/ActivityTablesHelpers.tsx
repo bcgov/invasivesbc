@@ -1,23 +1,22 @@
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 
 export interface ActivityRow {
-  activity_id: string;
-  short_id: string;
-  type: string;
-  sub_type: string;
-  received_timestamp: string;
-  jurisdiction: string[];
-  species_positive: string;
-  species_negative: string;
-  species_treated: string;
-  created_by: string;
+  activity_id: string; // activity_incoming_data.activity_id
+  short_id: string; // activity_incoming_data.activity_payload.short_id
+  type: string; // activity_incoming_data.activity_type
+  subtype: string; // activity_incoming_data.activity_subtype
+  received_timestamp: string; // activity_incoming_data.received_timestamp
+  jurisdiction: string[]; // activity_incoming_data.jurisdiction
+  species_positive: string[]; // activity_incoming_data.species_positive ***
+  species_negative: string[]; // activity_incoming_data.species_negative ***
+  species_treated: string[];
+  created_by: string; // activity_incoming_data.created_by
   updated_by: string;
-  agency: string;
-  regional_invasive_species_organization_areas: string;
-  regional_districts: string;
-  biogeoclimatic_zones: string;
-  elevation: string;
-  // date_modified: string; // Not on csv from crystals outline
+  agency: string; // activity_incoming_data.activity_payload.form_data.activity_data.invasive_species_agency_code
+  regional_invasive_species_organization_areas: string; // activity_incoming_data.activity_payload.regional_invasive_species_organization_areas
+  regional_districts: string; // activity_payload.regional_districts
+  biogeoclimatic_zones: string; // activity_payload.biogeoclimatic_zones
+  elevation: string; // activity_payload.form_data.activity_data.elevation
 }
 
 export const activites_default_headers = [
@@ -30,7 +29,7 @@ export const activites_default_headers = [
     name: 'Activity Type'
   },
   {
-    key: 'activity_subtype',
+    key: 'subtype',
     name: 'Activity Sub Type'
   },
   {
@@ -103,21 +102,21 @@ export const mapActivitiesToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((activity, index) => {
+    console.log("activity row: ", activity);
     return {
       // id: index,
       activity_id: activity?.activity_id,
       short_id: activity?.activity_payload?.short_id,
       type: activity?.activity_payload?.activity_type,
-      activity_type: activity?.activity_payload?.activity_type,
-      activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-      received_timestamp: new Date(activity?.activity_payload?.received_timestamp).toString(),
-      jurisdiction: activity?.activity_payload?.jurisdiction,
+      subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
+      received_timestamp: new Date(activity?.received_timestamp).toString(),
+      jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,
       species_treated: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
-      agency: activity?.activity_payload?.form_data?.activity_data?.invasive_species_agency_code, // Not in payload atm
+      agency: activity?.agency,
       regional_invasive_species_organization_areas: activity?.regional_invasive_species_organization_areas,
       regional_districts: activity?.regional_districts,
       biogeoclimatic_zones: activity?.biogeoclimatic_zones,
