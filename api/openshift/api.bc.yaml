@@ -7,6 +7,9 @@ metadata:
   name: invasivebci-api
   namespace: ${NAMESPACE}
 parameters:
+  - name: NAMESPACE
+    displayName: Namespace
+    description: namespace name
   - name: NAME
     displayName: Name
     description: Image name
