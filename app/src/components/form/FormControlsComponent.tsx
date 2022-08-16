@@ -46,12 +46,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
 
   const deleteTooltipString = () => {
     if (!props.isAlreadySubmitted()) {
-      return 'Able to delete the draft record';
+      return 'Able to delete the draft record.  Make sure this is what you want if the record is linked to another record!';
     }
     if (checkIfNotAuthorized()) {
       return 'Unauthorized to delete submitted record';
     }
-    return 'Able to delete the submitted record';
+    return 'Able to delete the submitted record.  Be sure this is what you want to do if it is linked to another record!';
   };
 
   const submitTooltipString = () => {
@@ -67,7 +67,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const DeleteDialog = () => {
     return (
       <Dialog open={open}>
-        <DialogTitle>Are you sure you want to delete this {props.activity.formStatus} Record?</DialogTitle>
+        <DialogTitle>Are you sure you want to delete this {props.activity.formStatus} Record? If it is linked to another record that link will be lost.</DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
