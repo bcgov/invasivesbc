@@ -58,6 +58,10 @@ jobs:
         with:
           node-version: 12.3.1
 
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -96,6 +100,10 @@ jobs:
         with:
           node-version: 12.3.1
 
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -133,7 +141,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.3.1
-
+          
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
