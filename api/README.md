@@ -272,7 +272,7 @@ There can sometimes be issues with the validation of the API JSON Schema Specifi
 
 ### Go [here](https://gdal.org/download.html) for more info on other ways to install
 
-# GDAL Usage
+# GDAL Usage 
 
 ## Step 1: Pull your GeoJSON from the DB
 
