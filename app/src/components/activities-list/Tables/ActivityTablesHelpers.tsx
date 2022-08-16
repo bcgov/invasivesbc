@@ -83,7 +83,7 @@ export const ActivitiesDefaultHeaders = () => {
   ];
   if (MOBILE) {
     headers.unshift({
-      key: 'cached',
+      key: 'status',
       name: 'Cached?'
     });
   } else {
@@ -95,9 +95,12 @@ export const ActivitiesDefaultHeaders = () => {
 export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities?) => {
   const checkIfActivityCached = (activityId: string) => {
     if (!cachedActivities) {
+      console.log('No cached activities');
       return false;
     }
     const activityIds = cachedActivities.map((activity) => activity.id);
+    console.log('Got activity ids: ', activityIds);
+    console.log('Checking activity ' + activityId + ' against cached activities');
     return activityIds?.includes(activityId);
   };
 
