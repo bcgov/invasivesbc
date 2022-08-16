@@ -5,7 +5,11 @@ metadata:
   labels:
     build: invasivebci-db-setup
   name: invasivebci-db-setup
+  namespace: '${SPACENAME}'
 parameters:
+  - name: SPACENAME
+    displayName: space Name
+    description: Image name
   - name: NAME
     displayName: Name
     description: Image name

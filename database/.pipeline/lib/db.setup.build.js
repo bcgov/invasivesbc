@@ -23,6 +23,7 @@ module.exports = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
       param: {
+        SPACENAME: '7068ad-tools',
         NAME: name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
