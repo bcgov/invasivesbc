@@ -12,7 +12,7 @@ module.exports = (settings) => {
   const options = settings.options;
   const phase = 'build';
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX({...options});
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
@@ -23,7 +23,6 @@ module.exports = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
       param: {
-        SPACENAME: '7068ad-tools',
         NAME: name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,

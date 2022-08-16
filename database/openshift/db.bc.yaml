@@ -3,11 +3,7 @@ apiVersion: v1
 metadata:
   name: postgresql
   creationTimestamp: null
-  namespace: '${SPACENAME}'
 parameters:
-  - name: SPACENAME
-    displayName: space Name
-    description: A name used for all space
   - name: NAME
     displayName: Name
     description: A name used for all objects

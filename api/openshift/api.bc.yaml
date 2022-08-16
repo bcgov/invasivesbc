@@ -5,11 +5,7 @@ metadata:
   labels:
     build: invasivebci-api
   name: invasivebci-api
-  namespace: '${SPACENAME}'
 parameters:
-  - name: SPACENAME
-    displayName: Name space
-    description: namespace workaround for cli update and pipeline-cli issue
   - name: NAME
     displayName: Name
     description: Image name
