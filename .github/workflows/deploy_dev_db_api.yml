@@ -64,6 +64,9 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      - name: Log in to OpenShift
+        run: oc project 7068ad-tools
+
       # Build the database image
       - name: Build Database Image
         working-directory: './database/.pipeline/'
@@ -137,6 +140,9 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      - name: Log in to OpenShift
+        run: oc project 7068ad-tools
+
       # Build the api image
       - name: Build API Image
         working-directory: './api/.pipeline/'
@@ -205,6 +211,9 @@ jobs:
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      - name: Log in to OpenShift
+        run: oc project 7068ad-tools
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
