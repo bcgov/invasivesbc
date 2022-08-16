@@ -48,7 +48,7 @@ options = processOptions(options);
 
 const phases = {
   build: {
-    namespace: '7068ad-tools',
+//    namespace: '7068ad-tools',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'build',
