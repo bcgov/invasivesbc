@@ -3,6 +3,7 @@ apiVersion: v1
 metadata:
   name: postgresql
   creationTimestamp: null
+  namespace: 7068ad-tools
 parameters:
   - name: NAME
     displayName: Name
