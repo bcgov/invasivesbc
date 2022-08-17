@@ -36,7 +36,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
 import { ThemeContext } from 'utils/CustomThemeProvider';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
@@ -233,7 +233,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
    * @param {number} activeTabNumber The current active tab index, to be used as backup if no matching paths are found.
    * @return {*}  {number}
    */
-  const getActiveTab = (activeTabNumber?: number): number => {
+  const getActiveTab = (activeTabNumber?: number): any => {
     for (let index = 0; index < tabConfig.length; index++) {
       const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
 
@@ -247,8 +247,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       }
     }
 
+
     // Otherwise return the current active tab index as a fallback
-    return activeTabNumber;
+    return false;
   };
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
@@ -261,12 +262,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   useEffect(() => {
+ //   console.log('activetab;')
+//    console.log(activeTab)
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
-  }, [history.location.pathname, getActiveTab]);
+  }, [history.location.pathname]);
 
   useEffect(() => {
-    const setTabConfigBasedOnRoles = async () => {
-      await setTabConfig(() => {
+    const setTabConfigBasedOnRoles = () => {
+      setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
         tabsUserHasAccessTo.push({
           label: 'Home',
@@ -331,13 +334,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
+    return ()=> setTabConfig([])
   }, [showLoggedInTabs, isAdmin]);
 
+
+  return useMemo(() => {
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
   }
-
-  return (
+    return (
     <>
       <IonAlert
         isOpen={showAlert}
@@ -403,25 +408,29 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <b>InvasivesBC</b>
             </Box>
             <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              {tabConfig && tabConfig.length > 0 ?
               <Tabs
                 indicatorColor="secondary"
                 textColor="inherit"
-                value={activeTab}
+                //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
+                value={getActiveTab()}
                 color="primary"
                 centered
                 style={{ width: '80%', color: '#fff' }}
                 onChange={handleChange}>
-                {tabConfig.map((tab) => (
-                  <Tab
-                    style={{ fontSize: '.7rem', fontWeight: 'bold' }}
-                    color="primary"
-                    label={tab.label}
-                    key={tab.label.split(' ').join('_')}
-                    icon={tab.icon}
-                    onClick={() => history.push(tab.path)}
-                  />
-                ))}
-              </Tabs>
+                {tabConfig.map((tab) => {
+                  if(tab && tab.label) return (
+                      <Tab
+                        style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                        color="primary"
+                        label={tab.label}
+                        key={tab.label.split(' ').join('_')}
+                        icon={tab.icon}
+                        onClick={() => history.push(tab.path)}
+                      />
+                  );}
+                )}
+              </Tabs> : <></>}
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <IconButton onClick={handleClick} size="small">
@@ -582,7 +591,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         </Drawer>
       </Box>
     </>
-  );
+  )
+  //},[tabConfig,activeTab,open]);
+  },[tabConfig,history.location.pathname,open]);
 };
 
 export default TabsContainer;

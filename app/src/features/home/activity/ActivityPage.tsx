@@ -56,6 +56,8 @@ import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
+import { useDispatch } from 'react-redux';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -88,6 +90,8 @@ interface IActivityPageProps {
 
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
+
+  const dispatch = useDispatch();
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
@@ -117,6 +121,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   });
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
+
+
+
+
+
+  //redux first steps
+  useEffect(()=> {
+    dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
+  },[])
+
+
+
+
+
+
   /**
    * Applies overriding updates to the current doc,
    * and queues an update to the corresponding DB state
@@ -582,10 +601,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setAlertCopiedOpen(true);
   };
 
+
+
+
+
+
   /*
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
+
+
     const appStateResults = await dataAccess.getAppState();
     if (!appStateResults.activeActivity) {
       return;

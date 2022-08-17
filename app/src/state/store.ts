@@ -6,6 +6,7 @@ import logger from 'redux-logger';
 import authenticationSaga from './sagas/auth';
 import { AppConfig } from './config';
 import {AUTH_INITIALIZE_REQUEST} from "./actions";
+import activityPageSaga from './sagas/activity';
 
 const setupStore = (configuration: AppConfig) => {
   const sagaMiddleware = createSagaMiddleware();
@@ -22,6 +23,7 @@ const setupStore = (configuration: AppConfig) => {
 
   // run the sagas
   sagaMiddleware.run(authenticationSaga);
+  sagaMiddleware.run(activityPageSaga);
 
   store.dispatch({type: AUTH_INITIALIZE_REQUEST});
 
