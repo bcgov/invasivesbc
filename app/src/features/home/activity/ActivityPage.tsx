@@ -640,6 +640,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
     }
     */
+   const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity)
     return mapDBActivityToDoc(activityResults);
   };
 
