@@ -266,7 +266,7 @@ export const useDataAccess = () => {
         }
       });
     } else {
-      const result = localStorage.getItem("boundaries");
+      const result = localStorage.getItem('boundaries');
       return new Promise((resolve, reject) => {
         resolve(JSON.parse(result));
         //no reject for now so it fails gracefully and returns a null to be handled in jumptotrip
@@ -295,7 +295,7 @@ export const useDataAccess = () => {
       if (currBoundaries) boundaries.push(...currBoundaries);
       boundaries.push(newBoundaryObj);
 
-      localStorage.setItem("boundaries", JSON.stringify(boundaries));
+      localStorage.setItem('boundaries', JSON.stringify(boundaries));
     }
   };
 
@@ -309,11 +309,16 @@ export const useDataAccess = () => {
     if (MOBILE) {
       return databaseContext.asyncQueue({
         asyncTask: () => {
-          return upsert([{
-            type: UpsertType.DOC_TYPE_AND_ID_DELETE,
-            docType: DocType.TRIP,
-            ID: String(id)
-          }], databaseContext);
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
+                docType: DocType.TRIP,
+                ID: String(id)
+              }
+            ],
+            databaseContext
+          );
         }
       });
     } else {
@@ -322,7 +327,7 @@ export const useDataAccess = () => {
         return b.id !== id;
       });
 
-      localStorage.setItem("boundaries", JSON.stringify(newBoundaries));
+      localStorage.setItem('boundaries', JSON.stringify(newBoundaries));
     }
   };
 
@@ -357,7 +362,6 @@ export const useDataAccess = () => {
     }
   };
 
-
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on MOBILE.
    *
@@ -370,13 +374,13 @@ export const useDataAccess = () => {
 
       const typeClause = activitiesSearchCriteria.activity_type
         ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
-          activitiesSearchCriteria.activity_type
-        ).replace(/[\[\]']+/g, '')})`
+            activitiesSearchCriteria.activity_type
+          ).replace(/[\[\]']+/g, '')})`
         : '';
       const subTypeClause = activitiesSearchCriteria.activity_subtype
         ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-          activitiesSearchCriteria.activity_subtype
-        ).replace(/[\[\]']+/g, '')})`
+            activitiesSearchCriteria.activity_subtype
+          ).replace(/[\[\]']+/g, '')})`
         : '';
 
       const sql = `select *
@@ -595,13 +599,13 @@ export const useDataAccess = () => {
         const table = referenceCache ? 'reference_activity' : 'activity';
         const typeClause = activitiesSearchCriteria.activity_type
           ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
-            activitiesSearchCriteria.activity_type
-          ).replace(/[\[\]']+/g, '')})`
+              activitiesSearchCriteria.activity_type
+            ).replace(/[\[\]']+/g, '')})`
           : '';
         const subTypeClause = activitiesSearchCriteria.activity_subtype
           ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-            activitiesSearchCriteria.activity_subtype
-          ).replace(/[\[\]']+/g, '')})`
+              activitiesSearchCriteria.activity_subtype
+            ).replace(/[\[\]']+/g, '')})`
           : '';
 
         const sql = `select *
@@ -620,7 +624,12 @@ export const useDataAccess = () => {
           }
         });
         return {
-          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          rows: asyncReturnVal.map((val) => {
+            return {
+              ...JSON.parse(val.json),
+              cached: true
+            };
+          }),
           count: asyncReturnVal.length
         };
       } else {
@@ -748,7 +757,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getAppState = async (): Promise<any> => {
-    if (Capacitor.getPlatform() === 'web') {
+    if (MOBILE) {
       const raw_old = localStorage.getItem('appstate-invasivesbc');
       if (raw_old) {
         return JSON.parse(raw_old);
@@ -771,7 +780,7 @@ export const useDataAccess = () => {
         });
         return JSON.parse(result[0].json);
       } catch (err) {
-        console.log("Thrown error in get app state", err);
+        console.log('Thrown error in get app state', err);
         console.dir(err);
       }
     }
@@ -814,7 +823,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const setAppState = async (newState: any): Promise<any> => {
-    if (!MOBILE) {
+    if (MOBILE) {
       const old = getAppState();
       if (old) {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
@@ -909,6 +918,59 @@ export const useDataAccess = () => {
     }
   };
 
+  const deleteActivityFromCache = async (activityId: string) => {
+    if (MOBILE) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
+                docType: DocType.REFERENCE_ACTIVITY,
+                ID: activityId
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
+    }
+  };
+
+  const getCachedActivityByID = async (activityId: string) => {
+    if (MOBILE) {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE_AND_ID,
+              docType: DocType.REFERENCE_ACTIVITY,
+              ID: activityId
+            },
+            databaseContext
+          );
+        }
+      });
+    }
+  };
+
+  const getCachedActivityIDs = async () => {
+    if (MOBILE) {
+      const response = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE,
+              docType: DocType.REFERENCE_ACTIVITY
+            },
+            databaseContext
+          );
+        }
+      });
+      return response;
+    }
+  };
+
   /**
    * Fetch iapp jurisdictions.
    *
@@ -956,7 +1018,9 @@ export const useDataAccess = () => {
     listCodeTables,
     fetchCodeTable,
     cacheCodeTables,
-    getIappJurisdictions
+    getIappJurisdictions,
+    deleteActivityFromCache,
+    getCachedActivityByID,
+    getCachedActivityIDs
   };
 };
-

@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { ListItemButton } from '@mui/material';
@@ -9,8 +8,12 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 export const JumpToActivity = (props) => {
+  const { MOBILE } = useSelector(selectConfiguration);
+
   // style
   const toolClass = toolStyles();
 
@@ -72,7 +75,7 @@ export const JumpToActivity = (props) => {
       let items = new Array<IFlyToAndFadeItem>();
 
       //then add activitys as geometries to show
-      if (Capacitor.getPlatform() == 'web') {
+      if (MOBILE) {
         console.log('got to web ');
         if (activityObject.activity_payload.geometry?.length > 0) {
           items.push({

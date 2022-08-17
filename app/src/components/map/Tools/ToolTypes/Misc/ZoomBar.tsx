@@ -1,6 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import { Slider } from '@mui/material';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -13,6 +15,7 @@ export const ZoomBar = (props) => {
   const zoomFunction = (zoom) => {
     props?.map.setZoom(zoom + 5);
   };
+  const { MOBILE } = useSelector(selectConfiguration);
 
   return (
     <div
@@ -30,13 +33,13 @@ export const ZoomBar = (props) => {
         props?.map.doubleClickZoom.enable();
       }}
       onMouseOver={() => {
-        if (Capacitor.getPlatform() == 'web') {
+        if (MOBILE) {
           props?.map.dragging.disable();
           props?.map.doubleClickZoom.disable();
         }
       }}
       onMouseOut={() => {
-        if (Capacitor.getPlatform() == 'web') {
+        if (MOBILE) {
           props?.map.dragging.enable();
           props?.map.doubleClickZoom.enable();
         }

@@ -4,8 +4,8 @@ import { DocType } from 'constants/database';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
-import { useSelector } from "../state/utilities/use_selector";
-import { selectConfiguration } from "../state/reducers/configuration";
+import { useSelector } from '../state/utilities/use_selector';
+import { selectConfiguration } from '../state/reducers/configuration';
 import { WebOnly } from '../components/common/WebOnly';
 import { MobileOnly } from '../components/common/MobileOnly';
 // Singleton SQLite Hook
@@ -340,10 +340,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   batchUpdate = '';
   const everythingElse = upsertConfigs.filter((e) => e.type !== UpsertType.DOC_TYPE_AND_ID);
   for (const upsertConfig of everythingElse) {
-
-      switch (upsertConfig.type) {
-        // full override update/upsert - json is replaced with new json
-        /*   case UpsertType.DOC_TYPE_AND_ID:
+    switch (upsertConfig.type) {
+      // full override update/upsert - json is replaced with new json
+      /*   case UpsertType.DOC_TYPE_AND_ID:
           //the linter formatted this not me
           batchUpdate +=
             `insert into ` +
@@ -356,67 +355,66 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             `') on conflict(id) do update set json=excluded.json;\n`;
           break;
           */
-        // json patch upsert:
-        case UpsertType.MOBILE_ACTIVITY_CREATE:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (id, json, activity_subtype, sync_status) values ('` +
-            upsertConfig.ID +
-            `','` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            `','` +
-            upsertConfig.activity_subtype +
-            `','` +
-            upsertConfig.sync_status +
-            `');\n`;
-          break;
-        case UpsertType.MOBILE_ACTIVITY_PATCH:
-          let sql =
-            `update ` +
-            upsertConfig.docType +
-            ` set sync_status='${upsertConfig.sync_status}', json='${JSON.stringify(upsertConfig.json)
-              .split(`'`)
-              .join(`''`)}` +
-            `' where id='${upsertConfig.ID}';\n`;
-          console.log('SQL: ', sql);
-          batchUpdate += sql;
-          break;
-        case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
-          break;
-        case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (id,json) values ('` +
-            upsertConfig.ID +
-            `','` +
-            JSON.stringify(upsertConfig.json) + //.split(`'`).join(`''`) +
-            //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json=json_patch(json,excluded.json);\n`;
-          break;
-        // no ID present therefore these are inserts
-        case UpsertType.DOC_TYPE_AND_ID_DELETE:
-          batchUpdate += `delete from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID + `;\n`;
-          break;
-        case UpsertType.DOC_TYPE:
-          batchUpdate +=
-            `insert into ` +
-            upsertConfig.docType +
-            ` (json) values ('` +
-            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
-            `')\n;`;
-          break;
-        // raw sql.
-        case UpsertType.RAW_SQL:
-          batchUpdate += upsertConfig.sql;
-          break;
-        default:
-          alert(
-            'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
-              JSON.stringify(upsertConfig)
-          );
-
+      // json patch upsert:
+      case UpsertType.MOBILE_ACTIVITY_CREATE:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (id, json, activity_subtype, sync_status) values ('` +
+          upsertConfig.ID +
+          `','` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          `','` +
+          upsertConfig.activity_subtype +
+          `','` +
+          upsertConfig.sync_status +
+          `');\n`;
+        break;
+      case UpsertType.MOBILE_ACTIVITY_PATCH:
+        let sql =
+          `update ` +
+          upsertConfig.docType +
+          ` set sync_status='${upsertConfig.sync_status}', json='${JSON.stringify(upsertConfig.json)
+            .split(`'`)
+            .join(`''`)}` +
+          `' where id='${upsertConfig.ID}';\n`;
+        console.log('SQL: ', sql);
+        batchUpdate += sql;
+        break;
+      case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
+        break;
+      case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (id,json) values ('` +
+          upsertConfig.ID +
+          `','` +
+          JSON.stringify(upsertConfig.json) + //.split(`'`).join(`''`) +
+          //JSON.stringify(upsertConfig.json) +
+          `') on conflict(id) do update set json=json_patch(json,excluded.json);\n`;
+        break;
+      // no ID present therefore these are inserts
+      case UpsertType.DOC_TYPE_AND_ID_DELETE:
+        batchUpdate += `delete from ` + upsertConfig.docType + ` where id="` + upsertConfig.ID + `";\n`;
+        break;
+      case UpsertType.DOC_TYPE:
+        batchUpdate +=
+          `insert into ` +
+          upsertConfig.docType +
+          ` (json) values ('` +
+          JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+          `')\n;`;
+        break;
+      // raw sql.
+      case UpsertType.RAW_SQL:
+        batchUpdate += upsertConfig.sql;
+        break;
+      default:
+        alert(
+          'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
+            JSON.stringify(upsertConfig)
+        );
     }
   }
   ret = await handleExecute(batchUpdate, db);
@@ -434,16 +432,12 @@ const handleExecute = async (input: string, db: any) => {
   let ret: any;
   let batchUpdate = input;
   if (batchUpdate !== '') {
-    try
-    {
-
-    ret = await db.execute(batchUpdate);
-    }
-    catch(e)
-    {
-      console.log('error executing sql')
-      console.log(e)
-      throw(e)
+    try {
+      ret = await db.execute(batchUpdate);
+    } catch (e) {
+      console.log('error executing sql');
+      console.log(e);
+      throw e;
     }
     if (!ret.changes) {
       return false;
@@ -591,49 +585,48 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
   let ret;
   let db = await getConnection();
 
-    switch (queryConfig.type) {
-      case QueryType.DOC_TYPE_AND_ID:
-        if (
-          [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
-            queryConfig.docType
-          )
-        ) {
-          //if ID is string
-          ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
-        } else {
-          //if ID is number
-          ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
-        }
+  switch (queryConfig.type) {
+    case QueryType.DOC_TYPE_AND_ID:
+      if (
+        [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+          queryConfig.docType
+        )
+      ) {
+        //if ID is string
+        ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
+      } else {
+        //if ID is number
+        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+      }
 
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.DOC_TYPE:
-        ret = await db.query(
-          'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
-        );
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.RAW_SQL:
-        ret = await db.query(queryConfig.sql);
-        if (!ret.values) {
-          return false;
-        } else {
-          return ret.values;
-        }
-      case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
-        return getByDocTypeAndBoudingPoly(queryConfig, db);
-      default:
-        alert(
-          'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
-            JSON.stringify(queryConfig)
-        );
-        return;
-    }
-
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.DOC_TYPE:
+      ret = await db.query(
+        'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
+      );
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.RAW_SQL:
+      ret = await db.query(queryConfig.sql);
+      if (!ret.values) {
+        return false;
+      } else {
+        return ret.values;
+      }
+    case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
+      return getByDocTypeAndBoudingPoly(queryConfig, db);
+    default:
+      alert(
+        'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
+          JSON.stringify(queryConfig)
+      );
+      return;
+  }
 };

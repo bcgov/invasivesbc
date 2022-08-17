@@ -7,15 +7,17 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext, useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { CircularProgress } from '@mui/material';
-import { activites_default_headers, mapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
+import { ActivitiesDefaultHeaders, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 
-const PlantMonitoringsTable = () => {
+const PlantTransectsTable = () => {
   const dataAccess = useDataAccess();
   const [activities, setActivities] = useState(undefined);
   const [accordionExpanded, setAccordionExpanded] = useState(true);
-  const { displayName, accessRoles } = useSelector(selectAuth);
+  const { displayName, roles } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -24,7 +26,7 @@ const PlantMonitoringsTable = () => {
   const getActivities = async () => {
     const act_list = await dataAccess.getActivities({
       created_by: displayName,
-      user_roles: accessRoles,
+      user_roles: roles,
       activity_type: ['Monitoring']
     });
     setActivities(act_list);
@@ -41,15 +43,15 @@ const PlantMonitoringsTable = () => {
   return (
     <Accordion expanded={accordionExpanded} onChange={handleAccordionExpand}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-        <Typography>Monitoring</Typography>
+        <Typography>Transect</Typography>
       </AccordionSummary>
       <AccordionDetails>
         {!activities ? (
           <CircularProgress />
         ) : (
           <DataGrid
-            rows={mapActivitiesToDataGridRows(activities)}
-            columns={activites_default_headers}
+            rows={MapActivitiesToDataGridRows(activities, MOBILE)}
+            columns={ActivitiesDefaultHeaders()}
             autoHeight
             checkboxSelection
             pageSize={10}
@@ -59,4 +61,4 @@ const PlantMonitoringsTable = () => {
     </Accordion>
   );
 };
-export default PlantMonitoringsTable;
+export default PlantTransectsTable;
