@@ -57,7 +57,8 @@ import { selectAuth } from '../../../state/reducers/auth';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -125,11 +126,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
 
 
+  const userSettingsState = useSelector(selectUserSettings);
 
   //redux first steps
   useEffect(()=> {
-    dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
-  },[])
+    console.dir(userSettingsState)
+    //dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
+  },[userSettingsState])
 
 
 
@@ -611,7 +614,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
 
+    // reference to store
 
+    /*
     const appStateResults = await dataAccess.getAppState();
     if (!appStateResults.activeActivity) {
       return;
@@ -634,6 +639,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         console.log('error reading activity: ', JSON.stringify(e));
       }
     }
+    */
+   const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity)
     return mapDBActivityToDoc(activityResults);
   };
 

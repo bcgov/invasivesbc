@@ -17,7 +17,7 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import { ACTIVITY_SET_ACTIVE_REQUEST } from 'state/actions';
+import { ACTIVITY_SET_ACTIVE_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
@@ -207,12 +207,9 @@ const PageContainer = (props) => {
         hidden: !recordStateContext.selectedRecord,
         onClick: async () => {
           try {
-            // await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
             dispatch({
-              type: ACTIVITY_SET_ACTIVE_REQUEST,
-              payload: recordStateContext?.selectedRecord?.id
-            });
-            console.log('setting up active activity');
+              type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+              payload: { activeActivity: recordStateContext?.selectedRecord?.id }})
           } catch (e) {
             console.log('unable to http ');
             console.log(e);

@@ -17,6 +17,8 @@ import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
 import { UserRolesAccess } from 'constants/roles';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
+import { useDispatch } from 'react-redux';
+import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -48,6 +50,8 @@ export interface INewRecordDialog {
 }
 
 const NewRecordDialog = (props: INewRecordDialog) => {
+  const dispatch = useDispatch();
+
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const history = useHistory();
@@ -174,6 +178,10 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     dbActivity.created_by = username
     dbActivity.user_role = accessRoles.map((role) => role.role_id);
     await dataAccess.createActivity(dbActivity, databaseContext);
+
+    dispatch({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+              payload: { activeActivity: dbActivity.activity_id }})
+
     await dataAccess.setAppState({
       activeActivity: dbActivity.activity_id,
       newActivityChoices: {
