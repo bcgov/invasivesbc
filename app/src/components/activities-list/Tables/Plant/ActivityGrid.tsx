@@ -116,7 +116,6 @@ export const getSearchCriteriaFromFilters = (
     filter.activity_type = [props.formType];
   }
   */
- console.log(gridFilters);
   if (gridFilters && gridFilters.enabled) {
     filter.grid_filters = gridFilters;
   }
@@ -498,9 +497,6 @@ const ActivityGrid = (props) => {
   //   });
   // }, [rows, filters]);
 
-  useEffect(() => {
-    console.log("filters updated: ", filters);
-  }, [filters]);
 
   function clearFilters() {
     setFilters({

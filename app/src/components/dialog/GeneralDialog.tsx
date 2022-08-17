@@ -39,7 +39,7 @@ export const GeneralDialog = (props: IGeneralDialog) => {
               action.children
             ) : (
               <Button
-                onClick={action.actionOnClick}
+                onClick={action.actionOnClick} key={'dialogue_action' + Math.random()}
                 color="primary"
                 autoFocus={action.autoFocus ? action.autoFocus : false}>
                 {action.actionName}

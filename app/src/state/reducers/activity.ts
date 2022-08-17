@@ -24,6 +24,7 @@ ACTIVITY_DELETE_REQUEST,
 ACTIVITY_DELETE_SUCCESS,
 ACTIVITY_DELETE_FAILURE,
 ACTIVITY_GET_INITIAL_STATE_REQUEST,
+ACTIVITY_SET_ACTIVE_REQUEST
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -40,6 +41,8 @@ class ActivityState {
   requestHeaders: {
     authorization: string;
   };
+
+  activeActivity: number;
 
   constructor() {
     this.initialized = false;
@@ -68,6 +71,11 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_UPDATE_GEO_FAILURE: {
+        return {
+          ...state,
+        };
+      }
+      case ACTIVITY_SET_ACTIVE_REQUEST: {
         return {
           ...state,
         };

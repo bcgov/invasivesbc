@@ -102,7 +102,6 @@ export const mapActivitiesToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((activity, index) => {
-    console.log("activity row: ", activity);
     return {
       // id: index,
       activity_id: activity?.activity_id,

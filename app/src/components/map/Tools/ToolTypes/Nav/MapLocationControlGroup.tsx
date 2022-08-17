@@ -136,6 +136,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           height: '40px'
         }}>
         <Tooltip title="Find Me" placement="right-start">
+          <span>
           <IconButton
             disabled={startTimer}
             onClick={() => {
@@ -148,7 +149,9 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
             sx={{ color: '#000' }}>
             <MyLocationIcon />
+
           </IconButton>
+          </span>
         </Tooltip>
       </div>
     );
@@ -175,6 +178,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           height: '40px'
         }}>
         <Tooltip title={isTracking ? 'Stop Tracking' : 'Track Me'} placement="right-start">
+          <span>
           <IconButton
             disabled={startTimer}
             onClick={() => {
@@ -189,6 +193,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             sx={{ color: '#000' }}>
             <FollowTheSignsIcon />
           </IconButton>
+          </span>
         </Tooltip>
       </div>
     );
@@ -215,6 +220,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           height: '40px'
         }}>
         <Tooltip title={accuracyOn ? 'Hide Accuracy' : 'Show Accuracy'} placement="right-start">
+          <span>
           <IconButton
             disabled={startTimer}
             onClick={() => {
@@ -228,7 +234,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             }
             sx={{ color: '#000' }}>
             <AttributionIcon />
-          </IconButton>
+          </IconButton></span>
         </Tooltip>
       </div>
     );
@@ -255,6 +261,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           height: '40px'
         }}>
         <Tooltip title={showTopo ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
+          <span>
           <IconButton
             disabled={startTimer}
             onClick={() => {
@@ -269,6 +276,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             sx={{ color: '#000' }}>
             {showTopo ? <LayersClearIcon /> : <LayersIcon />}
           </IconButton>
+          </span>
         </Tooltip>
       </div>
     );
