@@ -242,6 +242,7 @@ const PageContainer = (props) => {
                 recordStateContext,
                 selectedSet.recordSetName,
                 false,
+                null,
                 0,
                 1000
               );

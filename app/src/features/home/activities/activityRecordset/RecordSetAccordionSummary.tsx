@@ -102,10 +102,13 @@ const RecordSetAccordionSummary = (props) => {
       recordStateContext,
       props.recordSetName,
       false,
+      null,
       0,
       1000
     );
+    console.log('Filter: ', filter);
     const activityList = await dataAccess.getActivities(filter);
+    console.log('Got activities list: ', activityList);
     recordSets.push({
       recordSetName: props.recordSetName,
       activities: activityList
