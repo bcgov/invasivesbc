@@ -75,11 +75,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...state,
         };
       }
-      case ACTIVITY_SET_ACTIVE_REQUEST: {
-        return {
-          ...state,
-        };
-      }
       default:
         return state;
     }
