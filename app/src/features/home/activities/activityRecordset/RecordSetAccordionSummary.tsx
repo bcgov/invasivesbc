@@ -116,10 +116,14 @@ const RecordSetAccordionSummary = (props) => {
 
   const handleCachedActivityDelete = async () => {
     try {
+      console.log('RecordSetsToDelete: ', recordSetsToDelete);
       for (const activity of recordSetsToDelete[0].activities.rows) {
+        console.log('Attempting to delete activity: ' + activity.activity_id);
         const response = await dataAccess.deleteActivityFromCache(activity.activity_id);
+        console.log('Response from delete ' + activity.activity_id + ': ', response);
       }
     } catch (e) {
+      console.log('Error deleting cached activities: ', e);
     } finally {
       setRecordSetDeleteDialogOpen(false);
     }
@@ -274,14 +278,7 @@ const RecordSetAccordionSummary = (props) => {
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                if (
-                  /*eslint-disable*/
-                  confirm(
-                    'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
-                  )
-                ) {
-                  props.remove(props.setName);
-                }
+                openDeleteDialog();
               }}
               style={{ justifySelf: 'end', alignSelf: 'right' }}
               variant="outlined">

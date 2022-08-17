@@ -15,11 +15,12 @@ export interface ActivityRow {
   species_treated: string[];
   created_by: string; // activity_incoming_data.created_by
   updated_by: string;
-  agency: string; // activity_incoming_data.activity_payload.form_data.activity_data.invasive_species_agency_code
-  regional_invasive_species_organization_areas: string; // activity_incoming_data.activity_payload.regional_invasive_species_organization_areas
-  regional_districts: string; // activity_payload.regional_districts
-  biogeoclimatic_zones: string; // activity_payload.biogeoclimatic_zones
-  elevation: string; // activity_payload.form_data.activity_data.elevation
+  agency: string;
+  regional_invasive_species_organization_areas: string;
+  regional_districts: string;
+  biogeoclimatic_zones: string;
+  elevation: string;
+  status: string;
 }
 
 export const ActivitiesDefaultHeaders = () => {
@@ -84,7 +85,7 @@ export const ActivitiesDefaultHeaders = () => {
   if (MOBILE) {
     headers.unshift({
       key: 'status',
-      name: 'Cached?'
+      name: 'Status'
     });
   } else {
     console.log('NOT PUSHING STATUS HEADER');
@@ -99,9 +100,8 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       return false;
     }
     const activityIds = cachedActivities.map((activity) => activity.id);
-    console.log('Got activity ids: ', activityIds);
-    console.log('Checking activity ' + activityId + ' against cached activities');
-    return activityIds?.includes(activityId);
+    const includes = activityIds.includes(activityId) ? 'Cached' : 'Not Cached';
+    return includes;
   };
 
   if (cachedActivities) {
@@ -144,13 +144,11 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
 
     if (MOBILE) {
       // append status to columns
-      console.log('WE ON MOBILE');
       columns = {
         ...columns,
         status: checkIfActivityCached(activity?.activity_id)
       };
     }
-
     return columns;
   });
 };
