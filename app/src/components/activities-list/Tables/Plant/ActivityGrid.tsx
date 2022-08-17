@@ -471,7 +471,7 @@ const ActivityGrid = (props) => {
 
   // sets columnns based on record set type
   const iappColumns = useColumns(point_of_interest_iapp_default_headers);
-  const actColumns = useColumns(ActivitiesDefaultHeaders()); // TODO: MAKE SURE THIS WORKS
+  const actColumns = useColumns(ActivitiesDefaultHeaders());
   const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
 
   //todo - tests need to take into account type, they're all strings right now
