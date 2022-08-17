@@ -9,7 +9,8 @@ import { Marker, useMap, useMapEvent } from 'react-leaflet';
 import mapPin from '../../../Icons/mappin.png';
 import { createDataUTM, RenderTableActivity, RenderTablePOI, RenderTablePosition } from '../../Helpers/StyledTable';
 import { calc_utm } from '../Nav/DisplayPosition';
-import * as turf from '@turf/turf';
+import { point } from '@turf/turf';
+import buffer from '@turf/buffer';
 
 interface OnMapClickDetailsProps {
   clickDetailsEnabled: boolean;
@@ -38,8 +39,8 @@ const PositionInfo = (props) => {
     const lat = position[0];
     const lng = position[1];
     if (lat && lng) {
-      const point = turf.point([lng, lat]);
-      const buffer = turf.buffer(point, 1, { units: 'meters' });
+      const aPoint = point([lng, lat]);
+      const aBuffer = buffer(aPoint, 1, { units: 'meters' });
       return buffer;
     }
   };

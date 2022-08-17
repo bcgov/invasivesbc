@@ -13,10 +13,6 @@ import {
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import React, { useEffect, useState } from 'react';
 import { ExpandMore } from '@mui/icons-material';
-import distance from '@turf/distance';
-import * as turf from '@turf/helpers';
-import { lineString } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import { Geolocation } from '@capacitor/geolocation';
@@ -24,6 +20,11 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
+import { RecordSetProvider } from 'contexts/recordSetContext';
+import distance from '@turf/distance';
+import { point } from '@turf/turf';
+import { lineString } from '@turf/helpers';
+import lineToPolygon from '@turf/line-to-polygon';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -43,17 +44,15 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
 
-
-
-  useEffect(()=> {
-    console.log(props.geometryState.geometry)
-  },[])
+  useEffect(() => {
+    console.log(props.geometryState.geometry);
+  }, []);
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;
     try {
-      var fromAsPoint = turf.point(from);
-      var toAsPoint = turf.point(to);
+      var fromAsPoint = point(from);
+      var toAsPoint = point(to);
 
       returnVal = distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distanceV;
     } catch (e) {
@@ -139,7 +138,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     setStartTimer(true);
     const position = await Geolocation.getCurrentPosition();
     timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
-    props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
+    props.geometryState.setGeometry([point([position.coords.longitude, position.coords.latitude])]);
     draw.disable();
     map.setView([position.coords.latitude, position.coords.longitude], 17);
   };

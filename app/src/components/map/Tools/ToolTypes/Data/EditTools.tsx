@@ -1,8 +1,8 @@
 import { useLeafletContext } from '@react-leaflet/core';
+import { featureCollection } from '@turf/turf';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
-import centroid from '@turf/centroid';
-import * as turf from '@turf/helpers';
+// import centroid from '@turf/centroid';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -148,7 +148,7 @@ const EditTools = (props: any) => {
     if (aGeo?.geometry.type === 'LineString') {
       const buffer2 = prompt('Enter buffer width (total) in meters', '1');
       const buffered = buffer(aGeo.geometry, parseInt(buffer2, 10) / 1000, { units: 'kilometers', steps: 1 });
-      const result = turf.featureCollection([buffered, aGeo.geometry]);
+      const result = featureCollection([buffered, aGeo.geometry]);
 
       return { ...aGeo, geometry: result.features[0].geometry };
     }
