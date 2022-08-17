@@ -593,7 +593,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     </>
   )
   //},[tabConfig,activeTab,open]);
-  },[tabConfig,history.location.pathname,open]);
+  },[tabConfig,history.location.pathname,open, anchorEl]);
 };
 
 export default TabsContainer;
