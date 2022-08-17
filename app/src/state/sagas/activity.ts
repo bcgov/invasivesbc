@@ -25,17 +25,31 @@ ACTIVITY_SUBMIT_FAILURE,
 ACTIVITY_DELETE_REQUEST,
 ACTIVITY_DELETE_SUCCESS,
 ACTIVITY_DELETE_FAILURE,
-ACTIVITY_GET_INITIAL_STATE_REQUEST
+ACTIVITY_GET_INITIAL_STATE_REQUEST,
+ACTIVITY_GET_INITIAL_STATE_FAILURE,
+ACTIVITY_GET_INITIAL_STATE_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 
-let keycloakInstance = null;
+function* handle_ACTIVITY_GET_INITIAL_STATE_REQUEST(action) {
+  try {
+//    yield call(keycloakInstance.login);
 
+
+    
+
+
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_SUCCESS, payload: { stuff: 'banana'} });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
 
 function* activityPageSaga() {
   yield all([
-    takeEvery(ACTIVITY_GET_INITIAL_STATE_REQUEST , ()=> console.log('ACTIVITY_GET_INITIAL_STATE_REQUEST')),
+    takeEvery(ACTIVITY_GET_INITIAL_STATE_REQUEST , handle_ACTIVITY_GET_INITIAL_STATE_REQUEST),
     takeEvery(ACTIVITY_UPDATE_GEO_REQUEST , ()=> console.log('ACTIVITY_UPDATE_GEO_REQUEST')),
     takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST , ()=> console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
     takeEvery(ACTIVITY_UPDATE_PHOTO_REQUEST , ()=> console.log('ACTIVITY_UPDATE_PHOTO_REQUEST')),
