@@ -560,7 +560,6 @@ export function populateSpeciesArrays(record) {
       species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
       break;
     case ActivitySubtype.Collection_Biocontrol:
-      console.log('here');
       species_treated = subtypeData?.Biocontrol_Collection_Information?.map((plant) => plant.invasive_plant_code) || [];
       break;
     default:
