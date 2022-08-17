@@ -17,6 +17,8 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
+import { ACTIVITY_SET_ACTIVE_REQUEST } from 'state/actions';
+import { useDispatch } from 'react-redux';
 
 // not sure what we're using this for?
 interface IStatusPageProps {
@@ -88,6 +90,7 @@ const PageContainer = (props) => {
   const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);
+  const dispatch = useDispatch();
 
   const updateWidth = () => {
     setWidth(window.innerWidth);
@@ -174,7 +177,11 @@ const PageContainer = (props) => {
         hidden: !recordStateContext.selectedRecord,
         onClick: async () => {
           try {
-            await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
+            // await dataAccess.setAppState({ activeActivity: recordStateContext?.selectedRecord?.id });
+            dispatch({
+              type: ACTIVITY_SET_ACTIVE_REQUEST,
+              payload: recordStateContext?.selectedRecord?.id})
+            console.log("setting up active activity");
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
