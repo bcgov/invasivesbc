@@ -18,8 +18,6 @@ export const RecordSetLayersRenderer = (props: any) => {
   }
 
   useEffect(() => {
-    console.log('****record set layer renderer record state***');
-    console.dir(recordsetContext.recordSetState);
     const sets = Object.keys(recordsetContext.recordSetState);
     if (!sets || !sets.length) {
       return;
@@ -55,10 +53,7 @@ export const RecordSetLayersRenderer = (props: any) => {
               opacity={0.8}
             />
           );
-        } else {
-          return <></>;
-        }
-      })}
+        }       })}
     </>
   );
 };
