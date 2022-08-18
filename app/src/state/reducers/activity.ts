@@ -24,7 +24,8 @@ ACTIVITY_DELETE_REQUEST,
 ACTIVITY_DELETE_SUCCESS,
 ACTIVITY_DELETE_FAILURE,
 ACTIVITY_GET_INITIAL_STATE_REQUEST,
-ACTIVITY_SET_ACTIVE_REQUEST
+ACTIVITY_SET_ACTIVE_REQUEST,
+ACTIVITY_GET_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -49,21 +50,20 @@ class ActivityState {
     this.initialized = false;
   }
 }
-
 const initialState = new ActivityState();
 
 
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
     switch (action.type) {
-      case ACTIVITY_GET_INITIAL_STATE_REQUEST: {
+      case ACTIVITY_GET_SUCCESS: {
         return {
           ...state, activity: action.payload.activity
         };
       }
       case ACTIVITY_UPDATE_GEO_REQUEST: {
         return {
-          ...state,
+          ...state, activity: {...state.activity, geometry: action.payload.geometry}
         };
       }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {
@@ -82,6 +82,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
   };
 }
 
-const selectActivity: (state) => ActivityState = (state) => state.Activity;
+const selectActivity: (state) => ActivityState = (state) => state.ActivityPage;
 
 export { createActivityReducer, selectActivity};

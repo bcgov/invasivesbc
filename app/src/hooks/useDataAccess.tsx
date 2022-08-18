@@ -757,7 +757,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getAppState = async (): Promise<any> => {
-    if (MOBILE) {
+    if (!MOBILE) {
       const raw_old = localStorage.getItem('appstate-invasivesbc');
       if (raw_old) {
         return JSON.parse(raw_old);

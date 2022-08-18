@@ -27,7 +27,6 @@ const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
 
 
     useEffect(()=> {
-      dispatch({type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST})
     },[])
 
       return (

@@ -88,7 +88,7 @@ export const ActivitiesDefaultHeaders = () => {
       name: 'Status'
     });
   } else {
-    console.log('NOT PUSHING STATUS HEADER');
+    //console.log('NOT PUSHING STATUS HEADER');
   }
   return headers;
 };
@@ -96,7 +96,7 @@ export const ActivitiesDefaultHeaders = () => {
 export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities?) => {
   const checkIfActivityCached = (activityId: string) => {
     if (!cachedActivities) {
-      console.log('No cached activities');
+      //console.log('No cached activities');
       return false;
     }
     const activityIds = cachedActivities.map((activity) => activity.id);
@@ -105,10 +105,10 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
   };
 
   if (cachedActivities) {
-    console.log('Cached Activity IDs: ', cachedActivities);
+    //console.log('Cached Activity IDs: ', cachedActivities);
   }
 
-  console.log('Activities: ', activities);
+  //console.log('Activities: ', activities);
 
   if (!activities || activities.count === undefined) {
     return [];

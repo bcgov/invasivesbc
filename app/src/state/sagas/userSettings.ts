@@ -8,14 +8,15 @@ USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
 USER_SETTINGS_GET_INITIAL_STATE_FAILURE,
 USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
 ACTIVITY_GET_INITIAL_STATE_REQUEST,
+ACTIVITY_GET_REQUEST,
+AUTH_INITIALIZE_COMPLETE
 } from '../actions';
 
-function* handlie_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
+function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   try {
     const oldID = localStorage.getItem('activeActivity')
     
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID} });
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_REQUEST, payload: { activityID: oldID} });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_FAILURE });
@@ -32,9 +33,16 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
     yield put({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE });
   }
 }
+
+
+function* handle_APP_AUTH_READY(action) {
+      yield put({type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST})
+}
+
 function* userSettingsSaga() {
   yield all([
-    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST , handlie_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
+    takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY ),
+    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST , handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST , handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
   ]);
 }

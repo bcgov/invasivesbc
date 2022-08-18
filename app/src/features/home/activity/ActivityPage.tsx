@@ -54,10 +54,11 @@ import ActivityMapComponent from 'components/activity/ActivityMapComponent';
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
+import { selectActivity } from '../../../state/reducers/activity';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -93,6 +94,24 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const dispatch = useDispatch();
+  const activityInStore = useSelector(selectActivity);
+  const userSettingsState = useSelector(selectUserSettings);
+
+
+  const [geometry, setGeometry] = useState<Feature[]>([]);
+
+  useEffect(()=> {
+    if(geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry)
+    {
+      dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: geometry}})
+    }
+  },[geometry])
+
+
+
+
+
+
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
@@ -102,7 +121,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
-  const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
@@ -126,7 +144,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
 
 
-  const userSettingsState = useSelector(selectUserSettings);
 
   //redux first steps
   useEffect(()=> {
@@ -868,7 +885,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    if (geometry && geometry[0]) {
+    // check if new geo different than store
+    if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
         if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
@@ -983,7 +1001,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             classes={classes}
             activityId={activityId}
             mapId={activityId}
-            geometryState={{ geometry, setGeometry }}
+            geometryState={{ geometry: [activityInStore.activity.geometry], setGeometry: setGeometry }}
             showDrawControls={true}
             isLoading={isLoading}
           />
@@ -991,8 +1009,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading]
       )}
 
-      {doc && (
+      {false && (
         <>
+        {JSON.stringify(activityInStore.activity)}
           <ActivityComponent
             customValidation={getCustomValidator([
               getAreaValidator(doc.activitySubtype),

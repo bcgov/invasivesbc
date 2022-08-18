@@ -84,7 +84,7 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
                   Cancel
                 </Button>
               </Grid>
-              <Grid item spacing={2}>
+              <Grid item >
                 <Button
                   onClick={() => {
                     handleFilterSetDelete();

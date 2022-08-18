@@ -11,7 +11,7 @@ import {
   DialogActions
 } from '@mui/material';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ExpandMore } from '@mui/icons-material';
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';
@@ -43,6 +43,12 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   const [startTimer, setStartTimer] = useState(false);
   const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
+
+
+
+  useEffect(()=> {
+    console.log(props.geometryState.geometry)
+  },[])
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;

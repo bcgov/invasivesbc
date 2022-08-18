@@ -27,28 +27,28 @@ ACTIVITY_DELETE_SUCCESS,
 ACTIVITY_DELETE_FAILURE,
 ACTIVITY_GET_INITIAL_STATE_REQUEST,
 ACTIVITY_GET_INITIAL_STATE_FAILURE,
-ACTIVITY_GET_INITIAL_STATE_SUCCESS
+ACTIVITY_GET_INITIAL_STATE_SUCCESS,
+ACTIVITY_GET_REQUEST,
+ACTIVITY_GET_NETWORK_REQUEST,
+USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { handle_ACTIVITY_GET_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST} from './activity/dataAccess'
+import { handle_ACTIVITY_GET_NETWORK_REQUEST } from './activity/online'
 
-function* handle_ACTIVITY_GET_INITIAL_STATE_REQUEST(action) {
-  try {
-    
-    const dataAccess = useDataAccess();
-    const activity = yield call(dataAccess.getActivityById, action.payload.activityID) 
-
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_SUCCESS, payload: { activity: activity} });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
-  }
+function* handle_USER_SETTINGS_READY(action){
+  yield put({type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity}})
 }
 
 function* activityPageSaga() {
   yield all([
-    takeEvery(ACTIVITY_GET_INITIAL_STATE_REQUEST , handle_ACTIVITY_GET_INITIAL_STATE_REQUEST),
+    takeEvery(ACTIVITY_GET_REQUEST , handle_ACTIVITY_GET_REQUEST),
+    takeEvery(ACTIVITY_GET_NETWORK_REQUEST , handle_ACTIVITY_GET_NETWORK_REQUEST),
+    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_READY),
+    takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(ACTIVITY_UPDATE_GEO_REQUEST , ()=> console.log('ACTIVITY_UPDATE_GEO_REQUEST')),
     takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST , ()=> console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
     takeEvery(ACTIVITY_UPDATE_PHOTO_REQUEST , ()=> console.log('ACTIVITY_UPDATE_PHOTO_REQUEST')),
