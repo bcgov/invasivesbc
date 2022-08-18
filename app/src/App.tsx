@@ -7,7 +7,7 @@ import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 import { Provider, useDispatch } from 'react-redux';
-import { USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;

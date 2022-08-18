@@ -31,16 +31,15 @@ ACTIVITY_GET_INITIAL_STATE_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 function* handle_ACTIVITY_GET_INITIAL_STATE_REQUEST(action) {
   try {
-//    yield call(keycloakInstance.login);
-
-
     
+    const dataAccess = useDataAccess();
+    const activity = yield call(dataAccess.getActivityById, action.payload.activityID) 
 
-
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_SUCCESS, payload: { stuff: 'banana'} });
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_SUCCESS, payload: { activity: activity} });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });

@@ -36,6 +36,7 @@ class ActivityState {
   persistedActivityData: Object;
   rjsfFormData: Object;
   geometry: any;
+  activity: any;
   
   //?
   requestHeaders: {
@@ -57,7 +58,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
     switch (action.type) {
       case ACTIVITY_GET_INITIAL_STATE_REQUEST: {
         return {
-          ...state,
+          ...state, activity: action.payload.activity
         };
       }
       case ACTIVITY_UPDATE_GEO_REQUEST: {

@@ -7,13 +7,15 @@ USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
 USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
 USER_SETTINGS_GET_INITIAL_STATE_FAILURE,
 USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
+ACTIVITY_GET_INITIAL_STATE_REQUEST,
 } from '../actions';
 
 function* handlie_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   try {
     const oldID = localStorage.getItem('activeActivity')
     
-    yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID, banana: 'bunch'} });
+    yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID} });
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_REQUEST, payload: { activityID: oldID} });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_FAILURE });
