@@ -1,3 +1,4 @@
+import { calculateGeometryArea } from 'utils/geometryHelpers';
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
 ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -61,15 +62,14 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...state, activity: action.payload.activity
         };
       }
-      case ACTIVITY_UPDATE_GEO_REQUEST: {
-        return {
-          ...state, activity: {...state.activity, geometry: action.payload.geometry}
-        };
-      }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {
         return {
-          ...state,
-        };
+          ...state, activity: {...state.activity, geometry: action.payload.geometry,
+           formData: {...state.activity.formData, 
+            latitude: action.payload.lat, longitude: action.payload.long,
+            utm_zone: action.payload.utm[0], utm_easting: action.payload.utm[1], utm_northing: action.payload.utm[2], 
+            reported_area: action.payload.reported_area} 
+        }};
       }
       case ACTIVITY_UPDATE_GEO_FAILURE: {
         return {

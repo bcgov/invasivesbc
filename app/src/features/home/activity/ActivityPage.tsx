@@ -859,7 +859,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         let updatedFormData = getDefaultFormDataValues(activityResult);
         updatedFormData = setUpInitialValues(activityResult, updatedFormData);
         const updatedDoc = { ...activityResult, formData: updatedFormData };
-        setGeometry(updatedDoc.geometry);
+       // setGeometry(updatedDoc.geometry);
         // setExtent(updatedDoc.extent);
         setPhotos(updatedDoc.photos || []);
         setDoc(updatedDoc);
@@ -890,7 +890,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
         if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
-          saveGeometry(geometry);
+          //saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
         else {
@@ -1006,7 +1006,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             isLoading={isLoading}
           />
         ),
-        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading]
+        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore.activity.geometry]
       )}
 
       {false && (
