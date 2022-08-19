@@ -880,6 +880,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     getActivityData();
   }, []);
 
+
+
+
+
+
   useEffect(() => {
     if (isLoading || !doc) {
       return;
