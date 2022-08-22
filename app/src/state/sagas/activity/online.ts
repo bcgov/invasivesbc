@@ -45,9 +45,9 @@ const getRequestOptions = (config, requestHeaders) => {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`)
         //const validatedReturn = yield checkForErrors(networkReturn)
 
-        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
+       // const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-        yield put({ type:  ACTIVITY_GET_SUCCESS, payload: { activity: remappedBlob}})
+        yield put({ type:  ACTIVITY_GET_SUCCESS, payload: { activity: networkReturn}})
   };
 
    export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
@@ -55,14 +55,14 @@ const getRequestOptions = (config, requestHeaders) => {
 
 
         const oldActivity = yield select(selectActivity)
-        const newActivity = { ...oldActivity, formData: action.payload.updatedFormData}
+        const newActivity = { ...oldActivity.activity, formData: action.payload.updatedFormData}
 
-        const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/${action.payload.activityID}`, newActivity)
+      const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, { ...newActivity, activity_id: oldActivity.activity.activityId})
         //const validatedReturn = yield checkForErrors(networkReturn)
 
 //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-        yield put({ type:  ACTIVITY_SAVE_SUCCESS, payload: { activity: newActivity}})
+        yield put({ type:  ACTIVITY_SAVE_SUCCESS, payload: { activity: { ...newActivity, }}})
   };
 
 

@@ -493,8 +493,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
+    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
+
     const newDoc = {
-      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
+//      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
@@ -502,7 +504,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
     setCanSubmitWithoutErrors(false);
 
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityID, updatedFormData: {...newDoc} }})
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityId, updatedFormData: {...formData} }})
   //  await updateDoc(newDoc, 'Manual Save');
   };
 
@@ -562,7 +564,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
 //    await updateDoc(newDoc, 'Manual Save');
 alert(activityInStore.activity.activityID)
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityID, updatedFormData: {...newDoc} }})
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityId, updatedFormData: {...newDoc} }})
 
 
 

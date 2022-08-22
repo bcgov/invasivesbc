@@ -171,6 +171,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   }, [activityType]);
 
   const insert_record = async () => {
+    // TODO: fix
     if (!activityType || !activityCategory || !activitySubType) {
       return;
     }
