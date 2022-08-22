@@ -34,10 +34,6 @@ import { AppConfig } from '../config';
 class ActivityState {
   initialized: boolean;
   error: boolean;
-
-  persistedActivityData: Object;
-  rjsfFormData: Object;
-  geometry: any;
   activity: any;
   
   //?
@@ -45,7 +41,6 @@ class ActivityState {
     authorization: string;
   };
 
-  activeActivity: number;
 
   constructor() {
     this.initialized = false;
