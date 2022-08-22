@@ -1,7 +1,8 @@
 import { Http } from "@capacitor-community/http";
 import { IActivitySearchCriteria } from "interfaces/useInvasivesApi-interfaces";
 import { put, select } from "redux-saga/effects";
-import { ACTIVITY_GET_SUCCESS } from "state/actions";
+import { ACTIVITY_GET_SUCCESS, ACTIVITY_SAVE_SUCCESS } from "state/actions";
+import { selectActivity } from "state/reducers/activity";
 import { selectAuthHeaders } from "state/reducers/auth";
 import { selectConfiguration } from "state/reducers/configuration";
 import { mapDBActivityToDoc } from "utils/addActivity";
@@ -48,3 +49,22 @@ const getRequestOptions = (config, requestHeaders) => {
 
         yield put({ type:  ACTIVITY_GET_SUCCESS, payload: { activity: remappedBlob}})
   };
+
+   export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
+        //save to server
+
+
+        const oldActivity = yield select(selectActivity)
+        const newActivity = { ...oldActivity, formData: action.payload.updatedFormData}
+
+        const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/${action.payload.activityID}`, newActivity)
+        //const validatedReturn = yield checkForErrors(networkReturn)
+
+//        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
+
+        yield put({ type:  ACTIVITY_SAVE_SUCCESS, payload: { activity: newActivity}})
+  };
+
+
+
+  

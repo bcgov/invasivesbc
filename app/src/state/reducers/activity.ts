@@ -71,9 +71,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             reported_area: action.payload.reported_area} 
         }};
       }
-      case ACTIVITY_UPDATE_GEO_FAILURE: {
+      case ACTIVITY_SAVE_SUCCESS: {
         return {
-          ...state,
+          ...state, activity: {...action.payload.activity}
         };
       }
       default:

@@ -1,6 +1,6 @@
 import { calc_utm } from "components/map/Tools/ToolTypes/Nav/DisplayPosition";
 import { put } from "redux-saga/effects";
-import { ACTIVITY_GET_INITIAL_STATE_FAILURE, ACTIVITY_GET_INITIAL_STATE_SUCCESS, ACTIVITY_GET_NETWORK_REQUEST,ACTIVITY_UPDATE_GEO_SUCCESS } from "state/actions";
+import { ACTIVITY_GET_INITIAL_STATE_FAILURE,ACTIVITY_SAVE_NETWORK_REQUEST, ACTIVITY_GET_INITIAL_STATE_SUCCESS, ACTIVITY_GET_NETWORK_REQUEST,ACTIVITY_UPDATE_GEO_SUCCESS } from "state/actions";
 import { calculateGeometryArea, calculateLatLng } from "utils/geometryHelpers";
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
@@ -30,3 +30,13 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   }
 
   
+export function* handle_ACTIVITY_SAVE_REQUEST(action) {
+    try {
+
+        yield put({ type: ACTIVITY_SAVE_NETWORK_REQUEST, payload: { activityID: action.payload.activityID, updatedFormData: action.payload.updatedFormData}})
+      
+    } catch (e) {
+      console.error(e);
+      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    }
+  }

@@ -58,7 +58,7 @@ import { selectActivity } from '../../../state/reducers/activity';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST, ACTIVITY_SAVE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -502,7 +502,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
     setCanSubmitWithoutErrors(false);
 
-    await updateDoc(newDoc, 'Manual Save');
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityID, updatedFormData: {...newDoc} }})
+  //  await updateDoc(newDoc, 'Manual Save');
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -559,7 +560,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       geometry: geometry?.length ? [...geometry] : []
     };
 
-    await updateDoc(newDoc, 'Manual Save');
+//    await updateDoc(newDoc, 'Manual Save');
+alert(activityInStore.activity.activityID)
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityID, updatedFormData: {...newDoc} }})
+
+
+
     setAlertSavedOpen(true);
   };
 
