@@ -28,7 +28,9 @@ import { selectAuthHeaders } from "../state/reducers/auth";
 export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
-  const { API_BASE, DEBUG } = useSelector(selectConfiguration);
+//  const { API_BASE, DEBUG } = useSelector(selectConfiguration);
+const DEBUG = false;
+ const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {

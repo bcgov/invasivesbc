@@ -25,7 +25,8 @@ import { selectNetworkConnected } from '../state/reducers/network';
 export const useDataAccess = () => {
   const api = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
-  const { MOBILE } = useSelector(selectConfiguration);
+  //const { MOBILE } = useSelector(selectConfiguration);
+  const  MOBILE = false;
   const connected = useSelector(selectNetworkConnected);
 
   /**

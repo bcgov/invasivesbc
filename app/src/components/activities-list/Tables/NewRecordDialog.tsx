@@ -18,7 +18,7 @@ import { UserRolesAccess } from 'constants/roles';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, ACTIVITY_CREATE_REQUEST } from 'state/actions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -193,9 +193,15 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     });
 
     //return dbActivity.activity_id;
+    */
+
+    dispatch({ type: ACTIVITY_CREATE_REQUEST,
+      payload: { type: activityType, subType: activitySubType}
+    })
+
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });
-    }, 1000);
+    }, 10000);
     props.handleDialogClose();
   };
 
