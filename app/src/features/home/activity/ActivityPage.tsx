@@ -196,7 +196,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     // SECOND-ORDER EFFECT OVERRIDES (changing one field affects another)
     updatedDoc = populateSpeciesArrays(updatedDoc);
 
-    if (!updatedDoc._id) {
+    if (!updatedactivityInStore.activity._id) {
       return false;
     }
 
@@ -268,7 +268,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
             let newDoc = { ...doc };
-            newDoc.form_status = ActivityStatus.SUBMITTED;
+            newactivityInStore.activity.form_status = ActivityStatus.SUBMITTED;
             try {
               await updateDoc(newDoc, 'Official Submit');
               setAlertSavedOpen(true);
@@ -287,7 +287,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   const isAlreadySubmitted = () => {
-    return doc.form_status === ActivityStatus.SUBMITTED || doc.formStatus === ActivityStatus.SUBMITTED;
+    return activityInStore.activity.form_status === ActivityStatus.SUBMITTED || activityInStore.activity.formStatus === ActivityStatus.SUBMITTED;
   };
 
   const hasRole = (role: string) => {
@@ -493,7 +493,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
     const newDoc = {
-      formData: { ...doc.formData, ...formRef.current.state.formData },
+      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
@@ -679,7 +679,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const getLinked = async () => {
         let linkedRecordId: string = null;
         if (doc?.activitySubtype?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
-          linkedRecordId = doc.formData.activity_type_data.linked_id;
+          linkedRecordId = activityInStore.activity.formData.activity_type_data.linked_id;
         }
         if (linkedRecordId) {
           const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
@@ -726,10 +726,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updateDoc({
         ...incomingActivityDoc,
         formData: {
-          ...incomingActivityDoc.formData,
-          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          ...incomingActivityactivityInStore.activity.formData,
+          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
           activity_subtype_data: {
-            ...incomingActivityDoc.formData.activity_subtype_data,
+            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
             Well_Information: [
               {
                 well_id: 'No wells found',
@@ -750,7 +750,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
 
     //if it is a Chemical treatment and there are wells too close, display warning dialog
-    if (doc.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    if (activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -763,10 +763,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [
                       {
                         well_id: 'No wells found',
@@ -785,10 +785,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
@@ -799,7 +799,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         ]
       });
-    } else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    } else if (activityInStore.activity.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -811,10 +811,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
@@ -829,10 +829,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updateDoc({
         ...incomingActivityDoc,
         formData: {
-          ...incomingActivityDoc.formData,
-          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          ...incomingActivityactivityInStore.activity.formData,
+          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
           activity_subtype_data: {
-            ...incomingActivityDoc.formData.activity_subtype_data,
+            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
             Well_Information: [...wellInformationArr]
           }
         }
@@ -859,15 +859,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         let updatedFormData = getDefaultFormDataValues(activityResult);
         updatedFormData = setUpInitialValues(activityResult, updatedFormData);
         const updatedDoc = { ...activityResult, formData: updatedFormData };
-       // setGeometry(updatedDoc.geometry);
-        // setExtent(updatedDoc.extent);
-        setPhotos(updatedDoc.photos || []);
+       // setGeometry(updatedactivityInStore.activity.geometry);
+        // setExtent(updatedactivityInStore.activity.extent);
+        setPhotos(updatedactivityInStore.activity.photos || []);
         setDoc(updatedDoc);
 
         await updateDoc(updatedDoc);
 
-        if (updatedDoc.geometry) {
-          const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
+        if (updatedactivityInStore.activity.geometry) {
+          const res = await dataAccess.getJurisdictions({ search_feature: updatedactivityInStore.activity.geometry[0] });
           setSuggestedJurisdictions(res);
         }
       } catch (e) {
@@ -924,7 +924,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
       saveExtent(extent);
     }
   }, [extent, isLoading, saveExtent]);
@@ -950,7 +950,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
       savePhotos(photos);
     }
   }, [photos, isLoading]);
@@ -982,8 +982,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
-              {doc.activitySubtype &&
-                doc.activitySubtype
+              {activityInStore.activity.activitySubtype &&
+                activityInStore.activity.activitySubtype
                   .replace(/([A-Z])/g, ' $1')
                   .replace(/_/g, '')
                   .replace(/^./, function (str) {
@@ -992,9 +992,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
+            <Typography align="center">Activity ID: {activityInStore.activity.shortId ? activityInStore.activity.shortId : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+              Date created: {activityInStore.activity.dateCreated ? new Date(activityInStore.activity.dateCreated).toString() : 'unknown'}
             </Typography>
           </Box>
         </>
@@ -1014,16 +1014,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore.activity.geometry]
       )}
 
-      {false && (
+      {activityInStore.activity && (
         <>
-        {JSON.stringify(activityInStore.activity)}
           <ActivityComponent
             customValidation={getCustomValidator([
-              getAreaValidator(doc.activitySubtype),
-              getDateAndTimeValidator(doc.activitySubtype),
-              getWindValidator(doc.activitySubtype),
+              getAreaValidator(activityInStore.activity.activitySubtype),
+              getDateAndTimeValidator(activityInStore.activity.activitySubtype),
+              getWindValidator(activityInStore.activity.activitySubtype),
               getSlopeAspectBothFlatValidator(),
-              getTemperatureValidator(doc.activitySubtype),
+              getTemperatureValidator(activityInStore.activity.activitySubtype),
               getPosAndNegObservationValidator(),
               getTreatedAreaValidator(),
               getTargetPhenologySumValidator(),
@@ -1036,11 +1035,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getVegTransectPointsPercentCoverValidator(),
               getJurisdictionPercentValidator(),
               getInvasivePlantsValidator(linkedActivity),
-              getPlotIdentificatiomTreesValidator(doc.activitySubtype)
+              getPlotIdentificatiomTreesValidator(activityInStore.activity.activitySubtype)
             ])}
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
-            activity={doc}
+            activity={activityInStore.activity}
             suggestedJurisdictions={suggestedJurisdictions}
             linkedActivity={linkedActivity}
             onFormChange={onFormChange}

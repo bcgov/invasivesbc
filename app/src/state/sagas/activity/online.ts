@@ -43,7 +43,6 @@ const getRequestOptions = (config, requestHeaders) => {
    export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`)
         //const validatedReturn = yield checkForErrors(networkReturn)
-        console.dir(networkReturn)
 
         const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
