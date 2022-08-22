@@ -163,6 +163,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates, saveReason?) => {
+    return;
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
@@ -861,21 +862,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const updatedDoc = { ...activityResult, formData: updatedFormData };
        // setGeometry(updatedactivityInStore.activity.geometry);
         // setExtent(updatedactivityInStore.activity.extent);
-        setPhotos(updatedactivityInStore.activity.photos || []);
-        setDoc(updatedDoc);
+        //setPhotos(updatedactivityInStore.activity.photos || []);
+       // setDoc(updatedDoc);
 
+       /*
         await updateDoc(updatedDoc);
 
         if (updatedactivityInStore.activity.geometry) {
           const res = await dataAccess.getJurisdictions({ search_feature: updatedactivityInStore.activity.geometry[0] });
           setSuggestedJurisdictions(res);
         }
+      */
       } catch (e) {
         console.log('activity does not exist', e);
       }
 
       setIsLoading(false);
     };
+
 
     getActivityData();
   }, []);
@@ -955,18 +959,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   }, [photos, isLoading]);
 
+  /*
   useEffect(() => {
     if (props.setObservation && doc) {
       props.setObservation(doc);
     }
     setActivityId(doc?._id);
   }, [doc]);
+  */
 
   const [activityId, setActivityId] = useState(doc?._id);
 
   return (
     <Container className={props.classes.container}>
-      {!doc && (
+      {!activityInStore.activity && (
         <>
           <Box mb={3}>
             <Typography variant="h4">Current Activity </Typography>
@@ -978,7 +984,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
 
-      {doc && (
+      {activityInStore.activity && (
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
@@ -1004,11 +1010,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         () => (
           <ActivityMapComponent
             classes={classes}
-            activityId={activityId}
-            mapId={activityId}
+            activityId={activityInStore.activity.activityId}
+            mapId={activityInStore.activity.activityId}
             geometryState={{ geometry: [activityInStore.activity.geometry], setGeometry: setGeometry }}
             showDrawControls={true}
-            isLoading={isLoading}
+            //isLoading={isLoading}
+            isLoading={false}
           />
         ),
         [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore.activity.geometry]
