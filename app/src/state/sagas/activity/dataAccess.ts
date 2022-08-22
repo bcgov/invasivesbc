@@ -35,7 +35,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   export function* handle_ACTIVITY_SAVE_REQUEST(action) {
     try {
   
-        yield put({ type: ACTIVITY_SAVE_NETWORK_REQUEST, payload: { activityID: action.payload.activityID, updatedFormData: action.payload.updatedFormData}})
+        yield put({ type: ACTIVITY_SAVE_NETWORK_REQUEST, payload: { activity_id: action.payload.activity_id, updatedFormData: action.payload.updatedFormData}})
       
     } catch (e) {
       console.error(e);

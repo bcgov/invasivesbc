@@ -60,7 +60,8 @@ function* refreshRoles() {
   try {
     const { data: userData } = yield Http.request({
       method: 'GET',
-      url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
+      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
+      url: 'http://localhost:7080' + `/api/user-access`,
       headers: {
         Authorization: authHeaders.authorization,
         'Content-Type': 'application/json'
@@ -69,7 +70,8 @@ function* refreshRoles() {
 
     const { data: rolesData } = yield Http.request({
       method: 'GET',
-      url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
+      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
+      url: 'http://localhost:7080' + `/api/roles`,
       headers: {
         Authorization: authHeaders.authorization,
         'Content-Type': 'application/json'

@@ -504,7 +504,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
     setCanSubmitWithoutErrors(false);
 
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityId, updatedFormData: {...formData} }})
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activity_ID: activityInStore.activity.activity_id, updatedFormData: {...formData} }})
   //  await updateDoc(newDoc, 'Manual Save');
   };
 
@@ -564,7 +564,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
 //    await updateDoc(newDoc, 'Manual Save');
 alert(activityInStore.activity.activityID)
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activityID: activityInStore.activity.activityId, updatedFormData: {...newDoc} }})
+    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activity_id: activityInStore.activity.activity_id, updatedFormData: {...newDoc} }})
 
 
 
@@ -1006,9 +1006,9 @@ alert(activityInStore.activity.activityID)
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {activityInStore.activity.shortId ? activityInStore.activity.shortId : 'unknown'}</Typography>
+            <Typography align="center">Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {activityInStore.activity.dateCreated ? new Date(activityInStore.activity.dateCreated).toString() : 'unknown'}
+              Date created: {activityInStore.activity.date_created ? new Date(activityInStore.activity.date_created).toString() : 'unknown'}
             </Typography>
           </Box>
         </>
@@ -1018,8 +1018,8 @@ alert(activityInStore.activity.activityID)
         () => (
           <ActivityMapComponent
             classes={classes}
-            activityId={activityInStore.activity.activityId}
-            mapId={activityInStore.activity.activityId}
+            activityId={activityInStore.activity.activity_id}
+            mapId={activityInStore.activity.activity_id}
             geometryState={{ geometry: [activityInStore.activity.geometry], setGeometry: setGeometry }}
             showDrawControls={true}
             //isLoading={isLoading}

@@ -97,7 +97,9 @@ function getActivity(): RequestHandler {
 
       const result = (response && response.rows && response.rows[0]) || null;
 
-      req['activity'] = result;
+      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result)});
+
+      req['activity'] = result
     } catch (error) {
       defaultLog.debug({ label: 'getActivity', message: 'error', error });
       return res.status(500).json({
@@ -148,6 +150,17 @@ function getMedia(): RequestHandler {
  */
 function returnActivity(): RequestHandler {
   return async (req, res) => {
-    return res.status(200).json(req['activity']);
+
+    // original blob from client:
+    let originalPayload = { ...req['activity'].activity_payload}
+
+    // other columns in activity_incoming_data:
+    let supplementalFields = { ...req['activity']}
+    delete supplementalFields.activity_payload
+
+    // merge the two
+    const returnVal = { ...originalPayload, ...supplementalFields}
+
+    return res.status(200).json(returnVal);
   };
 }

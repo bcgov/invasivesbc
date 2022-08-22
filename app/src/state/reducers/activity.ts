@@ -54,7 +54,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
     switch (action.type) {
       case ACTIVITY_GET_SUCCESS: {
         return {
-          ...state, activity: {...action.payload.activity}
+         activity: {...action.payload.activity}
         };
       }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {
@@ -68,7 +68,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       }
       case ACTIVITY_SAVE_SUCCESS: {
         return {
-          ...state, activity: {...action.payload.activity}
+         activity: {...action.payload.activity}
         };
       }
       default:

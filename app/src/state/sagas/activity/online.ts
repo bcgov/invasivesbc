@@ -10,8 +10,8 @@ import { mapDBActivityToDoc } from "utils/addActivity";
 const getRequestOptions = (config, requestHeaders) => {
 
     return {
-      //baseUrl: config.API_BASE,
-      baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
+     baseUrl: config.API_BASE,
+     // baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
       headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
     };
   };
@@ -63,7 +63,7 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   const oldActivity = yield select(selectActivity)
   const newActivity = { ...oldActivity.activity, formData: action.payload.updatedFormData}
 
-  const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, { ...newActivity, activity_id: oldActivity.activity.activityId})
+  const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, { ...newActivity, activity_id: oldActivity.activity.activity_id})
   //const validatedReturn = yield checkForErrors(networkReturn)
 
 //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
