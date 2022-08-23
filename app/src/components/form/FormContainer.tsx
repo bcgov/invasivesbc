@@ -30,9 +30,9 @@ import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import PasteButtonComponent from './PasteButtonComponent';
-import { useSelector } from "../../state/utilities/use_selector";
-import { selectAuth } from "../../state/reducers/auth";
-import { selectConfiguration } from "../../state/reducers/configuration";
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
+import { selectConfiguration } from '../../state/reducers/configuration';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -71,7 +71,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
-  const [formData, setformData] = useState(props.activity?.formData);
+  const [formData, setformData] = useState(props.activity?.form_data);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = useRef(null);
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
@@ -80,7 +80,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [field, setField] = React.useState('');
   const { roles, accessRoles, authenticated } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
-
 
   useEffect(() => {
     if (!props.activity?.formData) {
