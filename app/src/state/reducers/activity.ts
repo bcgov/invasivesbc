@@ -36,11 +36,6 @@ class ActivityState {
   error: boolean;
   activity: any;
   
-  //?
-  requestHeaders: {
-    authorization: string;
-  };
-
 
   constructor() {
     this.initialized = false;

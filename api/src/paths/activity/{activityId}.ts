@@ -81,6 +81,7 @@ function getActivity(): RequestHandler {
       });
     }
 
+
     try {
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
 

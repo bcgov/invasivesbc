@@ -2,7 +2,7 @@ import { calc_utm } from "components/map/Tools/ToolTypes/Nav/DisplayPosition";
 import { put, select } from "redux-saga/effects";
 import { ACTIVITY_GET_INITIAL_STATE_FAILURE,ACTIVITY_SAVE_NETWORK_REQUEST, ACTIVITY_GET_INITIAL_STATE_SUCCESS, ACTIVITY_GET_NETWORK_REQUEST,ACTIVITY_UPDATE_GEO_SUCCESS, ACTIVITY_CREATE_NETWORK, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, ACTIVITY_CREATE_FAILURE } from "state/actions";
 import { selectAuth } from "state/reducers/auth";
-import { generateDBActivityPayload } from "utils/addActivity";
+import { generateDBActivityPayload, populateSpeciesArrays } from "utils/addActivity";
 import { calculateGeometryArea, calculateLatLng } from "utils/geometryHelpers";
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
@@ -47,14 +47,14 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     try {
       const authState = yield select(selectAuth);
 
-        //yield put({ type: ACTIVITY_c_NETWORK_REQUEST, payload: { activityID: action.payload.activityID, updatedFormData: action.payload.updatedFormData}})
-      let dbActivity = generateDBActivityPayload({}, null, action.payload.type, action.payload.subType);
-      dbActivity.created_by = authState.username;
-      dbActivity.user_role = authState.accessRoles.map((role) => role.role_id);
+      let activityV1 = generateDBActivityPayload({}, null, action.payload.type, action.payload.subType);
+      let activityV2 = populateSpeciesArrays(activityV1)
+      activityV2.created_by = authState.username;
+      activityV2.user_role = authState.accessRoles.map((role) => role.role_id);
       //await dataAccess.createActivity(dbActivity, databaseContext);
 
       yield put({type: ACTIVITY_CREATE_NETWORK,
-                payload: { activity: dbActivity }
+                payload: { activity: activityV2 }
               });
 
     } catch (e) {
