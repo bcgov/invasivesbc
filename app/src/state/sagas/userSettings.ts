@@ -9,8 +9,40 @@ import {
   AUTH_INITIALIZE_COMPLETE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
+  ACTIVITY_GET_INITIAL_STATE_REQUEST,
+  ACTIVITY_GET_REQUEST,
+  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
+  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
+  USER_SETTINGS_ADD_RECORD_SET_FAILURE
 } from '../actions';
+
+function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
+  try {
+    // retrieve previous record sets
+    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
+    const prev = oldAppState.recordSets;
+    const recordSets = {
+      ...prev,
+      [JSON.stringify(Object.keys(prev).length + 1)]: {
+        recordSetType: action.payload.recordSetType,
+        recordSetName: 'New Record Set',
+        advancedFilters: [],
+        gridFilters: {},
+        drawOrder: Object.keys(prev).length + 1
+      }
+    }
+    oldAppState.recordSets = recordSets;
+    
+    // update app state
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+
+    yield put({ type: USER_SETTINGS_ADD_RECORD_SET_SUCCESS, payload: { recordSets: recordSets } });
+  } catch(e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_ADD_RECORD_SET_FAILURE });
+  }
+}
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   try {
@@ -67,7 +99,8 @@ function* userSettingsSaga() {
     takeEvery(
       USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
       handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
-    )
+    ),
+    takeEvery(USER_SETTINGS_ADD_RECORD_SET_REQUEST , handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST),
   ]);
 }
 

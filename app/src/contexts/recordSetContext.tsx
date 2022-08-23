@@ -56,18 +56,18 @@ export const RecordSetProvider = (props) => {
     }
   };
 
-  const add = (type: string) => {
-    setRecordSetState((prev) => ({
-      ...prev,
-      [JSON.stringify(Object.keys(prev).length + 1)]: {
-        recordSetType: type,
-        recordSetName: 'New Record Set',
-        advancedFilters: [],
-        gridFilters: {},
-        drawOrder: Object.keys(prev).length + 1
-      }
-    }));
-  };
+  // const add = (type: string) => {
+  //   setRecordSetState((prev) => ({
+  //     ...prev,
+  //     [JSON.stringify(Object.keys(prev).length + 1)]: {
+  //       recordSetType: type,
+  //       recordSetName: 'New Record Set',
+  //       advancedFilters: [],
+  //       gridFilters: {},
+  //       drawOrder: Object.keys(prev).length + 1
+  //     }
+  //   }));
+  // };
 
   const remove = (recordSetName: string) => {
     setRecordSetState((prev) => {
@@ -148,7 +148,7 @@ export const RecordSetProvider = (props) => {
           selectedRecord: selectedRecord,
           recordSetState: recordSetState,
           setRecordSetState: setRecordSetState,
-          add: add,
+          // add: add,
           remove: remove,
           boundaries: boundaries,
           setBoundaries: setBoundaries,

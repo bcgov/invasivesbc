@@ -4,7 +4,8 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
+  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -14,9 +15,9 @@ class UserSettingsState {
   error: boolean;
 
   activeActivity: string;
-  recordSets: [];
 
   newRecordDialogState: INewRecordDialogState;
+  recordSets: Array<object>;
 
   constructor() {
     this.initialized = false;
@@ -50,6 +51,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           newRecordDialogState: action.payload
+        }
+      }
+      case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
         };
       }
       default:
