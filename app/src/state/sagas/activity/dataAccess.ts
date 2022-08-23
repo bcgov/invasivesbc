@@ -101,8 +101,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
-    let updatedFormData = populateSpeciesArrays(beforeActivity.form_data);
-    const after = { ...beforeActivity, form_data: updatedFormData };
+    let updatedFormData = populateSpeciesArrays(action.payload.eventFormData);
+    const after = { ...beforeActivity, form_data: { ...beforeActivity.form_data, ...updatedFormData } };
 
     //updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total release quantity (only on biocontrol release activity)
@@ -116,7 +116,10 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
     //handleRecordLinking(updatedFormData);
 
-    yield put({ type: ACTIVITY_ON_FORM_CHANGE_SUCCESS, payload: { activity: after } });
+    yield put({
+      type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
+      payload: { activity: after, lastField: action.payload.lastField }
+    });
 
     //call autofill events
   } catch (e) {

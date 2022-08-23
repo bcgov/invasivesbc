@@ -58,7 +58,13 @@ import { selectActivity } from '../../../state/reducers/activity';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST,ACTIVITY_ON_FORM_CHANGE_REQUEST, ACTIVITY_SAVE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import {
+  ACTIVITY_GET_INITIAL_STATE_REQUEST,
+  ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  ACTIVITY_SAVE_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST,
+  USER_SETTINGS_GET_INITIAL_STATE_REQUEST
+} from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -92,25 +98,17 @@ interface IActivityPageProps {
 
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
-
   const dispatch = useDispatch();
   const activityInStore = useSelector(selectActivity);
   const userSettingsState = useSelector(selectUserSettings);
 
-
   const [geometry, setGeometry] = useState<Feature[]>([]);
 
-  useEffect(()=> {
-    if(geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry)
-    {
-      dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: geometry}})
+  useEffect(() => {
+    if (geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry) {
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: geometry } });
     }
-  },[geometry])
-
-
-
-
-
+  }, [geometry]);
 
   const classes = useStyles();
   const dataAccess = useDataAccess();
@@ -141,20 +139,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
 
-
-
-
-
   //redux first steps
-  useEffect(()=> {
-    console.dir(userSettingsState)
+  useEffect(() => {
+    console.dir(userSettingsState);
     //dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
-  },[userSettingsState])
-
-
-
-
-
+  }, [userSettingsState]);
 
   /**
    * Applies overriding updates to the current doc,
@@ -288,7 +277,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   const isAlreadySubmitted = () => {
-    return activityInStore.activity.form_status === ActivityStatus.SUBMITTED || activityInStore.activity.formStatus === ActivityStatus.SUBMITTED;
+    return (
+      activityInStore.activity.form_status === ActivityStatus.SUBMITTED ||
+      activityInStore.activity.formStatus === ActivityStatus.SUBMITTED
+    );
   };
 
   const hasRole = (role: string) => {
@@ -496,7 +488,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
     const newDoc = {
-//      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
+      //      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
@@ -504,8 +496,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
     setCanSubmitWithoutErrors(false);
 
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activity_ID: activityInStore.activity.activity_id, updatedFormData: {...formData} }})
-  //  await updateDoc(newDoc, 'Manual Save');
+    dispatch({
+      type: ACTIVITY_SAVE_REQUEST,
+      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
+    });
+    //  await updateDoc(newDoc, 'Manual Save');
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -562,11 +557,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       geometry: geometry?.length ? [...geometry] : []
     };
 
-//    await updateDoc(newDoc, 'Manual Save');
-alert(activityInStore.activity.activityID)
-    dispatch({type: ACTIVITY_SAVE_REQUEST, payload: {activity_id: activityInStore.activity.activity_id, updatedFormData: {...newDoc} }})
-
-
+    //    await updateDoc(newDoc, 'Manual Save');
+    alert(activityInStore.activity.activityID);
+    dispatch({
+      type: ACTIVITY_SAVE_REQUEST,
+      payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: { ...newDoc } }
+    });
 
     setAlertSavedOpen(true);
   };
@@ -581,8 +577,13 @@ alert(activityInStore.activity.activityID)
   const onFormChange = debounced(
     100,
     async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-
-      dispatch({type: ACTIVITY_ON_FORM_CHANGE_REQUEST, payload: {eventFormData: event.formData}})
+      console.dir(event);
+      console.log(lastField);
+      if (lastField !== '' && lastField !== undefined && lastField !== null)
+        dispatch({
+          type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+          payload: { eventFormData: event.formData, lastField: lastField }
+        });
       /*
       let updatedFormData = event.formData;
 
@@ -604,7 +605,7 @@ alert(activityInStore.activity.activityID)
       */
 
       if (callbackFun) {
-       // callbackFun(updatedFormData);
+        // callbackFun(updatedFormData);
       }
     }
   );
@@ -634,16 +635,10 @@ alert(activityInStore.activity.activityID)
     setAlertCopiedOpen(true);
   };
 
-
-
-
-
-
   /*
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-
     // reference to store
 
     /*
@@ -670,7 +665,7 @@ alert(activityInStore.activity.activityID)
       }
     }
     */
-   const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity)
+    const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -758,12 +753,18 @@ alert(activityInStore.activity.activityID)
     const wellInformationArr = [];
     well_objects.forEach((well) => {
       if (well.proximity) {
-        wellInformationArr.push({ well_id: well.properties.WELL_TAG_NUMBER, well_proximity: well.proximity.toString() });
+        wellInformationArr.push({
+          well_id: well.properties.WELL_TAG_NUMBER,
+          well_proximity: well.proximity.toString()
+        });
       }
     });
 
     //if it is a Chemical treatment and there are wells too close, display warning dialog
-    if (activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    if (
+      activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') &&
+      (well_objects[0].proximity < 50 || areWellsInside)
+    ) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -812,7 +813,10 @@ alert(activityInStore.activity.activityID)
           }
         ]
       });
-    } else if (activityInStore.activity.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    } else if (
+      activityInStore.activity.activitySubtype.includes('Observation') &&
+      (well_objects[0].proximity < 50 || areWellsInside)
+    ) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -872,12 +876,12 @@ alert(activityInStore.activity.activityID)
         let updatedFormData = getDefaultFormDataValues(activityResult);
         updatedFormData = setUpInitialValues(activityResult, updatedFormData);
         const updatedDoc = { ...activityResult, formData: updatedFormData };
-       // setGeometry(updatedactivityInStore.activity.geometry);
+        // setGeometry(updatedactivityInStore.activity.geometry);
         // setExtent(updatedactivityInStore.activity.extent);
         //setPhotos(updatedactivityInStore.activity.photos || []);
-       // setDoc(updatedDoc);
+        // setDoc(updatedDoc);
 
-       /*
+        /*
         await updateDoc(updatedDoc);
 
         if (updatedactivityInStore.activity.geometry) {
@@ -892,14 +896,8 @@ alert(activityInStore.activity.activityID)
       setIsLoading(false);
     };
 
-
     getActivityData();
   }, []);
-
-
-
-
-
 
   useEffect(() => {
     if (isLoading || !doc) {
@@ -1010,9 +1008,14 @@ alert(activityInStore.activity.activityID)
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {activityInStore.activity.date_created ? new Date(activityInStore.activity.date_created).toString() : 'unknown'}
+              Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
+            </Typography>
+            <Typography align="center">
+              Date created:{' '}
+              {activityInStore.activity.date_created
+                ? new Date(activityInStore.activity.date_created).toString()
+                : 'unknown'}
             </Typography>
           </Box>
         </>
