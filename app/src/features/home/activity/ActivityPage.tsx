@@ -58,7 +58,7 @@ import { selectActivity } from '../../../state/reducers/activity';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST, ACTIVITY_SAVE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ACTIVITY_GET_INITIAL_STATE_REQUEST,ACTIVITY_ON_FORM_CHANGE_REQUEST, ACTIVITY_SAVE_REQUEST, ACTIVITY_UPDATE_GEO_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -581,6 +581,9 @@ alert(activityInStore.activity.activityID)
   const onFormChange = debounced(
     100,
     async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
+
+      dispatch({type: ACTIVITY_ON_FORM_CHANGE_REQUEST, payload: {eventFormData: event.formData}})
+      /*
       let updatedFormData = event.formData;
 
       updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
@@ -598,9 +601,10 @@ alert(activityInStore.activity.activityID)
       updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
       handleRecordLinking(updatedFormData);
+      */
 
       if (callbackFun) {
-        callbackFun(updatedFormData);
+       // callbackFun(updatedFormData);
       }
     }
   );

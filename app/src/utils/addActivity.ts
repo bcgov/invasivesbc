@@ -478,9 +478,9 @@ export function populateSpeciesArrays(record) {
   let species_positive = [];
   let species_negative = [];
   let species_treated = [];
-  const subtypeData = record?.formData?.activity_subtype_data;
+  const subtypeData = record?.form_data?.activity_subtype_data;
 
-  switch (record.activitySubtype) {
+  switch (record.activity_subtype) {
     case ActivitySubtype.Observation_PlantTerrestrial:
       species_positive = subtypeData?.TerrestrialPlants?.filter((plant) => plant.occurrence?.includes('Positive')).map(
         (plant) => plant.invasive_plant_code
