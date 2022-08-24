@@ -33,7 +33,7 @@ const HerbicidesAccordion = (props) => {
                     newHerbicidesArr.push({ index: newHerbicidesArr.length });
                     return {
                       ...prevDetails,
-                      formData: {
+                      form_data: {
                         ...prevDetails.form_data,
                         skipAppRateValidation: false,
                         tank_mix_object: {
@@ -49,7 +49,7 @@ const HerbicidesAccordion = (props) => {
                     newHerbicidesArr.push({ index: newHerbicidesArr.length });
                     return {
                       ...prevDetails,
-                      formData: {
+                      form_data: {
                         ...prevDetails.form_data,
                         skipAppRateValidation: false,
                         herbicides: newHerbicidesArr

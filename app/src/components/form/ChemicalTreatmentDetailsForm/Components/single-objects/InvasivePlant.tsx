@@ -45,7 +45,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         newSpeciesArr[index] = currentInvasivePlant;
         return {
           ...prevDetails,
-          formData: {
+          form_data: {
             ...prevDetails.form_data,
             invasive_plants: newSpeciesArr
           }
