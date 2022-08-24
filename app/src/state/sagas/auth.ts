@@ -9,8 +9,12 @@ import {
   AUTH_REFRESH_TOKEN,
   AUTH_REQUEST_COMPLETE,
   AUTH_REQUEST_ERROR,
-  AUTH_SIGNIN_REQUEST, AUTH_SIGNOUT_COMPLETE, AUTH_SIGNOUT_REQUEST,
-  AUTH_UPDATE_TOKEN_STATE, USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE
+  AUTH_SIGNIN_REQUEST,
+  AUTH_SIGNOUT_COMPLETE,
+  AUTH_SIGNOUT_REQUEST,
+  AUTH_UPDATE_TOKEN_STATE,
+  USERINFO_CLEAR_REQUEST,
+  USERINFO_LOAD_COMPLETE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -61,7 +65,8 @@ function* refreshRoles() {
     const { data: userData } = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
-      url: 'http://localhost:7080' + `/api/user-access`,
+      //url: 'http://localhost:7080' + `/api/user-access`,
+      url: configuration.API_BASE + `/api/user-access`,
       headers: {
         Authorization: authHeaders.authorization,
         'Content-Type': 'application/json'
@@ -71,7 +76,8 @@ function* refreshRoles() {
     const { data: rolesData } = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
-      url: 'http://localhost:7080' + `/api/roles`,
+      //url: 'http://localhost:7080' + `/api/roles`,
+      url: configuration.API_BASE + `/api/roles`,
       headers: {
         Authorization: authHeaders.authorization,
         'Content-Type': 'application/json'
@@ -79,7 +85,8 @@ function* refreshRoles() {
     });
 
     yield put({
-      type: AUTH_REFRESH_ROLES_COMPLETE, payload: {
+      type: AUTH_REFRESH_ROLES_COMPLETE,
+      payload: {
         all_roles: rolesData.result,
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo
@@ -135,7 +142,6 @@ function* handleSignoutRequest(action) {
     yield put({ type: AUTH_REQUEST_ERROR });
   }
 }
-
 
 function* authenticationSaga() {
   yield all([
