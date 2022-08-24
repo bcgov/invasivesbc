@@ -807,38 +807,41 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
   const getJurSuggestions = async () => {
     if (geometry[0]) {
-      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] });
+      const res = await dataAccess.getJurisdictions({ search_feature: activityInStore.activity.geometry[0] });
       setSuggestedJurisdictions(res);
     }
   };
 
   // check if new geo different than store
-  if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
-    //if geometry is withing british columbia boundries, save it
-    setTimeout(() => {
-      if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
-        //saveGeometry(geometry);
-      }
-      //if geometry is NOT withing british columbia boundries, display err
-      else {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Error!',
-          dialogContentText: 'The geometry drawn is outside the British Columbia.',
-          dialogActions: [
-            {
-              actionName: 'OK',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-        setGeometry(null);
-      }
-    }, 500);
-  }
+  //if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
+  useEffect(() => {
+    if (activityInStore.activity.geometry) {
+      //if geometry is withing british columbia boundries, save it
+      setTimeout(() => {
+        if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
+          //saveGeometry(geometry);
+        }
+        //if geometry is NOT withing british columbia boundries, display err
+        else {
+          setWarningDialog({
+            dialogOpen: true,
+            dialogTitle: 'Error!',
+            dialogContentText: 'The geometry drawn is outside the British Columbia.',
+            dialogActions: [
+              {
+                actionName: 'OK',
+                actionOnClick: async () => {
+                  setWarningDialog({ ...warningDialog, dialogOpen: false });
+                },
+                autoFocus: true
+              }
+            ]
+          });
+          setGeometry(null);
+        }
+      }, 500);
+    }
+  }, [JSON.stringify(activityInStore.activity.geometry)]);
 
   useEffect(() => {
     if (isLoading || !doc) {
