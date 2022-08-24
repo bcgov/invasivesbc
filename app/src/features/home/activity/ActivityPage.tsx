@@ -572,25 +572,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
         payload: { eventFormData: event.formData, lastField: lastField }
       });
-    /*
-      let updatedFormData = event.formData;
-
-      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
-      updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
-
-      //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
-      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-      //auto fills total release quantity (only on biocontrol release activity)
-      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-      //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-      // Autofills total bioagent quantity specifically for biocontrol collections
-      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
-
-      updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
-
-      handleRecordLinking(updatedFormData);
-      */
 
     if (callbackFun) {
       // callbackFun(updatedFormData);
@@ -625,33 +606,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function to pull activity results from the DB given an activityId if present
   */
+  //TODO REDUX
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    // reference to store
-
-    /*
-    const appStateResults = await dataAccess.getAppState();
-    if (!appStateResults.activeActivity) {
-      return;
-    }
-
-    let activityResults;
-    if (!MOBILE) {
-      activityResults = await dataAccess.getActivityById(
-        activityId || (appStateResults.activeActivity as string),
-        false
-      );
-    } else {
-      try {
-        activityResults = await dataAccess.getActivityById(
-          activityId || appStateResults.activeActivity,
-          true,
-          appStateResults.referenceData
-        );
-      } catch (e) {
-        console.log('error reading activity: ', JSON.stringify(e));
-      }
-    }
-    */
     const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
@@ -661,6 +617,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     and then set the linkedActivity in state for reference within
     the form as an accordion and for population of certain fields later/validation
   */
+  //TODO REDUX
   const handleRecordLinking = async (formData: any) => {
     if (doc?.activitySubtype?.includes('Monitoring') && formData?.activity_type_data?.linked_id) {
       await updateDoc({
@@ -685,10 +642,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  //TODO REDUX
   useEffect(() => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);
   }, [linkedActivity]);
 
+  // TODO DO WE NEED THIS
   //this sets up initial values for some of the fields in activity.
   const setUpInitialValues = (activity: any, formData: any): Object => {
     //Observations -- all:
@@ -712,6 +671,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
+  // TODO REDUX
   //sets well id and proximity if there are any
   const setClosestWells = async (incomingActivityDoc) => {
     let closestWells = await getClosestWells(geometry, databaseContext, api, true, connected);
@@ -812,6 +772,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           {
             actionName: 'Ok',
             actionOnClick: () => {
+              // TODO REDUX - why call update doc here??
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
@@ -830,6 +791,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ]
       });
     } else {
+      //TODO REDUX
       updateDoc({
         ...incomingActivityDoc,
         formData: {
@@ -850,75 +812,33 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
-  useEffect(() => {
-    const getActivityData = async () => {
-      try {
-        const activityResult = await getActivityResultsFromDB(props.activityId || null);
-
-        if (!activityResult) {
-          setIsLoading(false);
-          return;
-        }
-
-        let updatedFormData = getDefaultFormDataValues(activityResult);
-        updatedFormData = setUpInitialValues(activityResult, updatedFormData);
-        const updatedDoc = { ...activityResult, formData: updatedFormData };
-        // setGeometry(updatedactivityInStore.activity.geometry);
-        // setExtent(updatedactivityInStore.activity.extent);
-        //setPhotos(updatedactivityInStore.activity.photos || []);
-        // setDoc(updatedDoc);
-
-        /*
-        await updateDoc(updatedDoc);
-
-        if (updatedactivityInStore.activity.geometry) {
-          const res = await dataAccess.getJurisdictions({ search_feature: updatedactivityInStore.activity.geometry[0] });
-          setSuggestedJurisdictions(res);
-        }
-      */
-      } catch (e) {
-        console.log('activity does not exist', e);
+  // check if new geo different than store
+  if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
+    //if geometry is withing british columbia boundries, save it
+    setTimeout(() => {
+      if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
+        //saveGeometry(geometry);
       }
-
-      setIsLoading(false);
-    };
-
-    getActivityData();
-  }, []);
-
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
-
-    // check if new geo different than store
-    if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
-      //if geometry is withing british columbia boundries, save it
-      setTimeout(() => {
-        if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
-          //saveGeometry(geometry);
-        }
-        //if geometry is NOT withing british columbia boundries, display err
-        else {
-          setWarningDialog({
-            dialogOpen: true,
-            dialogTitle: 'Error!',
-            dialogContentText: 'The geometry drawn is outside the British Columbia.',
-            dialogActions: [
-              {
-                actionName: 'OK',
-                actionOnClick: async () => {
-                  setWarningDialog({ ...warningDialog, dialogOpen: false });
-                },
-                autoFocus: true
-              }
-            ]
-          });
-          setGeometry(null);
-        }
-      }, 500);
-    }
-  }, [geometry, isLoading]);
+      //if geometry is NOT withing british columbia boundries, display err
+      else {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Error!',
+          dialogContentText: 'The geometry drawn is outside the British Columbia.',
+          dialogActions: [
+            {
+              actionName: 'OK',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+        setGeometry(null);
+      }
+    }, 500);
+  }
 
   useEffect(() => {
     if (isLoading || !doc) {
