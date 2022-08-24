@@ -54,10 +54,18 @@ import ActivityMapComponent from 'components/activity/ActivityMapComponent';
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
+import { selectActivity } from '../../../state/reducers/activity';
 import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import {
+  ACTIVITY_GET_INITIAL_STATE_REQUEST,
+  ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  ACTIVITY_SAVE_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST,
+  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
+  ACTIVITY_SUBMIT_REQUEST
+} from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -91,8 +99,18 @@ interface IActivityPageProps {
 
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
-
   const dispatch = useDispatch();
+  const activityInStore = useSelector(selectActivity);
+  const userSettingsState = useSelector(selectUserSettings);
+
+  const [geometry, setGeometry] = useState<Feature[]>([]);
+
+  useEffect(() => {
+    if (geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry) {
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: geometry } });
+    }
+  }, [geometry]);
+
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
@@ -102,7 +120,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
-  const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
@@ -123,21 +140,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
 
-
-
-
-  const userSettingsState = useSelector(selectUserSettings);
-
   //redux first steps
-  useEffect(()=> {
-    console.dir(userSettingsState)
+  useEffect(() => {
+    console.dir(userSettingsState);
     //dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
-  },[userSettingsState])
-
-
-
-
-
+  }, [userSettingsState]);
 
   /**
    * Applies overriding updates to the current doc,
@@ -146,6 +153,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates, saveReason?) => {
+    return;
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
@@ -179,7 +187,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     // SECOND-ORDER EFFECT OVERRIDES (changing one field affects another)
     updatedDoc = populateSpeciesArrays(updatedDoc);
 
-    if (!updatedDoc._id) {
+    if (!updatedactivityInStore.activity._id) {
       return false;
     }
 
@@ -250,10 +258,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionName: 'Yes',
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
-            let newDoc = { ...doc };
-            newDoc.form_status = ActivityStatus.SUBMITTED;
+            dispatch({
+              type: ACTIVITY_SUBMIT_REQUEST,
+              payload: {
+                activity_ID: activityInStore.activity.activity_id
+              }
+            });
             try {
-              await updateDoc(newDoc, 'Official Submit');
               setAlertSavedOpen(true);
               setTimeout(() => {
                 history.push('/home/activities');
@@ -270,7 +281,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   const isAlreadySubmitted = () => {
-    return doc.form_status === ActivityStatus.SUBMITTED || doc.formStatus === ActivityStatus.SUBMITTED;
+    return (
+      activityInStore.activity.form_status === ActivityStatus.SUBMITTED ||
+      activityInStore.activity.formStatus === ActivityStatus.SUBMITTED
+    );
   };
 
   const hasRole = (role: string) => {
@@ -447,7 +461,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       dateUpdated: new Date()
     };
     await setClosestWells(activityDoc);
-    getJurSuggestions();
     return activityDoc;
   };
 
@@ -475,8 +488,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
+    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
+
     const newDoc = {
-      formData: { ...doc.formData, ...formRef.current.state.formData },
+      //      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
@@ -484,7 +499,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
     setCanSubmitWithoutErrors(false);
 
-    await updateDoc(newDoc, 'Manual Save');
+    dispatch({
+      type: ACTIVITY_SAVE_REQUEST,
+      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
+    });
+    //  await updateDoc(newDoc, 'Manual Save');
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -525,23 +544,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setFormHasErrors) {
       props.setFormHasErrors(false);
     }
+    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
     setCanSubmitWithoutErrors(true);
 
-    /*await formRef.setState({
-      ...formRef.state,
-      schemaValidationErrors: [],
-      schemaValidationErrorSchema: {}
-    });*/
-    const newDoc = {
-      formData: { ...event.formData },
-      status: ActivityStatus.DRAFT,
-      dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT,
-      geometry: geometry?.length ? [...geometry] : []
-    };
-
-    await updateDoc(newDoc, 'Manual Save');
+    dispatch({
+      type: ACTIVITY_SAVE_REQUEST,
+      payload: {
+        activity_ID: activityInStore.activity.activity_id,
+        updatedFormData: { ...formData, form_status: ActivityStatus.SUBMITTED }
+      }
+    });
     setAlertSavedOpen(true);
   };
 
@@ -552,32 +565,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = debounced(
-    100,
-    async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-      let updatedFormData = event.formData;
+  const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
+    if (lastField !== '' && lastField !== undefined && lastField !== null)
+      dispatch({
+        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+        payload: { eventFormData: event.formData, lastField: lastField }
+      });
 
-      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
-      updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
-
-      //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
-      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-      //auto fills total release quantity (only on biocontrol release activity)
-      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-      //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-      // Autofills total bioagent quantity specifically for biocontrol collections
-      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
-
-      updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
-
-      handleRecordLinking(updatedFormData);
-
-      if (callbackFun) {
-        callbackFun(updatedFormData);
-      }
+    if (callbackFun) {
+      // callbackFun(updatedFormData);
     }
-  );
+  };
 
   /**
    * Paste copied form data saved in session storage
@@ -604,43 +602,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setAlertCopiedOpen(true);
   };
 
-
-
-
-
-
   /*
     Function to pull activity results from the DB given an activityId if present
   */
+  //TODO REDUX
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-
-    // reference to store
-
-    /*
-    const appStateResults = await dataAccess.getAppState();
-    if (!appStateResults.activeActivity) {
-      return;
-    }
-
-    let activityResults;
-    if (!MOBILE) {
-      activityResults = await dataAccess.getActivityById(
-        activityId || (appStateResults.activeActivity as string),
-        false
-      );
-    } else {
-      try {
-        activityResults = await dataAccess.getActivityById(
-          activityId || appStateResults.activeActivity,
-          true,
-          appStateResults.referenceData
-        );
-      } catch (e) {
-        console.log('error reading activity: ', JSON.stringify(e));
-      }
-    }
-    */
-   const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity)
+    const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -649,6 +616,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     and then set the linkedActivity in state for reference within
     the form as an accordion and for population of certain fields later/validation
   */
+  //TODO REDUX
   const handleRecordLinking = async (formData: any) => {
     if (doc?.activitySubtype?.includes('Monitoring') && formData?.activity_type_data?.linked_id) {
       await updateDoc({
@@ -662,7 +630,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const getLinked = async () => {
         let linkedRecordId: string = null;
         if (doc?.activitySubtype?.includes('Monitoring') && doc?.formData?.activity_type_data?.linked_id) {
-          linkedRecordId = doc.formData.activity_type_data.linked_id;
+          linkedRecordId = activityInStore.activity.formData.activity_type_data.linked_id;
         }
         if (linkedRecordId) {
           const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
@@ -673,10 +641,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  //TODO REDUX
   useEffect(() => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);
   }, [linkedActivity]);
 
+  // TODO DO WE NEED THIS
   //this sets up initial values for some of the fields in activity.
   const setUpInitialValues = (activity: any, formData: any): Object => {
     //Observations -- all:
@@ -700,6 +670,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
+  // TODO REDUX
   //sets well id and proximity if there are any
   const setClosestWells = async (incomingActivityDoc) => {
     let closestWells = await getClosestWells(geometry, databaseContext, api, true, connected);
@@ -709,10 +680,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updateDoc({
         ...incomingActivityDoc,
         formData: {
-          ...incomingActivityDoc.formData,
-          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          ...incomingActivityactivityInStore.activity.formData,
+          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
           activity_subtype_data: {
-            ...incomingActivityDoc.formData.activity_subtype_data,
+            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
             Well_Information: [
               {
                 well_id: 'No wells found',
@@ -728,12 +699,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const wellInformationArr = [];
     well_objects.forEach((well) => {
       if (well.proximity) {
-        wellInformationArr.push({ well_id: well.properties.WELL_TAG_NUMBER, well_proximity: well.proximity.toString() });
+        wellInformationArr.push({
+          well_id: well.properties.WELL_TAG_NUMBER,
+          well_proximity: well.proximity.toString()
+        });
       }
     });
 
     //if it is a Chemical treatment and there are wells too close, display warning dialog
-    if (doc.activitySubtype.includes('Treatment_ChemicalPlant') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    if (
+      activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') &&
+      (well_objects[0].proximity < 50 || areWellsInside)
+    ) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -746,10 +723,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [
                       {
                         well_id: 'No wells found',
@@ -768,10 +745,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
@@ -782,7 +759,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         ]
       });
-    } else if (doc.activitySubtype.includes('Observation') && (well_objects[0].proximity < 50 || areWellsInside)) {
+    } else if (
+      activityInStore.activity.activitySubtype.includes('Observation') &&
+      (well_objects[0].proximity < 50 || areWellsInside)
+    ) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
@@ -791,13 +771,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           {
             actionName: 'Ok',
             actionOnClick: () => {
+              // TODO REDUX - why call update doc here??
               updateDoc({
                 ...incomingActivityDoc,
                 formData: {
-                  ...incomingActivityDoc.formData,
-                  activity_data: { ...incomingActivityDoc.formData.activity_data },
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
                   activity_subtype_data: {
-                    ...incomingActivityDoc.formData.activity_subtype_data,
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
                     Well_Information: [...wellInformationArr]
                   }
                 }
@@ -809,70 +790,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ]
       });
     } else {
+      //TODO REDUX
       updateDoc({
         ...incomingActivityDoc,
         formData: {
-          ...incomingActivityDoc.formData,
-          activity_data: { ...incomingActivityDoc.formData.activity_data },
+          ...incomingActivityactivityInStore.activity.formData,
+          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
           activity_subtype_data: {
-            ...incomingActivityDoc.formData.activity_subtype_data,
+            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
             Well_Information: [...wellInformationArr]
           }
         }
       });
     }
   };
-  const getJurSuggestions = async () => {
-    if (geometry[0]) {
-      const res = await dataAccess.getJurisdictions({ search_feature: geometry[0] });
-      setSuggestedJurisdictions(res);
-    }
-  };
 
+  // check if new geo different than store
+  //if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
+  //todo: fully move to redux saga
   useEffect(() => {
-    const getActivityData = async () => {
-      try {
-        const activityResult = await getActivityResultsFromDB(props.activityId || null);
-
-        if (!activityResult) {
-          setIsLoading(false);
-          return;
-        }
-
-        let updatedFormData = getDefaultFormDataValues(activityResult);
-        updatedFormData = setUpInitialValues(activityResult, updatedFormData);
-        const updatedDoc = { ...activityResult, formData: updatedFormData };
-        setGeometry(updatedDoc.geometry);
-        // setExtent(updatedDoc.extent);
-        setPhotos(updatedDoc.photos || []);
-        setDoc(updatedDoc);
-
-        await updateDoc(updatedDoc);
-
-        if (updatedDoc.geometry) {
-          const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
-          setSuggestedJurisdictions(res);
-        }
-      } catch (e) {
-        console.log('activity does not exist', e);
-      }
-
-      setIsLoading(false);
-    };
-
-    getActivityData();
-  }, []);
-
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
-
-    if (geometry && geometry[0]) {
+    if (activityInStore.activity.geometry) {
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
-        if (booleanWithin(geometry[0] as any, bcArea.features[0] as any)) {
-          saveGeometry(geometry);
+        if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
+          //saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
         else {
@@ -894,14 +835,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         }
       }, 500);
     }
-  }, [geometry, isLoading]);
+  }, [JSON.stringify(activityInStore?.activity?.geometry)]);
 
   useEffect(() => {
     if (isLoading || !doc) {
       return;
     }
 
-    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
       saveExtent(extent);
     }
   }, [extent, isLoading, saveExtent]);
@@ -910,40 +851,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    if (MOBILE) {
-      // Load users from cache
-      dataAccess.getApplicationUsers().then((res) => {
-        setApplicationUsers(res);
-      });
-    } else {
-      api.getApplicationUsers().then((res) => {
-        setApplicationUsers(res);
-      });
-    }
-  }, [isLoading, doc]);
 
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
-
-    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
       savePhotos(photos);
     }
   }, [photos, isLoading]);
-
-  useEffect(() => {
-    if (props.setObservation && doc) {
-      props.setObservation(doc);
-    }
-    setActivityId(doc?._id);
-  }, [doc]);
 
   const [activityId, setActivityId] = useState(doc?._id);
 
   return (
     <Container className={props.classes.container}>
-      {!doc && (
+      {!activityInStore.activity && (
         <>
           <Box mb={3}>
             <Typography variant="h4">Current Activity </Typography>
@@ -955,12 +873,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
 
-      {doc && (
+      {activityInStore.activity && (
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
-              {doc.activitySubtype &&
-                doc.activitySubtype
+              {activityInStore.activity.activitySubtype &&
+                activityInStore.activity.activitySubtype
                   .replace(/([A-Z])/g, ' $1')
                   .replace(/_/g, '')
                   .replace(/^./, function (str) {
@@ -969,9 +887,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+              Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
+            </Typography>
+            <Typography align="center">
+              Date created:{' '}
+              {activityInStore.activity.date_created
+                ? new Date(activityInStore.activity.date_created).toString()
+                : 'unknown'}
             </Typography>
           </Box>
         </>
@@ -981,25 +904,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         () => (
           <ActivityMapComponent
             classes={classes}
-            activityId={activityId}
-            mapId={activityId}
-            geometryState={{ geometry, setGeometry }}
+            activityId={activityInStore.activity.activity_id}
+            mapId={activityInStore.activity.activity_id}
+            geometryState={{ geometry: [activityInStore.activity.geometry], setGeometry: setGeometry }}
             showDrawControls={true}
-            isLoading={isLoading}
+            //isLoading={isLoading}
+            isLoading={false}
           />
         ),
-        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading]
+        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
       )}
 
-      {doc && (
+      {activityInStore.activity && (
         <>
           <ActivityComponent
             customValidation={getCustomValidator([
-              getAreaValidator(doc.activitySubtype),
-              getDateAndTimeValidator(doc.activitySubtype),
-              getWindValidator(doc.activitySubtype),
+              getAreaValidator(activityInStore.activity.activity_subtype),
+              getDateAndTimeValidator(activityInStore.activity.activity_subtype),
+              getWindValidator(activityInStore.activity.activity_subtype),
               getSlopeAspectBothFlatValidator(),
-              getTemperatureValidator(doc.activitySubtype),
+              getTemperatureValidator(activityInStore.activity.activity_subtype),
               getPosAndNegObservationValidator(),
               getTreatedAreaValidator(),
               getTargetPhenologySumValidator(),
@@ -1012,12 +936,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getVegTransectPointsPercentCoverValidator(),
               getJurisdictionPercentValidator(),
               getInvasivePlantsValidator(linkedActivity),
-              getPlotIdentificatiomTreesValidator(doc.activitySubtype)
+              getPlotIdentificatiomTreesValidator(activityInStore.activity.activity_subtype)
             ])}
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
-            activity={doc}
-            suggestedJurisdictions={suggestedJurisdictions}
+            activity={activityInStore.activity}
+            suggestedJurisdictions={activityInStore.suggestedJurisdictions}
             linkedActivity={linkedActivity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}

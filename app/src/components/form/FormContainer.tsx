@@ -30,9 +30,12 @@ import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import PasteButtonComponent from './PasteButtonComponent';
-import { useSelector } from "../../state/utilities/use_selector";
-import { selectAuth } from "../../state/reducers/auth";
-import { selectConfiguration } from "../../state/reducers/configuration";
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectAuth } from '../../state/reducers/auth';
+import { selectConfiguration } from '../../state/reducers/configuration';
+import { selectActivity } from 'state/reducers/activity';
+import { useDispatch } from 'react-redux';
+import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -71,7 +74,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
-  const [formData, setformData] = useState(props.activity?.formData);
+  const [formData, setformData] = useState(props.activity?.form_data);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = useRef(null);
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
@@ -81,13 +84,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { roles, accessRoles, authenticated } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
+  const dispatch = useDispatch();
+  const activityStateInStore = useSelector(selectActivity);
 
+  /*
   useEffect(() => {
-    if (!props.activity?.formData) {
+    if (!activityStateInStore.activity.form_data) {
       return;
     }
     setformData(props.activity?.formData);
   }, [props.activity]);
+  */
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -404,7 +411,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 readonly={props.isDisabled}
                 key={props.activity?._id}
                 disabled={isDisabled}
-                formData={formData || null}
+                //formData={formData || null}
+                formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
                 onFocus={(...args: string[]) => {
                   focusHandler(args);
@@ -436,7 +444,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 }}
                 onChange={(event) => {
                   props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                    setformData(updatedFormData);
+                    //setformData(updatedFormData);
                   });
                 }}
                 onError={(error) => {
@@ -472,14 +480,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   disabled={props.isDisabled}
-                  activitySubType={props.activity.activitySubtype || props.activity.activity_subtype || null}
-                  onChange={(formData, callback) => {
-                    setformData(formData);
+                  activitySubType={activityStateInStore.activity.activity_subtype || null}
+                  onChange={(form_data, callback) => {
+                    //todo redux chem treatment form on change
+                    dispatch({
+                      type: ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+                      payload: {
+                        eventFormData: form_data
+                      }
+                    });
+                    //setformData(formData);
                     if (callback !== null) {
                       callback();
                     }
                   }}
-                  formData={formData}
+                  form_data={activityStateInStore.activity.form_data}
                   schema={schemas.schema}
                 />
               )}

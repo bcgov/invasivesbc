@@ -240,7 +240,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
       if (
         pathsToMatchAgainst.some((pathToMatch) => {
-          return window.location.pathname.includes(pathToMatch);
+          return window.location.pathname.includes(pathToMatch) && !open;
         })
       ) {
         return index;
@@ -335,7 +335,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     };
     setTabConfigBasedOnRoles();
     return ()=> setTabConfig([])
-  }, [showLoggedInTabs, isAdmin]);
+  }, [showLoggedInTabs, isAdmin ]);
 
 
   return useMemo(() => {
@@ -413,7 +413,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 indicatorColor="secondary"
                 textColor="inherit"
                 //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
-                value={getActiveTab()}
+                value={tabConfig[getActiveTab()]? getActiveTab(): false}
                 color="primary"
                 centered
                 style={{ width: '80%', color: '#fff' }}

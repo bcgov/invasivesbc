@@ -348,7 +348,7 @@ export function generateDBActivityPayload(
     activity_id: id,
     date_created: time
   });
-  return {
+  let returnVal = {
     _id: id,
     short_id: short_id,
     activity_id: id,
@@ -363,7 +363,8 @@ export function generateDBActivityPayload(
       activity_data: {
         ...formData?.activity_data,
         activity_date_time: time
-      }
+      },
+      activity_subtype_data: {}
     },
     media: undefined,
     created_by: undefined,
@@ -374,6 +375,20 @@ export function generateDBActivityPayload(
     reviewed_by: undefined,
     reviewed_at: undefined
   };
+  if (returnVal.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant) {
+    returnVal.form_data.activity_subtype_data.chemical_treatment_details = {
+      invasive_plants: [],
+      herbicides: [],
+      tank_mix: false,
+      chemical_application_method: null,
+      tank_mix_object: {
+        herbicides: [],
+        calculation_type: null
+      },
+      skipAppRateValidation: false
+    };
+  }
+  return returnVal;
 }
 
 export function cloneDBRecord(dbRecord) {
@@ -478,9 +493,9 @@ export function populateSpeciesArrays(record) {
   let species_positive = [];
   let species_negative = [];
   let species_treated = [];
-  const subtypeData = record?.formData?.activity_subtype_data;
+  const subtypeData = record?.form_data?.activity_subtype_data;
 
-  switch (record.activitySubtype) {
+  switch (record.activity_subtype) {
     case ActivitySubtype.Observation_PlantTerrestrial:
       species_positive = subtypeData?.TerrestrialPlants?.filter((plant) => plant.occurrence?.includes('Positive')).map(
         (plant) => plant.invasive_plant_code

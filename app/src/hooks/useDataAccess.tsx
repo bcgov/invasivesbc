@@ -25,7 +25,8 @@ import { selectNetworkConnected } from '../state/reducers/network';
 export const useDataAccess = () => {
   const api = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
-  const { MOBILE } = useSelector(selectConfiguration);
+  //const { MOBILE } = useSelector(selectConfiguration);
+  const MOBILE = false;
   const connected = useSelector(selectNetworkConnected);
 
   /**
@@ -757,7 +758,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const getAppState = async (): Promise<any> => {
-    if (MOBILE) {
+    if (!MOBILE) {
       const raw_old = localStorage.getItem('appstate-invasivesbc');
       if (raw_old) {
         return JSON.parse(raw_old);
@@ -823,7 +824,7 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const setAppState = async (newState: any): Promise<any> => {
-    if (MOBILE) {
+    if (!MOBILE) {
       const old = getAppState();
       if (old) {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));

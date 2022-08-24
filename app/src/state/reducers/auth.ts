@@ -6,7 +6,8 @@ import {
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_REQUEST_COMPLETE, AUTH_SIGNOUT_COMPLETE,
+  AUTH_REQUEST_COMPLETE,
+  AUTH_SIGNOUT_COMPLETE,
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 
@@ -98,9 +99,11 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
     if (keycloakInstance.idTokenParsed['idir_userid']) idir_userid = keycloakInstance.idTokenParsed['idir_userid'];
     if (keycloakInstance.idTokenParsed['bceid_userid']) bceid_userid = keycloakInstance.idTokenParsed['bceid_userid'];
     username = keycloakInstance.idTokenParsed['preferred_username'];
-    if ('display_name' in keycloakInstance.idTokenParsed &&
+    if (
+      'display_name' in keycloakInstance.idTokenParsed &&
       keycloakInstance.idTokenParsed['display_name'] !== null &&
-      keycloakInstance.idTokenParsed['display_name'].length > 0) {
+      keycloakInstance.idTokenParsed['display_name'].length > 0
+    ) {
       // BCEid token has this attribute set
       displayName = keycloakInstance.idTokenParsed['display_name'];
     } else {

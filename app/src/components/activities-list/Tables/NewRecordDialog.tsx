@@ -18,7 +18,13 @@ import { UserRolesAccess } from 'constants/roles';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import {
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  ACTIVITY_CREATE_REQUEST,
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
+} from 'state/actions';
+import { selectActivity } from 'state/reducers/activity';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -49,6 +55,12 @@ export interface INewRecordDialog {
   handleDialogClose: () => void;
 }
 
+export interface INewRecordDialogState {
+  recordCategory: string;
+  recordSubtype: string;
+  recordType: string;
+}
+
 const NewRecordDialog = (props: INewRecordDialog) => {
   const dispatch = useDispatch();
 
@@ -58,15 +70,12 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
   const databaseContext = useContext(DatabaseContext);
 
-  const [activityCategory, setActivityCategory] = useState('');
-  const [activityType, setActivityType] = useState('');
-  const [activitySubType, setActivitySubType] = useState('');
-
   const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState([]);
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const { displayName,  accessRoles ,username} = useSelector(selectAuth);
+  const { displayName, accessRoles, username } = useSelector(selectAuth);
+  const { newRecordDialogState } = useSelector(selectUserSettings);
 
   useEffect(() => {
     const categories = [];
@@ -111,67 +120,99 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
     setActivityCategorySelectOptions(categories);
 
-    const fetchAndSetCategory = async () => {
-      const result = await dataAccess.getAppState();
-      const cachedCategory = result?.newActivityChoices?.category || undefined;
-
-      if (!cachedCategory) {
-        setActivityCategory('');
-      } else {
-        setActivityCategory(cachedCategory);
-      }
+    // TODO: Update this to cache for mobile as well
+    const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
+    if (cachedDialogState && JSON.parse(cachedDialogState).recordCategory) {
+      setNewRecordDialogState({
+        ...newRecordDialogState,
+        recordCategory: JSON.parse(cachedDialogState).recordCategory
+      });
+    } else {
+      setNewRecordDialogState({ ...newRecordDialogState, recordCategory: '' });
     }
-    fetchAndSetCategory();
+    // const fetchAndSetCategory = async () => {
+    //   const result = await dataAccess.getAppState();
+    //   const cachedCategory = result?.newActivityChoices?.category || undefined;
+
+    //   if (!cachedCategory) {
+    //     setNewRecordDialogState({ ...newRecordDialogState, recordCategory: '' });
+    //   } else {
+    //     setNewRecordDialogState({ ...newRecordDialogState, recordCategory: cachedCategory });
+    //   }
+    // };
+    // fetchAndSetCategory();
   }, []);
 
   useEffect(() => {
-    if (!activityCategory) {
+    if (!newRecordDialogState.recordCategory) {
       setActivityTypeSelectOptions([]);
-      setActivityType('');
+      setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
     } else {
       const types = [];
-      Object.keys(ActivitySubtypeRelations[activityCategory]).forEach((key) => {
+      Object.keys(ActivitySubtypeRelations[newRecordDialogState.recordCategory]).forEach((key) => {
         types.push(key);
       });
       setActivityTypeSelectOptions(types);
 
-      const fetchAndCacheType = async () => {
-        const result = await dataAccess.getAppState();
-        const cachedType = result?.newActivityChoices?.type || undefined;
-        if (!cachedType) {
-          setActivityType('');
-        } else {
-          setActivityType(cachedType);
-        }
+      // TODO: Update this to cache for mobile as well
+      const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
+      if (cachedDialogState && JSON.parse(cachedDialogState).recordType) {
+        setNewRecordDialogState({
+          ...newRecordDialogState,
+          recordType: JSON.parse(cachedDialogState).recordType
+        });
+      } else {
+        setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
       }
-      fetchAndCacheType();
+      // const fetchAndCacheType = async () => {
+      //   const result = await dataAccess.getAppState();
+      //   const cachedType = result?.newActivityChoices?.type || undefined;
+      //   if (!cachedType) {
+      //     setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
+      //   } else {
+      //     setNewRecordDialogState({ ...newRecordDialogState, recordType: cachedType });
+      //   }
+      // };
+      // fetchAndCacheType();
     }
-  }, [activityCategory]);
+  }, [newRecordDialogState.recordCategory]);
 
   useEffect(() => {
-    if (!activityType || !activityCategory) {
+    if (!newRecordDialogState.recordType || !newRecordDialogState.recordCategory) {
       setActivitySubTypeSelectOptions([]);
-      setActivitySubType('');
+      setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
     } else {
-      const subTypes = ActivitySubtypeRelations[activityCategory][activityType];
+      const subTypes = ActivitySubtypeRelations[newRecordDialogState.recordCategory][newRecordDialogState.recordType];
       setActivitySubTypeSelectOptions(subTypes);
 
-      const fetchAndCacheSubtype = async () => {
-        const result = await dataAccess.getAppState();
-        const cachedSubType = result?.newActivityChoices?.subType || undefined;
-
-        if (!cachedSubType) {
-          setActivitySubType('');
-        } else {
-          setActivitySubType(cachedSubType);
-        }
+      // TODO: Update this to cache for mobile as well
+      const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
+      if (cachedDialogState && JSON.parse(cachedDialogState).recordSubtype) {
+        setNewRecordDialogState({
+          ...newRecordDialogState,
+          recordSubtype: JSON.parse(cachedDialogState).recordSubtype
+        });
+      } else {
+        setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
       }
-      fetchAndCacheSubtype();
+      // const fetchAndCacheSubtype = async () => {
+      //   const result = await dataAccess.getAppState();
+      //   const cachedSubType = result?.newActivityChoices?.subType || undefined;
+
+      //   if (!cachedSubType) {
+      //     setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
+      //   } else {
+      //     setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: cachedSubType });
+      //   }
+      // };
+      // fetchAndCacheSubtype();
     }
-  }, [activityType]);
+  }, [newRecordDialogState.recordType]);
 
   const insert_record = async () => {
-    if (!activityType || !activityCategory || !activitySubType) {
+    // TODO: fix
+    /*
+    if (!activityType || !recordCategory || !activitySubType) {
       return;
     }
     const dbActivity = generateDBActivityPayload({}, null, activityType, activitySubType);
@@ -185,29 +226,40 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     await dataAccess.setAppState({
       activeActivity: dbActivity.activity_id,
       newActivityChoices: {
-        category: activityCategory,
+        category: recordCategory,
         type: activityType,
         subType: activitySubType
       }
     });
 
     //return dbActivity.activity_id;
+    */
+
+    dispatch({
+      type: ACTIVITY_CREATE_REQUEST,
+      payload: { type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype }
+    });
+
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });
-    }, 1000);
+    }, 2000);
     props.handleDialogClose();
   };
 
-  const handleActivityCategoryChange = (event: any) => {
-    setActivityCategory(event.target.value);
+  const setNewRecordDialogState = (value: INewRecordDialogState) => {
+    dispatch({ type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST, payload: value });
   };
 
-  const handleActivityTypeChange = (event: any) => {
-    setActivityType(event.target.value);
+  const handleRecordCategoryChange = (event: any) => {
+    setNewRecordDialogState({ ...newRecordDialogState, recordCategory: event.target.value });
   };
 
-  const handleActivitySubTypeChange = (event: any) => {
-    setActivitySubType(event.target.value);
+  const handleRecordTypeChange = (event: any) => {
+    setNewRecordDialogState({ ...newRecordDialogState, recordType: event.target.value });
+  };
+
+  const handleRecordSubtypeChange = (event: any) => {
+    setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: event.target.value });
   };
 
   return (
@@ -219,8 +271,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
           <InputLabel>Record Category</InputLabel>
           <Select
             className={classes.select}
-            value={activityCategory}
-            onChange={handleActivityCategoryChange}
+            value={newRecordDialogState.recordCategory}
+            onChange={handleRecordCategoryChange}
             label="Select Form Type">
             {activityCategorySelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
@@ -233,10 +285,10 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         <FormControl>
           <InputLabel>Record Type</InputLabel>
           <Select
-            disabled={activityCategory === ''}
+            disabled={newRecordDialogState.recordCategory === ''}
             className={classes.select}
-            value={activityType}
-            onChange={handleActivityTypeChange}
+            value={newRecordDialogState.recordType}
+            onChange={handleRecordTypeChange}
             label="Select Form Type">
             {activityTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
@@ -249,10 +301,10 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         <FormControl>
           <InputLabel>Record Sub-Type</InputLabel>
           <Select
-            disabled={activityType === ''}
+            disabled={newRecordDialogState.recordType === ''}
             className={classes.select}
-            value={activitySubType}
-            onChange={handleActivitySubTypeChange}
+            value={newRecordDialogState.recordSubtype}
+            onChange={handleRecordSubtypeChange}
             label="Select Form Type">
             {activitySubTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
@@ -273,7 +325,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         <Button
           variant="contained"
           aria-label="Create Record"
-          disabled={activitySubType === ''}
+          disabled={newRecordDialogState.recordSubtype === ''}
           onClick={insert_record}>
           New Record
         </Button>

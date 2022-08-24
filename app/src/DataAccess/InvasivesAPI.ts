@@ -25,14 +25,9 @@ import { selectAuthHeaders } from "../state/reducers/auth";
  *
  * @return {object} object whose properties are supported api methods.
  */
-export const useInvasivesApi = () => {
-  const databaseContext = useContext(DatabaseContext);
-  const errorContext = useContext(ErrorContext);
-  const { API_BASE} = useSelector(selectConfiguration);
-const DEBUG = false;
-// const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
-// const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
-  const requestHeaders = useSelector(selectAuthHeaders);
+  const API_BASE = ''
+  const DEBUG  = false;
+  const requestHeaders = null;//useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
     return {
@@ -43,13 +38,6 @@ const DEBUG = false;
 
   const checkForErrors = (response: any, status?: any, url?: any) => {
     if (response.code > 201) {
-      errorContext.pushError({
-        message: response.message
-          ? response.message
-          : "We're not sure what happened there. Try again in a few minutes.",
-        code: status ? status : 500,
-        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && url
-      });
     }
   };
 
@@ -59,7 +47,7 @@ const DEBUG = false;
    * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
-  const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
+  export const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       method: 'POST',
@@ -648,7 +636,7 @@ const DEBUG = false;
    * @param {string} activityId
    * @return {*}  {Promise<any>}
    */
-  const getActivityById = async (activityId: string): Promise<any> => {
+  export const getActivityById = async (activityId: string): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       headers: { ...options.headers },
@@ -848,152 +836,10 @@ const DEBUG = false;
    *
    * @return {*}  {Promise<any>}
    */
-  const getCachedApiSpec = async (): Promise<any> => {
-    try {
-      // on mobile - think there is internet:
-      if (MOBILE) {
-        // try to cache spec, then return it:
-        try {
-          const webResponse = await getApiSpec();
-          cacheSpec(webResponse);
-          return webResponse;
-        } catch (e) {
-          console.dir(e);
-          return await getSpecFromCache();
-        }
-      } else {
-        // must be web, try online:
-        return await getApiSpec();
-      }
-    } catch (e) {
-      console.log('Unable to get api spec');
-      console.log(JSON.stringify(e));
-    }
-  };
+ 
 
-  const getSpecFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
-      asyncTask: async () => {
-        let res = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.API_SPEC,
-            ID: '1'
-          },
-          databaseContext
-        );
-        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        return res;
-      }
-    });
 
-    if (data?.result?.length > 0) {
-      data = JSON.parse(data.result[0].json);
-      return data.result;
-    }
-  };
 
-  const cacheUserInfo = async (data) => {
-    if (data) {
-      console.log('Attempting to cachce user info...');
-      try {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.USER_INFO,
-                  json: data,
-                  ID: '1'
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-        return true;
-      } catch (e) {
-        alert('Unable to cache user info and roles');
-        console.log('ERROR: ', e);
-      }
-    }
-    return false;
-  };
-
-  const clearUserInfoFromCache = async () => {
-    console.log('Clearing user info from cache...');
-    try {
-      await databaseContext.asyncQueue({
-        asyncTask: async () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
-                ID: '1',
-                docType: DocType.USER_INFO
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-      return true;
-    } catch (e) {
-      alert('unable to remove user info from cache');
-    }
-    return false;
-  };
-
-  const getUserInfoFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
-      asyncTask: async () => {
-        let res = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.USER_INFO,
-            ID: '1'
-          },
-          databaseContext
-        );
-        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        return res;
-      }
-    });
-    if (data) {
-      return JSON.parse(JSON.stringify(data));
-    } else {
-      console.log('No information found when attempting to fetch cached user');
-    }
-  };
-
-  const cacheSpec = async (data) => {
-    if (data.components) {
-      console.log('caching spec');
-      //cache if on mobile
-      try {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.API_SPEC,
-                  json: data,
-                  ID: '1'
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-        return true;
-      } catch (e) {
-        alert('unable to cache api spec');
-      }
-    }
-    return false;
-  };
 
   /**
    * Fetch species details.
@@ -1188,59 +1034,3 @@ const DEBUG = false;
     return data.result;
   };
 
-  return {
-    getMedia,
-    getSpeciesDetails,
-    getActivities,
-    getActivitiesLean,
-    deleteActivities,
-    undeleteActivities,
-    getActivityById,
-    createActivity,
-    updateActivity,
-    getApiSpec,
-    getCachedApiSpec,
-    getGridItemsThatOverlapPolygon,
-    getPointsOfInterest,
-    getPointsOfInterestLean,
-    getMetabaseQueryResults,
-    getMetabaseQueryOptions,
-    getSimplifiedGeoJSON,
-    getAccessRequestData,
-    createMetabaseQuery,
-    getBatchUploads,
-    postBatchUpload,
-    downloadTemplate,
-    listCodeTables,
-    fetchCodeTable,
-    getJurisdictions,
-    getRISOs,
-    cacheUserInfo,
-    getUserInfoFromCache,
-    clearUserInfoFromCache,
-    getApplicationUsers,
-    submitAccessRequest,
-    getEmployers,
-    getFundingAgencies,
-    getRolesForUser,
-    getUsersForRole,
-    batchGrantRoleToUser,
-    revokeRoleFromUser,
-    getRoles,
-    getAccessRequests,
-    getUserByIDIR,
-    getUserByBCEID,
-    approveAccessRequests,
-    declineAccessRequest,
-    renewUser,
-    getAdminUploadGeoJSONLayers,
-    postAdminUploadShape,
-    submitUpdateRequest,
-    getUpdateRequests,
-    declineUpdateRequest,
-    approveUpdateRequests,
-    listEmbeddedMetabaseReports,
-    getEmbeddedMetabaseReport,
-    getIappJurisdictions
-  };
-};

@@ -498,9 +498,6 @@ const ActivityGrid = (props) => {
   //   });
   // }, [rows, filters]);
 
-  useEffect(() => {
-    console.log('filters updated: ', filters);
-  }, [filters]);
 
   function clearFilters() {
     setFilters({

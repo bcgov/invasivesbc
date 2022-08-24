@@ -82,7 +82,7 @@ const EditTools = (props: any) => {
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
-    (context.layerContainer as any).clearLayers();
+   // (context.layerContainer as any).clearLayers();
     var newLayer = e.layer;
 
     context.layerContainer.addLayer(newLayer);
@@ -100,7 +100,8 @@ const EditTools = (props: any) => {
       newState = aGeo ? [...newState, aGeo] : newState;
       props.geometryState.setGeometry([...newState]);
     } else {
-      (context.layerContainer as any).clearLayers();
+
+     // (context.layerContainer as any).clearLayers();
       props.geometryState.setGeometry([aGeo]);
     }
   };
@@ -116,6 +117,7 @@ const EditTools = (props: any) => {
       updatedGeoJSON.push(aGeo);
     });
 
+    ///(context.layerContainer as any).clearLayers();
     props.geometryState.setGeometry(updatedGeoJSON);
   };
 
@@ -134,9 +136,8 @@ const EditTools = (props: any) => {
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
   useMapEvent('draw:drawstart' as any, (e) => {
-    // if (!multiMode) {
+    console.log('****CLEAR LAYERS');
     (context.layerContainer as any).clearLayers();
-    // }
   });
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
@@ -289,7 +290,8 @@ const EditTools = (props: any) => {
 
     //setGeometryMapBounds();
     updateMapOnGeometryChange();
-  }, [props.geometryState.geometry]);
+//  }, [props.geometryState.geometry]);
+  }, []);
 
   // Get out if the tools are already defined.
   if (!(drawRef?.current as any)?._map) {
