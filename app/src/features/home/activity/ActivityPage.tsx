@@ -63,7 +63,8 @@ import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST
+  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
+  ACTIVITY_SUBMIT_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
@@ -257,10 +258,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           actionName: 'Yes',
           actionOnClick: async () => {
             setWarningDialog({ ...warningDialog, dialogOpen: false });
-            let newDoc = { ...doc };
-            newactivityInStore.activity.form_status = ActivityStatus.SUBMITTED;
+            dispatch({
+              type: ACTIVITY_SUBMIT_REQUEST,
+              payload: {
+                activity_ID: activityInStore.activity.activity_id
+              }
+            });
             try {
-              await updateDoc(newDoc, 'Official Submit');
               setAlertSavedOpen(true);
               setTimeout(() => {
                 history.push('/home/activities');
@@ -543,18 +547,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
-    const newDoc = {
-      //      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
-      status: ActivityStatus.DRAFT,
-      dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT,
-      geometry: geometry?.length ? [...geometry] : []
-    };
-    setCanSubmitWithoutErrors(false);
+    setCanSubmitWithoutErrors(true);
 
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
-      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
+      payload: {
+        activity_ID: activityInStore.activity.activity_id,
+        updatedFormData: { ...formData, form_status: ActivityStatus.SUBMITTED }
+      }
     });
     setAlertSavedOpen(true);
   };
@@ -854,7 +854,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    if (MOBILE) {
+    if (true) {
       // Load users from cache
       dataAccess.getApplicationUsers().then((res) => {
         setApplicationUsers(res);

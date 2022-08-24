@@ -1,4 +1,5 @@
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
+import { ActivityStatus } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
 import { throttle } from 'redux-saga/effects';
 
@@ -128,5 +129,17 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_CREATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
+  try {
+    yield put({
+      type: ACTIVITY_SAVE_NETWORK_REQUEST,
+      payload: { activity_id: action.payload.activity_id, form_status: ActivityStatus.SUBMITTED }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }

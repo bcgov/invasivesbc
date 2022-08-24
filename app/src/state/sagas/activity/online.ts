@@ -1,4 +1,5 @@
 import { Http } from '@capacitor-community/http';
+import { ActivityStatus } from 'constants/activities';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
 import { ACTIVITY_CREATE_SUCCESS, ACTIVITY_GET_SUCCESS, ACTIVITY_SAVE_SUCCESS } from 'state/actions';
@@ -69,7 +70,16 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //save to server
 
   const oldActivity = yield select(selectActivity);
-  const newActivity = { ...oldActivity.activity, form_data: action.payload.updatedFormData };
+
+  const newActivity = {
+    ...oldActivity.activity,
+    form_data: action.payload.updatedFormData ? action.payload.updatedFormData : oldActivity.activity.form_data,
+    form_status: [ActivityStatus.DRAFT, ActivityStatus.IN_REVIEW, ActivityStatus.SUBMITTED].includes(
+      action.payload.form_status
+    )
+      ? action.payload.form_status
+      : ActivityStatus.DRAFT
+  };
 
   const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
     ...newActivity,
