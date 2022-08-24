@@ -16,6 +16,9 @@ import {
   USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET_FAILURE
 } from '../actions';
+import { ActivityStatus } from 'constants/activities';
+import { useSelector } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
 
 function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
   try {
@@ -45,12 +48,45 @@ function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
+  const username = select(selectAuth);
+
+  const defaultRecordSet = {
+    ['1']: {
+      recordSetType: 'Activity',
+      recordSetName: 'My Drafts',
+      advancedFilters: [
+        {
+          filterField: 'created_by',
+          filterValue: username,
+          filterKey: 'created_by' + username
+        },
+        {
+          filterField: 'record_status',
+          filterValue: ActivityStatus.DRAFT,
+          filterKey: 'record_status' + ActivityStatus.DRAFT
+        }
+      ]
+    },
+    ['2']: {
+      recordSetType: "Activity",
+      recordSetName: 'All InvasivesBC Activities',
+      advancedFilters: []
+    },
+    ['3']: {
+      recordSetType: "POI",
+      recordSetName: 'All IAPP Records',
+      advancedFilters: []
+    }
+  }
+
   try {
     const oldID = localStorage.getItem('activeActivity');
+    // needs mobile later
+    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
 
-    if (oldID) {
-      yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID } });
-    }
+    const recordSets = oldAppState.recordSets ? oldAppState.recordSets : defaultRecordSet;
+    
+    yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID, recordSets: recordSets} });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_FAILURE });

@@ -38,7 +38,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activeActivity
+          activeActivity: action.payload.activeActivity,
+          recordSets: action.payload.recordSets
         };
       }
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {

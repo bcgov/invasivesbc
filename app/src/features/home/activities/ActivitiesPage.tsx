@@ -27,6 +27,7 @@ import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserSettings } from 'state/reducers/userSettings';
 interface IStatusPageProps {
   classes?: any;
 }
@@ -105,6 +106,7 @@ const PageContainer = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
   const { MOBILE } = useSelector(selectConfiguration);
+  const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
   const updateWidth = () => {
@@ -387,7 +389,7 @@ const PageContainer = (props) => {
           () => (
             <RecordSetRenderer />
           ),
-          [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord]
+          [userSettings?.recordSets?.length, recordStateContext?.selectedRecord]
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
