@@ -34,6 +34,8 @@ import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
 import { selectConfiguration } from '../../state/reducers/configuration';
 import { selectActivity } from 'state/reducers/activity';
+import { useDispatch } from 'react-redux';
+import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -82,6 +84,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { roles, accessRoles, authenticated } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
+  const dispatch = useDispatch();
   const activityStateInStore = useSelector(selectActivity);
 
   /*
@@ -477,14 +480,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   disabled={props.isDisabled}
-                  activitySubType={props.activity.activitySubtype || props.activity.activity_subtype || null}
-                  onChange={(formData, callback) => {
-                    setformData(formData);
+                  activitySubType={activityStateInStore.activity.activity_subtype || null}
+                  onChange={(form_data, callback) => {
+                    //todo redux chem treatment form on change
+                    dispatch({
+                      type: ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+                      payload: {
+                        eventFormData: form_data
+                      }
+                    });
+                    //setformData(formData);
                     if (callback !== null) {
                       callback();
                     }
                   }}
-                  formData={formData}
+                  form_data={activityStateInStore.activity.form_data}
                   schema={schemas.schema}
                 />
               )}

@@ -19,10 +19,10 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
 
   const businessCodes = formDetails.businessCodes;
 
-  const invasivePlantsArr = formDetails.formData.invasive_plants;
+  const invasivePlantsArr = formDetails.form_data.invasive_plants;
 
   const [currentInvasivePlant, setCurrentInvasivePlant] = useState<IInvasivePlant>(
-    formDetails.formData.invasive_plants[index]
+    formDetails.form_data.invasive_plants[index]
   );
 
   //creating valueLabels to to get the lable for heading
@@ -41,12 +41,12 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
   useEffect(() => {
     if (currentInvasivePlant !== species) {
       setFormDetails((prevDetails) => {
-        const newSpeciesArr = [...prevDetails.formData.invasive_plants];
+        const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
         newSpeciesArr[index] = currentInvasivePlant;
         return {
           ...prevDetails,
           formData: {
-            ...prevDetails.formData,
+            ...prevDetails.form_data,
             invasive_plants: newSpeciesArr
           }
         };
@@ -126,12 +126,12 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         disabled={formDetails.disabled}
         onClick={() => {
           setFormDetails((prevDetails) => {
-            const newSpeciesArr = [...prevDetails.formData.invasive_plants];
+            const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
             newSpeciesArr.splice(index, 1);
             return {
               ...prevDetails,
-              formData: {
-                ...prevDetails.formData,
+              form_data: {
+                ...prevDetails.form_data,
                 invasive_plants: newSpeciesArr
               }
             };

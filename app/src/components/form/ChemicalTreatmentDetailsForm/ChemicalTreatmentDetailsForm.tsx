@@ -81,19 +81,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   //main usestate that holds all form data
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    formData: !props.formData?.activity_subtype_data?.chemical_treatment_details
-      ? {
-          invasive_plants: [],
-          herbicides: [],
-          tank_mix: false,
-          chemical_application_method: null,
-          tank_mix_object: {
-            herbicides: [],
-            calculation_type: null
-          },
-          skipAppRateValidation: false
-        }
-      : { ...props.formData.activity_subtype_data.chemical_treatment_details },
+    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
     herbicideDictionary: herbicideDictionary,
     activitySubType: props.activitySubType,
@@ -106,17 +94,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
   const [reportedArea, setReportedArea] = useState(0);
 
   useEffect(() => {
-    setReportedArea(props.formData.activity_data.reported_area);
-  }, [props.formData]);
+    setReportedArea(props.form_data.activity_data.reported_area);
+  }, [props.form_data]);
 
   //when formDetails change, run validation and if it passes, perform calculations
   useEffect(() => {
     props.onChange(
       {
-        ...props.formData,
+        ...props.form_data,
         activity_subtype_data: {
-          ...props.formData.activity_subtype_data,
-          chemical_treatment_details: { ...formDetails.formData }
+          ...props.form_data.activity_subtype_data,
+          chemical_treatment_details: { ...formDetails.form_data }
         }
       },
       () => {
@@ -124,24 +112,24 @@ const ChemicalTreatmentDetailsForm = (props) => {
         //run validation
         const newErr = runValidation(
           reportedArea,
-          formDetails.formData,
+          formDetails.form_data,
           lerrors,
           businessCodes,
           herbicideDictionary,
-          formDetails.formData.skipAppRateValidation
+          formDetails.form_data.skipAppRateValidation
         );
         setLocalErrors([...newErr]);
 
         //if no errors, perform calculations
         if (newErr.length < 1) {
-          const results = performCalculation(reportedArea, formDetails.formData, businessCodes);
+          const results = performCalculation(reportedArea, formDetails.form_data, businessCodes);
           setCalculationResults(results as any);
           props.onChange(
             {
-              ...props.formData,
+              ...props.form_data,
               activity_subtype_data: {
-                ...props.formData.activity_subtype_data,
-                chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
+                ...props.form_data.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.form_data, calculation_results: results, errors: false }
               }
             },
             null
@@ -149,10 +137,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
         } else {
           props.onChange(
             {
-              ...props.formData,
+              ...props.form_data,
               activity_subtype_data: {
-                ...props.formData.activity_subtype_data,
-                chemical_treatment_details: { ...formDetails.formData, errors: true, calculation_results: undefined }
+                ...props.form_data.activity_subtype_data,
+                chemical_treatment_details: { ...formDetails.form_data, errors: true, calculation_results: undefined }
               }
             },
             null
@@ -184,7 +172,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
 
                 setFormDetails((prev) => {
-                  return { ...prev, formData: { ...prev.formData, skipAppRateValidation: true } };
+                  return { ...prev, formData: { ...prev.form_data, skipAppRateValidation: true } };
                 });
               },
               autoFocus: true
@@ -196,13 +184,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
   }, [localErrors]);
 
   //use state hooks for general fields outside any objects
-  const [tankMixOn, setTankMixOn] = useState(formDetails.formData.tank_mix);
+  const [tankMixOn, setTankMixOn] = useState(formDetails.form_data.tank_mix);
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
-    formDetails.formData.chemical_application_method
+    formDetails.form_data.chemical_application_method
   );
 
   //set chemical application method choices based on the value of tank mix
-  const chemicalApplicationMethodChoices = formDetails.formData.tank_mix
+  const chemicalApplicationMethodChoices = formDetails.form_data.tank_mix
     ? [...businessCodes['chemical_method_spray']]
     : [...businessCodes['chemical_method_spray'], ...businessCodes['chemical_method_direct']];
 
@@ -215,8 +203,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
   useEffect(() => {
     setFormDetails((prevFormDetails) => ({
       ...prevFormDetails,
-      formData: {
-        ...prevFormDetails.formData,
+      form_data: {
+        ...prevFormDetails.form_data,
         tank_mix: tankMixOn,
         chemical_application_method: chemicalApplicationMethod,
         chemical_application_method_type: chemical_method_direct_code_values.includes(chemicalApplicationMethod)

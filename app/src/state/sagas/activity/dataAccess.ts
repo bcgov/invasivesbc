@@ -23,7 +23,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST
+  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
+  ACTIVITY_ON_FORM_CHANGE_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -108,7 +109,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
-    let updatedFormData = populateSpeciesArrays(action.payload.eventFormData);
+
+    let updatedFormData = action.payload.eventFormData;
 
     //updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total release quantity (only on biocontrol release activity)
@@ -121,14 +123,13 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     if (beforeState.activity.activity_type === ActivityType.Treatment) {
       updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
     }
+    let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
 
     //handleRecordLinking(updatedFormData);
 
-    const after = { ...beforeActivity, form_data: { ...beforeActivity.form_data, ...updatedFormData } };
-
     yield put({
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-      payload: { activity: after, lastField: action.payload.lastField }
+      payload: { activity: updatedActivity, lastField: action.payload.lastField }
     });
 
     //call autofill events
@@ -192,6 +193,18 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(action) {
+  try {
+    yield put({
+      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+      payload: { eventFormData: action.payload.eventFormData }
     });
   } catch (e) {
     console.error(e);

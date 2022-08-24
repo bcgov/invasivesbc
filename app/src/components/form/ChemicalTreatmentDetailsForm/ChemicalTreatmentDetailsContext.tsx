@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IGeneralFields } from './Models';
 
 export interface IChemicalDetailsContextformDetails {
-  formData?: IGeneralFields;
+  form_data?: IGeneralFields;
   errors?: any[];
   herbicideDictionary?: any;
   businessCodes?: any;

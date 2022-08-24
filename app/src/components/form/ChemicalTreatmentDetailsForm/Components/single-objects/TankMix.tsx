@@ -8,13 +8,13 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
 
 const TankMix: React.FC = (props) => {
-  const formDataContext = useContext(ChemicalTreatmentDetailsContext);
-  const { formDetails, setFormDetails } = formDataContext;
+  const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
+  const { formDetails, setFormDetails } = form_dataContext;
 
   const classes = useFormStyles();
   const businessCodes = formDetails.businessCodes;
 
-  const [currentTankMix, setCurrentTankMix] = useState(formDetails.formData.tank_mix_object);
+  const [currentTankMix, setCurrentTankMix] = useState(formDetails.form_data.tank_mix_object);
   const [amountOfMixUsedKey, setAmountOfMixUsedKey] = useState(undefined);
   const [deliveryRateOfMixKey, setDeliveryRateOfMixKey] = useState(undefined);
 
@@ -22,10 +22,10 @@ const TankMix: React.FC = (props) => {
   useEffect(() => {
     setFormDetails((prevDetails) => ({
       ...prevDetails,
-      formData: {
-        ...prevDetails.formData,
+      form_data: {
+        ...prevDetails.form_data,
         tank_mix_object: {
-          ...formDetails.formData.tank_mix_object,
+          ...formDetails.form_data.tank_mix_object,
           delivery_rate_of_mix: currentTankMix.delivery_rate_of_mix,
           amount_of_mix: currentTankMix.amount_of_mix,
           calculation_type: currentTankMix.calculation_type
@@ -56,7 +56,7 @@ const TankMix: React.FC = (props) => {
         id={'calculation_type'}
         key={'calculation_type'}
         label={'Calculation Type'}
-        actualValue={formDetails.formData.tank_mix_object.calculation_type}
+        actualValue={formDetails.form_data.tank_mix_object.calculation_type}
         parentState={{ currentTankMix, setCurrentTankMix }}
         onChange={(event, value) => {
           if (value === null) {

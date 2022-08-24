@@ -10,7 +10,7 @@ const TankMixAccordion = () => {
   const { formDetails } = formDataContext;
 
   const classes = useFormStyles();
-  const tankMixOn = formDetails.formData.tank_mix;
+  const tankMixOn = formDetails.form_data.tank_mix;
 
   return (
     <Accordion expanded={tankMixOn} disabled={!tankMixOn}>

@@ -36,12 +36,12 @@ const InvasivePlantsAccordion = () => {
               disabled={formDetails.disabled}
               onClick={() => {
                 setFormDetails((prevDetails) => {
-                  const newSpeciesArr = [...prevDetails.formData.invasive_plants];
+                  const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
                   newSpeciesArr.push({ invasive_plant_code: null, index: newSpeciesArr.length });
                   return {
                     ...prevDetails,
-                    formData: {
-                      ...prevDetails.formData,
+                    form_data: {
+                      ...prevDetails.form_data,
                       invasive_plants: newSpeciesArr
                     }
                   };
@@ -55,7 +55,7 @@ const InvasivePlantsAccordion = () => {
           </Box>
 
           <Box component="div" className={classes.listContainer}>
-            {formDetails.formData.invasive_plants.map((species, index) => {
+            {formDetails.form_data.invasive_plants.map((species, index) => {
               return <InvasivePlant species={species} key={index} index={index} classes={classes} />;
             })}
           </Box>
