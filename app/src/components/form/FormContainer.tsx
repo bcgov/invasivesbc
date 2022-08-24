@@ -33,6 +33,7 @@ import PasteButtonComponent from './PasteButtonComponent';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
 import { selectConfiguration } from '../../state/reducers/configuration';
+import { selectActivity } from 'state/reducers/activity';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -81,12 +82,16 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { roles, accessRoles, authenticated } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
+  const activityStateInStore = useSelector(selectActivity);
+
+  /*
   useEffect(() => {
-    if (!props.activity?.formData) {
+    if (!activityStateInStore.activity.form_data) {
       return;
     }
     setformData(props.activity?.formData);
   }, [props.activity]);
+  */
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
@@ -403,7 +408,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 readonly={props.isDisabled}
                 key={props.activity?._id}
                 disabled={isDisabled}
-                formData={formData || null}
+                //formData={formData || null}
+                formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
                 onFocus={(...args: string[]) => {
                   focusHandler(args);
@@ -435,7 +441,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 }}
                 onChange={(event) => {
                   props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                    setformData(updatedFormData);
+                    //setformData(updatedFormData);
                   });
                 }}
                 onError={(error) => {

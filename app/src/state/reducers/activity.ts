@@ -57,14 +57,17 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           activity: {
             ...state.activity,
             geometry: action.payload.geometry,
-            formData: {
-              ...state.activity.formData,
-              latitude: action.payload.lat,
-              longitude: action.payload.long,
-              utm_zone: action.payload.utm[0],
-              utm_easting: action.payload.utm[1],
-              utm_northing: action.payload.utm[2],
-              reported_area: action.payload.reported_area
+            form_data: {
+              ...state.activity.form_data,
+              activity_data: {
+                ...state.activity.form_data.activity_data,
+                latitude: action.payload.lat,
+                longitude: action.payload.long,
+                utm_zone: action.payload.utm[0],
+                utm_easting: action.payload.utm[1],
+                utm_northing: action.payload.utm[2],
+                reported_area: action.payload.reported_area
+              }
             }
           }
         };

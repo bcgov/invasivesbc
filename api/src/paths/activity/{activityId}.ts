@@ -79,6 +79,7 @@ function getActivity(): RequestHandler {
         namespace: 'activity/{activityId}',
         code: 503
       });
+
     }
 
 

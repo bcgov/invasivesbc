@@ -541,29 +541,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setFormHasErrors) {
       props.setFormHasErrors(false);
     }
+    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
-    setCanSubmitWithoutErrors(true);
-
-    /*await formRef.setState({
-      ...formRef.state,
-      schemaValidationErrors: [],
-      schemaValidationErrorSchema: {}
-    });*/
     const newDoc = {
-      formData: { ...event.formData },
+      //      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT,
       geometry: geometry?.length ? [...geometry] : []
     };
+    setCanSubmitWithoutErrors(false);
 
-    //    await updateDoc(newDoc, 'Manual Save');
-    alert(activityInStore.activity.activityID);
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
-      payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: { ...newDoc } }
+      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
     });
-
     setAlertSavedOpen(true);
   };
 
