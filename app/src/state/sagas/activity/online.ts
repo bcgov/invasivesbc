@@ -6,7 +6,8 @@ import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
@@ -105,5 +106,14 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
   yield put({
     type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
     payload: { jurisdictions: networkReturn.data.result }
+  });
+}
+
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
+
+  yield put({
+    type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+    payload: { suggestedPersons: networkReturn.data.result }
   });
 }

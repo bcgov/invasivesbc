@@ -1,5 +1,5 @@
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { ActivityStatus } from 'constants/activities';
+import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
 import { throttle } from 'redux-saga/effects';
 
@@ -21,7 +21,9 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   ACTIVITY_CREATE_FAILURE,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -116,7 +118,9 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     // Autofills total bioagent quantity specifically for biocontrol collections
     //updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
 
-    // updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
+    if (beforeState.activity.activity_type === ActivityType.Treatment) {
+      updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
+    }
 
     //handleRecordLinking(updatedFormData);
 
@@ -163,6 +167,31 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
     yield put({
       type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
       payload: { search_feature: action.payload.search_feature }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
+  try {
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
+      payload: {}
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+// some form autofill on create stuff will likely need to go here
+export function* handle_ACTIVITY_GET_SUCCESS(action) {
+  try {
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
+      payload: {}
     });
   } catch (e) {
     console.error(e);

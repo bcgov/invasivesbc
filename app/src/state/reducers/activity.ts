@@ -28,7 +28,8 @@ import {
   ACTIVITY_SET_ACTIVE_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -38,6 +39,7 @@ class ActivityState {
   error: boolean;
   activity: any;
   suggestedJurisdictions: [];
+  suggestedPersons: [];
 
   constructor() {
     this.initialized = false;
@@ -87,7 +89,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           suggestedJurisdictions: [...action.payload.jurisdictions]
         };
       }
-
+      case ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS: {
+        return {
+          ...state,
+          suggestedPersons: [...action.payload.suggestedPersons]
+        };
+      }
       case ACTIVITY_SAVE_SUCCESS: {
         return {
           ...state,

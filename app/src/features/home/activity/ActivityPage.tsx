@@ -851,36 +851,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    if (true) {
-      // Load users from cache
-      dataAccess.getApplicationUsers().then((res) => {
-        setApplicationUsers(res);
-      });
-    } else {
-      api.getApplicationUsers().then((res) => {
-        setApplicationUsers(res);
-      });
-    }
-  }, [isLoading, doc]);
-
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
 
     if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
       savePhotos(photos);
     }
   }, [photos, isLoading]);
-
-  /*
-  useEffect(() => {
-    if (props.setObservation && doc) {
-      props.setObservation(doc);
-    }
-    setActivityId(doc?._id);
-  }, [doc]);
-  */
 
   const [activityId, setActivityId] = useState(doc?._id);
 
