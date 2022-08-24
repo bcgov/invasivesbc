@@ -461,7 +461,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       dateUpdated: new Date()
     };
     await setClosestWells(activityDoc);
-    getJurSuggestions();
     return activityDoc;
   };
 
@@ -805,15 +804,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       });
     }
   };
-  const getJurSuggestions = async () => {
-    if (geometry[0]) {
-      const res = await dataAccess.getJurisdictions({ search_feature: activityInStore.activity.geometry[0] });
-      setSuggestedJurisdictions(res);
-    }
-  };
 
   // check if new geo different than store
   //if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
+  //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore.activity.geometry) {
       //if geometry is withing british columbia boundries, save it
@@ -841,7 +835,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         }
       }, 500);
     }
-  }, [JSON.stringify(activityInStore.activity.geometry)]);
+  }, [JSON.stringify(activityInStore?.activity?.geometry)]);
 
   useEffect(() => {
     if (isLoading || !doc) {
@@ -943,7 +937,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             isLoading={false}
           />
         ),
-        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore.activity.geometry]
+        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
       )}
 
       {activityInStore.activity && (
@@ -972,7 +966,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
             activity={activityInStore.activity}
-            suggestedJurisdictions={suggestedJurisdictions}
+            suggestedJurisdictions={activityInStore.suggestedJurisdictions}
             linkedActivity={linkedActivity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}

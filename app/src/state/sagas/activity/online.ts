@@ -2,7 +2,12 @@ import { Http } from '@capacitor-community/http';
 import { ActivityStatus } from 'constants/activities';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
-import { ACTIVITY_CREATE_SUCCESS, ACTIVITY_GET_SUCCESS, ACTIVITY_SAVE_SUCCESS } from 'state/actions';
+import {
+  ACTIVITY_CREATE_SUCCESS,
+  ACTIVITY_GET_SUCCESS,
+  ACTIVITY_SAVE_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS
+} from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -90,4 +95,15 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
   yield put({ type: ACTIVITY_SAVE_SUCCESS, payload: { activity: { ...newActivity } } });
+}
+
+export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
+    search_feature: action.payload.search_feature[0]
+  });
+
+  yield put({
+    type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
+    payload: { jurisdictions: networkReturn.data.result }
+  });
 }

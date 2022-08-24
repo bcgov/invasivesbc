@@ -19,7 +19,9 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_CREATE_NETWORK,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  ACTIVITY_CREATE_FAILURE
+  ACTIVITY_CREATE_FAILURE,
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -137,6 +139,30 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
       payload: { activity_id: action.payload.activity_id, form_status: ActivityStatus.SUBMITTED }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
+  try {
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
+      payload: { search_feature: action.payload.geometry }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
+  try {
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
+      payload: { search_feature: action.payload.search_feature }
     });
   } catch (e) {
     console.error(e);
