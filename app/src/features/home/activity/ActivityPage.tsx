@@ -947,11 +947,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <>
           <ActivityComponent
             customValidation={getCustomValidator([
-              getAreaValidator(activityInStore.activity.activitySubtype),
-              getDateAndTimeValidator(activityInStore.activity.activitySubtype),
-              getWindValidator(activityInStore.activity.activitySubtype),
+              getAreaValidator(activityInStore.activity.activity_subtype),
+              getDateAndTimeValidator(activityInStore.activity.activity_subtype),
+              getWindValidator(activityInStore.activity.activity_subtype),
               getSlopeAspectBothFlatValidator(),
-              getTemperatureValidator(activityInStore.activity.activitySubtype),
+              getTemperatureValidator(activityInStore.activity.activity_subtype),
               getPosAndNegObservationValidator(),
               getTreatedAreaValidator(),
               getTargetPhenologySumValidator(),
@@ -964,7 +964,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getVegTransectPointsPercentCoverValidator(),
               getJurisdictionPercentValidator(),
               getInvasivePlantsValidator(linkedActivity),
-              getPlotIdentificatiomTreesValidator(activityInStore.activity.activitySubtype)
+              getPlotIdentificatiomTreesValidator(activityInStore.activity.activity_subtype)
             ])}
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
