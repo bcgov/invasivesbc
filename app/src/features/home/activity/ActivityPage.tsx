@@ -566,17 +566,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = debounced(
-    100,
-    async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-      console.dir(event);
-      console.log(lastField);
-      if (lastField !== '' && lastField !== undefined && lastField !== null)
-        dispatch({
-          type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-          payload: { eventFormData: event.formData, lastField: lastField }
-        });
-      /*
+  const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
+    if (lastField !== '' && lastField !== undefined && lastField !== null)
+      dispatch({
+        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+        payload: { eventFormData: event.formData, lastField: lastField }
+      });
+    /*
       let updatedFormData = event.formData;
 
       updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
@@ -596,11 +592,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       handleRecordLinking(updatedFormData);
       */
 
-      if (callbackFun) {
-        // callbackFun(updatedFormData);
-      }
+    if (callbackFun) {
+      // callbackFun(updatedFormData);
     }
-  );
+  };
 
   /**
    * Paste copied form data saved in session storage

@@ -1,5 +1,7 @@
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { put, select } from 'redux-saga/effects';
+import { throttle } from 'redux-saga/effects';
+
 import {
   autofillBiocontrolCollectionTotalQuantity,
   autoFillNameByPAC,
@@ -102,7 +104,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
     let updatedFormData = populateSpeciesArrays(action.payload.eventFormData);
-    const after = { ...beforeActivity, form_data: { ...beforeActivity.form_data, ...updatedFormData } };
 
     //updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total release quantity (only on biocontrol release activity)
@@ -115,6 +116,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     // updatedFormData = autoFillNameByPAC(updatedFormData, applicationUsers);
 
     //handleRecordLinking(updatedFormData);
+
+    const after = { ...beforeActivity, form_data: { ...beforeActivity.form_data, ...updatedFormData } };
 
     yield put({
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,

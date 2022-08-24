@@ -17,6 +17,7 @@ export const grantRoleToUserSQL = (user_id, role_id): SQLStatement => {
     ) ON CONFLICT DO NOTHING;
   `;
   }
+
 };
 
 export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
