@@ -1,9 +1,7 @@
 import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
-import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus } from 'constants/activities';
-import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -12,7 +10,6 @@ import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/Genera
 import bcArea from '../../../components/map/BC_AREA.json';
 import { IPhoto } from '../../../components/photo/PhotoContainer';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
-import { useDataAccess } from '../../../hooks/useDataAccess';
 import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
   getAreaValidator,
@@ -35,17 +32,6 @@ import {
   transferErrorsFromChemDetails,
   getPlotIdentificatiomTreesValidator
 } from '../../../rjsf/business-rules/customValidation';
-import {
-  autoFillSlopeAspect,
-  autoFillTotalBioAgentQuantity,
-  autofillBiocontrolCollectionTotalQuantity,
-  autoFillTotalReleaseQuantity,
-  autoFillTreeNumbers,
-  populateTransectLineAndPointData,
-  autoFillNameByPAC
-} from '../../../rjsf/business-rules/populateCalculatedFields';
-import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
-import { debounced } from '../../../utils/FunctionUtils';
 import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import './scrollbar.css';
@@ -59,11 +45,9 @@ import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
-  ACTIVITY_GET_INITIAL_STATE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -112,7 +96,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [geometry]);
 
   const classes = useStyles();
-  const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const api = useInvasivesApi();
   const { extendedInfo, displayName, roles } = useSelector(selectAuth);
@@ -125,12 +108,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
   const [alertCopiedOpen, setAlertCopiedOpen] = useState(false);
   const [alertPastedOpen, setAlertPastedOpen] = useState(false);
-  const [suggestedJurisdictions, setSuggestedJurisdictions] = useState();
   const history = useHistory();
-  const [doc, setDoc] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
   const connected = useSelector(selectNetworkConnected);
-  const [applicationUsers, setApplicationUsers] = useState([]);
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -139,76 +119,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   });
 
   const [canSubmitWithoutErrors, setCanSubmitWithoutErrors] = useState(false);
-
-  //redux first steps
-  useEffect(() => {
-    console.dir(userSettingsState);
-    //dispatch({type: ACTIVITY_GET_INITIAL_STATE_REQUEST})
-  }, [userSettingsState]);
-
-  /**
-   * Applies overriding updates to the current doc,
-   * and queues an update to the corresponding DB state
-   *
-   * @param {*} updates Updates as subsets of the doc/activity object
-   */
-  const updateDoc = async (updates, saveReason?) => {
-    return;
-    if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
-      return;
-    }
-    let updatedDoc = {
-      ...doc,
-      ...updates,
-      // deep merge:
-      formData: {
-        ...doc?.formData,
-        ...updates?.formData,
-        activity_data: {
-          ...doc?.formData?.activity_data,
-          ...updates?.formData?.activity_data
-        },
-        activity_type_data: {
-          ...doc?.formData?.activity_type_data,
-          ...updates?.formData?.activity_type_data
-        },
-        activity_subtype_data: {
-          ...doc?.formData?.activity_subtype_data,
-          ...updates?.formData?.activity_subtype_data
-        }
-      }
-    };
-    const hashedNewDoc = JSON.stringify(updatedDoc);
-    const hashedDoc = JSON.stringify(doc);
-    if (!updatedDoc || hashedDoc === hashedNewDoc) {
-      return false;
-    }
-
-    // SECOND-ORDER EFFECT OVERRIDES (changing one field affects another)
-    updatedDoc = populateSpeciesArrays(updatedDoc);
-
-    if (!updatedactivityInStore.activity._id) {
-      return false;
-    }
-
-    setDoc(updatedDoc);
-    try {
-      const dbUpdates = debounced(1000, async (updated) => {
-        const newActivity = {
-          ...mapDocToDBActivity(updated)
-        };
-
-        // this has to be a bug? if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        if (saveReason) {
-          await dataAccess.updateActivity(newActivity);
-        }
-      });
-      await dbUpdates(updatedDoc);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
 
   /**
    * Sets warning dialog when user tries to leave the page.
@@ -306,6 +216,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} activity The doc/activity object
    */
+  //TODO test to see which if any of these we still need to move to createactivitypayload
+  //  ****ITS NOT USED HERE*****
   const getDefaultFormDataValues = (activity: any) => {
     if (!activity) {
       return;
@@ -435,51 +347,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   /**
-   * Save the geometry added by the user
-   *
-   * @param {Feature} geoJSON The geometry in GeoJSON format
-   */
-  const saveGeometry = async (geom) => {
-    const { latitude, longitude } = calculateLatLng(geom) || {};
-    var utm = calc_utm(longitude, latitude);
-    let utm_zone = utm[0];
-    let utm_easting = utm[1];
-    let utm_northing = utm[2];
-    const activityDoc = {
-      formData: {
-        activity_data: {
-          latitude,
-          longitude,
-          utm_zone,
-          utm_easting,
-          utm_northing,
-          reported_area: calculateGeometryArea(geom)
-        }
-      },
-      geometry: geom,
-      status: ActivityStatus.DRAFT,
-      dateUpdated: new Date()
-    };
-    await setClosestWells(activityDoc);
-    return activityDoc;
-  };
-
-  /**
-   * Save the map Extent within the database
-   *
-   * @param {*} extent The leaflet bounds object
-   */
-  const saveExtent = async (newExtent: any) => {
-    await updateDoc({ extent: newExtent });
-  };
-
-  /**
    * Save the photos.
    *
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+    //  await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -490,20 +363,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     console.log('ERROR: ', error);
     const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
-    const newDoc = {
-      //      formData: { ...activityInStore.activity.formData, ...formRef.current.state.formData },
-      status: ActivityStatus.DRAFT,
-      dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT,
-      geometry: geometry?.length ? [...geometry] : []
-    };
     setCanSubmitWithoutErrors(false);
 
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
       payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
     });
-    //  await updateDoc(newDoc, 'Manual Save');
   };
 
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -581,34 +446,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
    */
+  //TODO redux copy and paste
   const pasteFormData = async () => {
     console.log('Pasting form data');
-    await updateDoc({
+    /* await updateDoc({
       formData: retrieveFormDataFromSession(doc),
       status: ActivityStatus.DRAFT,
       dateUpdated: new Date(),
       formStatus: ActivityStatus.DRAFT
     });
     setAlertPastedOpen(true);
+    */
   };
 
   /**
    * Copy form data into session storage
    */
   const copyFormData = () => {
-    const { formData, activitySubtype } = doc;
-    console.log('Copying ', formData, activitySubtype);
-    saveFormDataToSession(formData, activitySubtype);
+    const { form_data, activity_subtype } = activityInStore?.activity;
+    saveFormDataToSession(form_data, activity_subtype);
     setAlertCopiedOpen(true);
-  };
-
-  /*
-    Function to pull activity results from the DB given an activityId if present
-  */
-  //TODO REDUX
-  const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    const activityResults = await dataAccess.getActivityById(userSettingsState.activeActivity);
-    return mapDBActivityToDoc(activityResults);
   };
 
   /*
@@ -618,8 +475,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   //TODO REDUX
   const handleRecordLinking = async (formData: any) => {
+    /*
     if (doc?.activitySubtype?.includes('Monitoring') && formData?.activity_type_data?.linked_id) {
-      await updateDoc({
+      /*    await updateDoc({
         formData: {
           activity_type_data: {
             linked_id: formData.activity_type_data.linked_id
@@ -633,20 +491,22 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           linkedRecordId = activityInStore.activity.formData.activity_type_data.linked_id;
         }
         if (linkedRecordId) {
-          const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
-          if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
+          //TODO need array in store for linked records
+          //const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
+          //if (linkedRecordActivityResult) setLinkedActivity(linkedRecordActivityResult);
         }
       };
       getLinked();
     }
+    */
   };
 
-  //TODO REDUX
+  //TODO REDUX - needs more criteria though
   useEffect(() => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);
   }, [linkedActivity]);
 
-  // TODO DO WE NEED THIS
+  // TODO DO WE NEED THIS? Should all be moved to create activity payload if we do
   //this sets up initial values for some of the fields in activity.
   const setUpInitialValues = (activity: any, formData: any): Object => {
     //Observations -- all:
@@ -677,7 +537,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     //if nothing is received, don't do anything
     if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
-      updateDoc({
+      //todo set wells on geo save succes action
+      /* updateDoc({
         ...incomingActivityDoc,
         formData: {
           ...incomingActivityactivityInStore.activity.formData,
@@ -695,32 +556,33 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       });
       return;
     }
-    const { well_objects, areWellsInside } = closestWells;
-    const wellInformationArr = [];
-    well_objects.forEach((well) => {
-      if (well.proximity) {
-        wellInformationArr.push({
-          well_id: well.properties.WELL_TAG_NUMBER,
-          well_proximity: well.proximity.toString()
-        });
-      }
-    });
+    */
+      const { well_objects, areWellsInside } = closestWells;
+      const wellInformationArr = [];
+      well_objects.forEach((well) => {
+        if (well.proximity) {
+          wellInformationArr.push({
+            well_id: well.properties.WELL_TAG_NUMBER,
+            well_proximity: well.proximity.toString()
+          });
+        }
+      });
 
-    //if it is a Chemical treatment and there are wells too close, display warning dialog
-    if (
-      activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') &&
-      (well_objects[0].proximity < 50 || areWellsInside)
-    ) {
-      setWarningDialog({
-        dialogOpen: true,
-        dialogTitle: 'Warning!',
-        dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
-        dialogActions: [
-          {
-            actionName: 'No',
-            actionOnClick: () => {
-              setGeometry(null);
-              updateDoc({
+      //if it is a Chemical treatment and there are wells too close, display warning dialog
+      if (
+        activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') &&
+        (well_objects[0].proximity < 50 || areWellsInside)
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+          dialogActions: [
+            {
+              actionName: 'No',
+              actionOnClick: () => {
+                setGeometry(null);
+                /*  updateDoc({
                 ...incomingActivityDoc,
                 formData: {
                   ...incomingActivityactivityInStore.activity.formData,
@@ -735,14 +597,44 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                     ]
                   }
                 }
-              });
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              });*/
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              }
+            },
+            {
+              actionName: 'Yes',
+              actionOnClick: () => {
+                /* updateDoc({
+                ...incomingActivityDoc,
+                formData: {
+                  ...incomingActivityactivityInStore.activity.formData,
+                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
+                  activity_subtype_data: {
+                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
+                    Well_Information: [...wellInformationArr]
+                  }
+                }
+              });*/
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              },
+              autoFocus: true
             }
-          },
-          {
-            actionName: 'Yes',
-            actionOnClick: () => {
-              updateDoc({
+          ]
+        });
+      } else if (
+        activityInStore.activity.activitySubtype.includes('Observation') &&
+        (well_objects[0].proximity < 50 || areWellsInside)
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it.',
+          dialogActions: [
+            {
+              actionName: 'Ok',
+              actionOnClick: () => {
+                // TODO REDUX - why call update doc here??
+                /*     updateDoc({
                 ...incomingActivityDoc,
                 formData: {
                   ...incomingActivityactivityInStore.activity.formData,
@@ -752,46 +644,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                     Well_Information: [...wellInformationArr]
                   }
                 }
-              });
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
-            },
-            autoFocus: true
-          }
-        ]
-      });
-    } else if (
-      activityInStore.activity.activitySubtype.includes('Observation') &&
-      (well_objects[0].proximity < 50 || areWellsInside)
-    ) {
-      setWarningDialog({
-        dialogOpen: true,
-        dialogTitle: 'Warning!',
-        dialogContentText: 'There are wells that either inside your area or too close to it.',
-        dialogActions: [
-          {
-            actionName: 'Ok',
-            actionOnClick: () => {
-              // TODO REDUX - why call update doc here??
-              updateDoc({
-                ...incomingActivityDoc,
-                formData: {
-                  ...incomingActivityactivityInStore.activity.formData,
-                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-                  activity_subtype_data: {
-                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-                    Well_Information: [...wellInformationArr]
-                  }
-                }
-              });
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
-            },
-            autoFocus: true
-          }
-        ]
-      });
-    } else {
-      //TODO REDUX
-      updateDoc({
+              });*/
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      } else {
+        //TODO REDUX
+        /*  updateDoc({
         ...incomingActivityDoc,
         formData: {
           ...incomingActivityactivityInStore.activity.formData,
@@ -801,12 +663,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             Well_Information: [...wellInformationArr]
           }
         }
-      });
+      });*/
+      }
     }
   };
 
   // check if new geo different than store
-  //if (geometry && geometry[0] && JSON.stringify(geometry) !== JSON.stringify(activityInStore.activity.geometry)) {
   //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore.activity.geometry) {
@@ -836,28 +698,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }, 500);
     }
   }, [JSON.stringify(activityInStore?.activity?.geometry)]);
-
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
-
-    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
-      saveExtent(extent);
-    }
-  }, [extent, isLoading, saveExtent]);
-
-  useEffect(() => {
-    if (isLoading || !doc) {
-      return;
-    }
-
-    if (activityInStore.activity.docType !== DocType.REFERENCE_ACTIVITY) {
-      savePhotos(photos);
-    }
-  }, [photos, isLoading]);
-
-  const [activityId, setActivityId] = useState(doc?._id);
 
   return (
     <Container className={props.classes.container}>
@@ -912,7 +752,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             isLoading={false}
           />
         ),
-        [classes, activityId, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
+        [classes, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
       )}
 
       {activityInStore.activity && (
