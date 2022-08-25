@@ -4,7 +4,6 @@ import ObservationCreationStepperPage from 'features/home/activity/ObservationCr
 import HomeLayout from 'features/home/HomeLayout';
 import MapPage from 'features/home/map/MapPage';
 import PlanPage from 'features/home/plan/PlanPage';
-import ReferencesPage from 'features/home/references/ReferencesPage';
 import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -14,7 +13,7 @@ import PublicRoute from 'utils/PublicRoute';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
 import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import LandingPage from './landing/LandingPage';
-import {EmbeddedReportsPage} from "./reports/EmbeddedReportsPage";
+import { EmbeddedReportsPage } from './reports/EmbeddedReportsPage';
 import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
 
 interface IHomeRouterProps {
@@ -85,14 +84,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         component={PlanPage}
         componentProps={props}
       />
-      <PrivateRoute
-        exact
-        layout={HomeLayout}
-        path="/home/references"
-        title={getTitle('Reference')}
-        component={ReferencesPage}
-        componentProps={props}
-      />
+
       <PrivateRoute
         exact
         layout={HomeLayout}

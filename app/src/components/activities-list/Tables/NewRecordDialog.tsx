@@ -11,7 +11,6 @@ import { useHistory } from 'react-router-dom';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState, useContext } from 'react';
 import { ActivitySubtypeShortLabels, ActivityCategory, ActivitySubtypeRelations } from 'constants/activities';
-import { generateDBActivityPayload } from 'utils/addActivity';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
 import { UserRolesAccess } from 'constants/roles';
