@@ -16,7 +16,9 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   try {
     const oldID = localStorage.getItem('activeActivity');
 
-    yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID } });
+    if (oldID) {
+      yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID } });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_FAILURE });
