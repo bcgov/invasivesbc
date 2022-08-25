@@ -1,11 +1,10 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
-import {
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
+import { 
+  USER_SETTINGS_ADD_RECORD_SET_SUCCESS, 
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, 
+  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, 
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, 
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -58,6 +57,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state, recordSets: action.payload.recordSets
         };
+      }
+      case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
       }
       default:
         return state;

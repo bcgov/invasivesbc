@@ -1,24 +1,49 @@
 import { all, call, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import {
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_FAILURE,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
-  AUTH_INITIALIZE_COMPLETE,
+import { 
+  AUTH_INITIALIZE_COMPLETE, 
+  USER_SETTINGS_ADD_RECORD_SET_FAILURE, 
+  USER_SETTINGS_ADD_RECORD_SET_REQUEST, 
+  USER_SETTINGS_ADD_RECORD_SET_SUCCESS, 
+  USER_SETTINGS_GET_INITIAL_STATE_FAILURE, 
+  USER_SETTINGS_GET_INITIAL_STATE_REQUEST, 
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, 
+  USER_SETTINGS_REMOVE_RECORD_SET_FAILURE, 
+  USER_SETTINGS_REMOVE_RECORD_SET_REQUEST, 
+  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, 
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE, 
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, 
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, 
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_REQUEST,
-  ACTIVITY_GET_REQUEST,
-  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
-  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
-  USER_SETTINGS_ADD_RECORD_SET_FAILURE
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST, 
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS 
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
-import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
+
+function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
+  try {
+    // retrieve previous record sets
+    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
+    const prev = oldAppState.recordSets;
+
+    let newRecordSetState = {};
+
+    Object.keys(prev).forEach((key) => {
+      if (key !== action.payload.recordSetName) {
+        newRecordSetState[key] = prev[key];
+      }
+    });
+
+    oldAppState.recordSets = newRecordSetState;
+
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+
+    yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, payload: { recordSets: newRecordSetState } });
+  } catch(e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_FAILURE });
+  }
+}
 
 function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
   try {
@@ -137,6 +162,7 @@ function* userSettingsSaga() {
       handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
     ),
     takeEvery(USER_SETTINGS_ADD_RECORD_SET_REQUEST , handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST),
+    takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_REQUEST , handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST)
   ]);
 }
 

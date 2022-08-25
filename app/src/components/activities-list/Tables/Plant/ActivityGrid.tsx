@@ -231,13 +231,13 @@ const ActivityGrid = (props) => {
     const parentStateCollection = recordSetContext.recordSetState;
     //console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
-    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState?.gridFilters) {
       setFilters({ ...oldRecordSetState?.gridFilters });
     } else {
       setFilters({ enabled: false });
     }
 
-    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState?.advancedFilters) {
       setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);

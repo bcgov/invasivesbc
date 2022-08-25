@@ -13,7 +13,7 @@ export const RecordSetProvider = (props) => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
-  const { username, accessRoles } = useSelector(selectAuth);
+  const { username } = useSelector(selectAuth);
 
   const getInitialState = async () => {
     const oldState = await dataAccess.getAppState();
@@ -69,19 +69,19 @@ export const RecordSetProvider = (props) => {
   //   }));
   // };
 
-  const remove = (recordSetName: string) => {
-    setRecordSetState((prev) => {
-      let newRecordSetState = {};
+  // const remove = (recordSetName: string) => {
+  //   setRecordSetState((prev) => {
+  //     let newRecordSetState = {};
 
-      Object.keys(prev).forEach((key) => {
-        if (key !== recordSetName) {
-          newRecordSetState[key] = prev[key];
-        }
-      });
+  //     Object.keys(prev).forEach((key) => {
+  //       if (key !== recordSetName) {
+  //         newRecordSetState[key] = prev[key];
+  //       }
+  //     });
 
-      return newRecordSetState;
-    });
-  };
+  //     return newRecordSetState;
+  //   });
+  // };
 
   const addBoundaryToSet = async (boundary: Boundary, setName: string) => {
     const oldState = await dataAccess.getAppState();
@@ -149,7 +149,7 @@ export const RecordSetProvider = (props) => {
           recordSetState: recordSetState,
           setRecordSetState: setRecordSetState,
           // add: add,
-          remove: remove,
+          // remove: remove,
           boundaries: boundaries,
           setBoundaries: setBoundaries,
           addBoundaryToSet: addBoundaryToSet,

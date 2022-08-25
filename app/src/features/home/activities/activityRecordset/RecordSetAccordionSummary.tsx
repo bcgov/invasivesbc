@@ -29,9 +29,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import RecordSetDeleteDialog from './RecordSetDeleteDialog';
 import { getSearchCriteriaFromFilters } from '../../../../components/activities-list/Tables/Plant/ActivityGrid';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
 
 const OrderSelector = (props) => {
   return (
@@ -75,6 +76,7 @@ const RecordSetAccordionSummary = (props) => {
   const { MOBILE } = useSelector(selectConfiguration);
   const recordStateContext = useContext(RecordSetContext);
   const dataAccess = useDataAccess();
+  const dispatch = useDispatch();
 
   const [boundaryFilterDialog, setBoundaryFilterDialog] = useState<IGeneralDialog>({
     dialogActions: [
@@ -140,7 +142,13 @@ const RecordSetAccordionSummary = (props) => {
         'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
       )
     ) {
-      props.remove(recordSetName);
+      // props.remove(recordSetName);
+      dispatch({
+        type: USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
+        payload: {
+          recordSetName: recordSetName
+        }
+      });
       setRecordSetDeleteDialogOpen(false);
     }
   };
@@ -301,7 +309,13 @@ const RecordSetAccordionSummary = (props) => {
                     'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
                   )
                 ) {
-                  props.remove(props.setName);
+                  // props.remove(props.setName);
+                  dispatch({
+                    type: USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
+                    payload: {
+                      recordSetName: props.setName
+                    }
+                  });
                 }
               }}
               style={{ justifySelf: 'end', alignSelf: 'right' }}
