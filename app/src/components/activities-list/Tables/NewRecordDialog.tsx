@@ -241,7 +241,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
     setTimeout(() => {
       history.push({ pathname: `/home/activity` });
-    }, 5000);
+    }, 2000);
     props.handleDialogClose();
   };
 
