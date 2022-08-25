@@ -24,7 +24,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_REQUEST
+  ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  ACTIVITY_DEBUG
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -76,15 +77,17 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
+  console.log('banana');
   try {
     const authState = yield select(selectAuth);
+    console.log('banana2');
 
     let activityV1 = generateDBActivityPayload({}, null, action.payload.type, action.payload.subType);
     let activityV2 = populateSpeciesArrays(activityV1);
     activityV2.created_by = authState.username;
     activityV2.user_role = authState.accessRoles.map((role) => role.role_id);
-    //await dataAccess.createActivity(dbActivity, databaseContext);
 
+    console.log('banana3');
     yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: activityV2 } });
   } catch (e) {
     console.error(e);
