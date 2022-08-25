@@ -14,7 +14,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
   // grabs id from appState if URL is empty, if both are empty - id is undefined and message shows up
   if (urlParams.id === undefined) {
     const appStateResults = dataAccess.getAppState();
-    id = appStateResults.activeIappSite
+    id = appStateResults.activeIappSite;
   } else {
     id = urlParams.id;
   }
@@ -38,8 +38,8 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
             <Typography variant="h4">Current IAPP Site </Typography>
           </Box>
           <Typography m={3}>
-            There is no current IAPP Site selected. When you select and IAPP record, it will become your current IAPP site and
-            show up in this tab.
+            There is no current IAPP Site selected. When you select and IAPP record, it will become your current IAPP
+            site and show up in this tab.
           </Typography>
         </>
       )}

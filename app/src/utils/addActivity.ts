@@ -244,57 +244,6 @@ export const sanitizeRecord = (input: any) => {
 };
 
 /*
-  Function to temporarily deal with a grievous oversight by initial devs who thought 
-  naming variables differently in different contexts was a good idea.
-  Note for future refactoring: favor DB representation.
-*/
-export const mapDocToDBActivity = (doc: any): any => {
-  const retVal = {
-    ...mapKeys(doc, snakeCase),
-    _id: doc._id || doc.activity_id,
-    sync_status: doc.sync?.status,
-    media: doc.photos?.map((photo) => ({
-      file_name: photo.filepath,
-      encoded_file: photo.dataUrl
-    }))
-  };
-  return retVal;
-};
-
-/*
-  Function to temporarily deal with a grievous oversight by initial devs who thought 
-  naming variables differently in different contexts was a good idea.
-  Note for future refactoring: favor DB representation.
-*/
-export const mapDBActivityToDoc = (dbActivity: any) => {
-  if (dbActivity) {
-    const { _id, ...otherKeys } = dbActivity;
-    let doc: any = {
-      ...generateActivityPayload(
-        dbActivity.form_data,
-        dbActivity.geometry,
-        dbActivity.activity_type,
-        dbActivity.activity_subtype,
-        dbActivity.docType
-      ),
-      ...mapKeys(otherKeys, camelCase)
-    };
-    doc = {
-      ...doc,
-      ...mapKeys(dbActivity.activity_payload, camelCase),
-      sync: {
-        ...doc.sync,
-        ...dbActivity.activity_payload?.sync,
-        status: dbActivity.sync_status
-      },
-      _id: dbActivity.activity_id,
-      id: dbActivity.id
-    };
-    return doc;
-  }
-};
-
-/*
   Function to generate activity payload for a new activity (in old pouchDB doc format)
 */
 export function generateActivityPayload(

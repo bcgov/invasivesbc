@@ -12,7 +12,6 @@ import {
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { mapDBActivityToDoc } from 'utils/addActivity';
 
 const getRequestOptions = (config, requestHeaders) => {
   return {

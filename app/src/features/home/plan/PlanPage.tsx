@@ -10,15 +10,14 @@ import { Feature, GeoJsonObject } from 'geojson';
 import * as _ from 'lodash';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
-import RecordTable from '../../../components/common/RecordTable';
 import MapContainer from '../../../components/map/MapContainer';
 import { SingleTrip } from '../../../components/trip/SingleTrip';
 import { TripStatusCode } from '../../../components/trip/TripStepStatus';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import {useSelector} from "../../../state/utilities/use_selector";
-import {selectConfiguration} from "../../../state/reducers/configuration";
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectConfiguration } from '../../../state/reducers/configuration';
 
 interface IPlanPageProps {
   classes?: any;
@@ -293,7 +292,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <CircularProgress />
             </>
           )}
-          {tripsLoaded && (
+          {
+            tripsLoaded && <></>
+            /*
             <RecordTable
               className={classes.tripList}
               tableName={'My Trips'}
@@ -354,8 +355,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                     setCacheMapTilesFlag={setCacheMapTilesFlag}
                   />
                 );
-              }}></RecordTable>
-          )}
+              }}></RecordTable>*/
+          }
         </Container>
       </IonContent>
     </MapRecordsContextProvider>
