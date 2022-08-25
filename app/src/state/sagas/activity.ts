@@ -15,6 +15,7 @@ import {
   ACTIVITY_LINK_RECORD_FAILURE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_PERSIST_REQUEST,
+  ACTIVITY_DEBUG,
   ACTIVITY_PERSIST_SUCCESS,
   ACTIVITY_PERSIST_FAILURE,
   ACTIVITY_SAVE_REQUEST,
@@ -74,6 +75,10 @@ function* handle_USER_SETTINGS_READY(action) {
   yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
 }
 
+function* handle_ACTIVITY_DEBUG(action) {
+  console.log('halp');
+}
+
 function* activityPageSaga() {
   yield all([
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
@@ -95,6 +100,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_CREATE_NETWORK, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(ACTIVITY_CREATE_SUCCESS, handle_ACTIVITY_CREATE_SUCCESS),
     takeEvery(ACTIVITY_SUBMIT_REQUEST, handle_ACTIVITY_SUBMIT_REQUEST),
+    takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
     takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
     throttle(500, ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     throttle(

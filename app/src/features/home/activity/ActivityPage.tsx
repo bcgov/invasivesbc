@@ -671,7 +671,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   // check if new geo different than store
   //todo: fully move to redux saga
   useEffect(() => {
-    if (activityInStore.activity.geometry) {
+    if (activityInStore?.activity?.geometry) {
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
         if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
@@ -744,9 +744,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         () => (
           <ActivityMapComponent
             classes={classes}
-            activityId={activityInStore.activity.activity_id}
-            mapId={activityInStore.activity.activity_id}
-            geometryState={{ geometry: [activityInStore.activity.geometry], setGeometry: setGeometry }}
+            activityId={activityInStore?.activity?.activity_id}
+            mapId={activityInStore?.activity?.activity_id}
+            geometryState={{ geometry: [activityInStore?.activity?.geometry], setGeometry: setGeometry }}
             showDrawControls={true}
             //isLoading={isLoading}
             isLoading={false}
