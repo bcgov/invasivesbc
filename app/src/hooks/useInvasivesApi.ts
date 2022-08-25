@@ -16,9 +16,9 @@ import {
 } from '../interfaces/useInvasivesApi-interfaces';
 import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
 import { useSelector } from 'state/utilities/use_selector';
-import { selectConfiguration } from "../state/reducers/configuration";
-import { selectAuthHeaders } from "../state/reducers/auth";
-
+import { selectConfiguration } from '../state/reducers/configuration';
+import { selectAuthHeaders } from '../state/reducers/auth';
+import { select } from 'redux-saga/effects';
 
 /**
  * Returns a set of supported api methods.
@@ -28,10 +28,10 @@ import { selectAuthHeaders } from "../state/reducers/auth";
 export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
-  const { API_BASE} = useSelector(selectConfiguration);
-const DEBUG = false;
-// const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
-// const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
+  const { API_BASE } = useSelector(selectConfiguration);
+  const DEBUG = false;
+  // const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
+  // const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
@@ -1244,3 +1244,32 @@ const DEBUG = false;
     getIappJurisdictions
   };
 };
+
+export const getRequestOptions = (config, requestHeaders) => {
+  return {
+    baseUrl: config.API_BASE,
+    // baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
+    headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
+  };
+};
+
+export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
+  // get config and request setup from store
+  const requestOptions = yield select(selectAuthHeaders);
+  const config = yield select(selectConfiguration);
+  const options = getRequestOptions(config, requestOptions);
+
+  const { data, status, url } = yield Http.request({
+    method: method,
+    headers: { ...options.headers, 'Content-Type': 'application/json' },
+    url: options.baseUrl + endpoint,
+    data: payloadData
+  });
+
+  return { data, status, url };
+}
+
+export function* getSimplifiedGeoJSON(url_geo: string, percentage: string) {
+  const data = yield InvasivesAPI_Call('GET', `/api/map-shaper?url=${url_geo}&percentage=${percentage}`);
+  return data.result;
+}

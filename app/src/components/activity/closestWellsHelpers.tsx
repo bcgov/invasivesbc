@@ -7,7 +7,7 @@ import { getDataFromDataBC } from 'components/map/WFSConsumer';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 
 //gets layer data based on the layer name
-export const getClosestWells = async (inputGeometry, databaseContext, invasivesApi, dataBCAcceptsGeometry, online) => {
+export const getClosestWells = async (inputGeometry, online) => {
   const firstFeature = inputGeometry[0];
   //get the map extent as geoJson polygon feature
   const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
@@ -18,7 +18,7 @@ export const getClosestWells = async (inputGeometry, databaseContext, invasivesA
       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
       bufferedGeo,
       invasivesApi.getSimplifiedGeoJSON,
-      dataBCAcceptsGeometry
+      true
     );
 
     if (!returnVal?.features) {
@@ -39,9 +39,8 @@ export const getClosestWells = async (inputGeometry, databaseContext, invasivesA
     return getWellsArray(allFeatures, firstFeature);
   }
 };
-
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
-const getWellsArray = (arrayOfWells, inputGeometry) => {
+export const getWellsArray = (arrayOfWells, inputGeometry) => {
   let geoJSONFeature = inputGeometry;
   if (!geoJSONFeature.geometry?.coordinates) {
     return;
