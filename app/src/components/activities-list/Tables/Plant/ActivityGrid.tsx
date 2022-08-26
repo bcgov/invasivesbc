@@ -25,6 +25,8 @@ import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { useDispatch } from 'react-redux';
+import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -220,6 +222,7 @@ const ActivityGrid = (props) => {
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
 
+  const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
 
   const themeContext = useContext(ThemeContext);
@@ -364,23 +367,34 @@ const ActivityGrid = (props) => {
 
   // set selected record to activity
   useEffect(() => {
-    if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
-      props.setSelectedRecord({
-        type: DocType.ACTIVITY,
-        description: 'Activity-' + activitiesSelected.short_id,
-        id: activitiesSelected.activity_id
+    if (activitiesSelected && activitiesSelected.activity_id) {
+      dispatch({
+        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        payload: {
+          selectedRecord: {
+            type: DocType.ACTIVITY,
+            description: 'Activity-' + activitiesSelected.short_id,
+            id: activitiesSelected.activity_id,
+            isIapp: false
+          }
+        }
       });
     }
   }, [activitiesSelected]);
 
   // set selected record to poi
   useEffect(() => {
-    if (poiSelected && props.setSelectedRecord && poiSelected.point_of_interest_id) {
-      props.setSelectedRecord({
-        type: DocType.POINT_OF_INTEREST,
-        description: 'IAPP-' + poiSelected.point_of_interest_id,
-        id: poiSelected.point_of_interest_id,
-        isIAPP: true
+    if (poiSelected && poiSelected.point_of_interest_id) {
+      dispatch({
+        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        payload: {
+          selectedRecord: {
+            type: DocType.POINT_OF_INTEREST,
+            description: 'IAPP-' + poiSelected.point_of_interest_id,
+            id: poiSelected.point_of_interest_id,
+            isIAPP: true
+          }
+        }
       });
     }
   }, [poiSelected]);

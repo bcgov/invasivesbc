@@ -134,7 +134,7 @@ const PageContainer = (props) => {
   });
 
   const getSelectedRecordSets = async () => {
-    const recordSets = recordStateContext.recordSetState;
+    const recordSets = userSettings.recordSets;
     const selected = [];
     for (const recordSet of Object.keys(recordSets)) {
       if (recordSets[recordSet].recordSetName !== 'My Drafts' && recordSets[recordSet].isSelected) {
@@ -146,7 +146,7 @@ const PageContainer = (props) => {
 
   useEffect(() => {
     getSelectedRecordSets();
-  }, [recordStateContext.recordSetState]);
+  }, [userSettings.recordSets]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -213,22 +213,22 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (recordStateContext.selectedRecord?.description !== undefined &&
-            recordStateContext.selectedRecord?.description),
-        disabled: recordStateContext.selectedRecord?.description === undefined,
-        hidden: !recordStateContext.selectedRecord,
+          (userSettings.selectedRecord?.description !== undefined &&
+            userSettings.selectedRecord?.description),
+        disabled: userSettings.selectedRecord?.description === undefined,
+        hidden: !userSettings.selectedRecord,
         onClick: async () => {
           try {
             dispatch({
               type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: recordStateContext?.selectedRecord?.id }})
+              payload: { activeActivity: userSettings?.selectedRecord?.id }})
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
           }
           setTimeout(() => {
-            if (recordStateContext?.selectedRecord?.isIAPP) {
-              history.push({ pathname: `/home/iapp/${recordStateContext?.selectedRecord?.id}` });
+            if (userSettings?.selectedRecord?.isIAPP) {
+              history.push({ pathname: `/home/iapp/${userSettings?.selectedRecord?.id}` });
             } else {
               history.push({ pathname: `/home/activity` });
             }
@@ -270,7 +270,7 @@ const PageContainer = (props) => {
         }
       }
     ]);
-  }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id, selectedRecordSets]);
+  }, [userSettings?.recordSets?.length, userSettings?.selectedRecord?.id, selectedRecordSets]);
 
   const handleRecordSetSaveDialogAgree = async () => {
     setRecordSetSaveDialogLoading(true);
@@ -344,7 +344,7 @@ const PageContainer = (props) => {
             zoom={5}
             mapId={'mainMap'}
             geometryState={{ geometry, setGeometry }}>
-            <RecordSetLayersRenderer />
+            {/* <RecordSetLayersRenderer /> */}
           </MapContainer>
         </MapRecordsContextProvider>
       </Box>
@@ -389,7 +389,7 @@ const PageContainer = (props) => {
           () => (
             <RecordSetRenderer />
           ),
-          [userSettings?.recordSets?.length, recordStateContext?.selectedRecord]
+          [userSettings?.recordSets?.length, userSettings?.selectedRecord]
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />

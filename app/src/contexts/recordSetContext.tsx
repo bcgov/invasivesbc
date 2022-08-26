@@ -3,6 +3,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useState, useEffect, useContext } from 'react';
 import { useSelector } from "../state/utilities/use_selector";
 import { selectAuth } from "../state/reducers/auth";
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 // Where state is managed for all the sets of records, updates localstorage as it happens.
 // Everything that uses this context needs a memo that adequately checks dependencies, and none of them
@@ -13,48 +14,52 @@ export const RecordSetProvider = (props) => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const dataAccess = useDataAccess();
-  const { username } = useSelector(selectAuth);
+  const userSettings = useSelector(selectUserSettings);
 
-  const getInitialState = async () => {
-    const oldState = await dataAccess.getAppState();
-    if (oldState?.recordSets) {
-      setRecordSetState({ ...oldState.recordSets });
-    } else {
-      const defaults = {
-        recordSets: {
-          ['1']: {
-            recordSetType: 'Activity',
-            recordSetName: 'My Drafts',
-            advancedFilters: [
-              {
-                filterField: 'created_by',
-                filterValue: username,
-                filterKey: 'created_by' + username
-              },
-              {
-                filterField: 'record_status',
-                filterValue: ActivityStatus.DRAFT,
-                filterKey: 'record_status' + ActivityStatus.DRAFT
-              }
-            ]
-          },
-          ['2']: {
-            recordSetType: "Activity",
-            recordSetName: 'All InvasivesBC Activities',
-            advancedFilters: []
-          },
-          ['3']: {
-            recordSetType: "POI",
-            recordSetName: 'All IAPP Records',
-            advancedFilters: []
-          }
-        }
-      };
+  useEffect(() => {
+    setRecordSetState(userSettings.recordSets);
+  }, []);
 
-      dataAccess.setAppState({ ...defaults });
-      setRecordSetState({ ...defaults.recordSets });
-    }
-  };
+  // const getInitialState = async () => {
+  //   const oldState = await dataAccess.getAppState();
+  //   if (oldState?.recordSets) {
+  //     setRecordSetState({ ...oldState.recordSets });
+  //   } else {
+  //     const defaults = {
+  //       recordSets: {
+  //         ['1']: {
+  //           recordSetType: 'Activity',
+  //           recordSetName: 'My Drafts',
+  //           advancedFilters: [
+  //             {
+  //               filterField: 'created_by',
+  //               filterValue: username,
+  //               filterKey: 'created_by' + username
+  //             },
+  //             {
+  //               filterField: 'record_status',
+  //               filterValue: ActivityStatus.DRAFT,
+  //               filterKey: 'record_status' + ActivityStatus.DRAFT
+  //             }
+  //           ]
+  //         },
+  //         ['2']: {
+  //           recordSetType: "Activity",
+  //           recordSetName: 'All InvasivesBC Activities',
+  //           advancedFilters: []
+  //         },
+  //         ['3']: {
+  //           recordSetType: "POI",
+  //           recordSetName: 'All IAPP Records',
+  //           advancedFilters: []
+  //         }
+  //       }
+  //     };
+
+  //     dataAccess.setAppState({ ...defaults });
+  //     setRecordSetState({ ...defaults.recordSets });
+  //   }
+  // };
 
   // const add = (type: string) => {
   //   setRecordSetState((prev) => ({
@@ -111,9 +116,9 @@ export const RecordSetProvider = (props) => {
     setRecordSetState({ ...oldState.recordSets});
   }
 
-  useEffect(() => {
-    getInitialState();
-  }, []);
+  // useEffect(() => {
+  //   getInitialState();
+  // }, []);
 
   const updateState = async () => {
     const oldState = await dataAccess.getAppState();
@@ -144,8 +149,8 @@ export const RecordSetProvider = (props) => {
     return (
       <RecordSetContext.Provider
         value={{
-          setSelectedRecord: setSelectedRecord,
-          selectedRecord: selectedRecord,
+          // setSelectedRecord: setSelectedRecord,
+          // selectedRecord: selectedRecord,
           recordSetState: recordSetState,
           setRecordSetState: setRecordSetState,
           // add: add,

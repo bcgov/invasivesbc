@@ -187,7 +187,7 @@ export const RecordSet = (props) => {
                 setIsSelected={setIsSelected}
                 //  formType={formType}
                 // subType={subType}
-                setSelectedRecord={recordSetContext.setSelectedRecord}
+                // setSelectedRecord={recordSetContext.setSelectedRecord}
                 //   filtersCallBack={setFilters}
                 //   initialFilters={filters}
               />
