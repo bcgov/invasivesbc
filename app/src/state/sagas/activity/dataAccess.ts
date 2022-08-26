@@ -49,7 +49,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
     var utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
-    const nearestWells = yield getClosestWells(action.payload.geometry);
+    //todo handle different if online or not:
+    const nearestWells = yield getClosestWells(action.payload.geometry, true);
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload: {
