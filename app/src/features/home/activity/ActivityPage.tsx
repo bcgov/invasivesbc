@@ -565,7 +565,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   // check if new geo different than store
   //todo: fully move to redux saga
   useEffect(() => {
-    if (activityInStore?.activity?.geometry) {
+    if (activityInStore?.activity?.geometry && activityInStore.activity.geometry[0]) {
       setClosestWells();
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
@@ -577,18 +577,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           setWarningDialog({
             dialogOpen: true,
             dialogTitle: 'Error!',
-            dialogContentText: 'The geometry drawn is outside the British Columbia.',
+            dialogContentText: 'The geometry drawn is outside British Columbia, you cannot save the current geometry.',
             dialogActions: [
               {
                 actionName: 'OK',
                 actionOnClick: async () => {
                   setWarningDialog({ ...warningDialog, dialogOpen: false });
+                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
                 },
                 autoFocus: true
               }
             ]
           });
-          setGeometry(null);
         }
       }, 500);
     }

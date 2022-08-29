@@ -47,12 +47,13 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
-    var utm = calc_utm(longitude, latitude);
+    let utm;
+    if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
     //todo handle different if online or not:
 
-    const nearestWells = yield getClosestWells(action.payload.geometry, true);
     let wellInformationArr = [];
+    const nearestWells = latitude & longitude ? yield getClosestWells(action.payload.geometry, true) : null;
     if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
       wellInformationArr = [
         {
@@ -181,10 +182,12 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-      payload: { search_feature: action.payload.geometry }
-    });
+    if (action.payload.geometry) {
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
+        payload: { search_feature: action.payload.geometry }
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });

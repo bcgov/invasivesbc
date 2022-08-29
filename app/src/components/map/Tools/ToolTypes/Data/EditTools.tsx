@@ -82,7 +82,7 @@ const EditTools = (props: any) => {
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
-   // (context.layerContainer as any).clearLayers();
+    // (context.layerContainer as any).clearLayers();
     var newLayer = e.layer;
 
     context.layerContainer.addLayer(newLayer);
@@ -100,8 +100,7 @@ const EditTools = (props: any) => {
       newState = aGeo ? [...newState, aGeo] : newState;
       props.geometryState.setGeometry([...newState]);
     } else {
-
-     // (context.layerContainer as any).clearLayers();
+      // (context.layerContainer as any).clearLayers();
       props.geometryState.setGeometry([aGeo]);
     }
   };
@@ -290,8 +289,16 @@ const EditTools = (props: any) => {
 
     //setGeometryMapBounds();
     updateMapOnGeometryChange();
-//  }, [props.geometryState.geometry]);
+    //  }, [props.geometryState.geometry]);
   }, []);
+
+  /* can't do this for now, due to race condition between clearlayers and add layer between state updates
+  useEffect(() => {
+    if (props.geometryState?.geometry && props.geometryState.geometry[0] === null) {
+      (context.layerContainer as any).clearLayers();
+    }
+  }, [props.geometryState.geometry]);
+  */
 
   // Get out if the tools are already defined.
   if (!(drawRef?.current as any)?._map) {
