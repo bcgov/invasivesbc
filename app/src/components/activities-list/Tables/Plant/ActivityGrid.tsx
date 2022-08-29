@@ -27,6 +27,7 @@ import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -224,7 +225,7 @@ const ActivityGrid = (props) => {
 
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
-
+  const userSettings = useSelector(selectUserSettings);
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
 
@@ -672,7 +673,7 @@ const ActivityGrid = (props) => {
                 })}
               {recordSetContext?.recordSetState[props.setName]?.searchBoundary && (
                 <Chip
-                  label={`Boundary = ${recordSetContext?.recordSetState[props.setName]?.searchBoundary.name}`}
+                  label={`Boundary = ${userSettings?.recordSets[props.setName]?.searchBoundary.name}`}
                   variant="outlined"
                   color="secondary"
                   onClick={(e) => {
@@ -680,7 +681,7 @@ const ActivityGrid = (props) => {
                   }}
                   onDelete={(e) => {
                     e.stopPropagation();
-                    recordSetContext.removeBoundaryFromSet(props.setName);
+                    // recordSetContext.removeBoundaryFromSet(props.setName);
                   }}
                 />
               )}
@@ -741,7 +742,7 @@ const ActivityGrid = (props) => {
       </Box>
     ),
     [
-      recordSetContext?.recordSetState?.[props.setName],
+      JSON.stringify(userSettings?.recordSets?.[props.setName]),
       filterDialog,
       advancedFilterRows,
       filters,

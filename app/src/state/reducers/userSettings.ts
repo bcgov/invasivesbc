@@ -1,13 +1,6 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
 import { DocType } from 'constants/database';
-import { 
-  USER_SETTINGS_ADD_RECORD_SET_SUCCESS, 
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, 
-  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, 
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, 
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, 
-  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST 
-} from '../actions';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_BOUNDARIES_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -18,13 +11,33 @@ class UserSettingsState {
   activeActivity: string;
 
   newRecordDialogState: INewRecordDialogState;
-  recordSets: [];
+  recordSets: [
+    {
+      advancedFilters: [],
+      color: string,
+      drawOrder: number,
+      expanded: boolean,
+      isSelected: boolean,
+      mapToggle: boolean,
+      recordSetName: string,
+      recordSetType: string,
+      searchBoundary: any
+    }
+  ];
   selectedRecord: {
     type: DocType,
     description: string,
     id: any,
     isIAPP: boolean
   }
+  boundaries: [
+    {
+      geos: [],
+      id: number,
+      name: string,
+      server_id: any
+    }
+  ];
 
   constructor() {
     this.initialized = false;
@@ -76,6 +89,17 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state, selectedRecord: action.payload.selectedRecord
         }
       }
+      case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
+      }
+      case USER_SETTINGS_SET_BOUNDARIES_REQUEST: {
+        return {
+          ...state, boundaries: action.payload.boundaries
+        }
+      }
+
       default:
         return state;
     }

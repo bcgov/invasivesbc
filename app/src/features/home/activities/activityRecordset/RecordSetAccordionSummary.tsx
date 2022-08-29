@@ -32,7 +32,8 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const OrderSelector = (props) => {
   return (
@@ -74,6 +75,7 @@ const RecordSetAccordionSummary = (props) => {
   const [recordSetDeleteDialogLoading, setRecordSetDeleteDialogLoading] = useState(false);
   const { accessRoles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
+  const userSettings = useSelector(selectUserSettings);
   const recordStateContext = useContext(RecordSetContext);
   const dataAccess = useDataAccess();
   const dispatch = useDispatch();
@@ -336,13 +338,13 @@ const RecordSetAccordionSummary = (props) => {
             onChange={(e) => {
               e.stopPropagation();
               //add to the recordset filters
-              recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
+              dispatch({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, payload: { boundary: e.target?.value, setName: props?.setName }});
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
             }}>
-            {recordSetContext.boundaries?.map((boundary) => {
+            {userSettings.boundaries?.map((boundary) => {
               return (
-                <MenuItem key={boundary.id} value={boundary}>
-                  {boundary.name}
+                <MenuItem key={boundary?.id} value={boundary}>
+                  {boundary?.name}
                 </MenuItem>
               );
             })}
