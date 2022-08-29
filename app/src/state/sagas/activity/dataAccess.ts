@@ -50,10 +50,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
-    //todo handle different if online or not:
 
     let wellInformationArr = [];
-    const nearestWells = latitude & longitude ? yield getClosestWells(action.payload.geometry, true) : null;
+    let nearestWells = null;
+    if (latitude && longitude) {
+      nearestWells = yield getClosestWells(action.payload.geometry, true);
+    }
     if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
       wellInformationArr = [
         {
@@ -63,11 +65,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       ];
     } else {
       const { well_objects, areWellsInside } = nearestWells;
+      console.dir(well_objects);
       well_objects.forEach((well) => {
-        if (well.proximity) {
+        if (well.proximity || well.inside) {
           wellInformationArr.push({
             well_id: well.properties.WELL_TAG_NUMBER.toString(),
-            well_proximity: well.proximity.toString()
+            well_proximity: well.inside ? '0' : well.proximity.toString()
           });
         }
       });
@@ -103,17 +106,14 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
-  console.log('banana');
   try {
     const authState = yield select(selectAuth);
-    console.log('banana2');
 
     let activityV1 = generateDBActivityPayload({}, null, action.payload.type, action.payload.subType);
     let activityV2 = populateSpeciesArrays(activityV1);
     activityV2.created_by = authState.username;
     activityV2.user_role = authState.accessRoles.map((role) => role.role_id);
 
-    console.log('banana3');
     yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: activityV2 } });
   } catch (e) {
     console.error(e);

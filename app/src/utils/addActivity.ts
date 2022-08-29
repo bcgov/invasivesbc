@@ -298,6 +298,7 @@ export function generateDBActivityPayload(
     date_created: time
   });
   let returnVal = {
+    initial_autofill_done: false,
     _id: id,
     short_id: short_id,
     activity_id: id,
