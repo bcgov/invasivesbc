@@ -68,9 +68,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
                 ...state.activity.form_data.activity_data,
                 latitude: action.payload.lat,
                 longitude: action.payload.long,
-                utm_zone: action.payload.utm[0],
-                utm_easting: action.payload.utm[1],
-                utm_northing: action.payload.utm[2],
+                utm_zone: action.payload.utm ? action.payload.utm[0] : null,
+                utm_easting: action.payload.utm ? action.payload.utm[1] : null,
+                utm_northing: action.payload.utm ? action.payload.utm[2] : null,
                 reported_area: action.payload.reported_area
               },
               activity_subtype_data: {
