@@ -1,5 +1,6 @@
 import { Http } from '@capacitor-community/http';
 import { ActivityStatus } from 'constants/activities';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
 import {
@@ -13,34 +14,10 @@ import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 
-const getRequestOptions = (config, requestHeaders) => {
-  return {
-    baseUrl: config.API_BASE,
-    // baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
-    headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
-  };
-};
-
 const checkForErrors = (response: any, status?: any, url?: any) => {
   if (response.code > 201) {
   }
 };
-
-function* InvasivesAPI_Call(method, endpoint, payloadData?) {
-  // get config and request setup from store
-  const requestOptions = yield select(selectAuthHeaders);
-  const config = yield select(selectConfiguration);
-  const options = getRequestOptions(config, requestOptions);
-
-  const { data, status, url } = yield Http.request({
-    method: method,
-    headers: { ...options.headers, 'Content-Type': 'application/json' },
-    url: options.baseUrl + endpoint,
-    data: payloadData
-  });
-
-  return { data, status, url };
-}
 
 //
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
@@ -109,6 +86,15 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
+
+  yield put({
+    type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+    payload: { suggestedPersons: networkReturn.data.result }
+  });
+}
+
+export function* handle_ACTIVITY_GET_(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
 
   yield put({

@@ -532,139 +532,33 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   // TODO REDUX
   //sets well id and proximity if there are any
-  const setClosestWells = async (incomingActivityDoc) => {
-    let closestWells = await getClosestWells(geometry, databaseContext, api, true, connected);
-
-    //if nothing is received, don't do anything
-    if (!closestWells || !closestWells.well_objects || closestWells.well_objects.length < 1) {
-      //todo set wells on geo save succes action
-      /* updateDoc({
-        ...incomingActivityDoc,
-        formData: {
-          ...incomingActivityactivityInStore.activity.formData,
-          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-          activity_subtype_data: {
-            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-            Well_Information: [
-              {
-                well_id: 'No wells found',
-                well_proximity: 'No wells found'
-              }
-            ]
-          }
-        }
-      });
-      return;
-    }
-    */
-      const { well_objects, areWellsInside } = closestWells;
-      const wellInformationArr = [];
-      well_objects.forEach((well) => {
-        if (well.proximity) {
-          wellInformationArr.push({
-            well_id: well.properties.WELL_TAG_NUMBER,
-            well_proximity: well.proximity.toString()
-          });
-        }
-      });
-
-      //if it is a Chemical treatment and there are wells too close, display warning dialog
-      if (
-        activityInStore.activity.activitySubtype.includes('Treatment_ChemicalPlant') &&
-        (well_objects[0].proximity < 50 || areWellsInside)
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
-          dialogActions: [
-            {
-              actionName: 'No',
-              actionOnClick: () => {
-                setGeometry(null);
-                /*  updateDoc({
-                ...incomingActivityDoc,
-                formData: {
-                  ...incomingActivityactivityInStore.activity.formData,
-                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-                  activity_subtype_data: {
-                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-                    Well_Information: [
-                      {
-                        well_id: 'No wells found',
-                        well_proximity: 'No wells found'
-                      }
-                    ]
-                  }
-                }
-              });*/
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              }
+  const setClosestWells = () => {
+    //if it is a Chemical treatment and there are wells too close, display warning dialog
+    if (
+      activityInStore.activity.activity_subtype.includes('Treatment_ChemicalPlant') &&
+      activityInStore.activity.form_data?.activity_subtype_data?.Well_Information[0]?.proximity < 50
+    ) {
+      setWarningDialog({
+        dialogOpen: true,
+        dialogTitle: 'Warning!',
+        dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+        dialogActions: [
+          {
+            actionName: 'No',
+            actionOnClick: () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+            }
+          },
+          {
+            actionName: 'Yes',
+            actionOnClick: () => {
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             },
-            {
-              actionName: 'Yes',
-              actionOnClick: () => {
-                /* updateDoc({
-                ...incomingActivityDoc,
-                formData: {
-                  ...incomingActivityactivityInStore.activity.formData,
-                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-                  activity_subtype_data: {
-                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-                    Well_Information: [...wellInformationArr]
-                  }
-                }
-              });*/
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      } else if (
-        activityInStore.activity.activitySubtype.includes('Observation') &&
-        (well_objects[0].proximity < 50 || areWellsInside)
-      ) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Warning!',
-          dialogContentText: 'There are wells that either inside your area or too close to it.',
-          dialogActions: [
-            {
-              actionName: 'Ok',
-              actionOnClick: () => {
-                // TODO REDUX - why call update doc here??
-                /*     updateDoc({
-                ...incomingActivityDoc,
-                formData: {
-                  ...incomingActivityactivityInStore.activity.formData,
-                  activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-                  activity_subtype_data: {
-                    ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-                    Well_Information: [...wellInformationArr]
-                  }
-                }
-              });*/
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              },
-              autoFocus: true
-            }
-          ]
-        });
-      } else {
-        //TODO REDUX
-        /*  updateDoc({
-        ...incomingActivityDoc,
-        formData: {
-          ...incomingActivityactivityInStore.activity.formData,
-          activity_data: { ...incomingActivityactivityInStore.activity.formData.activity_data },
-          activity_subtype_data: {
-            ...incomingActivityactivityInStore.activity.formData.activity_subtype_data,
-            Well_Information: [...wellInformationArr]
+            autoFocus: true
           }
-        }
-      });*/
-      }
+        ]
+      });
     }
   };
 
@@ -672,6 +566,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore?.activity?.geometry) {
+      setClosestWells();
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
         if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
