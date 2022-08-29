@@ -94,6 +94,18 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS: {
+        if (state.activity.activity_subtype === 'Observation' && !state.activity.initial_autofill_done) {
+          return {
+            ...state,
+            suggestedPersons: [...action.payload.suggestedPersons]
+          };
+        }
+        if (state.activity.activity_subtype === 'Treatment' && !state.activity.initial_autofill_done) {
+          return {
+            ...state,
+            suggestedPersons: [...action.payload.suggestedPersons]
+          };
+        }
         return {
           ...state,
           suggestedPersons: [...action.payload.suggestedPersons]
