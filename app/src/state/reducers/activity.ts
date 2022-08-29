@@ -72,6 +72,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
                 utm_easting: action.payload.utm[1],
                 utm_northing: action.payload.utm[2],
                 reported_area: action.payload.reported_area
+              },
+              activity_subtype_data: {
+                ...state.activity.activity_subtype_data,
+                Well_Information: action.payload.Well_Information
               }
             }
           }

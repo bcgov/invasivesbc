@@ -1270,6 +1270,6 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
 }
 
 export function* getSimplifiedGeoJSON(url_geo: string, percentage: string) {
-  const data = yield InvasivesAPI_Call('GET', `/api/map-shaper?url=${url_geo}&percentage=${percentage}`);
-  return data.result;
+  const response = yield InvasivesAPI_Call('GET', `/api/map-shaper?url=${url_geo}&percentage=${percentage}`);
+  return response.data.result;
 }

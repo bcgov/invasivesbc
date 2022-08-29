@@ -50,7 +50,28 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     var utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
     //todo handle different if online or not:
+
     const nearestWells = yield getClosestWells(action.payload.geometry, true);
+    let wellInformationArr = [];
+    if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
+      wellInformationArr = [
+        {
+          well_id: 'No wells found',
+          well_proximity: 'No wells found'
+        }
+      ];
+    } else {
+      const { well_objects, areWellsInside } = nearestWells;
+      well_objects.forEach((well) => {
+        if (well.proximity) {
+          wellInformationArr.push({
+            well_id: well.properties.WELL_TAG_NUMBER.toString(),
+            well_proximity: well.proximity.toString()
+          });
+        }
+      });
+    }
+
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload: {
@@ -58,7 +79,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
         utm: utm,
         lat: latitude,
         long: longitude,
-        reported_area: reported_area
+        reported_area: reported_area,
+        Well_Information: wellInformationArr
       }
     });
   } catch (e) {

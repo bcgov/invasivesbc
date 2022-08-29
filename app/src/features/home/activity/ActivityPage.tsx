@@ -562,7 +562,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       well_objects.forEach((well) => {
         if (well.proximity) {
           wellInformationArr.push({
-            well_id: well.properties.WELL_TAG_NUMBER,
+            well_id: well.properties.WELL_TAG_NUMBER.toString(),
             well_proximity: well.proximity.toString()
           });
         }

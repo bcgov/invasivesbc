@@ -23,17 +23,16 @@ export function* getClosestWells(inputGeometry, online) {
     }
   }
   //if offline: try to get layer data from sqlite local storage
-/*  else {
+  /*  else {
     const allFeatures = await fetchLayerDataFromLocal(
       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
       bufferedGeo,
       databaseContext
     );*/
 
-    //if there is a geometry drawn, get closest wells and wells inside and label them
-   // return getWellsArray(allFeatures, firstFeature);
-  }
-};
+  //if there is a geometry drawn, get closest wells and wells inside and label them
+  // return getWellsArray(allFeatures, firstFeature);
+}
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
 export const getWellsArray = (arrayOfWells, inputGeometry) => {
   let geoJSONFeature = inputGeometry;
