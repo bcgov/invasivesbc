@@ -26,7 +26,7 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -671,9 +671,9 @@ const ActivityGrid = (props) => {
                     );
                   }
                 })}
-              {recordSetContext?.recordSetState[props.setName]?.searchBoundary && (
+              {userSettings?.recordSets[props.setName]?.searchBoundary && (
                 <Chip
-                  label={`Boundary = ${userSettings?.recordSets[props.setName]?.searchBoundary.name}`}
+                  label={`Boundary = ${userSettings?.recordSets[props.setName]?.searchBoundary?.name}`}
                   variant="outlined"
                   color="secondary"
                   onClick={(e) => {
@@ -681,7 +681,7 @@ const ActivityGrid = (props) => {
                   }}
                   onDelete={(e) => {
                     e.stopPropagation();
-                    // recordSetContext.removeBoundaryFromSet(props.setName);
+                    dispatch({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST , payload: { setName: props.setName }});
                   }}
                 />
               )}

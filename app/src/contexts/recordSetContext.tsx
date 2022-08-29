@@ -98,11 +98,11 @@ export const RecordSetProvider = (props) => {
   //   // dataAccess.setAppState({ recordSets: { ...recordSets } });
   // }
 
-  const removeBoundaryFromSet = async (setName: string) => {
-    const oldState = await dataAccess.getAppState();
-    oldState.recordSets[setName].searchBoundary = null;
-    setRecordSetState({ ...oldState.recordSets});
-  }
+  // const removeBoundaryFromSet = async (setName: string) => {
+  //   const oldState = await dataAccess.getAppState();
+  //   oldState.recordSets[setName].searchBoundary = null;
+  //   setRecordSetState({ ...oldState.recordSets});
+  // }
 
   // useEffect(() => {
   //   getInitialState();
@@ -144,9 +144,9 @@ export const RecordSetProvider = (props) => {
           // add: add,
           // remove: remove,
           // boundaries: boundaries,
-          setBoundaries: setBoundaries,
+          // setBoundaries: setBoundaries,
           // addBoundaryToSet: addBoundaryToSet,
-          removeBoundaryFromSet: removeBoundaryFromSet
+          // removeBoundaryFromSet: removeBoundaryFromSet
         }}>
         {props.children}
       </RecordSetContext.Provider>
