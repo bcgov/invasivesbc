@@ -10,7 +10,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
-import { RecordSetContext, RecordSetProvider } from '../../../contexts/recordSetContext';
+import { RecordSetContext } from '../../../contexts/recordSetContext';
 import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
@@ -80,9 +80,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
   return (
-    //<RecordSetProvider>
-      <PageContainer originalActivityPageClassName={classes.pageContainer} />
-    //</RecordSetProvider>
+    <PageContainer originalActivityPageClassName={classes.pageContainer} />
   );
 };
 

@@ -247,11 +247,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <RecordSetProvider>
-                <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
-                  <RecordSetLayersRenderer />
-                </MapContainer>
-              </RecordSetProvider>
+              <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
+                <RecordSetLayersRenderer />
+              </MapContainer>
             </Grid>
           </Grid>
         </AccordionDetails>

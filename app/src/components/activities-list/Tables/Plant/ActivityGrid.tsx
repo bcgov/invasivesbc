@@ -26,7 +26,7 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -257,46 +257,46 @@ const ActivityGrid = (props) => {
   //update state in main context and localstorage:
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
-    // recordSetContext.setRecordSetState((prev) => {
-    //   //if (save !== 0 && prev?.[props.setName]) {
-    //   if (prev?.[props.setName]) {
-    //     const thereAreNewFilters =
-    //       filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
-    //         ? true
-    //         : false;
-    //     const thereAreNewAdvancedFilters =
-    //       advancedFilterRows !== null &&
-    //       JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
-    //         ? true
-    //         : false;
+    if (save !== 0 && userSettings.recordSets?.[props.setName]) {
+      if (userSettings.recordSets?.[props.setName]) {
+        const thereAreNewFilters =
+          filters !== null && JSON.stringify(userSettings.recordSets[props.setName]?.gridFilters) !== JSON.stringify(filters)
+            ? true
+            : false;
+        const thereAreNewAdvancedFilters =
+          advancedFilterRows !== null &&
+          JSON.stringify(userSettings.recordSets?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+            ? true
+            : false;
 
-    //     const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
-    //     const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
+        const thereAreOldFilters = userSettings.recordSets?.[props.setName]?.gridFilters?.length ? true : false;
+        const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length ? true : false;
 
-    //     if (thereAreNewFilters || thereAreNewAdvancedFilters) {
-    //       const updatedFilters = thereAreNewFilters
-    //         ? { ...filters }
-    //         : thereAreOldFilters
-    //         ? { ...prev?.[props.setName]?.gridFilters }
-    //         : {};
-    //       const updatedAdvancedFilters = thereAreNewAdvancedFilters
-    //         ? [...advancedFilterRows]
-    //         : thereAreOldAdvancedFilters
-    //         ? [...prev?.[props.setName]?.advancedFilters]
-    //         : [];
-    //       return {
-    //         ...prev,
-    //         [props.setName]: {
-    //           ...prev?.[props.setName],
-    //           gridFilters: updatedFilters,
-    //           advancedFilters: updatedAdvancedFilters
-    //         }
-    //       };
-    //     }
-    //   }
-
-    //   return prev;
-    // });
+        if (thereAreNewFilters || thereAreNewAdvancedFilters) {
+          const updatedFilters = thereAreNewFilters
+            ? { ...filters }
+            : thereAreOldFilters
+            ? { ...userSettings.recordSets?.[props.setName]?.gridFilters }
+            : {};
+          const updatedAdvancedFilters = thereAreNewAdvancedFilters
+            ? [...advancedFilterRows]
+            : thereAreOldAdvancedFilters
+            ? [...userSettings.recordSets?.[props.setName]?.advancedFilters]
+            : [];
+          dispatch({
+            type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+            payload: {
+              updatedSet: {
+                ...userSettings.recordSets?.[props.setName],
+                gridFilters: updatedFilters,
+                advancedFilters: updatedAdvancedFilters
+              },
+              setName: props.setName
+            }
+          });
+        }
+      }
+    };
   }, [advancedFilterRows]);
 
   useEffect(() => {
