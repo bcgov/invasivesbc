@@ -152,13 +152,16 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
     let updatedFormData = action.payload.eventFormData;
 
-    //updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-    //auto fills total release quantity (only on biocontrol release activity)
-    //updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-    //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-    // updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-    // Autofills total bioagent quantity specifically for biocontrol collections
-    //updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
+    updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
+
+    if (beforeActivity.activity_type === ActivityType.Biocontrol) {
+      //auto fills total release quantity (only on biocontrol release activity)
+      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+      //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
+      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+      // Autofills total bioagent quantity specifically for biocontrol collections
+      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
+    }
 
     if (beforeState.activity.activity_type === ActivityType.Treatment) {
       updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);

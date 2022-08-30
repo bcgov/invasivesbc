@@ -29,7 +29,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const dataAccess = useDataAccess();
 
   const onSave = async () => {
-    try {
+    /* try {
       // NOTE: duplicate code from RecordTables.  Should be moved to a common Actions definitions file
       if (
         props.activity.formStatus !== FormValidationStatus.VALID ||
@@ -51,6 +51,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     } catch (error) {
       //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
+    */
   };
 
   return (
