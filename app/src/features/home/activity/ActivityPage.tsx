@@ -534,10 +534,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //sets well id and proximity if there are any
   const setClosestWells = () => {
     //if it is a Chemical treatment and there are wells too close, display warning dialog
-    if (
-      activityInStore.activity.activity_subtype.includes('Treatment_ChemicalPlant') &&
-      activityInStore.activity.form_data?.activity_subtype_data?.Well_Information[0]?.proximity < 50
-    ) {
+
+    let shouldWarn = false;
+    activityInStore.activity.form_data?.activity_subtype_data?.Well_Information.map((well) => {
+      if (well.proximity < 50 || well.inside) shouldWarn = true;
+    });
+
+    if (activityInStore.activity.activity_subtype.includes('Treatment_ChemicalPlant') && shouldWarn) {
       setWarningDialog({
         dialogOpen: true,
         dialogTitle: 'Warning!',
