@@ -314,6 +314,7 @@ export function generateDBActivityPayload(
         ...formData?.activity_data,
         activity_date_time: time
       },
+      activity_type_data: {},
       activity_subtype_data: {}
     },
     media: undefined,
