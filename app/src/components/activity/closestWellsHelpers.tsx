@@ -56,11 +56,12 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   arrayOfWells.forEach((well, index) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;
-      outputWells.push({ ...well, inside: true });
+      outputWells.push({ ...well, proximity: 0, inside: true });
     } else {
       outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
     }
   });
+
   //sort by proximity ASC
   outputWells.sort((wellA, wellB) => {
     return wellA.proximity - wellB.proximity;
@@ -69,12 +70,16 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   outputWells[0] = { ...outputWells[0], closest: true };
 
   let fiveClosest = [];
+  const insideGeoWells = [];
 
-  if (outputWells.length > 5) {
-    fiveClosest = outputWells.slice(0, 5);
-  } else {
-    fiveClosest = outputWells;
-  }
+  outputWells.forEach((well: any) => {
+    if (well.inside) {
+      insideGeoWells.push(well);
+    }
+    if (!well.inside && fiveClosest.length < 5) {
+      fiveClosest.push(well);
+    }
+  });
 
-  return { well_objects: fiveClosest, areWellsInside: areWellsInside };
+  return { well_objects: [...fiveClosest, ...insideGeoWells], areWellsInside: areWellsInside };
 };
