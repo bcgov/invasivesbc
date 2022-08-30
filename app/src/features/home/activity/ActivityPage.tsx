@@ -96,8 +96,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [geometry]);
 
   const classes = useStyles();
-  const databaseContext = useContext(DatabaseContext);
-  const api = useInvasivesApi();
   const { extendedInfo, displayName, roles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
@@ -209,141 +207,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return true;
     }
     return false;
-  };
-
-  /**
-   * Set the default form data values
-   *
-   * @param {*} activity The doc/activity object
-   */
-  //TODO test to see which if any of these we still need to move to createactivitypayload
-  //  ****ITS NOT USED HERE*****
-  const getDefaultFormDataValues = (activity: any) => {
-    if (!activity) {
-      return;
-    }
-    let activitySubtype = activity.activitySubtype;
-    let updatedActivity = activity;
-    let { activity_data } = activity.formData || {};
-    let activity_subtype_data = activity.formData.activity_subtype_data || {};
-    let activity_type_data = activity.formData.activity_type_data || {
-      activity_persons: [{ person_name: '', applicator_license: '' }]
-    };
-
-    let nameNeedsInsert = false;
-    let pacNeedsInsert = false;
-    let employerNeedsInsert = false;
-    let agenciesNeedInsert = false;
-    let psnNeedsInsert = false;
-
-    let userNameInject = '';
-    let applicatorLicenseInject = '';
-    let employerInject = '';
-    let agenciesInject = [];
-    let psnInject = '';
-
-    if (activity_type_data?.activity_persons) {
-      if (
-        activity_type_data?.activity_persons.length > 0 &&
-        (activity_type_data?.activity_persons[0].person_name === undefined ||
-          activity_type_data?.activity_persons[0].person_name === '')
-      ) {
-        nameNeedsInsert = true;
-
-        userNameInject = displayName;
-      }
-      if (
-        activity_type_data?.activity_persons.length > 0 &&
-        (activity_type_data?.activity_persons[0].applicator_license === undefined ||
-          activity_type_data?.activity_persons[0].applicator_license === '')
-      ) {
-        pacNeedsInsert = true;
-        if (extendedInfo?.pac_number) {
-          applicatorLicenseInject = extendedInfo.pac_number;
-        }
-      }
-    }
-
-    // ALL RECORDS: Auto fill user's employer
-    if (!activity_data?.employer_code || activity_data?.employer_code === '') {
-      employerNeedsInsert = true;
-      employerInject = extendedInfo.employer;
-    }
-
-    console.log('employerNeedsInsert', employerNeedsInsert);
-    console.log('employerInject', employerInject);
-
-    if (!activity_data?.invasive_species_agency_code || activity_data?.invasive_species_agency_code === '') {
-      agenciesNeedInsert = true;
-      agenciesInject = extendedInfo.funding_agencies;
-    }
-
-    // // If chemical treatment, auto fill service license number
-    if (
-      activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
-    ) {
-      if (
-        !activity_subtype_data?.Treatment_ChemicalPlant_Information?.pesticide_employer_code ||
-        activity_subtype_data.Treatment_ChemicalPlant_Information?.pesticide_employer_code === ''
-      ) {
-        psnNeedsInsert = true;
-        psnInject = extendedInfo.pac_service_number_1
-          ? extendedInfo.pac_service_number_1
-          : extendedInfo.pac_service_number_2
-          ? extendedInfo.pac_service_number_2
-          : '';
-      }
-    }
-
-    let activitySubtypeData;
-    if (psnNeedsInsert) {
-      activitySubtypeData = {
-        ...activity_subtype_data,
-        Treatment_ChemicalPlant_Information: {
-          // if government user, auto fill as 000000
-          pesticide_employer_code: isGov() ? '0' : psnInject.replace(/^0+(\d)/, '')
-        }
-      };
-    } else {
-      activitySubtypeData = {
-        ...activity_subtype_data
-      };
-    }
-
-    const activity_persons = [...activity_type_data?.activity_persons] || [{}];
-
-    if (nameNeedsInsert) {
-      activity_persons[0]['person_name'] = userNameInject;
-    }
-    if (pacNeedsInsert) {
-      activity_persons[0]['applicator_license'] = applicatorLicenseInject;
-    }
-
-    updatedActivity = {
-      ...activity.formData,
-      activity_data: {
-        ...activity_data,
-        employer_code: employerNeedsInsert
-          ? employerInject
-          : activity_data?.employer_code
-          ? activity_data.employer_code
-          : '',
-        invasive_species_agency_code: agenciesNeedInsert
-          ? agenciesInject
-          : activity_data?.invasive_species_agency_code
-          ? activity_data.invasive_species_agency_code
-          : '',
-        reported_area: calculateGeometryArea(activity.geometry)
-      },
-      activity_type_data: {
-        ...activity_type_data,
-        activity_persons: [...activity_persons]
-      },
-      activity_subtype_data: activitySubtypeData
-    };
-
-    return updatedActivity;
   };
 
   /**
@@ -506,30 +369,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (linkedActivity) setGeometry(linkedActivity?.geometry);
   }, [linkedActivity]);
 
-  // TODO DO WE NEED THIS? Should all be moved to create activity payload if we do
-  //this sets up initial values for some of the fields in activity.
-  const setUpInitialValues = (activity: any, formData: any): Object => {
-    //Observations -- all:
-    if (activity.activityType === 'Observation' && !formData.activity_subtype_data) {
-      //set the invasice plants to start with 1 element, rather than with 0
-      formData.activity_subtype_data = {};
-      formData.activity_subtype_data.invasive_plants = [{ occurrence: 'Positive occurrence' }];
-      //initialize slope and aspect code to '' so that its possible to auto fill flat values
-      //even though 1 of the fields hasn't been touched
-      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
-      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = '';
-      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = '';
-    }
-    //Observations -- Plant Terrestrial activity:
-    if (activity.activitySubtype === 'Activity_Observation_PlantTerrestrial' && !formData.activity_subtype_data) {
-      //set specific use to 'None'
-      formData.activity_subtype_data = {};
-      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
-      formData.activity_subtype_data.observation_plant_terrestrial_data.specific_use_code = 'NO';
-    }
-    return formData;
-  };
-
   // TODO REDUX
   //sets well id and proximity if there are any
   const setClosestWells = () => {
@@ -615,8 +454,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
-              {activityInStore.activity.activitySubtype &&
-                activityInStore.activity.activitySubtype
+              {activityInStore.activity.activity_subtype &&
+                activityInStore.activity.activity_subtype
                   .replace(/([A-Z])/g, ' $1')
                   .replace(/_/g, '')
                   .replace(/^./, function (str) {
