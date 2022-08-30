@@ -281,7 +281,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       let modifiedSchema = subtypeSchema;
       // Handle activity_id linking fetches
       try {
-        if (props.activity?.activityType === 'Monitoring') {
+        if (props.activity?.activity_type === 'Monitoring') {
           if (MOBILE) {
             uiSchema = {
               ...uiSchema,
