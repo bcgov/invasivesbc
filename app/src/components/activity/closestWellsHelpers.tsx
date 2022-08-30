@@ -56,11 +56,12 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   arrayOfWells.forEach((well, index) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;
-      outputWells.push({ ...well, inside: true });
+      outputWells.push({ ...well, proximity: 0, inside: true });
     } else {
       outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
     }
   });
+
   //sort by proximity ASC
   outputWells.sort((wellA, wellB) => {
     return wellA.proximity - wellB.proximity;
