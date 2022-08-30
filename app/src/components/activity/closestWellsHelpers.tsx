@@ -70,12 +70,16 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   outputWells[0] = { ...outputWells[0], closest: true };
 
   let fiveClosest = [];
+  const insideGeoWells = [];
 
-  if (outputWells.length > 5) {
-    fiveClosest = outputWells.slice(0, 5);
-  } else {
-    fiveClosest = outputWells;
-  }
+  outputWells.forEach((well: any) => {
+    if (well.inside) {
+      insideGeoWells.push(well);
+    }
+    if (!well.inside && fiveClosest.length < 5) {
+      fiveClosest.push(well);
+    }
+  });
 
-  return { well_objects: fiveClosest, areWellsInside: areWellsInside };
+  return { well_objects: [...fiveClosest, ...insideGeoWells], areWellsInside: areWellsInside };
 };
