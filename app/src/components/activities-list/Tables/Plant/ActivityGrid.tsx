@@ -20,7 +20,6 @@ import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 import SaveIcon from '@mui/icons-material/Save';
-import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
@@ -28,6 +27,7 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { select } from 'redux-saga/effects';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -93,13 +93,12 @@ const filterContainerClassname = `
 export const getSearchCriteriaFromFilters = (
   advancedFilterRows: any,
   rolesUserHasAccessTo: any,
-  recordSetContext: any,
+  recordSets: any,
   setName: string,
   isIAPP: boolean,
   gridFilters: any,
   page: number,
   limit: number
-  // gridFilters?: any
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
@@ -125,15 +124,15 @@ export const getSearchCriteriaFromFilters = (
   }
 
   //search_feature
-  if (recordSetContext.recordSetState[setName]?.searchBoundary) {
+  if (recordSets[setName]?.searchBoundary) {
     filter.search_feature = {
       type: 'FeatureCollection',
-      features: recordSetContext.recordSetState[setName]?.searchBoundary.geos
+      features: recordSets[setName]?.searchBoundary.geos
     };
   }
 
-  if (recordSetContext.recordSetState[setName]?.advancedFilters) {
-    const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
+  if (recordSets[setName]?.advancedFilters) {
+    const currentAdvFilters = recordSets[setName]?.advancedFilters;
     const jurisdictions = [];
     const speciesPositive = [];
     const speciesNegative = [];
@@ -230,7 +229,6 @@ const ActivityGrid = (props) => {
   const { themeType } = themeContext;
 
   //Grab filter state from main context
-  const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
     const parentStateCollection = userSettings.recordSets;
     //console.dir(parentStateCollection);
@@ -300,14 +298,14 @@ const ActivityGrid = (props) => {
   }, [advancedFilterRows]);
 
   useEffect(() => {
-    if (recordSetContext?.recordSetState?.[props.setName]) {
+    if (userSettings?.recordSets?.[props.setName]) {
       if (props.setType === 'POI') {
         getPOIs();
       } else {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(recordSetContext?.recordSetState?.[props.setName]), filters]);
+  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), filters]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -317,7 +315,7 @@ const ActivityGrid = (props) => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
       accessRoles,
-      recordSetContext,
+      userSettings?.recordSets,
       props.setName,
       false,
       filters.enabled ? filters : null,
@@ -343,7 +341,7 @@ const ActivityGrid = (props) => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
       accessRoles,
-      recordSetContext,
+      userSettings?.recordSets,
       props.setName,
       true,
       null,

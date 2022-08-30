@@ -24,7 +24,6 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
 import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { RecordSetContext } from 'contexts/recordSetContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { USER_SETTINGS_SET_BOUNDARIES_REQUEST } from 'state/actions';
@@ -80,7 +79,6 @@ export const NamedBoundaryMenu = (props) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
   // const [boundaries, setBoundaries] = useState<Boundary[]>([]);
-  const recordSetContext = useContext(RecordSetContext);
   const [KMLs, setKMLs] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
   const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);

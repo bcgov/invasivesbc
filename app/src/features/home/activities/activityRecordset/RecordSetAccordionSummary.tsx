@@ -21,7 +21,6 @@ import LayersIcon from '@mui/icons-material/Layers';
 // import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
 import GrassIcon from '@mui/icons-material/Grass';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
@@ -66,7 +65,6 @@ const OrderSelector = (props) => {
 };
 
 const RecordSetAccordionSummary = (props) => {
-  const recordSetContext = useContext(RecordSetContext);
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
 
@@ -76,7 +74,6 @@ const RecordSetAccordionSummary = (props) => {
   const { accessRoles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
-  const recordStateContext = useContext(RecordSetContext);
   const dataAccess = useDataAccess();
   const dispatch = useDispatch();
 
@@ -95,15 +92,11 @@ const RecordSetAccordionSummary = (props) => {
   });
 
   const openDeleteDialog = async () => {
-    const recordSetState = recordStateContext.recordSetState;
-    const recordSet = recordSetState[props.setName];
-    const advancedFilters = recordSet.advancedFilters;
-
     const recordSets = [];
     const filter = await getSearchCriteriaFromFilters(
-      advancedFilters,
+      userSettings.recordSets[props.setName].advancedFilters,
       accessRoles,
-      recordStateContext,
+      userSettings.recordSets,
       props.recordSetName,
       false,
       null,

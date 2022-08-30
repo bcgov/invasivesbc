@@ -10,7 +10,6 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
-import { RecordSetContext } from '../../../contexts/recordSetContext';
 import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
@@ -88,7 +87,6 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
 const PageContainer = (props) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
-  const recordStateContext = useContext(RecordSetContext);
   const [geometry, setGeometry] = useState<any[]>([]);
   const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
   const classes = useStyles();
@@ -246,7 +244,7 @@ const PageContainer = (props) => {
               const filter = await getSearchCriteriaFromFilters(
                 selectedSet.advancedFilters,
                 accessRoles,
-                recordStateContext,
+                userSettings.recordSets,
                 selectedSet.recordSetName,
                 false,
                 null,

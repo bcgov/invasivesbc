@@ -1,15 +1,15 @@
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
-import { RecordSetContext } from 'contexts/recordSetContext';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 import { useSelector } from "../../../state/utilities/use_selector";
 import { selectAuth } from "../../../state/reducers/auth";
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const RecordSetLayersRenderer = (props: any) => {
-  const recordsetContext = useContext(RecordSetContext);
   const [layersToRender, setLayersToRender] = useState([]);
   const { accessRoles } = useSelector(selectAuth);
+  const { recordSets } = useSelector(selectUserSettings)
 
   interface ILayerToRender {
     filter: IActivitySearchCriteria;
@@ -18,7 +18,7 @@ export const RecordSetLayersRenderer = (props: any) => {
   }
 
   useEffect(() => {
-    const sets = Object.keys(recordsetContext.recordSetState);
+    const sets = Object.keys(recordSets);
     if (!sets || !sets.length) {
       return;
     }
@@ -26,19 +26,23 @@ export const RecordSetLayersRenderer = (props: any) => {
     const layers = sets.map((s) => {
       let l: any = {};
       l.filters = getSearchCriteriaFromFilters(
-        recordsetContext.recordSetState[s].advancedFilters,
+        recordSets[s].advancedFilters,
         accessRoles,
-        recordsetContext,
-        s
+        recordSets,
+        s,
+        false,
+        null,
+        1,
+        1000
       );
-      l.color = recordsetContext.recordSetState[s].color;
+      l.color = recordSets[s].color;
       l.setName = s;
-      l.drawOrder = recordsetContext.recordSetState[s].drawOrder;
+      l.drawOrder = recordSets[s].drawOrder;
       return l;
     });
 
     setLayersToRender([...layers]);
-  }, [recordsetContext.recordSetState]);
+  }, [recordSets]);
 
   return (
     <>

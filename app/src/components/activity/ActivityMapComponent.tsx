@@ -24,7 +24,6 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
-import { RecordSetProvider } from 'contexts/recordSetContext';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
