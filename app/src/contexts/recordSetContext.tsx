@@ -148,7 +148,7 @@ export const RecordSetProvider = (props) => {
           // addBoundaryToSet: addBoundaryToSet,
           // removeBoundaryFromSet: removeBoundaryFromSet
         }}>
-        {props.children}
+        {/* {props.children} */}
       </RecordSetContext.Provider>
     );
   } else return <></>;

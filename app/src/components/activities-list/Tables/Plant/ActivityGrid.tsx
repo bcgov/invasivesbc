@@ -232,7 +232,7 @@ const ActivityGrid = (props) => {
   //Grab filter state from main context
   const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
-    const parentStateCollection = recordSetContext.recordSetState;
+    const parentStateCollection = userSettings.recordSets;
     //console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
     if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState?.gridFilters) {
@@ -257,46 +257,46 @@ const ActivityGrid = (props) => {
   //update state in main context and localstorage:
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
-    recordSetContext.setRecordSetState((prev) => {
-      //if (save !== 0 && prev?.[props.setName]) {
-      if (prev?.[props.setName]) {
-        const thereAreNewFilters =
-          filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
-            ? true
-            : false;
-        const thereAreNewAdvancedFilters =
-          advancedFilterRows !== null &&
-          JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
-            ? true
-            : false;
+    // recordSetContext.setRecordSetState((prev) => {
+    //   //if (save !== 0 && prev?.[props.setName]) {
+    //   if (prev?.[props.setName]) {
+    //     const thereAreNewFilters =
+    //       filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
+    //         ? true
+    //         : false;
+    //     const thereAreNewAdvancedFilters =
+    //       advancedFilterRows !== null &&
+    //       JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+    //         ? true
+    //         : false;
 
-        const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
-        const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
+    //     const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
+    //     const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
 
-        if (thereAreNewFilters || thereAreNewAdvancedFilters) {
-          const updatedFilters = thereAreNewFilters
-            ? { ...filters }
-            : thereAreOldFilters
-            ? { ...prev?.[props.setName]?.gridFilters }
-            : {};
-          const updatedAdvancedFilters = thereAreNewAdvancedFilters
-            ? [...advancedFilterRows]
-            : thereAreOldAdvancedFilters
-            ? [...prev?.[props.setName]?.advancedFilters]
-            : [];
-          return {
-            ...prev,
-            [props.setName]: {
-              ...prev?.[props.setName],
-              gridFilters: updatedFilters,
-              advancedFilters: updatedAdvancedFilters
-            }
-          };
-        }
-      }
+    //     if (thereAreNewFilters || thereAreNewAdvancedFilters) {
+    //       const updatedFilters = thereAreNewFilters
+    //         ? { ...filters }
+    //         : thereAreOldFilters
+    //         ? { ...prev?.[props.setName]?.gridFilters }
+    //         : {};
+    //       const updatedAdvancedFilters = thereAreNewAdvancedFilters
+    //         ? [...advancedFilterRows]
+    //         : thereAreOldAdvancedFilters
+    //         ? [...prev?.[props.setName]?.advancedFilters]
+    //         : [];
+    //       return {
+    //         ...prev,
+    //         [props.setName]: {
+    //           ...prev?.[props.setName],
+    //           gridFilters: updatedFilters,
+    //           advancedFilters: updatedAdvancedFilters
+    //         }
+    //       };
+    //     }
+    //   }
 
-      return prev;
-    });
+    //   return prev;
+    // });
   }, [advancedFilterRows]);
 
   useEffect(() => {

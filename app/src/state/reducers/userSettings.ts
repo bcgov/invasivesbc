@@ -14,6 +14,7 @@ class UserSettingsState {
   recordSets: [
     {
       advancedFilters: [],
+      gridFilters: [],
       color: string,
       drawOrder: number,
       expanded: boolean,

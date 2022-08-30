@@ -80,9 +80,9 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <RecordSetProvider>
+    //<RecordSetProvider>
       <PageContainer originalActivityPageClassName={classes.pageContainer} />
-    </RecordSetProvider>
+    //</RecordSetProvider>
   );
 };
 
