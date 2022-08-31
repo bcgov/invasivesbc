@@ -8,6 +8,7 @@ import { createUserInfoReducer } from './userInfo';
 import { createNetworkReducer } from './network';
 import { createActivityReducer } from './activity';
 import { createUserSettingsReducer } from './userSettings';
+import { createDarkThemeReducer } from './darktheme';
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -15,6 +16,7 @@ function createRootReducer(config: AppConfig) {
     Auth: createAuthReducer(config),
     UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
     Network: createNetworkReducer({ connected: true }),
+    DarkTheme: createDarkThemeReducer({ darktheme: false }),
     ActivityPage: createActivityReducer(config),
     UserSettings: createUserSettingsReducer(config)
   });
