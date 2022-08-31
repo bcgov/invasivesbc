@@ -67,7 +67,7 @@ const HerbicidesAccordion = (props) => {
 
           <Box component="div" className={classes.listContainer}>
             {props.insideTankMix
-              ? formDetails.form_data.tank_mix_object.herbicides.map((herbicide, index) => (
+              ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide, index) => (
                   <Herbicide
                     insideTankMix={props.insideTankMix}
                     classes={classes}
@@ -76,7 +76,7 @@ const HerbicidesAccordion = (props) => {
                     herbicide={herbicide}
                   />
                 ))
-              : formDetails.form_data.herbicides.map((herbicide, index) => (
+              : formDetails?.form_data?.herbicides?.map((herbicide, index) => (
                   <Herbicide
                     insideTankMix={props.insideTankMix}
                     classes={classes}
