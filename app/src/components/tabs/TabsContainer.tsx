@@ -35,8 +35,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
-import { ThemeContext } from 'utils/CustomThemeProvider';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
@@ -46,7 +45,9 @@ import {
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
-  NETWORK_GO_ONLINE
+  NETWORK_GO_ONLINE,
+  USER_SETTINGS_DISABLE_DARK_MODE,
+  USER_SETTINGS_ENABLE_DARK_MODE
 } from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
@@ -54,6 +55,7 @@ import { selectUserInfo } from '../../state/reducers/userInfo';
 import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const drawerWidth = 240;
 
@@ -181,7 +183,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const logoutUser = async () => {
     history.push('/home/landing');
-    dispatch({ type: AUTH_SIGNOUT_REQUEST});
+    dispatch({ type: AUTH_SIGNOUT_REQUEST });
     handleClose();
   };
 
@@ -247,23 +249,21 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       }
     }
 
-
     // Otherwise return the current active tab index as a fallback
     return false;
   };
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
-  const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
+  const { darkmode } = useSelector(selectUserSettings);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
   };
 
   useEffect(() => {
- //   console.log('activetab;')
-//    console.log(activeTab)
+    //   console.log('activetab;')
+    //    console.log(activeTab)
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname]);
 
@@ -334,158 +334,206 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       });
     };
     setTabConfigBasedOnRoles();
-    return ()=> setTabConfig([])
-  }, [showLoggedInTabs, isAdmin ]);
-
+    return () => setTabConfig([]);
+  }, [showLoggedInTabs, isAdmin]);
 
   return useMemo(() => {
-  if (!tabConfig || !tabConfig.length) {
-    return <CircularProgress />;
-  }
+    if (!tabConfig || !tabConfig.length) {
+      return <CircularProgress />;
+    }
     return (
-    <>
-      <IonAlert
-        isOpen={showAlert}
-        onDidDismiss={() => setShowAlert(false)}
-        header={'Are you sure?'}
-        message={
-          'If you log out while you are offline, you will not be able to access the app until you reconnect to a network.'
-        }
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {}
-          },
-          {
-            text: 'Okay',
-            handler: () => {
-              logoutUser();
-            }
+      <>
+        <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header={'Are you sure?'}
+          message={
+            'If you log out while you are offline, you will not be able to access the app until you reconnect to a network.'
           }
-        ]}
-      />
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+              handler: () => {}
+            },
+            {
+              text: 'Okay',
+              handler: () => {
+                logoutUser();
+              }
+            }
+          ]}
+        />
 
-      <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters style={{ display: 'flex' }}>
-            <Box sx={{ display: { md: 'none', xs: 'block' } }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                className={clsx(classes.menuButton, {
-                  [classes.hide]: open
-                })}>
-                <MenuIcon />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-              <img
-                className={classes.pointer}
-                src={invbclogo}
-                style={{
-                  marginRight: '5px',
-                  objectFit: 'contain',
-                  backgroundColor: 'white',
-                  padding: 4,
-                  borderRadius: 4
-                }}
-                height="60"
-                width="60"
-                alt="B.C. Government Logo"
-                onClick={() => history.push('/')}
-              />
-              <b>InvasivesBC</b>
-            </Box>
-            <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-              {tabConfig && tabConfig.length > 0 ?
-              <Tabs
-                indicatorColor="secondary"
-                textColor="inherit"
-                //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
-                value={tabConfig[getActiveTab()]? getActiveTab(): false}
-                color="primary"
-                centered
-                style={{ width: '80%', color: '#fff' }}
-                onChange={handleChange}>
-                {tabConfig.map((tab) => {
-                  if(tab && tab.label) return (
-                      <Tab
-                        style={{ fontSize: '.7rem', fontWeight: 'bold' }}
-                        color="primary"
-                        label={tab.label}
-                        key={tab.label.split(' ').join('_')}
-                        icon={tab.icon}
-                        onClick={() => history.push(tab.path)}
-                      />
-                  );}
+        <AppBar className={open ? classes.appBarShift : classes.appBar} position="static">
+          <Container maxWidth="xl">
+            <Toolbar disableGutters style={{ display: 'flex' }}>
+              <Box sx={{ display: { md: 'none', xs: 'block' } }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                  className={clsx(classes.menuButton, {
+                    [classes.hide]: open
+                  })}>
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                <img
+                  className={classes.pointer}
+                  src={invbclogo}
+                  style={{
+                    marginRight: '5px',
+                    objectFit: 'contain',
+                    backgroundColor: 'white',
+                    padding: 4,
+                    borderRadius: 4
+                  }}
+                  height="60"
+                  width="60"
+                  alt="B.C. Government Logo"
+                  onClick={() => history.push('/')}
+                />
+                <b>InvasivesBC</b>
+              </Box>
+              <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+                {tabConfig && tabConfig.length > 0 ? (
+                  <Tabs
+                    indicatorColor="secondary"
+                    textColor="inherit"
+                    //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
+                    value={tabConfig[getActiveTab()] ? getActiveTab() : false}
+                    color="primary"
+                    centered
+                    style={{ width: '80%', color: '#fff' }}
+                    onChange={handleChange}>
+                    {tabConfig.map((tab) => {
+                      if (tab && tab.label)
+                        return (
+                          <Tab
+                            style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                            color="primary"
+                            label={tab.label}
+                            key={tab.label.split(' ').join('_')}
+                            icon={tab.icon}
+                            onClick={() => history.push(tab.path)}
+                          />
+                        );
+                    })}
+                  </Tabs>
+                ) : (
+                  <></>
                 )}
-              </Tabs> : <></>}
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-              <IconButton onClick={handleClick} size="small">
-                <Avatar></Avatar>
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleClose}
-                PaperProps={{
-                  elevation: 3
-                }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-                {/*<MobileOnly>*/}
-                <MenuItem>
-                  <Switch
-                    color="secondary"
-                    checked={connected}
-                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
-                    onChange={() => {
-                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
-                    }}
-                  />
-                  Network Online
-                </MenuItem>
-                {/*</MobileOnly>*/}
-                <MenuItem>
-                  <Switch
-                    color="secondary"
-                    checked={themeType}
-                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
-                    onChange={() => {
-                      setThemeType(!themeType);
-                    }}
-                  />
-                  Theme
-                </MenuItem>
-                {showLoggedInTabs && (
-                  <MenuItem onClick={navToUpdateRequest}>
-                    <ListItemIcon>
-                      <AssignmentIndIcon />
-                    </ListItemIcon>
-                    Update My Info
+              </Box>
+              <Box sx={{ flexGrow: 0 }}>
+                <IconButton onClick={handleClick} size="small">
+                  <Avatar></Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={openMenu}
+                  onClose={handleClose}
+                  PaperProps={{
+                    elevation: 3
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                  {/*<MobileOnly>*/}
+                  <MenuItem>
+                    <Switch
+                      color="secondary"
+                      checked={connected}
+                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                      }}
+                    />
+                    Network Online
                   </MenuItem>
-                )}
-                {isAdmin && (
-                  <MenuItem onClick={navToAdmin}>
-                    <ListItemIcon>
-                      <AdminPanelSettingsIcon />
-                    </ListItemIcon>
-                    Admin
+                  {/*</MobileOnly>*/}
+                  <MenuItem>
+                    <Switch
+                      color="secondary"
+                      checked={darkmode}
+                      checkedIcon={darkmode ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        dispatch({ type: darkmode ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE });
+                      }}
+                    />
+                    Theme
                   </MenuItem>
-                )}
+                  {showLoggedInTabs && (
+                    <MenuItem onClick={navToUpdateRequest}>
+                      <ListItemIcon>
+                        <AssignmentIndIcon />
+                      </ListItemIcon>
+                      Update My Info
+                    </MenuItem>
+                  )}
+                  {isAdmin && (
+                    <MenuItem onClick={navToAdmin}>
+                      <ListItemIcon>
+                        <AdminPanelSettingsIcon />
+                      </ListItemIcon>
+                      Admin
+                    </MenuItem>
+                  )}
+                  {authenticated ? (
+                    <MenuItem onClick={logoutUser}>
+                      <ListItemIcon>
+                        <LogoutIcon />
+                      </ListItemIcon>
+                      Logout
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={loginUser}>
+                      <ListItemIcon>
+                        <LoginIcon />
+                      </ListItemIcon>
+                      Log In
+                    </MenuItem>
+                  )}
+                </Menu>
+              </Box>
+            </Toolbar>
+          </Container>
+        </AppBar>
+        <Box sx={{ display: { md: 'none', xs: 'block' } }}>
+          <Drawer
+            className={clsx(classes.drawer, {
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open
+            })}
+            classes={{
+              paper: clsx({
+                [classes.drawerOpen]: open,
+                [classes.drawerClose]: !open
+              })
+            }}
+            variant="permanent">
+            <div className={classes.toolbar}>
+              <Grid xs={1} container justifyContent="center" alignItems="center" item>
+                <IconButton onClick={handleClick} size="small">
+                  <>{authenticated ? <Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar> : <Avatar />}</>
+                </IconButton>
+              </Grid>
+              <IconButton onClick={handleDrawerClose}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
+            {connected ? (
+              <div>
                 {authenticated ? (
-                  <MenuItem onClick={logoutUser}>
+                  <MenuItem onClick={showLogoutAlert}>
                     <ListItemIcon>
                       <LogoutIcon />
                     </ListItemIcon>
@@ -499,101 +547,56 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                     Log In
                   </MenuItem>
                 )}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <Box sx={{ display: { md: 'none', xs: 'block' } }}>
-        <Drawer
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open
-          })}
-          classes={{
-            paper: clsx({
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open
-            })
-          }}
-          variant="permanent">
-          <div className={classes.toolbar}>
-            <Grid xs={1} container justifyContent="center" alignItems="center" item>
-              <IconButton onClick={handleClick} size="small">
-                <>{authenticated ? <Avatar>{displayName.match(/\b(\w)/g)?.join('')}</Avatar> : <Avatar />}</>
-              </IconButton>
-            </Grid>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
-          {connected ? (
-            <div>
-              {authenticated ? (
-                <MenuItem onClick={showLogoutAlert}>
-                  <ListItemIcon>
-                    <LogoutIcon />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
-              ) : (
-                <MenuItem onClick={loginUser}>
-                  <ListItemIcon>
-                    <LoginIcon />
-                  </ListItemIcon>
-                  Log In
-                </MenuItem>
-              )}
-            </div>
-          ) : (
-            <Chip className={classes.chip} color="primary" label="Offline Mode" />
-          )}
-          <Divider />
-          <List>
-            {tabConfig.map((tab) => (
-              <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
-                <ListItemIcon>{tab.icon}</ListItemIcon>
-                <ListItemText primary={tab.label} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <Grid container justifyContent="center" alignItems="center">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={themeType}
-                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
-                  onChange={() => {
-                    setThemeType(!themeType);
-                  }}
-                />
-              }
-              label="Theme Mode"
-            />
-          </Grid>
-          <MobileOnly>
+              </div>
+            ) : (
+              <Chip className={classes.chip} color="primary" label="Offline Mode" />
+            )}
+            <Divider />
+            <List>
+              {tabConfig.map((tab) => (
+                <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
+                  <ListItemIcon>{tab.icon}</ListItemIcon>
+                  <ListItemText primary={tab.label} />
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
             <Grid container justifyContent="center" alignItems="center">
               <FormControlLabel
                 control={
                   <Switch
-                    checked={connected}
-                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checked={darkmode}
+                    checkedIcon={darkmode ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                      dispatch({ type: darkmode ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE });
                     }}
                   />
                 }
-                label="Network Mode"
+                label="Theme Mode"
               />
             </Grid>
-          </MobileOnly>
-        </Drawer>
-      </Box>
-    </>
-  )
-  //},[tabConfig,activeTab,open]);
-  },[tabConfig,history.location.pathname,open, anchorEl]);
+            <MobileOnly>
+              <Grid container justifyContent="center" alignItems="center">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={connected}
+                      checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                      }}
+                    />
+                  }
+                  label="Network Mode"
+                />
+              </Grid>
+            </MobileOnly>
+          </Drawer>
+        </Box>
+      </>
+    );
+    //},[tabConfig,activeTab,open]);
+  }, [tabConfig, history.location.pathname, open, anchorEl]);
 };
 
 export default TabsContainer;
