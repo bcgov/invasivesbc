@@ -195,7 +195,6 @@ export const RecordSet = (props) => {
                 setIsSelected={setIsSelected}
                 //  formType={formType}
                 // subType={subType}
-                // setSelectedRecord={recordSetContext.setSelectedRecord}
                 //   filtersCallBack={setFilters}
                 //   initialFilters={filters}
               />
@@ -204,7 +203,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters)]
+    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters), expanded]
   );
 };
 export default RecordSet;
