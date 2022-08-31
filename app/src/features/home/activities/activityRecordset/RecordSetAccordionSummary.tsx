@@ -333,10 +333,11 @@ const RecordSetAccordionSummary = (props) => {
               //add to the recordset filters
               dispatch({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, payload: { boundary: e.target?.value, setName: props?.setName }});
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
-            }}>
+            }}
+            value={JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary) || ''}>
             {userSettings.boundaries?.map((boundary) => {
               return (
-                <MenuItem key={boundary?.id} value={boundary}>
+                <MenuItem key={boundary?.id + Math.random()} value={JSON.stringify(boundary) || ' '}>
                   {boundary?.name}
                 </MenuItem>
               );

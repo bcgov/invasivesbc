@@ -29,7 +29,7 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     const sets = oldAppState.recordSets;
     const current = sets[action.payload.setName];
 
-    current.searchBoundary = action.payload.boundary;
+    current.searchBoundary = JSON.parse(action.payload.boundary);
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
 

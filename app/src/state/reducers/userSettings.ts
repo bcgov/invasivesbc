@@ -22,7 +22,12 @@ class UserSettingsState {
       mapToggle: boolean,
       recordSetName: string,
       recordSetType: string,
-      searchBoundary: any
+      searchBoundary: {
+        geos: [],
+        id: number,
+        name: string,
+        server_id: any
+      }
     }
   ];
   selectedRecord: {
