@@ -210,7 +210,7 @@ const RecordSetAccordionSummary = (props) => {
           {nameEdit && (
             <>
               <TextField
-                value={newName}
+                value={newName || ''}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
