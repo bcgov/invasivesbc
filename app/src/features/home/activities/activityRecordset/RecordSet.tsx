@@ -203,7 +203,7 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters), expanded]
+    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters)]
   );
 };
 export default RecordSet;

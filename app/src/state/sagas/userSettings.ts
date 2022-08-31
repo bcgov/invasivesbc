@@ -43,22 +43,14 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
   try {
-    // const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    // const prev = oldAppState.recordSets;
+    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
+    const prev = oldAppState.recordSets;
 
-    // let newRecordSetState = {};
+    prev[action.payload.setName] = action.payload.updatedSet;
 
-    // Object.keys(prev).forEach((key) => {
-    //   if (key !== action.payload.recordSetName) {
-    //     newRecordSetState[key] = prev[key];
-    //   }
-    // });
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
 
-    // oldAppState.recordSets = newRecordSetState;
-
-    // const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
-
-    yield put({ type: USER_SETTINGS_SET_RECORD_SET_SUCCESS, payload: { /*recordSets: newRecordSetState*/ } });
+    yield put({ type: USER_SETTINGS_SET_RECORD_SET_SUCCESS, payload: { recordSets: prev } });
   } catch(e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_SET_RECORD_SET_FAILURE });
