@@ -55,7 +55,7 @@ const InvasivePlantsAccordion = () => {
           </Box>
 
           <Box component="div" className={classes.listContainer}>
-            {formDetails.form_data.invasive_plants.map((species, index) => {
+            {formDetails.form_data?.invasive_plants?.map((species, index) => {
               return <InvasivePlant species={species} key={index} index={index} classes={classes} />;
             })}
           </Box>

@@ -26,9 +26,9 @@ const TankMix: React.FC = (props) => {
         ...prevDetails.form_data,
         tank_mix_object: {
           ...formDetails.form_data.tank_mix_object,
-          delivery_rate_of_mix: currentTankMix.delivery_rate_of_mix,
-          amount_of_mix: currentTankMix.amount_of_mix,
-          calculation_type: currentTankMix.calculation_type
+          delivery_rate_of_mix: currentTankMix?.delivery_rate_of_mix,
+          amount_of_mix: currentTankMix?.amount_of_mix,
+          calculation_type: currentTankMix?.calculation_type
         }
       }
     }));
@@ -56,7 +56,7 @@ const TankMix: React.FC = (props) => {
         id={'calculation_type'}
         key={'calculation_type'}
         label={'Calculation Type'}
-        actualValue={formDetails.form_data.tank_mix_object.calculation_type}
+        actualValue={formDetails.form_data?.tank_mix_object?.calculation_type}
         parentState={{ currentTankMix, setCurrentTankMix }}
         onChange={(event, value) => {
           if (value === null) {
@@ -81,7 +81,7 @@ const TankMix: React.FC = (props) => {
         className={classes.inputField}
         type="text"
         label="Amount of Mix Used (L)"
-        value={currentTankMix.amount_of_mix}
+        value={currentTankMix?.amount_of_mix}
         variant="outlined"
         key={amountOfMixUsedKey}
         onChange={(event) => {
@@ -115,7 +115,7 @@ const TankMix: React.FC = (props) => {
         className={classes.inputField}
         type="text"
         label="Delivery Rate of Mix (L/ha)"
-        value={currentTankMix.delivery_rate_of_mix || ''}
+        value={currentTankMix?.delivery_rate_of_mix || ''}
         variant="outlined"
         key={deliveryRateOfMixKey}
         onChange={(event) => {
