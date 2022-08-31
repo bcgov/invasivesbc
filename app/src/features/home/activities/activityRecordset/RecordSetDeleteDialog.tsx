@@ -28,7 +28,9 @@ const RecordSetDeleteDialog: React.FC<IRecordSetDeleteDialog> = (props) => {
       ) : (
         <div>
           <DialogTitle id="alert-dialog-title">
-            <Typography variant="h4">Delete Record Sets</Typography>
+            <div>
+              <Typography variant="h4">Delete Record Sets</Typography>
+            </div>
           </DialogTitle>
           <Divider />
           <DialogContent>

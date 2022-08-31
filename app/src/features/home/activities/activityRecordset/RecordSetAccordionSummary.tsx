@@ -198,6 +198,11 @@ const RecordSetAccordionSummary = (props) => {
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (props.recordSetName === "New Record Set") {
+                        setNewName("");
+                      } else {
+                        setNewName(props.recordSetName);
+                      }
                       setNameEdit(true);
                     }}
                     aria-label="delete">
@@ -227,7 +232,6 @@ const RecordSetAccordionSummary = (props) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   props.setRecordSetName(newName);
-                  setNewName(props.recordSetName);
                   setNameEdit(false);
                 }}
                 variant="contained">
@@ -237,7 +241,6 @@ const RecordSetAccordionSummary = (props) => {
                 sx={{ ml: 7 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNewName(props.recordSetName);
                   setNameEdit(false);
                 }}
                 variant="text">
