@@ -2,17 +2,17 @@ import { all, call, delay, put, select, takeEvery, takeLatest } from 'redux-saga
 import { AUTH_INITIALIZE_COMPLETE, USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE, USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_FAILURE, USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_FAILURE, USER_SETTINGS_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_FAILURE, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_RECORD_SET_FAILURE, USER_SETTINGS_SET_RECORD_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_SUCCESS } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
   try {
-    // retrieve previous record sets
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const sets = oldAppState.recordSets;
+    const userSettings = yield select(selectUserSettings);
+    let sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
 
     current.searchBoundary = null;
 
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({recordSets: {...sets}}));
 
     yield put ({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, payload: { recordSets: sets } })
 
@@ -24,14 +24,13 @@ function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
 
 function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
   try {
-    // retrieve previous record sets
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const sets = oldAppState.recordSets;
+    const userSettings = yield select(selectUserSettings);
+    let sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
 
     current.searchBoundary = JSON.parse(action.payload.boundary);
 
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({recordSets: {...sets}}));
 
     yield put ({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, payload: { recordSets: sets } })
 
@@ -43,12 +42,12 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
   try {
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const prev = oldAppState.recordSets;
+    const userSettings = yield select(selectUserSettings);
+    let prev = userSettings?.recordSets;
 
     prev[action.payload.setName] = action.payload.updatedSet;
 
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({recordSets: {...prev}}));
 
     yield put({ type: USER_SETTINGS_SET_RECORD_SET_SUCCESS, payload: { recordSets: prev } });
   } catch(e) {
@@ -59,9 +58,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
 
 function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
   try {
-    // retrieve previous record sets
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const prev = oldAppState.recordSets;
+    const userSettings = yield select(selectUserSettings);
+    let prev = userSettings?.recordSets;
 
     let newRecordSetState = {};
 
@@ -71,9 +69,7 @@ function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
       }
     });
 
-    oldAppState.recordSets = newRecordSetState;
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({recordSets: {...newRecordSetState}}));
 
     yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, payload: { recordSets: newRecordSetState } });
   } catch(e) {
@@ -84,12 +80,12 @@ function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
 
 function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
   try {
-    // retrieve previous record sets
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const prev = oldAppState.recordSets;
+    const userSettings = yield select(selectUserSettings);
+    let prev = userSettings?.recordSets;
+
     const recordSets = {
       ...prev,
-      [JSON.stringify(Object.keys(prev).length + 1)]: {
+      [JSON.stringify(Number(Object.keys(prev)[Object.keys(prev).length - 1]) + 1)]: {
         recordSetType: action.payload.recordSetType,
         recordSetName: 'New Record Set',
         advancedFilters: [],
@@ -97,10 +93,8 @@ function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
         drawOrder: Object.keys(prev).length + 1
       }
     }
-    oldAppState.recordSets = recordSets;
-    
-    // update app state
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify(oldAppState));
+
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({recordSets: {...recordSets}}));
 
     yield put({ type: USER_SETTINGS_ADD_RECORD_SET_SUCCESS, payload: { recordSets: recordSets } });
   } catch(e) {
@@ -110,7 +104,7 @@ function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
-  const username = select(selectAuth);
+  const authState = yield select(selectAuth);
 
   const defaultRecordSet = {
     ['1']: {
@@ -119,8 +113,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       advancedFilters: [
         {
           filterField: 'created_by',
-          filterValue: username,
-          filterKey: 'created_by' + username
+          filterValue: authState.username,
+          filterKey: 'created_by' + authState.username
         },
         {
           filterField: 'record_status',
@@ -146,7 +140,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     // needs mobile later
     const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
 
-    const recordSets = oldAppState.recordSets ? oldAppState.recordSets : defaultRecordSet;
+    const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
     
     yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, payload: { activeActivity: oldID, recordSets: recordSets} });
   } catch (e) {
