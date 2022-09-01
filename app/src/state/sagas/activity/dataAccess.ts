@@ -154,7 +154,12 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
 
-    if (beforeActivity.activity_type === ActivityType.Biocontrol) {
+    if (
+      beforeActivity.activity_type === ActivityType.Biocontrol ||
+      beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||
+      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
+      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+    ) {
       //auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
