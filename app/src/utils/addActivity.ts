@@ -503,7 +503,7 @@ export function populateSpeciesArrays(record) {
       // DOn't know the path record borked
       break;
     case ActivitySubtype.Monitoring_BiologicalDispersal:
-      species_positive = [subtypeData.Monitoring_BiocontrolDispersal_Information.invasive_plant_code];
+      species_positive = [subtypeData?.Monitoring_BiocontrolDispersal_Information?.invasive_plant_code];
       break;
     case ActivitySubtype.Transect_FireMonitoring:
       species_positive = subtypeData?.fire_monitoring_transect_lines
