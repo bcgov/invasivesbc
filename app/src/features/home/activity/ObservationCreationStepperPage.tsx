@@ -7,7 +7,7 @@ import ActivityPage from 'features/home/activity/ActivityPage';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
+import { createLinkedActivity } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -182,8 +182,7 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
                     treatmentSubtypeToCreate,
                     observation
                   );
-                  await dataAccess.createActivity(sanitizeRecord(linkedActivity));
-                  setActiveActivityAndNavigate(linkedActivity);
+                  //await dataAccess.createActivity(linkedActivity); setActiveActivityAndNavigate(linkedActivity);
                 }}>
                 Create Associated Treatment
               </Button>

@@ -22,7 +22,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { generateDBActivityPayload, sanitizeRecord } from 'utils/addActivity';
+import { generateDBActivityPayload } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
