@@ -7,7 +7,6 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import 'gridfix.css';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useContext } from 'react';
-import { sanitizeRecord } from 'utils/addActivity';
 
 export interface IActivityComponentProps extends IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -25,9 +24,6 @@ export interface IActivityComponentProps extends IFormContainerProps, IPhotoCont
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
-  const dataAccess = useDataAccess();
-
   const onSave = async () => {
     /* try {
       // NOTE: duplicate code from RecordTables.  Should be moved to a common Actions definitions file
