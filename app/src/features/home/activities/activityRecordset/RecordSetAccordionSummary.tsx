@@ -88,7 +88,7 @@ const RecordSetAccordionSummary = (props) => {
     ],
     dialogOpen: false,
     dialogTitle: 'Select boundary to filter: ',
-    dialogContentText: null
+    dialogContentText: ''
   });
 
   const openDeleteDialog = async () => {
@@ -337,7 +337,7 @@ const RecordSetAccordionSummary = (props) => {
               dispatch({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, payload: { boundary: e.target?.value, setName: props?.setName }});
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
             }}
-            value={JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary) || ''}>
+            value={userSettings.recordSets[props?.setName]?.searchBoundary ? JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary) : ''}>
             {userSettings.boundaries?.map((boundary) => {
               return (
                 <MenuItem key={boundary?.id + Math.random()} value={JSON.stringify(boundary) || ' '}>
