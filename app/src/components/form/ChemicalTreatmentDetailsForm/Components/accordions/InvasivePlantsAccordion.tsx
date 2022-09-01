@@ -36,7 +36,9 @@ const InvasivePlantsAccordion = () => {
               disabled={formDetails.disabled}
               onClick={() => {
                 setFormDetails((prevDetails) => {
-                  const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
+                  const newSpeciesArr = prevDetails?.form_data?.invasive_plants
+                    ? [...prevDetails?.form_data?.invasive_plants]
+                    : [];
                   newSpeciesArr.push({ invasive_plant_code: null, index: newSpeciesArr.length });
                   return {
                     ...prevDetails,
