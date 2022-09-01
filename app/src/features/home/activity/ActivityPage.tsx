@@ -376,7 +376,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     let shouldWarn = false;
     activityInStore.activity.form_data?.activity_subtype_data?.Well_Information.map((well) => {
-      if (well.proximity < 50 || well.inside) shouldWarn = true;
+      if (Number(well.well_proximity) < 50 || well.inside) shouldWarn = true;
     });
 
     if (activityInStore.activity.activity_subtype.includes('Treatment_ChemicalPlant') && shouldWarn) {
