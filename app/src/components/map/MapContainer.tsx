@@ -249,7 +249,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {/* List of functions is located in this component */}
 
 
-            {useMemo(() => {
+            {/* {useMemo(() => {
               return (
                 <ToolbarContainer
                   position="topright"
@@ -285,7 +285,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               ),
               [props.geometryState.geometry]
 
-            )}
+            )} */}
              
 
             {props.children}
