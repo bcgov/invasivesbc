@@ -10,18 +10,13 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
-import { RecordSetContext, RecordSetProvider } from '../../../contexts/recordSetContext';
 import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
 import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import {
-  ACTIVITY_SET_ACTIVE_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS
-} from 'state/actions';
+import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
@@ -31,6 +26,7 @@ import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserSettings } from 'state/reducers/userSettings';
 interface IStatusPageProps {
   classes?: any;
 }
@@ -83,9 +79,7 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <RecordSetProvider>
-      <PageContainer originalActivityPageClassName={classes.pageContainer} />
-    </RecordSetProvider>
+    <PageContainer originalActivityPageClassName={classes.pageContainer} />
   );
 };
 
@@ -93,7 +87,6 @@ const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
 const PageContainer = (props) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
-  const recordStateContext = useContext(RecordSetContext);
   const [geometry, setGeometry] = useState<any[]>([]);
   const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
   const classes = useStyles();
@@ -109,6 +102,7 @@ const PageContainer = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
   const { MOBILE } = useSelector(selectConfiguration);
+  const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
   const updateWidth = () => {
@@ -136,7 +130,7 @@ const PageContainer = (props) => {
   });
 
   const getSelectedRecordSets = async () => {
-    const recordSets = recordStateContext.recordSetState;
+    const recordSets = userSettings.recordSets;
     const selected = [];
     for (const recordSet of Object.keys(recordSets)) {
       if (recordSets[recordSet].recordSetName !== 'My Drafts' && recordSets[recordSet].isSelected) {
@@ -148,7 +142,7 @@ const PageContainer = (props) => {
 
   useEffect(() => {
     getSelectedRecordSets();
-  }, [recordStateContext.recordSetState]);
+  }, [userSettings.recordSets]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -178,14 +172,24 @@ const PageContainer = (props) => {
                 actionName: 'IAPP',
                 actionOnClick: async () => {
                   setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
-                  recordStateContext.add('POI');
+                  dispatch({
+                    type: USER_SETTINGS_ADD_RECORD_SET_REQUEST,
+                    payload: {
+                      recordSetType: 'POI'
+                    }
+                  });
                 }
               },
               {
                 actionName: 'Activity',
                 actionOnClick: async () => {
                   setNewLayerDialog({ ...newLayerDialog, dialogOpen: false });
-                  recordStateContext.add('Activity');
+                  dispatch({
+                    type: USER_SETTINGS_ADD_RECORD_SET_REQUEST,
+                    payload: {
+                      recordSetType: 'Activity'
+                    }
+                  });
                 },
                 autoFocus: true
               }
@@ -205,22 +209,22 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (recordStateContext.selectedRecord?.description !== undefined &&
-            recordStateContext.selectedRecord?.description),
-        disabled: recordStateContext.selectedRecord?.description === undefined,
-        hidden: !recordStateContext.selectedRecord,
+          (userSettings.selectedRecord?.description !== undefined &&
+            userSettings.selectedRecord?.description),
+        disabled: userSettings.selectedRecord?.description === undefined,
+        hidden: !userSettings.selectedRecord,
         onClick: async () => {
           try {
             dispatch({
               type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: recordStateContext?.selectedRecord?.id }})
+              payload: { activeActivity: userSettings?.selectedRecord?.id }})
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
           }
           setTimeout(() => {
-            if (recordStateContext?.selectedRecord?.isIAPP) {
-              history.push({ pathname: `/home/iapp/${recordStateContext?.selectedRecord?.id}` });
+            if (userSettings?.selectedRecord?.isIAPP) {
+              history.push({ pathname: `/home/iapp/${userSettings?.selectedRecord?.id}` });
             } else {
               history.push({ pathname: `/home/activity` });
             }
@@ -240,7 +244,7 @@ const PageContainer = (props) => {
               const filter = await getSearchCriteriaFromFilters(
                 selectedSet.advancedFilters,
                 accessRoles,
-                recordStateContext,
+                userSettings.recordSets,
                 selectedSet.recordSetName,
                 false,
                 null,
@@ -262,7 +266,7 @@ const PageContainer = (props) => {
         }
       }
     ]);
-  }, [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord?.id, selectedRecordSets]);
+  }, [userSettings?.recordSets?.length, userSettings?.selectedRecord?.id, selectedRecordSets]);
 
   const handleRecordSetSaveDialogAgree = async () => {
     setRecordSetSaveDialogLoading(true);
@@ -336,7 +340,7 @@ const PageContainer = (props) => {
             zoom={5}
             mapId={'mainMap'}
             geometryState={{ geometry, setGeometry }}>
-            <RecordSetLayersRenderer />
+            {/* <RecordSetLayersRenderer /> */}
           </MapContainer>
         </MapRecordsContextProvider>
       </Box>
@@ -381,7 +385,7 @@ const PageContainer = (props) => {
           () => (
             <RecordSetRenderer />
           ),
-          [recordStateContext?.recordSetState?.length, recordStateContext?.selectedRecord]
+          [userSettings?.recordSets?.length, userSettings?.selectedRecord]
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />

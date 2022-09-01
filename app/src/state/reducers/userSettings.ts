@@ -1,11 +1,6 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
-import {
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
-} from '../actions';
+import { DocType } from 'constants/database';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_BOUNDARIES_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_RECORD_SET_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -14,9 +9,41 @@ class UserSettingsState {
   error: boolean;
 
   activeActivity: string;
-  recordSets: [];
 
   newRecordDialogState: INewRecordDialogState;
+  recordSets: [
+    {
+      advancedFilters: [],
+      gridFilters: [],
+      color: string,
+      drawOrder: number,
+      expanded: boolean,
+      isSelected: boolean,
+      mapToggle: boolean,
+      recordSetName: string,
+      recordSetType: string,
+      searchBoundary: {
+        geos: [],
+        id: number,
+        name: string,
+        server_id: any
+      }
+    }
+  ];
+  selectedRecord: {
+    type: DocType,
+    description: string,
+    id: any,
+    isIAPP: boolean
+  }
+  boundaries: [
+    {
+      geos: [],
+      id: number,
+      name: string,
+      server_id: any
+    }
+  ];
 
   constructor() {
     this.initialized = false;
@@ -37,7 +64,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activeActivity
+          activeActivity: action.payload.activeActivity,
+          recordSets: action.payload.recordSets
         };
       }
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
@@ -50,8 +78,45 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           newRecordDialogState: action.payload
+        }
+      }
+      case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
         };
       }
+      case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
+      }
+      case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
+        return {
+          ...state, selectedRecord: action.payload.selectedRecord
+        }
+      }
+      case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
+      }
+      case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
+      }
+      case USER_SETTINGS_SET_BOUNDARIES_REQUEST: {
+        return {
+          ...state, boundaries: action.payload.boundaries
+        }
+      }
+      case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
+        return {
+          ...state, recordSets: action.payload.recordSets
+        }
+      }
+      
+
       default:
         return state;
     }

@@ -20,11 +20,14 @@ import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 import SaveIcon from '@mui/icons-material/Save';
-import { RecordSetContext } from '../../../../contexts/recordSetContext';
 import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { useDispatch } from 'react-redux';
+import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { select } from 'redux-saga/effects';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -90,13 +93,12 @@ const filterContainerClassname = `
 export const getSearchCriteriaFromFilters = (
   advancedFilterRows: any,
   rolesUserHasAccessTo: any,
-  recordSetContext: any,
+  recordSets: any,
   setName: string,
   isIAPP: boolean,
   gridFilters: any,
   page: number,
   limit: number
-  // gridFilters?: any
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
@@ -122,15 +124,15 @@ export const getSearchCriteriaFromFilters = (
   }
 
   //search_feature
-  if (recordSetContext.recordSetState[setName]?.searchBoundary) {
+  if (recordSets[setName]?.searchBoundary) {
     filter.search_feature = {
       type: 'FeatureCollection',
-      features: recordSetContext.recordSetState[setName]?.searchBoundary.geos
+      features: recordSets[setName]?.searchBoundary.geos
     };
   }
 
-  if (recordSetContext.recordSetState[setName]?.advancedFilters) {
-    const currentAdvFilters = recordSetContext.recordSetState[setName]?.advancedFilters;
+  if (recordSets[setName]?.advancedFilters) {
+    const currentAdvFilters = recordSets[setName]?.advancedFilters;
     const jurisdictions = [];
     const speciesPositive = [];
     const speciesNegative = [];
@@ -220,24 +222,24 @@ const ActivityGrid = (props) => {
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
 
+  const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
-
+  const userSettings = useSelector(selectUserSettings);
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
 
   //Grab filter state from main context
-  const recordSetContext = useContext(RecordSetContext);
   useEffect(() => {
-    const parentStateCollection = recordSetContext.recordSetState;
+    const parentStateCollection = userSettings.recordSets;
     //console.dir(parentStateCollection);
     const oldRecordSetState = parentStateCollection[props.setName];
-    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.gridFilters) {
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState?.gridFilters) {
       setFilters({ ...oldRecordSetState?.gridFilters });
     } else {
       setFilters({ enabled: false });
     }
 
-    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState.advancedFilters) {
+    if (parentStateCollection && oldRecordSetState !== null && oldRecordSetState?.advancedFilters) {
       setAdvancedFilterRows([...oldRecordSetState?.advancedFilters]);
     } else {
       setAdvancedFilterRows([]);
@@ -253,57 +255,57 @@ const ActivityGrid = (props) => {
   //update state in main context and localstorage:
   // can probably move some of the 'get old stuff from parent first' logic up to the context
   useEffect(() => {
-    recordSetContext.setRecordSetState((prev) => {
-      //if (save !== 0 && prev?.[props.setName]) {
-      if (prev?.[props.setName]) {
+    if (save !== 0 && userSettings.recordSets?.[props.setName]) {
+      if (userSettings.recordSets?.[props.setName]) {
         const thereAreNewFilters =
-          filters !== null && JSON.stringify(prev[props.setName]?.gridFilters) !== JSON.stringify(filters)
+          filters !== null && JSON.stringify(userSettings.recordSets[props.setName]?.gridFilters) !== JSON.stringify(filters)
             ? true
             : false;
         const thereAreNewAdvancedFilters =
           advancedFilterRows !== null &&
-          JSON.stringify(prev?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+          JSON.stringify(userSettings.recordSets?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
             ? true
             : false;
 
-        const thereAreOldFilters = prev?.[props.setName]?.gridFilters?.length ? true : false;
-        const thereAreOldAdvancedFilters = prev?.[props.setName]?.advancedFilters?.length ? true : false;
+        const thereAreOldFilters = userSettings.recordSets?.[props.setName]?.gridFilters?.length ? true : false;
+        const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length ? true : false;
 
         if (thereAreNewFilters || thereAreNewAdvancedFilters) {
           const updatedFilters = thereAreNewFilters
             ? { ...filters }
             : thereAreOldFilters
-            ? { ...prev?.[props.setName]?.gridFilters }
+            ? { ...userSettings.recordSets?.[props.setName]?.gridFilters }
             : {};
           const updatedAdvancedFilters = thereAreNewAdvancedFilters
             ? [...advancedFilterRows]
             : thereAreOldAdvancedFilters
-            ? [...prev?.[props.setName]?.advancedFilters]
+            ? [...userSettings.recordSets?.[props.setName]?.advancedFilters]
             : [];
-          return {
-            ...prev,
-            [props.setName]: {
-              ...prev?.[props.setName],
-              gridFilters: updatedFilters,
-              advancedFilters: updatedAdvancedFilters
+          dispatch({
+            type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+            payload: {
+              updatedSet: {
+                ...userSettings.recordSets?.[props.setName],
+                gridFilters: updatedFilters,
+                advancedFilters: updatedAdvancedFilters
+              },
+              setName: props.setName
             }
-          };
+          });
         }
       }
-
-      return prev;
-    });
+    };
   }, [advancedFilterRows]);
 
   useEffect(() => {
-    if (recordSetContext?.recordSetState?.[props.setName]) {
+    if (userSettings?.recordSets?.[props.setName]) {
       if (props.setType === 'POI') {
         getPOIs();
       } else {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(recordSetContext?.recordSetState?.[props.setName]), filters]);
+  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), filters]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -313,7 +315,7 @@ const ActivityGrid = (props) => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
       accessRoles,
-      recordSetContext,
+      userSettings?.recordSets,
       props.setName,
       false,
       filters.enabled ? filters : null,
@@ -339,7 +341,7 @@ const ActivityGrid = (props) => {
     const filter = getSearchCriteriaFromFilters(
       advancedFilterRows,
       accessRoles,
-      recordSetContext,
+      userSettings?.recordSets,
       props.setName,
       true,
       null,
@@ -364,23 +366,34 @@ const ActivityGrid = (props) => {
 
   // set selected record to activity
   useEffect(() => {
-    if (activitiesSelected && props.setSelectedRecord && activitiesSelected.activity_id) {
-      props.setSelectedRecord({
-        type: DocType.ACTIVITY,
-        description: 'Activity-' + activitiesSelected.short_id,
-        id: activitiesSelected.activity_id
+    if (activitiesSelected && activitiesSelected.activity_id) {
+      dispatch({
+        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        payload: {
+          selectedRecord: {
+            type: DocType.ACTIVITY,
+            description: 'Activity-' + activitiesSelected.short_id,
+            id: activitiesSelected.activity_id,
+            isIapp: false
+          }
+        }
       });
     }
   }, [activitiesSelected]);
 
   // set selected record to poi
   useEffect(() => {
-    if (poiSelected && props.setSelectedRecord && poiSelected.point_of_interest_id) {
-      props.setSelectedRecord({
-        type: DocType.POINT_OF_INTEREST,
-        description: 'IAPP-' + poiSelected.point_of_interest_id,
-        id: poiSelected.point_of_interest_id,
-        isIAPP: true
+    if (poiSelected && poiSelected.point_of_interest_id) {
+      dispatch({
+        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        payload: {
+          selectedRecord: {
+            type: DocType.POINT_OF_INTEREST,
+            description: 'IAPP-' + poiSelected.point_of_interest_id,
+            id: poiSelected.point_of_interest_id,
+            isIAPP: true
+          }
+        }
       });
     }
   }, [poiSelected]);
@@ -656,9 +669,9 @@ const ActivityGrid = (props) => {
                     );
                   }
                 })}
-              {recordSetContext?.recordSetState[props.setName]?.searchBoundary && (
+              {userSettings?.recordSets[props.setName]?.searchBoundary && (
                 <Chip
-                  label={`Boundary = ${recordSetContext?.recordSetState[props.setName]?.searchBoundary.name}`}
+                  label={`Boundary = ${userSettings?.recordSets[props.setName]?.searchBoundary?.name}`}
                   variant="outlined"
                   color="secondary"
                   onClick={(e) => {
@@ -666,7 +679,7 @@ const ActivityGrid = (props) => {
                   }}
                   onDelete={(e) => {
                     e.stopPropagation();
-                    recordSetContext.removeBoundaryFromSet(props.setName);
+                    dispatch({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST , payload: { setName: props.setName }});
                   }}
                 />
               )}
@@ -727,7 +740,7 @@ const ActivityGrid = (props) => {
       </Box>
     ),
     [
-      recordSetContext?.recordSetState?.[props.setName],
+      JSON.stringify(userSettings?.recordSets?.[props.setName]),
       filterDialog,
       advancedFilterRows,
       filters,

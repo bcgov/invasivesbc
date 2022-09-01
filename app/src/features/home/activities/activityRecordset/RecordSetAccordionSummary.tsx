@@ -21,7 +21,6 @@ import LayersIcon from '@mui/icons-material/Layers';
 // import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { RecordSetContext } from 'contexts/recordSetContext';
 import DownloadIcon from '@mui/icons-material/Download';
 import GrassIcon from '@mui/icons-material/Grass';
 import { GeneralDialog, IGeneralDialog } from 'components/dialog/GeneralDialog';
@@ -29,9 +28,11 @@ import SaveIcon from '@mui/icons-material/Save';
 import RecordSetDeleteDialog from './RecordSetDeleteDialog';
 import { getSearchCriteriaFromFilters } from '../../../../components/activities-list/Tables/Plant/ActivityGrid';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const OrderSelector = (props) => {
   return (
@@ -64,7 +65,6 @@ const OrderSelector = (props) => {
 };
 
 const RecordSetAccordionSummary = (props) => {
-  const recordSetContext = useContext(RecordSetContext);
   const [newName, setNewName] = useState(props.recordSetName);
   const [nameEdit, setNameEdit] = useState(false);
 
@@ -73,8 +73,9 @@ const RecordSetAccordionSummary = (props) => {
   const [recordSetDeleteDialogLoading, setRecordSetDeleteDialogLoading] = useState(false);
   const { accessRoles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
-  const recordStateContext = useContext(RecordSetContext);
+  const userSettings = useSelector(selectUserSettings);
   const dataAccess = useDataAccess();
+  const dispatch = useDispatch();
 
   const [boundaryFilterDialog, setBoundaryFilterDialog] = useState<IGeneralDialog>({
     dialogActions: [
@@ -87,19 +88,15 @@ const RecordSetAccordionSummary = (props) => {
     ],
     dialogOpen: false,
     dialogTitle: 'Select boundary to filter: ',
-    dialogContentText: null
+    dialogContentText: ''
   });
 
   const openDeleteDialog = async () => {
-    const recordSetState = recordStateContext.recordSetState;
-    const recordSet = recordSetState[props.setName];
-    const advancedFilters = recordSet.advancedFilters;
-
     const recordSets = [];
     const filter = await getSearchCriteriaFromFilters(
-      advancedFilters,
+      userSettings.recordSets[props.setName].advancedFilters,
       accessRoles,
-      recordStateContext,
+      userSettings.recordSets,
       props.recordSetName,
       false,
       null,
@@ -140,7 +137,13 @@ const RecordSetAccordionSummary = (props) => {
         'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
       )
     ) {
-      props.remove(recordSetName);
+      // props.remove(recordSetName);
+      dispatch({
+        type: USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
+        payload: {
+          recordSetName: recordSetName
+        }
+      });
       setRecordSetDeleteDialogOpen(false);
     }
   };
@@ -195,6 +198,11 @@ const RecordSetAccordionSummary = (props) => {
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (props.recordSetName === "New Record Set") {
+                        setNewName("");
+                      } else {
+                        setNewName(props.recordSetName);
+                      }
                       setNameEdit(true);
                     }}
                     aria-label="delete">
@@ -207,7 +215,7 @@ const RecordSetAccordionSummary = (props) => {
           {nameEdit && (
             <>
               <TextField
-                value={newName}
+                value={newName || ''}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
@@ -224,7 +232,6 @@ const RecordSetAccordionSummary = (props) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   props.setRecordSetName(newName);
-                  setNewName(props.recordSetName);
                   setNameEdit(false);
                 }}
                 variant="contained">
@@ -234,7 +241,6 @@ const RecordSetAccordionSummary = (props) => {
                 sx={{ ml: 7 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNewName(props.recordSetName);
                   setNameEdit(false);
                 }}
                 variant="text">
@@ -301,7 +307,13 @@ const RecordSetAccordionSummary = (props) => {
                     'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
                   )
                 ) {
-                  props.remove(props.setName);
+                  // props.remove(props.setName);
+                  dispatch({
+                    type: USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
+                    payload: {
+                      recordSetName: props.setName
+                    }
+                  });
                 }
               }}
               style={{ justifySelf: 'end', alignSelf: 'right' }}
@@ -322,13 +334,14 @@ const RecordSetAccordionSummary = (props) => {
             onChange={(e) => {
               e.stopPropagation();
               //add to the recordset filters
-              recordSetContext.addBoundaryToSet(e.target?.value, props?.setName);
+              dispatch({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, payload: { boundary: e.target?.value, setName: props?.setName }});
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
-            }}>
-            {recordSetContext.boundaries?.map((boundary) => {
+            }}
+            value={userSettings.recordSets[props?.setName]?.searchBoundary ? JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary) : ''}>
+            {userSettings.boundaries?.map((boundary) => {
               return (
-                <MenuItem key={boundary.id} value={boundary}>
-                  {boundary.name}
+                <MenuItem key={boundary?.id + Math.random()} value={JSON.stringify(boundary) || ' '}>
+                  {boundary?.name}
                 </MenuItem>
               );
             })}
