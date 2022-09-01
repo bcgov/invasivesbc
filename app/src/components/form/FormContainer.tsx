@@ -153,7 +153,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_';
     } else if (
       args[0].includes('root_activity_subtype_data_Weather_Conditions_') &&
-      !props.activity.activitySubtype.toString().toLowerCase().includes('biocontrol')
+      !props.activity.activity_subtype.toString().toLowerCase().includes('biocontrol')
     ) {
       argumentFieldName = 'root_activity_subtype_data_Weather_Conditions_';
     } else if (args[0].includes('root_activity_data_')) {
@@ -353,7 +353,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 ...components,
                 schemas: {
                   ...components.schemas,
-                  [props.activity.activitySubtype]: modifiedSchema
+                  [props.activity.activity_subtype]: modifiedSchema
                 }
               };
             }
@@ -370,7 +370,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activitySubtype, authenticated, props.activity.activity_subtype, MOBILE]);
+  }, [props.activity.activity_subtype, authenticated, props.activity.activity_subtype, MOBILE]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 
@@ -394,7 +394,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   isDisabled={isDisabled}
-                  activitySubtype={props.activity.activitySubtype}
+                  activitySubtype={props.activity.activity_subtype}
                   onCopy={props.copyFormData ? () => props.copyFormData() : null}
                   onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
                   {...props}
@@ -515,7 +515,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               );
             }}
             isDisabled={isDisabled}
-            activitySubtype={props.activity.activitySubtype}
+            activitySubtype={props.activity.activity_subtype}
             onCopy={props.copyFormData ? () => props.copyFormData() : null}
             onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
             {...props}
