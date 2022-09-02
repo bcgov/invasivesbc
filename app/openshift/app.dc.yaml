@@ -28,10 +28,10 @@ parameters:
     value: '8100-tcp'
   - name: CPU_REQUEST
     description: CPU REQUEST for deployment config
-    value: '100m'
+    value: '200m'
   - name: CPU_LIMIT
     description: CPU LIMIT for dc
-    value: '200m'
+    value: '500m'
   - name: MEMORY_REQUEST
     description: MEMORY REQUEST for dc
     value: '0.5Gi'
