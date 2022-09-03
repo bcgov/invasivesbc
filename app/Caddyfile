@@ -1,0 +1,22 @@
+{
+    auto_https off
+}
+:8080
+
+root * /srv
+file_server
+
+log {
+  level WARN
+}
+encode gzip
+
+try_files {path} /generated_index.html
+
+templates /js/app_config* {
+  mime application/javascript
+}
+
+header /generated_index.html {
+  Cache-Control max-age=0,no-cache,no-store,must-revalidate
+}
