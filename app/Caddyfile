@@ -11,12 +11,12 @@ log {
 }
 encode gzip
 
-try_files {path} /generated_index.html
+try_files {path} /index.html
 
 templates /static/js/app_config* {
   mime application/javascript
 }
 
-header /generated_index.html {
+header /index.html {
   Cache-Control max-age=0,no-cache,no-store,must-revalidate
 }
