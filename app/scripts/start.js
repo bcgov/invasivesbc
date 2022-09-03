@@ -36,8 +36,10 @@ const getClientEnvironment = require('../config/env');
 const react = require(require.resolve('react', { paths: [paths.appPath] }));
 
 const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
+const argv = process.argv.slice(2);
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
+const buildingForMobile = argv.indexOf('--mobile') !== -1;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
@@ -65,6 +67,32 @@ if (process.env.HOST) {
   console.log();
 }
 
+
+const platformConfig = (isMobile) => {
+  if (isMobile) {
+    return {
+      CONFIGURATION_IS_MOBILE: true,
+      CONFIGURATION_KEYCLOAK_ADAPTER: 'capacitor',
+      CONFIGURATION_SOURCE: 'Webpack'
+    };
+  }
+  return {
+    CONFIGURATION_IS_MOBILE: false,
+    CONFIGURATION_KEYCLOAK_ADAPTER: 'web',
+    CONFIGURATION_SOURCE: 'Webpack'
+  };
+};
+
+// Generate configuration
+const config = configFactory('development', {
+  CONFIGURATION_API_BASE: process.env['REACT_APP_API_HOST'],
+  CONFIGURATION_KEYCLOAK_CLIENT_ID: process.env['SSO_CLIENT_ID'],
+  CONFIGURATION_KEYCLOAK_REALM: process.env['SSO_REALM'],
+  CONFIGURATION_KEYCLOAK_URL: process.env['SSO_URL'],
+  CONFIGURATION_REDIRECT_URI: process.env['REDIRECT_URI'],
+  ...platformConfig(buildingForMobile)
+});
+
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
@@ -80,16 +108,6 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const config = configFactory('development', {
-      CONFIGURATION_SOURCE: 'Hardcoded',
-      CONFIGURATION_API_BASE: null,
-      CONFIGURATION_KEYCLOAK_CLIENT_ID: null,
-      CONFIGURATION_KEYCLOAK_REALM: null,
-      CONFIGURATION_KEYCLOAK_URL: null,
-      CONFIGURATION_KEYCLOAK_ADAPTER: null,
-      CONFIGURATION_REDIRECT_URI: null,
-      CONFIGURATION_IS_MOBILE: null
-    });
 
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;

@@ -229,15 +229,15 @@
   },
   "scripts": {
     "start": "node scripts/start.js max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
-    "build": "node scripts/build.js",
     "prebuild:android": "node capacitor_config_prebuild.js android",
     "build:android": "node scripts/build.js --mobile",
     "prebuild:ios": "node capacitor_config_prebuild.js ios",
     "build:ios": "node scripts/build.js --mobile",
+    "ionic:serve": "node scripts/start.js --mobile --max-old-space-size=8192",
     "test": "node scripts/test.js",
     "start:ionic": "ionic serve --port 3000",
     "start:ionic:reload": "ionic serve",
-    "build-prod": "node scripts/build.js --prod src/app --max-old-space-size=8192",
+    "build-prod": "node scripts/build.js --prod src/app --max-old-space-size=8192 --caddy",
     "deploy_start": "npx serve -s build -l 8100",
     "lint:fix": "npm run lint -- --fix"
   },
