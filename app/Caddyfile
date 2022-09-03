@@ -13,7 +13,7 @@ encode gzip
 
 try_files {path} /generated_index.html
 
-templates /js/app_config* {
+templates /static/js/app_config* {
   mime application/javascript
 }
 
