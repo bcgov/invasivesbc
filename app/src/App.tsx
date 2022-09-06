@@ -8,6 +8,7 @@ import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 import { Provider, useDispatch } from 'react-redux';
 import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
+import { ThemeProvider } from '@mui/material';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -19,21 +20,14 @@ const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
     deviceInfo
   };
 
-
   // top level-ish component to handle some stuff on app start up
-  const ProviderChildren = (props) => 
-  {
+  const ProviderChildren = (props) => {
     const dispatch = useDispatch();
 
+    useEffect(() => {}, []);
 
-    useEffect(()=> {
-    },[])
-
-      return (
-        <>
-        {props.children}
-      </>)
-    }
+    return <>{props.children}</>;
+  };
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
@@ -41,14 +35,14 @@ const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
         <ProviderChildren>
           <ErrorContextProvider>
             <DatabaseContextProvider>
-              <CustomThemeProvider>
-                <IonReactRouter>
-                  <AppRouter {...appRouterProps} />
-                </IonReactRouter>
-              </CustomThemeProvider>
+              {/* <CustomThemeProvider> */}
+              <IonReactRouter>
+                <AppRouter {...appRouterProps} />
+              </IonReactRouter>
+              {/* </CustomThemeProvider> */}
             </DatabaseContextProvider>
           </ErrorContextProvider>
-      </ProviderChildren>
+        </ProviderChildren>
       </Provider>
     </Box>
   );
