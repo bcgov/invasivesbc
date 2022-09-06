@@ -221,6 +221,7 @@ const ActivityGrid = (props) => {
   const [messageConsole, setConsole] = useState('Click column headers to sort');
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
+  const [cursorPos, setCursorPos] = useState(0);
 
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
@@ -440,12 +441,17 @@ const ActivityGrid = (props) => {
                       {...rest}
                       className={classes.filterClassname}
                       value={filters[x.key]}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        setCursorPos(e.target.selectionStart);
                         setFilters({
                           ...filters,
                           [x.key]: e.target.value
                         })
-                      }
+                      }}
+                      onFocus={(e) => {
+                        e.target.selectionStart = cursorPos;
+                        e.target.selectionEnd = cursorPos;
+                      }}
                       onKeyDown={inputStopPropagation}
                     />
                   )}
@@ -463,12 +469,17 @@ const ActivityGrid = (props) => {
                       {...rest}
                       className={classes.filterClassname}
                       value={filters[x.key]}
-                      onChange={(e) =>
+                      onChange={(e) =>{
+                        setCursorPos(e.target.selectionStart);
                         setFilters({
                           ...filters,
                           [x.key]: e.target.value
                         })
-                      }
+                      }}
+                      onFocus={(e) => {
+                        e.target.selectionStart = cursorPos;
+                        e.target.selectionEnd = cursorPos;
+                      }}
                       onKeyDown={inputStopPropagation}
                     />
                   )}
@@ -706,10 +717,21 @@ const ActivityGrid = (props) => {
               <Button onClick={() => newFilter(undefined)} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <AddBoxIcon></AddBoxIcon>Advanced Filter
               </Button>
-              <Button onClick={() => setSave(Math.random())} sx={{ mr: 1 }} size={'small'} variant="contained">
+              <Button onClick={() => {
+                dispatch({ type: USER_SETTINGS_SET_RECORD_SET_REQUEST, payload: {
+                  updatedSet: {
+                    ...userSettings.recordSets?.[props.setName],
+                    gridFilters: {
+                      ...filters
+                    }
+                  },
+                  setName: props.setName
+                }});
+                setSave(Math.random());
+              }} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <FilterAltIcon />
                 <SaveIcon />
-                Apply Filters
+                Save Filters
               </Button>
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
