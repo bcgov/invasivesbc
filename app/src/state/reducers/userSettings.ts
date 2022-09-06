@@ -1,6 +1,6 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
 import { DocType } from 'constants/database';
-import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_BOUNDARIES_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_RECORD_SET_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from '../actions';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_BOUNDARIES_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_RECORD_SET_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS } from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -36,6 +36,7 @@ class UserSettingsState {
     id: any,
     isIAPP: boolean
   }
+  recordsExpanded: boolean;
   boundaries: [
     {
       geos: [],
@@ -65,7 +66,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           activeActivity: action.payload.activeActivity,
-          recordSets: action.payload.recordSets
+          recordSets: action.payload.recordSets,
+          recordsExpanded: action.payload.recordsExpanded
         };
       }
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
@@ -113,6 +115,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
         return {
           ...state, recordSets: action.payload.recordSets
+        }
+      }
+      case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
+        return {
+          ...state, recordsExpanded: !state.recordsExpanded
         }
       }
       

@@ -16,7 +16,7 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
@@ -90,7 +90,6 @@ const PageContainer = (props) => {
   const [geometry, setGeometry] = useState<any[]>([]);
   const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
   const classes = useStyles();
-  const [recordsExpanded, setRecordsExpanded] = useState(false);
   const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);
   const [selectedRecordSets, setSelectedRecordSets] = useState([]);
@@ -328,7 +327,7 @@ const PageContainer = (props) => {
       {/*the main list of record sets:*/}
       <Box
         style={{
-          height: recordsExpanded ? 'calc(100% - 400px)' : '91.5%'
+          height: userSettings.recordsExpanded ? 'calc(100% - 400px)' : '91.5%'
         }}>
         <MapRecordsContextProvider>
           <MapContainer
@@ -352,14 +351,14 @@ const PageContainer = (props) => {
             color={'warning'}
             onClick={(e) => {
               e.stopPropagation();
-              setRecordsExpanded((prev) => !prev);
+              dispatch({type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
             }}
             variant={'contained'}
             endIcon={
               <ArrowDropUpIcon
                 style={{
                   transition: 'transform 200ms ease-in-out',
-                  transform: recordsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                  transform: userSettings.recordsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
                 }}
               />
             }>
