@@ -521,6 +521,16 @@ const ActivityGrid = (props) => {
   }
 
   function toggleFilters() {
+    dispatch({ type: USER_SETTINGS_SET_RECORD_SET_REQUEST, payload: {
+      updatedSet: {
+        ...userSettings.recordSets?.[props.setName],
+        gridFilters: {
+          ...filters,
+          enabled: !filters.enabled
+        }
+      },
+      setName: props.setName
+    }});
     setFilters((filters) => ({
       ...filters,
       enabled: !filters.enabled
