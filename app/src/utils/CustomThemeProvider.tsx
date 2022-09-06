@@ -1,5 +1,7 @@
 import { createTheme, PaletteMode, ThemeOptions, ThemeProvider } from '@mui/material';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 interface IThemeContext {
   themeType: boolean;
@@ -14,14 +16,15 @@ export const ThemeContext = React.createContext<IThemeContext>({
 const CustomThemeProvider: React.FC = (props) => {
   const [mode, setMode] = React.useState<PaletteMode>('light');
   const [themeType, setThemeType] = React.useState(false);
+  const { darkmode } = useSelector(selectUserSettings);
 
   React.useEffect(() => {
-    if (!themeType) {
+    if (!darkmode) {
       setMode('light');
     } else {
       setMode('dark');
     }
-  }, [themeType]);
+  }, [darkmode]);
 
   const getDesignTokens = (mode: PaletteMode) => {
     return {
