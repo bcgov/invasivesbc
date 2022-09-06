@@ -183,7 +183,8 @@ const CustomThemeProvider: React.FC = (props) => {
   };
 
   // Update the theme only if the mode changes
-  const theme = React.useMemo(() => createTheme(getDesignTokens(mode) as ThemeOptions), [mode]);
+  // const theme = React.useMemo(() => createTheme(getDesignTokens(mode) as ThemeOptions), [mode]);
+  const theme = createTheme(getDesignTokens(mode) as ThemeOptions);
 
   return (
     <ThemeContext.Provider value={{ themeType, setThemeType }}>
