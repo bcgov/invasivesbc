@@ -93,7 +93,7 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   }
 };
 export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
-  title: 'Mechanical Terrestrial Aquatic Monitoring Information',
+  title: 'Mechanical Monitoring Information',
   type: 'object',
   required: ['efficacy_code', 'management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
