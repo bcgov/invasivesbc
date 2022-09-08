@@ -229,6 +229,7 @@
   },
   "scripts": {
     "start": "node scripts/start.js max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
+    "start:fast": "node scripts/start.js --fast max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
     "prebuild:android": "node capacitor_config_prebuild.js android",
     "build:android": "node scripts/build.js --mobile",
     "prebuild:ios": "node capacitor_config_prebuild.js ios",
