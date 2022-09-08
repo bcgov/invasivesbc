@@ -29,16 +29,11 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
 
-  // temp workaround for trash from server:
-  const species_positive = !networkReturn.data.species_positive[0] ? [] : networkReturn.data.species_positive;
-  const species_negative = !networkReturn.data.species_negative[0] ? [] : networkReturn.data.species_negative;
-  const species_treated = !networkReturn.data.species_treated[0] ? [] : networkReturn.data.species_treated;
-
   const datav2 = {
     ...networkReturn.data,
-    species_positive: species_positive,
-    species_negative: species_negative,
-    species_treated: species_treated
+    species_positive: networkReturn.data.species_positive || [],
+    species_negative: networkReturn.data.species_negative || [],
+    species_treated: networkReturn.data.species_treated || []
   };
 
   //const validatedReturn = yield checkForErrors(networkReturn)
