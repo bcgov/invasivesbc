@@ -84,7 +84,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       })
     ) {
       categories.push('Plant');
-    } else if (
+    }
+    if (
       accessRoles.some((role) => {
         return role.role_name === 'frep';
       })
