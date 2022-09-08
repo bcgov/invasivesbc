@@ -222,12 +222,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>
-            {useMemo(
+            {/*useMemo(
               () => (
                 <Layers inputGeo={props.geometryState.geometry} />
               ),
               [props.geometryState.geometry]
-            )}
+              )*/}
             <ZoomButtons position="bottomleft" />
             <ScaleControl position="bottomleft" imperial={false} />
 
