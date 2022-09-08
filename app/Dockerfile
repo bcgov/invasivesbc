@@ -4,7 +4,7 @@
 
 FROM node:16
 
-COPY --chown=1001:0 ./package.json $HOME 
+COPY --chown=1001:0 ./package.json $HOME
 COPY --chown=1001:0 ./package-lock.json $HOME
 
 RUN id
@@ -18,7 +18,7 @@ RUN npm install -g @ionic/cli
 COPY ./ $HOME
 
 # BUILD APP
-RUN npm run build-prod
+RUN npm run build-prod:legacy
 
 EXPOSE 3030
 
