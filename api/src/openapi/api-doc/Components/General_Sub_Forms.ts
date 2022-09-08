@@ -793,7 +793,6 @@ export const TerrestrialPlant = {
                         voucher_verification_completed_by: {
                           type: 'object',
                           title: 'Voucher verification completed by',
-                          required: ['person_name', 'organization'],
                           properties: {
                             person_name: {
                               type: 'string',
