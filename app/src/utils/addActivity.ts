@@ -131,6 +131,19 @@ export function generateDBActivityPayload(
       skipAppRateValidation: false
     };
   }
+  if (returnVal.activity_subtype === ActivitySubtype.Treatment_ChemicalPlantAquatic) {
+    returnVal.form_data.activity_subtype_data.chemical_treatment_details = {
+      invasive_plants: [],
+      herbicides: [],
+      tank_mix: false,
+      chemical_application_method: null,
+      tank_mix_object: {
+        herbicides: [],
+        calculation_type: null
+      },
+      skipAppRateValidation: false
+    };
+  }
   if (returnVal.activity_subtype === ActivitySubtype.Collection_Biocontrol) {
     returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = [
       {
