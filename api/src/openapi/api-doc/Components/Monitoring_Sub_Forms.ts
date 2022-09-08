@@ -29,11 +29,11 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
       },
       'x-tooltip-text': 'Target invasive plant species being treated at this location'
     },
-    monitoring_details: {
-      type: 'string',
-      title: 'Efficacy comments',
-      'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
-    },
+    // monitoring_details: {
+    //   type: 'string',
+    //   title: 'Efficacy comments',
+    //   'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
+    // },
     efficacy_code: {
       type: 'string',
       title: 'Treatment Efficacy Rating',
@@ -121,11 +121,11 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
       },
       'x-tooltip-text': 'Target invasive plant species being treated at this location'
     },
-    monitoring_details: {
-      type: 'string',
-      title: 'Efficacy comments',
-      'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
-    },
+    // monitoring_details: {
+    //   type: 'string',
+    //   title: 'Efficacy comments',
+    //   'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
+    // },
     efficacy_code: {
       type: 'string',
       title: 'Treatment Efficacy Rating',
