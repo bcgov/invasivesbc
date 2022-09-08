@@ -233,11 +233,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const blurHandler = (args: string[]) => {
     const $this = formRef.current;
     const field = getFieldNameFromArgs(args);
-    const { formData, uiSchema } = $this.state;
+    const { uiSchema } = $this.state;
     let path = getPathToFieldName(uiSchema, (key) => key === field);
     if (deepFind(uiSchema, path[0] + '')) {
       if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
-        const { errorSchema } = $this.validate(formData);
+        const { errorSchema } = $this.validate(activityStateInStore.activity.form_data);
         let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
         if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
           setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
@@ -419,7 +419,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   focusHandler(args);
                 }}
                 onBlur={(...args: string[]) => {
-                  blurHandler(args);
+                  setTimeout(() => {
+                    blurHandler(args);
+                  }, 500);
                 }}
                 uiSchema={schemas.uiSchema}
                 formContext={{
