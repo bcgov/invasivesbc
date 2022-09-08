@@ -239,6 +239,7 @@
     "start:ionic": "ionic serve --port 3000",
     "start:ionic:reload": "ionic serve",
     "build-prod": "node scripts/build.js --prod src/app --max-old-space-size=8192 --caddy",
+    "build-prod:legacy": "node scripts/build.js --prod src/app --max-old-space-size=8192",
     "deploy_start": "npx serve -s build -l 8100",
     "lint:fix": "npm run lint -- --fix"
   },
