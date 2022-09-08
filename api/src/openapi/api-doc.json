@@ -4008,7 +4008,7 @@
         }
       },
       "Monitoring_MechanicalTerrestrialAquaticPlant": {
-        "title": "Mechanical Terrestrial Aquatic Monitoring Information",
+        "title": "Mechanical Monitoring Information",
         "type": "object",
         "required": ["monitoring_details", "invasive_plant_code"],
         "properties": {

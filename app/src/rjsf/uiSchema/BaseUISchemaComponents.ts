@@ -83,9 +83,13 @@ const Observation = {
 
 const Monitoring = {
   linked_id: { 'ui:widget': 'single-select-autocomplete' },
-  legacy_iapp_id: {},
+  // legacy_iapp_id: {},
   activity_persons: {},
-  'ui:order': ['linked_id', 'legacy_iapp_id', 'activity_persons']
+  'ui:order': [
+    'linked_id',
+    // 'legacy_iapp_id',
+    'activity_persons'
+  ]
 };
 
 const Treatment = {
@@ -953,7 +957,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_details: {},
+  // monitoring_details: {},
   efficacy_code: { 'ui:widget': 'single-select-autocomplete' },
   management_efficacy_rating: { 'ui:widget': 'single-select-autocomplete' },
   evidence_of_treatment: {},
@@ -963,7 +967,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   'ui:order': [
     'invasive_plant_code',
     'aquatic_invasive_plant_code',
-    'monitoring_details',
+    // 'monitoring_details',
     'efficacy_code',
     'management_efficacy_rating',
     'evidence_of_treatment',
@@ -977,7 +981,7 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  monitoring_details: {},
+  // monitoring_details: {},
   efficacy_code: { 'ui:widget': 'single-select-autocomplete' },
   management_efficacy_rating: { 'ui:widget': 'single-select-autocomplete' },
   evidence_of_treatment: {},
@@ -987,7 +991,7 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   'ui:order': [
     'invasive_plant_code',
     'aquatic_invasive_plant_code',
-    'monitoring_details',
+    // 'monitoring_details',
     'efficacy_code',
     'management_efficacy_rating',
     'evidence_of_treatment',

@@ -1,7 +1,7 @@
 import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
-import { ActivityStatus } from 'constants/activities';
+import { ActivityStatus, ActivitySubtype } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -455,12 +455,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
               {activityInStore.activity.activity_subtype &&
-                activityInStore.activity.activity_subtype
-                  .replace(/([A-Z])/g, ' $1')
-                  .replace(/_/g, '')
-                  .replace(/^./, function (str) {
-                    return str.toUpperCase();
-                  })}
+              activityInStore.activity.activity_subtype === ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant
+                ? 'Activity Monitoring Chemical Terrestrial or Aquatic Plant'
+                : activityInStore.activity.activity_subtype
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/_/g, '')
+                    .replace(/^./, function (str) {
+                      return str.toUpperCase();
+                    })}
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>

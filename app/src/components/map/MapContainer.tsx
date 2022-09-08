@@ -222,7 +222,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>
-            {/*{useMemo(
+            {useMemo(
               () => (
                 <Layers inputGeo={props.geometryState.geometry} />
               ),
@@ -230,7 +230,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
             <ZoomButtons position="bottomleft" />
             <ScaleControl position="bottomleft" imperial={false} />
-              */}
 
             {props.showDrawControls && (
               <FeatureGroup>
@@ -247,7 +246,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {/* List of functions is located in this component */}
-
 
             {/* {useMemo(() => {
               return (
@@ -286,7 +284,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               [props.geometryState.geometry]
 
             )} */}
-             
 
             {props.children}
           </MapRequestContextProvider>
