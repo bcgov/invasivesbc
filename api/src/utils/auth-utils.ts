@@ -37,7 +37,15 @@ function retrieveKey(header, callback) {
     }
 
     const signingKey = key.getPublicKey();
+    // hack to stop bod from crashing
+    try{
     callback(null, signingKey);
+
+    }
+    catch(e)
+    {
+      
+    }
   });
 }
 
