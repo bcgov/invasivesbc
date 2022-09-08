@@ -40,6 +40,7 @@ const argv = process.argv.slice(2);
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
 const buildingForMobile = argv.indexOf('--mobile') !== -1;
+const goFastBuild = argv.indexOf('--fast') !== -1;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {

@@ -85,6 +85,8 @@ module.exports = function (webpackEnv, invasivesConfig) {
   const isEnvProductionProfile =
     isEnvProduction && process.argv.includes('--profile');
 
+  const goFastBuild = isEnvDevelopment && process.argv.includes('--fast');
+
   // We will provide `paths.publicUrlOrPath` to our app
   // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
   // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -159,7 +161,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
-    devtool: isEnvDevelopment ? 'inline-source-map' : 'source-map', //external source maps in prod
+    devtool: isEnvDevelopment ? (goFastBuild ? 'eval-cheap-source-map' : 'inline-source-map') : 'source-map', //external source maps in prod
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry:
@@ -594,10 +596,11 @@ module.exports = function (webpackEnv, invasivesConfig) {
         }
       ),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
-      isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+      isEnvDevelopment && !goFastBuild && new webpack.HotModuleReplacementPlugin(),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/master/packages/react-refresh
       isEnvDevelopment &&
+      !goFastBuild &&
       shouldUseReactRefresh &&
       new ReactRefreshWebpackPlugin({
         overlay: {
@@ -618,7 +621,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
       // to restart the development server for webpack to discover it. This plugin
       // makes the discovery automatic so you don't have to restart.
       // See https://github.com/facebook/create-react-app/issues/186
-      isEnvDevelopment &&
+      isEnvDevelopment && !goFastBuild &&
       new WatchMissingNodeModulesPlugin(paths.appNodeModules),
       isEnvProduction &&
       new MiniCssExtractPlugin({
