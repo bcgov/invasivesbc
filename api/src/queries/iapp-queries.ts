@@ -20,14 +20,25 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     ) AS anything) `);
   }
 
+  if (searchCriteria.grid_filters.jurisdictions) {
+    if (searchCriteria.search_feature) sqlStatement.append(SQL`, `);
+    sqlStatement.append(SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `);
+  }
+
   sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
-      ON i.site_id = s.site_id WHERE 1=1 `
+      ON i.site_id = s.site_id`
     // JOIN point_of_interest_incoming_data p
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
+
+  if (searchCriteria.grid_filters.jurisdictions) {
+    sqlStatement.append(SQL` INNER JOIN strings j ON i.site_id = j.site_id`);
+  }
+
+  sqlStatement.append(SQL` WHERE 1 = 1 `);
 
   if (searchCriteria.iappSiteID) {
     sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
@@ -80,11 +91,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         //gonna be difficult, comes from extract
       }
       if (gridFilters.jurisdictions) {
-        // sqlStatement.append(
-        //   SQL` AND LOWER(i.jurisdictions) LIKE '%'||`
-        // );
-        // sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
-        // sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL` AND LOWER(j.j_string) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
+        sqlStatement.append(SQL`||'%'`);
 
         //gonna have to do the same thing as activity with its array checking...
       }
