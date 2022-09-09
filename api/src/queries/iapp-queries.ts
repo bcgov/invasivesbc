@@ -63,6 +63,72 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     }
   }
 
+  // grid filtering
+  console.log('\n\n%%%%%%%%%%%%%%%%%%%%%%% GRID FILTERS @@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n');
+  if (searchCriteria.grid_filters) {
+    console.log('$$$$ GRID FILTERS @@@@@@@');
+    console.log(searchCriteria.grid_filters);
+
+    const gridFilters = searchCriteria.grid_filters;
+    if (gridFilters.enabled) {
+      if (gridFilters.point_of_interest_id) {
+        sqlStatement.append(SQL` AND i.site_id::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.point_of_interest_id}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.paper_file_id) {
+        //gonna be difficult, comes from extract
+      }
+      if (gridFilters.jurisdictions) {
+        // sqlStatement.append(
+        //   SQL` AND LOWER(i.jurisdictions) LIKE '%'||`
+        // );
+        // sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
+        // sqlStatement.append(SQL`||'%'`);
+
+        //gonna have to do the same thing as activity with its array checking...
+      }
+      if (gridFilters.date_created) {
+        // doesn't work fully because of mismatches
+
+        // sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
+        // sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
+        // sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.species_on_site) {
+        sqlStatement.append(SQL` AND LOWER(i.all_species_on_site) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.species_on_site})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.date_last_surveyed) {
+        // doesn't work either same reason
+
+        // sqlStatement.append(SQL` AND LOWER(i.max_survey::text) LIKE '%'||`);
+        // sqlStatement.append(SQL`LOWER(${gridFilters.date_last_surveyed})`);
+        // sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.agencies) {
+        // can't find, difficult
+      }
+      if (gridFilters.bio_release) {
+        // blocked
+      }
+      if (gridFilters.chem_treatment) {
+        // blocked
+      }
+      if (gridFilters.mech_treatment) {
+        // blocked
+      }
+      if (gridFilters.bio_dispersal) {
+        // blocked
+      }
+      if (gridFilters.monitored) {
+        // everything is true, does this even matter
+      }
+
+    }
+  }
+
   // search intersects with positive or negative species
   if ((searchCriteria.species_positive && searchCriteria.species_positive.length) || 
       (searchCriteria.species_negative && searchCriteria.species_negative.length)) {
