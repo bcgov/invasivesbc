@@ -98,11 +98,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         //gonna have to do the same thing as activity with its array checking...
       }
       if (gridFilters.date_created) {
-        // doesn't work fully because of mismatches
-
-        // sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
-        // sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
-        // sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.species_on_site) {
         sqlStatement.append(SQL` AND LOWER(i.all_species_on_site) LIKE '%'||`);
@@ -110,11 +108,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.date_last_surveyed) {
-        // doesn't work either same reason
-
-        // sqlStatement.append(SQL` AND LOWER(i.max_survey::text) LIKE '%'||`);
-        // sqlStatement.append(SQL`LOWER(${gridFilters.date_last_surveyed})`);
-        // sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL` AND LOWER(i.max_survey::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.date_last_surveyed})`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.agencies) {
         // can't find, difficult
