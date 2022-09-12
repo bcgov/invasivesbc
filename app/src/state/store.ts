@@ -2,16 +2,18 @@ import { applyMiddleware, legacy_createStore as createStore } from 'redux';
 import { createRootReducer } from './reducers';
 import createSagaMiddleware from 'redux-saga';
 
-import logger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import authenticationSaga from './sagas/auth';
 import { AppConfig } from './config';
-import {AUTH_INITIALIZE_REQUEST} from "./actions";
+import { AUTH_INITIALIZE_REQUEST } from './actions';
 import activityPageSaga from './sagas/activity';
 import userSettingsSaga from './sagas/userSettings';
 
 const setupStore = (configuration: AppConfig) => {
   const sagaMiddleware = createSagaMiddleware();
-
+  const logger = createLogger({
+    collapsed: true
+  });
   let middlewares;
 
   if (configuration.DEBUG) {
@@ -27,7 +29,7 @@ const setupStore = (configuration: AppConfig) => {
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(userSettingsSaga);
 
-  store.dispatch({type: AUTH_INITIALIZE_REQUEST});
+  store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   return store;
 };
