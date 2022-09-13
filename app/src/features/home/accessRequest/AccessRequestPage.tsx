@@ -50,12 +50,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [firstName, setFirstName] = React.useState(
     authState.displayName.split(' ')[1] ? authState.displayName.split(' ')[1] : ''
   );
-  console.log('FIRSTNAME: ', firstName);
   const [lastName, setLastName] = React.useState(
     authState.displayName.split(' ')[0].replace(',', '') ? authState.displayName.split(',')[0].replace(',', '') : ''
   );
-  console.log('DISPLAYNAME: ', authState.displayName);
-  console.log('LASTNAME: ', lastName);
   const [email, setEmail] = React.useState(authState.email ? authState.email : '');
   const idir_userid = authState?.idir_userid ? authState?.idir_userid : '';
   const bceid_userid = authState?.bceid_userid ? authState?.bceid_userid : '';
