@@ -48,10 +48,10 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [idir, setIdir] = useState(authState.username ? authState.username : '');
   const [bceid, setBceid] = useState(authState.username ? authState.username : '');
   const [firstName, setFirstName] = React.useState(
-    authState.displayName.split(' ', 2)[0] ? authState.displayName.split(' ', 2)[0] : ''
+    authState.displayName.split(' ')[1] ? authState.displayName.split(' ')[1] : ''
   );
   const [lastName, setLastName] = React.useState(
-    authState.displayName.split(' ', 2)[1] ? authState.displayName.split(' ', 2)[1] : ''
+    authState.displayName.split(' ')[0].replace(',', '') ? authState.displayName.split(',')[0].replace(',', '') : ''
   );
   const [email, setEmail] = React.useState(authState.email ? authState.email : '');
   const idir_userid = authState?.idir_userid ? authState?.idir_userid : '';
@@ -238,7 +238,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
             InvasivesBC Access Request
           </Typography>
         </Grid>
-        <Grid item xs={12} style={{marginBottom: 50}}>
+        <Grid item xs={12} style={{ marginBottom: 50 }}>
           <Card elevation={8}>
             {!submitted && (
               <CardContent>
