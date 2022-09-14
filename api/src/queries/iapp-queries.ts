@@ -118,20 +118,39 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.bio_release) {
-        // blocked
+        sqlStatement.append(SQL` AND has_biological_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.bio_release})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
       if (gridFilters.chem_treatment) {
-        // blocked
+        sqlStatement.append(SQL` AND has_chemical_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.chem_treatment})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
       if (gridFilters.mech_treatment) {
-        // blocked
+        sqlStatement.append(SQL` AND has_mechanical_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.mech_treatment})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
       if (gridFilters.bio_dispersal) {
-        // blocked
+        sqlStatement.append(SQL` AND has_biological_dispersals = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.bio_dispersal})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
       if (gridFilters.monitored) {
-        // everything is true, does this even matter
-        // 
+        // sqlStatement.append(SQL` AND has_biological_treatments = CASE
+        // WHEN LOWER('Yes') LIKE '%'||`);
+        // sqlStatement.append(SQL`LOWER(${gridFilters.monitored})`);
+        // sqlStatement.append(SQL`||'%'`);
+        // sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
 
     }
