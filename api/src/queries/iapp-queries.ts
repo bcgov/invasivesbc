@@ -146,11 +146,15 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
       }
       if (gridFilters.monitored) {
-        // sqlStatement.append(SQL` AND has_biological_treatments = CASE
-        // WHEN LOWER('Yes') LIKE '%'||`);
-        // sqlStatement.append(SQL`LOWER(${gridFilters.monitored})`);
-        // sqlStatement.append(SQL`||'%'`);
-        // sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+        sqlStatement.append(SQL` AND (
+          (has_biological_treatment_monitorings = TRUE 
+          OR has_chemical_treatment_monitorings = TRUE 
+          OR has_mechanical_treatment_monitorings = TRUE
+          )
+        AND LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.monitored})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`)`);
       }
 
     }
