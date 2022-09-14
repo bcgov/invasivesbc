@@ -20,7 +20,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     ) AS anything) `);
   }
 
-  if (searchCriteria.grid_filters.jurisdictions) {
+  if (searchCriteria?.grid_filters?.jurisdictions) {
     if (searchCriteria.search_feature) sqlStatement.append(SQL`, `);
     sqlStatement.append(SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `);
   }
@@ -34,7 +34,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
 
-  if (searchCriteria.grid_filters.jurisdictions) {
+  if (searchCriteria?.grid_filters?.jurisdictions) {
     sqlStatement.append(SQL` INNER JOIN strings j ON i.site_id = j.site_id`);
   }
 
@@ -88,14 +88,14 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.paper_file_id) {
-        //gonna be difficult, comes from extract
+        sqlStatement.append(SQL` AND LOWER(i.site_paper_file_id::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.paper_file_id})`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.jurisdictions) {
         sqlStatement.append(SQL` AND LOWER(j.j_string) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
         sqlStatement.append(SQL`||'%'`);
-
-        //gonna have to do the same thing as activity with its array checking...
       }
       if (gridFilters.date_created) {
         sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
@@ -113,7 +113,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.agencies) {
-        // can't find, difficult
+        sqlStatement.append(SQL` AND LOWER(i.agencies::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.agencies})`);
+        sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.bio_release) {
         // blocked
@@ -129,6 +131,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       }
       if (gridFilters.monitored) {
         // everything is true, does this even matter
+        // 
       }
 
     }
