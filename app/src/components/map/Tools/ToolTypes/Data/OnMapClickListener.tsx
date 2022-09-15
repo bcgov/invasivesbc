@@ -9,7 +9,8 @@ import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import dotMarker from '../../../Icons/dotMarker.png';
 import { createDataUTM, RenderTableActivity, RenderTablePOI, RenderTablePosition } from '../../Helpers/StyledTable';
 import { calc_utm } from '../Nav/DisplayPosition';
-import * as turf from '@turf/turf';
+import { point } from '@turf/turf';
+import buffer from '@turf/buffer';
 
 export const GeneratePopup = (props) => {
   const { position, onCloseCallback = null } = props;
@@ -30,8 +31,8 @@ export const GeneratePopup = (props) => {
     const lat = position[0];
     const lng = position[1];
     if (lat && lng) {
-      const point = turf.point([lng, lat]);
-      const buffer = turf.buffer(point, 1, { units: 'meters' });
+      const point = point([lng, lat]);
+      const buffer = buffer(point, 1, { units: 'meters' });
       return buffer;
     }
   };
