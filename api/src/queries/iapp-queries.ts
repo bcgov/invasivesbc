@@ -75,11 +75,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   }
 
   // grid filtering
-  console.log('\n\n%%%%%%%%%%%%%%%%%%%%%%% GRID FILTERS @@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n');
   if (searchCriteria.grid_filters) {
-    console.log('$$$$ GRID FILTERS @@@@@@@');
-    console.log(searchCriteria.grid_filters);
-
     const gridFilters = searchCriteria.grid_filters;
     if (gridFilters.enabled) {
       if (gridFilters.point_of_interest_id) {
