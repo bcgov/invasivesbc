@@ -418,11 +418,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 onFocus={(...args: string[]) => {
                   focusHandler(args);
                 }}
-                onBlur={(...args: string[]) => {
+                /*onBlur={(...args: string[]) => {
                   setTimeout(() => {
                     blurHandler(args);
                   }, 500);
-                }}
+                }}*/
                 uiSchema={schemas.uiSchema}
                 formContext={{
                   suggestedJurisdictions: props.suggestedJurisdictions || []
