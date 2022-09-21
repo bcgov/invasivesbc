@@ -66,6 +66,11 @@ export const Monitoring_Biocontrol = {
       title: 'Legacy IAPP Release ID',
       'x-tooltip-text': 'IAPP site ID'
     },
+    linked_id: {
+      type: 'string',
+      title: 'Linked Treatment ID',
+      'x-tooltip-text': 'Identifier of linked treatment record'
+    },
     activity_persons: {
       type: 'array',
       default: [{}],

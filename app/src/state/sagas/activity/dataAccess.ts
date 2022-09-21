@@ -165,7 +165,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
       // Autofills total bioagent quantity specifically for biocontrol collections
-      updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
+      // updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
     }
 
     if (beforeState.activity.activity_type === ActivityType.Treatment) {
