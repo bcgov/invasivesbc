@@ -975,9 +975,9 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     'invasive_plant_code',
     'aquatic_invasive_plant_code',
     // 'monitoring_details',
+    'evidence_of_treatment',
     'efficacy_code',
     'management_efficacy_rating',
-    'evidence_of_treatment',
     'invasive_plants_on_site',
     'treatment_pass',
     'comment'
@@ -999,10 +999,11 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     'invasive_plant_code',
     'aquatic_invasive_plant_code',
     // 'monitoring_details',
+    'evidence_of_treatment',
     'efficacy_code',
     'management_efficacy_rating',
-    'evidence_of_treatment',
     'invasive_plants_on_site',
+    'plant_count',
     'treatment_pass',
     'comment'
   ]
