@@ -34,18 +34,6 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     //   title: 'Efficacy comments',
     //   'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
     // },
-    efficacy_code: {
-      type: 'string',
-      title: 'Treatment Efficacy Rating',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'efficacy_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
-    },
     management_efficacy_rating: {
       type: 'string',
       title: 'Management Efficacy Rating',
@@ -80,7 +68,7 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     treatment_pass: {
       type: 'string',
       title: 'Treatment Pass',
-      enum: ['First', 'Second', 'Unknown'],
+      enum: ['First', 'Second', 'Third', 'Unknown'],
       'x-tooltip-text':
         'Indicate whether you are monitoring the first or second treatment pass of the calendar year, if known'
     },
@@ -90,12 +78,44 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
       'x-tooltip-text':
         'Note whether chlorosis, necrosis, curling, browning, yellow, epicormic growth etc. is observed, or any additional relevant information'
     }
+  },
+  dependencies: {
+    evidence_of_treatment: {
+      oneOf: [
+        { 
+          properties: {
+            evidence_of_treatment: {
+            enum: ['No']
+          },
+          }
+        },
+        { 
+          properties: {
+            evidence_of_treatment: {
+            enum: ['Yes']
+          } ,
+    efficacy_code: {
+      type: 'string',
+      title: 'Treatment Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+    },
+          },
+        }
+      ]
+    }
   }
 };
 export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   title: 'Mechanical Monitoring Information',
   type: 'object',
-  required: ['efficacy_code', 'management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
+  required: ['management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -126,18 +146,6 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     //   title: 'Efficacy comments',
     //   'x-tooltip-text': 'Provide any other observations of the treatment that was completed.'
     // },
-    efficacy_code: {
-      type: 'string',
-      title: 'Treatment Efficacy Rating',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'efficacy_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
-    },
     management_efficacy_rating: {
       type: 'string',
       title: 'Management Efficacy Rating',
@@ -172,7 +180,7 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     treatment_pass: {
       type: 'string',
       title: 'Treatment Pass',
-      enum: ['First', 'Second', 'Unknown'],
+      enum: ['First', 'Second', 'Third', 'Unknown'],
       'x-tooltip-text':
         'Indicate whether you are monitoring the first or second treatment pass of the calendar year, if known'
     },
@@ -181,6 +189,38 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
       title: 'Comment',
       'x-tooltip-text':
         'Add any additional relevant information about the efficacy of the treatment including missed plants, seeds left on site, etc.'
+    }
+  },
+  dependencies: {
+    evidence_of_treatment: {
+      oneOf: [
+        { 
+          properties: {
+            evidence_of_treatment: {
+            enum: ['No']
+          },
+          }
+        },
+        { 
+          properties: {
+            evidence_of_treatment: {
+            enum: ['Yes']
+          } ,
+    efficacy_code: {
+      type: 'string',
+      title: 'Treatment Efficacy Rating',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'efficacy_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+    },
+          },
+        }
+      ]
     }
   }
 };
