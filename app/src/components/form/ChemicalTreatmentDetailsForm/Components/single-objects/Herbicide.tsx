@@ -38,12 +38,22 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
     if (!product_application_rate || isNaN(product_application_rate)) {
       return;
     } else {
-      setCurrentHerbicide((prevFields) => ({
-        ...prevFields,
-        product_application_rate: Number(product_application_rate) / 1000
-      }));
+      if (herbicide.herbicide_type_code === 'G') {
+        setCurrentHerbicide((prevFields) => ({
+          ...prevFields,
+          product_application_rate_calculated: Number(product_application_rate) / 1000,
+          product_application_rate: product_application_rate
+        }));
+      }
+      if (herbicide.herbicide_type_code === 'L') {
+        setCurrentHerbicide((prevFields) => ({
+          ...prevFields,
+          product_application_rate_calculated: product_application_rate,
+          product_application_rate: product_application_rate
+        }));
+      }
     }
-  }, [product_application_rate]);
+  }, [product_application_rate, herbicide?.herbicide_type_code]);
 
   //get arrays for spray and direct chemical methods
   const chemical_method_direct_code_values = businessCodes['chemical_method_direct'].map((code) => {
