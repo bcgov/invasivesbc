@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
+import { selectActivity } from 'state/reducers/activity';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -26,8 +27,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
   const { accessRoles, displayName } = useSelector(selectAuth);
+
+  const activityInState = useSelector(selectActivity);
+
   const deleteRecord = () => {
-    const activityIds = [props.activity.activityId];
+    const activityIds = [activityInState.activity.activity_id];
     dataAccess.deleteActivities(activityIds);
     history.push('/home/activities');
   };
@@ -67,7 +71,10 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const DeleteDialog = () => {
     return (
       <Dialog open={open}>
-        <DialogTitle>Are you sure you want to delete this {props.activity.formStatus} Record? If it is linked to another record that link will be lost.</DialogTitle>
+        <DialogTitle>
+          Are you sure you want to delete this {props.activity.formStatus} Record? If it is linked to another record
+          that link will be lost.
+        </DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
