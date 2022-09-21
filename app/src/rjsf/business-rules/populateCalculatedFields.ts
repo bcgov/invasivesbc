@@ -359,6 +359,7 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information ||
     formData.activity_subtype_data.Biocontrol_Release_Information ||
     formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ||
+    formData.activity_subtype_data.Biocontrol_Collection_Information ||
     undefined;
 
   let formLabel = '';
@@ -369,6 +370,8 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     formLabel = 'Biocontrol_Release_Information';
   } else if (formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information) {
     formLabel = 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information';
+  } else if (formData.activity_subtype_data.Biocontrol_Collection_Information) {
+    formLabel = 'Biocontrol_Collection_Information';
   } else {
     return formData;
   }

@@ -1093,39 +1093,37 @@ const Monitoring_BiocontrolDispersal_Information = {
 };
 
 const Biocontrol_Collection_Information = {
-  items: {
-    ...ThreeColumnStyle,
-    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-    historical_iapp_site_id: {},
-    collection_type: {},
-    plant_count: {},
-    collection_method: { 'ui:widget': 'single-select-autocomplete' },
-    num_of_sweeps: {},
-    start_time: {},
-    stop_time: { 'ui:widget': 'datetime' },
-    actual_quantity_and_life_stage_of_agent_collected: {},
-    estimated_quantity_and_life_stage_of_agent_collected: {},
-    total_bio_agent_quantity_actual: { 'ui:readonly': true },
-    total_bio_agent_quantity_estimated: { 'ui:readonly': true },
-    comment: { 'ui:widget': 'textarea' },
-    'ui:order': [
-      'invasive_plant_code',
-      'biological_agent_code',
-      'historical_iapp_site_id',
-      'collection_type',
-      'plant_count',
-      'collection_method',
-      'num_of_sweeps',
-      'start_time',
-      'stop_time',
-      'actual_quantity_and_life_stage_of_agent_collected',
-      'estimated_quantity_and_life_stage_of_agent_collected',
-      'total_bio_agent_quantity_actual',
-      'total_bio_agent_quantity_estimated',
-      'comment'
-    ]
-  }
+  ...ThreeColumnStyle,
+  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+  historical_iapp_site_id: {},
+  collection_type: {},
+  plant_count: {},
+  collection_method: { 'ui:widget': 'single-select-autocomplete' },
+  num_of_sweeps: {},
+  start_time: {},
+  stop_time: { 'ui:widget': 'datetime' },
+  actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+  estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+  total_bio_agent_quantity_actual: { 'ui:readonly': true },
+  total_bio_agent_quantity_estimated: { 'ui:readonly': true },
+  comment: { 'ui:widget': 'textarea' },
+  'ui:order': [
+    'invasive_plant_code',
+    'biological_agent_code',
+    'historical_iapp_site_id',
+    'collection_type',
+    'plant_count',
+    'collection_method',
+    'num_of_sweeps',
+    'start_time',
+    'stop_time',
+    'actual_biological_agents',
+    'estimated_biological_agents',
+    'total_bio_agent_quantity_actual',
+    'total_bio_agent_quantity_estimated',
+    'comment'
+  ]
 };
 
 const Biocontrol_Release_Information = {

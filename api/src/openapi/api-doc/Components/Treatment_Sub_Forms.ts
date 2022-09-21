@@ -1,4 +1,4 @@
-import { Agent_Quantity_And_Life_Stage, Biocontrol_Release_Biological_Agent_Stage } from './General_Sub_Forms';
+import { Agent_Quantity_And_Life_Stage, Biocontrol_Release_Biological_Agent_Stage, Biological_Agent_Stage } from './General_Sub_Forms';
 
 //--------------------- Chemical ---------------------
 export const Treatment_ChemicalAnimalTerrestrial = {
@@ -598,21 +598,16 @@ export const Biocontrol_Release_Information = {
   }
 };
 export const Biocontrol_Collection_Information = {
-  title: 'Biocontrol Collections',
-  type: 'array',
-  default: [{}],
-  minimum: 1,
-  items: {
-    title: 'Collection Details',
-    type: 'object',
-    required: [
-      'invasive_plant_code',
-      'biological_agent_code',
-      'collection_method',
-      'collection_type',
-      'start_time',
-      'stop_time'
-    ],
+  title: 'Biocontrol Collection',
+  type: 'object',
+  required: [
+    'invasive_plant_code',
+    'biological_agent_code',
+    'collection_method',
+    'collection_type',
+    'start_time',
+    'stop_time'
+  ],
     dependencies: {
       collection_type: {
         oneOf: [
@@ -728,22 +723,21 @@ export const Biocontrol_Collection_Information = {
         format: 'date-time',
         title: 'Stop time collecting'
       },
-      actual_quantity_and_life_stage_of_agent_collected: {
+      actual_biological_agents: {
         type: 'array',
-        title: 'Actual Quantity and Life Stage of Agent Collected',
+        title: 'Actual Biological Agents',
         items: {
-          ...Agent_Quantity_And_Life_Stage
+          ...Biocontrol_Release_Biological_Agent_Stage
         },
-        'x-tooltip-text': 'The quantity of the biocontrol agent collected in the life stage it w '
+        'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
       },
-      estimated_quantity_and_life_stage_of_agent_collected: {
+      estimated_biological_agents: {
         type: 'array',
-        title: 'Estimated Quantity and Life Stage of Agent Collected',
+        title: 'Estimated Biological Agents',
         items: {
-          ...Agent_Quantity_And_Life_Stage
+          ...Biocontrol_Release_Biological_Agent_Stage
         },
-        'x-tooltip-text':
-          'When plant parts are collected with agents within those plant parts, an estimate of the quantity of the biocontrol agent collected in the life stage it was collected if required.'
+        'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
       },
       total_bio_agent_quantity_estimated: {
         type: 'number',
@@ -760,6 +754,6 @@ export const Biocontrol_Collection_Information = {
         title: 'Comment',
         'x-tooltip-text': 'Any comments of particular interest regarding this collection that does not fit elsewhere.'
       }
-    }
+
   }
 };

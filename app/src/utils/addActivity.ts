@@ -145,12 +145,10 @@ export function generateDBActivityPayload(
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Collection_Biocontrol) {
-    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = [
-      {
-        actual_quantity_and_life_stage_of_agent_collected: [{}],
-        estimated_quantity_and_life_stage_of_agent_collected: [{}]
-      }
-    ];
+    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = {
+      actual_biological_agents: [{}],
+      estimated_biological_agents: [{}]
+    };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant) {
     returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information = {
@@ -351,7 +349,7 @@ export function populateSpeciesArrays(record) {
       species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
       break;
     case ActivitySubtype.Collection_Biocontrol:
-      species_treated = subtypeData?.Biocontrol_Collection_Information?.map((plant) => plant.invasive_plant_code) || [];
+      species_treated = [subtypeData?.Biocontrol_Collection_Information?.invasive_plant_code];
       break;
     default:
       break;
