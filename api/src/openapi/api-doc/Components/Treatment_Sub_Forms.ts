@@ -658,7 +658,7 @@ export const Biocontrol_Collection_Information = {
           {
             properties: {
               collection_method: {
-                enum: ['As', 'Hp', 'Sw', 'Tt', 'Tp']
+                enum: ['As', 'Hp', 'Sw', 'Tt', 'Tp', 'Cl']
               }
             }
           }
