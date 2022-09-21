@@ -116,7 +116,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //Dialog Proceed OnClick func
   const proceedClick = () => {
-    alert('proceed click');
     //setTimeout is called so that the setState works as expected
     setTimeout(() => {
       const $this = formRef.current;
