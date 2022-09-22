@@ -11,25 +11,6 @@ import {
   TABS_GET_INITIAL_STATE_FAILURE
 } from '../actions';
 
-function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
-  try {
-    yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, activeTab: action.payload });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: TABS_SET_ACTIVE_TAB_FAILURE });
-  }
-}
-
-function* handle_TABS_SET_USER_MENU_OPEN_REQUEST(action) {
-  try {
-    console.log('Setting user menu open to ' + action.payload);
-    yield put({ type: TABS_SET_USER_MENU_OPEN_SUCCESS, userMenuOpen: action.payload });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: TABS_SET_USER_MENU_OPEN_FAILURE });
-  }
-}
-
 function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
   const currentTab = localStorage.getItem('TABS_CURRENT_TAB');
   if (!currentTab) {
@@ -46,6 +27,25 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
   } catch (e) {
     console.error(e);
     yield put({ type: TABS_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
+  try {
+    yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: TABS_SET_ACTIVE_TAB_FAILURE });
+  }
+}
+
+function* handle_TABS_SET_USER_MENU_OPEN_REQUEST(action) {
+  try {
+    console.log('Setting user menu open to ' + action.payload);
+    yield put({ type: TABS_SET_USER_MENU_OPEN_SUCCESS, payload: action.payload });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: TABS_SET_USER_MENU_OPEN_FAILURE });
   }
 }
 
