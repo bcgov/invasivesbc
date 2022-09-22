@@ -47,8 +47,7 @@ import {
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
   NETWORK_GO_ONLINE,
-  TABS_SET_ACTIVE_TAB_REQUEST,
-  TABS_SET_USER_MENU_OPEN_REQUEST
+  TABS_SET_ACTIVE_TAB_REQUEST
 } from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
