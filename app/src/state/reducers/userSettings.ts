@@ -1,6 +1,18 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
 import { DocType } from 'constants/database';
-import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, USER_SETTINGS_ADD_RECORD_SET_SUCCESS, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, USER_SETTINGS_SET_BOUNDARIES_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS, USER_SETTINGS_SET_RECORD_SET_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS } from '../actions';
+import {
+  USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
+  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
+  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
+  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
+  USER_SETTINGS_SET_RECORD_SET_SUCCESS,
+  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
+} from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -13,36 +25,36 @@ class UserSettingsState {
   newRecordDialogState: INewRecordDialogState;
   recordSets: [
     {
-      advancedFilters: [],
-      gridFilters: [],
-      color: string,
-      drawOrder: number,
-      expanded: boolean,
-      isSelected: boolean,
-      mapToggle: boolean,
-      recordSetName: string,
-      recordSetType: string,
+      advancedFilters: [];
+      gridFilters: [];
+      color: string;
+      drawOrder: number;
+      expanded: boolean;
+      isSelected: boolean;
+      mapToggle: boolean;
+      recordSetName: string;
+      recordSetType: string;
       searchBoundary: {
-        geos: [],
-        id: number,
-        name: string,
-        server_id: any
-      }
+        geos: [];
+        id: number;
+        name: string;
+        server_id: any;
+      };
     }
   ];
   selectedRecord: {
-    type: DocType,
-    description: string,
-    id: any,
-    isIAPP: boolean
-  }
+    type: DocType;
+    description: string;
+    id: any;
+    isIAPP: boolean;
+  };
   recordsExpanded: boolean;
   boundaries: [
     {
-      geos: [],
-      id: number,
-      name: string,
-      server_id: any
+      geos: [];
+      id: number;
+      name: string;
+      server_id: any;
     }
   ];
 
@@ -80,49 +92,56 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           newRecordDialogState: action.payload
-        }
+        };
       }
       case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
         return {
-          ...state, recordSets: action.payload.recordSets
+          ...state,
+          recordSets: action.payload.recordSets
         };
       }
       case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
         return {
-          ...state, recordSets: action.payload.recordSets
-        }
+          ...state,
+          recordSets: action.payload.recordSets
+        };
       }
       case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
         return {
-          ...state, selectedRecord: action.payload.selectedRecord
-        }
+          ...state,
+          selectedRecord: action.payload.selectedRecord
+        };
       }
       case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
         return {
-          ...state, recordSets: action.payload.recordSets
-        }
+          ...state,
+          recordSets: action.payload.recordSets
+        };
       }
       case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
         return {
-          ...state, recordSets: action.payload.recordSets
-        }
+          ...state,
+          recordSets: action.payload.recordSets
+        };
       }
       case USER_SETTINGS_SET_BOUNDARIES_REQUEST: {
         return {
-          ...state, boundaries: action.payload.boundaries
-        }
+          ...state,
+          boundaries: action.payload.boundaries
+        };
       }
       case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
         return {
-          ...state, recordSets: action.payload.recordSets
-        }
+          ...state,
+          recordSets: action.payload.recordSets
+        };
       }
       case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
         return {
-          ...state, recordsExpanded: !state.recordsExpanded
-        }
+          ...state,
+          recordsExpanded: !state.recordsExpanded
+        };
       }
-      
 
       default:
         return state;
