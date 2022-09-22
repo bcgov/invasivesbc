@@ -13,6 +13,7 @@ import {
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
+  TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';
@@ -45,15 +46,25 @@ function* initializeAuthentication() {
 
   yield put({
     type: AUTH_INITIALIZE_COMPLETE,
-    payload: {}
+    payload: {
+      authenticated: keycloakInstance.authenticated
+    }
   });
 
   if (keycloakInstance.authenticated) {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-
     yield put({ type: AUTH_REFRESH_TOKEN });
+  } else {
+    // we are not logged in
+    yield put({
+      type: TABS_GET_INITIAL_STATE_REQUEST,
+      payload: {
+        authenticated: false,
+        activated: false
+      }
+    });
   }
 }
 
@@ -97,6 +108,13 @@ function* refreshRoles() {
       type: USERINFO_LOAD_COMPLETE,
       payload: {
         userInfo: userData.result.extendedInfo
+      }
+    });
+    yield put({
+      type: TABS_GET_INITIAL_STATE_REQUEST,
+      payload: {
+        authenticated: true,
+        activated: userData.result.extendedInfo.activation_status === 1
       }
     });
   } catch (err) {
