@@ -46,7 +46,9 @@ import {
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
-  NETWORK_GO_ONLINE
+  NETWORK_GO_ONLINE,
+  TABS_SET_ACTIVE_TAB_REQUEST,
+  TABS_SET_USER_MENU_OPEN_REQUEST
 } from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
@@ -54,6 +56,7 @@ import { selectUserInfo } from '../../state/reducers/userInfo';
 import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
+import { selectTabs } from 'state/reducers/tabs';
 
 const drawerWidth = 240;
 
@@ -149,15 +152,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
-
   const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
-
-  const [showLoggedInTabs, setShowLoggedInTabs] = useState(authenticated && activated && userInfoLoaded);
-
-  useEffect(() => {
-    setShowLoggedInTabs(authenticated && userInfoLoaded && activated);
-  }, [authenticated, activated, userInfoLoaded]);
+  const {
+    showLoggedInTabs
+    // activeTab,
+  } = useSelector(selectTabs);
 
   const [isAdmin, setIsAdmin] = useState(
     authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' })
@@ -257,13 +257,22 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const { themeType, setThemeType } = themeContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setActiveTab(newValue);
+    dispatch({
+      type: TABS_SET_ACTIVE_TAB_REQUEST,
+      payload: {
+        activeTab: newValue
+      }
+    });
+    setActiveTab(newValue); // TODO: REMOVE THIS WHEN NO LONGER NEEDED
   };
 
   useEffect(() => {
     //   console.log('activetab;')
     //    console.log(activeTab)
-    setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
+    setActiveTab((activeTabNumber) => {
+      console.log('PATHNAME CHANGED. GETTING ACTIVE TAB BASED ON ACTIVE TAB NUMBER: ', activeTabNumber);
+      return getActiveTab(activeTabNumber);
+    });
   }, [history.location.pathname]);
 
   useEffect(() => {
