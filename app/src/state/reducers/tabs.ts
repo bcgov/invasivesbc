@@ -1,25 +1,22 @@
 import {
   TABS_SET_ACTIVE_TAB_SUCCESS,
   TABS_SET_USER_MENU_OPEN_SUCCESS,
-  TABS_SET_SHOW_LOGGED_IN_TABS_SUCCESS
+  TABS_GET_INITIAL_STATE_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
 
 class TabsState {
+  initialized: boolean;
   activeTab: number;
   userMenuOpen: boolean;
   showLoggedInTabs: boolean;
 
   constructor() {
+    this.initialized = false;
     this.userMenuOpen = false;
-
-    // this.newRecordDialogState = {
-    //   recordCategory:
-    //     JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
-    //   recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
-    //   recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
-    // };
+    this.showLoggedInTabs = false;
+    this.activeTab = 0;
   }
 }
 
@@ -27,27 +24,30 @@ const initialState = new TabsState();
 
 function createTabsReducer(configuration: AppConfig): (TabsState, AnyAction) => TabsState {
   return (state = initialState, action) => {
-    console.log('ACTION RECEIVED', action);
     switch (action.type) {
-      case TABS_SET_ACTIVE_TAB_SUCCESS: {
+      case TABS_GET_INITIAL_STATE_SUCCESS: {
+        console.log('GOT INITAL STATE FOR TABS!', action.payload);
         return {
           ...state,
-          activeTab: action.activeTab
+          initialized: true,
+          activeTab: action.payload.activeTab,
+          showLoggedInTabs: action.payload.showLoggedInTabs
+        };
+      }
+      case TABS_SET_ACTIVE_TAB_SUCCESS: {
+        console.log('SET ACTIVE TAB SUCCESS!', action);
+        return {
+          ...state,
+          activeTab: action.payload.activeTab
         };
       }
 
       case TABS_SET_USER_MENU_OPEN_SUCCESS:
+        console.log('SET USER MENU OPEN SUCCESS!', action);
         return {
           ...state,
-          userMenuOpen: action.userMenuOpen
+          userMenuOpen: action.payload.userMenuOpen
         };
-
-      case TABS_SET_SHOW_LOGGED_IN_TABS_SUCCESS: {
-        return {
-          ...state,
-          showLoggedInTabs: action.showLoggedInTabs
-        };
-      }
       default:
         return state;
     }
