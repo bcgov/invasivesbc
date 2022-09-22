@@ -1,14 +1,13 @@
 import AdminRouter from 'features/admin/AdminRouter';
-import React, {useEffect, useState} from 'react';
-import {Redirect, Switch, useHistory} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Redirect, Switch, useHistory } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import PublicLayout from './layouts/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
-import {NotFoundPage} from './pages/misc/NotFoundPage';
+import { NotFoundPage } from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
-import {useSelector} from "./state/utilities/use_selector";
-import {selectConfiguration} from "./state/reducers/configuration";
-
+import { useSelector } from './state/utilities/use_selector';
+import { selectConfiguration } from './state/reducers/configuration';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -17,8 +16,8 @@ interface IAppRouterProps {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const {DEBUG} = useSelector(selectConfiguration);
-  const {location} = useHistory();
+  const { DEBUG } = useSelector(selectConfiguration);
+  const { location } = useHistory();
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -32,22 +31,12 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   return (
     <Switch>
-      <Redirect exact from="/" to="/home/landing"/>
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout}/>
-      <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout}/>
-      <AppRoute
-        path="/home"
-        title={getTitle('Home')}
-        component={HomeRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute
-        path="/admin"
-        title={getTitle('Admin')}
-        component={AdminRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found"/>}/>
+      <Redirect exact from="/" to="/home/landing" />
+      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
+      <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout} />
+      <AppRoute path="/home" title={getTitle('Home')} component={HomeRouter} layout={PublicLayout} />
+      <AppRoute path="/admin" title={getTitle('Admin')} component={AdminRouter} layout={PublicLayout} />
+      <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );
 };
