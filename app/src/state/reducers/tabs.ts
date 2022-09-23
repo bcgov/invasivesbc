@@ -6,11 +6,13 @@ class TabsState {
   initialized: boolean;
   activeTab: number;
   showLoggedInTabs: boolean;
+  tabConfig: any[];
 
   constructor() {
     this.initialized = false;
     this.showLoggedInTabs = false;
-    this.activeTab = 0;
+    this.activeTab = localStorage.getItem('TABS_CURRENT_TAB') ? Number(localStorage.getItem('TABS_CURRENT_TAB')) : 0;
+    this.tabConfig = [];
   }
 }
 
@@ -24,10 +26,13 @@ function createTabsReducer(configuration: AppConfig): (TabsState, AnyAction) => 
           ...state,
           initialized: true,
           activeTab: Number(action.payload.activeTab),
-          showLoggedInTabs: action.payload.showLoggedInTabs
+          showLoggedInTabs: action.payload.showLoggedInTabs,
+          tabConfig: action.payload.tabConfig
         };
       }
+
       case TABS_SET_ACTIVE_TAB_SUCCESS: {
+        console.log('ACTIVE TAB: ', action.payload);
         return {
           ...state,
           activeTab: action.payload.activeTab

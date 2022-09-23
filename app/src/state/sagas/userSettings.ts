@@ -219,7 +219,6 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
   try {
-    console.log('SAGA HIT! ');
     // Store value in localstorage if on web
     localStorage.setItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE', JSON.stringify(action.payload));
     // TODO: Store value in cached db on mobile

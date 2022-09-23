@@ -1,4 +1,7 @@
-import { all, put, takeEvery } from 'redux-saga/effects';
+import { TabIconName } from 'components/tabs/TabIconIndex';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
+import { selectAuth } from 'state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 import {
   TABS_SET_ACTIVE_TAB_REQUEST,
   TABS_SET_ACTIVE_TAB_SUCCESS,
@@ -14,11 +17,69 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
     localStorage.setItem('TABS_CURRENT_TAB', '0');
   }
   try {
+    const configuration = yield select(selectConfiguration);
+    const auth = yield select(selectAuth);
+
+    const isMasterAdmin = auth.roles.some((role) => role.role_name === 'master_administrator');
+    const showLoggedInTabs = action.payload.activated && action.payload.authenticated;
+
+    const tabConfig = [
+      {
+        label: 'Home',
+        path: '/home/landing',
+        icon: TabIconName.Home
+      }
+    ];
+
+    if (!showLoggedInTabs) {
+      tabConfig.push({
+        label: 'Map',
+        path: '/home/map',
+        icon: TabIconName.Map
+      });
+    }
+
+    if (showLoggedInTabs) {
+      tabConfig.push(
+        {
+          label: 'Recorded Activities',
+          path: '/home/activities',
+          icon: TabIconName.Homework
+        },
+        {
+          label: 'Current Activity',
+          path: '/home/activity',
+          icon: TabIconName.Assignment
+        },
+        {
+          label: 'Current IAPP Site',
+          path: '/home/iapp/',
+          icon: TabIconName.IAPP
+        }
+      );
+      if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
+        tabConfig.push({
+          label: 'Reports',
+          path: '/home/reports',
+          icon: TabIconName.Assessment
+        });
+      }
+    }
+
+    if (isMasterAdmin) {
+      tabConfig.push({
+        label: 'Admin',
+        path: '/admin/useraccess',
+        icon: TabIconName.AdminPanelSettings
+      });
+    }
+
     yield put({
       type: TABS_GET_INITIAL_STATE_SUCCESS,
       payload: {
-        activeTab: localStorage.getItem('TABS_CURRENT_TAB'), // TODO GRAB FROM LOCALSTORAGE
-        showLoggedInTabs: action.payload.activated && action.payload.authenticated // TODO COMPUTE THIS
+        activeTab: localStorage.getItem('TABS_CURRENT_TAB'),
+        showLoggedInTabs: showLoggedInTabs,
+        tabConfig: tabConfig
       }
     });
   } catch (e) {
@@ -39,8 +100,8 @@ function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
 
 function* tabsSaga() {
   yield all([
-    takeEvery(TABS_SET_ACTIVE_TAB_REQUEST, handle_TABS_SET_ACTIVE_TAB_REQUEST),
-    takeEvery(TABS_GET_INITIAL_STATE_REQUEST, handle_TABS_GET_INITIAL_STATE_REQUEST)
+    takeEvery(TABS_GET_INITIAL_STATE_REQUEST, handle_TABS_GET_INITIAL_STATE_REQUEST),
+    takeEvery(TABS_SET_ACTIVE_TAB_REQUEST, handle_TABS_SET_ACTIVE_TAB_REQUEST)
   ]);
 }
 

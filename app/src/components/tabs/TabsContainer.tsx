@@ -24,7 +24,6 @@ import {
   Box
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
@@ -33,7 +32,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
 import { ThemeContext } from 'utils/CustomThemeProvider';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -43,7 +41,6 @@ import './TabsContainer.css';
 import { useDispatch } from 'react-redux';
 import {
   AUTH_SIGNIN_REQUEST,
-  AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
   NETWORK_GO_ONLINE,
@@ -56,6 +53,7 @@ import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
 import { selectTabs } from 'state/reducers/tabs';
+import { getTabIconByName } from './TabIconIndex';
 
 const drawerWidth = 240;
 
@@ -131,13 +129,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ITabConfig {
-  path: string;
-  childPaths?: string[];
-  label: string;
-  icon: React.ReactElement;
-}
-
 export interface ITabsContainerProps {}
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
@@ -151,19 +142,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
-  const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
-  const {
-    showLoggedInTabs
-    // activeTab,
-  } = useSelector(selectTabs);
+  const { showLoggedInTabs, activeTab, initialized: tabsInitialized, tabConfig } = useSelector(selectTabs);
 
   const [isAdmin, setIsAdmin] = useState(
     authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' })
   );
 
   useEffect(() => {
-    setIsAdmin(authenticated && roles.filter((role) => role.role_id === 18).length > 0);
+    setIsAdmin(authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' }));
   }, [authenticated, roles]);
 
   const handleClose = () => {
@@ -224,7 +211,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setOpen(false);
   };
 
-  const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
+  // const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
 
   /**
    * Determine the active tab index, based on the current url path.
@@ -232,14 +219,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
    * @param {number} activeTabNumber The current active tab index, to be used as backup if no matching paths are found.
    * @return {*}  {number}
    */
-  const getActiveTab = (activeTabNumber?: number): any => {
+  const getActiveTab = (pathname: string): number => {
     for (let index = 0; index < tabConfig.length; index++) {
       const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
 
       // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
       if (
         pathsToMatchAgainst.some((pathToMatch) => {
-          return window.location.pathname.includes(pathToMatch) && !open;
+          return pathname.includes(pathToMatch) && !open;
         })
       ) {
         return index;
@@ -247,102 +234,119 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     }
 
     // Otherwise return the current active tab index as a fallback
-    return false;
+    return activeTab;
   };
 
-  const [activeTab, setActiveTab] = React.useState(getActiveTab());
+  // const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    console.log('TAB CHANGED! SETTING TO: ', newValue);
     dispatch({
       type: TABS_SET_ACTIVE_TAB_REQUEST,
       payload: {
         activeTab: newValue
       }
     });
-    setActiveTab(newValue); // TODO: REMOVE THIS WHEN NO LONGER NEEDED
   };
 
-  useEffect(() => {
-    //   console.log('activetab;')
-    //    console.log(activeTab)
-    setActiveTab((activeTabNumber) => {
-      console.log('PATHNAME CHANGED. GETTING ACTIVE TAB BASED ON ACTIVE TAB NUMBER: ', activeTabNumber);
-      return getActiveTab(activeTabNumber);
-    });
-  }, [history.location.pathname]);
+  // When we navigate manually in the browser, update the active tab
+  // useEffect(() => {
+  //   // Fallback to set the active tab based on the path if a user loads to a specific page
+  //   console.log('USEEFFECT LINE 264 HIT! SETTING CURRENT TAB TO ' + getActiveTab(history.location.pathname));
+  //   dispatch({
+  //     type: TABS_SET_ACTIVE_TAB_REQUEST,
+  //     payload: {
+  //       activeTab: getActiveTab(history.location.pathname)
+  //     }
+  //   });
+  // }, [history.location.pathname]);
 
-  useEffect(() => {
-    const setTabConfigBasedOnRoles = () => {
-      setTabConfig(() => {
-        const tabsUserHasAccessTo: ITabConfig[] = [];
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home fontSize={'small'} />
-        });
+  // When we first load onto the page, set the active tab based on the tab config
 
-        if (!showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Map',
-            path: '/home/map',
-            icon: <Map fontSize={'small'} />
-          });
-        }
+  // useEffect(() => {
+  //   console.log('Path changed. It is now ' + history.location.pathname);
+  // }, [history.location.pathname]);
 
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Recorded Activities',
-            path: '/home/activities',
-            icon: <HomeWork fontSize={'small'} />
-          });
-        }
+  // useEffect(() => {
+  //   // If tabs are initialized and our tabConfig is set up and our active tab is a valid target that is not the page we are currently on, then redirect to the active tab
+  //   if (tabsInitialized && tabConfig.length > activeTab && history.location.pathname !== tabConfig[activeTab].path) {
+  //     console.log('Setting path to ' + tabConfig[activeTab].path);
+  //     history.push(tabConfig[activeTab].path);
+  //   }
+  // }, [activeTab, tabsInitialized, tabConfig, history.location.pathname]);
 
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment fontSize={'small'} />
-          });
-        }
+  // useEffect(() => {
+  //   const setTabConfigBasedOnRoles = () => {
+  //     setTabConfig(() => {
+  //       const tabsUserHasAccessTo: ITabConfig[] = [];
+  //       if (tabsInitialized) {
+  //         tabsUserHasAccessTo.push({
+  //           label: 'Home',
+  //           path: '/home/landing',
+  //           icon: <Home fontSize={'small'} />
+  //         });
 
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Current IAPP Site',
-            path: '/home/iapp/',
-            icon: (
-              <img
-                alt="iapp logo"
-                src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
-                style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
-              />
-            )
-          });
-        }
+  //         tabsUserHasAccessTo.push({
+  //           label: 'Map',
+  //           path: '/home/map',
+  //           icon: <Map fontSize={'small'} />
+  //         });
 
-        if (isAdmin) {
-          tabsUserHasAccessTo.push({
-            label: 'Admin',
-            path: '/admin/useraccess',
-            icon: <AdminPanelSettingsIcon fontSize={'small'} />
-          });
-        }
+  //         if (showLoggedInTabs) {
+  //           tabsUserHasAccessTo.push({
+  //             label: 'Recorded Activities',
+  //             path: '/home/activities',
+  //             icon: <HomeWork fontSize={'small'} />
+  //           });
+  //         }
 
-        if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
-          tabsUserHasAccessTo.push({
-            label: 'Reports',
-            path: '/home/reports',
-            icon: <AssessmentIcon fontSize={'small'} />
-          });
-        }
-        return tabsUserHasAccessTo;
-      });
-    };
-    setTabConfigBasedOnRoles();
-    return () => setTabConfig([]);
-  }, [showLoggedInTabs, isAdmin]);
+  //         if (showLoggedInTabs) {
+  //           tabsUserHasAccessTo.push({
+  //             label: 'Current Activity',
+  //             path: '/home/activity',
+  //             icon: <Assignment fontSize={'small'} />
+  //           });
+  //         }
+
+  //         if (showLoggedInTabs) {
+  //           tabsUserHasAccessTo.push({
+  //             label: 'Current IAPP Site',
+  //             path: '/home/iapp/',
+  //             icon: (
+  //               <img
+  //                 alt="iapp logo"
+  //                 src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
+  //                 style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
+  //               />
+  //             )
+  //           });
+  //         }
+
+  //         if (isAdmin) {
+  //           tabsUserHasAccessTo.push({
+  //             label: 'Admin',
+  //             path: '/admin/useraccess',
+  //             icon: <AdminPanelSettingsIcon fontSize={'small'} />
+  //           });
+  //         }
+
+  //         if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
+  //           tabsUserHasAccessTo.push({
+  //             label: 'Reports',
+  //             path: '/home/reports',
+  //             icon: <AssessmentIcon fontSize={'small'} />
+  //           });
+  //         }
+  //       }
+  //       return tabsUserHasAccessTo;
+  //     });
+  //   };
+  //   setTabConfigBasedOnRoles();
+  //   return () => setTabConfig([]);
+  // }, [showLoggedInTabs, isAdmin, tabsInitialized]);
 
   return useMemo(() => {
     if (!tabConfig || !tabConfig.length) {
@@ -414,12 +418,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <b>InvasivesBC</b>
               </Box>
               <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-                {tabConfig && tabConfig.length > 0 ? (
+                {tabConfig && tabConfig.length > 0 && tabsInitialized ? (
                   <Tabs
                     indicatorColor="secondary"
                     textColor="inherit"
-                    //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
-                    value={tabConfig[getActiveTab()] ? getActiveTab() : false}
+                    value={activeTab}
                     color="primary"
                     centered
                     style={{ width: '80%', color: '#fff' }}
@@ -432,7 +435,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                             color="primary"
                             label={tab.label}
                             key={tab.label.split(' ').join('_')}
-                            icon={tab.icon}
+                            icon={getTabIconByName(tab.icon)}
                             onClick={() => history.push(tab.path)}
                           />
                         );
