@@ -110,7 +110,14 @@ POST.apiDoc = {
               type: 'array',
               description: 'A list of columns to order by. (for DESC, use "columname DESC")',
               items: {
-                type: 'string'
+                properties: {
+                  columnKey: {
+                    type: 'string'
+                  },
+                  direction: {
+                    type: 'string'
+                  }
+                }
               }
             }
           }

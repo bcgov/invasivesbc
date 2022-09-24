@@ -98,7 +98,8 @@ export const getSearchCriteriaFromFilters = (
   isIAPP: boolean,
   gridFilters: any,
   page: number,
-  limit: number
+  limit: number,
+  sortColumns: readonly SortColumn[]
 ) => {
   const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
@@ -174,6 +175,10 @@ export const getSearchCriteriaFromFilters = (
   // row limit
   filter.limit = limit;
 
+  // column sorting
+  if (sortColumns && sortColumns.length > 0) {
+    filter.order = [...sortColumns];
+  }
   return filter;
 };
 
@@ -222,6 +227,7 @@ const ActivityGrid = (props) => {
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
   const [cursorPos, setCursorPos] = useState(0);
+  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
 
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
@@ -306,7 +312,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), filters]);
+  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), filters, sortColumns]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -321,7 +327,8 @@ const ActivityGrid = (props) => {
       false,
       filters.enabled ? filters : null,
       0,
-      20
+      20,
+      sortColumns.length ? [...sortColumns] : null
     );
 
     const act_list = await dataAccess.getActivities(filter);
@@ -347,7 +354,8 @@ const ActivityGrid = (props) => {
       true,
       null,
       0,
-      20
+      20,
+      sortColumns.length ? [...sortColumns] : []
     );
 
     const act_list = await dataAccess.getPointsOfInterest(filter);
@@ -570,35 +578,6 @@ const ActivityGrid = (props) => {
     setRows(newrows);
   }, [POIs]);
 
-  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-
-  type Comparator = (a, b) => number;
-
-  function getComparator(sortColumn: string): Comparator {
-    switch (sortColumn) {
-      default:
-        return (a, b) => {
-          return a[sortColumn].localeCompare(b[sortColumn]);
-        };
-    }
-  }
-
-  const sortedRows = useMemo(() => {
-    if (sortColumns?.length === 0) return rows;
-
-    if (rows?.length) {
-      return [...rows].sort((a, b) => {
-        for (const sort of sortColumns) {
-          const comparator = getComparator(sort.columnKey);
-          const compResult = comparator(a, b);
-          if (compResult !== 0) {
-            return sort.direction === 'ASC' ? compResult : -compResult;
-          }
-        }
-        return 0;
-      });
-    } else return [];
-  }, [rows, sortColumns]);
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
@@ -746,7 +725,7 @@ const ActivityGrid = (props) => {
                 style={{ height: '100%' }}
                 className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
                 // rows={filteredRows}
-                rows={sortedRows}
+                rows={rows}
                 defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}
                 //columns={columns}
                 onRowClick={(r) => {
@@ -777,7 +756,8 @@ const ActivityGrid = (props) => {
       advancedFilterRows,
       filters,
       activities,
-      sortedRows
+      sortColumns,
+      rows
     ]
   );
 };

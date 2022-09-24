@@ -115,8 +115,53 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     `);
   }
 
-  if (searchCriteria.order?.length) {
-    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  if (searchCriteria.order && searchCriteria.order?.length > 0) {
+    const order = searchCriteria.order.map((sortColumn) => {
+      let key = '';
+      switch(sortColumn['columnKey']) {
+        case 'point_of_interest_id':
+          key = 'site_id';
+          break;
+        case 'paper_file_id':
+          key = 'site_paper_file_id';
+          break;
+        case 'jurisdictions':
+          key = 'jurisdictions';
+          break;
+        case 'date_created':
+          key = 'min_survey';
+          break;
+        case 'species_on_site':
+          key = 'all_species_on_site';
+          break;
+        case 'date_last_surveyed':
+          key = 'max_survey';
+          break;
+        case 'agencies':
+          key = 'agencies';
+          break;
+        case 'bio_release':
+          key = 'has_biological_treatments';
+          break;
+        case 'chem_treatment':
+          key = 'has_chemical_treatments';
+          break;
+        case 'mech_treatment':
+          key = 'has_mechanical_treatments';
+          break;
+        case 'bio_dispersal':
+          key = 'has_biological_dispersals';
+          break;
+        case 'monitored':
+          key = 'monitored';
+          break;
+        default :
+          break;
+      }
+
+      return `i.${key} ${sortColumn['direction']}`;
+    });
+    sqlStatement.append(SQL` ORDER BY ${order.join(', ')}`);
   }
 
   if (searchCriteria.limit) {
