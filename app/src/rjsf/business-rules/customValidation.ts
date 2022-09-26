@@ -332,9 +332,9 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
     }
 
     //if wind is more than 50km/h, display an error
-    if (wind_speed > 50) {
+    if (wind_speed > 9) {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['wind_speed'].addError(
-        'Wind should ideally be less or equal to 50km/h'
+        'Wind should ideally be less or equal to 9km/h'
       );
     }
     //if user clicked proceed in the warning dialog, remove the error

@@ -258,12 +258,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   : 'Product Application Rate (l/ha)'
               }
               // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-              value={herbicide?.product_application_rate}
+              value={herbicide?.product_application_rate?.toFixed(2)}
               variant="outlined"
               key={tankProductApplicationRateKey}
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
+                  console.log('is blank string');
                   setCurrentHerbicide((prevFields) => ({
                     ...prevFields,
                     product_application_rate: undefined
@@ -297,12 +298,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="text"
               label="Amount of Mix Used (L)"
-              value={herbicide?.amount_of_mix}
+              value={herbicide?.amount_of_mix?.toFixed(2)}
               variant="outlined"
               key={amountOfMixUsedKey}
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
+                  console.log('blank string');
                   setCurrentHerbicide((prevFields) => ({
                     ...prevFields,
                     amount_of_mix: undefined
@@ -336,10 +338,10 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="text"
               label="Dilution (%)"
-              value={herbicide?.dilution}
+              value={herbicide?.dilution?.toFixed(2)}
               variant="outlined"
               key={dilutionPercentKey}
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
                   setCurrentHerbicide((prevFields) => ({
@@ -371,10 +373,10 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="text"
               label="Area Treated (sqm)"
-              value={herbicide.area_treated_sqm}
+              value={herbicide?.area_treated_sqm?.toFixed(2)}
               variant="outlined"
               key={areaTreatedSqmKey}
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
                   setCurrentHerbicide((prevFields) => ({
@@ -408,10 +410,10 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               type="text"
               id="delivery-rate-of-mix"
               label="Delivery Rate of Mix (L/ha)"
-              value={herbicide.delivery_rate_of_mix}
+              value={herbicide?.delivery_rate_of_mix?.toFixed(2)}
               variant="outlined"
               key={deliveryRateOfMixKey}
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
                   setCurrentHerbicide((prevFields) => ({
@@ -444,17 +446,17 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <TextField
               disabled={formDetails.disabled}
               className={classes.inputField}
-              type="text"
+              type="decimal"
               id="product-application-rate"
               label={
                 currentHerbicide?.herbicide_type_code === 'G'
                   ? 'Product Application Rate (g/ha)'
                   : 'Product Application Rate (L/ha)'
               }
-              value={product_application_rate}
+              value={product_application_rate?.toFixed(2)}
               key={noTankProductApplicationRateKey}
               variant="outlined"
-              onChange={(event) => {
+              onBlur={(event) => {
                 const input = event.target.value;
                 if (event.target.value === '') {
                   setproduct_application_rate(undefined);
@@ -483,10 +485,10 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   type="number"
                   id="product-application-rate"
                   // label="Product Application Rate (L/ha)"
-                  value={herbicide.product_application_rate}
+                  value={herbicide?.product_application_rate?.toFixed(2)}
                   variant="outlined"
                   key={noTankProductApplicationRateLHAKey}
-                  onChange={(event) => {
+                  onBlur={(event) => {
                     const input = event.target.value;
                     if (input === '') {
                       setCurrentHerbicide((prevFields) => ({
