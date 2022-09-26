@@ -161,7 +161,8 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
       return `i.${key} ${sortColumn['direction']}`;
     });
-    sqlStatement.append(SQL` ORDER BY ${order.join(', ')}`);
+    sqlStatement.append(` ORDER BY ${order.join(', ')}`);
+    //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
 
   if (searchCriteria.limit) {
