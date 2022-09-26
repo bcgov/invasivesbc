@@ -137,20 +137,19 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         }}>
         <Tooltip title="Find Me" placement="right-start">
           <span>
-          <IconButton
-            disabled={startTimer}
-            onClick={() => {
-              try {
-                zoomToLocation();
-              } catch (e) {
-                console.log('Map SetView error', e);
-              }
-            }}
-            className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
-            sx={{ color: '#000' }}>
-            <MyLocationIcon />
-
-          </IconButton>
+            <IconButton
+              disabled={startTimer}
+              onClick={() => {
+                try {
+                  zoomToLocation();
+                } catch (e) {
+                  console.log('Map SetView error', e);
+                }
+              }}
+              className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
+              sx={{ color: '#000' }}>
+              <MyLocationIcon />
+            </IconButton>
           </span>
         </Tooltip>
       </div>
@@ -179,20 +178,20 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         }}>
         <Tooltip title={isTracking ? 'Stop Tracking' : 'Track Me'} placement="right-start">
           <span>
-          <IconButton
-            disabled={startTimer}
-            onClick={() => {
-              setIsTracking(!isTracking);
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              classes.customHoverFocus +
-              ' ' +
-              (isTracking ? classes.selected : classes.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            <FollowTheSignsIcon />
-          </IconButton>
+            <IconButton
+              disabled={startTimer}
+              onClick={() => {
+                setIsTracking(!isTracking);
+              }}
+              className={
+                'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                classes.customHoverFocus +
+                ' ' +
+                (isTracking ? classes.selected : classes.notSelected)
+              }
+              sx={{ color: '#000' }}>
+              <FollowTheSignsIcon />
+            </IconButton>
           </span>
         </Tooltip>
       </div>
@@ -221,20 +220,21 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         }}>
         <Tooltip title={accuracyOn ? 'Hide Accuracy' : 'Show Accuracy'} placement="right-start">
           <span>
-          <IconButton
-            disabled={startTimer}
-            onClick={() => {
-              setAccuracyOn(!accuracyOn);
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              classes.customHoverFocus +
-              ' ' +
-              (accuracyOn ? classes.selected : classes.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            <AttributionIcon />
-          </IconButton></span>
+            <IconButton
+              disabled={startTimer}
+              onClick={() => {
+                setAccuracyOn(!accuracyOn);
+              }}
+              className={
+                'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                classes.customHoverFocus +
+                ' ' +
+                (accuracyOn ? classes.selected : classes.notSelected)
+              }
+              sx={{ color: '#000' }}>
+              <AttributionIcon />
+            </IconButton>
+          </span>
         </Tooltip>
       </div>
     );
@@ -262,20 +262,20 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         }}>
         <Tooltip title={showTopo ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
           <span>
-          <IconButton
-            disabled={startTimer}
-            onClick={() => {
-              setShowTopo(!showTopo);
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              classes.customHoverFocus +
-              ' ' +
-              (showTopo ? classes.selected : classes.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            {showTopo ? <LayersClearIcon /> : <LayersIcon />}
-          </IconButton>
+            <IconButton
+              disabled={startTimer}
+              onClick={() => {
+                setShowTopo(!showTopo);
+              }}
+              className={
+                'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                classes.customHoverFocus +
+                ' ' +
+                (showTopo ? classes.selected : classes.notSelected)
+              }
+              sx={{ color: '#000' }}>
+              {showTopo ? <LayersClearIcon /> : <LayersIcon />}
+            </IconButton>
           </span>
         </Tooltip>
       </div>
@@ -563,12 +563,12 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         ),
         [accuracyOn, startTimer]
       )}
-      {useMemo(
+      {/*useMemo(
         () => (
           <TrackMeButton />
         ),
         [isTracking, startTimer]
-      )}
+        )*/}
       {useMemo(
         () => (
           <>

@@ -280,13 +280,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             />
             <OnMapClickDetails clickDetailsEnabled={clickDetailsEnabled} />
 
+            */}
             {useMemo(
               () => (
                 <MapLocationControlGroup {...props} />
               ),
               [props.geometryState.geometry]
-
-            )} */}
+            )}
 
             {props.children}
           </MapRequestContextProvider>
