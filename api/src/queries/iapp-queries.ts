@@ -116,51 +116,24 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   }
 
   if (searchCriteria.order && searchCriteria.order?.length > 0) {
+    const columnMap = {
+      point_of_interest_id: 'site_id',
+      paper_file_id: 'site_paper_file_id',
+      jurisdictions: 'jurisdictions',
+      date_created: 'min_survey',
+      species_on_site: 'all_species_on_site',
+      date_last_surveyed: 'max_survey',
+      agencies: 'agencies',
+      bio_release: 'has_biological_treatments',
+      chem_treatment: 'has_chemical_treatments',
+      mech_treatment: 'has_mechanical_treatments',
+      bio_dispersal: 'has_biological_dispersals',
+      monitored: 'monitored'
+    }
     const order = searchCriteria.order.map((sortColumn) => {
-      let key = '';
-      switch(sortColumn['columnKey']) {
-        case 'point_of_interest_id':
-          key = 'site_id';
-          break;
-        case 'paper_file_id':
-          key = 'site_paper_file_id';
-          break;
-        case 'jurisdictions':
-          key = 'jurisdictions';
-          break;
-        case 'date_created':
-          key = 'min_survey';
-          break;
-        case 'species_on_site':
-          key = 'all_species_on_site';
-          break;
-        case 'date_last_surveyed':
-          key = 'max_survey';
-          break;
-        case 'agencies':
-          key = 'agencies';
-          break;
-        case 'bio_release':
-          key = 'has_biological_treatments';
-          break;
-        case 'chem_treatment':
-          key = 'has_chemical_treatments';
-          break;
-        case 'mech_treatment':
-          key = 'has_mechanical_treatments';
-          break;
-        case 'bio_dispersal':
-          key = 'has_biological_dispersals';
-          break;
-        case 'monitored':
-          key = 'monitored';
-          break;
-        default :
-          break;
-      }
-
-      return `i.${key} ${sortColumn['direction']}`;
+      return `i.${columnMap[sortColumn['columnKey']]} ${sortColumn['direction']}`;
     });
+      
     sqlStatement.append(` ORDER BY ${order.join(', ')}`);
     //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
