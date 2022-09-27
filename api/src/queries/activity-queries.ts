@@ -159,6 +159,23 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  */
 //NOSONAR
 export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean): SQLStatement => {
+  const columnMap = {
+    short_id: 'short_id', //needs a migration because of the payload stuff
+    type: 'activity_type',
+    subtype: 'activity_subtype',  //also in payload stuff (activity_type is too but different)
+    received_timestamp: 'received_timestamp',
+    jurisdiction: 'jurisdiction_display',
+    species_positive: 'species_positive_full',
+    species_negative: 'species_negative_full',
+    species_treated: 'species_treated_full',
+    created_by: 'created_by',
+    updated_by: 'updated_by',
+    agency: 'agency',
+    regional_invasive_species_organization_areas: 'regional_invasive_species_organization_areas',
+    regional_districts: 'regional_districts',
+    biogeoclimatic_zones: 'biogeoclimatic_zones',
+    elevation: 'elevation'
+  }
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature) {
@@ -446,8 +463,12 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     `);
   }
 
-  if (searchCriteria.order?.length) {
-    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  if (searchCriteria.order && searchCriteria.order?.length > 0) {
+    const order = searchCriteria.order.map((column) => {
+      return `${columnMap[column['columnKey']]} ${column['direction']}`;
+    })
+    sqlStatement.append(` ORDER BY ${order.join(', ')}`);
+    //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
 
   if (searchCriteria.limit) {
