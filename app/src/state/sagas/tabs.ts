@@ -53,7 +53,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
         },
         {
           label: 'Current IAPP Site',
-          path: '/home/iapp/',
+          path: '/home/iapp',
           icon: TabIconName.IAPP
         }
       );
@@ -69,7 +69,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
     if (isMasterAdmin) {
       tabConfig.push({
         label: 'Admin',
-        path: '/admin/useraccess',
+        path: '/home/admin',
         icon: TabIconName.AdminPanelSettings
       });
     }

@@ -22,9 +22,9 @@ const PublicLayout: React.FC<IPublicLayoutProps> = (props) => {
 
   return (
     <Box mb={2} height="inherit" width="inherit" display="flex" flexDirection="column">
-      <CssBaseline />
       <main className={classes.mainContent}>
         {React.Children.map(props.children, (child: any) => {
+          // CLONING HOMEROUTER
           return React.cloneElement(child, { classes: classes });
         })}
       </main>

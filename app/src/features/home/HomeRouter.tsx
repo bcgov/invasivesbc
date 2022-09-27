@@ -15,19 +15,21 @@ import { ReferenceIAPPSitePage } from './references/ReferenceIAPPSitePage';
 import LandingPage from './landing/LandingPage';
 import { EmbeddedReportsPage } from './reports/EmbeddedReportsPage';
 import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
+import UserAccessPage from 'features/admin/userAccess/UserAccessPage';
 
 interface IHomeRouterProps {
   classes: any;
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
+  // PROPS: CLASSES FROM PUBLICLAYOUT
+  console.log('GOT PROPS FOR HOMEROUTER: ', props);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
 
   return (
     <Switch>
-      <Redirect exact from="/" to="/home/landing" />
       <PublicRoute
         layout={HomeLayout}
         path="/home/map*"
@@ -115,6 +117,14 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         path="/home/iapp/:id?"
         title={getTitle('IAPP Site')}
         component={ReferenceIAPPSitePage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/admin"
+        title={getTitle('User Access')}
+        component={UserAccessPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}

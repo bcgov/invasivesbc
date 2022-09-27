@@ -48,8 +48,6 @@ import {
 } from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
-import { selectUserInfo } from '../../state/reducers/userInfo';
-import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
 import { selectTabs } from 'state/reducers/tabs';
@@ -141,7 +139,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const dispatch = useDispatch();
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
-  const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   const connected = useSelector(selectNetworkConnected);
   const { showLoggedInTabs, activeTab, initialized: tabsInitialized, tabConfig } = useSelector(selectTabs);
 
@@ -251,102 +248,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       }
     });
   };
-
-  // When we navigate manually in the browser, update the active tab
-  // useEffect(() => {
-  //   // Fallback to set the active tab based on the path if a user loads to a specific page
-  //   console.log('USEEFFECT LINE 264 HIT! SETTING CURRENT TAB TO ' + getActiveTab(history.location.pathname));
-  //   dispatch({
-  //     type: TABS_SET_ACTIVE_TAB_REQUEST,
-  //     payload: {
-  //       activeTab: getActiveTab(history.location.pathname)
-  //     }
-  //   });
-  // }, [history.location.pathname]);
-
-  // When we first load onto the page, set the active tab based on the tab config
-
-  // useEffect(() => {
-  //   console.log('Path changed. It is now ' + history.location.pathname);
-  // }, [history.location.pathname]);
-
-  // useEffect(() => {
-  //   // If tabs are initialized and our tabConfig is set up and our active tab is a valid target that is not the page we are currently on, then redirect to the active tab
-  //   if (tabsInitialized && tabConfig.length > activeTab && history.location.pathname !== tabConfig[activeTab].path) {
-  //     console.log('Setting path to ' + tabConfig[activeTab].path);
-  //     history.push(tabConfig[activeTab].path);
-  //   }
-  // }, [activeTab, tabsInitialized, tabConfig, history.location.pathname]);
-
-  // useEffect(() => {
-  //   const setTabConfigBasedOnRoles = () => {
-  //     setTabConfig(() => {
-  //       const tabsUserHasAccessTo: ITabConfig[] = [];
-  //       if (tabsInitialized) {
-  //         tabsUserHasAccessTo.push({
-  //           label: 'Home',
-  //           path: '/home/landing',
-  //           icon: <Home fontSize={'small'} />
-  //         });
-
-  //         tabsUserHasAccessTo.push({
-  //           label: 'Map',
-  //           path: '/home/map',
-  //           icon: <Map fontSize={'small'} />
-  //         });
-
-  //         if (showLoggedInTabs) {
-  //           tabsUserHasAccessTo.push({
-  //             label: 'Recorded Activities',
-  //             path: '/home/activities',
-  //             icon: <HomeWork fontSize={'small'} />
-  //           });
-  //         }
-
-  //         if (showLoggedInTabs) {
-  //           tabsUserHasAccessTo.push({
-  //             label: 'Current Activity',
-  //             path: '/home/activity',
-  //             icon: <Assignment fontSize={'small'} />
-  //           });
-  //         }
-
-  //         if (showLoggedInTabs) {
-  //           tabsUserHasAccessTo.push({
-  //             label: 'Current IAPP Site',
-  //             path: '/home/iapp/',
-  //             icon: (
-  //               <img
-  //                 alt="iapp logo"
-  //                 src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
-  //                 style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
-  //               />
-  //             )
-  //           });
-  //         }
-
-  //         if (isAdmin) {
-  //           tabsUserHasAccessTo.push({
-  //             label: 'Admin',
-  //             path: '/admin/useraccess',
-  //             icon: <AdminPanelSettingsIcon fontSize={'small'} />
-  //           });
-  //         }
-
-  //         if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
-  //           tabsUserHasAccessTo.push({
-  //             label: 'Reports',
-  //             path: '/home/reports',
-  //             icon: <AssessmentIcon fontSize={'small'} />
-  //           });
-  //         }
-  //       }
-  //       return tabsUserHasAccessTo;
-  //     });
-  //   };
-  //   setTabConfigBasedOnRoles();
-  //   return () => setTabConfig([]);
-  // }, [showLoggedInTabs, isAdmin, tabsInitialized]);
 
   return useMemo(() => {
     if (!tabConfig || !tabConfig.length) {
