@@ -1,18 +1,23 @@
-import AdminRouter from 'features/admin/AdminRouter';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Switch, useHistory } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
-import PublicLayout from './layouts/PublicLayout';
+import PublicLayout from './utils/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
 import { useSelector } from './state/utilities/use_selector';
 import { selectConfiguration } from './state/reducers/configuration';
+import NewAppRoute from './router/NewAppRoute';
+import LandingPage from 'features/home/landing/LandingPage';
 
 interface IAppRouterProps {
   deviceInfo: any;
-  keycloak: any;
-  keycloakConfig: any;
+}
+
+export enum AccessLevel {
+  PUBLIC = 'PUBLIC',
+  USER = 'USER',
+  ADMIN = 'ADMIN'
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
@@ -35,7 +40,12 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
       <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
       <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout} />
       <AppRoute path="/home" title={getTitle('Home')} component={HomeRouter} layout={PublicLayout} />
-      <AppRoute path="/admin" title={getTitle('Admin')} component={AdminRouter} layout={PublicLayout} />
+      {/* <NewAppRoute
+        accessLevel={AccessLevel.PUBLIC}
+        path="/home/landing"
+        title={getTitle('Landing')}
+        component={LandingPage}
+      /> */}
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

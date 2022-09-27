@@ -11,11 +11,14 @@ export type IAppRouteProps = RouteProps & {
 const AppRoute: React.FC<IAppRouteProps> = ({ component: Component, layout, title, props, ...rest }) => {
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
   document.title = title;
+  console.log('PROPS IN APPROUTE: ', props);
   return (
     <Route
       {...rest}
       render={() => (
+        // PUBLICLAYOUT
         <Layout>
+          {/* HOMEROUTER GETS CLASSES PROP FROM PUBLICLAYOUT AFTER CLONE */}
           <Component {...props} />
         </Layout>
       )}

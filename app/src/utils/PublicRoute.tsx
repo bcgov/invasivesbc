@@ -16,6 +16,15 @@ interface IPublicRouteProps extends RouteProps {
  * @return {*}
  */
 const PublicRoute: React.FC<IPublicRouteProps> = (props) => {
+  /* PROPS INCLUDE: 
+  - exact
+  - layout={HomeLayout}
+  - path="/home/landing"
+  - title={getTitle('Welcome')}
+  - component={LandingPage})}
+  - componentProps={props} (PROPS IS CLASSES FROM HOMEROUTER)
+  */
+  console.log('PROPS IN PUBLICROUTE: ', props);
   const errorContext = useContext(ErrorContext);
   const [hasErrors, setHasErrors] = React.useState(false);
   let { component: Component, layout: Layout, ...rest } = props;
@@ -33,7 +42,9 @@ const PublicRoute: React.FC<IPublicRouteProps> = (props) => {
     <Route
       {...rest}
       render={(renderProps) => {
+        console.log('RENDERPROPS IN PUBLICROUTE', renderProps);
         return (
+          // HOMELAYOUT
           <Layout>
             {hasErrors &&
               errorContext.errorArray.map((error: any) => {
@@ -46,6 +57,7 @@ const PublicRoute: React.FC<IPublicRouteProps> = (props) => {
                   />
                 );
               })}
+            {/* PAGE TO RENDER */}
             <Component {...renderProps} {...rest.componentProps} />
           </Layout>
         );
