@@ -462,14 +462,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">
+            <Typography align="left">
               Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
             </Typography>
-            <Typography align="center">
-              Date created:{' '}
+            <Typography style={{ display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word' }} align="left">
+              Date created:
               {activityInStore.activity.date_created
                 ? new Date(activityInStore.activity.date_created).toString()
                 : 'unknown'}
+              {'\n'}Created by: {activityInStore.activity.created_by ? activityInStore.activity.created_by : 'unknown'}
+              {'\n'}Date modified:{' '}
+              {activityInStore.activity.date_created
+                ? new Date(activityInStore.activity.date_created).toString()
+                : 'unknown'}
+              {'\n'}Modified by: {activityInStore.activity.updated_by ? activityInStore.activity.updated_by : 'unknown'}
             </Typography>
           </Box>
         </>
