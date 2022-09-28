@@ -445,13 +445,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           </Typography>
         </>
       )}
-
       {activityInStore.activity && (
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
               {activityInStore.activity.activity_subtype &&
-              activityInStore.activity.activity_subtype === ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant
+              activityInStore.activity.activity_subtype == ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant
                 ? 'Activity Monitoring Chemical Terrestrial or Aquatic Plant'
                 : activityInStore.activity.activity_subtype
                     .replace(/([A-Z])/g, ' $1')
