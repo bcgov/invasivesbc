@@ -255,7 +255,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
 
-  const { darkmode } = useSelector(selectUserSettings);
+  const { themeMode } = useSelector(selectUserSettings);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
@@ -463,10 +463,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   <MenuItem>
                     <Switch
                       color="secondary"
-                      checked={darkmode}
-                      checkedIcon={darkmode ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      checked={themeMode === 'dark'}
+                      checkedIcon={themeMode === 'dark' ? <Brightness2Icon /> : <WbSunnyIcon />}
                       onChange={() => {
-                        dispatch({ type: darkmode ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE });
+                        dispatch({
+                          type: themeMode === 'dark' ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE
+                        });
                       }}
                     />
                     Theme
@@ -565,10 +567,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={darkmode}
-                    checkedIcon={darkmode ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checked={themeMode === 'dark'}
+                    checkedIcon={themeMode === 'dark' ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      dispatch({ type: darkmode ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE });
+                      dispatch({
+                        type: themeMode === 'dark' ? USER_SETTINGS_DISABLE_DARK_MODE : USER_SETTINGS_ENABLE_DARK_MODE
+                      });
                     }}
                   />
                 }

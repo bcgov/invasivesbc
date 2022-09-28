@@ -21,7 +21,7 @@ interface IAppRouterProps {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const { DEBUG } = useSelector(selectConfiguration);
   const { location } = useHistory();
-  const { darkmode } = useSelector(selectUserSettings);
+  const { themeMode } = useSelector(selectUserSettings);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -33,7 +33,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
     }
   }, [location.pathname, location.search, location.state, DEBUG]);
 
-  const theme = createTheme(getDesignTokens(darkmode) as ThemeOptions);
+  const theme = createTheme(getDesignTokens(themeMode) as ThemeOptions);
 
   return (
     <ThemeProvider theme={theme}>

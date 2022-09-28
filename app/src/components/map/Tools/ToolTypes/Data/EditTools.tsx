@@ -344,7 +344,7 @@ const EditTools = (props: any) => {
       )}
       {/*<IconButton
         //ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        className={themeMode === 'dark' ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={toggleMode}>
         {multiMode ? (
           <img src={multi} style={{ width: 32, height: 32 }} />

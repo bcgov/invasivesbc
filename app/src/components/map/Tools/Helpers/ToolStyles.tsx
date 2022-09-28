@@ -1,5 +1,5 @@
 import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material';
+import { PaletteMode, Theme } from '@mui/material';
 
 export const toolStyles = makeStyles((theme: Theme) => ({
   toolBtn: {
@@ -138,32 +138,32 @@ export const layerPickerStyles = makeStyles((theme: Theme) => ({
  * Specify theme for selected mode text and background to be used
  * in className
  * @param mode is true; mode = Point otherwise mode = Within Radius
- * @param themeType if true in dark mode else in light mdoe
+ * @param themeMode PaletteMode property of dark or light
  * @returns class
  */
-export const assignPointModeTheme = (mode: boolean, themeType: boolean) => {
-  return mode && themeType ? toolStyles().popupModeSelectedDark : toolStyles().popupModeSelectedLight;
+export const assignPointModeTheme = (mode: boolean, themeMode: PaletteMode) => {
+  return mode && themeMode === 'dark' ? toolStyles().popupModeSelectedDark : toolStyles().popupModeSelectedLight;
 };
 
 /**
  * Specify theme for non selected mode text to be used in style
  * @param mode is true; mode = Point otherwise mode = Within Radius
- * @param themeType if true in dark mode else in light mdoe
+ * @param themeMode PaletteMode property of dark or light
  * @returns color style
  */
-export const assignPtDefaultTheme = (mode: boolean, themeType: boolean) => {
-  return { color: mode && (themeType ? '#fff' : 'rgba(0, 0, 0, 0.87)') };
+export const assignPtDefaultTheme = (mode: boolean, themeMode: PaletteMode) => {
+  return { color: mode && (themeMode === 'dark' ? '#fff' : 'rgba(0, 0, 0, 0.87)') };
 };
 
 /**
  * Specify theme for text to be used in style
- * @param themeType if true in dark mode else in light mdoe
+ * @param themeMode PaletteMode property of dark or light
  * @returns color style
  */
-export const assignTextDefaultTheme = (themeType: boolean) => {
-  return { color: themeType ? '#fff' : 'rgba(0, 0, 0, 0.87)' };
+export const assignTextDefaultTheme = (themeMode: PaletteMode) => {
+  return { color: themeMode === 'dark' ? '#fff' : 'rgba(0, 0, 0, 0.87)' };
 };
 
-export const assignPaperBGTheme = (themeType: boolean) => {
-  return { backgroundColor: themeType ? '#424242' : '#fff' };
+export const assignPaperBGTheme = (themeMode: PaletteMode) => {
+  return { backgroundColor: themeMode === 'dark' ? '#424242' : '#fff' };
 };

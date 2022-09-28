@@ -1,16 +1,16 @@
 import { WidgetProps } from '@rjsf/core';
 import chroma from 'chroma-js';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import React, { useContext, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { MultipleSelect } from 'react-select-material-ui';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   // @ts-ignore
   const enumOptions = (props.schema.options as any[]) || (props.options.enumOptions as any[]);
   const [focused, setFocused] = useState(false);
   const [hasValues, setHasValues] = useState(false);
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
+  const { themeMode } = useSelector(selectUserSettings);
 
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
@@ -37,7 +37,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
 
   if (enumOptions) {
     enumOptions.forEach(({ value, label }) => {
-      optionArr.push({ label: label, value: value, color: themeType ? '#FFF' : '#000' });
+      optionArr.push({ label: label, value: value, color: themeMode === 'dark' ? '#FFF' : '#000' });
     });
   }
 
@@ -86,7 +86,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       const color = chroma(data.color);
       return {
         ...styles,
-        backgroundColor: themeType ? '#424242' : '#FFF',
+        backgroundColor: themeMode === 'dark' ? '#424242' : '#FFF',
         color: isDisabled ? '#ccc' : isSelected && data.color,
         cursor: isDisabled ? 'not-allowed' : 'default',
         ':active': {
@@ -98,20 +98,20 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     multiValue: (styles, { data }) => {
       return {
         ...styles,
-        backgroundColor: themeType ? '#1C1C1C' : '#FFF'
+        backgroundColor: themeMode === 'dark' ? '#1C1C1C' : '#FFF'
       };
     },
     multiValueLabel: (styles, { data }) => ({
       ...styles,
-      color: props.disabled ? '#A1A1A1' : themeType ? '#FFF' : '#000'
+      color: props.disabled ? '#A1A1A1' : themeMode === 'dark' ? '#FFF' : '#000'
     }),
     multiValueRemove: (styles, { data }) => {
       return {
         ...styles,
-        color: themeType ? '#FFF' : '#000',
+        color: themeMode === 'dark' ? '#FFF' : '#000',
         ':hover': {
-          backgroundColor: themeType ? '#FFF' : '#223f75',
-          color: themeType ? '#424242' : '#FFF'
+          backgroundColor: themeMode === 'dark' ? '#FFF' : '#223f75',
+          color: themeMode === 'dark' ? '#424242' : '#FFF'
         }
       };
     }
@@ -125,7 +125,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
         InputLabelProps={{
           style: {
             transform: focused === true ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
-            backgroundColor: themeType ? '#424242' : 'white',
+            backgroundColor: themeMode === 'dark' ? '#424242' : 'white',
             paddingInline: focused === true ? '5px' : '0px',
             zIndex: focused === true ? 1 : 0,
             position: 'absolute'

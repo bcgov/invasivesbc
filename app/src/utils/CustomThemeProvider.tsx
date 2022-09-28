@@ -15,24 +15,23 @@ export const ThemeContext = React.createContext<IThemeContext>({
 
 const CustomThemeProvider: React.FC = (props) => {
   const [themeType, setThemeType] = React.useState(false);
-  const { darkmode } = useSelector(selectUserSettings);
 
   // Update the theme only if the mode changes
   // const theme = React.useMemo(() => createTheme(getDesignTokens(mode) as ThemeOptions), [mode]);
-  const theme = createTheme(getDesignTokens(darkmode) as ThemeOptions);
+  // const theme = createTheme(getDesignTokens(darkmode) as ThemeOptions);
 
   return (
     <ThemeContext.Provider value={{ themeType, setThemeType }}>
-      <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+      {/* <ThemeProvider theme={theme}>{props.children}</ThemeProvider> */}
     </ThemeContext.Provider>
   );
 };
 
-export const getDesignTokens = (darkmode: boolean) => {
+export const getDesignTokens = (mode: PaletteMode) => {
   return {
     palette: {
-      mode: darkmode ? 'dark' : 'light',
-      ...(!darkmode
+      mode,
+      ...(mode === 'light'
         ? {
             // palette values for light mode
             common: {

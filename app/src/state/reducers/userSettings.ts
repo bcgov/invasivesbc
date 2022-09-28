@@ -1,3 +1,4 @@
+import { PaletteMode } from '@mui/material';
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
 import { DocType } from 'constants/database';
 import {
@@ -60,7 +61,7 @@ class UserSettingsState {
     }
   ];
 
-  darkmode: boolean;
+  themeMode: PaletteMode;
 
   constructor() {
     this.initialized = false;
@@ -70,7 +71,7 @@ class UserSettingsState {
       recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
       recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
     };
-    this.darkmode = false;
+    this.themeMode = 'light';
   }
 }
 
@@ -150,13 +151,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_ENABLE_DARK_MODE: {
         return {
           ...state,
-          darkmode: true
+          themeMode: 'dark'
         };
       }
       case USER_SETTINGS_DISABLE_DARK_MODE: {
         return {
           ...state,
-          darkmode: false
+          themeMode: 'light'
         };
       }
 

@@ -17,7 +17,6 @@ import { Autocomplete } from '@mui/material';
 import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -31,7 +30,6 @@ export const NewRecordRecordPagae = (props) => {
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
   const history = useHistory();
 
   const authState = useSelector(selectAuth);
