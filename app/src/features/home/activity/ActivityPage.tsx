@@ -472,9 +472,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 : 'unknown'}
               {'\n'}Created by: {activityInStore.activity.created_by ? activityInStore.activity.created_by : 'unknown'}
               {'\n'}Date modified:{' '}
-              {activityInStore.activity.date_created
-                ? new Date(activityInStore.activity.date_created).toString()
-                : 'unknown'}
+              {activityInStore.activity.received_timestamp
+                ? new Date(activityInStore.activity.received_timestamp).toString()
+                : new Date(activityInStore.activity.date_created).toString()}
               {'\n'}Modified by: {activityInStore.activity.updated_by ? activityInStore.activity.updated_by : 'unknown'}
             </Typography>
           </Box>
