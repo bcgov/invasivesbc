@@ -311,15 +311,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   //TODO redux copy and paste
   const pasteFormData = async () => {
-    console.log('Pasting form data');
-    /* await updateDoc({
-      formData: retrieveFormDataFromSession(doc),
-      status: ActivityStatus.DRAFT,
-      dateUpdated: new Date(),
-      formStatus: ActivityStatus.DRAFT
+    dispatch({
+      type: ACTIVITY_SAVE_REQUEST,
+      payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: retrieveFormDataFromSession() }
     });
     setAlertPastedOpen(true);
-    */
   };
 
   /**
