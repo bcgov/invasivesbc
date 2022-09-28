@@ -393,7 +393,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     );
                   }}
                   isDisabled={isDisabled}
-                  activitySubtype={props.activity.activity_subtype}
+                  activity_subtype={props.activity.activity_subtype}
                   onCopy={props.copyFormData ? () => props.copyFormData() : null}
                   onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
                   {...props}

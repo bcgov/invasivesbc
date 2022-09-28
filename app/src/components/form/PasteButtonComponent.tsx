@@ -6,7 +6,7 @@ export interface IPasteButtonComponentProps {
   onSubmit?: Function;
   onCopy?: Function;
   onPaste?: Function;
-  activitySubtype?: string;
+  activity_subtype?: string;
   hideCheckFormForErrors?: boolean;
   onSave?: Function;
   onSubmitAsOfficial?: Function;
@@ -22,7 +22,7 @@ const PasteButtonComponent: React.FC<IPasteButtonComponentProps> = (props) => {
     <>
       <Grid container>
         {sessionStorage.getItem('copiedFormData') &&
-          sessionStorage.getItem('activitySubtype') === props.activitySubtype &&
+          sessionStorage.getItem('copiedSubType') === props.activity_subtype &&
           props.onPaste && (
             <Grid item>
               <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>

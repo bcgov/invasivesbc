@@ -5,7 +5,7 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
   and stores both into session storage for pasting ability later
 */
 export function saveFormDataToSession(formData: any, activitySubtype: string): void {
-  const activityData = { ...formData.activity_data };
+  /*const activityData = { ...formData.activity_data };
   const activitySubtypeData = { ...formData.activity_subtype_data };
 
   // call business rule function to exclude certain fields of the activity_data of the form data
@@ -15,9 +15,10 @@ export function saveFormDataToSession(formData: any, activitySubtype: string): v
     ...formData,
     activity_data: activityDataToCopy
   };
+  */
 
-  sessionStorage.setItem('copiedFormData', JSON.stringify(formDataToCopy));
-  sessionStorage.setItem('activitySubtype', activitySubtype);
+  sessionStorage.setItem('copiedFormData', JSON.stringify(formData));
+  sessionStorage.setItem('copiedSubType', activitySubtype);
 }
 
 /*
@@ -25,13 +26,10 @@ export function saveFormDataToSession(formData: any, activitySubtype: string): v
   and return it after ensuring the activity_data is not completely overriden
   (due to business rule)
 */
-export function retrieveFormDataFromSession(activity: any): any {
-  const formData = activity.formData;
-  const activityData = { ...formData.activity_data };
-  const newActivityData = { ...activityData, ...JSON.parse(sessionStorage.getItem('copiedFormData')).activity_data };
+export function retrieveFormDataFromSession(): any {
+  const newActivityData = { ...JSON.parse(sessionStorage.getItem('copiedFormData')) };
 
   return {
-    ...JSON.parse(sessionStorage.getItem('copiedFormData')),
-    activity_data: newActivityData
+    ...newActivityData
   };
 }
