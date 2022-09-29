@@ -16,7 +16,11 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST } from 'state/actions';
+import {
+  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST
+} from 'state/actions';
 import { useDispatch } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
@@ -78,9 +82,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
-  return (
-    <PageContainer originalActivityPageClassName={classes.pageContainer} />
-  );
+  return <PageContainer originalActivityPageClassName={classes.pageContainer} />;
 };
 
 // main page component - moved everything in here so it could be wrapped in a context local to this page.
@@ -208,15 +210,15 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (userSettings.selectedRecord?.description !== undefined &&
-            userSettings.selectedRecord?.description),
+          (userSettings.selectedRecord?.description !== undefined && userSettings.selectedRecord?.description),
         disabled: userSettings.selectedRecord?.description === undefined,
         hidden: !userSettings.selectedRecord,
         onClick: async () => {
           try {
             dispatch({
               type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: userSettings?.selectedRecord?.id }})
+              payload: { activeActivity: userSettings?.selectedRecord?.id }
+            });
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
@@ -349,9 +351,10 @@ const PageContainer = (props) => {
             id="show-records-tab"
             className={classes.toggleButton}
             color={'warning'}
+            sx={{ color: userSettings.themeMode === 'dark' && '#fff' }}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
+              dispatch({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
             }}
             variant={'contained'}
             endIcon={
@@ -367,7 +370,7 @@ const PageContainer = (props) => {
         </Box>
         <MenuOptions
           sx={{
-            backgroundColor: '#223f75',
+            backgroundColor: userSettings.themeMode === 'dark' ? '#272727' : '#223f75',
             width: '100%',
             padding: '5px',
             height: 'auto',
