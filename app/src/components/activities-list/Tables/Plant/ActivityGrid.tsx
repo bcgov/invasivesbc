@@ -20,6 +20,8 @@ import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
 import SaveIcon from '@mui/icons-material/Save';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
@@ -228,6 +230,7 @@ const ActivityGrid = (props) => {
   const [save, setSave] = useState(0);
   const [cursorPos, setCursorPos] = useState(0);
   const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
@@ -312,7 +315,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns]);
+  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns, filters, pageNumber]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -326,7 +329,7 @@ const ActivityGrid = (props) => {
       props.setName,
       false,
       filters.enabled ? filters : null,
-      0,
+      pageNumber - 1, //limit indexed at 0
       20,
       sortColumns.length ? [...sortColumns] : null
     );
@@ -353,7 +356,7 @@ const ActivityGrid = (props) => {
       props.setName,
       true,
       filters.enabled ? filters : null,
-      0,
+      pageNumber - 1, //limit indexed at 0
       20,
       sortColumns.length ? [...sortColumns] : []
     );
@@ -633,6 +636,27 @@ const ActivityGrid = (props) => {
     });
   };
 
+  function Pagination() {
+    return <div>
+      {pageNumber <= 1 ? <Button disabled><ArrowLeftIcon></ArrowLeftIcon></Button> : 
+        <Button 
+        onClick={(e) => {
+          e.stopPropagation();
+          setPageNumber(pageNumber - 1);
+        }}>
+          <ArrowLeftIcon></ArrowLeftIcon>
+        </Button>
+      }
+      <span>{pageNumber}</span>
+      <Button onClick={(e) => {
+        e.stopPropagation();
+        setPageNumber(pageNumber + 1);
+      }}>
+        <ArrowRightIcon></ArrowRightIcon>
+      </Button>
+    </div>;
+  }
+
   return useMemo(
     () => (
       <Box key={'gridbox_' + props.setName} maxHeight="100%" paddingBottom="20px">
@@ -736,6 +760,7 @@ const ActivityGrid = (props) => {
                 onSortColumnsChange={setSortColumns}
                 components={{ rowRenderer: RowRenderer }}
               />
+              <Pagination></Pagination>
             </div>
           </FilterContext.Provider>
         )}
