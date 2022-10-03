@@ -70,6 +70,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     inlineSize: '100%',
     padding: '4px',
     fontSize: '14px'
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   }
 }));
 
@@ -637,9 +642,9 @@ const ActivityGrid = (props) => {
   };
 
   function Pagination() {
-    return <div>
-      {pageNumber <= 1 ? <Button disabled><ArrowLeftIcon></ArrowLeftIcon></Button> : 
-        <Button 
+    return <div className={classes.pagination}>
+      {pageNumber <= 1 ? <Button disabled sx={{ m: 1, p: 1 }} size={'small'}><ArrowLeftIcon></ArrowLeftIcon></Button> : 
+        <Button sx={{ m: 1, p: 1 }} size={'small'}
         onClick={(e) => {
           e.stopPropagation();
           setPageNumber(pageNumber - 1);
@@ -648,7 +653,8 @@ const ActivityGrid = (props) => {
         </Button>
       }
       <span>{pageNumber}</span>
-      <Button onClick={(e) => {
+      <Button sx={{ m: 1, p: 1 }} size={'small'}
+      onClick={(e) => {
         e.stopPropagation();
         setPageNumber(pageNumber + 1);
       }}>
