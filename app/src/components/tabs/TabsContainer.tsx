@@ -332,7 +332,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                       if (tab && tab.label)
                         return (
                           <Tab
-                            style={{ fontSize: '.7rem', fontWeight: 'bold' }}
+                            style={{
+                              fontSize: '.7rem',
+                              fontWeight: 'bold',
+                              justifyContent: 'space-between',
+                              paddingBottom: '15px',
+                              paddingTop: '15px'
+                            }}
                             color="primary"
                             label={tab.label}
                             key={tab.label.split(' ').join('_')}

@@ -7,7 +7,7 @@ import { selectAuth } from '../state/reducers/auth';
 import { AccessLevel } from '../AppRouter';
 import CheckAccess from './CheckAccess';
 import HomeLayout from 'features/home/HomeLayout';
-import { Box, CssBaseline, Theme } from '@mui/material';
+import { Box, CircularProgress, CssBaseline, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -51,7 +51,6 @@ const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
   return (
     <Route
       render={(renderProps) => {
-        console.log('RENDERPROPS IN NEWAPPROUTE: ', renderProps);
         return (
           <>
             {
@@ -77,7 +76,9 @@ const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
                   </HomeLayout>
                 </>
               ) : (
-                <h1>Loading...</h1>
+                <div>
+                  <CircularProgress />
+                </div>
               )
             }
           </>
