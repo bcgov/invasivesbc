@@ -22,6 +22,7 @@ import { DocType } from 'constants/database';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
@@ -643,7 +644,16 @@ const ActivityGrid = (props) => {
 
   function Pagination() {
     return <div className={classes.pagination}>
-      {pageNumber <= 1 ? <Button disabled sx={{ m: 1, p: 1 }} size={'small'}><ArrowLeftIcon></ArrowLeftIcon></Button> : 
+      {pageNumber <= 1 ? <Button disabled sx={{ m: 0, p: 0 }} size={'small'}><DoubleArrowLeftIcon></DoubleArrowLeftIcon></Button> : 
+        <Button sx={{ m: 1, p: 1 }} size={'small'}
+        onClick={(e) => {
+          e.stopPropagation();
+          setPageNumber(1);
+        }}>
+          <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+        </Button>
+      }
+      {pageNumber <= 1 ? <Button disabled sx={{ m: 0, p: 0 }} size={'small'}><ArrowLeftIcon></ArrowLeftIcon></Button> : 
         <Button sx={{ m: 1, p: 1 }} size={'small'}
         onClick={(e) => {
           e.stopPropagation();
