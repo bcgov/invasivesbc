@@ -255,7 +255,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   const handleRecordTypeChange = (event: any) => {
-    setNewRecordDialogState({ ...newRecordDialogState, recordType: event.target.value });
+    setNewRecordDialogState({ ...newRecordDialogState, recordType: event.target.value, recordSubtype: '' });
   };
 
   const handleRecordSubtypeChange = (event: any) => {
