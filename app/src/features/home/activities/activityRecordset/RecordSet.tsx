@@ -35,6 +35,7 @@ export const RecordSet = (props) => {
   const [recordSetName, setRecordSetName] = useState(null);
   const [isSelected, setIsSelected] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
@@ -79,6 +80,7 @@ export const RecordSet = (props) => {
           break;
       }
     }
+    setIsInitialized(true);
   };
 
   const updatePropertyStates = (propertyNames: string[]) => {
@@ -116,16 +118,26 @@ export const RecordSet = (props) => {
         }
       });
 
-      dispatch({
-        type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
-        payload: {
-          updatedSet: {
-              ...initialState,
-              ...newState
-          },
-          setName: props.setName
-        }
-      });
+      if (
+        (newState['expanded'] !== initialState['expanded']) ||
+        (newState['drawOrder'] !== initialState['drawOrder']) ||
+        (newState['mapToggle'] !== initialState['mapToggle']) ||
+        (newState['color'] !== initialState['color']) ||
+        (newState['recordSetName'] !== initialState['recordSetName']) ||
+        (newState['isSelected'] !== initialState['isSelected']) ||
+        (newState['advancedFilters'] !== initialState['advancedFilters'])
+      ) {
+        dispatch({
+          type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+          payload: {
+            updatedSet: {
+                ...initialState,
+                ...newState
+            },
+            setName: props.setName
+          }
+        });
+      }
     }
   };
 
@@ -141,15 +153,17 @@ export const RecordSet = (props) => {
   }, []);
 
   useEffect(() => {
-    updatePropertyStates([
-      'expanded',
-      'mapToggle',
-      'color',
-      'recordSetName',
-      'advancedFilters',
-      'drawOrder',
-      'isSelected'
-    ]);
+    if (isInitialized) {
+      updatePropertyStates([
+        'expanded',
+        'mapToggle',
+        'color',
+        'recordSetName',
+        'advancedFilters',
+        'drawOrder',
+        'isSelected'
+      ]);
+    }
   }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder, isSelected]);
 
   return useMemo(
