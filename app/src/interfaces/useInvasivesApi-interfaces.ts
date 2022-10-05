@@ -78,10 +78,10 @@ export interface IActivitySearchCriteria {
   /**
    * Activity requested return order.
    *
-   * @type {object[]}
+   * @type {string[]}
    * @memberof IActivitySearchCriteria
    */
-  order?: object[];
+  order?: string[];
   /**
    * Identifier of the original author of the activity
    *
@@ -302,10 +302,10 @@ export interface IPointOfInterestSearchCriteria {
   /**
    * Point of Interest requested return order.
    *
-   * @type {object[]}
+   * @type {string[]}
    * @memberof IPointOfInterestSearchCriteria
    */
-  order?: object[];
+  order?: string[];
   /**
    * Point of Interest - should query be local or server
    *
