@@ -270,7 +270,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               />
             )}
 
-            {/* <MapResizer />
+            <MapResizer />
+            {/*
             <ToggleClickDetailsButton
               clickDetailsEnabled={clickDetailsEnabled}
               setClickDetailsEnabled={setClickDetailsEnabled}
