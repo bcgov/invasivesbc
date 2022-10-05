@@ -208,8 +208,27 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     `);
   }
 
-  if (searchCriteria.order?.length) {
-    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  if (searchCriteria.order && searchCriteria.order?.length > 0) {
+    const columnMap = {
+      point_of_interest_id: 'site_id',
+      paper_file_id: 'site_paper_file_id',
+      jurisdictions: 'jurisdictions',
+      date_created: 'min_survey',
+      species_on_site: 'all_species_on_site',
+      date_last_surveyed: 'max_survey',
+      agencies: 'agencies',
+      bio_release: 'has_biological_treatments',
+      chem_treatment: 'has_chemical_treatments',
+      mech_treatment: 'has_mechanical_treatments',
+      bio_dispersal: 'has_biological_dispersals',
+      monitored: 'monitored'
+    }
+    const order = searchCriteria.order.map((sortColumn) => {
+      return `i.${columnMap[sortColumn['columnKey']]} ${sortColumn['direction']}`;
+    });
+      
+    sqlStatement.append(` ORDER BY ${order.join(', ')}`);
+    //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
 
   if (searchCriteria.limit) {

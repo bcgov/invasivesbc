@@ -20,6 +20,7 @@ export class PointOfInterestPostRequestBody {
 
   species_positive: string[];
   species_negative: string[];
+  order: any[];
 
   received_timestamp: string;
 
@@ -60,6 +61,8 @@ export class PointOfInterestPostRequestBody {
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
 
+    this.order = obj?.order || [];
+
     this.received_timestamp = new Date().toISOString();
 
     this.geoJSONFeature = obj?.geometry || [];
@@ -94,7 +97,7 @@ export class PointOfInterestSearchCriteria {
 
   column_names: string[];
 
-  order: string[]; // ["columnname1 ASC", "columnname2 DESC"]
+  order: any[]; // [{columnKey: "columnname1", direction: "ASC"}, {columnKey: "columnname2", direction: "DESC"}]
 
   jurisdiction: string[];
   species_positive: string[];
