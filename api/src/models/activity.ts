@@ -139,7 +139,7 @@ export class ActivitySearchCriteria {
 
   grid_filters: any;
 
-  order: object[];
+  order: string[];
   hideTreatmentsAndMonitoring: boolean;
 
   /**
