@@ -67,6 +67,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((record, index) => {
+    let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
     let species = new Set();
     const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
@@ -80,6 +81,10 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of surveys) {
+      // last survey date
+      const survey_date = new Date(survey?.survey_date);
+      if (survey_date > lastSurveyed) lastSurveyed = survey_date;
+
       // agency
       agencies.add(survey?.invasive_species_agency_code);
 
@@ -91,9 +96,11 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       point_of_interest_id: record?.point_of_interest_id,
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
       jurisdictions: jurisdictions ? jurisdictions : null,
-      date_created: new Date(record?.point_of_interest_payload?.date_created).toISOString().substring(0, 10),
+      date_created: new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created)
+        .toISOString()
+        .substring(0, 10),
       species_on_site: Array.from(species).join(', '),
-      date_last_surveyed: new Date(record?.point_of_interest_payload?.date_last_surveyed).toISOString().substring(0, 10),
+      date_last_surveyed: lastSurveyed.toISOString().substring(0, 10),
       agencies: Array.from(agencies).join(', '),
       bio_release: bioRelease,
       chem_treatment: chemTreatment,
