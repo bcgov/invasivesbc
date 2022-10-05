@@ -352,7 +352,7 @@ const ActivityGrid = (props) => {
       userSettings?.recordSets,
       props.setName,
       true,
-      null,
+      filters.enabled ? filters : null,
       0,
       20,
       sortColumns.length ? [...sortColumns] : []

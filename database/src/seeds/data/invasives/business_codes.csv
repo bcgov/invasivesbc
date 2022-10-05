@@ -1039,6 +1039,7 @@ invasive_species_agency_code, qRD, qathet Regional District,257
 invasive_species_agency_code, SLRD, Squamish-Lillooet Regional District,258
 invasive_species_agency_code, SRD, Strathcona Regional District,259
 invasive_species_agency_code,ENB,Enbridge Inc.,260
+invasive_species_agency_code,NRQ,Not required,261
 jurisdiction_code,MOF,Ministry of Forests,1
 jurisdiction_code,MOTI,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
@@ -1184,6 +1185,7 @@ service_license_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,112
 service_license_code,1838,01838 WESTERN WEED CONTROL (1980) LTD.,113
 service_license_code,23531,23531 YENDOR LOGGING,114
 service_license_code,15142,15142 ZEDI FIELD SERVICES,115
+service_license_code,NRQ,Not required,116
 liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
 liquid_herbicide_code,9528,"AM500b [2,4-D 2,4-D Amine 500] 9528",2
 liquid_herbicide_code,5931,"AM600a [2,4-D 2,4-D Amine 600] 5931",3
@@ -1798,6 +1800,7 @@ employer_code,HC,Hatfield Consultants,279
 employer_code,WSPG,WSP Global Inc.,280
 employer_code,GFS,Generous Forest Services,281
 employer_code,MSI,Matrix Solutions Inc.,282
+employer_code,NRQ,Not required,283
 waterbody_use_code,R,Recreation,1
 waterbody_use_code,F,Fishing,2
 waterbody_use_code,B,Boating,3

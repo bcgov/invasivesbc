@@ -102,9 +102,10 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
       });
 
       // If user.roles contains a role with a role that contains the name "bcgov", append 000000 to the filtered agency codes
-      if (user.roles && user.roles.some((role: any) => role.role_name.includes('bcgov'))) {
+      if (user.roles && user.roles.some((role: any) => role.role_name.includes('bcgov') || role.role_name.includes('master_administrator'))) {
         filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === '0'));
       }
+        filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === 'NRQ'));
 
       const employerCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'employer_code')
         .code_header_id;

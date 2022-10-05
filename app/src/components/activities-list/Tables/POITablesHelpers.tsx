@@ -67,7 +67,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
   }
 
   return activities?.rows?.map((record, index) => {
-    let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     let agencies = new Set();
     let species = new Set();
     const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
@@ -81,10 +80,6 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     const monitored = record?.point_of_interest_payload?.form_data?.monitored;
 
     for (const survey of surveys) {
-      // last survey date
-      const survey_date = new Date(survey?.survey_date);
-      if (survey_date > lastSurveyed) lastSurveyed = survey_date;
-
       // agency
       agencies.add(survey?.invasive_species_agency_code);
 

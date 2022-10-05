@@ -120,7 +120,7 @@ export const Treatment_Chemical = {
                 'x-tooltip-text': 'Valid pesticide applicator certificate number'
               }
             },
-            required: ['applicator_license']
+  
           }
         ]
       },

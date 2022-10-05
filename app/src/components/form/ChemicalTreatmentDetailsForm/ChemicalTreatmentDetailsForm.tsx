@@ -172,7 +172,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
 
                 setFormDetails((prev) => {
-                  return { ...prev, formData: { ...prev.form_data, skipAppRateValidation: true } };
+                  return { ...prev, form_data: { ...prev.form_data, skipAppRateValidation: true } };
                 });
               },
               autoFocus: true

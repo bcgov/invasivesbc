@@ -259,7 +259,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
                 </ToolbarContainer>
               );
-            }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])}
+            }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])} */}
             {props?.showBoundaryMenu && (
               <NamedBoundaryMenu
                 {...props}
@@ -270,10 +270,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               />
             )}
 
-            */}
-
-            <MapResizer />
-            {/*
+            {/* <MapResizer />
             <ToggleClickDetailsButton
               clickDetailsEnabled={clickDetailsEnabled}
               setClickDetailsEnabled={setClickDetailsEnabled}

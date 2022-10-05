@@ -72,10 +72,10 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.lastName ? accessRequest.lastName : null},
         ${accessRequest.email ? accessRequest.email : null},
         ${accessRequest.phone ? accessRequest.phone : null},
-        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies : null},
-        ${accessRequest.employer ? accessRequest.employer : null},
+        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies +  ',NRQ' : 'NRQ'},
+        ${accessRequest.employer ? accessRequest.employer +  ',NRQ' : 'NRQ'},
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
-        ${accessRequest.psn1 ? accessRequest.psn1 : null},
+        ${accessRequest.psn1 ? accessRequest.psn1 +  ',NRQ' : 'NRQ'},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
         ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
@@ -86,6 +86,7 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
     )
     on conflict (idir_userid, bceid_userid) do nothing;
   `;
+
 };
 
 /**

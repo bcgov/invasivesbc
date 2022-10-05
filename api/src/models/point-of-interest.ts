@@ -89,6 +89,8 @@ export class PointOfInterestSearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
+  grid_filters: any;
+
   point_of_interest_ids: string[];
 
   search_feature: GeoJSON.FeatureCollection;
@@ -122,6 +124,8 @@ export class PointOfInterestSearchCriteria {
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
+
+    this.grid_filters = (obj && obj.grid_filters) || null;
 
     this.search_feature = (obj && obj.search_feature) || null;
 

@@ -371,7 +371,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //if it is a Chemical treatment and there are wells too close, display warning dialog
 
     let shouldWarn = false;
-    activityInStore.activity.form_data?.activity_subtype_data?.Well_Information.map((well) => {
+    activityInStore.activity.form_data?.activity_subtype_data?.Well_Information?.map((well) => {
       if (Number(well.well_proximity) < 50) shouldWarn = true;
     });
 
@@ -445,13 +445,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           </Typography>
         </>
       )}
-
       {activityInStore.activity && (
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
               {activityInStore.activity.activity_subtype &&
-              activityInStore.activity.activity_subtype === ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant
+              activityInStore.activity.activity_subtype == ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant
                 ? 'Activity Monitoring Chemical Terrestrial or Aquatic Plant'
                 : activityInStore.activity.activity_subtype
                     .replace(/([A-Z])/g, ' $1')
@@ -462,14 +461,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">
+            <Typography align="left">
               Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
             </Typography>
-            <Typography align="center">
-              Date created:{' '}
+            <Typography style={{ display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word' }} align="left">
+              Date created:
               {activityInStore.activity.date_created
                 ? new Date(activityInStore.activity.date_created).toString()
                 : 'unknown'}
+              {'\n'}Created by: {activityInStore.activity.created_by ? activityInStore.activity.created_by : 'unknown'}
+              {'\n'}Date modified:{' '}
+              {activityInStore.activity.received_timestamp
+                ? new Date(activityInStore.activity.received_timestamp).toString()
+                : new Date(activityInStore.activity.date_created).toString()}
+              {'\n'}Modified by: {activityInStore.activity.updated_by ? activityInStore.activity.updated_by : 'unknown'}
             </Typography>
           </Box>
         </>
