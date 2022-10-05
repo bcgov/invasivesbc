@@ -345,7 +345,7 @@ const ActivityGrid = (props) => {
       userSettings?.recordSets,
       props.setName,
       true,
-      filters.enabled ? filters : null,
+      null,
       0,
       20
     );
