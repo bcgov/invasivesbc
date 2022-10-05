@@ -255,9 +255,9 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     const { temperature } = formData.activity_subtype_data['Treatment_ChemicalPlant_Information'];
 
     //if themperature is out of normal range, display an error
-    if (temperature < 15 || temperature > 22) {
+    if (temperature < 10 || temperature > 28) {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['temperature'].addError(
-        'Temperature should ideally be between 15 and 22 degrees'
+        'Temperature should ideally be between 10 and 28 degrees'
       );
     }
     //if user clicked proceed in the warning dialog, remove the erro
@@ -332,7 +332,7 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
     }
 
     //if wind is more than 50km/h, display an error
-    if (wind_speed > 9) {
+    if (wind_speed > 8) {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['wind_speed'].addError(
         'Wind should ideally be less or equal to 9km/h'
       );

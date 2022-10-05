@@ -108,7 +108,7 @@ const EditTools = (props: any) => {
     let updatedGeoJSON = [];
     (context.layerContainer as any).eachLayer((layer) => {
       let aGeo = layer.toGeoJSON();
-      if (layer.feature.properties.radius) {
+      if (layer?.feature?.properties?.radius) {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
       }
       aGeo = convertLineStringToPoly(aGeo);
