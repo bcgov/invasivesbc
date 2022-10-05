@@ -20,14 +20,25 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     ) AS anything) `);
   }
 
+  if (searchCriteria?.grid_filters?.jurisdictions) {
+    if (searchCriteria.search_feature) sqlStatement.append(SQL`, `);
+    sqlStatement.append(SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `);
+  }
+
   sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
-      ON i.site_id = s.site_id WHERE 1=1 `
+      ON i.site_id = s.site_id`
     // JOIN point_of_interest_incoming_data p
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
+
+  if (searchCriteria?.grid_filters?.jurisdictions) {
+    sqlStatement.append(SQL` INNER JOIN strings j ON i.site_id = j.site_id`);
+  }
+
+  sqlStatement.append(SQL` WHERE 1 = 1 `);
 
   if (searchCriteria.iappSiteID) {
     sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
@@ -60,6 +71,88 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     }
     if (searchCriteria.date_range_end) {
       sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+    }
+  }
+
+  // grid filtering
+  if (searchCriteria.grid_filters) {
+    const gridFilters = searchCriteria.grid_filters;
+    if (gridFilters.enabled) {
+      if (gridFilters.point_of_interest_id) {
+        sqlStatement.append(SQL` AND i.site_id::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.point_of_interest_id}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.paper_file_id) {
+        sqlStatement.append(SQL` AND LOWER(i.site_paper_file_id::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.paper_file_id})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.jurisdictions) {
+        sqlStatement.append(SQL` AND LOWER(j.j_string) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.date_created) {
+        sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.species_on_site) {
+        sqlStatement.append(SQL` AND LOWER(i.all_species_on_site) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.species_on_site})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.date_last_surveyed) {
+        sqlStatement.append(SQL` AND LOWER(i.max_survey::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.date_last_surveyed})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.agencies) {
+        sqlStatement.append(SQL` AND LOWER(i.agencies::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.agencies})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.bio_release) {
+        sqlStatement.append(SQL` AND has_biological_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.bio_release})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+      }
+      if (gridFilters.chem_treatment) {
+        sqlStatement.append(SQL` AND has_chemical_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.chem_treatment})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+      }
+      if (gridFilters.mech_treatment) {
+        sqlStatement.append(SQL` AND has_mechanical_treatments = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.mech_treatment})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+      }
+      if (gridFilters.bio_dispersal) {
+        sqlStatement.append(SQL` AND has_biological_dispersals = CASE
+        WHEN LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.bio_dispersal})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+      }
+      if (gridFilters.monitored) {
+        sqlStatement.append(SQL` AND (
+          (has_biological_treatment_monitorings = TRUE 
+          OR has_chemical_treatment_monitorings = TRUE 
+          OR has_mechanical_treatment_monitorings = TRUE
+          )
+        AND LOWER('Yes') LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.monitored})`);
+        sqlStatement.append(SQL`||'%'`);
+        sqlStatement.append(SQL`)`);
+      }
+
     }
   }
 
