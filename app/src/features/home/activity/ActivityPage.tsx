@@ -371,7 +371,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //if it is a Chemical treatment and there are wells too close, display warning dialog
 
     let shouldWarn = false;
-    activityInStore.activity.form_data?.activity_subtype_data?.Well_Information.map((well) => {
+    activityInStore.activity.form_data?.activity_subtype_data?.Well_Information?.map((well) => {
       if (Number(well.well_proximity) < 50) shouldWarn = true;
     });
 
