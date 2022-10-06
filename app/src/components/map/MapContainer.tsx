@@ -37,6 +37,8 @@ import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
 import { OnMapClickDetails } from './Tools/ToolTypes/Data/OnMapClickDetails';
 import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDetailsButton';
 import { LayerPickerBasic } from './LayerPickerBasic';
+import { JurisdictionsLayer } from './LayerLoaderHelpers/JurisdictionsLayer';
+import { RISOLayer } from './LayerLoaderHelpers/RISOLayer';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,

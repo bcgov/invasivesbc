@@ -41,7 +41,7 @@ export const RISOLayer = (props) => {
   });
 
   const fetchData = async () => {
-    const risosData = await dataAccess.getRISOs({ search_feature: mapBounds }, databaseContext);
+    const risosData = await dataAccess.getRISOs({ search_feature: mapBounds });
     let risosFeatureArray = [];
     risosData?.forEach((row) => {
       risosFeatureArray.push(row.geojson ? row.geojson : row);
