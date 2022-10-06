@@ -2,7 +2,6 @@ import { BottomNavigation, BottomNavigationAction, Card, Grid, TableContainer, T
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Marker, useMap, useMapEvent } from 'react-leaflet';
@@ -10,6 +9,8 @@ import mapPin from '../../../Icons/mappin.png';
 import { createDataUTM, RenderTableActivity, RenderTablePOI, RenderTablePosition } from '../../Helpers/StyledTable';
 import { calc_utm } from '../Nav/DisplayPosition';
 import * as turf from '@turf/turf';
+import { useSelector } from 'state/utilities/use_selector';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 interface OnMapClickDetailsProps {
   clickDetailsEnabled: boolean;
@@ -18,8 +19,7 @@ interface OnMapClickDetailsProps {
 const PositionInfo = (props) => {
   const { position } = props;
   const divRef = useRef();
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
+  const { darkTheme } = useSelector
   const [section, setSection] = useState('position');
   const map = useMap();
   const utmResult = calc_utm(position[0], position[1]);
@@ -71,7 +71,7 @@ const PositionInfo = (props) => {
         </TableContainer>
         <Grid container>
           <BottomNavigation
-            style={{ backgroundColor: themeType ? '#333' : null, width: 500 }}
+            style={{ backgroundColor: darkTheme ? '#333' : null, width: 500 }}
             value={section}
             onChange={handleChange}>
             <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />

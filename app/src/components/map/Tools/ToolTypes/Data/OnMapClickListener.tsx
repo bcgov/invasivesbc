@@ -2,7 +2,6 @@ import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer,
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useRef, useState } from 'react';
 import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
@@ -10,12 +9,13 @@ import dotMarker from '../../../Icons/dotMarker.png';
 import { createDataUTM, RenderTableActivity, RenderTablePOI, RenderTablePosition } from '../../Helpers/StyledTable';
 import { calc_utm } from '../Nav/DisplayPosition';
 import * as turf from '@turf/turf';
+import { useSelector } from 'state/utilities/use_selector';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const GeneratePopup = (props) => {
   const { position, onCloseCallback = null } = props;
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
-  const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
+  const { darkTheme } = useSelector(selectUserSettings);
+  const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
   const map = useMap();
   const popupRef = useRef(null);
@@ -68,7 +68,7 @@ export const GeneratePopup = (props) => {
           </TableContainer>
           <Grid container>
             <BottomNavigation
-              style={{ backgroundColor: themeType ? '#333' : null, width: 500 }}
+              style={{ backgroundColor: darkTheme ? '#333' : null, width: 500 }}
               value={section}
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />

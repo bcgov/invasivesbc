@@ -58,8 +58,11 @@ class UserSettingsState {
     }
   ];
 
+  darkTheme: boolean;
+
   constructor() {
     this.initialized = false;
+    this.darkTheme = false;
     this.newRecordDialogState = {
       recordCategory:
         JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
@@ -140,6 +143,18 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           recordsExpanded: !state.recordsExpanded
+        };
+      }
+      case USER_SETTINGS_ENABLE_DARK_THEME: {
+        return {
+          ...state,
+          darkTheme: true
+        };
+      }
+      case USER_SETTINGS_DISABLE_DARK_THEME: {
+        return {
+          ...state,
+          darkTheme: false
         };
       }
 

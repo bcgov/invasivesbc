@@ -52,6 +52,8 @@ import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
 import { selectTabs } from 'state/reducers/tabs';
 import { getTabIconByName } from './TabIconIndex';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { USER_SETTINGS_DISABLE_DARK_THEME, USER_SETTINGS_ENABLE_DARK_THEME } from 'state/actions/index';
 
 const drawerWidth = 240;
 
@@ -139,6 +141,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const dispatch = useDispatch();
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
+  const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+  const { darkTheme } = useSelector(selectUserSettings);
+
+  const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
   const { showLoggedInTabs, activeTab, initialized: tabsInitialized, tabConfig } = useSelector(selectTabs);
 

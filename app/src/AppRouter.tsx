@@ -17,6 +17,9 @@ import ActivityPage from 'features/home/activity/ActivityPage';
 import { EmbeddedReportsPage } from 'features/home/reports/EmbeddedReportsPage';
 import { ReferenceIAPPSitePage } from 'features/home/references/ReferenceIAPPSitePage';
 import UserAccessPage from 'features/admin/userAccess/UserAccessPage';
+import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
+import { getDesignTokens } from 'utils/CustomThemeProvider';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -31,6 +34,9 @@ export enum AccessLevel {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const { DEBUG } = useSelector(selectConfiguration);
   const { location } = useHistory();
+  const { darkTheme } = useSelector(selectUserSettings);
+
+  const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;

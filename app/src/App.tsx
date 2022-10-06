@@ -5,9 +5,9 @@ import { ErrorContextProvider } from 'contexts/ErrorContext';
 import React from 'react';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
-import CustomThemeProvider from './utils/CustomThemeProvider';
 import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
+
 interface IAppProps {
   deviceInfo: DeviceInfo;
   store: any;
@@ -24,11 +24,9 @@ const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
       <Provider store={store}>
         <ErrorContextProvider>
           <DatabaseContextProvider>
-            <CustomThemeProvider>
-              <IonReactRouter>
-                <AppRouter {...appRouterProps} />
-              </IonReactRouter>
-            </CustomThemeProvider>
+            <IonReactRouter>
+              <AppRouter {...appRouterProps} />
+            </IonReactRouter>
           </DatabaseContextProvider>
         </ErrorContextProvider>
       </Provider>
