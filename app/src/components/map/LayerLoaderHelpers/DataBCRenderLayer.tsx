@@ -25,7 +25,7 @@ export const DataBCLayer = (props) => {
       return (
         <WMSTileLayer
           key={Math.random()}
-          transparent={true}
+          transparent={false}
           opacity={props.opacity}
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"

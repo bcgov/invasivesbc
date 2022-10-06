@@ -12,6 +12,7 @@ import {
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
+  WMSTileLayer,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
@@ -35,6 +36,7 @@ import { NamedBoundaryMenu } from './NamedBoundaryMenu';
 import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
 import { OnMapClickDetails } from './Tools/ToolTypes/Data/OnMapClickDetails';
 import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDetailsButton';
+import { LayerPickerBasic } from './LayerPickerBasic';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -238,12 +240,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {/* Offline component */}
-            {useMemo(
+            {/*useMemo(
               () => (
                 <OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />
               ),
               [mapMaxNativeZoom]
-            )}
+              )*/}
+            <OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />
 
             {/* List of functions is located in this component */}
 
@@ -278,7 +281,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             />
             <OnMapClickDetails clickDetailsEnabled={clickDetailsEnabled} />
 
-            */}
             {useMemo(
               () => (
                 <MapLocationControlGroup {...props} />
@@ -287,6 +289,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {props.children}
+            */}
+
+            <LayerPickerBasic></LayerPickerBasic>
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>
       </ReactLeafletMapContainer>
