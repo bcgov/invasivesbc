@@ -5,7 +5,6 @@ import { ErrorContextProvider } from 'contexts/ErrorContext';
 import React, { useEffect } from 'react';
 import AppRouter from './AppRouter';
 import { DatabaseContextProvider } from './contexts/DatabaseContext';
-import CustomThemeProvider from './utils/CustomThemeProvider';
 import { Provider, useDispatch } from 'react-redux';
 import { ACTIVITY_GET_INITIAL_STATE_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_REQUEST } from 'state/actions';
 
@@ -41,11 +40,9 @@ const App: React.FC<IAppProps> = ({ deviceInfo, store }) => {
         <ProviderChildren>
           <ErrorContextProvider>
             <DatabaseContextProvider>
-              <CustomThemeProvider>
-                <IonReactRouter>
-                  <AppRouter {...appRouterProps} />
-                </IonReactRouter>
-              </CustomThemeProvider>
+              <IonReactRouter>
+                <AppRouter {...appRouterProps} />
+              </IonReactRouter>
             </DatabaseContextProvider>
           </ErrorContextProvider>
       </ProviderChildren>

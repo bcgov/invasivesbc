@@ -54,6 +54,8 @@ import { selectUserInfo } from '../../state/reducers/userInfo';
 import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { USER_SETTINGS_DISABLE_DARK_THEME, USER_SETTINGS_ENABLE_DARK_THEME } from 'state/actions/index';
 
 const drawerWidth = 240;
 
@@ -149,6 +151,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+  const { darkTheme } = useSelector(selectUserSettings);
 
   const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
@@ -253,9 +256,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab());
-
-  const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
@@ -460,10 +460,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <MenuItem>
                   <Switch
                     color="secondary"
-                    checked={themeType}
-                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checked={darkTheme}
+                    checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      setThemeType(!themeType);
+                      if (darkTheme) dispatch({ type: USER_SETTINGS_DISABLE_DARK_THEME });
+                      else dispatch({ type: USER_SETTINGS_ENABLE_DARK_THEME });
                     }}
                   />
                   Theme
@@ -562,10 +563,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={themeType}
-                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                  checked={darkTheme}
+                  checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                   onChange={() => {
-                    setThemeType(!themeType);
+                    if (darkTheme) dispatch({ type: USER_SETTINGS_DISABLE_DARK_THEME });
+                    else dispatch({ type: USER_SETTINGS_ENABLE_DARK_THEME });
                   }}
                 />
               }

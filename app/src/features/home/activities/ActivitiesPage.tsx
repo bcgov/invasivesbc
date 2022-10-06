@@ -349,6 +349,7 @@ const PageContainer = (props) => {
             id="show-records-tab"
             className={classes.toggleButton}
             color={'warning'}
+            sx={{ color: userSettings.darkTheme && '#fff' }}
             onClick={(e) => {
               e.stopPropagation();
               dispatch({type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });

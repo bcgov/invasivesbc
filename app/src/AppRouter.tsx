@@ -8,7 +8,9 @@ import {NotFoundPage} from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
 import {useSelector} from "./state/utilities/use_selector";
 import {selectConfiguration} from "./state/reducers/configuration";
-
+import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
+import { getDesignTokens } from 'utils/CustomThemeProvider';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -19,6 +21,9 @@ interface IAppRouterProps {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const {DEBUG} = useSelector(selectConfiguration);
   const {location} = useHistory();
+  const { darkTheme } = useSelector(selectUserSettings);
+
+  const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -31,24 +36,26 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   }, [location.pathname, location.search, location.state, DEBUG]);
 
   return (
-    <Switch>
-      <Redirect exact from="/" to="/home/landing"/>
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout}/>
-      <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout}/>
-      <AppRoute
-        path="/home"
-        title={getTitle('Home')}
-        component={HomeRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute
-        path="/admin"
-        title={getTitle('Admin')}
-        component={AdminRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found"/>}/>
-    </Switch>
+    <ThemeProvider theme={theme}>
+      <Switch>
+        <Redirect exact from="/" to="/home/landing"/>
+        <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout}/>
+        <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout}/>
+        <AppRoute
+          path="/home"
+          title={getTitle('Home')}
+          component={HomeRouter}
+          layout={PublicLayout}
+        />
+        <AppRoute
+          path="/admin"
+          title={getTitle('Admin')}
+          component={AdminRouter}
+          layout={PublicLayout}
+        />
+        <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found"/>}/>
+      </Switch>
+    </ThemeProvider>
   );
 };
 

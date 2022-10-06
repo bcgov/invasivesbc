@@ -15,7 +15,6 @@ import './filter-cell.css';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
 import { DocType } from 'constants/database';
@@ -241,8 +240,6 @@ const ActivityGrid = (props) => {
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
   const userSettings = useSelector(selectUserSettings);
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
 
   //Grab filter state from main context
   useEffect(() => {
@@ -763,7 +760,7 @@ const ActivityGrid = (props) => {
                 enableVirtualization
                 headerRowHeight={filters.enabled ? 70 : undefined}
                 style={{ height: '100%' }}
-                className={(themeType ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
+                className={(userSettings.darkTheme ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
                 // rows={filteredRows}
                 rows={rows}
                 defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}

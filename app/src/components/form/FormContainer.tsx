@@ -17,7 +17,6 @@ import { MuiForm5 as Form } from '@rjsf/material-ui';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import { getShortActivityID } from 'utils/addActivity';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
@@ -36,6 +35,7 @@ import { selectConfiguration } from '../../state/reducers/configuration';
 import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -85,6 +85,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { MOBILE } = useSelector(selectConfiguration);
 
   const dispatch = useDispatch();
+  const { darkTheme } = useSelector(selectUserSettings);
   const activityStateInStore = useSelector(selectActivity);
 
   /*
@@ -96,8 +97,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   }, [props.activity]);
   */
 
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
     palette: { ...rjsfTheme.palette, mode: 'dark' }
@@ -378,7 +377,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   } else {
     return (
       <Box width="100%">
-        <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
+        <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
               <Box mt={3}>
