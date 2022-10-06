@@ -82,31 +82,31 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   dependencies: {
     evidence_of_treatment: {
       oneOf: [
-        { 
+        {
           properties: {
             evidence_of_treatment: {
-            enum: ['No']
-          },
+              enum: ['No']
+            }
           }
         },
-        { 
+        {
           properties: {
             evidence_of_treatment: {
-            enum: ['Yes']
-          } ,
-    efficacy_code: {
-      type: 'string',
-      title: 'Treatment Efficacy Rating',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'efficacy_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
-    },
-          },
+              enum: ['Yes']
+            },
+            efficacy_code: {
+              type: 'string',
+              title: 'Treatment Efficacy Rating',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'efficacy_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+            }
+          }
         }
       ]
     }
@@ -194,31 +194,31 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   dependencies: {
     evidence_of_treatment: {
       oneOf: [
-        { 
+        {
           properties: {
             evidence_of_treatment: {
-            enum: ['No']
-          },
+              enum: ['No']
+            }
           }
         },
-        { 
+        {
           properties: {
             evidence_of_treatment: {
-            enum: ['Yes']
-          } ,
-    efficacy_code: {
-      type: 'string',
-      title: 'Treatment Efficacy Rating',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'efficacy_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
-      },
-      'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
-    },
-          },
+              enum: ['Yes']
+            },
+            efficacy_code: {
+              type: 'string',
+              title: 'Treatment Efficacy Rating',
+              'x-enum-code': {
+                'x-enum-code-category-name': 'invasives',
+                'x-enum-code-header-name': 'efficacy_code',
+                'x-enum-code-name': 'code_name',
+                'x-enum-code-text': 'code_description',
+                'x-enum-code-sort-order': 'code_sort_order'
+              },
+              'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
+            }
+          }
         }
       ]
     }
