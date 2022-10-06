@@ -2,6 +2,7 @@ import { TabIconName } from 'components/tabs/TabIconIndex';
 import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { selectTabs } from 'state/reducers/tabs';
 import {
   TABS_SET_ACTIVE_TAB_REQUEST,
   TABS_SET_ACTIVE_TAB_SUCCESS,
@@ -12,9 +13,13 @@ import {
 } from '../actions';
 
 function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
-  const currentTab = localStorage.getItem('TABS_CURRENT_TAB');
+  const currentTab = yield localStorage.getItem('TABS_CURRENT_TAB');
+  const currentTabPath = yield localStorage.getItem('TABS_CURRENT_TAB_PATH');
   if (!currentTab) {
-    localStorage.setItem('TABS_CURRENT_TAB', '0');
+    yield localStorage.setItem('TABS_CURRENT_TAB', '0');
+  }
+  if (!currentTabPath) {
+    yield localStorage.setItem('TABS_CURRENT_TAB_PATH', '/home/landing');
   }
   try {
     const configuration = yield select(selectConfiguration);
@@ -90,7 +95,9 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
 
 function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
   try {
-    localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
+    const tabs = yield select(selectTabs);
+    yield localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
+    yield localStorage.setItem('TABS_CURRENT_TAB_PATH', tabs.tabConfig[action.payload.activeTab].path);
     yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
   } catch (e) {
     console.error(e);

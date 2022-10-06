@@ -8,7 +8,6 @@ import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
-
 interface IAppProps {
   deviceInfo: DeviceInfo;
   store: any;

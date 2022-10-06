@@ -38,7 +38,6 @@ interface ILandingPage {
 }
 
 const LandingPage: React.FC<ILandingPage> = (props) => {
-  console.log('PROPS IN LANDINGPAGE: ', props);
   const classes = useStyles();
   const history = useHistory();
   const connected = useSelector(selectNetworkConnected);

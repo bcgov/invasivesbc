@@ -147,7 +147,12 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         title={getTitle('User Access')}
         component={UserAccessPage}
       />
-      <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
+      <NewAppRoute
+        accessLevel={AccessLevel.PUBLIC}
+        title="*"
+        path="*"
+        component={() => <Redirect to="/page-not-found" />}
+      />
     </Switch>
   );
 };
