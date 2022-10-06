@@ -171,6 +171,8 @@ specific_use_code,MT,Mine tailings,21
 specific_use_code,BS,Burn scar,22
 specific_use_code,IS,Industrial site,23
 specific_use_code,CP,Community pasture,24
+specific_use_code,AP,Apiary,25
+specific_use_code,OF,Organic Farm,26
 aspect_code,FL,Flat,1
 aspect_code,NA,variable,2
 aspect_code,N,North facing,3
