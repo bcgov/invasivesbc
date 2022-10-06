@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+import { Route, RouteProps, useHistory } from 'react-router-dom';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { ErrorBanner } from '../components/error/ErrorBanner';
 import { useSelector } from '../state/utilities/use_selector';
@@ -7,7 +7,7 @@ import { selectAuth } from '../state/reducers/auth';
 import { AccessLevel } from '../AppRouter';
 import CheckAccess from './CheckAccess';
 import HomeLayout from 'features/home/HomeLayout';
-import { Box, CircularProgress, CssBaseline, Theme } from '@mui/material';
+import { CircularProgress, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -30,14 +30,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const classes = useStyles();
-  console.log('PROPS IN NEWAPPROUTE: ', props);
-  const errorContext = useContext(ErrorContext);
-  const [hasErrors, setHasErrors] = React.useState(false);
-
-  const { initialized: authInitialized } = useSelector(selectAuth);
-
   let { component: Component, title: pageTitle, accessLevel } = props;
+  const classes = useStyles();
+  const errorContext = useContext(ErrorContext);
+  const { initialized: authInitialized } = useSelector(selectAuth);
+  const [hasErrors, setHasErrors] = React.useState(false);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (authInitialized) {
+      const lastVisitedPath = localStorage.getItem('TABS_CURRENT_TAB_PATH');
+      if (lastVisitedPath) {
+        // auth is ready to go, redirect to last visited page
+        history.push(lastVisitedPath);
+      }
+    }
+  }, [authInitialized]);
 
   document.title = pageTitle;
 
@@ -48,6 +56,7 @@ const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
       setHasErrors(false);
     }
   }, [errorContext.hasErrors, errorContext.errorArray]);
+
   return (
     <Route
       render={(renderProps) => {
