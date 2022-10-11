@@ -163,7 +163,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const logoutUser = async () => {
-    history.push('/home/landing');
     dispatch({ type: AUTH_SIGNOUT_REQUEST });
     handleClose();
   };
