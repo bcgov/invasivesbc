@@ -20,6 +20,7 @@ export class PointOfInterestPostRequestBody {
 
   species_positive: string[];
   species_negative: string[];
+  order: any[];
 
   received_timestamp: string;
 
@@ -60,6 +61,8 @@ export class PointOfInterestPostRequestBody {
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
 
+    this.order = obj?.order || [];
+
     this.received_timestamp = new Date().toISOString();
 
     this.geoJSONFeature = obj?.geometry || [];
@@ -86,13 +89,15 @@ export class PointOfInterestSearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
+  grid_filters: any;
+
   point_of_interest_ids: string[];
 
   search_feature: GeoJSON.FeatureCollection;
 
   column_names: string[];
 
-  order: string[]; // ["columnname1 ASC", "columnname2 DESC"]
+  order: any[]; // [{columnKey: "columnname1", direction: "ASC"}, {columnKey: "columnname2", direction: "DESC"}]
 
   jurisdiction: string[];
   species_positive: string[];
@@ -119,6 +124,8 @@ export class PointOfInterestSearchCriteria {
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
+
+    this.grid_filters = (obj && obj.grid_filters) || null;
 
     this.search_feature = (obj && obj.search_feature) || null;
 
