@@ -312,7 +312,7 @@ const ActivityGrid = (props) => {
         getActivities();
       }
     }
-  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), filters, sortColumns]);
+  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns]);
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -707,10 +707,10 @@ const ActivityGrid = (props) => {
                   setName: props.setName
                 }});
                 setSave(Math.random());
-              }} sx={{ mr: 1 }} size={'small'} variant="contained">
+              }} sx={{ mr: 1, float: 'right' }} size={'large'} variant="contained">
                 <FilterAltIcon />
                 <SaveIcon />
-                Save Filters
+                Save & Apply Filters
               </Button>
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
