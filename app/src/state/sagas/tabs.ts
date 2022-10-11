@@ -62,6 +62,9 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
           icon: TabIconName.IAPP
         }
       );
+    }
+
+    if (isMasterAdmin) {
       if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
         tabConfig.push({
           label: 'Reports',
@@ -69,9 +72,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
           icon: TabIconName.Assessment
         });
       }
-    }
 
-    if (isMasterAdmin) {
       tabConfig.push({
         label: 'Admin',
         path: '/home/admin',
