@@ -36,7 +36,17 @@ const CheckAcces: React.FC<ICheckAccessProps> = (props: ICheckAccessProps) => {
     }
   };
 
-  return <>{accessGranted() ? children : AccessDenied}</>;
+  return (
+    <>
+      {accessGranted() ? (
+        children
+      ) : (
+        <>
+          <AccessDenied />
+        </>
+      )}
+    </>
+  );
 };
 
 export default CheckAcces;
