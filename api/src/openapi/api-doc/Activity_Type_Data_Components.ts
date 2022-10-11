@@ -35,13 +35,6 @@ export const Monitoring = {
       title: 'Linked Treatment ID',
       'x-tooltip-text': 'Identifier of linked treatment record'
     },
-    // legacy_iapp_id: {
-    //   type: 'number',
-    //   maximum: 999999,
-    //   minimum: 10000,
-    //   title: 'Legacy IAPP Release ID',
-    //   'x-tooltip-text': 'IAPP site ID'
-    // },
     activity_persons: {
       type: 'array',
       default: [{}],
@@ -58,6 +51,30 @@ export const Monitoring_Biocontrol = {
   title: 'Monitoring Information',
   type: 'object',
   required: ['activity_persons'],
+  properties: {
+    legacy_iapp_id: {
+      type: 'number',
+      maximum: 999999,
+      minimum: 10000,
+      title: 'Legacy IAPP Release ID',
+      'x-tooltip-text': 'IAPP site ID'
+    },
+    activity_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Monitoring Person(s)',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing monitoring'
+    }
+  }
+};
+
+export const Monitoring_Biocontrol_Release = {
+  title: 'Monitoring Information',
+  type: 'object',
+  required: ['activity_persons', 'linked_id'],
   properties: {
     legacy_iapp_id: {
       type: 'number',
@@ -119,8 +136,7 @@ export const Treatment_Chemical = {
                 title: 'Pesticide Applicator Certificate Number',
                 'x-tooltip-text': 'Valid pesticide applicator certificate number'
               }
-            },
-  
+            }
           }
         ]
       },

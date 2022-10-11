@@ -1,5 +1,5 @@
 import { Activity } from '../../Activity_Data_Components';
-import { Monitoring, Monitoring_Biocontrol } from '../../Activity_Type_Data_Components';
+import { Monitoring, Monitoring_Biocontrol, Monitoring_Biocontrol_Release } from '../../Activity_Type_Data_Components';
 import {
   Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant,
@@ -42,7 +42,7 @@ export const Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = {
       ...Activity
     },
     activity_type_data: {
-      ...Monitoring_Biocontrol
+      ...Monitoring_Biocontrol_Release
     },
     activity_subtype_data: {
       ...Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant
