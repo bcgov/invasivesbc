@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 import { Redirect, Switch, useHistory } from 'react-router-dom';
-import HomeRouter from './features/home/HomeRouter';
-import PublicLayout from './utils/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
-import AppRoute from './utils/AppRoute';
 import { useSelector } from './state/utilities/use_selector';
 import { selectConfiguration } from './state/reducers/configuration';
-import NewAppRoute from './router/NewAppRoute';
+import AppRoute from './router/AppRoute';
 import LandingPage from 'features/home/landing/LandingPage';
 import MapPage from 'features/home/map/MapPage';
 import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
@@ -51,25 +48,25 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
       {/* <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
       <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout} />
       <AppRoute path="/home" title={getTitle('Home')} component={HomeRouter} layout={PublicLayout} /> */}
-      <NewAppRoute
+      <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         path="/forbidden"
         title={getTitle('Forbidden')}
         component={AccessDenied}
       />
-      <NewAppRoute
+      <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         path="/page-not-found"
         title={getTitle('Not Found')}
         component={NotFoundPage}
       />
-      <NewAppRoute
+      <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         path="/home/landing"
         title={getTitle('Landing')}
         component={LandingPage}
       />
-      <NewAppRoute
+      <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         path="/home/map*"
         strict={false}
@@ -77,77 +74,71 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         title={getTitle('Map')}
         component={MapPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.PUBLIC}
         path="/home/access-request"
         title={getTitle('Access Request')}
         component={AccessRequestPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.PUBLIC}
         path="/home/data-sharing-agreement"
         title={getTitle('Data Sharing Agreement')}
         component={DataSharingAgreementPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.USER}
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
         component={BulkEditActivitiesPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.USER}
         path="/home/activity/observation"
         title={getTitle('Create Observation')}
         component={ObservationCreationStepperPage}
       />
-      <NewAppRoute
-        exact
-        accessLevel={AccessLevel.USER}
-        path="/home/plan"
-        title={getTitle('Plan')}
-        component={PlanPage}
-      />
-      <NewAppRoute
+      <AppRoute exact accessLevel={AccessLevel.USER} path="/home/plan" title={getTitle('Plan')} component={PlanPage} />
+      <AppRoute
         exact
         accessLevel={AccessLevel.USER}
         path="/home/activities"
         title={getTitle('Activities')}
         component={ActivitiesPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.USER}
         path="/home/activity"
         title={getTitle('Activity')}
         component={ActivityPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.USER}
         path="/home/iapp/:id?"
         title={getTitle('IAPP Site')}
         component={ReferenceIAPPSitePage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.ADMIN}
         path="/home/reports"
         title={getTitle('Reports')}
         component={EmbeddedReportsPage}
       />
-      <NewAppRoute
+      <AppRoute
         exact
         accessLevel={AccessLevel.ADMIN}
         path="/home/admin"
         title={getTitle('User Access')}
         component={UserAccessPage}
       />
-      <NewAppRoute
+      <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         title="*"
         path="*"

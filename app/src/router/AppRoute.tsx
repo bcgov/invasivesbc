@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
+const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
   let { component: Component, title: pageTitle, accessLevel } = props;
   const classes = useStyles();
   const errorContext = useContext(ErrorContext);
@@ -97,4 +97,4 @@ const NewAppRoute: React.FC<IPrivateRouteProps> = (props) => {
   );
 };
 
-export default NewAppRoute;
+export default AppRoute;
