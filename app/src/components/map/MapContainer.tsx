@@ -283,6 +283,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             />
             <OnMapClickDetails clickDetailsEnabled={clickDetailsEnabled} />
 
+            */}
             {useMemo(
               () => (
                 <MapLocationControlGroup {...props} />
@@ -291,7 +292,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {props.children}
-            */}
 
             <LayerPickerBasic></LayerPickerBasic>
           </MapRequestContextProvider>
