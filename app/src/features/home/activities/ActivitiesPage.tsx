@@ -368,7 +368,7 @@ const PageContainer = (props) => {
         </Box>
         <MenuOptions
           sx={{
-            backgroundColor: '#223f75',
+            backgroundColor: userSettings.darkTheme ? '#272727' : '#223f75',
             width: '100%',
             padding: '5px',
             height: 'auto',
