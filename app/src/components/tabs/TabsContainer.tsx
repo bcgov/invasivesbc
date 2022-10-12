@@ -207,39 +207,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setOpen(false);
   };
 
-  // const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
-
-  /**
-   * Determine the active tab index, based on the current url path.
-   *
-   * @param {number} activeTabNumber The current active tab index, to be used as backup if no matching paths are found.
-   * @return {*}  {number}
-   */
-  const getActiveTab = (pathname: string): number => {
-    for (let index = 0; index < tabConfig.length; index++) {
-      const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
-
-      // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
-      if (
-        pathsToMatchAgainst.some((pathToMatch) => {
-          return pathname.includes(pathToMatch) && !open;
-        })
-      ) {
-        return index;
-      }
-    }
-
-    // Otherwise return the current active tab index as a fallback
-    return activeTab;
-  };
-
-  // const [activeTab, setActiveTab] = React.useState(getActiveTab());
-
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    console.log('TAB CHANGED! SETTING TO: ', newValue);
     dispatch({
       type: TABS_SET_ACTIVE_TAB_REQUEST,
       payload: {
