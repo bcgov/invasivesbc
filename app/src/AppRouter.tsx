@@ -45,9 +45,6 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   return (
     <Switch>
       <Redirect exact from="/" to="/home/landing" />
-      {/* <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
-      <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout} />
-      <AppRoute path="/home" title={getTitle('Home')} component={HomeRouter} layout={PublicLayout} /> */}
       <AppRoute
         accessLevel={AccessLevel.PUBLIC}
         path="/forbidden"
