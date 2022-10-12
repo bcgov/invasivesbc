@@ -65,7 +65,6 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
             {
               // If the auth reducer is finished loading, logged in or not
               authInitialized ? (
-                // TODO: Combine public and home layouts into one layout
                 <>
                   <HomeLayout>
                     {hasErrors &&

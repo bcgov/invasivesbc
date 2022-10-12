@@ -32,7 +32,6 @@ function createTabsReducer(configuration: AppConfig): (TabsState, AnyAction) => 
       }
 
       case TABS_SET_ACTIVE_TAB_SUCCESS: {
-        console.log('ACTIVE TAB: ', action.payload);
         return {
           ...state,
           activeTab: action.payload.activeTab
