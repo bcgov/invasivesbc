@@ -33,7 +33,7 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
