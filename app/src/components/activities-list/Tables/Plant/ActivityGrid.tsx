@@ -27,7 +27,11 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_REQUEST, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import {
+  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
+  USER_SETTINGS_SET_RECORD_SET_REQUEST,
+  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST
+} from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { select } from 'redux-saga/effects';
 
@@ -271,17 +275,21 @@ const ActivityGrid = (props) => {
     if (save !== 0 && userSettings.recordSets?.[props.setName]) {
       if (userSettings.recordSets?.[props.setName]) {
         const thereAreNewFilters =
-          filters !== null && JSON.stringify(userSettings.recordSets[props.setName]?.gridFilters) !== JSON.stringify(filters)
+          filters !== null &&
+          JSON.stringify(userSettings.recordSets[props.setName]?.gridFilters) !== JSON.stringify(filters)
             ? true
             : false;
         const thereAreNewAdvancedFilters =
           advancedFilterRows !== null &&
-          JSON.stringify(userSettings.recordSets?.[props.setName].advancedFilters) !== JSON.stringify(advancedFilterRows)
+          JSON.stringify(userSettings.recordSets?.[props.setName].advancedFilters) !==
+            JSON.stringify(advancedFilterRows)
             ? true
             : false;
 
         const thereAreOldFilters = userSettings.recordSets?.[props.setName]?.gridFilters?.length ? true : false;
-        const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length ? true : false;
+        const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length
+          ? true
+          : false;
 
         if (thereAreNewFilters || thereAreNewAdvancedFilters) {
           const updatedFilters = thereAreNewFilters
@@ -307,7 +315,7 @@ const ActivityGrid = (props) => {
           });
         }
       }
-    };
+    }
   }, [advancedFilterRows]);
 
   useEffect(() => {
@@ -460,7 +468,7 @@ const ActivityGrid = (props) => {
                         setFilters({
                           ...filters,
                           [x.key]: e.target.value
-                        })
+                        });
                       }}
                       onFocus={(e) => {
                         e.target.selectionStart = cursorPos;
@@ -483,12 +491,12 @@ const ActivityGrid = (props) => {
                       {...rest}
                       className={classes.filterClassname}
                       value={filters[x.key]}
-                      onChange={(e) =>{
+                      onChange={(e) => {
                         setCursorPos(e.target.selectionStart);
                         setFilters({
                           ...filters,
                           [x.key]: e.target.value
-                        })
+                        });
                       }}
                       onFocus={(e) => {
                         e.target.selectionStart = cursorPos;
@@ -536,7 +544,6 @@ const ActivityGrid = (props) => {
   //   });
   // }, [rows, filters]);
 
-
   function clearFilters() {
     setFilters({
       activity_id: '',
@@ -546,16 +553,19 @@ const ActivityGrid = (props) => {
   }
 
   function toggleFilters() {
-    dispatch({ type: USER_SETTINGS_SET_RECORD_SET_REQUEST, payload: {
-      updatedSet: {
-        ...userSettings.recordSets?.[props.setName],
-        gridFilters: {
-          ...filters,
-          enabled: !filters.enabled
-        }
-      },
-      setName: props.setName
-    }});
+    dispatch({
+      type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+      payload: {
+        updatedSet: {
+          ...userSettings.recordSets?.[props.setName],
+          gridFilters: {
+            ...filters,
+            enabled: !filters.enabled
+          }
+        },
+        setName: props.setName
+      }
+    });
     setFilters((filters) => ({
       ...filters,
       enabled: !filters.enabled
@@ -583,7 +593,6 @@ const ActivityGrid = (props) => {
     const newrows = mapPOI_IAPP_ToDataGridRows(POIs);
     setRows(newrows);
   }, [POIs]);
-
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
@@ -640,34 +649,50 @@ const ActivityGrid = (props) => {
   };
 
   function Pagination() {
-    return <div className={classes.pagination}>
-      {pageNumber <= 1 ? <Button disabled sx={{ m: 0, p: 0 }} size={'small'}><DoubleArrowLeftIcon></DoubleArrowLeftIcon></Button> : 
-        <Button sx={{ m: 1, p: 1 }} size={'small'}
-        onClick={(e) => {
-          e.stopPropagation();
-          setPageNumber(1);
-        }}>
-          <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+    return (
+      <div className={classes.pagination}>
+        {pageNumber <= 1 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setPageNumber(1);
+            }}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        )}
+        {pageNumber <= 1 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setPageNumber(pageNumber - 1);
+            }}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        )}
+        <span>{pageNumber}</span>
+        <Button
+          sx={{ m: 1, p: 1 }}
+          size={'small'}
+          onClick={(e) => {
+            e.stopPropagation();
+            setPageNumber(pageNumber + 1);
+          }}>
+          <ArrowRightIcon></ArrowRightIcon>
         </Button>
-      }
-      {pageNumber <= 1 ? <Button disabled sx={{ m: 0, p: 0 }} size={'small'}><ArrowLeftIcon></ArrowLeftIcon></Button> : 
-        <Button sx={{ m: 1, p: 1 }} size={'small'}
-        onClick={(e) => {
-          e.stopPropagation();
-          setPageNumber(pageNumber - 1);
-        }}>
-          <ArrowLeftIcon></ArrowLeftIcon>
-        </Button>
-      }
-      <span>{pageNumber}</span>
-      <Button sx={{ m: 1, p: 1 }} size={'small'}
-      onClick={(e) => {
-        e.stopPropagation();
-        setPageNumber(pageNumber + 1);
-      }}>
-        <ArrowRightIcon></ArrowRightIcon>
-      </Button>
-    </div>;
+      </div>
+    );
   }
 
   return useMemo(
@@ -716,7 +741,10 @@ const ActivityGrid = (props) => {
                   }}
                   onDelete={(e) => {
                     e.stopPropagation();
-                    dispatch({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST , payload: { setName: props.setName }});
+                    dispatch({
+                      type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
+                      payload: { setName: props.setName }
+                    });
                   }}
                 />
               )}
@@ -733,18 +761,25 @@ const ActivityGrid = (props) => {
               <Button onClick={() => newFilter(undefined)} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <AddBoxIcon></AddBoxIcon>Advanced Filter
               </Button>
-              <Button onClick={() => {
-                dispatch({ type: USER_SETTINGS_SET_RECORD_SET_REQUEST, payload: {
-                  updatedSet: {
-                    ...userSettings.recordSets?.[props.setName],
-                    gridFilters: {
-                      ...filters
+              <Button
+                onClick={() => {
+                  dispatch({
+                    type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+                    payload: {
+                      updatedSet: {
+                        ...userSettings.recordSets?.[props.setName],
+                        gridFilters: {
+                          ...filters
+                        }
+                      },
+                      setName: props.setName
                     }
-                  },
-                  setName: props.setName
-                }});
-                setSave(Math.random());
-              }} sx={{ mr: 1, float: 'right' }} size={'large'} variant="contained">
+                  });
+                  setSave(Math.random());
+                }}
+                sx={{ mr: 1, float: 'right' }}
+                size={'large'}
+                variant="contained">
                 <FilterAltIcon />
                 <SaveIcon />
                 Save & Apply Filters
@@ -760,7 +795,10 @@ const ActivityGrid = (props) => {
                 enableVirtualization
                 headerRowHeight={filters.enabled ? 70 : undefined}
                 style={{ height: '100%' }}
-                className={(userSettings.darkTheme ? 'rdg-dark' : 'rdg-light') + (filters.enabled ? filterContainerClassname : '')}
+                className={
+                  (userSettings.darkTheme ? 'rdg-dark' : 'rdg-light') +
+                  (filters.enabled ? filterContainerClassname : '')
+                }
                 // rows={filteredRows}
                 rows={rows}
                 defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}

@@ -3,7 +3,6 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { toolStyles } from './Helpers/ToolStyles';
@@ -11,7 +10,6 @@ import { toolStyles } from './Helpers/ToolStyles';
 export const ToggleDisplayButtons = (props) => {
   //const history = useHistory();
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);

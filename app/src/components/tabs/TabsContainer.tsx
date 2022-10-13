@@ -33,7 +33,6 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
@@ -212,9 +211,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     dispatch({
@@ -458,10 +454,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={themeType}
-                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checked={darkTheme}
+                    checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      setThemeType(!themeType);
+                      if (darkTheme) dispatch({ type: USER_SETTINGS_DISABLE_DARK_THEME });
+                      else dispatch({ type: USER_SETTINGS_ENABLE_DARK_THEME });
                     }}
                   />
                 }
