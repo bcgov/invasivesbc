@@ -15,8 +15,13 @@ const checkForErrors = (response: any, status?: any, url?: any) => {
 
 //
 export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api//api/activities-lean/`, {});
-  //return.result
-
-  yield put({ type: ACTIVITIES_GEOJSON_GET_SUCCESS, payload: { activitiesGeoJSON: {} } });
+  const networkReturn = yield InvasivesAPI_Call(
+    'POST',
+    `/api/activities-lean/`,
+    action.payload.activitiesFilterCriteria
+  );
+  yield put({
+    type: ACTIVITIES_GEOJSON_GET_SUCCESS,
+    payload: { recordSetID: action.payload.recordSetID, activitiesGeoJSON: networkReturn.result }
+  });
 }

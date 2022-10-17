@@ -36,7 +36,7 @@ import {
 
 import { AppConfig } from '../config';
 
-class ActivitesState {
+class ActivitiesState {
   initialized: boolean;
   error: boolean;
   activitiesGeoJSON: any;
@@ -48,16 +48,16 @@ class ActivitesState {
     this.initialized = false;
   }
 }
-const initialState = new ActivitesState();
+const initialState = new ActivitiesState();
 
-function createActivitesReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivitesState {
+function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, AnyAction) => ActivitiesState {
   return (state = initialState, action) => {
     switch (action.type) {
       case ACTIVITIES_TABLE_ROW_GET_SUCCESS: {
         return {
           ...state,
           activities_table_rows: [
-            ...state.activities_table_rows.filter((item) => {
+            ...state?.activities_table_rows?.filter((item) => {
               return item.recordSetID !== action.payload.recordSetID;
             }),
             { recordSetID: action.payload.recordSetID, rows: [...action.payload.activities_table_rows] }
@@ -67,11 +67,11 @@ function createActivitesReducer(configuration: AppConfig): (ActivityState, AnyAc
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
         return {
           ...state,
-          activities_geojson: [
-            ...state.activities_geojson.filter((item) => {
+          activitiesGeoJSON: [
+            ...state?.activitiesGeoJSON?.filter((item) => {
               return item.recordSetID !== action.payload.recordSetID;
             }),
-            { recordSetID: action.payload.recordSetID, rows: [...action.payload.activities_geojson] }
+            { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
           ]
         };
       }
@@ -81,6 +81,6 @@ function createActivitesReducer(configuration: AppConfig): (ActivityState, AnyAc
   };
 }
 
-const selectActivites: (state) => ActivitesState = (state) => state.ActivitiesPageState;
+const selectActivites: (state) => ActivitiesState = (state) => state.ActivitiesPageState;
 
-export { createActivitesReducer, selectActivites };
+export { createActivitiesReducer, selectActivites };
