@@ -53,6 +53,8 @@ import { selectTabs } from 'state/reducers/tabs';
 import { getTabIconByName } from './TabIconIndex';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { USER_SETTINGS_DISABLE_DARK_THEME, USER_SETTINGS_ENABLE_DARK_THEME } from 'state/actions/index';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserInfo } from 'state/reducers/userInfo';
 
 const drawerWidth = 240;
 
@@ -352,10 +354,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   <MenuItem>
                     <Switch
                       color="secondary"
-                      checked={themeType}
-                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      checked={darkTheme}
+                      checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                       onChange={() => {
-                        setThemeType(!themeType);
+                        if (darkTheme) dispatch({ type: USER_SETTINGS_DISABLE_DARK_THEME });
+                        else dispatch({ type: USER_SETTINGS_ENABLE_DARK_THEME });
                       }}
                     />
                     Theme
@@ -444,7 +447,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             <List>
               {tabConfig.map((tab) => (
                 <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
-                  <ListItemIcon>{tab.icon}</ListItemIcon>
+                  <ListItemIcon>{getTabIconByName(tab.icon)}</ListItemIcon>
                   <ListItemText primary={tab.label} />
                 </ListItem>
               ))}
