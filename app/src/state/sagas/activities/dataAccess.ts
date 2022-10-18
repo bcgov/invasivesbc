@@ -39,7 +39,10 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
     // if mobile or web
     if (true) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_ONLINE, payload: { activityID: action.payload.activityID } });
+      yield put({
+        type: ACTIVITIES_GEOJSON_GET_ONLINE,
+        payload: { recordSetID: 'test', activitiesFilterCriteria: {} }
+      });
     }
     if (false) {
       yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });

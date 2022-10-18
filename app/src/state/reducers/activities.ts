@@ -53,7 +53,7 @@ const initialState = new ActivitiesState();
 function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, AnyAction) => ActivitiesState {
   return (state = initialState, action) => {
     switch (action.type) {
-      case ACTIVITIES_TABLE_ROW_GET_SUCCESS: {
+      /*  case ACTIVITIES_TABLE_ROW_GET_SUCCESS: {
         return {
           ...state,
           activities_table_rows: [
@@ -63,17 +63,30 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
             { recordSetID: action.payload.recordSetID, rows: [...action.payload.activities_table_rows] }
           ]
         };
-      }
+      }*/
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-        return {
-          ...state,
-          activitiesGeoJSON: [
-            ...state?.activitiesGeoJSON?.filter((item) => {
-              return item.recordSetID !== action.payload.recordSetID;
-            }),
-            { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
-          ]
-        };
+        if (
+          state?.activitiesGeoJSON?.length &&
+          state?.activitiesGeoJSON?.filter((item) => {
+            return item.recordSetID !== action.payload.recordSetID;
+          })
+        ) {
+          return {
+            ...state,
+            activitiesGeoJSON: [
+              ...state?.activitiesGeoJSON?.filter((item) => {
+                return item.recordSetID !== action.payload.recordSetID;
+              }),
+              { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
+            ]
+          };
+        } else {
+          return {
+            activitiesGeoJSON: [
+              { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
+            ]
+          };
+        }
       }
       default:
         return state;

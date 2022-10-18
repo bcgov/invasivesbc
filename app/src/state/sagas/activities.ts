@@ -18,7 +18,7 @@ function* handle_ACTIVITY_DEBUG(action) {
 }
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   //recordSets.filter(recordSetName
-  yield put({ type: ACTIVITIES_GEOJSON_GET_REQUEST, payload: {} });
+  yield put({ type: ACTIVITIES_GEOJSON_GET_REQUEST, payload: { recordSetID: 'test', activitiesFilterCriteria: {} } });
   yield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
 }
 function* activitiesPageSaga() {

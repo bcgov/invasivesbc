@@ -20,8 +20,11 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     `/api/activities-lean/`,
     action.payload.activitiesFilterCriteria
   );
+  console.log(
+    JSON.stringify({ recordSetID: action.payload.recordSetID, activitiesGeoJSON: networkReturn.data.result.rows })
+  );
   yield put({
     type: ACTIVITIES_GEOJSON_GET_SUCCESS,
-    payload: { recordSetID: action.payload.recordSetID, activitiesGeoJSON: networkReturn.result }
+    payload: { recordSetID: action.payload.recordSetID, activitiesGeoJSON: networkReturn.data.result.rows }
   });
 }
