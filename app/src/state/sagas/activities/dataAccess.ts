@@ -41,7 +41,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
     if (true) {
       yield put({
         type: ACTIVITIES_GEOJSON_GET_ONLINE,
-        payload: { recordSetID: 'test', activitiesFilterCriteria: {} }
+        payload: { recordSetID: action.payload.recordSetID, activitiesFilterCriteria: {} }
       });
     }
     if (false) {
