@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import {
   AUTH_INITIALIZE_COMPLETE,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE,
@@ -19,22 +19,21 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
+  USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_FAILURE,
   USER_SETTINGS_SET_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
-  USER_SETTINGS_DISABLE_DARK_THEME,
-  USER_SETTINGS_ENABLE_DARK_THEME
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { selectConfiguration } from '../reducers/configuration';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -238,6 +237,13 @@ function* handle_APP_AUTH_READY(action) {
   yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST });
 }
 
+function* handle_USER_SETTINGS_SET_DARK_THEME(action) {
+  const { DEBUG } = yield select(selectConfiguration);
+  if (DEBUG) {
+    console.log(`Changing theme: dark mode-enable = ${action.payload.enabled}`);
+  }
+}
+
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
@@ -253,8 +259,7 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_REQUEST, handle_USER_SETTINGS_SET_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
-    takeEvery(USER_SETTINGS_DISABLE_DARK_THEME, () => console.log('USER_SETTINGS_DISABLE_DARK_THEME')),
-    takeEvery(USER_SETTINGS_ENABLE_DARK_THEME, () => console.log('USER_SETTINGS_ENABLE_DARK_THEME'))
+    takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME)
   ]);
 }
 

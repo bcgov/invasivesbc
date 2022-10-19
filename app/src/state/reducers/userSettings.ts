@@ -3,13 +3,12 @@ import { DocType } from 'constants/database';
 import {
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
-  USER_SETTINGS_DISABLE_DARK_THEME,
-  USER_SETTINGS_ENABLE_DARK_THEME,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+  USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
@@ -147,19 +146,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           recordsExpanded: !state.recordsExpanded
         };
       }
-      case USER_SETTINGS_ENABLE_DARK_THEME: {
+      case USER_SETTINGS_SET_DARK_THEME: {
         return {
           ...state,
-          darkTheme: true
+          darkTheme: action.payload.enabled
         };
       }
-      case USER_SETTINGS_DISABLE_DARK_THEME: {
-        return {
-          ...state,
-          darkTheme: false
-        };
-      }
-
       default:
         return state;
     }
