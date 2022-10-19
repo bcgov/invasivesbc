@@ -8,6 +8,7 @@ import { AppConfig } from './config';
 import { AUTH_INITIALIZE_REQUEST } from './actions';
 import activityPageSaga from './sagas/activity';
 import userSettingsSaga from './sagas/userSettings';
+import tabsSaga from './sagas/tabs';
 
 const setupStore = (configuration: AppConfig) => {
   const sagaMiddleware = createSagaMiddleware();
@@ -28,6 +29,7 @@ const setupStore = (configuration: AppConfig) => {
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(userSettingsSaga);
+  sagaMiddleware.run(tabsSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 

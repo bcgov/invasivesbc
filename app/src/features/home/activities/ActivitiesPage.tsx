@@ -349,6 +349,7 @@ const PageContainer = (props) => {
             id="show-records-tab"
             className={classes.toggleButton}
             color={'warning'}
+            sx={{ color: userSettings.darkTheme && '#fff' }}
             onClick={(e) => {
               e.stopPropagation();
               dispatch({type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
@@ -367,7 +368,7 @@ const PageContainer = (props) => {
         </Box>
         <MenuOptions
           sx={{
-            backgroundColor: '#223f75',
+            backgroundColor: userSettings.darkTheme ? '#272727' : '#223f75',
             width: '100%',
             padding: '5px',
             height: 'auto',

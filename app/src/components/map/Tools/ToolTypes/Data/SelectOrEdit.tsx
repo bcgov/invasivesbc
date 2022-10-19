@@ -1,6 +1,5 @@
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import { ListItem, ListItemIcon, ListItemText, ListItemButton, Typography } from '@mui/material';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -8,7 +7,6 @@ import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const SelectOrEdit = (props) => {
   const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);

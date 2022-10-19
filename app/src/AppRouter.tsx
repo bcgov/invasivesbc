@@ -1,25 +1,44 @@
-import AdminRouter from 'features/admin/AdminRouter';
-import React, {useEffect, useState} from 'react';
-import {Redirect, Switch, useHistory} from 'react-router-dom';
-import HomeRouter from './features/home/HomeRouter';
-import PublicLayout from './layouts/PublicLayout';
+import React, { useEffect } from 'react';
+import { Redirect, Switch, useHistory } from 'react-router-dom';
 import AccessDenied from './pages/misc/AccessDenied';
-import {NotFoundPage} from './pages/misc/NotFoundPage';
-import AppRoute from './utils/AppRoute';
-import {useSelector} from "./state/utilities/use_selector";
-import {selectConfiguration} from "./state/reducers/configuration";
-
+import { NotFoundPage } from './pages/misc/NotFoundPage';
+import { useSelector } from './state/utilities/use_selector';
+import { selectConfiguration } from './state/reducers/configuration';
+import AppRoute from './router/AppRoute';
+import LandingPage from 'features/home/landing/LandingPage';
+import MapPage from 'features/home/map/MapPage';
+import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
+import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
+import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
+import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
+import PlanPage from 'features/home/plan/PlanPage';
+import ActivitiesPage from 'features/home/activities/ActivitiesPage';
+import ActivityPage from 'features/home/activity/ActivityPage';
+import { EmbeddedReportsPage } from 'features/home/reports/EmbeddedReportsPage';
+import { ReferenceIAPPSitePage } from 'features/home/references/ReferenceIAPPSitePage';
+import UserAccessPage from 'features/admin/userAccess/UserAccessPage';
+import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
+import { getDesignTokens } from 'utils/CustomThemeProvider';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { CssBaseline } from '@mui/material';
 
 interface IAppRouterProps {
   deviceInfo: any;
-  keycloak: any;
-  keycloakConfig: any;
+}
+
+export enum AccessLevel {
+  PUBLIC = 'PUBLIC',
+  USER = 'USER',
+  ADMIN = 'ADMIN'
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const {DEBUG} = useSelector(selectConfiguration);
-  const {location} = useHistory();
+  const { DEBUG } = useSelector(selectConfiguration);
+  const { location } = useHistory();
+  const { darkTheme } = useSelector(selectUserSettings);
 
+  const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
+  console.log('THEME:', theme);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
@@ -31,24 +50,114 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   }, [location.pathname, location.search, location.state, DEBUG]);
 
   return (
-    <Switch>
-      <Redirect exact from="/" to="/home/landing"/>
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout}/>
-      <AppRoute path="/page-not-found" title={getTitle('Not Found')} component={NotFoundPage} layout={PublicLayout}/>
-      <AppRoute
-        path="/home"
-        title={getTitle('Home')}
-        component={HomeRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute
-        path="/admin"
-        title={getTitle('Admin')}
-        component={AdminRouter}
-        layout={PublicLayout}
-      />
-      <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found"/>}/>
-    </Switch>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Switch>
+        <Redirect exact from="/" to="/home/landing" />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          path="/forbidden"
+          title={getTitle('Forbidden')}
+          component={AccessDenied}
+        />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          path="/page-not-found"
+          title={getTitle('Not Found')}
+          component={NotFoundPage}
+        />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          path="/home/landing"
+          title={getTitle('Landing')}
+          component={LandingPage}
+        />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          path="/home/map*"
+          strict={false}
+          sensitive={false}
+          title={getTitle('Map')}
+          component={MapPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.PUBLIC}
+          path="/home/access-request"
+          title={getTitle('Access Request')}
+          component={AccessRequestPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.PUBLIC}
+          path="/home/data-sharing-agreement"
+          title={getTitle('Data Sharing Agreement')}
+          component={DataSharingAgreementPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/search/bulkedit"
+          title={getTitle('Bulk Edit')}
+          component={BulkEditActivitiesPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/activity/observation"
+          title={getTitle('Create Observation')}
+          component={ObservationCreationStepperPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/plan"
+          title={getTitle('Plan')}
+          component={PlanPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/activities"
+          title={getTitle('Activities')}
+          component={ActivitiesPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/activity"
+          title={getTitle('Activity')}
+          component={ActivityPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/iapp/:id?"
+          title={getTitle('IAPP Site')}
+          component={ReferenceIAPPSitePage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.ADMIN}
+          path="/home/reports"
+          title={getTitle('Reports')}
+          component={EmbeddedReportsPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.ADMIN}
+          path="/home/admin"
+          title={getTitle('User Access')}
+          component={UserAccessPage}
+        />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          title="*"
+          path="*"
+          component={() => <Redirect to="/page-not-found" />}
+        />
+      </Switch>
+    </ThemeProvider>
   );
 };
 

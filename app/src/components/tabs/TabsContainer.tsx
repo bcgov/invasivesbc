@@ -2,15 +2,16 @@ import { IonAlert } from '@ionic/react';
 import {
   AppBar,
   Avatar,
+  Box,
   Chip,
   CircularProgress,
+  Container,
   Divider,
   Drawer,
   FormControlLabel,
   Grid,
   IconButton,
   List,
-  Container,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -20,11 +21,9 @@ import {
   Tab,
   Tabs,
   Theme,
-  Toolbar,
-  Box
+  Toolbar
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@mui/icons-material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
@@ -33,27 +32,29 @@ import MenuIcon from '@mui/icons-material/Menu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import clsx from 'clsx';
-import { ThemeContext } from 'utils/CustomThemeProvider';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import './TabsContainer.css';
 import { useDispatch } from 'react-redux';
 import {
   AUTH_SIGNIN_REQUEST,
-  AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
-  NETWORK_GO_ONLINE
+  NETWORK_GO_ONLINE,
+  TABS_SET_ACTIVE_TAB_REQUEST
 } from '../../state/actions';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
-import { selectUserInfo } from '../../state/reducers/userInfo';
-import { selectConfiguration } from '../../state/reducers/configuration';
 import { MobileOnly } from '../common/MobileOnly';
 import { selectNetworkConnected } from '../../state/reducers/network';
+import { selectTabs } from 'state/reducers/tabs';
+import { getTabIconByName } from './TabIconIndex';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { USER_SETTINGS_SET_DARK_THEME } from 'state/actions/index';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserInfo } from 'state/reducers/userInfo';
 
 const drawerWidth = 240;
 
@@ -129,14 +130,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ITabConfig {
-  path: string;
-  childPaths?: string[];
-  label: string;
-  icon: React.ReactElement;
+export interface ITabsContainerProps {
 }
-
-export interface ITabsContainerProps {}
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const classes = useStyles();
@@ -149,22 +144,18 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const { displayName, roles, authenticated } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+  const { darkTheme } = useSelector(selectUserSettings);
 
   const { FEATURE_GATE } = useSelector(selectConfiguration);
   const connected = useSelector(selectNetworkConnected);
-
-  const [showLoggedInTabs, setShowLoggedInTabs] = useState(authenticated && activated && userInfoLoaded);
-
-  useEffect(() => {
-    setShowLoggedInTabs(authenticated && userInfoLoaded && activated);
-  }, [authenticated, activated, userInfoLoaded]);
+  const { showLoggedInTabs, activeTab, initialized: tabsInitialized, tabConfig } = useSelector(selectTabs);
 
   const [isAdmin, setIsAdmin] = useState(
     authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' })
   );
 
   useEffect(() => {
-    setIsAdmin(authenticated && roles.filter((role) => role.role_id === 18).length > 0);
+    setIsAdmin(authenticated && roles.includes({ role_id: 18, role_name: 'master_administrator' }));
   }, [authenticated, roles]);
 
   const handleClose = () => {
@@ -180,8 +171,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
 
   const logoutUser = async () => {
-    history.push('/home/landing');
-    dispatch({ type: AUTH_SIGNOUT_REQUEST});
+    dispatch({ type: AUTH_SIGNOUT_REQUEST });
     handleClose();
   };
 
@@ -225,124 +215,20 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setOpen(false);
   };
 
-  const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
-
-  /**
-   * Determine the active tab index, based on the current url path.
-   *
-   * @param {number} activeTabNumber The current active tab index, to be used as backup if no matching paths are found.
-   * @return {*}  {number}
-   */
-  const getActiveTab = (activeTabNumber?: number): any => {
-    for (let index = 0; index < tabConfig.length; index++) {
-      const pathsToMatchAgainst = [tabConfig[index].path, ...(tabConfig[index].childPaths || [])];
-
-      // If the current url path contains any of the paths for a tab, return its index as the new active tab index.
-      if (
-        pathsToMatchAgainst.some((pathToMatch) => {
-          return window.location.pathname.includes(pathToMatch) && !open;
-        })
-      ) {
-        return index;
-      }
-    }
-
-
-    // Otherwise return the current active tab index as a fallback
-    return false;
-  };
-
-  const [activeTab, setActiveTab] = React.useState(getActiveTab());
-
-  const themeContext = useContext(ThemeContext);
-  const { themeType, setThemeType } = themeContext;
-
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setActiveTab(newValue);
+    dispatch({
+      type: TABS_SET_ACTIVE_TAB_REQUEST,
+      payload: {
+        activeTab: newValue
+      }
+    });
   };
 
-  useEffect(() => {
- //   console.log('activetab;')
-//    console.log(activeTab)
-    setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
-  }, [history.location.pathname]);
 
-  useEffect(() => {
-    const setTabConfigBasedOnRoles = () => {
-      setTabConfig(() => {
-        const tabsUserHasAccessTo: ITabConfig[] = [];
-        tabsUserHasAccessTo.push({
-          label: 'Home',
-          path: '/home/landing',
-          icon: <Home fontSize={'small'} />
-        });
-
-        if (!showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Map',
-            path: '/home/map',
-            icon: <Map fontSize={'small'} />
-          });
-        }
-
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Recorded Activities',
-            path: '/home/activities',
-            icon: <HomeWork fontSize={'small'} />
-          });
-        }
-
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment fontSize={'small'} />
-          });
-        }
-
-        if (showLoggedInTabs) {
-          tabsUserHasAccessTo.push({
-            label: 'Current IAPP Site',
-            path: '/home/iapp/',
-            icon: (
-              <img
-                alt="iapp logo"
-                src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
-                style={{ maxWidth: '3.8rem', marginBottom: '6px' }}
-              />
-            )
-          });
-        }
-
-        if (isAdmin) {
-          tabsUserHasAccessTo.push({
-            label: 'Admin',
-            path: '/admin/useraccess',
-            icon: <AdminPanelSettingsIcon fontSize={'small'} />
-          });
-        }
-
-        if (showLoggedInTabs && FEATURE_GATE.EMBEDDED_REPORTS) {
-          tabsUserHasAccessTo.push({
-            label: 'Reports',
-            path: '/home/reports',
-            icon: <AssessmentIcon fontSize={'small'} />
-          });
-        }
-        return tabsUserHasAccessTo;
-      });
-    };
-    setTabConfigBasedOnRoles();
-    return ()=> setTabConfig([])
-  }, [showLoggedInTabs, isAdmin ]);
-
-
-  return useMemo(() => {
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
   }
-    return (
+  return (
     <>
       <IonAlert
         isOpen={showAlert}
@@ -356,7 +242,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {}
+            handler: () => {
+            }
           },
           {
             text: 'Okay',
@@ -408,29 +295,38 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <b>InvasivesBC</b>
             </Box>
             <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-              {tabConfig && tabConfig.length > 0 ?
-              <Tabs
-                indicatorColor="secondary"
-                textColor="inherit"
-                //value={tabConfig[activeTab]? tabConfig[activeTab]: false}
-                value={tabConfig[getActiveTab()]? getActiveTab(): false}
-                color="primary"
-                centered
-                style={{ width: '80%', color: '#fff' }}
-                onChange={handleChange}>
-                {tabConfig.map((tab) => {
-                  if(tab && tab.label) return (
-                      <Tab
-                        style={{ fontSize: '.7rem', fontWeight: 'bold' }}
-                        color="primary"
-                        label={tab.label}
-                        key={tab.label.split(' ').join('_')}
-                        icon={tab.icon}
-                        onClick={() => history.push(tab.path)}
-                      />
-                  );}
-                )}
-              </Tabs> : <></>}
+              {tabConfig && tabConfig.length > 0 && tabsInitialized ? (
+                <Tabs
+                  indicatorColor="secondary"
+                  textColor="inherit"
+                  value={activeTab}
+                  color="primary"
+                  centered
+                  style={{ width: '80%', color: '#fff' }}
+                  onChange={handleChange}>
+                  {tabConfig.map((tab) => {
+                    if (tab && tab.label)
+                      return (
+                        <Tab
+                          style={{
+                            fontSize: '.7rem',
+                            fontWeight: 'bold',
+                            justifyContent: 'space-between',
+                            paddingBottom: '15px',
+                            paddingTop: '15px'
+                          }}
+                          color="primary"
+                          label={tab.label}
+                          key={tab.label.split(' ').join('_')}
+                          icon={getTabIconByName(tab.icon)}
+                          onClick={() => history.push(tab.path)}
+                        />
+                      );
+                  })}
+                </Tabs>
+              ) : (
+                <></>
+              )}
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <IconButton onClick={handleClick} size="small">
@@ -460,10 +356,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <MenuItem>
                   <Switch
                     color="secondary"
-                    checked={themeType}
-                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    checked={darkTheme}
+                    checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                     onChange={() => {
-                      setThemeType(!themeType);
+                      dispatch({ type: USER_SETTINGS_SET_DARK_THEME, payload: { enabled: !darkTheme } });
                     }}
                   />
                   Theme
@@ -552,7 +448,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <List>
             {tabConfig.map((tab) => (
               <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
-                <ListItemIcon>{tab.icon}</ListItemIcon>
+                <ListItemIcon>{getTabIconByName(tab.icon)}</ListItemIcon>
                 <ListItemText primary={tab.label} />
               </ListItem>
             ))}
@@ -562,10 +458,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={themeType}
-                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                  color="secondary"
+                  checked={darkTheme}
+                  checkedIcon={darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
                   onChange={() => {
-                    setThemeType(!themeType);
+                    dispatch({ type: USER_SETTINGS_SET_DARK_THEME, payload: { enabled: !darkTheme } });
                   }}
                 />
               }
@@ -591,9 +488,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         </Drawer>
       </Box>
     </>
-  )
-  //},[tabConfig,activeTab,open]);
-  },[tabConfig,history.location.pathname,open, anchorEl]);
+  );
 };
 
 export default TabsContainer;

@@ -17,7 +17,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 // import StorageIcon from '@mui/icons-material/Storage';
 import { point } from '@turf/helpers';
 import buffer from '@turf/buffer';
-import { ThemeContext } from 'utils/CustomThemeProvider';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
@@ -33,12 +32,13 @@ import {
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from '../Nav/DisplayPosition';
 import center from '@turf/center';
+import { useSelector } from 'react-redux';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const GeneratePopup = (props) => {
   const { bufferedGeo, onCloseCallback = null } = props;
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
-  const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
+  const { darkTheme } = useSelector(selectUserSettings);
+  const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [section, setSection] = useState('position');
   const map = useMap();
   const position = center(bufferedGeo).geometry.coordinates;
@@ -79,7 +79,7 @@ export const GeneratePopup = (props) => {
           </TableContainer>
           <Grid container>
             <BottomNavigation
-              style={{ backgroundColor: themeType ? '#333' : null, width: 500 }}
+              style={{ backgroundColor: darkTheme ? '#333' : null, width: 500 }}
               value={section}
               onChange={handleChange}>
               <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
@@ -110,10 +110,10 @@ function SetPointOnClick() {
   const [userGeo, setUserGeo] = React.useState(null);
   const map = useMap();
   const toolClass = toolStyles();
-  const themeContext = React.useContext(ThemeContext);
   const divRef = React.useRef();
   const markerRef = useRef(null);
   const [coolguy, setCoolGuy] = useState(null);
+  const { darkTheme } = useSelector(selectUserSettings);
 
   useEffect(() => {
     if (userGeo !== null) {
@@ -197,7 +197,7 @@ function SetPointOnClick() {
         <ListItemIcon>
           <img
             style={{ width: 32, height: 32 }}
-            color={themeContext.themeType ? '#000' : 'white'}
+            color={darkTheme ? '#000' : 'white'}
             src={binoculars}
             aria-label="create-pin"
           />
