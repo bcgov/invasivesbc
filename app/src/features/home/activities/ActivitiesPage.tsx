@@ -1,8 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Box, Button, Container, Theme } from '@mui/material';
+import { Alert, Box, Button, Container, Snackbar, Theme } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MapIcon from '@mui/icons-material/Map';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -16,7 +17,11 @@ import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST } from 'state/actions';
+import {
+  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST
+} from 'state/actions';
 import { useDispatch } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
@@ -78,9 +83,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
-  return (
-    <PageContainer originalActivityPageClassName={classes.pageContainer} />
-  );
+  return <PageContainer originalActivityPageClassName={classes.pageContainer} />;
 };
 
 // main page component - moved everything in here so it could be wrapped in a context local to this page.
@@ -96,6 +99,7 @@ const PageContainer = (props) => {
   const [recordSetsForSave, setRecordSetsForSave] = useState([]);
   const [recordSetSaveDialogOpen, setRecordSetSaveDialogOpen] = useState(false);
   const [recordSetSaveDialogLoading, setRecordSetSaveDialogLoading] = useState(false);
+  const [copyAlertOpen, setCopyAlertOpen] = useState(false);
 
   const { accessRoles } = useSelector(selectAuth);
 
@@ -114,6 +118,13 @@ const PageContainer = (props) => {
 
   const handleNewRecordDialogClose = () => {
     setNewRecordDialog((prev) => ({ ...prev, dialogOpen: false }));
+  };
+
+  const handleCopyAlertClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setCopyAlertOpen(false);
   };
 
   const [newRecordDialog, setNewRecordDialog] = useState<INewRecordDialog>({
@@ -208,15 +219,15 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (userSettings.selectedRecord?.description !== undefined &&
-            userSettings.selectedRecord?.description),
+          (userSettings.selectedRecord?.description !== undefined && userSettings.selectedRecord?.description),
         disabled: userSettings.selectedRecord?.description === undefined,
         hidden: !userSettings.selectedRecord,
         onClick: async () => {
           try {
             dispatch({
               type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: userSettings?.selectedRecord?.id }})
+              payload: { activeActivity: userSettings?.selectedRecord?.id }
+            });
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
@@ -228,6 +239,25 @@ const PageContainer = (props) => {
               history.push({ pathname: `/home/activity` });
             }
           }, 1000);
+        }
+      },
+      {
+        name:
+          'Copy ID to Clipboard (' +
+          (userSettings.selectedRecord?.description !== undefined &&
+            userSettings.selectedRecord?.description.split('-')[1].trim()) +
+          ')',
+        disabled: userSettings.selectedRecord?.description === undefined,
+        hidden: !userSettings.selectedRecord,
+        icon: ContentCopy,
+        onClick: async () => {
+          try {
+            navigator.clipboard.writeText(userSettings.selectedRecord.description.split('-')[1].trim());
+            setCopyAlertOpen(true);
+          } catch (e) {
+            console.log('Unable to copy ID.');
+            console.log(e);
+          }
         }
       },
       {
@@ -324,6 +354,11 @@ const PageContainer = (props) => {
         }}
         recordSets={recordSetsForSave}
       />
+      <Snackbar open={copyAlertOpen} autoHideDuration={3000} onClose={handleCopyAlertClose}>
+        <Alert onClose={handleCopyAlertClose} severity="success" sx={{ width: '100%', marginBottom: '30px' }}>
+          Copied to clipboard!
+        </Alert>
+      </Snackbar>
       {/*the main list of record sets:*/}
       <Box
         style={{
@@ -352,7 +387,7 @@ const PageContainer = (props) => {
             sx={{ color: userSettings.darkTheme && '#fff' }}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
+              dispatch({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST });
             }}
             variant={'contained'}
             endIcon={
