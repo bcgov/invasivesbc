@@ -164,6 +164,19 @@ export const LayerPickerBasic = (props) => {
           />
         </LayerGroup>
       </LayersControl.Overlay>
+
+      <LayersControl.Overlay checked={true} name="MOTI RFI">
+        <LayerGroup>
+          <DataBCLayer
+            enabled={true}
+            transparent={true}
+            layer_mode={LayerMode.WMSOnline}
+            bcgw_code="WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP"
+            opacity={1.0}
+            zIndex={3513}
+          />
+        </LayerGroup>
+      </LayersControl.Overlay>
     </LayersControl>
   );
 };
