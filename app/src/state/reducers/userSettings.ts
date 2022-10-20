@@ -63,7 +63,10 @@ class UserSettingsState {
 
   constructor() {
     this.initialized = false;
-    this.darkTheme = false;
+    this.darkTheme = localStorage.getItem('USER_SETTINGS_DARK_THEME')
+      ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
+      : false;
+    console.log('this.darkTheme', this.darkTheme);
     this.newRecordDialogState = {
       recordCategory:
         JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
