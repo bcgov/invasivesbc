@@ -242,6 +242,7 @@ function* handle_USER_SETTINGS_SET_DARK_THEME(action) {
   if (DEBUG) {
     console.log(`Changing theme: dark mode-enable = ${action.payload.enabled}`);
   }
+  localStorage.setItem('USER_SETTINGS_DARK_THEME', JSON.stringify(action.payload.enabled));
 }
 
 function* userSettingsSaga() {
