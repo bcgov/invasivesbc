@@ -5,6 +5,9 @@ import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectAuth } from '../../state/reducers/auth';
 import { selectActivity } from 'state/reducers/activity';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { useDispatch } from 'react-redux';
+import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -27,10 +30,21 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
   const { accessRoles, displayName } = useSelector(selectAuth);
+  const userSettings = useSelector(selectUserSettings);
+  const dispatch = useDispatch();
 
   const activityInState = useSelector(selectActivity);
 
   const deleteRecord = () => {
+    // On record deletion, clear selected record
+    if (userSettings.selectedRecord.id === activityInState.activity.activity_id) {
+      dispatch({
+        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        payload: {
+          selectedRecord: null
+        }
+      });
+    }
     const activityIds = [activityInState.activity.activity_id];
     dataAccess.deleteActivities(activityIds);
     history.push('/home/activities');
