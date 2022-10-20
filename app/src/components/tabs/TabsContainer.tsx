@@ -130,8 +130,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ITabsContainerProps {
-}
+export interface ITabsContainerProps {}
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const classes = useStyles();
@@ -215,16 +214,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setOpen(false);
   };
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    dispatch({
-      type: TABS_SET_ACTIVE_TAB_REQUEST,
-      payload: {
-        activeTab: newValue
-      }
-    });
-  };
-
-
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
   }
@@ -242,8 +231,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {
-            }
+            handler: () => {}
           },
           {
             text: 'Okay',
@@ -302,8 +290,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   value={activeTab}
                   color="primary"
                   centered
-                  style={{ width: '80%', color: '#fff' }}
-                  onChange={handleChange}>
+                  style={{ width: '80%', color: '#fff' }}>
                   {tabConfig.map((tab) => {
                     if (tab && tab.label)
                       return (
