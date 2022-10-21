@@ -10,7 +10,7 @@ import { selectActivites } from 'state/reducers/activities';
 export const RecordSetLayersRenderer = (props: any) => {
   const [layersToRender, setLayersToRender] = useState([]);
   const { accessRoles } = useSelector(selectAuth);
-  const { recordSets } = useSelector(selectUserSettings);
+  const userSettingsState = useSelector(selectUserSettings);
   const activitiesState = useSelector(selectActivites);
 
   interface ILayerToRender {
@@ -20,21 +20,25 @@ export const RecordSetLayersRenderer = (props: any) => {
   }
 
   useEffect(() => {
-    const sets = Object.keys(recordSets);
+    const sets = Object.keys(userSettingsState.recordSets);
     if (!sets || !sets.length) {
       return;
     }
 
     const layers = sets.map((s) => {
       let l: any = {};
-      l.color = recordSets[s].color;
+      l.color = sets[s]?.color;
       l.setName = s;
-      l.drawOrder = recordSets[s].drawOrder;
+      l.drawOrder = sets[s]?.drawOrder;
+      l.activities = activitiesState?.activitiesGeoJSON?.filter((x) => {
+        return x.recordSetID === l.setName;
+      })[0]?.rows;
       return l;
     });
 
     setLayersToRender([...layers]);
-  }, [recordSets, activitiesState?.activitiesGeoJSON]);
+    console.log(JSON.stringify(layers));
+  }, [userSettingsState.recordSets, activitiesState]);
 
   return (
     <>
@@ -43,12 +47,7 @@ export const RecordSetLayersRenderer = (props: any) => {
           return (
             <ActivitiesLayerV2
               key={'activitiesv2filter' + l.setName}
-              activities={
-                activitiesState?.activitiesGeoJSON?.filter((x) => {
-                  return x.recordSetID === l.setName;
-                })[0]?.rows
-              }
-              filters={l.filters}
+              activities={l.activities}
               zIndex={999999999 - l.drawOrder}
               color={l.color}
               opacity={0.8}
