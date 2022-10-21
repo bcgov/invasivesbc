@@ -36,12 +36,12 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   sets[action.payload.updatedSetName] = action.payload.updatedSet;
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.updatedSet.advancedFilterRows,
-    authState.roles,
+    authState.accessRoles,
     sets,
     action.payload.updatedSetName,
     false,
     action.payload.updatedSet.gridFilters,
-    1,
+    0,
     999
   );
   yield put({

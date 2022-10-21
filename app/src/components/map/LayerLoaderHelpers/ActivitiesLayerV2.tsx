@@ -23,7 +23,6 @@ export const ActivitiesLayerV2 = (props: any) => {
   const map = useMap();
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
   const [activities, setActivities] = useState(null);
-  const dataAccess = useDataAccess();
   const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 100,
@@ -64,11 +63,8 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   const filters: IActivitySearchCriteria = props.filters;
   const fetchData = async () => {
-    const activitiesData = await dataAccess.getActivitiesLean({
-      ...filters
-    });
     const activitiesFeatureArray = [];
-    activitiesData?.rows?.forEach((row) => {
+    props.activities?.forEach((row) => {
       activitiesFeatureArray.push(row.geojson ? row.geojson : row);
     });
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
@@ -76,7 +72,11 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   useEffect(() => {
     fetchData();
-  }, [props.filters]);
+  }, []);
+
+  useEffect(() => {
+    console.log('len**' + activities?.features?.length);
+  }, [activities]);
 
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
@@ -87,7 +87,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   const getActivitiesSLD = () => {
     getSldStylesFromLocalFile().then((res) => {
       setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
-      fetchData();
+      // fetchData();
     });
   };
 
@@ -142,11 +142,12 @@ export const ActivitiesLayerV2 = (props: any) => {
                 features: [a]
               };
 
-              if(a.properties.activity_id) return (
-                <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup bufferedGeo={bufferedGeo} />
-                </Marker>
-              );
+              if (a.properties.activity_id)
+                return (
+                  <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
+                    <GeneratePopup bufferedGeo={bufferedGeo} />
+                  </Marker>
+                );
             }
           })}
         </MarkerClusterGroup>
