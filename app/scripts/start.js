@@ -41,6 +41,7 @@ const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
 const buildingForMobile = argv.indexOf('--mobile') !== -1;
 const goFastBuild = argv.indexOf('--fast') !== -1;
+const enableJeepSqlite = argv.indexOf('--jeepsqlite') !== -1;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
@@ -91,7 +92,8 @@ const config = configFactory('development', {
   CONFIGURATION_KEYCLOAK_REALM: process.env['SSO_REALM'],
   CONFIGURATION_KEYCLOAK_URL: process.env['SSO_URL'],
   CONFIGURATION_REDIRECT_URI: process.env['REDIRECT_URI'],
-  ...platformConfig(buildingForMobile)
+  ...platformConfig(buildingForMobile),
+  ENABLE_JEEP_SQLITE: enableJeepSqlite
 });
 
 // We require that you explicitly set browsers and do not fall back to

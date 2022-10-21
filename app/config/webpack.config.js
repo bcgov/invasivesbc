@@ -592,6 +592,7 @@ module.exports = function (webpackEnv, invasivesConfig) {
           CONFIGURATION_KEYCLOAK_ADAPTER: JSON.stringify(invasivesConfig.CONFIGURATION_KEYCLOAK_ADAPTER),
           CONFIGURATION_REDIRECT_URI: JSON.stringify(invasivesConfig.CONFIGURATION_REDIRECT_URI),
           CONFIGURATION_IS_MOBILE: JSON.stringify(invasivesConfig.CONFIGURATION_IS_MOBILE),
+          ENABLE_JEEPSQLITE: JSON.stringify(invasivesConfig.ENABLE_JEEP_SQLITE),
           ...env.stringified
         }
       ),
