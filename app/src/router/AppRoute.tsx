@@ -9,6 +9,9 @@ import CheckAccess from './CheckAccess';
 import HomeLayout from 'features/home/HomeLayout';
 import { CircularProgress, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useDispatch } from 'react-redux';
+import { selectTabs } from 'state/reducers/tabs';
+import { TABS_SET_ACTIVE_TAB_REQUEST } from 'state/actions';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -36,6 +39,8 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
   const { initialized: authInitialized } = useSelector(selectAuth);
   const [hasErrors, setHasErrors] = React.useState(false);
   const history = useHistory();
+  const dispatch = useDispatch();
+  const tabs = useSelector(selectTabs);
 
   useEffect(() => {
     if (authInitialized) {
@@ -46,6 +51,16 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
       }
     }
   }, [authInitialized]);
+
+  useEffect(() => {
+    const tabIndex = tabs.tabConfig.findIndex((tab) => tab.path === history.location.pathname);
+    dispatch({
+      type: TABS_SET_ACTIVE_TAB_REQUEST,
+      payload: {
+        activeTab: tabIndex === -1 ? 0 : tabIndex
+      }
+    });
+  }, [history.location.pathname]);
 
   document.title = pageTitle;
 

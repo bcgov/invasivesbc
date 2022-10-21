@@ -97,9 +97,13 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
 function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
   try {
     const tabs = yield select(selectTabs);
-    yield localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
-    yield localStorage.setItem('TABS_CURRENT_TAB_PATH', tabs.tabConfig[action.payload.activeTab].path);
-    yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
+    if (tabs.initialized) {
+      yield localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
+      yield console.log('tabs', tabs);
+      yield console.log('activeTab: ', action.payload.activeTab);
+      yield localStorage.setItem('TABS_CURRENT_TAB_PATH', tabs.tabConfig[action.payload.activeTab].path); // Causing error
+      yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: TABS_SET_ACTIVE_TAB_FAILURE });
