@@ -48,6 +48,7 @@ const argv = process.argv.slice(2);
 const writeStatsJson = argv.indexOf('--stats') !== -1;
 const buildingForMobile = argv.indexOf('--mobile') !== -1;
 const buildForCaddyTemplates = argv.indexOf('--caddy') !== -1;
+const enableJeepSqlite = argv.indexOf('--jeepsqlite') !== -1;
 
 const platformConfig = (isMobile) => {
   if (isMobile) {
@@ -80,7 +81,8 @@ const configSource = (isCaddyBuild) => {
 // Generate configuration
 const config = configFactory('production', {
   ...configSource(buildForCaddyTemplates),
-  ...platformConfig(buildingForMobile)
+  ...platformConfig(buildingForMobile),
+  ENABLE_JEEP_SQLITE: enableJeepSqlite
 });
 
 // We require that you explicitly set browsers and do not fall back to

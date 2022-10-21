@@ -65,6 +65,7 @@ export const DatabaseContextProvider = (props) => {
     isConnection,
     addUpgradeStatement,
     importFromJson,
+    initWebStore,
     isJsonValid,
     isDatabase,
     getDatabaseList,
@@ -99,37 +100,24 @@ export const DatabaseContextProvider = (props) => {
       isAvailable: isAvailable
     };
     isJsonListeners = { jsonListeners: jsonListeners, setJsonListeners: setJsonListeners };
+
+    // local mobile development
+    if (MOBILE && ENABLE_JEEPSQLITE) {
+      const jeepEl = document.createElement("jeep-sqlite");
+      document.body.appendChild(jeepEl);
+      customElements.whenDefined('jeep-sqlite').then( () => {
+        initWebStore().then( () => {
+          console.log('jeepSqlite initialized');
+          createSqliteTables();
+        });
+      });
+    }
+
     // open connnection, make tables, set db in context
-    if (MOBILE) createSqliteTables();
+    // real mobile device (or sim)
+    if (MOBILE && !ENABLE_JEEPSQLITE) createSqliteTables();
     // a bunch of one time stuff
   }, []);
-
-  // useEffect(() => {
-  //   const saveUserInfo = async () => {
-  //     const user = keycloak?.userInfo;
-  //     if (!user) {
-  //       return;
-  //     }
-  //     if (Capacitor.getPlatform() !== 'web' && databaseIsSetup && sqlite) {
-  //       await processRequest({
-  //         asyncTask: () => {
-  //           return upsert(
-  //             [
-  //               {
-  //                 type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-  //                 docType: DocType.KEYCLOAK,
-  //                 ID: '1',
-  //                 json: user
-  //               }
-  //             ],
-  //             DatabaseContext
-  //           );
-  //         }
-  //       });
-  //     }
-  //   };
-  //   saveUserInfo();
-  // }, [keycloak?.obj, keycloak?.userInfo, processRequest, databaseIsSetup]);
 
   const createSqliteTables = async () => {
     // initialize the connection

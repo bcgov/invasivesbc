@@ -1,12 +1,36 @@
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import App from 'App';
-import { default as React, useEffect } from 'react';
+import { default as React, HTMLAttributes } from 'react';
 import ReactDOM from 'react-dom';
 import { setupStore } from './state/store';
 import { Device } from '@capacitor/device';
+import { applyPolyfills, defineCustomElements as jeepSqlite, JSX as LocalJSX } from "jeep-sqlite/loader";
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
+
+
+type StencilToReact<T> = {
+  [P in keyof T]?: T[P] & Omit<HTMLAttributes<Element>, 'className'> & {
+  class?: string;
+};
+};
+
+declare global {
+  export namespace JSX {
+    interface IntrinsicElements extends StencilToReact<LocalJSX.IntrinsicElements> {
+    }
+  }
+  // webpack-injected. only for ionic:serve builds.
+  const ENABLE_JEEPSQLITE: boolean;
+}
+
+if (ENABLE_JEEPSQLITE) {
+  console.log('enabling polyfills for jeep sqlite');
+  applyPolyfills().then(() => {
+    jeepSqlite(window);
+  });
+}
 
 const startApp = (info) => {
   import(/* webpackChunkName: "app_config" */ 'state/config').then(({ CONFIG }) => {
