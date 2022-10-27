@@ -90,6 +90,16 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
       crossOrigin: true
     }
   );
+
+  const placeoMap = (L.tileLayer as any).offline(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
+      subdomains: 'abc',
+      zIndex: 3001,
+      crossOrigin: true
+    }
+  );
   // const map = useMap(); // Get the map from the context
   // const group = ; // Create a group to hold the drawn features
   const classes = useStyles(); // Get the classes from the context
@@ -475,11 +485,14 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   useEffect(() => {
     // If showTopo changes, disable or enable the circle
     if (showTopo) {
+      baseMapGroup.clearLayers();
       baseMapGroup.addLayer(topoMap);
       map.addLayer(baseMapGroup);
     } else {
       baseMapGroup.clearLayers();
       map.removeLayer(baseMapGroup);
+      baseMapGroup.addLayer(placeoMap);
+      map.addLayer(baseMapGroup);
     }
   }, [showTopo]);
 
