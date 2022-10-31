@@ -16,6 +16,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { ACTIVITY_ADD_PHOTO_REQUEST } from 'state/actions';
 
 export interface IPhoto {
   filepath: string;
@@ -32,6 +34,8 @@ export interface IPhotoContainerProps {
 }
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
+  const dispatch = useDispatch();
+
   const takePhoto = async () => {
     try {
       const cameraPhoto = await Camera.getPhoto({
@@ -46,6 +50,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         dataUrl: cameraPhoto.dataUrl,
         description: 'untitled'
       };
+
+      dispatch({ type: ACTIVITY_ADD_PHOTO_REQUEST, payload: { 
+        photo: photo
+      } });
 
       props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {

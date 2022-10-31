@@ -30,7 +30,8 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITY_CREATE_SUCCESS
+  ACTIVITY_CREATE_SUCCESS,
+  ACTIVITY_ADD_PHOTO_REQUEST
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -122,6 +123,18 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         return {
           ...state,
           activity: { ...action.payload.activity }
+        };
+      }
+      case ACTIVITY_ADD_PHOTO_REQUEST: {
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            media: [
+              ...state.activity.media,
+              action.payload.photo
+            ]
+          }
         };
       }
       default:
