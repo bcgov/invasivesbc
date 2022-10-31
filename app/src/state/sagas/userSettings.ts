@@ -20,6 +20,7 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_DARK_THEME,
+  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
@@ -214,6 +215,20 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
       payload: { activeActivity: action.payload.activeActivity }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE });
+  }
+}
+
+function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
+  try {
+    const newID = localStorage.setItem('activeIAPP', action.payload.activeIAPP);
+
+    yield put({
+      type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+      payload: { activeActivity: action.payload.activeIAPP }
     });
   } catch (e) {
     console.error(e);

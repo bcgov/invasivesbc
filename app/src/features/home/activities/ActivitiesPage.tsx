@@ -219,25 +219,34 @@ const PageContainer = (props) => {
       {
         name:
           'Open ' +
-          (userSettings.selectedRecord?.description !== undefined && userSettings.selectedRecord?.description),
-        disabled: userSettings.selectedRecord?.description === undefined,
-        hidden: !userSettings.selectedRecord,
+          (userSettings.selectedInvasivesBCRecord?.description !== undefined &&
+            userSettings.selectedInvasivesBCRecord?.description),
+        disabled: userSettings.selectedInvasivesBCRecord?.description === undefined,
+        hidden: !userSettings.selectedInvasivesBCRecord,
         onClick: async () => {
           try {
             dispatch({
               type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: userSettings?.selectedRecord?.id }
+              payload: { activeActivity: userSettings?.selectedInvasivesBCRecord?.id }
             });
           } catch (e) {
             console.log('unable to http ');
             console.log(e);
           }
           setTimeout(() => {
-            if (userSettings?.selectedRecord?.isIAPP) {
-              history.push({ pathname: `/home/iapp/${userSettings?.selectedRecord?.id}` });
-            } else {
-              history.push({ pathname: `/home/activity` });
-            }
+            history.push({ pathname: `/home/activity` });
+          }, 1000);
+        }
+      },
+      {
+        name:
+          'Open ' +
+          (userSettings.selectedIAPPRecord?.description !== undefined && userSettings.selectedIAPPRecord?.description),
+        disabled: userSettings.selectedIAPPRecord?.description === undefined,
+        hidden: !userSettings.selectedIAPPRecord,
+        onClick: async () => {
+          setTimeout(() => {
+            history.push({ pathname: `/home/iapp/${userSettings?.selectedIAPPRecord?.id}` });
           }, 1000);
         }
       },

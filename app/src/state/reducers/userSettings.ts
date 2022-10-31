@@ -9,6 +9,8 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_BOUNDARIES_REQUEST,
   USER_SETTINGS_SET_DARK_THEME,
+  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
@@ -43,11 +45,13 @@ class UserSettingsState {
       };
     }
   ];
-  selectedRecord: {
-    type: DocType;
+  selectedInvasivesBCRecord: {
     description: string;
     id: any;
-    isIAPP: boolean;
+  };
+  selectedIAPPRecord: {
+    description: string;
+    id: any;
   };
   recordsExpanded: boolean;
   boundaries: [
@@ -93,6 +97,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           activeActivity: action.payload.activeActivity
+        };
+      }
+      case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
+        return {
+          ...state,
+          activeActivity: action.payload.activeIAPP
         };
       }
       case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
@@ -155,6 +165,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           darkTheme: action.payload.enabled
         };
       }
+
       default:
         return state;
     }
