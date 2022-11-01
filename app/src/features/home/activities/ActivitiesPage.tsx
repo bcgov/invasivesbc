@@ -20,6 +20,7 @@ import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/Genera
 import {
   USER_SETTINGS_ADD_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST
 } from 'state/actions';
 import { useDispatch } from 'react-redux';
@@ -239,12 +240,19 @@ const PageContainer = (props) => {
         }
       },
       {
-        name:
-          'Open ' +
-          (userSettings.selectedIAPPRecord?.description !== undefined && userSettings.selectedIAPPRecord?.description),
-        disabled: userSettings.selectedIAPPRecord?.description === undefined,
+        name: 'Open ' + (userSettings.selectedIAPPRecord?.id !== undefined),
+        disabled: userSettings.selectedIAPPRecord?.id === undefined,
         hidden: !userSettings.selectedIAPPRecord,
         onClick: async () => {
+          try {
+            dispatch({
+              type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+              payload: { activeIAPP: userSettings?.selectedIAPPRecord?.id }
+            });
+          } catch (e) {
+            console.log('unable to http ');
+            console.log(e);
+          }
           setTimeout(() => {
             history.push({ pathname: `/home/iapp/${userSettings?.selectedIAPPRecord?.id}` });
           }, 1000);
