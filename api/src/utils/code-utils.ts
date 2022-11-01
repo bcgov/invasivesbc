@@ -102,10 +102,15 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
       });
 
       // If user.roles contains a role with a role that contains the name "bcgov", append 000000 to the filtered agency codes
-      if (user.roles && user.roles.some((role: any) => role.role_name.includes('bcgov') || role.role_name.includes('master_administrator'))) {
+      if (
+        user.roles &&
+        user.roles.some(
+          (role: any) => role.role_name.includes('bcgov') || role.role_name.includes('master_administrator')
+        )
+      ) {
         filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === '0'));
       }
-        filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === 'NRQ'));
+      filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === 'NRQ'));
 
       const employerCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'employer_code')
         .code_header_id;
@@ -119,17 +124,17 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
 
       const filteredCodes = responses[2].rows.filter((code: any) => {
         if (user) {
-          if (code.code_header_id === employerCodeHeaderId) {
+          if (code?.code_header_id === employerCodeHeaderId) {
             return filteredEmployerCodes.some((employerCode: any) => {
-              return employerCode.code_id === code.code_id;
+              return employerCode?.code_id === code?.code_id;
             });
-          } else if (code.code_header_id === agencyCodeHeaderId) {
-            return filteredAgencyCodes.some((agencyCode: any) => {
-              return agencyCode.code_id === code.code_id;
+          } else if (code?.code_header_id === agencyCodeHeaderId) {
+            return filteredAgencyCodes?.some((agencyCode: any) => {
+              return agencyCode?.code_id === code?.code_id;
             });
-          } else if (code.code_header_id === psnCodeHeaderId) {
+          } else if (code?.code_header_id === psnCodeHeaderId) {
             return filteredPSNCodes.some((psnCode: any) => {
-              return psnCode.code_id === code.code_id;
+              return psnCode?.code_id === code?.code_id;
             });
           }
         }
