@@ -16,8 +16,9 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ACTIVITY_ADD_PHOTO_REQUEST } from 'state/actions';
+import { selectActivity } from 'state/reducers/activity';
 
 export interface IPhoto {
   filepath: string;
@@ -35,6 +36,7 @@ export interface IPhotoContainerProps {
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
+  const activityState = useSelector(selectActivity);
 
   const takePhoto = async () => {
     try {
@@ -94,10 +96,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       <Box mb={3}>
         <Grid container>
           <Grid container item>
-            {props.photoState.photos.map((photo, index) => (
+            {activityState.activity.media.map((photo, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card>
-                  <CardMedia src={photo.dataUrl} component="img" />
+                  <CardMedia src={photo.encoded_file} component="img" />
                   <Typography style={{ marginTop: '15px' }} textAlign={'center'} variant="h5">
                     {photo.description}
                   </Typography>

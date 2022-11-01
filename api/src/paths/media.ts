@@ -41,7 +41,7 @@ function getMedia(): RequestHandler {
     return res.status(200).json({
       message: 'Successfully got media',
       request: req.query,
-      result: getMediaItemsList(response),
+      result: getMediaItemsList(response, keys),
       namespace: 'media',
       code: 200
     });
@@ -111,8 +111,8 @@ export function uploadMedia(): RequestHandler {
 /*
   Function to get list of media items from s3 object list
 */
-export function getMediaItemsList(s3ObjectList: GetObjectOutput[]) {
-  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput) => {
+export function getMediaItemsList(s3ObjectList: GetObjectOutput[], keys: string[]) {
+  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput, index) => {
     // Encode image buffer as base64
     const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
 
@@ -123,7 +123,8 @@ export function getMediaItemsList(s3ObjectList: GetObjectOutput[]) {
       file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.filename) || null,
       encoded_file: encodedFile,
       description: (s3Object && s3Object.Metadata && s3Object.Metadata.description) || null,
-      media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null
+      media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null,
+      media_key: keys[index]
     };
 
     return mediaItem;
