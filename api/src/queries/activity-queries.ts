@@ -73,7 +73,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
 
   if (activity.mediaKeys) {
     sqlStatement.append(SQL`
-      ${activity.mediaKeys},
+      ,${activity.mediaKeys}
     `);
   } else {
     sqlStatement.append(SQL`

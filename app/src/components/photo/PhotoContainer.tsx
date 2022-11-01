@@ -47,7 +47,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       const fileName = new Date().getTime() + '.' + cameraPhoto.format;
       const photo = {
         filepath: fileName,
-        dataUrl: cameraPhoto.dataUrl,
+        encoded_file: cameraPhoto.dataUrl,
         description: 'untitled'
       };
 
