@@ -246,7 +246,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     sqlStatement.append(
-      SQL` AND ${roles} @> ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
+      SQL` AND ${roles} && ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
     );
   }
 
