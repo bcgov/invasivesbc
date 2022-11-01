@@ -169,7 +169,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   sqlStatement.append(SQL`SELECT`);
-    
+
   // Build lean object
   if (lean) {
     sqlStatement.append(SQL`
@@ -246,7 +246,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     sqlStatement.append(
-      SQL` AND ${roles} @> ARRAY(select array_agg(x)::int[] || array[]::int[] from jsonb_array_elements_text(activity_payload->'user_role') t(x))`
+      SQL` AND ${roles} @> ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
     );
   }
 
@@ -534,7 +534,7 @@ export const getOverlappingBCGridCellsSQL = (
 ): SQLStatement => {
   switch (isGridLarge) {
     case '1':
-      return SQL` 
+      return SQL`
         SELECT id, public.st_asGeoJSON(geo) as geo
             FROM invasivesbc.bc_large_grid
             WHERE public.ST_INTERSECTS(
@@ -554,8 +554,8 @@ export const getOverlappingBCGridCellsSQL = (
       if (grid_item_ids.length < 1) {
         throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
       } else {
-        return SQL` 
-        SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id 
+        return SQL`
+        SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id
             FROM invasivesbc.bc_small_grid
             WHERE large_grid_item_id = ANY (${grid_item_ids}) AND public.ST_INTERSECTS(
               geo,
