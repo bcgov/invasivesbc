@@ -152,19 +152,6 @@ export const LayerPickerBasic = (props) => {
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={true} name="City Names">
-        <LayerGroup>
-          <DataBCLayer
-            enabled={true}
-            transparent={true}
-            layer_mode={LayerMode.WMSOnline}
-            bcgw_code="WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP"
-            opacity={1.0}
-            zIndex={3512}
-          />
-        </LayerGroup>
-      </LayersControl.Overlay>
-
       <LayersControl.Overlay checked={true} name="MOTI RFI">
         <LayerGroup>
           <DataBCLayer
