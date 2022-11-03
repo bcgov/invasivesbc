@@ -36,11 +36,12 @@ export const ActivitiesLayerV2 = (props: any) => {
     solidChildren: false,
     layerStyles: {},
     style: {
-      fillColor: '#00000',
-      color: '#00000',
-      strokeColor: '#00000',
+      fillColor: props.color,
+      color: props.color,
+      strokeColor: props.color,
       stroke: true,
       strokeOpacity: 1,
+      strokeWidth: 10,
       opacity: props.opacity,
       fillOpacity: props.opacity / 2,
       weight: 3,
@@ -128,9 +129,9 @@ export const ActivitiesLayerV2 = (props: any) => {
                 features: [a]
               };
 
-              if (a.properties.activity_id)
+              if (a.properties.id)
                 return (
-                  <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
+                  <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.id}>
                     <GeneratePopup bufferedGeo={bufferedGeo} />
                   </Marker>
                 );
@@ -141,23 +142,28 @@ export const ActivitiesLayerV2 = (props: any) => {
     } else return <></>;
   }, [props.color, props.activities]);
 
+  /*  return (
+    <>
+      <GeoJSON key={Math.random()} data={props.activities} style={options.style} />
+    </>
+  );
+  */
+
+  const GeoJSONMemo = useMemo(() => {
+    return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
+  }, [props.activities, options]);
+
   return useMemo(() => {
     if (props.activities && props.activities.features && props.color) {
       switch (zoomType) {
         case ZoomTypes.HIGH:
-          return (
-            <>
-              {
-                props.activities && (
-                  <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={props.activities} options={options} />
-                ) //NOSONAR
-              }
-            </>
-          );
+          return GeoJSONMemo;
         case ZoomTypes.MEDIUM:
           return MarkerMemo;
+        //return GeoJSONMemo;
         case ZoomTypes.LOW:
           return MarkerMemo;
+        //return GeoJSONMemo;
       }
     } else return <></>;
   }, [JSON.stringify(props.color), JSON.stringify(props.activities), props.zIndex, JSON.stringify(zoomType)]);

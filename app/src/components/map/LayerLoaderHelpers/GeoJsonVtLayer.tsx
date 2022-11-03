@@ -76,19 +76,19 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
     ctx.beginPath();
 
     if (
-      this.options.layerStyles?.output.name
+      this.options.layerStyles?.output?.name
         .toString()
         .toLowerCase()
         .includes(feature.tags.layer?.toString().toLowerCase())
     ) {
-      this.options.layerStyles?.output.rules.forEach((rule) => {
+      this.options.layerStyles?.output?.rules.forEach((rule) => {
         if (rule.name && feature.tags.type.toString().toLowerCase() === rule.name?.toString().toLowerCase()) {
           this.options.style.color = rule.symbolizers[0].color;
           this.options.style.fillColor = rule.symbolizers[0].color;
         }
       });
     } else {
-      this.options.layerStyles?.output.rules.forEach((rule) => {
+      this.options.layerStyles?.output?.rules.forEach((rule) => {
         if (rule.filter) {
           if (isFilterSatisfied(rule?.filter, feature.tags)) {
             this.options.style.color = rule.symbolizers[0].color;
@@ -97,7 +97,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
         }
       });
     }
-    if (this.options.style) {
+    if (this.options?.style) {
       this.setStyle(ctx, this.options.style);
     }
     if (type === 2 || type === 3) {
