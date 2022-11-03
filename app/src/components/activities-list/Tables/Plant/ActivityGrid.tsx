@@ -110,10 +110,10 @@ export const getSearchCriteriaFromFilters = (
   gridFilters: any,
   page: number,
   limit: number,
-  sortColumns: readonly SortColumn[]
+  sortColumns?: readonly SortColumn[]
 ) => {
-  const created_by_filter = advancedFilterRows.filter((x) => x.filterField === 'created_by');
-  const form_status_filter = advancedFilterRows.filter((x) => x.filterField === 'record_status');
+  const created_by_filter = advancedFilterRows?.filter((x) => x.filterField === 'created_by');
+  const form_status_filter = advancedFilterRows?.filter((x) => x.filterField === 'record_status');
   const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
   const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
   let filter: any = {

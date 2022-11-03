@@ -9,6 +9,7 @@ import { createNetworkReducer } from './network';
 import { createActivityReducer } from './activity';
 import { createUserSettingsReducer } from './userSettings';
 import { createTabsReducer } from './tabs';
+import { createActivitiesReducer } from './activities';
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -18,7 +19,8 @@ function createRootReducer(config: AppConfig) {
     Network: createNetworkReducer({ connected: true }),
     ActivityPage: createActivityReducer(config),
     UserSettings: createUserSettingsReducer(config),
-    Tabs: createTabsReducer(config)
+    Tabs: createTabsReducer(config),
+    Activities: createActivitiesReducer(config)
   });
 }
 

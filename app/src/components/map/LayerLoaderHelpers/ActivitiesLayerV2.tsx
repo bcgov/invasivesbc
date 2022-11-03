@@ -19,11 +19,13 @@ enum ZoomTypes {
 }
 
 export const ActivitiesLayerV2 = (props: any) => {
+  useEffect(() => {
+    console.log('i was here' + JSON.stringify(props));
+  }, []);
+
   // use this use state var to only rerender when necessary
   const map = useMap();
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
-  const [activities, setActivities] = useState(null);
-  const dataAccess = useDataAccess();
   const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 100,
@@ -34,11 +36,12 @@ export const ActivitiesLayerV2 = (props: any) => {
     solidChildren: false,
     layerStyles: {},
     style: {
-      fillColor: '#00000',
-      color: '#00000',
-      strokeColor: '#00000',
+      fillColor: props.color,
+      color: props.color,
+      strokeColor: props.color,
       stroke: true,
       strokeOpacity: 1,
+      strokeWidth: 10,
       opacity: props.opacity,
       fillOpacity: props.opacity / 2,
       weight: 3,
@@ -62,22 +65,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     }
   });
 
-  const filters: IActivitySearchCriteria = props.filters;
-  const fetchData = async () => {
-    const activitiesData = await dataAccess.getActivitiesLean({
-      ...filters
-    });
-    const activitiesFeatureArray = [];
-    activitiesData?.rows?.forEach((row) => {
-      activitiesFeatureArray.push(row.geojson ? row.geojson : row);
-    });
-    setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [props.filters]);
-
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
     let styles = await sldParser.readStyle(InvasivesBCSLD);
@@ -87,7 +74,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   const getActivitiesSLD = () => {
     getSldStylesFromLocalFile().then((res) => {
       setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
-      fetchData();
+      // fetchData();
     });
   };
 
@@ -103,7 +90,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.color]);
 
   const MarkerMemo = useMemo(() => {
-    if (activities && activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color) {
       const createClusterCustomIcon = (cluster) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
@@ -134,7 +121,7 @@ export const ActivitiesLayerV2 = (props: any) => {
       };
       return (
         <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
-          {activities?.features?.map((a) => {
+          {props.activities?.features?.map((a) => {
             if (a?.geometry?.type) {
               const position = center(a)?.geometry?.coordinates;
               const bufferedGeo = {
@@ -142,40 +129,42 @@ export const ActivitiesLayerV2 = (props: any) => {
                 features: [a]
               };
 
-              if(a.properties.activity_id) return (
-                <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.activity_id}>
-                  <GeneratePopup bufferedGeo={bufferedGeo} />
-                </Marker>
-              );
+              if (a.properties.id)
+                return (
+                  <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.id}>
+                    <GeneratePopup bufferedGeo={bufferedGeo} />
+                  </Marker>
+                );
             }
           })}
         </MarkerClusterGroup>
       );
     } else return <></>;
-  }, [props.color, activities]);
+  }, [props.color, props.activities]);
+
+  /*  return (
+    <>
+      <GeoJSON key={Math.random()} data={props.activities} style={options.style} />
+    </>
+  );
+  */
+
+  const GeoJSONMemo = useMemo(() => {
+    return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
+  }, [props.activities, options]);
 
   return useMemo(() => {
-    if (activities && activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color) {
       switch (zoomType) {
         case ZoomTypes.HIGH:
-          return (
-            <>
-              {
-                activities && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={activities} options={options} /> //NOSONAR
-              }
-            </>
-          );
+          return GeoJSONMemo;
         case ZoomTypes.MEDIUM:
           return MarkerMemo;
+        //return GeoJSONMemo;
         case ZoomTypes.LOW:
           return MarkerMemo;
+        //return GeoJSONMemo;
       }
     } else return <></>;
-  }, [
-    JSON.stringify(props.filters),
-    JSON.stringify(props.color),
-    JSON.stringify(activities),
-    props.zIndex,
-    JSON.stringify(zoomType)
-  ]);
+  }, [JSON.stringify(props.color), JSON.stringify(props.activities), props.zIndex, JSON.stringify(zoomType)]);
 };

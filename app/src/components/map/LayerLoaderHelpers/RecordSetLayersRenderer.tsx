@@ -2,14 +2,13 @@ import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
-import { useSelector } from "../../../state/utilities/use_selector";
-import { selectAuth } from "../../../state/reducers/auth";
-import { selectUserSettings } from 'state/reducers/userSettings';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
+import { selectActivities } from 'state/reducers/activities';
 
 export const RecordSetLayersRenderer = (props: any) => {
-  const [layersToRender, setLayersToRender] = useState([]);
   const { accessRoles } = useSelector(selectAuth);
-  const { recordSets } = useSelector(selectUserSettings)
+  const activitiesState = useSelector(selectActivities);
 
   interface ILayerToRender {
     filter: IActivitySearchCriteria;
@@ -17,47 +16,22 @@ export const RecordSetLayersRenderer = (props: any) => {
     setName: string;
   }
 
-  useEffect(() => {
-    const sets = Object.keys(recordSets);
-    if (!sets || !sets.length) {
-      return;
-    }
-
-    const layers = sets.map((s) => {
-      let l: any = {};
-      l.filters = getSearchCriteriaFromFilters(
-        recordSets[s].advancedFilters,
-        accessRoles,
-        recordSets,
-        s,
-        false,
-        null,
-        1,
-        1000
-      );
-      l.color = recordSets[s].color;
-      l.setName = s;
-      l.drawOrder = recordSets[s].drawOrder;
-      return l;
-    });
-
-    setLayersToRender([...layers]);
-  }, [recordSets]);
-
   return (
     <>
-      {layersToRender.map((l) => {
-        if (l && l.filters && l.color) {
+      {activitiesState?.activitiesGeoJSON?.map((l) => {
+        //if (l && l.layerState.color) {
+        if (true) {
           return (
             <ActivitiesLayerV2
-              key={'activitiesv2filter' + l.setName}
-              filters={l.filters}
-              zIndex={999999999 - l.drawOrder}
-              color={l.color}
+              key={'activitiesv2filter' + l.recordSetID}
+              activities={l.featureCollection}
+              zIndex={999999999 - l.layerState.drawOrder}
+              color={l.layerState.color}
               opacity={0.8}
             />
           );
-        }       })}
+        }
+      })}
     </>
   );
 };

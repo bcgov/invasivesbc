@@ -92,7 +92,10 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...prev } }));
 
-    yield put({ type: USER_SETTINGS_SET_RECORD_SET_SUCCESS, payload: { recordSets: prev } });
+    yield put({
+      type: USER_SETTINGS_SET_RECORD_SET_SUCCESS,
+      payload: { recordSets: prev, updatedSetName: action.payload.setName, updatedSet: action.payload.updatedSet }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_SET_RECORD_SET_FAILURE });
