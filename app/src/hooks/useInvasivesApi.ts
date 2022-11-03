@@ -28,10 +28,10 @@ import { select } from 'redux-saga/effects';
 export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   const errorContext = useContext(ErrorContext);
-  //const { API_BASE } = useSelector(selectConfiguration);
+  const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
   // const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
-  const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+  //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
@@ -1247,8 +1247,8 @@ export const useInvasivesApi = () => {
 
 export const getRequestOptions = (config, requestHeaders) => {
   return {
-    //baseUrl: config.API_BASE,
-    baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
+    baseUrl: config.API_BASE,
+    //baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
     headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
   };
 };
