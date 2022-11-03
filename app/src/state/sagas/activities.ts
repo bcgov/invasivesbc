@@ -44,11 +44,22 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     0,
     999
   );
+
+  const layerState = {
+    color: action.payload.updatedSet.color,
+    drawOrder: action.payload.updatedSet.drawOrder,
+    enabled: true
+  };
+
   yield put({
     type: ACTIVITIES_GEOJSON_GET_REQUEST,
-    payload: { recordSetID: action.payload.updatedSetName, activitiesFilterCriteria: filterCriteria }
+    payload: {
+      recordSetID: action.payload.updatedSetName,
+      activitiesFilterCriteria: filterCriteria,
+      layerState: layerState
+    }
   });
-  yield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
+  //uyield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
 }
 function* activitiesPageSaga() {
   yield all([

@@ -19,10 +19,13 @@ enum ZoomTypes {
 }
 
 export const ActivitiesLayerV2 = (props: any) => {
+  useEffect(() => {
+    console.log('i was here' + JSON.stringify(props));
+  }, []);
+
   // use this use state var to only rerender when necessary
   const map = useMap();
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
-  const [activities, setActivities] = useState(null);
   const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 100,
@@ -61,23 +64,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     }
   });
 
-  const filters: IActivitySearchCriteria = props.filters;
-  const fetchData = async () => {
-    const activitiesFeatureArray = [];
-    props.activities?.forEach((row) => {
-      activitiesFeatureArray.push(row.geojson ? row.geojson : row);
-    });
-    setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    console.log('len**' + activities?.features?.length);
-  }, [activities]);
-
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
     let styles = await sldParser.readStyle(InvasivesBCSLD);
@@ -103,7 +89,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.color]);
 
   const MarkerMemo = useMemo(() => {
-    if (activities && activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color) {
       const createClusterCustomIcon = (cluster) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
@@ -134,7 +120,7 @@ export const ActivitiesLayerV2 = (props: any) => {
       };
       return (
         <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
-          {activities?.features?.map((a) => {
+          {props.activities?.features?.map((a) => {
             if (a?.geometry?.type) {
               const position = center(a)?.geometry?.coordinates;
               const bufferedGeo = {
@@ -153,16 +139,18 @@ export const ActivitiesLayerV2 = (props: any) => {
         </MarkerClusterGroup>
       );
     } else return <></>;
-  }, [props.color, activities]);
+  }, [props.color, props.activities]);
 
   return useMemo(() => {
-    if (activities && activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color) {
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return (
             <>
               {
-                activities && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={activities} options={options} /> //NOSONAR
+                props.activities && (
+                  <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={props.activities} options={options} />
+                ) //NOSONAR
               }
             </>
           );
@@ -172,11 +160,5 @@ export const ActivitiesLayerV2 = (props: any) => {
           return MarkerMemo;
       }
     } else return <></>;
-  }, [
-    JSON.stringify(props.filters),
-    JSON.stringify(props.color),
-    JSON.stringify(activities),
-    props.zIndex,
-    JSON.stringify(zoomType)
-  ]);
+  }, [JSON.stringify(props.color), JSON.stringify(props.activities), props.zIndex, JSON.stringify(zoomType)]);
 };

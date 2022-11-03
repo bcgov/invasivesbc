@@ -43,7 +43,8 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
         type: ACTIVITIES_GEOJSON_GET_ONLINE,
         payload: {
           recordSetID: action.payload.recordSetID,
-          activitiesFilterCriteria: action.payload.activitiesFilterCriteria
+          activitiesFilterCriteria: action.payload.activitiesFilterCriteria,
+          layerState: action.payload.layerState
         }
       });
     }

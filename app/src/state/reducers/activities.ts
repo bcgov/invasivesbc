@@ -77,13 +77,21 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
               ...state?.activitiesGeoJSON?.filter((item) => {
                 return item.recordSetID !== action.payload.recordSetID;
               }),
-              { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
+              {
+                recordSetID: action.payload.recordSetID,
+                featureCollection: action.payload.activitiesGeoJSON,
+                layerState: action.payload.layerState
+              }
             ]
           };
         } else {
           return {
             activitiesGeoJSON: [
-              { recordSetID: action.payload.recordSetID, rows: [...action.payload.activitiesGeoJSON] }
+              {
+                recordSetID: action.payload.recordSetID,
+                featureCollection: action.payload.activitiesGeoJSON,
+                layerState: action.payload.layerState
+              }
             ]
           };
         }
@@ -94,6 +102,6 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
   };
 }
 
-const selectActivites: (state) => ActivitiesState = (state) => state.ActivitiesPageState;
+const selectActivities: (state) => ActivitiesState = (state) => state.Activities;
 
-export { createActivitiesReducer, selectActivites };
+export { createActivitiesReducer, selectActivities };
