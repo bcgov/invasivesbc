@@ -20,6 +20,8 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_DARK_THEME,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
@@ -209,11 +211,26 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
   try {
-    const newID = localStorage.setItem('activeActivity', action.payload.activeActivity);
+    const newID = localStorage.setItem('activeActivity', action.payload.id);
+    const newdesc = localStorage.setItem('activeActivityDescription', action.payload.description);
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: { activeActivity: action.payload.activeActivity }
+      payload: { ...action.payload }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE });
+  }
+}
+
+function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
+  try {
+    const newID = localStorage.setItem('activeIAPP', action.payload.activeIAPP);
+
+    yield put({
+      type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+      payload: { activeIAPP: action.payload.id }
     });
   } catch (e) {
     console.error(e);
@@ -253,6 +270,7 @@ function* userSettingsSaga() {
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
+    takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
     takeEvery(
       USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
       handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST

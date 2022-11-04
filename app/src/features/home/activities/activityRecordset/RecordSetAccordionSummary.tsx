@@ -198,8 +198,8 @@ const RecordSetAccordionSummary = (props) => {
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (props.recordSetName === "New Record Set") {
-                        setNewName("");
+                      if (props.recordSetName === 'New Record Set') {
+                        setNewName('');
                       } else {
                         setNewName(props.recordSetName);
                       }
@@ -259,18 +259,20 @@ const RecordSetAccordionSummary = (props) => {
             Boundary Filter
             <ArrowDropDownIcon />
           </Button>
-          <Button
-            //className={classes.mainHeader}
-            onClick={(e) => {
-              e.stopPropagation();
-              const currentIndex = props.colours.indexOf(props.color);
-              const nextIndex = (currentIndex + 1) % props.colours.length;
-              props.setColor(props.colours[nextIndex]);
-            }}
-            style={{ backgroundColor: props.color }}
-            variant="contained">
-            <ColorLensIcon />
-          </Button>
+          {props.canRemove && (
+            <Button
+              //className={classes.mainHeader}
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = props.colours.indexOf(props.color);
+                const nextIndex = (currentIndex + 1) % props.colours.length;
+                props.setColor(props.colours[nextIndex]);
+              }}
+              style={{ backgroundColor: props.color }}
+              variant="contained">
+              <ColorLensIcon />
+            </Button>
+          )}
           <Button onClick={(e) => e.stopPropagation()} variant="outlined">
             <LayersIcon />
             <Checkbox
@@ -334,10 +336,17 @@ const RecordSetAccordionSummary = (props) => {
             onChange={(e) => {
               e.stopPropagation();
               //add to the recordset filters
-              dispatch({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, payload: { boundary: e.target?.value, setName: props?.setName }});
+              dispatch({
+                type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
+                payload: { boundary: e.target?.value, setName: props?.setName }
+              });
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
             }}
-            value={userSettings.recordSets[props?.setName]?.searchBoundary ? JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary) : ''}>
+            value={
+              userSettings.recordSets[props?.setName]?.searchBoundary
+                ? JSON.stringify(userSettings.recordSets[props?.setName]?.searchBoundary)
+                : ''
+            }>
             {userSettings.boundaries?.map((boundary) => {
               return (
                 <MenuItem key={boundary?.id + Math.random()} value={JSON.stringify(boundary) || ' '}>

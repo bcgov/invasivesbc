@@ -9,6 +9,7 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_BOUNDARIES_REQUEST,
   USER_SETTINGS_SET_DARK_THEME,
+  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
@@ -22,6 +23,8 @@ class UserSettingsState {
   error: boolean;
 
   activeActivity: string;
+  activeActivityDescription: string;
+  activeIAPP: string;
 
   newRecordDialogState: INewRecordDialogState;
   recordSets: [
@@ -43,12 +46,6 @@ class UserSettingsState {
       };
     }
   ];
-  selectedRecord: {
-    type: DocType;
-    description: string;
-    id: any;
-    isIAPP: boolean;
-  };
   recordsExpanded: boolean;
   boundaries: [
     {
@@ -92,7 +89,14 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activeActivity
+          activeActivity: action.payload.id,
+          activeActivityDescription: action.payload.description
+        };
+      }
+      case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
+        return {
+          ...state,
+          activeIAPP: action.payload.activeIAPP
         };
       }
       case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {

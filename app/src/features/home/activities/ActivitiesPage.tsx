@@ -20,6 +20,7 @@ import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/Genera
 import {
   USER_SETTINGS_ADD_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST
 } from 'state/actions';
 import { useDispatch } from 'react-redux';
@@ -218,41 +219,34 @@ const PageContainer = (props) => {
       },
       {
         name:
-          'Open ' +
-          (userSettings.selectedRecord?.description !== undefined && userSettings.selectedRecord?.description),
-        disabled: userSettings.selectedRecord?.description === undefined,
-        hidden: !userSettings.selectedRecord,
+          'Copy Activity ID to Clipboard (' +
+          (userSettings?.activeActivityDescription !== undefined &&
+            userSettings.activeActivityDescription?.split('-')[1].trim()) +
+          ')',
+        disabled: userSettings.activeActivityDescription === undefined,
+        hidden: !userSettings.activeActivity,
+        icon: ContentCopy,
         onClick: async () => {
           try {
-            dispatch({
-              type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-              payload: { activeActivity: userSettings?.selectedRecord?.id }
-            });
+            navigator.clipboard.writeText(userSettings.activeActivityDescription.split('-')[1].trim());
+            setCopyAlertOpen(true);
           } catch (e) {
-            console.log('unable to http ');
+            console.log('Unable to copy ID.');
             console.log(e);
           }
-          setTimeout(() => {
-            if (userSettings?.selectedRecord?.isIAPP) {
-              history.push({ pathname: `/home/iapp/${userSettings?.selectedRecord?.id}` });
-            } else {
-              history.push({ pathname: `/home/activity` });
-            }
-          }, 1000);
         }
       },
       {
         name:
-          'Copy ID to Clipboard (' +
-          (userSettings.selectedRecord?.description !== undefined &&
-            userSettings.selectedRecord?.description.split('-')[1].trim()) +
+          'Copy IAPP SITE ID to Clipboard (' +
+          (userSettings?.activeIAPP !== undefined && userSettings?.activeIAPP) +
           ')',
-        disabled: userSettings.selectedRecord?.description === undefined,
-        hidden: !userSettings.selectedRecord,
+        disabled: userSettings.activeIAPP === undefined,
+        hidden: !userSettings.activeIAPP,
         icon: ContentCopy,
         onClick: async () => {
           try {
-            navigator.clipboard.writeText(userSettings.selectedRecord.description.split('-')[1].trim());
+            navigator.clipboard.writeText(userSettings.activeIAPP);
             setCopyAlertOpen(true);
           } catch (e) {
             console.log('Unable to copy ID.');
@@ -295,7 +289,7 @@ const PageContainer = (props) => {
         }
       }
     ]);
-  }, [userSettings?.recordSets?.length, userSettings?.selectedRecord?.id, selectedRecordSets]);
+  }, [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity, selectedRecordSets]);
 
   const handleRecordSetSaveDialogAgree = async () => {
     setRecordSetSaveDialogLoading(true);
@@ -420,7 +414,7 @@ const PageContainer = (props) => {
           () => (
             <RecordSetRenderer />
           ),
-          [userSettings?.recordSets?.length, userSettings?.selectedRecord]
+          [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />

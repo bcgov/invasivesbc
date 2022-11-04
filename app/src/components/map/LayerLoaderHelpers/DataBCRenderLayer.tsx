@@ -1,3 +1,4 @@
+import { CRS } from 'leaflet';
 import React from 'react';
 import { useMap, WMSTileLayer } from 'react-leaflet';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
