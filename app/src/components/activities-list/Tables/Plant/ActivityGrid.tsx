@@ -391,7 +391,7 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     if (activitiesSelected && activitiesSelected.activity_id) {
       dispatch({
-        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        type: USER_SETTINGS_SET_SELECTED_ACTIVITY_REQUEST,
         payload: {
           selectedRecord: {
             type: DocType.ACTIVITY,
@@ -408,7 +408,7 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     if (poiSelected && poiSelected.point_of_interest_id) {
       dispatch({
-        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+        type: USER_SETTINGS_SET_SELECTED_IAPP_REQUEST,
         payload: {
           selectedRecord: {
             type: DocType.POINT_OF_INTEREST,
