@@ -71,9 +71,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.mediaKeys) {
+  if (activity.media_keys) {
     sqlStatement.append(SQL`
-      ,${activity.mediaKeys}
+      ,${activity.media_keys}
     `);
   } else {
     sqlStatement.append(SQL`

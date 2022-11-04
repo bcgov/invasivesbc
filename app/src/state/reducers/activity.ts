@@ -31,7 +31,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_CREATE_SUCCESS,
-  ACTIVITY_ADD_PHOTO_REQUEST
+  ACTIVITY_ADD_PHOTO_REQUEST,
+  ACTIVITY_DELETE_PHOTO_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -134,6 +135,20 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
               ...state.activity.media,
               action.payload.photo
             ]
+          }
+        };
+      }
+      case ACTIVITY_DELETE_PHOTO_SUCCESS: {
+        const media = state.activity.media.filter((photo) => photo.media_key !== action.payload.key);
+        const media_keys = state.activity.media_keys.filter((key) => key !== action.payload.key);
+        console.log("new mediAAAAA: ", media);
+        console.log("new media keys ahhhh", media_keys);
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            media: media.length ? media : [],
+            media_keys: media_keys.length ? media_keys : []
           }
         };
       }

@@ -102,7 +102,7 @@ export function uploadMedia(): RequestHandler {
 
     const results = await Promise.all(s3UploadPromises);
 
-    req['mediaKeys'] = results.map((result) => result.Key);
+    req['media_keys'] = results.map((result) => result.Key);
 
     next();
   };

@@ -17,7 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_ADD_PHOTO_REQUEST } from 'state/actions';
+import { ACTIVITY_ADD_PHOTO_REQUEST, ACTIVITY_DELETE_PHOTO_REQUEST } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 
 export interface IPhoto {
@@ -75,10 +75,13 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     props.photoState.setPhotos([]);
   };
 
-  const deletePhoto = async (filepath: any) => {
-    const reducedPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
-    props.photoState.setPhotos(reducedPhotos);
+  const deletePhoto = async (key: any) => {
+    console.log("file path of delete media: ", key);
+    dispatch( {type: ACTIVITY_DELETE_PHOTO_REQUEST, payload: {
+      key: key
+    }});
   };
+  
   const [editing, setEditing] = useState(false);
   const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
   const editPhotoDesc = () => {
@@ -105,7 +108,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   </Typography>
                   {!props.isDisabled && (
                     <CardActions style={{ width: '100%', display: 'flex', justifyContent: 'space-around' }}>
-                      <IconButton onClick={() => deletePhoto(photo.filepath)}>
+                      <IconButton onClick={() => deletePhoto(photo.media_key)}>
                         <DeleteForever />
                       </IconButton>
                       <IconButton disabled={editing} onClick={() => editPhotoDesc()}>

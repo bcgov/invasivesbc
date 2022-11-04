@@ -3,6 +3,7 @@ import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
 import { throttle } from 'redux-saga/effects';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   autofillBiocontrolCollectionTotalQuantity,
@@ -26,7 +27,10 @@ import {
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_DEBUG
+  ACTIVITY_DEBUG,
+  ACTIVITY_DELETE_PHOTO_REQUEST,
+  ACTIVITY_DELETE_PHOTO_SUCCESS,
+  ACTIVITY_DELETE_PHOTO_FAILURE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -259,5 +263,23 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
+  try {
+    if (action.payload.key) {
+      const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${action.payload.key}`);
+      
+      if (networkReturn) {
+        yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS,
+          payload: {
+            key: action.payload.key
+        }});
+      }
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_DELETE_PHOTO_FAILURE });
   }
 }
