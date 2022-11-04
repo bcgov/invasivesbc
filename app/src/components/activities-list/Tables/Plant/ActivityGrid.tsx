@@ -29,6 +29,8 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   USER_SETTINGS_SET_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST
 } from 'state/actions';
@@ -391,14 +393,10 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     if (activitiesSelected && activitiesSelected.activity_id) {
       dispatch({
-        type: USER_SETTINGS_SET_SELECTED_ACTIVITY_REQUEST,
+        type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
         payload: {
-          selectedRecord: {
-            type: DocType.ACTIVITY,
-            description: 'Activity-' + activitiesSelected.short_id,
-            id: activitiesSelected.activity_id,
-            isIapp: false
-          }
+          description: 'Activity-' + activitiesSelected.short_id,
+          id: activitiesSelected.activity_id
         }
       });
     }
@@ -408,14 +406,10 @@ const ActivityGrid = (props) => {
   useEffect(() => {
     if (poiSelected && poiSelected.point_of_interest_id) {
       dispatch({
-        type: USER_SETTINGS_SET_SELECTED_IAPP_REQUEST,
+        type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
         payload: {
-          selectedRecord: {
-            type: DocType.POINT_OF_INTEREST,
-            description: 'IAPP-' + poiSelected.point_of_interest_id,
-            id: poiSelected.point_of_interest_id,
-            isIAPP: true
-          }
+          description: 'IAPP-' + poiSelected.point_of_interest_id,
+          id: poiSelected.point_of_interest_id
         }
       });
     }

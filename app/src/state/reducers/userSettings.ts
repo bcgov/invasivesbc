@@ -23,6 +23,8 @@ class UserSettingsState {
   error: boolean;
 
   activeActivity: string;
+  activeActivityDescription: string;
+  activeIAPP: string;
 
   newRecordDialogState: INewRecordDialogState;
   recordSets: [
@@ -44,14 +46,6 @@ class UserSettingsState {
       };
     }
   ];
-  selectedInvasivesBCRecord: {
-    description: string;
-    id: any;
-  };
-  selectedIAPPRecord: {
-    description: string;
-    id: any;
-  };
   recordsExpanded: boolean;
   boundaries: [
     {
@@ -95,13 +89,14 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activeActivity
+          activeActivity: action.payload.id,
+          activeActivityDescription: action.payload.description
         };
       }
       case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activeIAPP
+          activeIAPP: action.payload.id
         };
       }
       case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
@@ -164,7 +159,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           darkTheme: action.payload.enabled
         };
       }
-
       default:
         return state;
     }

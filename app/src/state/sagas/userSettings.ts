@@ -211,11 +211,12 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
   try {
-    const newID = localStorage.setItem('activeActivity', action.payload.activeActivity);
+    const newID = localStorage.setItem('activeActivity', action.payload.id);
+    const newdesc = localStorage.setItem('activeActivityDescription', action.payload.description);
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: { activeActivity: action.payload.activeActivity }
+      payload: { ...action.payload }
     });
   } catch (e) {
     console.error(e);
