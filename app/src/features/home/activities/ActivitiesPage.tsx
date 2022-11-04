@@ -396,7 +396,7 @@ const PageContainer = (props) => {
           () => (
             <RecordSetRenderer />
           ),
-          [userSettings?.recordSets?.length, userSettings?.selectedIAPPRecord, userSettings?.selectedInvasivesBCRecord]
+          [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
         )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
