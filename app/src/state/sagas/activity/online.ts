@@ -50,6 +50,9 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   const newActivity = {
     ...oldActivity.activity,
+    species_positive: oldActivity.activity?.species_positive[0] !== null ? oldActivity.activity?.species_positive : [],
+    species_negative: oldActivity.activity?.species_negative[0] !== null ? oldActivity.activity?.species_negative : [],
+    species_treated: oldActivity.activity?.species_treated[0] !== null ? oldActivity.activity?.species_treated : [],
     form_data: action.payload.updatedFormData ? action.payload.updatedFormData : oldActivity.activity.form_data,
     form_status: [ActivityStatus.DRAFT, ActivityStatus.IN_REVIEW, ActivityStatus.SUBMITTED].includes(
       action.payload.form_status

@@ -71,7 +71,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.media_keys) {
+  if (activity.media_keys?.length) {
     sqlStatement.append(SQL`
       ,${activity.media_keys}
     `);
@@ -81,7 +81,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.species_positive?.length) {
+  if (activity.species_positive?.length && activity.species_positive[0] !== null) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_positive}::text, '{', '['), '}', ']')::jsonb
     `);
@@ -91,7 +91,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.species_negative?.length) {
+  if (activity.species_negative?.length && activity.species_negative[0] !== null) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_negative}::text, '{', '['), '}', ']')::jsonb
     `);
@@ -101,7 +101,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  if (activity.species_treated?.length) {
+  if (activity.species_treated?.length && activity.species_treated[0] !== null) {
     sqlStatement.append(SQL`
       ,replace(replace(${activity.species_treated}::text, '{', '['), '}', ']')::jsonb
     `);
