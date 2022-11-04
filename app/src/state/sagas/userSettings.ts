@@ -230,7 +230,7 @@ function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-      payload: { activeActivity: action.payload.activeIAPP }
+      payload: { activeIAPP: action.payload.id }
     });
   } catch (e) {
     console.error(e);

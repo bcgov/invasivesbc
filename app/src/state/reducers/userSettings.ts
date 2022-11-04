@@ -96,7 +96,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
         return {
           ...state,
-          activeIAPP: action.payload.id
+          activeIAPP: action.payload.activeIAPP
         };
       }
       case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {

@@ -237,6 +237,24 @@ const PageContainer = (props) => {
         }
       },
       {
+        name:
+          'Copy IAPP SITE ID to Clipboard (' +
+          (userSettings?.activeIAPP !== undefined && userSettings?.activeIAPP) +
+          ')',
+        disabled: userSettings.activeIAPP === undefined,
+        hidden: !userSettings.activeIAPP,
+        icon: ContentCopy,
+        onClick: async () => {
+          try {
+            navigator.clipboard.writeText(userSettings.activeIAPP);
+            setCopyAlertOpen(true);
+          } catch (e) {
+            console.log('Unable to copy ID.');
+            console.log(e);
+          }
+        }
+      },
+      {
         name: 'Save Selected Records',
         icon: SaveIcon,
         hidden: selectedRecordSets.length === 0 || !MOBILE,

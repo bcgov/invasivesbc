@@ -3,36 +3,30 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Box, Typography } from '@mui/material';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { useSelector } from 'state/utilities/use_selector';
 
 export const ReferenceIAPPSitePage: React.FC = (props) => {
-  const urlParams: { id: string } = useParams();
   const dataAccess = useDataAccess();
-  let id: string = undefined;
 
   const [poi, setPOI] = useState(null);
 
-  // grabs id from appState if URL is empty, if both are empty - id is undefined and message shows up
-  if (urlParams.id === undefined) {
-    const appStateResults = dataAccess.getAppState();
-    id = appStateResults.activeIappSite;
-  } else {
-    id = urlParams.id;
-  }
+  const userSettings = useSelector(selectUserSettings);
 
   useEffect(() => {
     const fetchPOI = async () => {
-      const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: id, isIAPP: true });
+      const poiData = await dataAccess.getPointsOfInterest({ iappSiteID: userSettings?.activeIAPP, isIAPP: true });
       setPOI(poiData.rows[0]);
     };
 
-    if (!poi && id) {
+    if (!poi && userSettings?.activeIAPP) {
       fetchPOI();
     }
-  }, [poi, dataAccess, urlParams.id, id]);
+  }, [poi, dataAccess, userSettings?.activeIAPP]);
 
   return (
     <div id="iapp_site" style={{ marginTop: 30, marginBottom: 30 }}>
-      {!id && (
+      {!userSettings?.activeIAPP && (
         <>
           <Box m={3}>
             <Typography variant="h4">Current IAPP Site </Typography>
@@ -43,7 +37,7 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
           </Typography>
         </>
       )}
-      {id && poi && <IAPPSite record={poi} />}
+      {userSettings?.activeIAPP && poi && <IAPPSite record={poi} />}
     </div>
   );
 };
