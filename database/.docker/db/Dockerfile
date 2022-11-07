@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 postgres:9.6
+FROM --platform=linux/amd64 postgres:10
 
 # set variables
 ENV POSTGISV 2.4
