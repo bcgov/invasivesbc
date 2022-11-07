@@ -30,7 +30,9 @@ import {
   ACTIVITY_DEBUG,
   ACTIVITY_DELETE_PHOTO_REQUEST,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
-  ACTIVITY_DELETE_PHOTO_FAILURE
+  ACTIVITY_DELETE_PHOTO_FAILURE,
+  ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_ADD_PHOTO_FAILURE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -263,6 +265,17 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
+  try {
+    if (action.payload.photo) {
+      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload}});
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_ADD_PHOTO_FAILURE });
   }
 }
 
