@@ -29,7 +29,8 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS
+  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+  ACTIVITY_CREATE_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -109,6 +110,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         return {
           ...state,
           suggestedPersons: [...action.payload.suggestedPersons]
+        };
+      }
+      case ACTIVITY_CREATE_SUCCESS: {
+        return {
+          ...state,
+          activeActivity: action.payload.activity_id
         };
       }
       case ACTIVITY_SAVE_SUCCESS: {
