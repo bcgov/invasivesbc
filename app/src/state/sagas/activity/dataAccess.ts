@@ -136,7 +136,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
   try {
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-      payload: { activeActivity: action.payload.activity_id }
+      payload: { activeActivity: action.payload.activity_id, id: action.payload.activity_id }
     });
   } catch (e) {
     console.error(e);

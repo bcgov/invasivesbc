@@ -19,10 +19,6 @@ enum ZoomTypes {
 }
 
 export const ActivitiesLayerV2 = (props: any) => {
-  useEffect(() => {
-    console.log('i was here' + JSON.stringify(props));
-  }, []);
-
   // use this use state var to only rerender when necessary
   const map = useMap();
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
