@@ -26,6 +26,9 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
     const auth = yield select(selectAuth);
 
     const isMasterAdmin = auth.roles.some((role) => role.role_name === 'master_administrator');
+    const isPlantPerson = auth.roles.some(
+      (role) => role.role_name === 'master_administrator' || role.role_name.toLowerCase().includes('plant')
+    );
     const showLoggedInTabs = action.payload.activated && action.payload.authenticated;
 
     const tabConfig = [
@@ -64,7 +67,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
       );
     }
 
-    if (isMasterAdmin) {
+    if (isMasterAdmin || isPlantPerson) {
       if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
         tabConfig.push({
           label: 'Reports',
