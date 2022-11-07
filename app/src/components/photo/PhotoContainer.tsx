@@ -75,10 +75,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     props.photoState.setPhotos([]);
   };
 
-  const deletePhoto = async (key: any) => {
-    console.log("file path of delete media: ", key);
+  const deletePhoto = async (photo: any) => {
+    console.log("delete media: ", photo);
     dispatch( {type: ACTIVITY_DELETE_PHOTO_REQUEST, payload: {
-      key: key
+      photo: photo
     }});
   };
   
@@ -108,7 +108,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   </Typography>
                   {!props.isDisabled && (
                     <CardActions style={{ width: '100%', display: 'flex', justifyContent: 'space-around' }}>
-                      <IconButton onClick={() => deletePhoto(photo.media_key)}>
+                      <IconButton onClick={() => deletePhoto(photo)}>
                         <DeleteForever />
                       </IconButton>
                       <IconButton disabled={editing} onClick={() => editPhotoDesc()}>

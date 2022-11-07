@@ -268,15 +268,8 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
 
 export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
   try {
-    if (action.payload.key) {
-      const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${action.payload.key}`);
-      
-      if (networkReturn) {
-        yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS,
-          payload: {
-            key: action.payload.key
-        }});
-      }
+    if (action.payload.photo) {
+      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: { ...action.payload}});
     }
   } catch (e) {
     console.error(e);

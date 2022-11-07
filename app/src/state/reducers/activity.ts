@@ -139,16 +139,38 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_DELETE_PHOTO_SUCCESS: {
-        const media = state.activity.media.filter((photo) => photo.media_key !== action.payload.key);
-        const media_keys = state.activity.media_keys.filter((key) => key !== action.payload.key);
-        console.log("new mediAAAAA: ", media);
-        console.log("new media keys ahhhh", media_keys);
+        const media = state.activity.media.filter((photo) => {
+          if (photo.media_key) {
+            return photo.media_key !== action.payload.photo.media_key
+          } else {
+            return photo.filepath !== action.payload.photo.filepath
+          }
+        });
+
+        let media_keys = [];
+        if (state.activity.media_keys) {
+          media_keys = state.activity.media_keys.filter((key) => {
+            if (action.payload.photo.media_key) {
+              return key !== action.payload.photo.media_key
+            }
+          });
+        } 
+
+        let delete_keys = [];
+        if (state.activity.media_delete_keys?.length) {
+          delete_keys = [...state.activity.media_delete_keys];
+        }
+        if (action.payload.photo.media_key) {
+          delete_keys.push(action.payload.photo.media_key);
+        }
+
         return {
           ...state,
           activity: {
             ...state.activity,
             media: media.length ? media : [],
-            media_keys: media_keys.length ? media_keys : []
+            media_keys: media_keys.length ? media_keys : [],
+            media_delete_keys: delete_keys
           }
         };
       }

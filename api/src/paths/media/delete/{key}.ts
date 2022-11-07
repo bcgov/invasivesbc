@@ -50,14 +50,12 @@ DELETE.apiDoc = {
 
 export function deleteMedia(): RequestHandler {
   return async (req, res, next) => {
-    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ HIT DELETE MEDIA: ", req);
     if (!req.params.key) {
       // No media keys found, skipping delete media step
       return next();
     }
 
     const result = await deleteFileFromS3(req.params.key);
-    // const result = "test";
 
     return res.status(200).json({
       message: 'Delete file',
