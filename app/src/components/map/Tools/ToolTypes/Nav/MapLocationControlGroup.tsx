@@ -432,7 +432,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           if (accuracyOn) {
             drawCircle(foundPosition, pos.coords.accuracy);
           }
-          map.setView(foundPosition, map.getZoom());
+          map.setView(foundPosition, 18);
         })
         .catch((error) => {
           console.log('Error getting position: ', error);
