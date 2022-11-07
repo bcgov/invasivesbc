@@ -37,11 +37,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
 
   const deleteRecord = () => {
     // On record deletion, clear selected record
-    if (userSettings.selectedRecord.id === activityInState.activity.activity_id) {
+    if (userSettings.activeActivity === activityInState.activity.activity_id) {
       dispatch({
         type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
         payload: {
-          selectedRecord: null
+          activeActivity: null
         }
       });
     }
