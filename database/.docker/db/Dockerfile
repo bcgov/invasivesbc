@@ -1,19 +1,20 @@
-FROM --platform=linux/amd64 postgres:10
+FROM --platform=linux/amd64 postgis/postgis:10-3.2
 
 # set variables
-ENV POSTGISV 2.4
+##ENV POSTGISV 2.4
 ENV TZ America/Vancouver
 ENV PORT 5432
 
 # install postgis packages
 RUN mkdir -p /opt/apps
-RUN apt-get -qq update
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGISV
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGISV-scripts
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
-RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
-RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
+##//RUN apt update
+##RUN apt-get -qq update
+##RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGISV
+##RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGISV-scripts
+#R##UN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
+#RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
+#RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
+#RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
 RUN apt-get -qq clean
 
 # set time zone
