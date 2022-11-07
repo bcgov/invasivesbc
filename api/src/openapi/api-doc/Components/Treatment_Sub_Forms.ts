@@ -145,13 +145,13 @@ export const Treatment_ChemicalPlant_Information = {
     temperature: {
       type: 'number',
       title: 'Temperature (C°)',
-      'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)'
+      'x-tooltip-text': 'Measured in degrees celcius at time of treatment (ideally between 10 and 28 degrees)'
     },
     wind_speed: {
       type: 'number',
       title: 'Wind Speed (km/h)',
       minimum: 0,
-      'x-tooltip-text': 'Wind speed in km/hr at time of treatment'
+      'x-tooltip-text': 'Wind speed in km/hr at time of treatment (ideally less than 9km/hr)'
     },
     wind_direction_code: {
       type: 'string',
