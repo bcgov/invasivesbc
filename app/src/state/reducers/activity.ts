@@ -141,39 +141,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_DELETE_PHOTO_SUCCESS: {
-        const media = state.activity.media.filter((photo) => {
-          if (photo.media_key) {
-            return photo.media_key !== action.payload.photo.media_key
-          } else {
-            return photo.file_name !== action.payload.photo.file_name
-          }
-        });
-
-        let media_keys = [];
-        if (state.activity.media_keys) {
-          media_keys = state.activity.media_keys.filter((key) => {
-            if (action.payload.photo.media_key) {
-              return key !== action.payload.photo.media_key
-            }
-          });
-        } 
-
-        let delete_keys = [];
-        if (state.activity.media_delete_keys?.length) {
-          delete_keys = [...state.activity.media_delete_keys];
-        }
-        if (action.payload.photo.media_key) {
-          delete_keys.push(action.payload.photo.media_key);
-        }
-
         return {
           ...state,
-          activity: {
-            ...state.activity,
-            media: media.length ? media : [],
-            media_keys: media_keys.length ? media_keys : [],
-            media_delete_keys: delete_keys
-          }
+          activity: action.payload.activity
         };
       }
       case ACTIVITY_EDIT_PHOTO_SUCCESS: {

@@ -284,7 +284,42 @@ export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
 export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
   try {
     if (action.payload.photo) {
-      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: { ...action.payload}});
+      const beforeState = yield select(selectActivity);
+      const beforeActivity = beforeState.activity;
+
+      const media = beforeActivity.media.filter((photo) => {
+        if (photo.media_key) {
+          return photo.media_key !== action.payload.photo.media_key
+        } else {
+          return photo.file_name !== action.payload.photo.file_name
+        }
+      });
+
+      let media_keys = [];
+      if (beforeActivity.media_keys) {
+        media_keys = beforeActivity.media_keys.filter((key) => {
+          if (action.payload.photo.media_key) {
+            return key !== action.payload.photo.media_key
+          }
+        });
+      } 
+
+      let delete_keys = [];
+      if (beforeActivity.media_delete_keys?.length) {
+        delete_keys = [...beforeActivity.media_delete_keys];
+      }
+      if (action.payload.photo.media_key) {
+        delete_keys.push(action.payload.photo.media_key);
+      }
+
+      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
+        activity: {
+          ...beforeActivity,
+          media: media.length ? media : [],
+          media_keys: media_keys.length ? media_keys : [],
+          media_delete_keys: delete_keys
+        }
+      }});
     }
   } catch (e) {
     console.error(e);

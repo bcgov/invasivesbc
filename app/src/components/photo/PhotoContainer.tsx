@@ -59,40 +59,39 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         photo: photo
       } });
 
-      props.photoState.setPhotos([...props.photoState.photos, photo]);
+      // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
       console.log('user cancelled or other camera problem');
       console.log(JSON.stringify(e));
     }
   };
 
-  const changePhotoDescription = (file_name: any, fieldsToUpdate: Object) => {
-    const oldPhoto = props.photoState.photos.find((photo) => photo.file_name === file_name);
-    const otherPhotos = props.photoState.photos.filter((photo) => photo.file_name !== file_name);
-    const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
-    props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
-  };
+  // const changePhotoDescription = (file_name: any, fieldsToUpdate: Object) => {
+  //   const oldPhoto = props.photoState.photos.find((photo) => photo.file_name === file_name);
+  //   const otherPhotos = props.photoState.photos.filter((photo) => photo.file_name !== file_name);
+  //   const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
+  //   props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
+  // };
 
-  const deletePhotos = async () => {
-    props.photoState.setPhotos([]);
-  };
+  // const deletePhotos = async () => {
+  //   props.photoState.setPhotos([]);
+  // };
 
   const deletePhoto = async (photo: any) => {
-    console.log("delete media: ", photo);
     dispatch( {type: ACTIVITY_DELETE_PHOTO_REQUEST, payload: {
       photo: photo
     }});
   };
   
-  const [editing, setEditing] = useState(false);
+  // const [editing, setEditing] = useState(false);
   const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
-  const editPhotoDesc = () => {
-    if (editing === false) {
-      setEditing(true);
-    }
-  };
+  // const editPhotoDesc = () => {
+  //   if (editing === false) {
+  //     setEditing(true);
+  //   }
+  // };
 
-  if (!props.photoState) {
+  if (!activityState.activity.media) {
     return <CircularProgress />;
   }
 
@@ -152,7 +151,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                                 }
                               }
                             });
-                            setEditing(false);
+                            // setEditing(false);
                             setNewPhotoDesc('untitled');
                           }}>
                           Save
@@ -175,11 +174,11 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   Add A Photo
                 </Button>
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
                   Remove All Photos
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Box>
