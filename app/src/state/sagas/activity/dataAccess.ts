@@ -32,7 +32,9 @@ import {
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_DELETE_PHOTO_FAILURE,
   ACTIVITY_ADD_PHOTO_SUCCESS,
-  ACTIVITY_ADD_PHOTO_FAILURE
+  ACTIVITY_ADD_PHOTO_FAILURE,
+  ACTIVITY_EDIT_PHOTO_SUCCESS,
+  ACTIVITY_EDIT_PHOTO_FAILURE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -287,5 +289,24 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_DELETE_PHOTO_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
+  try {
+    const beforeState = yield select(selectActivity);
+    const beforeActivity = beforeState.activity;
+    const photoIndex = beforeActivity.media.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
+
+    if (photoIndex >= 0) {
+      beforeActivity.media[photoIndex] = action.payload.photo;
+    }
+
+    yield put({ type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
+      media: beforeActivity.media
+    }});
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });
   }
 }

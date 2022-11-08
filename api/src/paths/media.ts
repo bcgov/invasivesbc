@@ -90,7 +90,7 @@ export function uploadMedia(): RequestHandler {
       }
 
       const metadata = {
-        filename: media.mediaName || '',
+        file_name: media.mediaName || '',
         description: media.mediaDescription || '',
         date: media.mediaDate || '',
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
@@ -120,7 +120,7 @@ export function getMediaItemsList(s3ObjectList: GetObjectOutput[], keys: string[
     const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;
 
     const mediaItem: IMediaItem = {
-      file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.filename) || null,
+      file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.file_name) || null,
       encoded_file: encodedFile,
       description: (s3Object && s3Object.Metadata && s3Object.Metadata.description) || null,
       media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null,

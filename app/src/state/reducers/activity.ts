@@ -33,7 +33,8 @@ import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
-  ACTIVITY_ADD_PHOTO_SUCCESS
+  ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_EDIT_PHOTO_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -144,7 +145,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           if (photo.media_key) {
             return photo.media_key !== action.payload.photo.media_key
           } else {
-            return photo.filepath !== action.payload.photo.filepath
+            return photo.file_name !== action.payload.photo.file_name
           }
         });
 
@@ -172,6 +173,17 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             media: media.length ? media : [],
             media_keys: media_keys.length ? media_keys : [],
             media_delete_keys: delete_keys
+          }
+        };
+      }
+      case ACTIVITY_EDIT_PHOTO_SUCCESS: {
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            media: [
+              ...action.payload.media
+            ]
           }
         };
       }
