@@ -1,9 +1,6 @@
-FROM node:16
+FROM node:16.14-alpine
 
-RUN apt-get -qq update
-RUN apt-get -qq install -y curl
-
-RUN npm install -g npm
+RUN apk update && apk add curl
 RUN npm install -g @ionic/cli
 
 # set variables
@@ -24,6 +21,6 @@ VOLUME ${HOME}
 
 ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 ARG REACT_APP_REAL_NODE_ENV
-ENV REACT_APP_REAL_NODE_ENV ${REACT_APP_REAL_NODE_ENV} 
+ENV REACT_APP_REAL_NODE_ENV ${REACT_APP_REAL_NODE_ENV}
 # run the ionic app in reload mode (will reload on file changes)
 CMD [ "npm", "run", "start:ionic:reload" ]

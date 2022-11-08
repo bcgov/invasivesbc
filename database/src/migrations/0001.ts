@@ -1,6 +1,22 @@
-import { Knex } from 'knex';
+import {Knex} from 'knex';
 
 export async function up(knex: Knex) {
+
+  // included in the large block below
+
+  let legacyFunctionDef;
+
+  if (
+    process.env['SKIP_POSTGRES9_COMPATIBILITY'] !== undefined &&
+    process.env['SKIP_POSTGRES9_COMPATIBILITY'].toLowerCase() === 'true'
+  ) {
+    legacyFunctionDef = `-- ommitted legacy function def`;
+  } else {
+    legacyFunctionDef = `CREATE or replace  FUNCTION public.convert_string_list_to_array_elements(unknown) RETURNS TABLE(f1 text)
+      AS $$ SELECT unnest(('{' || $1::text || '}')::text[]); $$
+      LANGUAGE SQL;`;
+  }
+
   try {
     await knex.raw(`
     -- Permissions
@@ -8,409 +24,409 @@ export async function up(knex: Knex) {
     -- DROP SCHEMA invasivesbc;
 
     CREATE SCHEMA invasivesbc AUTHORIZATION invasivebc;
-    
+
     -- DROP TYPE invasivesbc."batch_upload_status";
-    
+
     CREATE TYPE invasivesbc."batch_upload_status" AS ENUM (
       'NEW',
       'PROCESSING',
       'ERROR',
       'SUCCESS');
-    
+
     -- DROP TYPE invasivesbc."embedded_metabase_resource_type";
-    
+
     CREATE TYPE invasivesbc."embedded_metabase_resource_type" AS ENUM (
       'dashboard',
       'question');
-    
+
     -- DROP TYPE invasivesbc."validation_status";
-    
+
     CREATE TYPE invasivesbc."validation_status" AS ENUM (
       'VALID',
       'INVALID');
-    
+
     -- DROP SEQUENCE invasivesbc.access_request_access_request_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.access_request_access_request_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.access_request_access_request_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.access_request_access_request_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.activity_incoming_data_activity_incoming_data_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.activity_incoming_data_activity_incoming_data_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.activity_incoming_data_activity_incoming_data_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.activity_incoming_data_activity_incoming_data_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.admin_defined_shapes_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.admin_defined_shapes_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.admin_defined_shapes_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.admin_defined_shapes_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.application_user_user_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.application_user_user_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.application_user_user_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.application_user_user_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.batch_uploads_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.batch_uploads_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.batch_uploads_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.batch_uploads_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.bc_small_grid_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.bc_small_grid_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.bc_small_grid_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.bc_small_grid_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.biological_dispersal_extract_biologicaldispersalid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.biological_dispersal_extract_biologicaldispersalid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.biological_dispersal_extract_biologicaldispersalid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.biological_dispersal_extract_biologicaldispersalid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.biological_monitoring_extract_biologicalmonitoringid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.biological_monitoring_extract_biologicalmonitoringid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.biological_monitoring_extract_biologicalmonitoringid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.biological_monitoring_extract_biologicalmonitoringid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.biological_treatment_extract_biotreatmentid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.biological_treatment_extract_biotreatmentid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.biological_treatment_extract_biotreatmentid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.biological_treatment_extract_biotreatmentid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.chemical_monitoring_extract_chemicalmonitoringid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.chemical_monitoring_extract_chemicalmonitoringid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.chemical_monitoring_extract_chemicalmonitoringid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.chemical_monitoring_extract_chemicalmonitoringid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.chemical_treatment_extract_chemicaltreatmentid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.chemical_treatment_extract_chemicaltreatmentid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.chemical_treatment_extract_chemicaltreatmentid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.chemical_treatment_extract_chemicaltreatmentid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.code_category_code_category_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.code_category_code_category_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.code_category_code_category_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.code_category_code_category_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.code_code_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.code_code_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.code_code_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.code_code_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.code_header_code_header_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.code_header_code_header_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.code_header_code_header_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.code_header_code_header_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.embedded_report_categories_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.embedded_report_categories_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.embedded_report_categories_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.embedded_report_categories_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.embedded_reports_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.embedded_reports_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 10000;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.embedded_reports_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.embedded_reports_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.iapp_invbc_mapping_mapping_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.iapp_invbc_mapping_mapping_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.iapp_invbc_mapping_mapping_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.iapp_invbc_mapping_mapping_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.iapp_jurisdictions_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.iapp_jurisdictions_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.iapp_jurisdictions_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.iapp_jurisdictions_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.invasive_plant_no_treatment_extr_invasiveplantnotreatmentid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.invasive_plant_no_treatment_extr_invasiveplantnotreatmentid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.invasive_plant_no_treatment_extr_invasiveplantnotreatmentid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.invasive_plant_no_treatment_extr_invasiveplantnotreatmentid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.mechanical_monitoring_extract_mechmonitoringid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.mechanical_monitoring_extract_mechmonitoringid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.mechanical_monitoring_extract_mechmonitoringid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.mechanical_monitoring_extract_mechmonitoringid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.mechanical_treatment_extract_mechanicaltreatmentid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.mechanical_treatment_extract_mechanicaltreatmentid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.mechanical_treatment_extract_mechanicaltreatmentid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.mechanical_treatment_extract_mechanicaltreatmentid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.planning_extract_planningid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.planning_extract_planningid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.planning_extract_planningid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.planning_extract_planningid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.point_of_interest_incoming_da_point_of_interest_incoming_da_seq;
-    
+
     CREATE SEQUENCE invasivesbc.point_of_interest_incoming_da_point_of_interest_incoming_da_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.point_of_interest_incoming_da_point_of_interest_incoming_da_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.point_of_interest_incoming_da_point_of_interest_incoming_da_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.point_of_interest_incoming_data_point_of_interest_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.point_of_interest_incoming_data_point_of_interest_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.point_of_interest_incoming_data_point_of_interest_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.point_of_interest_incoming_data_point_of_interest_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.site_selection_extract_siteselectionid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.site_selection_extract_siteselectionid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.site_selection_extract_siteselectionid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.site_selection_extract_siteselectionid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.species_ref_raw_species_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.species_ref_raw_species_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.species_ref_raw_species_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.species_ref_raw_species_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.survey_extract_surveyid_seq;
-    
+
     CREATE SEQUENCE invasivesbc.survey_extract_surveyid_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.survey_extract_surveyid_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.survey_extract_surveyid_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.user_access_access_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.user_access_access_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.user_access_access_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.user_access_access_id_seq TO invasivebc;
-    
+
     -- DROP SEQUENCE invasivesbc.user_role_role_id_seq;
-    
+
     CREATE SEQUENCE invasivesbc.user_role_role_id_seq
       INCREMENT BY 1
       MINVALUE 1
       MAXVALUE 9223372036854775807
       START 1;
-    
+
     -- Permissions
-    
+
     ALTER SEQUENCE invasivesbc.user_role_role_id_seq OWNER TO invasivebc;
     GRANT ALL ON SEQUENCE invasivesbc.user_role_role_id_seq TO invasivebc;
     -- invasivesbc.access_request definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.access_request;
-    
+
     CREATE TABLE invasivesbc.access_request (
       access_request_id serial4 NOT NULL,
       idir_account_name varchar(100) NULL,
@@ -435,19 +451,19 @@ export async function up(knex: Knex) {
       CONSTRAINT access_request_idir_userid_bceid_userid_key UNIQUE (idir_userid, bceid_userid),
       CONSTRAINT access_request_pkey PRIMARY KEY (access_request_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.access_request OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.access_request TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_incoming_data definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.activity_incoming_data;
-    
+
     CREATE TABLE invasivesbc.activity_incoming_data (
       activity_incoming_data_id serial4 NOT NULL,
       activity_id uuid NULL,
@@ -494,19 +510,19 @@ export async function up(knex: Knex) {
     CREATE INDEX activity_incoming_data_activity_type_idx ON invasivesbc.activity_incoming_data USING btree (activity_type);
     CREATE INDEX activity_incoming_data_geog_idx ON invasivesbc.activity_incoming_data USING gist (geog);
     CREATE INDEX activity_incoming_data_geom_idx ON invasivesbc.activity_incoming_data USING gist (geom);
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_incoming_data OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_incoming_data TO invasivebc;
-    
-    
+
+
     -- invasivesbc.admin_defined_shapes definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.admin_defined_shapes;
-    
+
     CREATE TABLE invasivesbc.admin_defined_shapes (
       id serial4 NOT NULL,
       visible bool NOT NULL DEFAULT true,
@@ -516,19 +532,19 @@ export async function up(knex: Knex) {
       geog public.geography(polygon, 4326) NULL,
       CONSTRAINT admin_defined_shapes_pkey PRIMARY KEY (id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.admin_defined_shapes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.admin_defined_shapes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.application_user definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.application_user;
-    
+
     CREATE TABLE invasivesbc.application_user (
       user_id serial4 NOT NULL,
       first_name varchar(100) NULL,
@@ -557,19 +573,19 @@ export async function up(knex: Knex) {
     );
     CREATE UNIQUE INDEX unique_bceid_userid_if_not_null ON invasivesbc.application_user USING btree (bceid_userid) WHERE (bceid_userid IS NOT NULL);
     CREATE UNIQUE INDEX unique_idir_userid_if_not_null ON invasivesbc.application_user USING btree (idir_userid) WHERE (idir_userid IS NOT NULL);
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.application_user OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.application_user TO invasivebc;
-    
-    
+
+
     -- invasivesbc.batch_uploads definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.batch_uploads;
-    
+
     CREATE TABLE invasivesbc.batch_uploads (
       id serial4 NOT NULL,
       csv_data text NOT NULL,
@@ -580,55 +596,55 @@ export async function up(knex: Knex) {
       created_at timestamp NOT NULL DEFAULT now(),
       created_by varchar(100) NOT NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.batch_uploads OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.batch_uploads TO invasivebc;
-    
-    
+
+
     -- invasivesbc.bc_large_grid definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.bc_large_grid;
-    
+
     CREATE TABLE invasivesbc.bc_large_grid (
       id int4 NOT NULL,
       geo public.geography(geometry, 4326) NOT NULL,
       CONSTRAINT bc_large_grid_pkey PRIMARY KEY (id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.bc_large_grid OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.bc_large_grid TO invasivebc;
-    
-    
+
+
     -- invasivesbc.bc_small_grid definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.bc_small_grid;
-    
+
     CREATE TABLE invasivesbc.bc_small_grid (
       id serial4 NOT NULL,
       geo public.geography(geometry, 4326) NOT NULL,
       large_grid_item_id int4 NOT NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.bc_small_grid OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.bc_small_grid TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biological_dispersal_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.biological_dispersal_extract;
-    
+
     CREATE TABLE invasivesbc.biological_dispersal_extract (
       biologicaldispersalid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -672,19 +688,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biological_dispersal_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biological_dispersal_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biological_monitoring_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.biological_monitoring_extract;
-    
+
     CREATE TABLE invasivesbc.biological_monitoring_extract (
       biologicalmonitoringid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -732,19 +748,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biological_monitoring_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biological_monitoring_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biological_treatment_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.biological_treatment_extract;
-    
+
     CREATE TABLE invasivesbc.biological_treatment_extract (
       biotreatmentid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -783,19 +799,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biological_treatment_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biological_treatment_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.chemical_monitoring_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.chemical_monitoring_extract;
-    
+
     CREATE TABLE invasivesbc.chemical_monitoring_extract (
       chemicalmonitoringid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -838,19 +854,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.chemical_monitoring_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.chemical_monitoring_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.chemical_treatment_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.chemical_treatment_extract;
-    
+
     CREATE TABLE invasivesbc.chemical_treatment_extract (
       chemicaltreatmentid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -895,19 +911,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.chemical_treatment_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.chemical_treatment_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.code_category definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.code_category;
-    
+
     CREATE TABLE invasivesbc.code_category (
       code_category_id serial4 NOT NULL,
       code_category_name varchar(100) NOT NULL,
@@ -922,19 +938,19 @@ export async function up(knex: Knex) {
       CONSTRAINT code_category_code_category_name_valid_from_unique UNIQUE (code_category_name, valid_from),
       CONSTRAINT code_category_pkey PRIMARY KEY (code_category_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.code_category OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.code_category TO invasivebc;
-    
-    
+
+
     -- invasivesbc.embedded_report_categories definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.embedded_report_categories;
-    
+
     CREATE TABLE invasivesbc.embedded_report_categories (
       id serial4 NOT NULL,
       "name" varchar(128) NOT NULL,
@@ -943,19 +959,19 @@ export async function up(knex: Knex) {
       CONSTRAINT embedded_report_categories_pkey PRIMARY KEY (id),
       CONSTRAINT embedded_report_categories_sort_order_check CHECK ((sort_order > 0))
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.embedded_report_categories OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.embedded_report_categories TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_invbc_mapping definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.iapp_invbc_mapping;
-    
+
     CREATE TABLE invasivesbc.iapp_invbc_mapping (
       mapping_id serial4 NOT NULL,
       char_code varchar(2) NULL,
@@ -965,57 +981,57 @@ export async function up(knex: Knex) {
       "comments" varchar(300) NULL,
       CONSTRAINT iapp_invbc_mapping_pkey PRIMARY KEY (mapping_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_invbc_mapping OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_invbc_mapping TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_jurisdictions definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.iapp_jurisdictions;
-    
+
     CREATE TABLE invasivesbc.iapp_jurisdictions (
       id serial4 NOT NULL,
       jurisdiction varchar(70) NOT NULL,
       code varchar(10) NULL,
       CONSTRAINT iapp_jurisdictions_pkey PRIMARY KEY (id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_jurisdictions OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_jurisdictions TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_spatial definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.iapp_spatial;
-    
+
     CREATE TABLE invasivesbc.iapp_spatial (
       site_id int4 NOT NULL,
       geog public.geography(geometry, 4326) NULL
     );
     CREATE INDEX spatial_iapp_geog_idx ON invasivesbc.iapp_spatial USING gist (geog);
     CREATE INDEX spatial_iapp_site_id_idx ON invasivesbc.iapp_spatial USING btree (site_id);
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_spatial OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_spatial TO invasivebc;
-    
-    
+
+
     -- invasivesbc.invasive_plant_no_treatment_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.invasive_plant_no_treatment_extract;
-    
+
     CREATE TABLE invasivesbc.invasive_plant_no_treatment_extract (
       invasiveplantnotreatmentid int4 NOT NULL DEFAULT nextval('invasivesbc.invasive_plant_no_treatment_extr_invasiveplantnotreatmentid_seq'::regclass),
       site_id int4 NOT NULL,
@@ -1048,19 +1064,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.invasive_plant_no_treatment_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.invasive_plant_no_treatment_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.mechanical_monitoring_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.mechanical_monitoring_extract;
-    
+
     CREATE TABLE invasivesbc.mechanical_monitoring_extract (
       mechmonitoringid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -1099,19 +1115,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.mechanical_monitoring_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.mechanical_monitoring_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.mechanical_treatment_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.mechanical_treatment_extract;
-    
+
     CREATE TABLE invasivesbc.mechanical_treatment_extract (
       mechanicaltreatmentid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -1146,19 +1162,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.mechanical_treatment_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.mechanical_treatment_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.planning_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.planning_extract;
-    
+
     CREATE TABLE invasivesbc.planning_extract (
       planningid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -1196,19 +1212,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.planning_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.planning_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.point_of_interest_incoming_data definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.point_of_interest_incoming_data;
-    
+
     CREATE TABLE invasivesbc.point_of_interest_incoming_data (
       point_of_interest_incoming_data_id int4 NOT NULL DEFAULT nextval('invasivesbc.point_of_interest_incoming_da_point_of_interest_incoming_da_seq'::regclass),
       point_of_interest_id serial4 NOT NULL,
@@ -1236,19 +1252,19 @@ export async function up(knex: Knex) {
     CREATE INDEX poi_type_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_type);
     CREATE INDEX point_of_interest_incoming_data_gist ON invasivesbc.point_of_interest_incoming_data USING gist (geom);
     CREATE INDEX point_of_interest_incoming_data_gist2 ON invasivesbc.point_of_interest_incoming_data USING gist (geog);
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.point_of_interest_incoming_data OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.point_of_interest_incoming_data TO invasivebc;
-    
-    
+
+
     -- invasivesbc.site_selection_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.site_selection_extract;
-    
+
     CREATE TABLE invasivesbc.site_selection_extract (
       siteselectionid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -1286,19 +1302,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.site_selection_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.site_selection_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.species_ref_raw definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.species_ref_raw;
-    
+
     -- CREATE TABLE invasivesbc.species_ref_raw (
     --  species_id serial4 NOT NULL,
     --  common_name varchar(50) NOT NULL,
@@ -1307,19 +1323,19 @@ export async function up(knex: Knex) {
     --  species varchar(3) NOT NULL,
     --  map_symbol varchar(2) NOT NULL
     -- );
-    
+
     -- Permissions
-    
+
     -- ALTER TABLE invasivesbc.species_ref_raw OWNER TO invasivebc;
     -- GRANT ALL ON TABLE invasivesbc.species_ref_raw TO invasivebc;
-    
-    
+
+
     -- invasivesbc.survey_extract definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.survey_extract;
-    
+
     CREATE TABLE invasivesbc.survey_extract (
       surveyid serial4 NOT NULL,
       site_id int4 NOT NULL,
@@ -1354,19 +1370,19 @@ export async function up(knex: Knex) {
       regional_district varchar(200) NULL,
       regional_invasive_species_organization varchar(200) NULL
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.survey_extract OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.survey_extract TO invasivebc;
-    
-    
+
+
     -- invasivesbc.user_role definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.user_role;
-    
+
     CREATE TABLE invasivesbc.user_role (
       role_id serial4 NOT NULL,
       role_description varchar(250) NOT NULL,
@@ -1376,19 +1392,19 @@ export async function up(knex: Knex) {
       metabase_group varchar(100) NULL,
       CONSTRAINT user_role_pkey PRIMARY KEY (role_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.user_role OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.user_role TO invasivebc;
-    
-    
+
+
     -- invasivesbc.code_header definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.code_header;
-    
+
     CREATE TABLE invasivesbc.code_header (
       code_header_id serial4 NOT NULL,
       code_category_id int4 NULL,
@@ -1405,19 +1421,19 @@ export async function up(knex: Knex) {
       CONSTRAINT code_header_pkey PRIMARY KEY (code_header_id),
       CONSTRAINT code_header_code_category_id_foreign FOREIGN KEY (code_category_id) REFERENCES invasivesbc.code_category(code_category_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.code_header OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.code_header TO invasivebc;
-    
-    
+
+
     -- invasivesbc.embedded_reports definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.embedded_reports;
-    
+
     CREATE TABLE invasivesbc.embedded_reports (
       metabase_id int4 NOT NULL,
       category_id int4 NOT NULL,
@@ -1432,19 +1448,19 @@ export async function up(knex: Knex) {
       CONSTRAINT embedded_reports_sort_order_check CHECK ((sort_order > 0)),
       CONSTRAINT embedded_reports_category_id_fkey FOREIGN KEY (category_id) REFERENCES invasivesbc.embedded_report_categories(id) ON DELETE RESTRICT
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.embedded_reports OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.embedded_reports TO invasivebc;
-    
-    
+
+
     -- invasivesbc.user_access definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.user_access;
-    
+
     CREATE TABLE invasivesbc.user_access (
       access_id serial4 NOT NULL,
       user_id int4 NULL,
@@ -1456,19 +1472,19 @@ export async function up(knex: Knex) {
       CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES invasivesbc.user_role(role_id) ON DELETE CASCADE,
       CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES invasivesbc.application_user(user_id) ON DELETE CASCADE
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.user_access OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.user_access TO invasivebc;
-    
-    
+
+
     -- invasivesbc.code definition
-    
+
     -- Drop table
-    
+
     -- DROP TABLE invasivesbc.code;
-    
+
     CREATE TABLE invasivesbc.code (
       code_id serial4 NOT NULL,
       code_header_id int4 NULL,
@@ -1485,30 +1501,30 @@ export async function up(knex: Knex) {
       CONSTRAINT code_pkey PRIMARY KEY (code_id),
       CONSTRAINT code_code_header_id_foreign FOREIGN KEY (code_header_id) REFERENCES invasivesbc.code_header(code_header_id)
     );
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.code OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.code TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_current source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_current
     AS SELECT activity_incoming_data.activity_id,
         max(activity_incoming_data.activity_incoming_data_id) AS incoming_data_id
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.deleted_timestamp IS NULL
       GROUP BY activity_incoming_data.activity_id;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_current OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_current TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_jurisdictions source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_jurisdictions
     AS WITH jurisdictions AS (
             SELECT a_1.activity_incoming_data_id,
@@ -1525,15 +1541,15 @@ export async function up(knex: Knex) {
         JOIN invasivesbc.activity_current b ON a.activity_incoming_data_id = b.incoming_data_id
         LEFT JOIN jurisdictions j ON j.activity_incoming_data_id = a.activity_incoming_data_id
       ORDER BY a.activity_id DESC;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_jurisdictions OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_jurisdictions TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_monitoring_biological_terrestrialplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_monitoring_biological_terrestrialplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_code'::text)::text, '"'::text) AS invasive_plant_code,
@@ -1544,15 +1560,15 @@ export async function up(knex: Knex) {
         ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'signage_on_site'::text)::text)::boolean AS signage_on_site
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Monitoring'::text AND activity_incoming_data.activity_subtype::text = 'Monitoring_BiologicalTerrestrialPlant'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_monitoring_biological_terrestrialplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_monitoring_biological_terrestrialplant_with_codes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_observation_aquaticplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_observation_aquaticplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.version,
@@ -1576,15 +1592,15 @@ export async function up(knex: Knex) {
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'voucher_submission_detail'::text)::text, '"'::text) AS voucher_submission_detail
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Observation'::text AND activity_incoming_data.activity_subtype::text = 'Activity_Observation_PlantAquatic'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_observation_aquaticplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_observation_aquaticplant_with_codes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_observation_terrestrialplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_observation_terrestrialplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.version,
@@ -1609,15 +1625,15 @@ export async function up(knex: Knex) {
         ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'biological_ind'::text)::text)::boolean AS biological_ind
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Observation'::text AND activity_incoming_data.activity_subtype::text = 'Activity_Observation_PlantTerrestrial'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_observation_terrestrialplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_observation_terrestrialplant_with_codes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_treatment_biological_terrestrialplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_treatment_biological_terrestrialplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_code'::text)::text, '"'::text) AS invasive_plant_code,
@@ -1629,15 +1645,15 @@ export async function up(knex: Knex) {
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'bioagent_maturity_status_code'::text)::text, '"'::text) AS bioagent_maturity_status_code
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Treatment'::text AND activity_incoming_data.activity_subtype::text = 'Treatment_BiologicalPlant'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_treatment_biological_terrestrialplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_treatment_biological_terrestrialplant_with_codes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_treatment_chemical_terrestrialplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_treatment_chemical_terrestrialplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'applicator1_first_name'::text)::text, '"'::text) AS applicator1_first_name,
@@ -1657,15 +1673,15 @@ export async function up(knex: Knex) {
         ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'humidity'::text)::text)::integer AS humidity
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Treatment'::text AND activity_incoming_data.activity_subtype::text = 'Activity_Treatment_ChemicalPlant'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_treatment_chemical_terrestrialplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_treatment_chemical_terrestrialplant_with_codes TO invasivebc;
-    
-    
+
+
     -- invasivesbc.activity_treatment_mechanical_terrestrialplant_with_codes source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.activity_treatment_mechanical_terrestrialplant_with_codes
     AS SELECT activity_incoming_data.activity_id,
         btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_code'::text)::text, '"'::text) AS invasive_plant_code,
@@ -1676,22 +1692,20 @@ export async function up(knex: Knex) {
         ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'signage_on_site'::text)::text)::boolean AS signage_on_site
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Treatment'::text AND activity_incoming_data.activity_subtype::text = 'Treatment_MechanicalPlant'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.activity_treatment_mechanical_terrestrialplant_with_codes OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.activity_treatment_mechanical_terrestrialplant_with_codes TO invasivebc;
-    
+
     CREATE  or replace  FUNCTION public.convert_string_list_to_array_elements(text) RETURNS TABLE(f1 text)
       AS $$ SELECT  unnest(('{' || $1::text || '}')::text[]); $$
       LANGUAGE SQL;
 
-    CREATE  or replace  FUNCTION public.convert_string_list_to_array_elements(unknown) RETURNS TABLE(f1 text)
-      AS $$ SELECT  unnest(('{' || $1::text || '}')::text[]); $$
-      LANGUAGE SQL;
+    ${legacyFunctionDef}
 
    -- invasivesbc.common_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.common_summary
     AS WITH jurisdiction_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -1820,10 +1834,10 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code_header employer_code_header ON employer_code_header.code_header_title::text = 'employer_code'::text AND employer_code_header.valid_to IS NULL
         LEFT JOIN invasivesbc.code employer_codes ON employer_codes.code_header_id = employer_code_header.code_header_id AND (a.activity_payload #>> '{form_data,activity_data,employer_code}'::text[]) = employer_codes.code_name::text
       WHERE (a.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
-              FROM invasivesbc.activity_current)) AND a.form_status::text = 'Submitted'::text; 
-   
+              FROM invasivesbc.activity_current)) AND a.form_status::text = 'Submitted'::text;
+
     -- invasivesbc.biocontrol_collection_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.biocontrol_collection_summary
     AS WITH biocontrol_collection_json AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -2010,15 +2024,15 @@ export async function up(knex: Knex) {
         JOIN biocontrol_collection_monitoring_select b ON b.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Biocontrol_Collection'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biocontrol_collection_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biocontrol_collection_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biocontrol_dispersal_monitoring_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.biocontrol_dispersal_monitoring_summary
     AS WITH biocontrol_dispersal_monitoring_json AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -2257,15 +2271,15 @@ export async function up(knex: Knex) {
         JOIN biocontrol_release_monitoring_select b ON b.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biocontrol_dispersal_monitoring_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biocontrol_dispersal_monitoring_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biocontrol_release_monitoring_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.biocontrol_release_monitoring_summary
     AS WITH biocontrol_release_monitoring_json AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -2478,15 +2492,15 @@ export async function up(knex: Knex) {
         JOIN biocontrol_release_monitoring_select b ON b.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biocontrol_release_monitoring_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biocontrol_release_monitoring_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.biocontrol_release_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.biocontrol_release_summary
     AS WITH biocontrol_release_json AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -2641,15 +2655,15 @@ export async function up(knex: Knex) {
         JOIN biocontrol_release_json_select b ON b.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Biocontrol_Release'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.biocontrol_release_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.biocontrol_release_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.chemical_treatment_monitoring_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.chemical_treatment_monitoring_summary
     AS WITH invasive_plants_on_site AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -2742,20 +2756,20 @@ export async function up(knex: Knex) {
         LEFT JOIN chemical_monitoring_json j ON j.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.chemical_treatment_monitoring_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.chemical_treatment_monitoring_summary TO invasivebc;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.common_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.common_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.embedded_reports_view source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.embedded_reports_view
     AS SELECT r.id,
         r.metabase_resource,
@@ -2766,14 +2780,14 @@ export async function up(knex: Knex) {
         JOIN invasivesbc.embedded_report_categories c ON r.category_id = c.id
       WHERE r.enabled IS TRUE
       ORDER BY c.sort_order, c.name, r.sort_order, r.display_name;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.embedded_reports_view OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.embedded_reports_view TO invasivebc;
-    
+
     -- invasivesbc.iapp_site_summary_slow source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.iapp_site_summary_slow
     AS WITH sites_grouped AS (
             SELECT site_selection_extract.site_id,
@@ -2865,9 +2879,9 @@ export async function up(knex: Knex) {
             END AS has_mechanical_treatment_monitorings
       FROM sites_grouped sse
         JOIN date_summary ds ON ds.site_id = sse.site_id;
-    
+
     -- invasivesbc.iapp_site_summary source
-    
+
     CREATE MATERIALIZED VIEW invasivesbc.iapp_site_summary
     TABLESPACE pg_default
     AS WITH jurisdiction_data AS (
@@ -2911,15 +2925,15 @@ export async function up(knex: Knex) {
         JOIN jurisdiction_data jd ON i.site_id = jd.site_id
       WHERE 1 = 1
     WITH DATA;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_site_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_site_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_site_summary_and_geojson source
-    
+
     CREATE MATERIALIZED VIEW invasivesbc.iapp_site_summary_and_geojson
     TABLESPACE pg_default
     AS SELECT i.site_id,
@@ -2958,15 +2972,15 @@ export async function up(knex: Knex) {
         JOIN invasivesbc.iapp_spatial s ON i.site_id = s.site_id
       WHERE 1 = 1
     WITH DATA;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_site_summary_and_geojson OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_site_summary_and_geojson TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_site_summary_slow source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.iapp_site_summary_slow
     AS WITH sites_grouped AS (
             SELECT site_selection_extract.site_id,
@@ -3058,15 +3072,15 @@ export async function up(knex: Knex) {
             END AS has_mechanical_treatment_monitorings
       FROM sites_grouped sse
         JOIN date_summary ds ON ds.site_id = sse.site_id;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_site_summary_slow OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_site_summary_slow TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_species_ref_raw source
-    
+
     -- CREATE OR REPLACE VIEW invasivesbc.iapp_species_ref_raw
     -- AS WITH all_plant_codes AS (
     --        SELECT c_1.code_id,
@@ -3087,15 +3101,15 @@ export async function up(knex: Knex) {
     --    n.map_symbol
     -- FROM invasivesbc.species_ref_raw n
     --    JOIN all_plant_codes c ON c.code_name::text = n.map_symbol::text;
-    
+
     -- Permissions
-    
+
     -- ALTER TABLE invasivesbc.iapp_species_ref_raw OWNER TO invasivebc;
     -- GRANT ALL ON TABLE invasivesbc.iapp_species_ref_raw TO invasivebc;
-    
-    
+
+
     -- invasivesbc.iapp_species_status source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.iapp_species_status
     AS WITH most_recent_positive_occurences AS (
             SELECT se.site_id,
@@ -3137,15 +3151,15 @@ export async function up(knex: Knex) {
         site_species_status.is_species_negative
       FROM site_species_status
       ORDER BY site_species_status.is_species_negative DESC;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.iapp_species_status OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.iapp_species_status TO invasivebc;
-    
-    
+
+
     -- invasivesbc.mechanical_treatment_monitoring_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.mechanical_treatment_monitoring_summary
     AS WITH invasive_plants_on_site AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -3238,15 +3252,15 @@ export async function up(knex: Knex) {
         LEFT JOIN mechanical_monitoring_json j ON j.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.mechanical_treatment_monitoring_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.mechanical_treatment_monitoring_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.monitoring_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.monitoring_summary
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.activity_subtype AS monitoring_type,
@@ -3287,15 +3301,15 @@ export async function up(knex: Knex) {
         ((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_data'::text) -> 'general_comment'::text AS general_observation_comment__needs_verify
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Monitoring'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.monitoring_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.monitoring_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.observation_aquatic_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_aquatic_plant_summary
     AS WITH waterbody_outflow AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -3578,14 +3592,14 @@ export async function up(knex: Knex) {
         LEFT JOIN aquatic_plant_json_select a ON a.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Observation_PlantAquatic'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_aquatic_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_aquatic_plant_summary TO invasivebc;
-    
+
     -- invasivesbc.observation_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_summary
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.activity_subtype AS observation_type,
@@ -3627,14 +3641,14 @@ export async function up(knex: Knex) {
         ((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_data'::text) -> 'general_comment'::text AS general_observation_comment__needs_verify
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Observation'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_summary TO invasivebc;
-    
+
     -- invasivesbc.observation_aquaticplant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_aquaticplant_summary
     AS SELECT record.activity_id,
         aid.version,
@@ -3701,15 +3715,15 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code plant_health_codes ON plant_health_codes.code_header_id = plant_health_code_header.code_header_id AND record.plant_health_code = plant_health_codes.code_name::text
         LEFT JOIN invasivesbc.code_header plant_seed_stage_code_header ON plant_seed_stage_code_header.code_header_title::text = 'plant_seed_stage_code'::text AND plant_seed_stage_code_header.valid_to IS NULL
         LEFT JOIN invasivesbc.code plant_seed_stage_codes ON plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id AND record.plant_seed_stage_code = plant_seed_stage_codes.code_name::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_aquaticplant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_aquaticplant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.observation_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_summary
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.activity_subtype AS observation_type,
@@ -3751,15 +3765,15 @@ export async function up(knex: Knex) {
         ((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_data'::text) -> 'general_comment'::text AS general_observation_comment__needs_verify
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Observation'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.observation_terrestrial_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_terrestrial_plant_summary
     AS WITH terrestrial_plant_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -3880,15 +3894,15 @@ export async function up(knex: Knex) {
         JOIN terrestrial_plant_select t ON t.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Observation_PlantTerrestrial'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_terrestrial_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_terrestrial_plant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.observation_terrestrialplant source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observation_terrestrialplant
     AS SELECT record.activity_id,
         summary.version,
@@ -3975,15 +3989,15 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code plant_health_codes ON plant_health_codes.code_header_id = plant_health_code_header.code_header_id AND record.plant_health_code = plant_health_codes.code_name::text
         LEFT JOIN invasivesbc.code_header plant_seed_stage_code_header ON plant_seed_stage_code_header.code_header_title::text = 'plant_seed_stage_code'::text AND plant_seed_stage_code_header.valid_to IS NULL
         LEFT JOIN invasivesbc.code plant_seed_stage_codes ON plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id AND record.plant_seed_stage_code = aspect_codes.code_name::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observation_terrestrialplant OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observation_terrestrialplant TO invasivebc;
-    
-    
+
+
     -- invasivesbc.observations_by_species source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.observations_by_species
     AS WITH spatial_expload_positive AS (
             SELECT activity_incoming_data.activity_type,
@@ -4114,14 +4128,14 @@ export async function up(knex: Knex) {
         spatial_union.geom
       FROM spatial_union
       WHERE st_area(spatial_union.geom) > 0::double precision;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.observations_by_species OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.observations_by_species TO invasivebc;
-    
+
     -- invasivesbc.treatment_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_summary
     AS SELECT activity_incoming_data.activity_id,
         activity_incoming_data.activity_subtype AS observation_type,
@@ -4161,14 +4175,14 @@ export async function up(knex: Knex) {
         ((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_data'::text) -> 'general_comment'::text AS general_observation_comment__needs_verify
       FROM invasivesbc.activity_incoming_data
       WHERE activity_incoming_data.activity_type::text = 'Treatment'::text AND activity_incoming_data.deleted_timestamp IS NULL;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_summary TO invasivebc;
-    
+
     -- invasivesbc.treatment_biological_terrestrialplant source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_biological_terrestrialplant
     AS SELECT record.activity_id,
         summary.version,
@@ -4223,15 +4237,15 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code biological_agent_stage_codes ON biological_agent_stage_codes.code_header_id = biological_agent_stage_code_header.code_header_id AND record.biological_agent_stage_code = biological_agent_stage_codes.code_name::text
         LEFT JOIN invasivesbc.code_header bioagent_maturity_status_code_header ON bioagent_maturity_status_code_header.code_header_title::text = 'bioagent_maturity_status_code'::text AND bioagent_maturity_status_code_header.valid_to IS NULL
         LEFT JOIN invasivesbc.code bioagent_maturity_status_codes ON bioagent_maturity_status_codes.code_header_id = bioagent_maturity_status_code_header.code_header_id AND record.bioagent_maturity_status_code = bioagent_maturity_status_codes.code_name::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_biological_terrestrialplant OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_biological_terrestrialplant TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_chemical_aquatic_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_chemical_aquatic_plant_summary
     AS WITH herbicide_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -4608,15 +4622,15 @@ export async function up(knex: Knex) {
         LEFT JOIN tank_mix_json_select tm ON tm.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Treatment_ChemicalPlantAquatic'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_chemical_aquatic_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_chemical_aquatic_plant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_chemical_terrestrial_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_chemical_terrestrial_plant_summary
     AS WITH herbicide_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -4993,15 +5007,15 @@ export async function up(knex: Knex) {
         LEFT JOIN tank_mix_json_select tm ON tm.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Treatment_ChemicalPlantTerrestrial'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_chemical_terrestrial_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_chemical_terrestrial_plant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_chemical_terrestrialplant source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_chemical_terrestrialplant
     AS SELECT record.activity_id,
         summary.version,
@@ -5063,15 +5077,15 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code chemical_method_codes ON chemical_method_codes.code_header_id = chemical_method_code_header.code_header_id AND record.chemical_method_code = chemical_method_codes.code_name::text
         LEFT JOIN invasivesbc.code_header wind_direction_code_header ON wind_direction_code_header.code_header_title::text = 'wind_direction_code'::text AND wind_direction_code_header.valid_to IS NULL
         LEFT JOIN invasivesbc.code wind_direction_codes ON wind_direction_codes.code_header_id = wind_direction_code_header.code_header_id AND record.wind_direction_code = wind_direction_codes.code_name::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_chemical_terrestrialplant OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_chemical_terrestrialplant TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_mechanical_aquatic_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_mechanical_aquatic_plant_summary
     AS WITH mechanical_treatment_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -5169,15 +5183,15 @@ export async function up(knex: Knex) {
         JOIN shoreline_agg a ON a.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Treatment_MechanicalPlantAquatic'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_mechanical_aquatic_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_mechanical_aquatic_plant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_mechanical_terrestrial_plant_summary source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_mechanical_terrestrial_plant_summary
     AS WITH mechanical_treatment_array AS (
             SELECT activity_incoming_data.activity_incoming_data_id,
@@ -5249,15 +5263,15 @@ export async function up(knex: Knex) {
         FULL JOIN mechanical_treatment_select m ON m.activity_incoming_data_id = c.activity_incoming_data_id
       WHERE c.activity_subtype = 'Activity_Treatment_MechanicalPlantTerrestrial'::text AND (c.activity_incoming_data_id IN ( SELECT activity_current.incoming_data_id
               FROM invasivesbc.activity_current)) AND c.form_status::text = 'Submitted'::text;
-    
+
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_mechanical_terrestrial_plant_summary OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_mechanical_terrestrial_plant_summary TO invasivebc;
-    
-    
+
+
     -- invasivesbc.treatment_mechanical_terrestrialplant source
-    
+
     CREATE OR REPLACE VIEW invasivesbc.treatment_mechanical_terrestrialplant
     AS SELECT record.activity_id,
         summary.version,
@@ -5315,10 +5329,10 @@ export async function up(knex: Knex) {
         LEFT JOIN invasivesbc.code soil_disturbance_codes ON soil_disturbance_codes.code_header_id = soil_disturbance_code_header.code_header_id AND record.soil_disturbance_code = soil_disturbance_codes.code_name::text;
 
     -- Permissions
-    
+
     ALTER TABLE invasivesbc.treatment_mechanical_terrestrialplant OWNER TO invasivebc;
     GRANT ALL ON TABLE invasivesbc.treatment_mechanical_terrestrialplant TO invasivebc;
-    
+
     CREATE OR REPLACE FUNCTION invasivesbc.delete_last_activity()
     RETURNS trigger
     LANGUAGE plpgsql
@@ -5332,12 +5346,12 @@ export async function up(knex: Knex) {
           END;
           $function$
     ;
-    
+
     -- Permissions
-    
+
     ALTER FUNCTION invasivesbc.delete_last_activity() OWNER TO invasivebc;
     GRANT ALL ON FUNCTION invasivesbc.delete_last_activity() TO invasivebc;
-    
+
     CREATE OR REPLACE FUNCTION invasivesbc.immutable_to_date(the_date text)
     RETURNS date
     LANGUAGE sql
@@ -5346,12 +5360,12 @@ export async function up(knex: Knex) {
       select to_date(the_date, 'yyyy-mm-dd');
       $function$
     ;
-    
+
     -- Permissions
-    
+
     ALTER FUNCTION invasivesbc.immutable_to_date(text) OWNER TO invasivebc;
     GRANT ALL ON FUNCTION invasivesbc.immutable_to_date(text) TO invasivebc;
-    
+
     CREATE OR REPLACE FUNCTION invasivesbc.update_created_by_on_activity_updates_function()
     RETURNS trigger
     LANGUAGE plpgsql
@@ -5359,9 +5373,9 @@ export async function up(knex: Knex) {
           BEGIN
               UPDATE invasivesbc.activity_incoming_data
               SET created_by = (
-                SELECT created_by 
-                FROM invasivesbc.activity_incoming_data 
-                WHERE NEW.activity_id = activity_id 
+                SELECT created_by
+                FROM invasivesbc.activity_incoming_data
+                WHERE NEW.activity_id = activity_id
                 AND created_by IS NOT null
                 ORDER BY created_timestamp ASC
                 LIMIT 1
@@ -5372,23 +5386,23 @@ export async function up(knex: Knex) {
           END
           $function$
     ;
-    
+
     -- Permissions
-    
+
     ALTER FUNCTION invasivesbc.update_created_by_on_activity_updates_function() OWNER TO invasivebc;
     GRANT ALL ON FUNCTION invasivesbc.update_created_by_on_activity_updates_function() TO invasivebc;
 
     -- Table Triggers
-    
+
     create trigger update_created_by_on_activity_updates after
     insert
         on
         invasivesbc.activity_incoming_data for each row execute procedure invasivesbc.update_created_by_on_activity_updates_function();
-    
-    
+
+
     -- Permissions
-    
-    GRANT ALL ON SCHEMA invasivesbc TO invasivebc;    
+
+    GRANT ALL ON SCHEMA invasivesbc TO invasivebc;
     `);
   } catch (e) {
     console.log('Failed to build SQL', e);
