@@ -66,7 +66,7 @@ const saveBCGW = async (id: any, req: any) => {
         const column = layer.targetColumn;
         sqlStatement.append(`
           update activity_incoming_data
-          set (${column}) = ('${attribute}')
+          set ${column} = '${attribute}'
           where activity_id = '${id}';
         `);
       })
