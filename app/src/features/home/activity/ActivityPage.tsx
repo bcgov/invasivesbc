@@ -224,13 +224,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
-    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
+    const form_data = { ...activityInStore.activity.form_data, ...formRef.current.state.formData };
 
     setCanSubmitWithoutErrors(false);
 
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
-      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...formData } }
+      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...form_data } }
     });
   };
 
@@ -294,11 +294,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-    if (lastField !== '' && lastField !== undefined && lastField !== null)
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField }
-      });
+    console.log('last field check');
+    //    if (lastField !== '' && lastField !== undefined && lastField !== null)
+    dispatch({
+      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+      payload: { eventFormData: event.formData, lastField: lastField }
+    });
 
     if (callbackFun) {
       // callbackFun(updatedFormData);

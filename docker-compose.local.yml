@@ -1,13 +1,9 @@
 version: '3.5'
 
 services:
-  ## Build postgres docker image
   db:
-    image: ${PROJECT_NAME}-${TAG}-postgres-img
+    image: postgis/postgis:14-3.2-alpine
     container_name: ${PROJECT_NAME}-${TAG}-db
-    build:
-      context: ./database/.docker/db
-      dockerfile: Dockerfile
     ports:
       - ${DB_PORT}:${DB_PORT}
     environment:
@@ -15,10 +11,12 @@ services:
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=${DB_PORT}
+      - TZ=America/Vancouver
     networks:
       - local-network
     volumes:
       - postgres:/var/lib/postgresql/data
+      - ./database/.docker/db/entrypoint:/docker-entrypoint-initdb.d
 
   ## Run the database migrations and seeding
   db_setup:
@@ -36,6 +34,7 @@ services:
       - ENVIRONMENT=local
       - REACT_APP_REAL_NODE_ENV=local
       - NODE_ENV=local
+      - SKIP_POSTGRES9_COMPATIBILITY=true
     networks:
       - local-network
     links:

@@ -1,9 +1,6 @@
-FROM node:16
+FROM node:16.14-alpine
 
-RUN apt-get -qq update
-RUN apt-get -qq install -y curl
-
-RUN npm install -g npm
+RUN apk update && apk add curl
 
 # set variables
 ENV HOME_ROOT=/opt/app-root

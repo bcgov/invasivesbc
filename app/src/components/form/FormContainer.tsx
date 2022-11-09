@@ -253,8 +253,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (formRef) {
       let field = getFieldNameFromArgs(args);
       setFocusedFieldArgs(args);
-      const $this = formRef.current;
-      const { formData } = $this.state;
+      //const $this = formRef.current;
+      //const { formData } = $this.state;
+      const form_data = activityStateInStore?.activity?.form_data;
       if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
         const index = formData.forceNoValidationFields.indexOf(field);
         if (index > -1) {
@@ -413,9 +414,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 //formData={formData || null}
                 formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
-                onFocus={(...args: string[]) => {
+                /*onFocus={(...args: string[]) => {
                   focusHandler(args);
-                }}
+                }}*/
                 /*onBlur={(...args: string[]) => {
                   setTimeout(() => {
                     blurHandler(args);

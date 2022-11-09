@@ -75,7 +75,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
                 reported_area: action.payload.reported_area
               },
               activity_subtype_data: {
-                ...state.activity.activity_subtype_data,
+                ...state.activity.form_data.activity_subtype_data,
                 Well_Information: action.payload.Well_Information
               }
             }
