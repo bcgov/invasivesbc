@@ -294,11 +294,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-    if (lastField !== '' && lastField !== undefined && lastField !== null)
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField }
-      });
+    console.log('last field check');
+    //    if (lastField !== '' && lastField !== undefined && lastField !== null)
+    dispatch({
+      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+      payload: { eventFormData: event.formData, lastField: lastField }
+    });
 
     if (callbackFun) {
       // callbackFun(updatedFormData);
