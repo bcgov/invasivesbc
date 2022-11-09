@@ -16,13 +16,17 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ACTIVITY_ADD_PHOTO_REQUEST, ACTIVITY_DELETE_PHOTO_REQUEST, ACTIVITY_EDIT_PHOTO_REQUEST } from 'state/actions';
+import { selectActivity } from 'state/reducers/activity';
 
 export interface IPhoto {
-  filepath: string;
+  file_name: string;
   webviewPath?: string;
   base64?: string;
   dataUrl?: string;
   description?: string;
+  editing?: boolean;
 }
 
 export interface IPhotoContainerProps {
@@ -32,6 +36,9 @@ export interface IPhotoContainerProps {
 }
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
+  const dispatch = useDispatch();
+  const activityState = useSelector(selectActivity);
+
   const takePhoto = async () => {
     try {
       const cameraPhoto = await Camera.getPhoto({
@@ -42,42 +49,49 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
       const fileName = new Date().getTime() + '.' + cameraPhoto.format;
       const photo = {
-        filepath: fileName,
-        dataUrl: cameraPhoto.dataUrl,
-        description: 'untitled'
+        file_name: fileName,
+        encoded_file: cameraPhoto.dataUrl,
+        description: 'untitled',
+        editing: false
       };
 
-      props.photoState.setPhotos([...props.photoState.photos, photo]);
+      dispatch({ type: ACTIVITY_ADD_PHOTO_REQUEST, payload: { 
+        photo: photo
+      } });
+
+      // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
       console.log('user cancelled or other camera problem');
       console.log(JSON.stringify(e));
     }
   };
 
-  const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
-    const oldPhoto = props.photoState.photos.find((photo) => photo.filepath === filepath);
-    const otherPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
-    const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
-    props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
-  };
+  // const changePhotoDescription = (file_name: any, fieldsToUpdate: Object) => {
+  //   const oldPhoto = props.photoState.photos.find((photo) => photo.file_name === file_name);
+  //   const otherPhotos = props.photoState.photos.filter((photo) => photo.file_name !== file_name);
+  //   const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
+  //   props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
+  // };
 
-  const deletePhotos = async () => {
-    props.photoState.setPhotos([]);
-  };
+  // const deletePhotos = async () => {
+  //   props.photoState.setPhotos([]);
+  // };
 
-  const deletePhoto = async (filepath: any) => {
-    const reducedPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
-    props.photoState.setPhotos(reducedPhotos);
+  const deletePhoto = async (photo: any) => {
+    dispatch( {type: ACTIVITY_DELETE_PHOTO_REQUEST, payload: {
+      photo: photo
+    }});
   };
-  const [editing, setEditing] = useState(false);
+  
+  // const [editing, setEditing] = useState(false);
   const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
-  const editPhotoDesc = () => {
-    if (editing === false) {
-      setEditing(true);
-    }
-  };
+  // const editPhotoDesc = () => {
+  //   if (editing === false) {
+  //     setEditing(true);
+  //   }
+  // };
 
-  if (!props.photoState) {
+  if (!activityState.activity.media) {
     return <CircularProgress />;
   }
 
@@ -86,26 +100,36 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       <Box mb={3}>
         <Grid container>
           <Grid container item>
-            {props.photoState.photos.map((photo, index) => (
+            {activityState.activity.media.map((photo, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card>
-                  <CardMedia src={photo.dataUrl} component="img" />
+                  <CardMedia src={photo.encoded_file} component="img" />
                   <Typography style={{ marginTop: '15px' }} textAlign={'center'} variant="h5">
                     {photo.description}
                   </Typography>
                   {!props.isDisabled && (
                     <CardActions style={{ width: '100%', display: 'flex', justifyContent: 'space-around' }}>
-                      <IconButton onClick={() => deletePhoto(photo.filepath)}>
+                      <IconButton onClick={() => deletePhoto(photo)}>
                         <DeleteForever />
                       </IconButton>
-                      <IconButton disabled={editing} onClick={() => editPhotoDesc()}>
+                      <IconButton disabled={photo.editing} onClick={() => {
+                        dispatch({
+                          type: ACTIVITY_EDIT_PHOTO_REQUEST,
+                          payload: {
+                            photo: {
+                              ...photo,
+                              editing: true
+                            }
+                          }
+                        });
+                      }}>
                         <EditIcon />
                       </IconButton>
                     </CardActions>
                   )}
 
                   <FormControl>
-                    {editing && (
+                    {photo.editing && (
                       <>
                         <TextField
                           label="Change Description"
@@ -116,8 +140,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                         />
                         <Button
                           onClick={() => {
-                            changePhotoDescription(photo.filepath, { description: newPhotoDesc });
-                            setEditing(false);
+                            // changePhotoDescription(photo.filepath, { description: newPhotoDesc });
+                            dispatch({
+                              type: ACTIVITY_EDIT_PHOTO_REQUEST,
+                              payload: {
+                                photo: {
+                                  ...photo,
+                                  description: newPhotoDesc,
+                                  editing: false
+                                }
+                              }
+                            });
+                            // setEditing(false);
                             setNewPhotoDesc('untitled');
                           }}>
                           Save
@@ -140,11 +174,11 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   Add A Photo
                 </Button>
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
                   Remove All Photos
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Box>

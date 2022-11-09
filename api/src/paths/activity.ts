@@ -271,7 +271,7 @@ function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
-    const data = { ...req.body, mediaKeys: req['mediaKeys'] };
+    const data = { ...req.body, media_keys: req['media_keys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
     sanitizedActivityData.created_by = req.authContext?.preferredUsername;
@@ -377,7 +377,7 @@ function updateActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
 
-    const data = { ...req.body, mediaKeys: req['mediaKeys'] };
+    const data = { ...req.body, media_keys: req['media_keys'] };
 
     const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
     const preferredUsername = req.authContext?.preferredUsername;

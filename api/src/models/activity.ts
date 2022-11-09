@@ -26,7 +26,7 @@ export class ActivityPostRequestBody {
 
   geoJSONFeature: GeoJSON.Feature[];
 
-  mediaKeys: string[];
+  media_keys: string[];
 
   form_status: string;
   sync_status: string;
@@ -82,7 +82,7 @@ export class ActivityPostRequestBody {
 
     this.geoJSONFeature = (obj && obj.geometry) || [];
 
-    this.mediaKeys = (obj && obj.mediaKeys) || null;
+    this.media_keys = (obj && obj.media_keys) || null;
 
     this.form_status = (obj && obj.form_status) || null;
     this.sync_status = (obj && obj.sync_status) || null;

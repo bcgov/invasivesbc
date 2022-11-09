@@ -1,7 +1,7 @@
 'use strict';
 
 import AWS from 'aws-sdk';
-import { GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
+import { GetObjectOutput, ManagedUpload, Metadata, DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { v4 as uuidv4 } from 'uuid';
 import { S3ACLRole } from '../constants/misc';
 import { MediaBase64 } from '../models/media';
@@ -56,6 +56,25 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
     Key: key,
     ACL: S3ACLRole.AUTH_READ,
     Metadata: metadata
+  }).promise();
+}
+
+/**
+ * Delete a file from s3
+ *
+ * @export
+ * @param {string} key of object to delete from s3 bucket
+ * @returns {Promise<DeleteObjectOutput>} 
+ */
+ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput> {
+  if (!key) {
+    return null;
+  }
+  console.log("delete file from s3: ", OBJECT_STORE_BUCKET_NAME);
+
+  return S3.deleteObject({
+    Bucket: OBJECT_STORE_BUCKET_NAME,
+    Key: key
   }).promise();
 }
 

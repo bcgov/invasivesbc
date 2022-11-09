@@ -139,7 +139,7 @@ function getMedia(): RequestHandler {
     const response = await Promise.all(s3GetPromises);
 
     // Add encoded media to activity
-    req['activity'].media = getMediaItemsList(response);
+    req['activity'].media = getMediaItemsList(response, activity['media_keys']);
 
     return next();
   };

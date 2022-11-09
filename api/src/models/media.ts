@@ -11,6 +11,7 @@ export interface IMediaItem {
   description?: string;
   file_name: string;
   encoded_file: string;
+  media_key?: string;
 }
 
 /**
