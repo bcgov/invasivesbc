@@ -31,7 +31,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITIES_TABLE_ROW_GET_SUCCESS,
-  ACTIVITIES_GEOJSON_GET_SUCCESS
+  ACTIVITIES_GEOJSON_GET_SUCCESS,
+  IAPP_GEOJSON_GET_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -90,6 +91,38 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
               {
                 recordSetID: action.payload.recordSetID,
                 featureCollection: action.payload.activitiesGeoJSON,
+                layerState: action.payload.layerState
+              }
+            ]
+          };
+        }
+      }
+      case IAPP_GEOJSON_GET_SUCCESS: {
+        if (
+          state?.IAPPGeoJSON?.length &&
+          state?.IAPPGeoJSON?.filter((item) => {
+            return item.recordSetID !== action.payload.recordSetID;
+          })
+        ) {
+          return {
+            ...state,
+            IAPPGeoJSON: [
+              ...state?.IAPPGeoJSON?.filter((item) => {
+                return item.recordSetID !== action.payload.recordSetID;
+              }),
+              {
+                recordSetID: action.payload.recordSetID,
+                featureCollection: action.payload.IAPPGeoJSON,
+                layerState: action.payload.layerState
+              }
+            ]
+          };
+        } else {
+          return {
+            IAPPGeoJSON: [
+              {
+                recordSetID: action.payload.recordSetID,
+                featureCollection: action.payload.IAPPGeoJSON,
                 layerState: action.payload.layerState
               }
             ]
