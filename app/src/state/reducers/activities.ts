@@ -119,6 +119,7 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
           };
         } else {
           return {
+            ...state,
             IAPPGeoJSON: [
               {
                 recordSetID: action.payload.recordSetID,

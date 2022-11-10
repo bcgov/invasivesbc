@@ -45,8 +45,10 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   );
   let featureCollection = {
     type: 'FeatureCollection',
-    features: networkReturn.data.result.rows.map((row) => {
-      return row.geojson ? row.geojson : row;
+    features: networkReturn.data.result.filter((row) => {
+      if (row !== undefined && row?.geometry?.coordinates) {
+        return row;
+      }
     })
   };
 

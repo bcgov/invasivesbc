@@ -32,6 +32,25 @@ export const RecordSetLayersRenderer = (props: any) => {
           );
         }
       })}
+      {true && activitiesState?.IAPPGeoJSON?.length > 0 ? (
+        activitiesState?.IAPPGeoJSON?.map((l) => {
+          //if (l && l.layerState.color) {
+          if (l?.featureCollection?.features?.length > 0) {
+            return (
+              <ActivitiesLayerV2
+                key={'activitiesv2filter' + l.recordSetID}
+                activities={l.featureCollection}
+                zIndex={999999999 - l.layerState.drawOrder}
+                color={l.layerState.color}
+                isIAPP={true}
+                opacity={0.8}
+              />
+            );
+          }
+        })
+      ) : (
+        <></>
+      )}
     </>
   );
 };

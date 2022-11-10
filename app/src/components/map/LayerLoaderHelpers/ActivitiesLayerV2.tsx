@@ -81,7 +81,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   useMemo(() => {
     setOptions((prevOptions) => ({
       ...prevOptions,
-      style: { ...prevOptions.style, fillColor: props.color.toUpperCase() }
+      style: { ...prevOptions.style, fillColor: props.color?.toUpperCase() }
     }));
   }, [props.color]);
 
@@ -146,10 +146,16 @@ export const ActivitiesLayerV2 = (props: any) => {
   */
 
   const GeoJSONMemo = useMemo(() => {
+    if (props.isIAPP) {
+    }
+    return <GeoJSON key={Math.random()} data={props.activities} style={options.style} />;
     return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
   }, [props.activities, options]);
 
   return useMemo(() => {
+    if (props.isIAPP) {
+      return GeoJSONMemo;
+    }
     if (props.activities && props.activities.features && props.color) {
       switch (zoomType) {
         case ZoomTypes.HIGH:

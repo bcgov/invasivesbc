@@ -12,6 +12,7 @@ import {
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
+  GeoJSON,
   WMSTileLayer,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
