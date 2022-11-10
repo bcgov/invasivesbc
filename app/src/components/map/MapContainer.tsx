@@ -23,7 +23,6 @@ import booleanOverlap from '@turf/boolean-overlap';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
 import './MapContainer.css';
-import { ToolbarContainer } from './ToolbarContainer';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
 import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
@@ -36,7 +35,6 @@ import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import Layers from './Layers/Layers';
 import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
 import { NamedBoundaryMenu } from './NamedBoundaryMenu';
-import ZoomControl from './Tools/ToolTypes/Misc/ZoomControl';
 import { OnMapClickDetails } from './Tools/ToolTypes/Data/OnMapClickDetails';
 import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDetailsButton';
 import { LayerPickerBasic } from './LayerPickerBasic';
@@ -296,9 +294,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             */}
             {useMemo(
               () => (
-                <MapLocationControlGroup {...props} />
+                <MapLocationControlGroup 
+                  {...props}
+                  setMapMaxNativeZoom={setMapMaxNativeZoom} 
+                />
               ),
-              [props.geometryState.geometry]
+              [props.geometryState.geometry] 
             )}
 
             {props.children}
