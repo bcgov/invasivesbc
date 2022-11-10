@@ -150,6 +150,9 @@ export const ActivitiesLayerV2 = (props: any) => {
   }, [props.activities, options]);
 
   return useMemo(() => {
+    if (props.isIAPP) {
+      return GeoJSONMemo;
+    }
     if (props.activities && props.activities.features && props.color) {
       switch (zoomType) {
         case ZoomTypes.HIGH:

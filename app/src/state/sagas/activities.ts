@@ -7,12 +7,14 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_TABLE_ROW_GET_SUCCESS,
   ACTIVITIES_GEOJSON_GET_ONLINE,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  IAPP_GEOJSON_GET_REQUEST,
+  IAPP_GEOJSON_GET_ONLINE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
-import { handle_ACTIVITIES_GEOJSON_GET_REQUEST } from './activities/dataAccess';
-import { handle_ACTIVITIES_GEOJSON_GET_ONLINE } from './activities/online';
+import { handle_ACTIVITIES_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST } from './activities/dataAccess';
+import { handle_ACTIVITIES_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE } from './activities/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
 
@@ -67,6 +69,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const sets = {};
   sets['2'] = action.payload.recordSets[2];
+  sets['3'] = action.payload.recordSets[3];
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.recordSets[2].advancedFilterRows,
     authState.accessRoles,
@@ -78,9 +81,26 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
     999
   );
 
+  const IAPP_filter = yield getSearchCriteriaFromFilters(
+    action.payload.recordSets[3].advancedFilterRows,
+    authState.accessRoles,
+    sets,
+    '3',
+    true,
+    action.payload.recordSets[3].gridFilters,
+    0,
+    200000
+  );
+
   const layerState = {
     color: action.payload.recordSets[2].color,
     drawOrder: action.payload.recordSets[2].drawOrder,
+    enabled: true
+  };
+
+  const IAPPlayerState = {
+    color: action.payload.recordSets[3].color,
+    drawOrder: action.payload.recordSets[3].drawOrder,
     enabled: true
   };
 
@@ -92,7 +112,17 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
       layerState: layerState
     }
   });
-  //uyield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
+
+  yield put({
+    type: IAPP_GEOJSON_GET_REQUEST,
+    payload: {
+      recordSetID: '3',
+      IAPPFilterCriteria: IAPP_filter,
+      layerState: IAPPlayerState
+    }
+  });
+
+  // TODO: get iapp geojson event
 }
 
 function* activitiesPageSaga() {
@@ -100,6 +130,8 @@ function* activitiesPageSaga() {
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
+    takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
+    takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_TABLE_ROW_GET_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST'))
   ]);

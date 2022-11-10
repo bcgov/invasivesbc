@@ -177,11 +177,14 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
+      drawOrder: 1,
       advancedFilters: []
     },
     ['3']: {
       recordSetType: 'POI',
       recordSetName: 'All IAPP Records',
+      color: '#21f34f',
+      drawOrder: 2,
       advancedFilters: []
     }
   };
