@@ -30,7 +30,11 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITY_CREATE_SUCCESS
+  ACTIVITY_CREATE_SUCCESS,
+  ACTIVITY_ADD_PHOTO_REQUEST,
+  ACTIVITY_DELETE_PHOTO_SUCCESS,
+  ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_EDIT_PHOTO_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -121,7 +125,36 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       case ACTIVITY_SAVE_SUCCESS: {
         return {
           ...state,
-          activity: { ...action.payload.activity }
+          activity: {...action.payload.activity}
+        };
+      }
+      case ACTIVITY_ADD_PHOTO_SUCCESS: {
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            media: [
+              ...state.activity.media,
+              action.payload.photo
+            ]
+          }
+        };
+      }
+      case ACTIVITY_DELETE_PHOTO_SUCCESS: {
+        return {
+          ...state,
+          activity: action.payload.activity
+        };
+      }
+      case ACTIVITY_EDIT_PHOTO_SUCCESS: {
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            media: [
+              ...action.payload.media
+            ]
+          }
         };
       }
       default:

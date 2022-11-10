@@ -81,7 +81,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   useMemo(() => {
     setOptions((prevOptions) => ({
       ...prevOptions,
-      style: { ...prevOptions.style, fillColor: props.color?.toUpperCase() }
+      style: { ...prevOptions.style, fillColor: props?.color?.toUpperCase() }
     }));
   }, [props.color]);
 

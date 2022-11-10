@@ -33,7 +33,9 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
     ...networkReturn.data,
     species_positive: networkReturn.data.species_positive || [],
     species_negative: networkReturn.data.species_negative || [],
-    species_treated: networkReturn.data.species_treated || []
+    species_treated: networkReturn.data.species_treated || [],
+    media: networkReturn.data.media || [],
+    media_delete_keys: networkReturn.data.media_delete_keys || []
   };
 
   //const validatedReturn = yield checkForErrors(networkReturn)
@@ -50,6 +52,9 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   const newActivity = {
     ...oldActivity.activity,
+    species_positive: oldActivity.activity?.species_positive[0] !== null ? oldActivity.activity?.species_positive : [],
+    species_negative: oldActivity.activity?.species_negative[0] !== null ? oldActivity.activity?.species_negative : [],
+    species_treated: oldActivity.activity?.species_treated[0] !== null ? oldActivity.activity?.species_treated : [],
     form_data: action.payload.updatedFormData ? action.payload.updatedFormData : oldActivity.activity.form_data,
     form_status: [ActivityStatus.DRAFT, ActivityStatus.IN_REVIEW, ActivityStatus.SUBMITTED].includes(
       action.payload.form_status
@@ -57,6 +62,20 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
       ? action.payload.form_status
       : ActivityStatus.DRAFT
   };
+
+  // handle delete photos if needed
+  let keys_to_delete = [];
+  if (newActivity.media_delete_keys?.length) {
+    const keys = newActivity.media_delete_keys;
+    for (let key of keys) {
+      const deleteReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${key}`);
+      if (deleteReturn) {
+        keys_to_delete.push(key);
+      }
+    }
+  }
+
+  const filtered_media_delete_keys = newActivity.media_delete_keys.filter(key => !keys_to_delete.includes(key));
 
   const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
     ...newActivity,
@@ -66,7 +85,12 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-  yield put({ type: ACTIVITY_SAVE_SUCCESS, payload: { activity: { ...newActivity } } });
+  yield put({ type: ACTIVITY_SAVE_SUCCESS, payload: { 
+    activity: {
+      ...newActivity,
+      media_delete_keys: filtered_media_delete_keys
+    }
+  } });
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {

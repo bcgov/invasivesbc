@@ -3,6 +3,7 @@ import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
 import { throttle } from 'redux-saga/effects';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   autofillBiocontrolCollectionTotalQuantity,
@@ -26,7 +27,14 @@ import {
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_DEBUG
+  ACTIVITY_DEBUG,
+  ACTIVITY_DELETE_PHOTO_REQUEST,
+  ACTIVITY_DELETE_PHOTO_SUCCESS,
+  ACTIVITY_DELETE_PHOTO_FAILURE,
+  ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_ADD_PHOTO_FAILURE,
+  ACTIVITY_EDIT_PHOTO_SUCCESS,
+  ACTIVITY_EDIT_PHOTO_FAILURE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -259,5 +267,81 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
+  try {
+    if (action.payload.photo) {
+      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload}});
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_ADD_PHOTO_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
+  try {
+    if (action.payload.photo) {
+      const beforeState = yield select(selectActivity);
+      const beforeActivity = beforeState.activity;
+
+      const media = beforeActivity.media.filter((photo) => {
+        if (photo.media_key) {
+          return photo.media_key !== action.payload.photo.media_key
+        } else {
+          return photo.file_name !== action.payload.photo.file_name
+        }
+      });
+
+      let media_keys = [];
+      if (beforeActivity.media_keys) {
+        media_keys = beforeActivity.media_keys.filter((key) => {
+          if (action.payload.photo.media_key) {
+            return key !== action.payload.photo.media_key
+          }
+        });
+      } 
+
+      let delete_keys = [];
+      if (beforeActivity.media_delete_keys?.length) {
+        delete_keys = [...beforeActivity.media_delete_keys];
+      }
+      if (action.payload.photo.media_key) {
+        delete_keys.push(action.payload.photo.media_key);
+      }
+
+      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
+        activity: {
+          ...beforeActivity,
+          media: media.length ? media : [],
+          media_keys: media_keys.length ? media_keys : [],
+          media_delete_keys: delete_keys
+        }
+      }});
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_DELETE_PHOTO_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
+  try {
+    const beforeState = yield select(selectActivity);
+    const beforeActivity = beforeState.activity;
+    const photoIndex = beforeActivity.media.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
+
+    if (photoIndex >= 0) {
+      beforeActivity.media[photoIndex] = action.payload.photo;
+    }
+
+    yield put({ type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
+      media: beforeActivity.media
+    }});
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });
   }
 }

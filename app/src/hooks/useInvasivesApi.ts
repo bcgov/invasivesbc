@@ -666,15 +666,15 @@ export const useInvasivesApi = () => {
   /**
    * Fetch media items.
    *
-   * @param {string[]} mediaKeys
+   * @param {string[]} media_keys
    * @return {*}  {Promise<any>}
    */
-  const getMedia = async (mediaKeys: string[]): Promise<any> => {
+   const getMedia = async (media_keys: string[]): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
-      url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
+      url: options.baseUrl + `/api/media?` + qs.stringify({ key: media_keys })
     });
     checkForErrors(data, status, url);
     if (DEBUG) {
