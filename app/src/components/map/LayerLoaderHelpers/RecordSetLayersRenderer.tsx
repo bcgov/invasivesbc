@@ -20,7 +20,7 @@ export const RecordSetLayersRenderer = (props: any) => {
     <>
       {activitiesState?.activitiesGeoJSON?.map((l) => {
         //if (l && l.layerState.color) {
-        if (true) {
+        if (l.layerState.enabled) {
           return (
             <ActivitiesLayerV2
               key={'activitiesv2filter' + l.recordSetID}
@@ -35,7 +35,7 @@ export const RecordSetLayersRenderer = (props: any) => {
       {true && activitiesState?.IAPPGeoJSON?.length > 0 ? (
         activitiesState?.IAPPGeoJSON?.map((l) => {
           //if (l && l.layerState.color) {
-          if (l?.featureCollection?.features?.length > 0) {
+          if (l?.featureCollection?.features?.length > 0 && l.layerState.enabled) {
             return (
               <ActivitiesLayerV2
                 key={'activitiesv2filter' + l.recordSetID}
