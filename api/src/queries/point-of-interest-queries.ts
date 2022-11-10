@@ -311,9 +311,14 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
         not_null_issag
     )
    `);
+    sqlStatement.append(
+      SQL`SELECT a.site_id, b.intersects, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`
+    );
+  } else {
+    sqlStatement.append(
+      SQL`SELECT a.site_id, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a WHERE 1 = 1`
+    );
   }
-
-  sqlStatement.append(SQL`SELECT a.site_id, b.intersects, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`);
 
   enum PoiType {
     Sites = 'Sites',
@@ -438,13 +443,13 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
  * @param {Array} codes
  * @returns {SQLStatement} sql query object
  */
- export const getSpeciesMapSQL = (codes: Array<String>): SQLStatement => {
+export const getSpeciesMapSQL = (codes: Array<String>): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT iapp_name FROM iapp_invbc_mapping WHERE char_code IN (`;
-    sqlStatement.append(SQL`${codes[0]}`);
-    
-    for(let idx = 1; idx < codes.length; idx++) {
-      sqlStatement.append(SQL`, ${codes[idx]}`);
-    }
+  sqlStatement.append(SQL`${codes[0]}`);
+
+  for (let idx = 1; idx < codes.length; idx++) {
+    sqlStatement.append(SQL`, ${codes[idx]}`);
+  }
 
   sqlStatement.append(SQL`);`);
 

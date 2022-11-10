@@ -146,9 +146,6 @@ export const ActivitiesLayerV2 = (props: any) => {
   */
 
   const GeoJSONMemo = useMemo(() => {
-    if (props.isIAPP) {
-    }
-    return <GeoJSON key={Math.random()} data={props.activities} style={options.style} />;
     return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
   }, [props.activities, options]);
 

@@ -89,7 +89,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
     true,
     action.payload.recordSets[3].gridFilters,
     0,
-    999
+    200000
   );
 
   const layerState = {

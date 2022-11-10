@@ -43,6 +43,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     `/api/points-of-interest-lean/`,
     action.payload.IAPPFilterCriteria
   );
+  console.dir(networkReturn);
   let featureCollection = {
     type: 'FeatureCollection',
     features: networkReturn.data.result.filter((row) => {
