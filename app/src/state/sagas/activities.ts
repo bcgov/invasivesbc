@@ -34,6 +34,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     limit: number,
     sortColumns: readonly SortColumn[]
   ) => {*/
+
   const authState = yield select(selectAuth);
   const sets = {};
   sets[action.payload.updatedSetName] = action.payload.updatedSet;
@@ -42,26 +43,37 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     authState.accessRoles,
     sets,
     action.payload.updatedSetName,
-    false,
+    action.payload.updatedSet.recordSetType === 'POI' ? true : false,
     action.payload.updatedSet.gridFilters,
     0,
-    999
+    200000
   );
 
   const layerState = {
     color: action.payload.updatedSet.color,
     drawOrder: action.payload.updatedSet.drawOrder,
-    enabled: true
+    enabled: action.payload.updatedSet.mapToggle
   };
 
-  yield put({
-    type: ACTIVITIES_GEOJSON_GET_REQUEST,
-    payload: {
-      recordSetID: action.payload.updatedSetName,
-      activitiesFilterCriteria: filterCriteria,
-      layerState: layerState
-    }
-  });
+  if (action.payload.updatedSet.recordSetType === 'POI') {
+    yield put({
+      type: IAPP_GEOJSON_GET_REQUEST,
+      payload: {
+        recordSetID: action.payload.updatedSetName,
+        IAPPFilterCriteria: filterCriteria,
+        layerState: layerState
+      }
+    });
+  } else {
+    yield put({
+      type: ACTIVITIES_GEOJSON_GET_REQUEST,
+      payload: {
+        recordSetID: action.payload.updatedSetName,
+        activitiesFilterCriteria: filterCriteria,
+        layerState: layerState
+      }
+    });
+  }
   //uyield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
 }
 
