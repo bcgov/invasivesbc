@@ -14,7 +14,9 @@ import {
   useMap,
   GeoJSON,
   WMSTileLayer,
-  ZoomControl as ZoomButtons
+  ZoomControl as ZoomButtons,
+  Marker,
+  Popup
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
 import booleanOverlap from '@turf/boolean-overlap';
@@ -40,6 +42,10 @@ import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDeta
 import { LayerPickerBasic } from './LayerPickerBasic';
 import { JurisdictionsLayer } from './LayerLoaderHelpers/JurisdictionsLayer';
 import { RISOLayer } from './LayerLoaderHelpers/RISOLayer';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { useSelector } from 'react-redux';
+import { selectActivity } from 'state/reducers/activity';
+import centroid from '@turf/centroid';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -140,6 +146,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [clickDetailsEnabled, setClickDetailsEnabled] = useState<boolean>(false);
   const [map, setMap] = useState<any>(null);
   const editRef = useRef();
+
+  const userSettingsState = useSelector(selectUserSettings);
+  const activityState = useSelector(selectActivity);
 
   useEffect(() => {
     if (props.setMapForActivityPage) {
@@ -293,6 +302,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             {props.children}
+
+            {activityState?.activity?.geometry ? (
+              <Marker
+                key={Math.random()}
+                position={[
+                  centroid(activityState?.activity?.geometry[0]).geometry.coordinates[1],
+                  centroid(activityState?.activity?.geometry[0]).geometry.coordinates[0]
+                ]}>
+                <Popup>{activityState.activity.short_id}</Popup>
+              </Marker>
+            ) : (
+              <></>
+            )}
 
             <LayerPickerBasic></LayerPickerBasic>
           </MapRequestContextProvider>

@@ -11,6 +11,7 @@ import SLDParser from 'geostyler-sld-parser';
 import { InvasivesBCSLD } from '../SldStyles/invasivesbc_sld';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DonutSVG } from '../Donut';
+import mapPin from '../Icons/mappin.png';
 
 enum ZoomTypes {
   LOW = 'low',
@@ -127,7 +128,14 @@ export const ActivitiesLayerV2 = (props: any) => {
 
               if (a.properties.id)
                 return (
-                  <Marker position={[position[1], position[0]]} key={'activity_marker' + a.properties.id}>
+                  <Marker
+                    icon={L.icon({
+                      iconUrl: mapPin,
+                      iconSize: [40, 40],
+                      iconAnchor: [20, 40]
+                    })}
+                    position={[position[1], position[0]]}
+                    key={'activity_marker' + a.properties.id}>
                     <GeneratePopup bufferedGeo={bufferedGeo} />
                   </Marker>
                 );
