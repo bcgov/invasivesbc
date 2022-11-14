@@ -2,6 +2,8 @@
 
 import bodyParser from 'body-parser';
 import express from 'express';
+import compression from 'compression';
+
 import { initialize } from 'express-openapi';
 import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
@@ -19,6 +21,17 @@ export { HOST, PORT };
 // Get initial express app
 const app: express.Express = express();
 
+app.use(compression({ filter: shouldCompress }));
+
+function shouldCompress(req, res) {
+  if (req.headers['x-no-compression']) {
+    // don't compress responses with this request header
+    return false;
+  }
+
+  // fallback to standard filter function
+  return compression.filter(req, res);
+}
 // Enable CORS
 app.use(function (req: any, res: any, next: any) {
   defaultLog.info(`${req.method} ${req.url}`);
