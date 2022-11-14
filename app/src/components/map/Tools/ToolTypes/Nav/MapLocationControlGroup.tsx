@@ -14,6 +14,8 @@ import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import AttributionIcon from '@mui/icons-material/Attribution';
+import HdIcon from '@mui/icons-material/Hd';
+import SdIcon from '@mui/icons-material/Sd';
 import { Divider, IconButton, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { calc_utm } from '../../../Tools/ToolTypes/Nav/DisplayPosition';
@@ -53,6 +55,7 @@ export interface IMapLocationControlGroupProps {
   };
   setMapForActivityPage?: React.Dispatch<any>;
   contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
+  setMapMaxNativeZoom?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props) => {
@@ -73,6 +76,10 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
 
   const [initialTime, setInitialTime] = useState(0); // Keeps track of the initial time of the timer
   const [startTimer, setStartTimer] = useState(false); // Keeps track of whether or not the timer has started
+
+  const LOW_RES = 17;
+  const HIGH_RES = 21;
+  const [isHighRes, setIsHighRes] = useState(false);
 
   const [showTopo, setShowTopo] = useState(false);
 
@@ -292,6 +299,44 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     );
   }
 
+
+/**
+   * ZoomControlButton
+   * @description Component to handle the max zoom resolution
+   * @returns {void}
+   */
+function ZoomControlButton() {
+  const divRef = useRef();
+  useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef?.current);
+    L.DomEvent.disableScrollPropagation(divRef?.current);
+  }, []);
+  return (
+    <div
+      ref={divRef}
+      className="leaflet-bottom leaflet-right"
+      style={{
+        bottom: '230px',
+        width: '40px',
+        height: '40px'
+      }}>
+      <Tooltip title={`Max Zoom Resolution: ${isHighRes ? 'High Def' : 'Low Def'}`} placement="right-start">
+        <span>
+          <IconButton
+            disabled={showTopo || startTimer}
+            onClick={toggleResolution}
+            className={
+              'leaflet-control-zoom leaflet-bar leaflet-control ' +
+              classes.customHoverFocus}
+            sx={{ color: '#000' }}>
+            { isHighRes ? <HdIcon /> : <SdIcon />}
+          </IconButton>
+        </span>
+      </Tooltip>
+    </div>
+  );
+}
+
   /**
    * drawCircle
    * @description Draws a circle at a position with a given radius
@@ -442,6 +487,23 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     }
   };
 
+    /**
+   * toggleResolution
+   * @description Toggles the high and low max zoom resolution.
+   * @returns {number}
+   */
+  const toggleResolution = async () => {
+    props.setMapMaxNativeZoom((prevState) => {
+      if (prevState === LOW_RES) {
+        setIsHighRes(true);
+        return HIGH_RES;
+      } else {
+        setIsHighRes(false);
+        return LOW_RES;
+      }
+    });
+  };
+
   /**
    * Mount
    * @description Starts timer when the map is ready and attempts to find initial position
@@ -570,6 +632,12 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
 
   return (
     <>
+      {useMemo(
+        () => (
+            <ZoomControlButton />
+        ),
+        [toggleResolution, startTimer, isHighRes, showTopo]
+      )}
       {useMemo(
         () => (
           <AccuracyButton />
