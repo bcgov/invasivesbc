@@ -33,8 +33,14 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
     if (user.pac_service_number_2) {
       pesticideServiceNumbers.push(user.pac_service_number_2.replace(/^0+(\d)/, ''));
     }
-    if (user.employer) {
+    /*if (user.employer) {
       employers.push(user.employer);
+    }*/
+    if (user.employer && user.employer?.split(',')?.length > 0) {
+      const employerSplit = user.employer?.split(',');
+      for (let i = 0; i < employerSplit.length; i++) {
+        employers.push(employerSplit[i]);
+      }
     }
     if (user.funding_agencies && user.funding_agencies?.split(',')?.length > 0) {
       const agenciesSplit = user.funding_agencies?.split(',');
