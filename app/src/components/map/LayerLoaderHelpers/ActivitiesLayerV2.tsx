@@ -11,7 +11,7 @@ import SLDParser from 'geostyler-sld-parser';
 import { InvasivesBCSLD } from '../SldStyles/invasivesbc_sld';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DonutSVG } from '../Donut';
-import mapPin from '../Icons/mappin.png';
+import mapIcon from '../Icons/mapicon.png';
 
 enum ZoomTypes {
   LOW = 'low',
@@ -130,7 +130,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                 return (
                   <Marker
                     icon={L.icon({
-                      iconUrl: mapPin,
+                      iconUrl: mapIcon,
                       iconSize: [40, 40],
                       iconAnchor: [20, 40]
                     })}
