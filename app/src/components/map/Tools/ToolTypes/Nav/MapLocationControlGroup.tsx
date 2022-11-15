@@ -320,10 +320,10 @@ function ZoomControlButton() {
         width: '40px',
         height: '40px'
       }}>
-      <Tooltip title={`Max Zoom Resolution: ${isHighRes ? 'High Def' : 'Low Def'}`} placement="right-start">
+      <Tooltip title={`Max Zoom Resolution: ${isHighRes ? 'Low Def' : 'High Def'}`} placement="right-start">
         <span>
           <IconButton
-            disabled={showTopo || startTimer}
+            disabled={startTimer}
             onClick={toggleResolution}
             className={
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
