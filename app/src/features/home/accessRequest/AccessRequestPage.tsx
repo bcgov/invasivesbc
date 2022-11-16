@@ -389,6 +389,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip placement="left" title="Who do you work for?">
                             <TextField
+                              required
                               style={{ width: 320 }}
                               classes={{ root: classes.root }}
                               select
@@ -418,6 +419,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
                             <TextField
+                              required
                               style={{ width: 320 }}
                               classes={{ root: classes.root }}
                               select
@@ -490,6 +492,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item style={{ marginBottom: '10px' }}>
                           <Tooltip placement="left" title="Select one or more roles to request.">
                             <TextField
+                              required
                               style={{ width: 320 }}
                               classes={{ root: classes.root }}
                               select
