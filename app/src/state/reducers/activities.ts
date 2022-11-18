@@ -32,7 +32,9 @@ import {
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITIES_TABLE_ROW_GET_SUCCESS,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  IAPP_GEOJSON_GET_SUCCESS
+  IAPP_GEOJSON_GET_SUCCESS,
+  IAPP_TABLE_ROWS_GET_SUCCESS,
+  IAPP_RECORDSET_ID_LIST_GET_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -44,6 +46,7 @@ class ActivitiesState {
   activitiesTableRows: {};
   IAPPGeoJSON: any;
   IAPPTableRows: any;
+  IAPPRecordSetIDS: any;
 
   constructor() {
     this.initialized = false;
@@ -92,6 +95,43 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
                 recordSetID: action.payload.recordSetID,
                 featureCollection: action.payload.activitiesGeoJSON,
                 layerState: action.payload.layerState
+              }
+            ]
+          };
+        }
+      }
+      case IAPP_RECORDSET_ID_LIST_GET_SUCCESS: {
+        return {
+          ...state,
+          IAPPRecordSetIDS: { ...state.IAPPRecordSetIDS, [action.payload.recordSetID]: action.payload.ids }
+        };
+      }
+      case IAPP_TABLE_ROWS_GET_SUCCESS: {
+        if (
+          state?.IAPPTableRows?.length &&
+          state?.IAPPTableRows?.filter((item) => {
+            return item.recordSetID !== action.payload.recordSetID;
+          })
+        ) {
+          return {
+            ...state,
+            IAPPTableRows: [
+              ...state?.IAPPTableRows?.filter((item) => {
+                return item.recordSetID !== action.payload.recordSetID;
+              }),
+              {
+                recordSetID: action.payload.recordSetID,
+                IAPPTableRows: action.payload.IAPPTableRows
+              }
+            ]
+          };
+        } else {
+          return {
+            ...state,
+            IAPPTableRows: [
+              {
+                recordSetID: action.payload.recordSetID,
+                IAPPTableRows: action.payload.IAPPTableRows
               }
             ]
           };
