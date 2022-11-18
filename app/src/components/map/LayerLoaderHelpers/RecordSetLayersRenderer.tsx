@@ -35,12 +35,13 @@ export const RecordSetLayersRenderer = (props: any) => {
       {true && activitiesState?.IAPPGeoJSON?.length > 0 ? (
         activitiesState?.IAPPGeoJSON?.map((l) => {
           //if (l && l.layerState.color) {
-          if (l?.featureCollection?.features?.length > 0 && l.layerState.enabled) {
+          if (l?.featureCollection?.features?.length > 0 && l.layerState.enabled && activitiesState?.IAPPRecordSetIDS) {
             return (
               <ActivitiesLayerV2
                 key={'activitiesv2filter' + l.recordSetID}
                 activities={l.featureCollection}
                 zIndex={999999999 - l.layerState.drawOrder}
+                ids={activitiesState?.IAPPRecordSetIDS[l?.recordSetID]}
                 color={l.layerState.color}
                 isIAPP={true}
                 opacity={0.8}

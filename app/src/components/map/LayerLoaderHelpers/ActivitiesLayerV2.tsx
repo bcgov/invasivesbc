@@ -23,7 +23,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   // use this use state var to only rerender when necessary
   const map = useMap();
   const [zoomType, setZoomType] = useState(ZoomTypes.LOW);
-  const [options, setOptions] = useState({
+  const initialOptions = {
     maxZoom: 24,
     tolerance: 100,
     debug: 0,
@@ -33,9 +33,9 @@ export const ActivitiesLayerV2 = (props: any) => {
     solidChildren: false,
     layerStyles: {},
     style: {
-      fillColor: props.color,
-      color: props.color,
-      strokeColor: props.color,
+      //      fillColor: props.color,
+      //     color: props.color,
+      //    strokeColor: props.color,
       stroke: true,
       strokeOpacity: 1,
       strokeWidth: 10,
@@ -44,7 +44,8 @@ export const ActivitiesLayerV2 = (props: any) => {
       weight: 3,
       zIndex: props.zIndex
     }
-  });
+  };
+  const [options, setOptions] = useState(initialOptions);
 
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
@@ -65,26 +66,77 @@ export const ActivitiesLayerV2 = (props: any) => {
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
     let styles = await sldParser.readStyle(InvasivesBCSLD);
+    console.log('unadultered style');
+    console.dir(styles);
     return styles;
   };
 
   const getActivitiesSLD = () => {
     getSldStylesFromLocalFile().then((res) => {
-      setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
-      // fetchData();
+      const rule = {
+        name: 'iapp_ids_filter',
+        filter: ['in', 'site_id', props.ids],
+        scaleDenominator: {
+          min: 1,
+          max: 10000000000
+        },
+        symbolizers: [
+          {
+            kind: 'Fill',
+            color: '#ed2f49',
+            outlineColor: '#232323',
+            outlineOpacity: 0.85,
+            outlineWidth: 1
+          }
+        ]
+      };
+      const rule2 = {
+        name: 'iapp_ids_filter2',
+        filter: ['not_in', 'site_id', []],
+        scaleDenominator: {
+          min: 1,
+          max: 10000000000
+        },
+        symbolizers: [
+          {
+            kind: 'Fill',
+            color: '#eb9e34',
+            outlineColor: '#232323',
+            outlineOpacity: 0.85,
+            outlineWidth: 1
+          }
+        ]
+      };
+      if (props.ids !== undefined) {
+        setOptions({
+          ...initialOptions,
+          layerStyles: { output: { ...res.output, rules: [...res.output.rules, rule] } }
+        });
+      } else {
+        setOptions({ ...initialOptions, layerStyles: { output: { ...res.output, rules: [...res.output.rules] } } });
+      }
     });
   };
 
   useEffect(() => {
     getActivitiesSLD();
-  }, []);
+  }, [props.color, props.ids]);
 
+  useEffect(() => {
+    console.dir(options);
+  }, [options]);
+
+  /*
   useMemo(() => {
-    setOptions((prevOptions) => ({
+    /*setOptions((prevOptions) => ({
       ...prevOptions,
       style: { ...prevOptions.style, fillColor: props?.color?.toUpperCase() }
     }));
+    setOptions((prevOptions) => ({
+      ...prevOptions
+    }));
   }, [props.color]);
+  */
 
   const MarkerMemo = useMemo(() => {
     if (props.activities && props.activities.features && props.color) {
@@ -155,7 +207,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   const GeoJSONMemo = useMemo(() => {
     return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
-  }, [props.activities, options]);
+  }, [props.activities, options, props.ids]);
 
   return useMemo(() => {
     if (props.isIAPP) {
@@ -173,5 +225,11 @@ export const ActivitiesLayerV2 = (props: any) => {
         //return GeoJSONMemo;
       }
     } else return <></>;
-  }, [JSON.stringify(props.color), JSON.stringify(props.activities), props.zIndex, JSON.stringify(zoomType)]);
+  }, [
+    JSON.stringify(props.color),
+    JSON.stringify(props.activities),
+    props.zIndex,
+    JSON.stringify(zoomType),
+    props.ids
+  ]);
 };

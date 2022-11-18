@@ -66,7 +66,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     return [];
   }
 
-  return activities?.rows?.map((record, index) => {
+  return activities?.map((record, index) => {
     let agencies = new Set();
     let species = new Set();
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
@@ -97,9 +97,7 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       point_of_interest_id: record?.point_of_interest_id.toString(),
       paper_file_id: record?.point_of_interest_payload?.form_data?.point_of_interest_data?.project_code[0]?.description,
       jurisdictions: jurisdictions ? jurisdictions.sort().join(', ') : null,
-      date_created: new Date(record?.point_of_interest_payload?.date_created)
-        .toISOString()
-        .substring(0, 10),
+      date_created: new Date(record?.point_of_interest_payload?.date_created).toISOString().substring(0, 10),
       species_on_site: Array.from(species).sort().join(', '),
       date_last_surveyed: lastSurveyed.toISOString().substring(0, 10),
       agencies: Array.from(agencies).sort().join(', '),

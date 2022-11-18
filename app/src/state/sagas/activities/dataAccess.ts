@@ -29,7 +29,8 @@ import {
   ACTIVITY_DEBUG,
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_OFFLINE,
-  IAPP_GEOJSON_GET_ONLINE
+  IAPP_GEOJSON_GET_ONLINE,
+  IAPP_TABLE_ROWS_GET_ONLINE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -64,6 +65,26 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
     if (true) {
       yield put({
         type: IAPP_GEOJSON_GET_ONLINE,
+        payload: {
+          ...action.payload
+        }
+      });
+    }
+    if (false) {
+      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
+  try {
+    // if mobile or web
+    if (true) {
+      yield put({
+        type: IAPP_TABLE_ROWS_GET_ONLINE,
         payload: {
           ...action.payload
         }

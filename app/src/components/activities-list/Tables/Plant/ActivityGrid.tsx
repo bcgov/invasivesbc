@@ -36,6 +36,7 @@ import {
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { select } from 'redux-saga/effects';
+import { selectActivities } from 'state/reducers/activities';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -231,7 +232,7 @@ const ActivityGrid = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
   const [activities, setActivities] = useState(undefined);
-  const [POIs, setPOIs] = useState(undefined);
+
   const [accordionExpanded, setAccordionExpanded] = useState(true);
   const [activitiesSelected, setActivitiesSelected] = useState(null);
   const [poiSelected, setPoiSelected] = useState(null);
@@ -246,6 +247,7 @@ const ActivityGrid = (props) => {
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
   const userSettings = useSelector(selectUserSettings);
+  const recordsState = useSelector(selectActivities);
 
   //Grab filter state from main context
   useEffect(() => {
@@ -320,6 +322,7 @@ const ActivityGrid = (props) => {
     }
   }, [advancedFilterRows]);
 
+  /*
   useEffect(() => {
     if (userSettings?.recordSets?.[props.setName]) {
       if (props.setType === 'POI') {
@@ -329,6 +332,7 @@ const ActivityGrid = (props) => {
       }
     }
   }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns, filters, pageNumber]);
+  */
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -584,9 +588,21 @@ const ActivityGrid = (props) => {
   }, [activities]);
 
   useEffect(() => {
-    const newrows = mapPOI_IAPP_ToDataGridRows(POIs);
+    if (!recordsState.IAPPTableRows) {
+      return;
+    }
+    const POIS = recordsState?.IAPPTableRows?.filter((row) => {
+      return row?.recordSetID === props.setName;
+    })[0]?.IAPPTableRows;
+    const newrows = mapPOI_IAPP_ToDataGridRows(POIS);
     setRows(newrows);
-  }, [POIs]);
+  }, [
+    JSON.stringify(
+      recordsState?.IAPPTableRows?.filter((row) => {
+        return row?.recordSetID === props.setName;
+      })[0]?.IAPPTableRows
+    )
+  ]);
 
   //TODO THEME MODE
   const RowRenderer = (props) => {
@@ -692,7 +708,7 @@ const ActivityGrid = (props) => {
   return useMemo(
     () => (
       <Box key={'gridbox_' + props.setName} maxHeight="100%" paddingBottom="20px">
-        {!activities ? (
+        {!rows ? (
           <CircularProgress />
         ) : (
           <FilterContext.Provider value={filters}>
