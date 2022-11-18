@@ -102,6 +102,9 @@ export const api_doc = {
       '201': {
         description: 'Created'
       },
+      '304': {
+        description: 'Not Modified'
+      },
       '400': {
         description: 'Bad request',
         content: {
