@@ -13,84 +13,16 @@ import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries
 import { getLogger } from '../utils/logger';
 import { isIAPPrelated } from './points-of-interest';
 import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
+import cacheService from "../utils/cache-service";
+import {createHash} from "crypto";
 
 const defaultLog = getLogger('point-of-interest');
 
-export const POST: Operation = [getPointsOfInterestBySearchFilterCriteria()];
+export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Fetches all ponts of interest based on search criteria.',
   tags: ['point-of-interest'],
-  requestBody: {
-    description: 'Points Of Interest search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            page: {
-              type: 'number',
-              default: 0,
-              minimum: 0
-            },
-            limit: {
-              type: 'number',
-              default: SEARCH_LIMIT_DEFAULT,
-              minimum: 0,
-              maximum: SEARCH_LIMIT_MAX
-            },
-            point_of_interest_type: {
-              type: 'string'
-            },
-            point_of_interest_subtype: {
-              type: 'string'
-            },
-            iappType: {
-              type: 'string'
-            },
-            date_range_start: {
-              type: 'string',
-              description: 'Date range start, in YYYY-MM-DD format. Defaults time to start of day.',
-              example: '2020-07-30'
-            },
-            date_range_end: {
-              type: 'string',
-              description: 'Date range end, in YYYY-MM-DD format. Defaults time to end of day.',
-              example: '2020-08-30'
-            },
-            point_of_interest_ids: {
-              type: 'array',
-              description: 'A list of ids to limit results to',
-              items: {
-                type: 'string'
-              }
-            },
-            search_feature: {
-              type: 'object',
-              description: 'Shape feature collection to filter by',
-              properties: {
-                type: {
-                  type: 'string'
-                },
-                features: {
-                  type: 'array',
-                  items: {
-                    ...(geoJSON_Feature_Schema as any)
-                  }
-                }
-              }
-            },
-            order: {
-              type: 'array',
-              description: 'A list of columns to order by. (for DESC, use "columname DESC")',
-              items: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Point Of Interest get response object array.',
@@ -120,6 +52,9 @@ POST.apiDoc = {
         }
       }
     },
+    304: {
+      $ref: '#/components/responses/304'
+    },
     401: {
       $ref: '#/components/responses/401'
     },
@@ -141,21 +76,70 @@ POST.apiDoc = {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
+    const criteria = JSON.parse(<string>req.query['query']);
+
+
     defaultLog.debug({
       label: 'point-of-interest-lean',
       message: 'getPointsOfInterestBySearchFilterCriteria',
-      body: req.body
+      body: criteria
     });
-    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(req.body);
+    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
     const connection = await getDBConnection();
 
     if (!connection) {
       return res.status(503).json({
         message: 'Database connection unavailable',
-        request: req.body,
+        request: criteria,
         namespace: 'points-of-interest-lean',
         code: 503
       });
+    }
+
+    // we'll send it later, overriding cache headers as appropriate
+    const responseCacheHeaders = {};
+    let ETag = null;
+    // server-side cache
+    const cache = cacheService.getCache('poi-lean');
+
+    // check the cache tag to see if, perhaps, the user already has the latest
+    try {
+      const cacheQueryResult = await connection.query(`select updated_at from cache_versions where cache_name = $1`, [
+        'iapp_site_summary'
+      ]);
+      const cacheVersion = cacheQueryResult.rows[0].updated_at;
+
+      // because we have parameters and user roles, the actual resource cache tag is
+      // tuple: (cacheVersion, parameters)
+      // hash it for brevity and to obscure the real modification date
+
+      const cacheTagStr = `${cacheVersion} ${JSON.stringify(criteria)}`;
+
+      ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+
+      // ok, see if we got a conditional request
+      const ifNoneMatch = req.header('If-None-Match');
+      if (ifNoneMatch && ifNoneMatch === ETag) {
+        // great, we can shortcut this request.
+        connection.release();
+        return res.status(304).send({}); //not-modified
+      }
+
+      // we computed ok, so make sure we send it
+      responseCacheHeaders['ETag'] = ETag;
+      responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
+
+      // check server-side cache
+      const cachedResult = cache.get(ETag);
+      if (cachedResult) {
+        // hit! send this one and save some db traffic
+        connection.release();
+        return res.status(200).set(responseCacheHeaders).json(cachedResult);
+      }
+    } catch (e) {
+      console.log(
+        'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
+      );
     }
 
     try {
@@ -163,7 +147,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Unable to generate SQL statement',
-          request: req.body,
+          request: criteria,
           namespace: 'points-of-interest-lean',
           code: 500
         });
@@ -190,19 +174,27 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         };
       });
 
-      return res.status(200).json({
+      const responseBody = {
         message: 'Got points of interest by search filter criteria',
-        request: req.body,
+        request: criteria,
         result: returnVal,
         count: returnVal.length,
         namespace: 'points-of-interest-lean',
         code: 200
-      });
+      };
+
+      if (ETag !== null) {
+        // save for later;
+        cache.put(ETag, responseBody);
+      }
+
+      return res.status(200).set(responseCacheHeaders).json(responseBody);
+
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting points of interest by search filter criteria',
-        request: req.body,
+        request: criteria,
         error: error,
         namespace: 'points-of-interest-lean',
         code: 500
