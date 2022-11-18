@@ -490,6 +490,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/agency_codes`
     });
     checkForErrors(data, status, url);
+    data.result.sort((a,b) => a.code_description.localeCompare(b.code_description));
     if (DEBUG) {
       console.log('getFundingAgencies', data);
     }
@@ -505,6 +506,7 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/employer_codes`
     });
     checkForErrors(data, status, url);
+    data.result.sort((a,b) => a.code_description.localeCompare(b.code_description));
     if (DEBUG) {
       console.log('getEmployers', data);
     }
