@@ -30,7 +30,7 @@ export const useInvasivesApi = () => {
   const errorContext = useContext(ErrorContext);
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
-  // const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
+  //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   const requestHeaders = useSelector(selectAuthHeaders);
 
@@ -677,7 +677,7 @@ export const useInvasivesApi = () => {
    * @param {string[]} media_keys
    * @return {*}  {Promise<any>}
    */
-   const getMedia = async (media_keys: string[]): Promise<any> => {
+  const getMedia = async (media_keys: string[]): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       headers: { ...options.headers },
@@ -1289,8 +1289,6 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
 
     return { data, status, url };
   }
-
-
 }
 
 export function* getSimplifiedGeoJSON(url_geo: string, percentage: string) {

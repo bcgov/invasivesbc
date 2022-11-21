@@ -58,7 +58,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     action.payload.updatedSet.recordSetType === 'POI' ? true : false,
     action.payload.updatedSet.gridFilters,
     0,
-    200000
+    100000
   );
 
   const layerState = {
@@ -72,7 +72,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       type: IAPP_TABLE_ROWS_GET_REQUEST,
       payload: {
         recordSetID: action.payload.updatedSetName,
-        IAPPFilterCriteria: filterCriteria
+        IAPPFilterCriteria: { ...filterCriteria, site_id_only: true }
       }
     });
     yield put({
@@ -120,7 +120,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
     true,
     action.payload.recordSets[3].gridFilters,
     0,
-    200000
+    100
   );
 
   const layerState = {
@@ -148,7 +148,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
     type: IAPP_GEOJSON_GET_REQUEST,
     payload: {
       recordSetID: '3',
-      IAPPFilterCriteria: IAPP_filter,
+      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 },
       layerState: IAPPlayerState
     }
   });
@@ -158,7 +158,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
 
 function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
   const IDList = action.payload.IAPPTableRows.map((row) => {
-    return row.point_of_interest_payload.form_data.point_of_interest_type_data.site_id;
+    return row.site_id;
   });
 
   yield put({

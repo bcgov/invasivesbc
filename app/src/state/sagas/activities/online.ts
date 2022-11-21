@@ -51,7 +51,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   console.dir(networkReturn);
   let featureCollection = {
     type: 'FeatureCollection',
-    features: networkReturn.data.result.filter((row) => {
+    features: networkReturn?.data?.result?.filter((row) => {
       if (row !== undefined && row?.geometry?.coordinates) {
         return row;
       }
@@ -69,7 +69,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
   console.dir(networkReturn);
 
   if (networkReturn.data.result.rows) {

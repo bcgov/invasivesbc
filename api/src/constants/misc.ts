@@ -153,7 +153,7 @@ export const SEARCH_LIMIT_DEFAULT = 1000;
  *
  * @type {number}
  */
-export const SEARCH_LIMIT_MAX = 200000;
+export const SEARCH_LIMIT_MAX = 100000;
 
 /**
  * Supported PSQL `ORDER BY` directions.
