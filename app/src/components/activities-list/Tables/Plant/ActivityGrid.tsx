@@ -591,11 +591,14 @@ const ActivityGrid = (props) => {
     if (!recordsState.IAPPTableRows) {
       return;
     }
+    console.log('inside of hook');
     const POIS = recordsState?.IAPPTableRows?.filter((row) => {
       return row?.recordSetID === props.setName;
     })[0]?.IAPPTableRows;
+    console.log('after filter', POIS.length);
     const newrows = mapPOI_IAPP_ToDataGridRows(POIS);
     setRows(newrows);
+    console.log('setting rows', newrows.length);
   }, [
     JSON.stringify(
       recordsState?.IAPPTableRows?.filter((row) => {

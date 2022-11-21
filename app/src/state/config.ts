@@ -53,7 +53,7 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       DEBUG: true,
       MOBILE: JSON.parse(CONFIGURATION_IS_MOBILE) === true,
-      API_BASE: CONFIGURATION_API_BASE,
+      API_BASE: 'http://localhost:3002', ///CONFIGURATION_API_BASE,
       KEYCLOAK_CLIENT_ID: CONFIGURATION_KEYCLOAK_CLIENT_ID,
       KEYCLOAK_REALM: CONFIGURATION_KEYCLOAK_REALM,
       KEYCLOAK_URL: CONFIGURATION_KEYCLOAK_URL,
@@ -70,7 +70,7 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       DEBUG: true,
       MOBILE: false,
-      API_BASE: 'http://localhost:7080',
+      API_BASE: 'http://localhost:3002',
       KEYCLOAK_CLIENT_ID: 'invasives-bc-1849',
       KEYCLOAK_REALM: 'onestopauth-business',
       KEYCLOAK_URL: 'https://dev.oidc.gov.bc.ca/auth',

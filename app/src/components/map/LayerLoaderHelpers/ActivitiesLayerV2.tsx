@@ -49,7 +49,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
-    getActivitiesSLD();
+    //    getActivitiesSLD();
     if (zoom < 8) {
       setZoomType(ZoomTypes.LOW);
       return;
@@ -110,7 +110,7 @@ export const ActivitiesLayerV2 = (props: any) => {
       if (props.ids !== undefined) {
         setOptions({
           ...initialOptions,
-          layerStyles: { output: { ...res.output, rules: [...res.output.rules, rule] } }
+          layerStyles: { output: { ...res.output, rules: [...res.output.rules, rule, rule2] } }
         });
       } else {
         setOptions({ ...initialOptions, layerStyles: { output: { ...res.output, rules: [...res.output.rules] } } });
@@ -183,8 +183,8 @@ export const ActivitiesLayerV2 = (props: any) => {
                   <Marker
                     icon={L.icon({
                       iconUrl: mapIcon,
-                      iconSize: [40, 40],
-                      iconAnchor: [20, 40]
+                      iconSize: [10, 17.5],
+                      iconAnchor: [12, 19]
                     })}
                     position={[position[1], position[0]]}
                     key={'activity_marker' + a.properties.id}>

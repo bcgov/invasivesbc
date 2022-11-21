@@ -226,11 +226,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
         bounceAtZoomLimits={true}
         maxZoom={mapMaxZoom}
-        minZoom={6}
+        minZoom={1}
         style={{ height: 'calc(100%)', width: '100%' }}
         zoomControl={false}
         whenCreated={setMap}
         preferCanvas={true}
+        wheelPxPerZoomLevel={2}
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>
@@ -294,12 +295,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             */}
             {useMemo(
               () => (
-                <MapLocationControlGroup 
-                  {...props}
-                  setMapMaxNativeZoom={setMapMaxNativeZoom} 
-                />
+                <MapLocationControlGroup {...props} setMapMaxNativeZoom={setMapMaxNativeZoom} />
               ),
-              [props.geometryState.geometry] 
+              [props.geometryState.geometry]
             )}
 
             {props.children}

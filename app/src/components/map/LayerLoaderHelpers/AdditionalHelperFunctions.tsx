@@ -1,6 +1,7 @@
 import booleanOverlap from '@turf/boolean-overlap';
 import booleanContains from '@turf/boolean-contains';
 import { query, QueryType } from 'contexts/DatabaseContext';
+import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 
 export const getStyleForLayerFeature = (feature: any, layerStyles: any, opacity: number): any => {
   let style = {};
@@ -41,16 +42,10 @@ export const isFilterSatisfied = (filter, featureProps): boolean => {
       return filter[2].toString() === featureProps[filterProp].toString();
     case 'in':
       const result = filter[2].includes(featureProps[filterProp]);
-      if (result) {
-        console.log(JSON.stringify(filter[2]), JSON.stringify(featureProps[filterProp]), result);
-      }
       return result;
     case 'not_in':
       const result2 = filter[2].includes(featureProps[filterProp]);
-      if (!result2) {
-        console.log(JSON.stringify(filter[2]), JSON.stringify(featureProps[filterProp]), result2);
-      }
-      return result;
+      return result2;
   }
 };
 
