@@ -73,8 +73,8 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   drawFeature: function (ctx, feature) {
     const type = feature.type;
 
-    ctx.beginPath();
-
+    let style: any = {};
+    let anyFiltersPassed = false;
     if (
       this.options.layerStyles?.output?.name
         .toString()

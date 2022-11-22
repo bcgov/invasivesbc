@@ -1,6 +1,6 @@
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
@@ -14,17 +14,35 @@ import L from 'leaflet';
 import { glify } from 'react-leaflet-glify';
 //import 'leaflet-canvas-marker';
 import 'leaflet-markers-canvas';
+import { cleanup } from '@testing-library/react';
+import { useLeafletContext } from '@react-leaflet/core';
 
 export const LeafletCanvasMarker = (props) => {
   const map = useMap();
 
+  const context = useLeafletContext();
+
   const [markersCanvas, setMarkersCanvas] = useState();
+  const [markers, setMarkers] = useState([]);
+  const [cleanupCallback, setCleanupCallback] = useState();
+  const layerRef = useRef();
 
   useEffect(() => {
     if (!map) return;
+    try {
+      //console.dir(markersCanvas);
+      //const clear = (markersCanvas as any)?.clear();
+      //const remove = (markersCanvas as any)?.removeMarkers();
+      //map.removeLayer(markersCanvas);
+    } catch (e) {}
+    const container = context.layerContainer || context.map;
 
-    const mc = new (L as any).MarkersCanvas();
-    mc.addTo(map);
+    layerRef.current = new (L as any).MarkersCanvas();
+    container.addLayer(layerRef.current);
+
+    //const mcLayer = mc.addTo(map);
+
+    // if (markers?.length > 0) mcLayer.removeMarkers(markers);
 
     //'canvas-marker' way:
     //var ciLayer = (L as any).canvasIconLayer({}).addTo(map);
@@ -38,14 +56,51 @@ export const LeafletCanvasMarker = (props) => {
     });
     */
 
-    var greenIcon = L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    /*
+    var icon = L.icon({
+
+      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
       iconSize: [12, 10],
       iconAnchor: [10, 9]
-    });
 
+    });
+    */
+
+    let colour = '';
+    switch (props.colour) {
+      case '#2A81CB':
+        colour = 'blue';
+        break;
+      case '#FFD326':
+        colour = 'gold';
+        break;
+      case '#CB2B3E':
+        colour = 'red';
+        break;
+      case '#2AAD27':
+        colour = 'green';
+        break;
+      case '#CB8427':
+        colour = 'orange';
+        break;
+      case '#CAC428':
+        colour = 'yellow';
+        break;
+      case '#9C2BCB':
+        colour = 'violet';
+        break;
+      case '#7B7B7B':
+        colour = 'grey';
+        break;
+      case '#3D3D3D':
+        colour = 'black';
+        break;
+      default:
+        colour = 'blue';
+    }
     var icon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+      iconUrl:
+        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + colour + '.png',
       iconSize: [12, 10],
       iconAnchor: [10, 9]
     });
@@ -56,7 +111,7 @@ export const LeafletCanvasMarker = (props) => {
         return;
       }
       var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
-        icon: props.colour === '#21f34f' ? greenIcon : icon
+        icon: icon
       }); //?.bindPopup('I Am ' + point.properties);
       markers.push(marker);
     });
@@ -65,12 +120,30 @@ export const LeafletCanvasMarker = (props) => {
       map.removeLayer(ciLayer);
     };
     */
-    mc.addMarkers(markers);
-    setMarkersCanvas(mc);
+    layerRef?.current?.clear();
+    if (props.enabled) {
+      layerRef?.current?.addMarkers(markers);
+    }
 
-    return () => {};
+    /*const acleanupCallback = () => mc.removeMarkers(markers);
+    setCleanupCallback(acleanupCallback);
+    */
+
+    //setMarkersCanvas(mcLayer);
+
+    return () => {
+      container.removeLayer(layerRef.current);
+      if (container) {
+        //layerRef.current.removeMarkers(markers);
+      }
+      try {
+        //acleanupCallback();
+        //(markersCanvas as any)?.removeMarkers();
+        // (markersCanvas as any)?.clear();
+      } catch (e) {}
+    };
     //}, [map]);
-  }, []);
+  }, [props.colour, props.enabled, props.points]);
 
   return <></>;
 };
@@ -127,6 +200,7 @@ export const RecordSetLayersRenderer = (props: any) => {
               <LeafletCanvasMarker
                 key={'activitieslayerg2' + l.recordSetID}
                 points={filtered}
+                enabled={l.layerState.enabled}
                 colour={l.layerState.color}
               />
             );

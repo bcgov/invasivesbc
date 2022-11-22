@@ -134,15 +134,28 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
   defaultLog.debug({ label: 'getIAPPjson', message: 'site ids: ' + JSON.stringify(site_ids) });
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
-  const all_biological_dispersal_extracts = await getIappExtractFromDB(site_ids, 'biological_dispersal_extract');
-  const all_biological_monitoring_extracts = await getIappExtractFromDB(site_ids, 'biological_monitoring_extract');
-  const all_biological_treatment_extracts = await getIappExtractFromDB(site_ids, 'biological_treatment_extract');
-  const all_chemical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'chemical_monitoring_extract');
-  const all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
-  const all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
-  const all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
-  const all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
-  const all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
+  let all_site_selection_extracts = [];
+  let all_biological_dispersal_extracts = [];
+  let all_biological_monitoring_extracts = [];
+  let all_biological_treatment_extracts = [];
+  let all_chemical_monitoring_extracts = [];
+  let all_chemical_treatment_extracts = [];
+  let all_mechanical_monitoring_extracts = [];
+  let all_mechanical_treatment_extracts = [];
+  let all_survey_extracts = [];
+
+  if (!searchCriteria.site_id_only) {
+    // get all of them for all the above site ids, vs doing many queries (while looping over sites)
+    all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
+    all_biological_dispersal_extracts = await getIappExtractFromDB(site_ids, 'biological_dispersal_extract');
+    all_biological_monitoring_extracts = await getIappExtractFromDB(site_ids, 'biological_monitoring_extract');
+    all_biological_treatment_extracts = await getIappExtractFromDB(site_ids, 'biological_treatment_extract');
+    all_chemical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'chemical_monitoring_extract');
+    all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
+    all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
+    all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
+    all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
+  }
 
   defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
   defaultLog.debug({
