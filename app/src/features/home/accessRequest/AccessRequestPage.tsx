@@ -2,20 +2,25 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
+  Chip,
   Container,
   Divider,
   FormControlLabel,
   FormLabel,
   Grid,
+  InputLabel,
   Radio,
   RadioGroup,
   TextField,
   FormControl,
   MenuItem,
+  OutlinedInput,
+  Select,
   Typography,
   Tooltip,
   Theme
@@ -128,8 +133,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       pacNumber: null,
       psn1: null,
       psn2: null,
-      employer: null,
-      fundingAgencies: null,
+      employer: '',
+      fundingAgencies: '',
       requestedRoles: null,
       comments: null,
       status: 'REMOVED',
@@ -216,18 +221,31 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     setEmployer(event.target.value);
   };
 
-  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
-    const {
-      target: { value }
-    } = event;
-    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
   };
 
+  const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name).code_description;
+  
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
       target: { value }
     } = event;
     setRequestedRoles(typeof value === 'string' ? value.split(',') : value);
+  };
+
+  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
+    const {
+      target: { value },
+    } = event;
+    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -418,26 +436,41 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
-                            <TextField
-                              required
-                              style={{ width: 320 }}
-                              classes={{ root: classes.root }}
-                              select
-                              name="Funding Agencies"
-                              id="funding-agency"
-                              variant="outlined"
-                              label="Funding Agencies"
-                              SelectProps={{
-                                multiple: true,
-                                value: fundingAgencies,
-                                onChange: handleFundingAgenciesChange
-                              }}>
-                              {fundingAgenciesList.map((fundingAgency) => (
-                                <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
-                                  {fundingAgency.code_description}
-                                </MenuItem>
-                              ))}
-                            </TextField>
+                            <>
+                              <InputLabel 
+                                htmlFor="funding-agency"
+                              >
+                                Funding Agencies
+                              </InputLabel>
+                              <Select
+                                label="Funding Agencies"
+                                id="funding-agency"
+                                required
+                                // variant="outlined"
+                                style={{ width: 1000}}
+                                multiple
+                                value={fundingAgencies}
+                                onChange={handleFundingAgenciesChange}
+                                input={<OutlinedInput label="Funding" />}
+                                renderValue={(selected) => (
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                      <Chip key={value} label={getAgencyDescription(value)} />
+                                    ))}
+                                  </Box>
+                                )}
+                                MenuProps={MenuProps}
+                              >
+                                {fundingAgenciesList.map((fundingAgency) => (
+                                  <MenuItem
+                                    key={fundingAgency.code_id}
+                                    value={fundingAgency.code_name}
+                                  >
+                                    {fundingAgency.code_description}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </>
                           </Tooltip>
                         </Grid>
                       </Grid>
