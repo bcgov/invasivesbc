@@ -480,7 +480,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
-                              required
                               value={pacNumber}
                               onChange={(e) => setPacNumber(e.target.value)}
                               style={{ width: 320 }}
@@ -495,7 +494,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
-                              required
                               value={psn1}
                               onChange={(e) => setPsn1(e.target.value)}
                               style={{ width: 320 }}
@@ -510,7 +508,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
-                              required
                               value={psn2}
                               onChange={(e) => setPsn2(e.target.value)}
                               style={{ width: 320 }}
