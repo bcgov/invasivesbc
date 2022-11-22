@@ -30,13 +30,14 @@ export const RecordSet = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
-  const [color, setColor] = useState(blue[500]);
+  const [color, setColor] = useState('#2A81CB');
   const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState(null);
   const [isSelected, setIsSelected] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
-  const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
+  //const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
+  const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
   const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
@@ -119,20 +120,20 @@ export const RecordSet = (props) => {
       });
 
       if (
-        (newState['expanded'] !== initialState['expanded']) ||
-        (newState['drawOrder'] !== initialState['drawOrder']) ||
-        (newState['mapToggle'] !== initialState['mapToggle']) ||
-        (newState['color'] !== initialState['color']) ||
-        (newState['recordSetName'] !== initialState['recordSetName']) ||
-        (newState['isSelected'] !== initialState['isSelected']) ||
-        (newState['advancedFilters'] !== initialState['advancedFilters'])
+        newState['expanded'] !== initialState['expanded'] ||
+        newState['drawOrder'] !== initialState['drawOrder'] ||
+        newState['mapToggle'] !== initialState['mapToggle'] ||
+        newState['color'] !== initialState['color'] ||
+        newState['recordSetName'] !== initialState['recordSetName'] ||
+        newState['isSelected'] !== initialState['isSelected'] ||
+        newState['advancedFilters'] !== initialState['advancedFilters']
       ) {
         dispatch({
           type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
           payload: {
             updatedSet: {
-                ...initialState,
-                ...newState
+              ...initialState,
+              ...newState
             },
             setName: props.setName
           }
@@ -217,7 +218,11 @@ export const RecordSet = (props) => {
         </Accordion>
       </>
     ),
-    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters)]
+    [
+      JSON.stringify(userSettings.recordSets?.[props.setName]),
+      JSON.stringify(recordSetName),
+      JSON.stringify(advancedFilters)
+    ]
   );
 };
 export default RecordSet;
