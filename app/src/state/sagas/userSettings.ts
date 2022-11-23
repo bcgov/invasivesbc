@@ -191,6 +191,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   try {
     const oldID = localStorage.getItem('activeActivity');
+    const oldIappID = localStorage.getItem('activeIAPP');
     // needs mobile later
     const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
     const recordsExpandedState = JSON.parse(localStorage.getItem('records-expanded'));
@@ -202,6 +203,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
       payload: {
         id: oldID,
+        activeIAPP: oldIappID,
         activeActivity: oldID,
         recordSets: recordSets,
         recordsExpanded: recordsExpanded
@@ -230,7 +232,7 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
 
 function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
   try {
-    const newID = localStorage.setItem('activeIAPP', action.payload.activeIAPP);
+    const newID = localStorage.setItem('activeIAPP', action.payload.id);
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
