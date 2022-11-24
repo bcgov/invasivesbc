@@ -119,93 +119,44 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     // }
 
     setActivityCategorySelectOptions(categories);
-
     // TODO: Update this to cache for mobile as well
     const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
-    if (cachedDialogState && JSON.parse(cachedDialogState).recordCategory) {
-      setNewRecordDialogState({
-        ...newRecordDialogState,
-        recordCategory: JSON.parse(cachedDialogState).recordCategory
-      });
-    } else {
-      setNewRecordDialogState({ ...newRecordDialogState, recordCategory: '' });
-    }
-    // const fetchAndSetCategory = async () => {
-    //   const result = await dataAccess.getAppState();
-    //   const cachedCategory = result?.newActivityChoices?.category || undefined;
+    const cachedCategory = (cachedDialogState && JSON.parse(cachedDialogState).recordCategory) ?
+      JSON.parse(cachedDialogState).recordCategory : 
+      '';
+    const cachedType = (cachedDialogState && JSON.parse(cachedDialogState).recordType) ?
+      JSON.parse(cachedDialogState).recordType : 
+      '';
+    const cachedSubtype = (cachedDialogState && JSON.parse(cachedDialogState).recordSubtype) ?
+      JSON.parse(cachedDialogState).recordSubtype : 
+      '';
 
-    //   if (!cachedCategory) {
-    //     setNewRecordDialogState({ ...newRecordDialogState, recordCategory: '' });
-    //   } else {
-    //     setNewRecordDialogState({ ...newRecordDialogState, recordCategory: cachedCategory });
-    //   }
-    // };
-    // fetchAndSetCategory();
+    setNewRecordDialogState({
+      ...newRecordDialogState,
+      recordCategory: cachedCategory,
+      recordType: cachedType,
+      recordSubtype: cachedSubtype
+    });
   }, []);
 
   useEffect(() => {
     if (!newRecordDialogState.recordCategory) {
       setActivityTypeSelectOptions([]);
-      setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
     } else {
       const types = [];
       Object.keys(ActivitySubtypeRelations[newRecordDialogState.recordCategory]).forEach((key) => {
         types.push(key);
       });
       setActivityTypeSelectOptions(types);
-
-      // TODO: Update this to cache for mobile as well
-      const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
-      if (cachedDialogState && JSON.parse(cachedDialogState).recordType) {
-        setNewRecordDialogState({
-          ...newRecordDialogState,
-          recordType: JSON.parse(cachedDialogState).recordType
-        });
-      } else {
-        setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
-      }
-      // const fetchAndCacheType = async () => {
-      //   const result = await dataAccess.getAppState();
-      //   const cachedType = result?.newActivityChoices?.type || undefined;
-      //   if (!cachedType) {
-      //     setNewRecordDialogState({ ...newRecordDialogState, recordType: '' });
-      //   } else {
-      //     setNewRecordDialogState({ ...newRecordDialogState, recordType: cachedType });
-      //   }
-      // };
-      // fetchAndCacheType();
     }
   }, [newRecordDialogState.recordCategory]);
 
   useEffect(() => {
     if (!newRecordDialogState.recordType || !newRecordDialogState.recordCategory) {
       setActivitySubTypeSelectOptions([]);
-      setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
     } else {
       const subTypes = ActivitySubtypeRelations[newRecordDialogState.recordCategory][newRecordDialogState.recordType];
       setActivitySubTypeSelectOptions(subTypes);
-
-      // TODO: Update this to cache for mobile as well
-      const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
-      if (cachedDialogState && JSON.parse(cachedDialogState).recordSubtype) {
-        setNewRecordDialogState({
-          ...newRecordDialogState,
-          recordSubtype: JSON.parse(cachedDialogState).recordSubtype
-        });
-      } else {
-        setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
-      }
-      // const fetchAndCacheSubtype = async () => {
-      //   const result = await dataAccess.getAppState();
-      //   const cachedSubType = result?.newActivityChoices?.subType || undefined;
-
-      //   if (!cachedSubType) {
-      //     setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: '' });
-      //   } else {
-      //     setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: cachedSubType });
-      //   }
-      // };
-      // fetchAndCacheSubtype();
     }
   }, [newRecordDialogState.recordType]);
 
@@ -251,7 +202,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   const handleRecordCategoryChange = (event: any) => {
-    setNewRecordDialogState({ ...newRecordDialogState, recordCategory: event.target.value });
+    setNewRecordDialogState({ ...newRecordDialogState, recordCategory: event.target.value, recordType: '', recordSubtype: '' });
   };
 
   const handleRecordTypeChange = (event: any) => {
