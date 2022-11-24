@@ -100,10 +100,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
         {value: requestedRoles?.join(), error: setRequestedRolesErrorText, text: 'Please enter 1 or more Requested Roles'},
       );
     }
-    // Auto fill value on submission and validation
-    if (!psn1) {
-      setPsn1('NRQ');
-    }
 
     if (accountType === 'IDIR') {
       requiredFields.push({value: idir, error: setIdirErrorText, text: 'Please enter IDIR name'});
