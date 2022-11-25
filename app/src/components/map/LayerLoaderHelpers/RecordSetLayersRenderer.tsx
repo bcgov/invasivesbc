@@ -26,6 +26,7 @@ export const LeafletCanvasMarker = (props) => {
   const [markers, setMarkers] = useState([]);
   const [cleanupCallback, setCleanupCallback] = useState();
   const layerRef = useRef();
+  const groupRef = useRef();
 
   useEffect(() => {
     if (!map) return;
@@ -38,7 +39,11 @@ export const LeafletCanvasMarker = (props) => {
     const container = context.layerContainer || context.map;
 
     layerRef.current = new (L as any).MarkersCanvas();
-    container.addLayer(layerRef.current);
+
+    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
+    groupRef.current.setZIndex(props.zIndex);
+
+    //    container.addLayer(layerRef.current);
 
     //const mcLayer = mc.addTo(map);
 
@@ -120,8 +125,9 @@ export const LeafletCanvasMarker = (props) => {
       map.removeLayer(ciLayer);
     };
     */
-    layerRef?.current?.clear();
-    if (props.enabled) {
+    if (groupRef.current) layerRef?.current?.clear();
+
+    if (props.enabled && groupRef.current) {
       layerRef?.current?.addMarkers(markers);
     }
 
@@ -130,9 +136,13 @@ export const LeafletCanvasMarker = (props) => {
     */
 
     //setMarkersCanvas(mcLayer);
+    setTimeout(() => {
+      layerRef?.current?.redraw();
+    }, 5000);
 
     return () => {
-      container.removeLayer(layerRef.current);
+      //container.removeLayer(layerRef.current);
+      container.removeLayer(groupRef.current);
       if (container) {
         //layerRef.current.removeMarkers(markers);
       }
@@ -157,6 +167,31 @@ export const RecordSetLayersRenderer = (props: any) => {
     color: any;
     setName: string;
   }
+
+  const GLLayerPoints = (props) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (map && props.points) {
+        //        (L as any).glify = glify;
+
+        (L as any).glify.points({
+          map,
+          data: props.points,
+          size: 10,
+
+          click: (e, pointOrGeoJsonFeature, xy): boolean | void => {
+            // do something when a point is clicked
+            // return false to continue traversing
+          },
+          hover: (e, pointOrGeoJsonFeature, xy): boolean | void => {
+            // do something when a point is hovered
+          }
+        });
+      }
+    }, []);
+    return <></>;
+  };
 
   return (
     <>
@@ -202,6 +237,7 @@ export const RecordSetLayersRenderer = (props: any) => {
                 points={filtered}
                 enabled={l.layerState.enabled}
                 colour={l.layerState.color}
+                zIndex={l.layerState.drawOrder + 10000}
               />
             );
           }
