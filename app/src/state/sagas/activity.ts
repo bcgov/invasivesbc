@@ -78,8 +78,8 @@ import {
 } from './activity/online';
 
 function* handle_USER_SETTINGS_READY(action) {
-  if (action.payload.id) {
-    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.id } });
+  if (action.payload.activeActivity) {
+    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
   }
 }
 

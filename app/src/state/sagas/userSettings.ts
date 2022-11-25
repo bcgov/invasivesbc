@@ -202,7 +202,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     yield put({
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
       payload: {
-        id: oldID,
         activeIAPP: oldIappID,
         activeActivity: oldID,
         recordSets: recordSets,
