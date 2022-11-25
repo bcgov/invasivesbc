@@ -1,5 +1,5 @@
 import { Box, Button, Container, Typography } from '@mui/material';
-import { ArrowBack, Login} from '@mui/icons-material';
+import { ArrowBack} from '@mui/icons-material';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -21,10 +21,6 @@ const AccessDenied = () => {
     <Container>
       <Box my={6}>
         <Box>
-          <Button variant="text" color="primary" startIcon={<Login />} onClick={login}>
-            <Typography variant="body1">Log in to view page</Typography>
-          </Button>
-          or
           <Button variant="text" color="primary" startIcon={<ArrowBack />} onClick={navigateToHome}>
             <Typography variant="body1">Go back to the home page</Typography>
           </Button>
