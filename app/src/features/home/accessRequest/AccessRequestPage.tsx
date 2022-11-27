@@ -2,20 +2,25 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
+  Chip,
   Container,
   Divider,
   FormControlLabel,
   FormLabel,
   Grid,
+  InputLabel,
   Radio,
   RadioGroup,
   TextField,
   FormControl,
   MenuItem,
+  OutlinedInput,
+  Select,
   Typography,
   Tooltip,
   Theme
@@ -69,75 +74,125 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [comments, setComments] = React.useState('');
   const [roles, setRoles] = React.useState<any[]>([]);
 
+  // Validation Error Messages
+  const [idirErrorText, setIdirErrorText] = React.useState('');
+  const [bceidErrorText, setBceidErrorText] = React.useState('');
+  const [firstNameErrorText, setFirstNameErrorText] = React.useState('');
+  const [lastNameErrorText, setLastNameErrorText] = React.useState('');
+  const [emailErrorText, setEmailErrorText] = React.useState('');
+  const [employerErrorText, setEmployerErrorText] = React.useState('');
+  const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = React.useState('');
+  const [requestedRolesErrorText, setRequestedRolesErrorText] = React.useState('');
+
   let isUpdating = false;
 
+  const isValid = (decline:Boolean = false, valid:Boolean = true):Boolean => {
+    let requiredFields = [
+      {value: firstName, error: setFirstNameErrorText, text: 'Please enter First name'},
+      {value: lastName, error: setLastNameErrorText, text: 'Please enter Last name'},
+      {value: email, error: setEmailErrorText, text: 'Please enter primary Email'},
+    ];
+    // if not declining check more fields
+    if (!decline) {
+      requiredFields.push(
+        {value: employer, error: setEmployerErrorText, text: 'Please enter Employer'},
+        {value: fundingAgencies?.join(), error: setFundingAgenciesErrorText, text: 'Please enter 1 or more Funding Agencies'},
+        {value: requestedRoles?.join(), error: setRequestedRolesErrorText, text: 'Please enter 1 or more Requested Roles'},
+      );
+    }
+
+    if (accountType === 'IDIR') {
+      requiredFields.push({value: idir, error: setIdirErrorText, text: 'Please enter IDIR name'});
+    }else{
+      requiredFields.push({value: bceid, error: setBceidErrorText, text: 'Please enter BCeID'});
+
+    }
+
+    requiredFields.map((field) => {
+      if (!field.value || field.value.length === 0) {
+        field.error(field.text);
+        valid = false;
+      } else {
+        field.error('');
+      }
+    });
+
+    return valid;
+  };
+
   const submitAccessRequest = async () => {
-    const accessRequest = {
-      idir: idir,
-      bceid: bceid,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      pacNumber: pacNumber,
-      psn1: psn1,
-      psn2: psn2,
-      employer: employer?.toString(),
-      fundingAgencies: fundingAgencies?.toString(),
-      requestedRoles: requestedRoles?.toString(),
-      comments: comments,
-      status: 'NOT_APPROVED',
-      idirUserId: idir_userid,
-      bceidUserId: bceid_userid
-    };
-    await api.submitAccessRequest(accessRequest);
-    setSubmitted(true);
+    if (isValid()) {
+      const accessRequest = {
+        idir: idir,
+        bceid: bceid,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        pacNumber: pacNumber,
+        psn1: psn1,
+        psn2: psn2,
+        employer: employer?.toString(),
+        fundingAgencies: fundingAgencies?.toString(),
+        requestedRoles: requestedRoles?.toString(),
+        comments: comments,
+        status: 'NOT_APPROVED',
+        idirUserId: idir_userid,
+        bceidUserId: bceid_userid
+      };
+      await api.submitAccessRequest(accessRequest);
+      setSubmitted(true);
+    }
   };
 
   const submitUpdateRequest = async () => {
-    const updateRequest = {
-      idir: idir,
-      bceid: bceid,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      pacNumber: pacNumber,
-      psn1: psn1,
-      psn2: psn2,
-      employer: employer?.toString(),
-      fundingAgencies: fundingAgencies?.toString(),
-      requestedRoles: requestedRoles?.toString(),
-      comments: comments,
-      status: 'NOT_APPROVED',
-      idirUserId: idir_userid,
-      bceidUserId: bceid_userid
-    };
-    await api.submitUpdateRequest(updateRequest);
-    setSubmitted(true);
+    if (isValid()) {
+      const updateRequest = {
+        idir: idir,
+        bceid: bceid,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        pacNumber: pacNumber,
+        psn1: psn1,
+        psn2: psn2,
+        employer: employer?.toString(),
+        fundingAgencies: fundingAgencies?.toString(),
+        requestedRoles: requestedRoles?.toString(),
+        comments: comments,
+        status: 'NOT_APPROVED',
+        idirUserId: idir_userid,
+        bceidUserId: bceid_userid
+      };
+      await api.submitUpdateRequest(updateRequest);
+      setSubmitted(true);
+    }
   };
 
   const declineAccess = async () => {
-    const accessRequest = {
-      idir: idir,
-      bceid: bceid,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: null,
-      pacNumber: null,
-      psn1: null,
-      psn2: null,
-      employer: null,
-      fundingAgencies: null,
-      requestedRoles: null,
-      comments: null,
-      status: 'REMOVED',
-      idir_userid: null,
-      bceid_userid: null
-    };
-    await api.submitAccessRequest(accessRequest);
-    setSubmitted(true);
+    if (isValid(true)) {
+      const accessRequest = {
+        idir: idir,
+        bceid: bceid,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: null,
+        pacNumber: null,
+        psn1: null,
+        psn2: null,
+        employer: '',
+        fundingAgencies: '',
+        requestedRoles: null,
+        comments: null,
+        status: 'REMOVED',
+        idir_userid: null,
+        bceid_userid: null
+      };
+      await api.submitAccessRequest(accessRequest);
+      setSubmitted(true);
+    }
   };
 
   if (props?.location?.state?.updateInfo && props?.location?.state?.updateInfo === true) {
@@ -216,18 +271,31 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     setEmployer(event.target.value);
   };
 
-  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
-    const {
-      target: { value }
-    } = event;
-    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
   };
 
+  const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name).code_description;
+  
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
       target: { value }
     } = event;
     setRequestedRoles(typeof value === 'string' ? value.split(',') : value);
+  };
+
+  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
+    const {
+      target: { value },
+    } = event;
+    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -315,7 +383,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 onChange={(e) => setIdir(e.target.value)}
                                 required
                                 variant="outlined"
-                                id="outlined-required"
+                                error={!!idirErrorText}
+                                id="idir"
                                 label="IDIR Account Name"
                               />
                             </Grid>
@@ -329,7 +398,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 onChange={(e) => setBceid(e.target.value)}
                                 style={{ width: 320 }}
                                 variant="outlined"
-                                id="outlined-required"
+                                error={!!bceidErrorText}
+                                id="bceid"
                                 label="BCeID Account Name"
                               />
                             </Grid>
@@ -346,7 +416,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             variant="outlined"
-                            id="outlined-required"
+                            error={!!firstNameErrorText}
+                            id="first-name"
                             label="First Name"
                           />
                         </Grid>
@@ -357,7 +428,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             variant="outlined"
-                            id="outlined-required"
+                            error={!!lastNameErrorText}
+                            id="last-name"
                             label="Last Name"
                           />
                         </Grid>
@@ -368,7 +440,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             variant="outlined"
-                            id="outlined-required"
+                            error={!!emailErrorText}
+                            id="primary-email"
                             label="Primary Email"
                           />
                         </Grid>
@@ -382,13 +455,14 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             style={{ width: 320 }}
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            id="outlined-required"
+                            id="work-phone"
                             label="Work Phone (optional)"
                           />
                         </Grid>
                         <Grid item>
                           <Tooltip placement="left" title="Who do you work for?">
                             <TextField
+                              required
                               style={{ width: 320 }}
                               classes={{ root: classes.root }}
                               select
@@ -396,6 +470,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                               id="employer"
                               variant="outlined"
                               label="Employer"
+                              error={!!employerErrorText}
                               SelectProps={{
                                 multiple: false,
                                 value: employer,
@@ -417,25 +492,42 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
-                            <TextField
-                              style={{ width: 320 }}
-                              classes={{ root: classes.root }}
-                              select
-                              name="Funding Agencies"
-                              id="funding-agency"
-                              variant="outlined"
-                              label="Funding Agencies"
-                              SelectProps={{
-                                multiple: true,
-                                value: fundingAgencies,
-                                onChange: handleFundingAgenciesChange
-                              }}>
-                              {fundingAgenciesList.map((fundingAgency) => (
-                                <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
-                                  {fundingAgency.code_description}
-                                </MenuItem>
-                              ))}
-                            </TextField>
+                            <>
+                              <InputLabel 
+                                htmlFor="funding-agency"
+                              >
+                                Funding Agencies
+                              </InputLabel>
+                              <Select
+                                label="Funding Agencies"
+                                id="funding-agency"
+                                required
+                                // variant="outlined"
+                                style={{ width: 1000}}
+                                multiple
+                                value={fundingAgencies}
+                                error={!!fundingAgenciesErrorText}
+                                onChange={handleFundingAgenciesChange}
+                                input={<OutlinedInput label="Funding" />}
+                                renderValue={(selected) => (
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                      <Chip key={value} label={getAgencyDescription(value)} />
+                                    ))}
+                                  </Box>
+                                )}
+                                MenuProps={MenuProps}
+                              >
+                                {fundingAgenciesList.map((fundingAgency) => (
+                                  <MenuItem
+                                    key={fundingAgency.code_id}
+                                    value={fundingAgency.code_name}
+                                  >
+                                    {fundingAgency.code_description}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </>
                           </Tooltip>
                         </Grid>
                       </Grid>
@@ -445,12 +537,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
-                              required
                               value={pacNumber}
                               onChange={(e) => setPacNumber(e.target.value)}
                               style={{ width: 320 }}
                               variant="outlined"
-                              id="outlined-required"
+                              id="pac-number"
                               label="PAC Number"
                             />
                           </Tooltip>
@@ -460,12 +551,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
-                              required
                               value={psn1}
                               onChange={(e) => setPsn1(e.target.value)}
                               style={{ width: 320 }}
                               variant="outlined"
-                              id="outlined-required"
+                              id="psn1"
                               label="Pesticide Service Number #1"
                             />
                           </Tooltip>
@@ -475,12 +565,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
-                              required
                               value={psn2}
                               onChange={(e) => setPsn2(e.target.value)}
                               style={{ width: 320 }}
                               variant="outlined"
-                              id="outlined-required"
+                              id="psn2"
                               label="Pesticide Service Number #2"
                             />
                           </Tooltip>
@@ -490,6 +579,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item style={{ marginBottom: '10px' }}>
                           <Tooltip placement="left" title="Select one or more roles to request.">
                             <TextField
+                              required
                               style={{ width: 320 }}
                               classes={{ root: classes.root }}
                               select
@@ -497,6 +587,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                               id="requested-roles"
                               variant="outlined"
                               label="Requested Role(s)"
+                              error={!!requestedRolesErrorText}
                               SelectProps={{
                                 multiple: true,
                                 value: requestedRoles,
