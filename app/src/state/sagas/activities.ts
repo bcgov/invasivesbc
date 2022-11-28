@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, throttle, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, throttle, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import Keycloak from 'keycloak-js';
 import {
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
@@ -13,7 +13,9 @@ import {
   IAPP_TABLE_ROWS_GET_REQUEST,
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_SUCCESS,
-  IAPP_RECORDSET_ID_LIST_GET_SUCCESS
+  IAPP_RECORDSET_ID_LIST_GET_SUCCESS,
+  IAPP_GEOJSON_GET_SUCCESS,
+  IAPP_INIT_LAYER_STATE_REQUEST
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -29,6 +31,8 @@ import {
 } from './activities/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
+import { selectActivities } from 'state/reducers/activities';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -153,7 +157,79 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
     }
   });
 
+  yield take(IAPP_GEOJSON_GET_SUCCESS);
+
+  yield put({ type: IAPP_INIT_LAYER_STATE_REQUEST, payload: {} });
+
   // TODO: get iapp geojson event
+}
+
+function* handle_IAPP_INIT_LAYER_STATE_REQUEST(action) {
+  const recordSetState = yield select(selectUserSettings);
+
+  const authState = yield select(selectAuth);
+  const sets = {};
+  //  sets['2'] = action.payload.recordSets[2];
+  // sets['3'] = action.payload.recordSets[3];
+
+  yield Object.keys(recordSetState.recordSets).map(function* (recordSetID) {
+    const recordSet = recordSetState.recordSets[recordSetID];
+    /*
+    const filterCriteria = getSearchCriteriaFromFilters(
+      action.payload.recordSets[2].advancedFilterRows,
+      authState.accessRoles,
+      sets,
+      '2',
+      false,
+      action.payload.recordSets[2].gridFilters,
+      0,
+      999
+    );
+    */
+
+    const IAPP_filter = yield getSearchCriteriaFromFilters(
+      recordSetState.recordSets[recordSetID].advancedFilterRows,
+      authState.accessRoles,
+      sets,
+      recordSetID,
+      true,
+      recordSetState.recordSets[recordSetID].gridFilters,
+      0,
+      100
+    );
+
+    /* prove out just iapp for now
+    const layerState = {
+      color: action.payload.recordSets[2].color,
+      drawOrder: action.payload.recordSets[2].drawOrder,
+      enabled: true
+    };
+    */
+
+    const IAPPlayerState = {
+      color: recordSetState.recordSets[recordSetID].color,
+      drawOrder: recordSetState.recordSets[recordSetID].drawOrder,
+      enabled: true
+    };
+
+    /* put({
+      type: ACTIVITIES_GEOJSON_GET_REQUEST,
+      payload: {
+        recordSetID: '2',
+        activitiesFilterCriteria: filterCriteria,
+        layerState: layerState
+      }
+    });
+    */
+
+    yield put({
+      type: IAPP_TABLE_ROWS_GET_REQUEST,
+      payload: {
+        recordSetID: recordSetState.recordSets[recordSetID],
+        IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
+      }
+    });
+  });
 }
 
 function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
@@ -178,6 +254,7 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+    takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROW_GET_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST'))
   ]);
 }
