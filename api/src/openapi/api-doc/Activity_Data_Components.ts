@@ -82,7 +82,7 @@ export const Activity = {
     location_description: {
       type: 'string',
       title: 'Location Description',
-      maxLength: 300,
+      maxLength: 2000,
       minLength: 5,
       default: '',
       'x-tooltip-text':
