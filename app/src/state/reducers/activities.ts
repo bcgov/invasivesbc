@@ -90,6 +90,7 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
           };
         } else {
           return {
+            ...state,
             activitiesGeoJSON: [
               {
                 recordSetID: action.payload.recordSetID,
@@ -101,9 +102,12 @@ function createActivitiesReducer(configuration: AppConfig): (ActivitiesState, An
         }
       }
       case IAPP_RECORDSET_ID_LIST_GET_SUCCESS: {
+        const newState = {};
+        newState[action.payload.recordSetID] = action.payload.ids;
+
         return {
           ...state,
-          IAPPRecordSetIDS: { ...state.IAPPRecordSetIDS, [action.payload.recordSetID]: action.payload.ids }
+          IAPPRecordSetIDS: { ...state.IAPPRecordSetIDS, ...newState }
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {

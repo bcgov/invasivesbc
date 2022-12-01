@@ -172,9 +172,12 @@ function* handle_IAPP_INIT_LAYER_STATE_REQUEST(action) {
   //  sets['2'] = action.payload.recordSets[2];
   // sets['3'] = action.payload.recordSets[3];
 
-  yield Object.keys(recordSetState.recordSets).map(function* (recordSetID) {
-    const recordSet = recordSetState.recordSets[recordSetID];
-    /*
+  //console.dir(Object.keys(recordSetState))
+
+  for (const recordSetID in recordSetState.recordSets) {
+    if (recordSetState.recordSets[recordSetID].recordSetType === 'POI') {
+      const recordSet = recordSetState.recordSets[recordSetID];
+      /*
     const filterCriteria = getSearchCriteriaFromFilters(
       action.payload.recordSets[2].advancedFilterRows,
       authState.accessRoles,
@@ -187,18 +190,18 @@ function* handle_IAPP_INIT_LAYER_STATE_REQUEST(action) {
     );
     */
 
-    const IAPP_filter = yield getSearchCriteriaFromFilters(
-      recordSetState.recordSets[recordSetID].advancedFilterRows,
-      authState.accessRoles,
-      sets,
-      recordSetID,
-      true,
-      recordSetState.recordSets[recordSetID].gridFilters,
-      0,
-      100
-    );
+      const IAPP_filter = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        authState.accessRoles,
+        sets,
+        recordSet,
+        true,
+        recordSetState.recordSets[recordSetID].gridFilters,
+        0,
+        200000
+      );
 
-    /* prove out just iapp for now
+      /* prove out just iapp for now
     const layerState = {
       color: action.payload.recordSets[2].color,
       drawOrder: action.payload.recordSets[2].drawOrder,
@@ -206,13 +209,13 @@ function* handle_IAPP_INIT_LAYER_STATE_REQUEST(action) {
     };
     */
 
-    const IAPPlayerState = {
-      color: recordSetState.recordSets[recordSetID].color,
-      drawOrder: recordSetState.recordSets[recordSetID].drawOrder,
-      enabled: true
-    };
+      const IAPPlayerState = {
+        color: recordSetState.recordSets[recordSetID].color,
+        drawOrder: recordSetState.recordSets[recordSetID].drawOrder,
+        enabled: true
+      };
 
-    /* put({
+      /* put({
       type: ACTIVITIES_GEOJSON_GET_REQUEST,
       payload: {
         recordSetID: '2',
@@ -222,14 +225,16 @@ function* handle_IAPP_INIT_LAYER_STATE_REQUEST(action) {
     });
     */
 
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: recordSetState.recordSets[recordSetID],
-        IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
-      }
-    });
-  });
+      yield put({
+        type: IAPP_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          //recordSetID: recordSetState.recordSets[recordSetID],
+          recordSetID: recordSetID,
+          IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
+        }
+      });
+    }
+  }
 }
 
 function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
