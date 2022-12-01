@@ -20,7 +20,9 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  LAYER_STATE_UPDATE
+  LAYER_STATE_UPDATE,
+  ACTIVITY_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITY_GET_IDS_FOR_RECORDSET_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -256,6 +258,29 @@ function* handle_MAP_INIT_REQUEST(action) {
         }
       });
       yield take(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS);
+    }
+    else
+    {
+      const activity_filter = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        authState.accessRoles,
+        sets,
+        recordSet,
+        true,
+        recordSet.gridFilters,
+        0,
+        200000
+      );
+
+      yield put({
+        type: ACTIVITY_GET_IDS_FOR_RECORDSET_REQUEST,
+        payload: {
+          recordSetID: rs,
+          ActivityFilterCriteria: { ...activity_filter, activity_id_only: true }
+        }
+      });
+      //yield take(ACTIVITY_GET_IDS_FOR_RECORDSET_SUCCESS);
+
     }
   }
 }
