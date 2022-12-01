@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
-import { selectActivities } from 'state/reducers/activities';
+import { selectMap } from 'state/reducers/map';
 import { useMap } from 'react-leaflet';
 
 import L from 'leaflet';
@@ -160,7 +160,7 @@ export const LeafletCanvasMarker = (props) => {
 
 export const RecordSetLayersRenderer = (props: any) => {
   const { accessRoles } = useSelector(selectAuth);
-  const activitiesState = useSelector(selectActivities);
+  const activitiesState = useSelector(selectMap);
 
   interface ILayerToRender {
     filter: IActivitySearchCriteria;

@@ -36,7 +36,7 @@ import {
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { select } from 'redux-saga/effects';
-import { selectActivities } from 'state/reducers/activities';
+import { selectMap } from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -247,7 +247,7 @@ const ActivityGrid = (props) => {
   const dispatch = useDispatch();
   const { accessRoles } = useSelector(selectAuth);
   const userSettings = useSelector(selectUserSettings);
-  const recordsState = useSelector(selectActivities);
+  const recordsState = useSelector(selectMap);
 
   //Grab filter state from main context
   useEffect(() => {

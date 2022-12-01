@@ -9,7 +9,7 @@ import { createNetworkReducer } from './network';
 import { createActivityReducer } from './activity';
 import { createUserSettingsReducer } from './userSettings';
 import { createTabsReducer } from './tabs';
-import { createActivitiesReducer } from './activities';
+import { createMapReducer } from './map';
 import { createIappsiteReducer } from './iappsite';
 
 function createRootReducer(config: AppConfig) {
@@ -22,7 +22,7 @@ function createRootReducer(config: AppConfig) {
     IappsitePage: createIappsiteReducer(config),
     UserSettings: createUserSettingsReducer(config),
     Tabs: createTabsReducer(config),
-    Activities: createActivitiesReducer(config)
+    Map: createMapReducer(config)
   });
 }
 

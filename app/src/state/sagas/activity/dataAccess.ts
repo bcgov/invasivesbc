@@ -249,10 +249,19 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action) {
   try {
+
+    const activityState = yield select(selectActivity)
+    const type = activityState?.activity?.activity_subtype
+
+
+
+
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
     });
+
+
     yield put({
       type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
       payload: {
