@@ -30,7 +30,10 @@ import {
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
+  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
+  USER_SETTINGS_SET_MAP_CENTER_FAILURE
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
@@ -191,7 +194,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   try {
     const oldID = localStorage.getItem('activeActivity');
-    const oldIappID = localStorage.getItem('activeIAPP');
+    const IAPPID = localStorage.getItem('activeIAPP');
     // needs mobile later
     const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
     const recordsExpandedState = JSON.parse(localStorage.getItem('records-expanded'));
@@ -202,8 +205,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     yield put({
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
       payload: {
-        activeIAPP: oldIappID,
         activeActivity: oldID,
+        activeIAPP: IAPPID,
         recordSets: recordSets,
         recordsExpanded: recordsExpanded
       }
@@ -221,7 +224,9 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: { ...action.payload }
+      payload: { 
+        ...action.payload,
+        activeActivity: action.payload.id }
     });
   } catch (e) {
     console.error(e);
@@ -270,6 +275,18 @@ function* handle_USER_SETTINGS_SET_DARK_THEME(action) {
   localStorage.setItem('USER_SETTINGS_DARK_THEME', JSON.stringify(action.payload.enabled));
 }
 
+function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
+  try {
+    yield put({
+      type: USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
+      payload: action.payload
+    })
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_SET_MAP_CENTER_FAILURE });
+  }
+}
+
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
@@ -286,7 +303,8 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_REQUEST, handle_USER_SETTINGS_SET_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
-    takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME)
+    takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME),
+    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
   ]);
 }
 
