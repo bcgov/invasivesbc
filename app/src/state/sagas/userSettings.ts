@@ -224,7 +224,9 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: { ...action.payload }
+      payload: { 
+        ...action.payload,
+        activeActivity: action.payload.id }
     });
   } catch (e) {
     console.error(e);
