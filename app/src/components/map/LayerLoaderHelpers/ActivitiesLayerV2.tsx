@@ -184,7 +184,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                     icon={L.icon({
                       iconUrl: mapIcon,
                       iconSize: [10, 17.5],
-                      iconAnchor: [12, 19]
+                      iconAnchor: [5, 19]
                     })}
                     position={[position[1], position[0]]}
                     key={'activity_marker' + a.properties.id}>
