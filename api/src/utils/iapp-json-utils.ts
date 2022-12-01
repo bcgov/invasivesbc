@@ -206,13 +206,11 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
       return r.site_id === row.site_id;
     });
     // Assigning extracts into form_data
-    if ((iapp_site as any).point_of_interest_payload.form_data?.surveys) {
-      (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts?.map((x) => {
-        const returnVal = getSurveyObj(x, row['map_symbol']);
-        if (returnVal) return returnVal;
-        else return [];
-      });
-    }
+    (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts?.map((x) => {
+      const returnVal = getSurveyObj(x, row['map_symbol']);
+      if (returnVal) return returnVal;
+      else return [];
+    });
     (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
       (x) => {
         const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
