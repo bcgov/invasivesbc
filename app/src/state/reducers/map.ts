@@ -34,7 +34,9 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_TABLE_ROWS_GET_SUCCESS,
-  IAPP_RECORDSET_ID_LIST_GET_SUCCESS
+  IAPP_RECORDSET_ID_LIST_GET_SUCCESS,
+  LAYER_STATE_UPDATE,
+  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -68,42 +70,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ]
         };
       }*/
-      case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-        if (
-          state?.activitiesGeoJSON?.length &&
-          state?.activitiesGeoJSON?.filter((item) => {
-            return item.recordSetID !== action.payload.recordSetID;
-          })
-        ) {
-          return {
-            ...state,
-            activitiesGeoJSON: [
-              ...state?.activitiesGeoJSON?.filter((item) => {
-                return item.recordSetID !== action.payload.recordSetID;
-              }),
-              {
-                recordSetID: action.payload.recordSetID,
-                featureCollection: action.payload.activitiesGeoJSON,
-                layerState: action.payload.layerState
-              }
-            ]
-          };
-        } else {
-          return {
-            activitiesGeoJSON: [
-              {
-                recordSetID: action.payload.recordSetID,
-                featureCollection: action.payload.activitiesGeoJSON,
-                layerState: action.payload.layerState
-              }
-            ]
-          };
+      case LAYER_STATE_UPDATE: {
+
+        return {
+          ...state, ...action.payload
         }
       }
-      case IAPP_RECORDSET_ID_LIST_GET_SUCCESS: {
+      case ACTIVITIES_GEOJSON_GET_SUCCESS: {
+          return {
+            ...state,
+            activitiesGeoJSON: action.payload.activitiesGeoJSON
+      }
+    }
+      case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
         return {
           ...state,
-          IAPPRecordSetIDS: { ...state.IAPPRecordSetIDS, [action.payload.recordSetID]: action.payload.ids }
+          [action.payload.recordSetID]: { ...state[action.payload.recordSetID], IDList: action.payload.IDList}
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {
@@ -138,38 +120,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
       }
       case IAPP_GEOJSON_GET_SUCCESS: {
-        if (
-          state?.IAPPGeoJSON?.length &&
-          state?.IAPPGeoJSON?.filter((item) => {
-            return item.recordSetID !== action.payload.recordSetID;
-          })
-        ) {
           return {
             ...state,
-            IAPPGeoJSON: [
-              ...state?.IAPPGeoJSON?.filter((item) => {
-                return item.recordSetID !== action.payload.recordSetID;
-              }),
-              {
-                recordSetID: action.payload.recordSetID,
-                featureCollection: action.payload.IAPPGeoJSON,
-                layerState: action.payload.layerState
-              }
-            ]
+            IAPPGeoJSON: action.payload.IAPPGeoJSON 
           };
-        } else {
-          return {
-            ...state,
-            IAPPGeoJSON: [
-              {
-                recordSetID: action.payload.recordSetID,
-                featureCollection: action.payload.IAPPGeoJSON,
-                layerState: action.payload.layerState
-              }
-            ]
-          };
-        }
-      }
+        }  
       default:
         return state;
     }
