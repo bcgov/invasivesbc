@@ -47,6 +47,8 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityStatus } from 'constants/activities';
+import userSettingsSaga from './userSettings';
+import userSettings from './userSettings';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -178,7 +180,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     return true;
   };
 
-  if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.layerState, layerState)) {
+  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
       type: LAYER_STATE_UPDATE,
       payload: {
@@ -191,7 +193,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.filters, newFilterState)) {
-      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: {...newFilterState}, type: 'POI' }} });
+      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: {...newFilterState}, type: action.payload.updatedSet.recordSetType}} });
     }   
 }
 
@@ -230,20 +232,6 @@ function* handle_MAP_INIT_REQUEST(action) {
     0,
     100
   );
-
-  /*
-  const layerState = {
-    color: action.payload.recordSets[2].color,
-    drawOrder: action.payload.recordSets[2].drawOrder,
-    enabled: true
-  };
-
-  const IAPPlayerState = {
-    color: action.payload.recordSets[3].color,
-    drawOrder: action.payload.recordSets[3].drawOrder,
-    enabled: true
-  };
-  */
 
   yield put({
     type: ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -343,55 +331,8 @@ function* handle_MAP_INIT_REQUEST(action) {
     payload: { ...newMapState }
   })
 
-  for (const rs in recordSets) {
-    const recordSet = recordSets[rs];
-    if (recordSets[rs].recordSetType === 'POI') {
-      const IAPP_filter = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        authState.accessRoles,
-        sets,
-        recordSet,
-        true,
-        recordSet.gridFilters,
-        0,
-        200000
-      );
-
-      yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: {
-          recordSetID: rs,
-          IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
-        }
-      });
-      yield take(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS);
-    } else {
-      const activity_filter = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        authState.accessRoles,
-        sets,
-        recordSet,
-        false,
-        recordSet.gridFilters,
-        0,
-        200000
-      );
-
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: {
-          recordSetID: rs,
-          ActivityFilterCriteria: { ...activity_filter, activity_id_only: true }
-        }
-      });
-      yield take(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS);
-
-    }
-  }
 }
 
-function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
-}
 
 function* handle_FILTER_STATE_UPDATE(action) {
   const authState = yield select(selectAuth);
@@ -425,16 +366,51 @@ function* handle_FILTER_STATE_UPDATE(action) {
         authState.accessRoles,
         [],
         x,
-        true,
+        false,
         action.payload[x].gridFilters,
         0,
         200000
       ); 
+      yield put({
+        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+        payload: {
+          recordSetID: x,
+          ActivityFilterCriteria: { ...activityFilter, activity_id_only: true }
+        }
+      });
 
     }
 
 
   }
+}
+
+function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
+  const authState = yield select(selectAuth);
+  const recordSetsState = yield select(selectUserSettings)
+  const recordSetID = action.payload.recordSetID
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
+  const isOpen = recordSet.expanded
+
+  if(!isOpen)
+  {
+    return
+  }
+
+  const filters = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        authState.accessRoles,
+        [],
+        recordSetID,
+        true,
+        recordSet.gridFilters,
+        0,
+        20,
+        //recordSet.sortColumns
+      ); 
+
+  //trigger get
+  yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {recordSetID: recordSetID, IAPPFilterCriteria: filters }})
 }
 
 
@@ -450,11 +426,12 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
+    takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
-    takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+   // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROW_GET_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST'))
   ]);
