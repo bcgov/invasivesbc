@@ -200,8 +200,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     ) as "geojson"
   `);
   } else {
-
-    if (searchCriteria.column_names && searchCriteria.column_names.length) {
+    if (searchCriteria.activity_id_only) {
+      sqlStatement.append(SQL` a.activity_id`);
+    } else if (searchCriteria.column_names && searchCriteria.column_names.length) {
       // do not include the `SQL` template string prefix, as column names can not be parameterized
       const newColumnNames = searchCriteria.column_names.map((name) => {
         return 'a.' + name;
