@@ -202,8 +202,7 @@ export const RecordSet = (props) => {
           />
           <AccordionDetails>
             <Grid sx={{ pt: 2 }} xs={12} item>
-              {mapAndRecordsState?.layers?.[props.setName]?.loaded? <Button>LOADED</Button>: <Button>NOT</Button>}
-              <ActivityGrid
+              {!mapAndRecordsState?.layers?.[props.setName]?.loaded? <>loading</> : <ActivityGrid
                 key={props.setName + 'ActivityGrid'}
                 setType={recordSetType}
                 setName={props.setName}
@@ -216,6 +215,7 @@ export const RecordSet = (props) => {
                 //   filtersCallBack={setFilters}
                 //   initialFilters={filters}
               />
+          }
             </Grid>
           </AccordionDetails>
         </Accordion>
@@ -224,7 +224,8 @@ export const RecordSet = (props) => {
     [
       JSON.stringify(userSettings.recordSets?.[props.setName]),
       JSON.stringify(recordSetName),
-      JSON.stringify(advancedFilters)
+      JSON.stringify(advancedFilters),
+      !mapAndRecordsState?.layers?.[props.setName]?.loaded
     ]
   );
 };

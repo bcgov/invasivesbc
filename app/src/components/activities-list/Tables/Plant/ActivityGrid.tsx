@@ -588,7 +588,7 @@ const ActivityGrid = (props) => {
   }, [activities]);
 
   useEffect(() => {
-    if (!recordsState.IAPPTableRows) {
+    if (!userSettings.recordSets[props.setName].expanded || !recordsState.IAPPTableRows) {
       return;
     }
     console.log('inside of hook');

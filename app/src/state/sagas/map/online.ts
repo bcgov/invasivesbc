@@ -79,9 +79,9 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       type: IAPP_TABLE_ROWS_GET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        IAPPTableRows: networkReturn.data.result.rows
-      }
-    });
+        rows: networkReturn.data.result.rows
+      }}
+    );
   } else {
     put({
       type: IAPP_TABLE_ROWS_GET_FAILURE,
@@ -95,7 +95,6 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
-  console.dir(networkReturn);
 
   if (networkReturn.data.result) {
     const IDList = networkReturn.data.result.map((row) => {

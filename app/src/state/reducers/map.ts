@@ -71,104 +71,83 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }*/
       case LAYER_STATE_UPDATE: {
-
-        let newState = JSON.parse(JSON.stringify({...state.layers}))
-        for(const x in action.payload)
-        {
-
-          if(newState[x]?.layerState)
-          {
-            newState[x].layerState = action.payload[x]?.layerState
-            newState[x].type = action.payload[x]?.type
-          }
-          else
-          {
-            newState[x] = {}
-            newState[x].layerState = action.payload[x]?.layerState
-            newState[x].type = action.payload[x]?.type
+        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        for (const x in action.payload) {
+          if (newState[x]?.layerState) {
+            newState[x].layerState = action.payload[x]?.layerState;
+            newState[x].type = action.payload[x]?.type;
+          } else {
+            newState[x] = {};
+            newState[x].layerState = action.payload[x]?.layerState;
+            newState[x].type = action.payload[x]?.type;
           }
         }
 
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({...newState}))
-        }
+          layers: JSON.parse(JSON.stringify({ ...newState }))
+        };
       }
       case FILTER_STATE_UPDATE: {
-
-        let newState = JSON.parse(JSON.stringify({...state.layers}))
-        for(const x in action.payload)
-        {
-          newState[x].filters = {...action.payload[x]?.filters}
-          newState[x].loaded = false
+        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        for (const x in action.payload) {
+          newState[x].filters = { ...action.payload[x]?.filters };
+          newState[x].loaded = false;
         }
 
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({...newState}))
-        }
+          layers: JSON.parse(JSON.stringify({ ...newState }))
+        };
       }
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-          return {
-            ...state,
-            activitiesGeoJSON: action.payload.activitiesGeoJSON
-      }
-    }
-      case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({...state.layers}))
-        newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
-        newState[action.payload.recordSetID].loaded = true
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({...newState}))
+          activitiesGeoJSON: action.payload.activitiesGeoJSON
+        };
+      }
+      case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
+        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
+        newState[action.payload.recordSetID].loaded = true;
+        return {
+          ...state,
+          layers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({...state.layers}))
-        newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
-        newState[action.payload.recordSetID].loaded = true
+        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
+        newState[action.payload.recordSetID].loaded = true;
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({...newState}))
+          layers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {
-        if (
-          state?.IAPPTableRows?.length &&
-          state?.IAPPTableRows?.filter((item) => {
-            return item.recordSetID !== action.payload.recordSetID;
-          })
-        ) {
-          return {
-            ...state,
-            IAPPTableRows: [
-              ...state?.IAPPTableRows?.filter((item) => {
-                return item.recordSetID !== action.payload.recordSetID;
-              }),
-              {
-                recordSetID: action.payload.recordSetID,
-                IAPPTableRows: action.payload.IAPPTableRows
-              }
-            ]
-          };
-        } else {
-          return {
-            ...state,
-            IAPPTableRows: [
-              {
-                recordSetID: action.payload.recordSetID,
-                IAPPTableRows: action.payload.IAPPTableRows
-              }
-            ]
-          };
+        let newState = (state.recordTables)? JSON.parse(JSON.stringify({ ...state.recordTables })): {recordTables: {}}
+
+        if(newState?.[action.payload.recordSetID])
+        {
+          newState[action.payload.recordSetID].rows = action.payload.rows;
         }
+        else
+        {
+          newState[action.payload.recordSetID] = {}
+          newState[action.payload.recordSetID].rows = action.payload.rows;
+        }
+
+        return {
+          ...state,
+          recordTables: JSON.parse(JSON.stringify({ ...newState }))
+        };
       }
       case IAPP_GEOJSON_GET_SUCCESS: {
-          return {
-            ...state,
-            IAPPGeoJSON: action.payload.IAPPGeoJSON 
-          };
-        }  
+        return {
+          ...state,
+          IAPPGeoJSON: action.payload.IAPPGeoJSON
+        };
+      }
       default:
         return state;
     }
