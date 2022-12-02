@@ -410,12 +410,12 @@ const PageContainer = (props) => {
           listSX={{ width: 'auto' }}
           options={options}
         />
-        {/*useMemo(
+        {useMemo(
           () => (
             <RecordSetRenderer />
           ),
           [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
-          )*/}
+          )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
       <GeneralDialog

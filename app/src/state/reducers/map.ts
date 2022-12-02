@@ -37,7 +37,8 @@ import {
   IAPP_RECORDSET_ID_LIST_GET_SUCCESS,
   LAYER_STATE_UPDATE,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  FILTER_STATE_UPDATE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -73,8 +74,35 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }*/
       case LAYER_STATE_UPDATE: {
 
+        let newState = { ...state}
+        for(const x in action.payload)
+        {
+
+          if(newState[x]?.layerState)
+          {
+            newState[x].layerState = action.payload[x]?.layerState
+          }
+          else
+          {
+            newState[x] = {}
+            newState[x].layerState = action.payload[x]?.layerState
+          }
+        }
+
         return {
-          ...state, ...action.payload
+          ...newState
+        }
+      }
+      case FILTER_STATE_UPDATE: {
+
+        let newState = { ...state}
+        for(const x in action.payload)
+        {
+          newState[x].filters = action.payload[x]?.filters
+        }
+
+        return {
+          ...newState
         }
       }
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
