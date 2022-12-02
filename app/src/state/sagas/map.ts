@@ -21,9 +21,10 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   LAYER_STATE_UPDATE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  FILTER_STATE_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -65,6 +66,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   ) => {*/
 
   const authState = yield select(selectAuth);
+  const mapState = yield select(selectMap);
   const sets = {};
   sets[action.payload.updatedSetName] = action.payload.updatedSet;
   const filterCriteria = yield getSearchCriteriaFromFilters(
@@ -81,37 +83,91 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const layerState = {
     color: action.payload.updatedSet.color,
     drawOrder: action.payload.updatedSet.drawOrder,
-    enabled: action.payload.updatedSet.mapToggle
+    mapToggle: action.payload.updatedSet.mapToggle
   };
 
-  if (action.payload.updatedSet.recordSetType === 'POI') {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: action.payload.updatedSetName,
-        IAPPFilterCriteria: { ...filterCriteria, site_id_only: true }
+  const newFilterState = {
+    advancedFilters: action.payload.updatedSet.advancedFilters,
+    gridFilters: action.payload.updatedSet.gridFilters
+  };
+
+  const testStateEqual = (a, b) => {
+    return a.color === b.color && a.drawOrder === b.drawOrder && a.mapToggle === b.mapToggle;
+  };
+  function arraysEqual(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+  
+    // If you don't care about the order of the elements inside
+    // the array, you should sort both arrays here.
+    // Please note that calling sort on an array will modify that array.
+    // you might want to clone your array first.
+  
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
+  const compareObjects = (a, b) => {
+  console.log(JSON.stringify(a))
+  console.log(JSON.stringify(b))
+  if(a && !b)
+  {
+    return false
+  }
+  if(b && !a)
+  {
+    return false;
+  }
+    for (const p in a) {
+      switch(typeof a[p])
+      {
+        case 'string':
+          if (a[p] !== b[p]) {
+            return false;
+          }
+          break;
+        case 'boolean':
+          if (a[p] !== b[p]) {
+            return false;
+          }
+          break;
+       default:
+        if(!arraysEqual(a[p], b[p]))
+        {
+            return false;
+        }
+        else
+        {
+          if(!compareObjects(a[p], b[p]))
+          {
+            return false;
+          }
+        }
       }
-    });
+    }
+    return true;
+  };
+
+  if (!compareObjects(mapState[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
-      type: IAPP_GEOJSON_GET_REQUEST,
+      type: LAYER_STATE_UPDATE,
       payload: {
-        recordSetID: action.payload.updatedSetName,
-        IAPPFilterCriteria: filterCriteria,
-        layerState: layerState
-      }
-    });
-  } else {
-    yield put({
-      type: ACTIVITIES_GEOJSON_GET_REQUEST,
-      payload: {
-        recordSetID: action.payload.updatedSetName,
-        activitiesFilterCriteria: filterCriteria,
-        layerState: layerState
+        [action.payload.updatedSetName]: {
+          layerState: layerState
+        }
       }
     });
   }
-  //uyield put({ type: ACTIVITIES_TABLE_ROW_GET_REQUEST, payload: {} });
+
+  if (!compareObjects(mapState[action.payload.updatedSetName].filters, newFilterState)) {
+      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: newFilterState, type: 'POI' }} });
+    }   
 }
+
+
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
@@ -239,6 +295,11 @@ function* handle_MAP_INIT_REQUEST(action) {
     payload: { ...newMapState }
   });
 
+  yield put({
+    type: FILTER_STATE_UPDATE,
+    payload: { ...newMapState }
+  })
+
   for (const rs in recordSets) {
     const recordSet = recordSets[rs];
     if (recordSets[rs].recordSetType === 'POI') {
@@ -261,9 +322,7 @@ function* handle_MAP_INIT_REQUEST(action) {
         }
       });
       yield take(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS);
-    }
-    else
-    {
+    } else {
       const activity_filter = getSearchCriteriaFromFilters(
         recordSet.advancedFilters,
         authState.accessRoles,
@@ -299,6 +358,51 @@ function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
   });
 }
 
+function* handle_FILTER_STATE_UPDATE(action) {
+  const authState = yield select(selectAuth);
+  for(const x in action.payload)
+  {
+    if(action.payload[x].type === 'POI')
+    {
+      const IAPP_filter = getSearchCriteriaFromFilters(
+        action.payload[x].advancedFilters,
+        authState.accessRoles,
+        [],
+        x,
+        true,
+        action.payload[x].gridFilters,
+        0,
+        200000
+      ); 
+   yield put({
+    type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+    payload: {
+      recordSetID: x,
+      IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
+    }
+  });
+
+    }
+    else
+    {
+      const activityFilter = getSearchCriteriaFromFilters(
+        action.payload[x].advancedFilters,
+        authState.accessRoles,
+        [],
+        x,
+        true,
+        action.payload[x].gridFilters,
+        0,
+        200000
+      ); 
+
+    }
+
+
+  }
+}
+
+
 function* activitiesPageSaga() {
   yield all([
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
@@ -310,6 +414,7 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
+    takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
