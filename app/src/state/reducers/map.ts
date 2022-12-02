@@ -47,10 +47,7 @@ class MapState {
   initialized: boolean;
   error: boolean;
   activitiesGeoJSON: any;
-  activitiesTableRows: {};
   IAPPGeoJSON: any;
-  IAPPTableRows: any;
-  IAPPRecordSetIDS: any;
 
   constructor() {
     this.initialized = false;
@@ -74,7 +71,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }*/
       case LAYER_STATE_UPDATE: {
 
-        let newState = { ...state}
+        let newState = { ...state.layers}
         for(const x in action.payload)
         {
 
@@ -90,19 +87,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
 
         return {
-          ...newState
+          ...state,
+          layers: {...newState}
         }
       }
       case FILTER_STATE_UPDATE: {
 
-        let newState = { ...state}
+        let newState = { ...state.layers}
         for(const x in action.payload)
         {
           newState[x].filters = action.payload[x]?.filters
         }
 
         return {
-          ...newState
+          ...state,
+          layers: {...newState}
         }
       }
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
@@ -112,15 +111,19 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
     }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
+        const newState = {...state.layers}
+        newState[action.payload.recordSetID].IDList = action.payload.IDList
         return {
           ...state,
-          [action.payload.recordSetID]: { ...state[action.payload.recordSetID], IDList: action.payload.IDList}
+          layers: {...newState}
         };
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
+        const newState = {...state.layers}
+        newState[action.payload.recordSetID].IDList = action.payload.IDList
         return {
           ...state,
-          [action.payload.recordSetID]: { ...state[action.payload.recordSetID], IDList: action.payload.IDList}
+          layers: {...newState}
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {
