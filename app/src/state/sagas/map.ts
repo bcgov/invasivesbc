@@ -156,13 +156,14 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       type: LAYER_STATE_UPDATE,
       payload: {
         [action.payload.updatedSetName]: {
-          layerState: layerState
+          layerState: layerState,
+          type: action.payload.updatedSet.recordSetType
         }
       }
     });
   }
 
-  if (!compareObjects(mapState[action.payload.updatedSetName].filters, newFilterState)) {
+  if (!compareObjects(mapState[action.payload.updatedSetName]?.filters, newFilterState)) {
       yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: newFilterState, type: 'POI' }} });
     }   
 }
