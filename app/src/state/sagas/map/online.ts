@@ -5,6 +5,7 @@ import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
@@ -91,6 +92,35 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
     });
   }
 }
+
+export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
+  console.dir(networkReturn);
+
+  if (networkReturn.data.result) {
+    const IDList = networkReturn.data.result.map((row) => {
+      return row.activity_id;
+    })
+
+    yield put({
+      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        IDList: IDList
+      }
+    });
+  } else {
+  /*  put({
+      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        error: networkReturn.data
+      }
+    });
+    */
+  }
+}
+
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
   console.dir(networkReturn);
@@ -98,7 +128,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   if (networkReturn.data.result.rows) {
     const IDList = networkReturn.data.result.rows.map((row) => {
       return row.site_id;
-      })
+    })
 
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,

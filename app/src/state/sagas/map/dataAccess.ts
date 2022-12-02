@@ -31,7 +31,9 @@ import {
   ACTIVITIES_GEOJSON_GET_OFFLINE,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -80,6 +82,25 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
   }
 }
 
+export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
+  try {
+    // if mobile or web
+    if (true) {
+      yield put({
+        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+        payload: {
+          ...action.payload
+        }
+      });
+    }
+    if (false) {
+      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE, payload: { activityID: action.payload.activityID } });
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {

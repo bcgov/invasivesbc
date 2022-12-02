@@ -21,19 +21,22 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   LAYER_STATE_UPDATE,
-  ACTIVITY_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITY_GET_IDS_FOR_RECORDSET_SUCCESS
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import {
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST
 } from './map/dataAccess';
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
@@ -266,20 +269,20 @@ function* handle_MAP_INIT_REQUEST(action) {
         authState.accessRoles,
         sets,
         recordSet,
-        true,
+        false,
         recordSet.gridFilters,
         0,
         200000
       );
 
       yield put({
-        type: ACTIVITY_GET_IDS_FOR_RECORDSET_REQUEST,
+        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: {
           recordSetID: rs,
           ActivityFilterCriteria: { ...activity_filter, activity_id_only: true }
         }
       });
-      //yield take(ACTIVITY_GET_IDS_FOR_RECORDSET_SUCCESS);
+      yield take(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS);
 
     }
   }
@@ -303,6 +306,8 @@ function* activitiesPageSaga() {
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
+    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
+    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
