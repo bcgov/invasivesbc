@@ -148,10 +148,37 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
         }
       }
     }
+    for (const p in b) {
+      switch(typeof b[p])
+      {
+        case 'string':
+          if (a[p] !== b[p]) {
+            return false;
+          }
+          break;
+        case 'boolean':
+          if (a[p] !== b[p]) {
+            return false;
+          }
+          break;
+       default:
+        if(!arraysEqual(a[p], b[p]))
+        {
+            return false;
+        }
+        else
+        {
+          if(!compareObjects(b[p], a[p]))
+          {
+            return false;
+          }
+        }
+      }
+    }
     return true;
   };
 
-  if (!compareObjects(mapState[action.payload.updatedSetName]?.layerState, layerState)) {
+  if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
       type: LAYER_STATE_UPDATE,
       payload: {
@@ -163,7 +190,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     });
   }
 
-  if (!compareObjects(mapState[action.payload.updatedSetName]?.filters, newFilterState)) {
+  if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.filters, newFilterState)) {
       yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: newFilterState, type: 'POI' }} });
     }   
 }
