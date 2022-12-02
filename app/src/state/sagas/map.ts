@@ -68,7 +68,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
   const sets = {};
-  sets[action.payload.updatedSetName] = action.payload.updatedSet;
+  sets[action.payload.updatedSetName] = {...action.payload.updatedSet};
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.updatedSet.advancedFilterRows,
     authState.accessRoles,
@@ -87,8 +87,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   };
 
   const newFilterState = {
-    advancedFilters: action.payload.updatedSet.advancedFilters,
-    gridFilters: action.payload.updatedSet.gridFilters
+    advancedFilters: [...action.payload.updatedSet.advancedFilters],
+    gridFilters: {...action.payload.updatedSet.gridFilters}
   };
 
   const testStateEqual = (a, b) => {
@@ -183,7 +183,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       type: LAYER_STATE_UPDATE,
       payload: {
         [action.payload.updatedSetName]: {
-          layerState: layerState,
+          layerState: {...layerState},
           type: action.payload.updatedSet.recordSetType
         }
       }
@@ -191,7 +191,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.filters, newFilterState)) {
-      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: newFilterState, type: 'POI' }} });
+      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: {...newFilterState}, type: 'POI' }} });
     }   
 }
 
@@ -304,18 +304,28 @@ function* handle_MAP_INIT_REQUEST(action) {
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
-    newMapState[rs].layerState = {
+    let newLayerState = {}
+    newLayerState = {
       color: recordSets[rs].color,
       mapToggle: recordSets[rs].mapToggle,
       drawOrder: recordSets[rs].drawOrder
     };
+    newMapState[rs].layerState = {
+      ...newLayerState
+    };
 
-    newMapState[rs].filters = {
+    let newFilters = {}
+    newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters
+
+    }
+    newMapState[rs].filters = {
+      ...newFilters
     };
 
     newMapState[rs].type = recordSets[rs].recordSetType;
+    newMapState[rs].loaded = false
   }
 
   yield put({
@@ -376,14 +386,6 @@ function* handle_MAP_INIT_REQUEST(action) {
 }
 
 function* handle_IAPP_TABLE_ROWS_GET_SUCCESS(action) {
-  const IDList = action.payload.IAPPTableRows.map((row) => {
-    return row.site_id;
-  });
-
-  yield put({
-    type: IAPP_RECORDSET_ID_LIST_GET_SUCCESS,
-    payload: { recordSetID: action.payload.recordSetID, ids: IDList }
-  });
 }
 
 function* handle_FILTER_STATE_UPDATE(action) {

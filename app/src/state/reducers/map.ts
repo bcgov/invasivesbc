@@ -45,6 +45,7 @@ import { AppConfig } from '../config';
 
 class MapState {
   initialized: boolean;
+  layers: object;
   error: boolean;
   activitiesGeoJSON: any;
   IAPPGeoJSON: any;
@@ -98,7 +99,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         let newState = { ...state.layers}
         for(const x in action.payload)
         {
-          newState[x].filters = action.payload[x]?.filters
+          newState[x].filters = {...action.payload[x]?.filters}
+          newState[x].loaded = false
         }
 
         return {
@@ -114,7 +116,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
     }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
         const newState = {...state.layers}
-        newState[action.payload.recordSetID].IDList = action.payload.IDList
+        newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
+        newState[action.payload.recordSetID].loaded = true
         return {
           ...state,
           layers: {...newState}
@@ -122,7 +125,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
         const newState = {...state.layers}
-        newState[action.payload.recordSetID].IDList = action.payload.IDList
+        newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
+        newState[action.payload.recordSetID].loaded = true
         return {
           ...state,
           layers: {...newState}
