@@ -72,7 +72,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }*/
       case LAYER_STATE_UPDATE: {
 
-        let newState = { ...state.layers}
+        let newState = JSON.parse(JSON.stringify({...state.layers}))
         for(const x in action.payload)
         {
 
@@ -91,12 +91,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         return {
           ...state,
-          layers: {...newState}
+          layers: JSON.parse(JSON.stringify({...newState}))
         }
       }
       case FILTER_STATE_UPDATE: {
 
-        let newState = { ...state.layers}
+        let newState = JSON.parse(JSON.stringify({...state.layers}))
         for(const x in action.payload)
         {
           newState[x].filters = {...action.payload[x]?.filters}
@@ -105,7 +105,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         return {
           ...state,
-          layers: {...newState}
+          layers: JSON.parse(JSON.stringify({...newState}))
         }
       }
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
@@ -115,21 +115,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
     }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = {...state.layers}
+        const newState = JSON.parse(JSON.stringify({...state.layers}))
         newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
         newState[action.payload.recordSetID].loaded = true
         return {
           ...state,
-          layers: {...newState}
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = {...state.layers}
+        const newState = JSON.parse(JSON.stringify({...state.layers}))
         newState[action.payload.recordSetID].IDList = [...action.payload.IDList]
         newState[action.payload.recordSetID].loaded = true
         return {
           ...state,
-          layers: {...newState}
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {

@@ -324,8 +324,13 @@ function* handle_MAP_INIT_REQUEST(action) {
       ...newFilters
     };
 
-    newMapState[rs].type = recordSets[rs].recordSetType;
-    newMapState[rs].loaded = false
+    const newLayer = {layerState: {...newLayerState},
+    filters: {...newFilters},
+    type: recordSets[rs].recordSetType ,
+    loaded: false
+  }
+
+    newMapState[rs] = { ...newLayer}
   }
 
   yield put({
