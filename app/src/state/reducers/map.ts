@@ -78,11 +78,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if(newState[x]?.layerState)
           {
             newState[x].layerState = action.payload[x]?.layerState
+            newState[x].type = action.payload[x]?.type
           }
           else
           {
             newState[x] = {}
             newState[x].layerState = action.payload[x]?.layerState
+            newState[x].type = action.payload[x]?.type
           }
         }
 
