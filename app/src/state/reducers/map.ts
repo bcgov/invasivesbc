@@ -30,7 +30,6 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITIES_TABLE_ROW_GET_SUCCESS,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_TABLE_ROWS_GET_SUCCESS,
@@ -38,7 +37,8 @@ import {
   LAYER_STATE_UPDATE,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  FILTER_STATE_UPDATE
+  FILTER_STATE_UPDATE,
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -122,6 +122,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           layers: JSON.parse(JSON.stringify({ ...newState }))
+        };
+      }
+      case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
+        let newState = (state.recordTables)? JSON.parse(JSON.stringify({ ...state.recordTables })): {recordTables: {}}
+
+        if(newState?.[action.payload.recordSetID])
+        {
+          newState[action.payload.recordSetID].rows = action.payload.rows;
+        }
+        else
+        {
+          newState[action.payload.recordSetID] = {}
+          newState[action.payload.recordSetID].rows = action.payload.rows;
+        }
+
+        return {
+          ...state,
+          recordTables: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {

@@ -6,6 +6,8 @@ import { put, select } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  ACTIVITIES_TABLE_ROWS_GET_FAILURE,
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
@@ -68,6 +70,29 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
    //   layerState: action.payload.layerState
     }
   });
+}
+
+export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
+  console.dir(networkReturn);
+
+  if (networkReturn.data.result) {
+    yield put({
+      type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        rows: networkReturn.data.result
+      }}
+    );
+  } else {
+    put({
+      type: ACTIVITIES_TABLE_ROWS_GET_FAILURE,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        error: networkReturn.data
+      }
+    });
+  }
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
