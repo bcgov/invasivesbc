@@ -114,72 +114,99 @@ export const getSpeciesRef = async () => {
 
 export const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
 export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: any[]) => {
-  const species_and_genus_match_array = [...input.matchAll(species_and_genus_regex)];
+  const species_and_genus_match_array = [...input?.matchAll(species_and_genus_regex)];
   const map_codes_only = species_and_genus_match_array.map((x) => {
-    return species_ref.filter((r: any) => {
+    return species_ref?.filter((r: any) => {
       if (r.genus === x[1] && r.species === x[2]) return r;
     });
   });
   return map_codes_only.map((r: any) => {
-    return r[0].map_symbol;
+    return r[0]?.map_symbol;
   });
 }; //todo: filter based on species (group 1) and genus (group 0)
 
-const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
+const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   const species_ref: any[] = await getSpeciesRef();
+  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
+  defaultLog.debug({ label: 'getIAPPjson', message: 'site ids: ' + JSON.stringify(site_ids) });
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
-  const all_biological_dispersal_extracts = await getIappExtractFromDB(site_ids, 'biological_dispersal_extract');
-  const all_biological_monitoring_extracts = await getIappExtractFromDB(site_ids, 'biological_monitoring_extract');
-  const all_biological_treatment_extracts = await getIappExtractFromDB(site_ids, 'biological_treatment_extract');
-  const all_chemical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'chemical_monitoring_extract');
-  const all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
-  const all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
-  const all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
-  const all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
-  const all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
+  let all_site_selection_extracts = [];
+  let all_biological_dispersal_extracts = [];
+  let all_biological_monitoring_extracts = [];
+  let all_biological_treatment_extracts = [];
+  let all_chemical_monitoring_extracts = [];
+  let all_chemical_treatment_extracts = [];
+  let all_mechanical_monitoring_extracts = [];
+  let all_mechanical_treatment_extracts = [];
+  let all_survey_extracts = [];
 
+  if (!searchCriteria.site_id_only) {
+    // get all of them for all the above site ids, vs doing many queries (while looping over sites)
+    all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
+    all_biological_dispersal_extracts = await getIappExtractFromDB(site_ids, 'biological_dispersal_extract');
+    all_biological_monitoring_extracts = await getIappExtractFromDB(site_ids, 'biological_monitoring_extract');
+    all_biological_treatment_extracts = await getIappExtractFromDB(site_ids, 'biological_treatment_extract');
+    all_chemical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'chemical_monitoring_extract');
+    all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
+    all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
+    all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
+    all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
+  }
+
+  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
+  defaultLog.debug({
+    label: 'getIAPPjson',
+    message: 'example site' + JSON.stringify(site_extract_table_response.rows[0])
+  });
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
       return r.site_id === row.site_id;
     });
     // Setting iapp site object
-    const iapp_site = getIAPPjson(row, relevant_site_selection_extracts[0]);
+    const iapp_site = getIAPPjson(row, relevant_site_selection_extracts[0], searchCriteria);
+    if (searchCriteria.site_id_only) {
+      return iapp_site;
+    }
+    defaultLog.debug({
+      label: 'getIAPPjson',
+      message: 'getting species codes'
+    });
     (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
       row['all_species_on_site'],
       species_ref
     );
     // Fetching Extracts
-    const relevant_biological_dispersal_extracts = all_biological_dispersal_extracts.filter((r) => {
+    const relevant_biological_dispersal_extracts = all_biological_dispersal_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_biological_monitoring_extracts = all_biological_monitoring_extracts.filter((r) => {
+    const relevant_biological_monitoring_extracts = all_biological_monitoring_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_biological_treatment_extracts = all_biological_treatment_extracts.filter((r) => {
+    const relevant_biological_treatment_extracts = all_biological_treatment_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_chemical_monitoring_extracts = all_chemical_monitoring_extracts.filter((r) => {
+    const relevant_chemical_monitoring_extracts = all_chemical_monitoring_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_chemical_treatment_extracts = all_chemical_treatment_extracts.filter((r) => {
+    const relevant_chemical_treatment_extracts = all_chemical_treatment_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_mechanical_monitoring_extracts = all_mechanical_monitoring_extracts.filter((r) => {
+    const relevant_mechanical_monitoring_extracts = all_mechanical_monitoring_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
-    const relevant_mechanical_treatment_extracts = all_mechanical_treatment_extracts.filter((r) => {
+    const relevant_mechanical_treatment_extracts = all_mechanical_treatment_extracts?.filter((r) => {
       return r.site_id === row.site_id;
     });
     const relevant_survey_extracts = all_survey_extracts.filter((r) => {
       return r.site_id === row.site_id;
     });
     // Assigning extracts into form_data
-    (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts.map((x) => {
+    (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts?.map((x) => {
       const returnVal = getSurveyObj(x, row['map_symbol']);
       if (returnVal) return returnVal;
       else return [];
@@ -227,10 +254,17 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any) => {
   });
 };
 
-const getIAPPjson = (row: any, extract: any) => {
+const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   try {
+    if (searchCriteria.site_id_only) {
+      return {
+        point_of_interest_id: row['site_id'],
+        site_id: row['site_id']
+      };
+    }
     return {
       point_of_interest_id: row['site_id'],
+      site_id: row['site_id'],
       version: '1.0.0',
       point_of_interest_type: 'IAPP Site',
       point_of_interest_subtype: 'First Load',
@@ -337,9 +371,11 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
+    defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
-    var returnVal = response.rowCount > 0 ? await mapSitesRowsToJSON(response) : [];
+    var returnVal = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
 
     return {
       rows: returnVal,

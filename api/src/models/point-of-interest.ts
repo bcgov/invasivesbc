@@ -90,6 +90,7 @@ export class PointOfInterestSearchCriteria {
   date_range_end: Date;
 
   grid_filters: any;
+  site_id_only?: boolean;
 
   point_of_interest_ids: string[];
 
@@ -121,6 +122,7 @@ export class PointOfInterestSearchCriteria {
     this.iappSiteID = (obj && obj.iappSiteID) || null;
     this.point_of_interest_ids = (obj && obj.point_of_interest_ids) || [];
     // this.species_positive = obj?.species_positive || [];
+    this.site_id_only = (obj && obj.site_id_only) || null;
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;

@@ -44,11 +44,26 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'react-redux';
 import { selectActivity } from 'state/reducers/activity';
 import centroid from '@turf/centroid';
+import { selectIappsite } from 'state/reducers/iappsite';
+import IappIconUrl from './Icons/iapp-icon.png';
+import ActivityIconUrl from './Icons/activity-icon.png';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
   iconAnchor: [12, 41]
+});
+
+const IappIcon = L.icon({
+  iconUrl: IappIconUrl,
+  iconSize: [20, 30],
+  iconAnchor: [10, 30]
+});
+
+const ActivityIcon = L.icon({
+  iconUrl: ActivityIconUrl,
+  iconSize: [20, 30],
+  iconAnchor: [10, 30]
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -147,6 +162,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const userSettingsState = useSelector(selectUserSettings);
   const activityState = useSelector(selectActivity);
+  const IappsiteState = useSelector(selectIappsite);
 
   useEffect(() => {
     if (props.setMapForActivityPage) {
@@ -176,6 +192,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   useEffect(() => {
     mapRecordsContext.setEditRef(editRef);
   }, [mapRecordsContext]);
+
+  useEffect(() => {
+    if (map && userSettingsState?.mapCenter) map.flyTo([userSettingsState?.mapCenter[1], userSettingsState?.mapCenter[0]]);
+  }, [userSettingsState?.mapCenter]);
 
   return (
     <ReactLeafletEditable
@@ -222,15 +242,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     >
       <ReactLeafletMapContainer
         editable={true}
-        center={props.center ? props.center : [55, -128]}
+        center={[55, -128]}
         zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
         bounceAtZoomLimits={true}
         maxZoom={mapMaxZoom}
-        minZoom={6}
+        minZoom={1}
         style={{ height: 'calc(100%)', width: '100%' }}
         zoomControl={false}
         whenCreated={setMap}
         preferCanvas={true}
+        wheelPxPerZoomLevel={2}
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>
@@ -294,12 +315,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             */}
             {useMemo(
               () => (
-                <MapLocationControlGroup 
-                  {...props}
-                  setMapMaxNativeZoom={setMapMaxNativeZoom} 
-                />
+                <MapLocationControlGroup {...props} setMapMaxNativeZoom={setMapMaxNativeZoom} />
               ),
-              [props.geometryState.geometry] 
+              [props.geometryState.geometry]
             )}
 
             {props.children}
@@ -307,11 +325,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {activityState?.activity?.geometry ? (
               <Marker
                 key={Math.random()}
+                icon={ActivityIcon}
                 position={[
                   centroid(activityState?.activity?.geometry[0]).geometry.coordinates[1],
                   centroid(activityState?.activity?.geometry[0]).geometry.coordinates[0]
                 ]}>
-                <Popup>{activityState.activity.short_id}</Popup>
+                <Popup closeButton={false}>{activityState.activity.short_id}</Popup>
+              </Marker>
+            ) : (
+              <></>
+            )}
+
+            {IappsiteState?.IAPP?.geom ? (
+              <Marker
+                key={'iappselectmarker'}
+                icon={IappIcon}
+                position={[
+                  centroid(IappsiteState?.IAPP?.geom).geometry.coordinates[1],
+                  centroid(IappsiteState?.IAPP?.geom).geometry.coordinates[0]
+                ]}>
+                <Popup closeButton={false}>{IappsiteState?.IAPP?.point_of_interest_id}</Popup>
               </Marker>
             ) : (
               <></>

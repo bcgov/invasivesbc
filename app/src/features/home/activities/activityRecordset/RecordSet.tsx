@@ -2,11 +2,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityGrid from 'components/activities-list/Tables/Plant/ActivityGrid';
 import RecordSetAccordionSummary from './RecordSetAccordionSummary';
-import { Accordion, AccordionDetails, Grid } from '@mui/material';
+import { Accordion, AccordionDetails, Button, Grid } from '@mui/material';
 import { blue, green, red, brown, purple } from '@mui/material/colors';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useDispatch, useSelector } from 'react-redux';
 import { USER_SETTINGS_SET_RECORD_SET_REQUEST } from 'state/actions';
+import { selectMap } from 'state/reducers/map';
 
 export const RecordSet = (props) => {
   const useStyles = makeStyles((theme: any) => ({
@@ -30,14 +31,16 @@ export const RecordSet = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
-  const [color, setColor] = useState(blue[500]);
+  const [color, setColor] = useState('#2A81CB');
   const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState(null);
   const [isSelected, setIsSelected] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
-  const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
+  //const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
+  const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
   const userSettings = useSelector(selectUserSettings);
+  const mapAndRecordsState = useSelector(selectMap)
   const dispatch = useDispatch();
 
   const getInitialPropertyState = (propertyName) => {
@@ -119,20 +122,20 @@ export const RecordSet = (props) => {
       });
 
       if (
-        (newState['expanded'] !== initialState['expanded']) ||
-        (newState['drawOrder'] !== initialState['drawOrder']) ||
-        (newState['mapToggle'] !== initialState['mapToggle']) ||
-        (newState['color'] !== initialState['color']) ||
-        (newState['recordSetName'] !== initialState['recordSetName']) ||
-        (newState['isSelected'] !== initialState['isSelected']) ||
-        (newState['advancedFilters'] !== initialState['advancedFilters'])
+        newState['expanded'] !== initialState['expanded'] ||
+        newState['drawOrder'] !== initialState['drawOrder'] ||
+        newState['mapToggle'] !== initialState['mapToggle'] ||
+        newState['color'] !== initialState['color'] ||
+        newState['recordSetName'] !== initialState['recordSetName'] ||
+        newState['isSelected'] !== initialState['isSelected'] ||
+        newState['advancedFilters'] !== initialState['advancedFilters']
       ) {
         dispatch({
           type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
           payload: {
             updatedSet: {
-                ...initialState,
-                ...newState
+              ...initialState,
+              ...newState
             },
             setName: props.setName
           }
@@ -199,7 +202,7 @@ export const RecordSet = (props) => {
           />
           <AccordionDetails>
             <Grid sx={{ pt: 2 }} xs={12} item>
-              <ActivityGrid
+              {!mapAndRecordsState?.layers?.[props.setName]?.loaded? <>loading</> : <ActivityGrid
                 key={props.setName + 'ActivityGrid'}
                 setType={recordSetType}
                 setName={props.setName}
@@ -212,12 +215,18 @@ export const RecordSet = (props) => {
                 //   filtersCallBack={setFilters}
                 //   initialFilters={filters}
               />
+          }
             </Grid>
           </AccordionDetails>
         </Accordion>
       </>
     ),
-    [JSON.stringify(userSettings.recordSets?.[props.setName]), JSON.stringify(recordSetName), JSON.stringify(advancedFilters)]
+    [
+      JSON.stringify(userSettings.recordSets?.[props.setName]),
+      JSON.stringify(recordSetName),
+      JSON.stringify(advancedFilters),
+      !mapAndRecordsState?.layers?.[props.setName]?.loaded
+    ]
   );
 };
 export default RecordSet;

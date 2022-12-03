@@ -10,14 +10,16 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
+import {createHash} from "crypto";
+import cacheService from "../utils/cache-service";
 
 const defaultLog = getLogger('activity');
 
-export const POST: Operation = [getActivitiesBySearchFilterCriteria()];
+export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 
 export const DELETE: Operation = [deleteActivitiesByIds()];
 
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
   tags: ['activity'],
   security: SECURITY_ON
@@ -27,133 +29,6 @@ POST.apiDoc = {
         }
       ]
     : [],
-  requestBody: {
-    description: 'Activities search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            page: {
-              type: 'number',
-              default: 0,
-              minimum: 0
-            },
-            limit: {
-              type: 'number',
-              default: SEARCH_LIMIT_DEFAULT,
-              minimum: 0,
-              maximum: SEARCH_LIMIT_MAX
-            },
-            order: {
-              type: 'array',
-              description: 'A list of columns to order by. (for DESC, use "columname DESC")',
-              items: {
-                properties: {
-                  columnKey: {
-                    type: 'string'
-                  },
-                  direction: {
-                    type: 'string'
-                  }
-                }
-              }
-            },
-            activity_type: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            activity_subtype: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            date_range_start: {
-              type: 'string',
-              description: 'Date range start, in YYYY-MM-DD format. Defaults time to start of day.',
-              example: '2020-07-30'
-            },
-            date_range_end: {
-              type: 'string',
-              description: 'Date range end, in YYYY-MM-DD format. Defaults time to end of day.',
-              example: '2020-08-30'
-            },
-            activity_ids: {
-              type: 'array',
-              description: 'A list of ids to limit results to',
-              items: {
-                type: 'string'
-              }
-            },
-            linked_id: {
-              type: 'string',
-              description: 'Limit results to only those which link to this Activity ID'
-            },
-            species_positive: {
-              type: 'array',
-              description: 'Limit results to only those matching at least one of the species in this list',
-              items: {
-                type: 'string'
-              }
-            },
-            species_negative: {
-              type: 'array',
-              description:
-                'Limit results to only those with "negative occurences" matching at least one of the species in this list',
-              items: {
-                type: 'string'
-              }
-            },
-            jurisdictions: {
-              type: 'array',
-              description: 'Jurisdictions to filter by',
-              items: {
-                type: 'string'
-              }
-            },
-            created_by: {
-              type: 'array',
-              description: 'People to search by',
-              items: {
-                type: 'string'
-              }
-            },
-            form_stauts: {
-              type: 'array',
-              description: 'Form status to search by',
-              items: {
-                type: 'string'
-              }
-            },
-            search_feature: {
-              type: 'object',
-              description: 'Shape feature collection to filter by',
-              properties: {
-                type: {
-                  type: 'string'
-                },
-                features: {
-                  type: 'array',
-                  items: {
-                    ...(geoJSON_Feature_Schema as any)
-                  }
-                }
-              }
-              // ...(geoJSON_Feature_Schema as any)
-            },
-            column_names: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Activity get response object array.',
@@ -182,6 +57,9 @@ POST.apiDoc = {
           }
         }
       }
+    },
+    304: {
+      $ref: '#/components/responses/304'
     },
     401: {
       $ref: '#/components/responses/401'
@@ -241,6 +119,9 @@ DELETE.apiDoc = {
         }
       }
     },
+    304: {
+      $ref: '#/components/responses/304'
+    },
     401: {
       $ref: '#/components/responses/401'
     },
@@ -260,10 +141,12 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
+    const criteria = JSON.parse(<string>req.query['query']);
+
+    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
 
     const roleName = (req as any).authContext.roles[0]?.role_name;
-    const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
 
     if (!roleName || roleName.includes('animal')) {
@@ -274,10 +157,56 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const connection = await getDBConnection();
     if (!connection) {
-      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
+      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
       return res
         .status(503)
-        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
+        .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
+    }
+
+    // we'll send it later, overriding cache headers as appropriate
+    const responseCacheHeaders = {};
+    let ETag = null;
+    // server-side cache
+    const cache = cacheService.getCache('activity');
+
+    // check the cache tag to see if, perhaps, the user already has the latest
+    try {
+      const cacheQueryResult = await connection.query(`select updated_at from cache_versions where cache_name = $1`, [
+        'activity'
+      ]);
+      const cacheVersion = cacheQueryResult.rows[0].updated_at;
+
+      // because we have parameters and user roles, the actual resource cache tag is
+      // tuple: (cacheVersion, parameters, roleName)
+      // hash it for brevity and to obscure the real modification date
+
+      const cacheTagStr = `${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`;
+
+      ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+
+      // ok, see if we got a conditional request
+      const ifNoneMatch = req.header('If-None-Match');
+      if (ifNoneMatch && ifNoneMatch === ETag) {
+        // great, we can shortcut this request.
+        connection.release();
+        return res.status(304).send({}); //not-modified
+      }
+
+      // we computed ok, so make sure we send it
+      responseCacheHeaders['ETag'] = ETag;
+      responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
+
+      // check server-side cache
+      const cachedResult = cache.get(ETag);
+      if (cachedResult) {
+        // hit! send this one and save some db traffic
+        connection.release();
+        return res.status(200).set(responseCacheHeaders).json(cachedResult);
+      }
+    } catch (e) {
+      console.log(
+        'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
+      );
     }
 
     try {
@@ -286,19 +215,26 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+          .json({ message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      return res.status(200).json({
+      const responseBody = {
         message: 'Got activities by search filter criteria',
-        request: req.body,
+        request: criteria,
         result: response.rows,
         count: response.rowCount,
         namespace: 'activities',
         code: 200
-      });
+      };
+
+      if (ETag !== null) {
+        // save for later;
+        cache.put(ETag, responseBody);
+      }
+
+      return res.status(200).set(responseCacheHeaders).json(responseBody);
     } catch (error) {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({

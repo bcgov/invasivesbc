@@ -22,10 +22,16 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria?.grid_filters?.jurisdictions) {
     if (searchCriteria.search_feature) sqlStatement.append(SQL`, `);
-    sqlStatement.append(SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `);
+    sqlStatement.append(
+      SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
+    );
   }
 
-  sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
+  if (searchCriteria.site_id_only) {
+    sqlStatement.append(SQL`SELECT i.site_id `);
+  } else {
+    sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
+  }
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s 
@@ -152,17 +158,17 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`||'%'`);
         sqlStatement.append(SQL`)`);
       }
-
     }
   }
 
   // search intersects with positive or negative species
-  if ((searchCriteria.species_positive && searchCriteria.species_positive.length) || 
-      (searchCriteria.species_negative && searchCriteria.species_negative.length)) {
-
+  if (
+    (searchCriteria.species_positive && searchCriteria.species_positive.length) ||
+    (searchCriteria.species_negative && searchCriteria.species_negative.length)
+  ) {
     // filter positive species encounters
     if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
-      for (let i = 0; i < searchCriteria.species_positive.length; i++ ) {
+      for (let i = 0; i < searchCriteria.species_positive.length; i++) {
         sqlStatement.append(SQL`
           AND i.site_id IN (SELECT site_id
             FROM iapp_species_status
@@ -177,7 +183,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
     // filter negative species encounters
     if (searchCriteria.species_negative && searchCriteria.species_negative.length) {
-      for (let i = 0; i < searchCriteria.species_negative.length; i++ ) {
+      for (let i = 0; i < searchCriteria.species_negative.length; i++) {
         sqlStatement.append(SQL`
           AND i.site_id IN (SELECT site_id
             FROM iapp_species_status
@@ -198,7 +204,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       sqlStatement.append(SQL`AND array_to_string(jurisdictions, ', ') LIKE ${string} `);
     }
   }
-    
+
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
@@ -222,11 +228,11 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       mech_treatment: 'has_mechanical_treatments',
       bio_dispersal: 'has_biological_dispersals',
       monitored: 'monitored'
-    }
+    };
     const order = searchCriteria.order.map((sortColumn) => {
       return `i.${columnMap[sortColumn['columnKey']]} ${sortColumn['direction']}`;
     });
-      
+
     sqlStatement.append(` ORDER BY ${order.join(', ')}`);
     //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
@@ -251,7 +257,11 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
  * @returns {SQLStatement} sql query object
  */
 export const iapp_extract_sql = (site_id: number[], extractName: string): SQLStatement => {
+  const defaultLog = getLogger('point-of-interest');
+
+  defaultLog.debug({ label: 'help', message: JSON.stringify(site_id[0]) });
   //stupid lib doesn't let you dynamically pass table name
+  console.log(JSON.stringify(site_id[0]));
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   switch (extractName) {
@@ -299,11 +309,13 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
     sqlStatement.append(SQL` where site_id IN (`);
 
     // add the first activity subtype, which does not get a comma prefix
-    sqlStatement.append(SQL`${site_id[0]}`);
+    sqlStatement.append(SQL`${site_id[0].toString()}`);
 
     for (let idx = 1; idx < site_id.length; idx++) {
       // add all subsequent activity subtypes, which do get a comma prefix
-      sqlStatement.append(SQL`, ${site_id[idx]}`);
+      if (Number.isInteger(site_id[idx])) {
+        sqlStatement.append(SQL`, ${site_id[idx]}`);
+      }
     }
 
     sqlStatement.append(SQL`);`);

@@ -30,7 +30,7 @@ export const useInvasivesApi = () => {
   const errorContext = useContext(ErrorContext);
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
-  // const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca'
+  //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   const requestHeaders = useSelector(selectAuthHeaders);
 
@@ -62,10 +62,12 @@ export const useInvasivesApi = () => {
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      headers: { ...options.headers },
       url: options.baseUrl + `/api/activities/`,
-      data: activitiesSearchCriteria
+      params: {
+        query: JSON.stringify(activitiesSearchCriteria)
+      }
     });
 
     checkForErrors(data, status, url);
@@ -236,10 +238,12 @@ export const useInvasivesApi = () => {
     const options = await getRequestOptions();
 
     const { data, status, url } = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      headers: { ...options.headers },
       url: options.baseUrl + `/api/points-of-interest/`,
-      data: pointsOfInterestSearchCriteria
+      params: {
+        query: JSON.stringify(pointsOfInterestSearchCriteria)
+      }
     });
 
     checkForErrors(data, status, url);
@@ -525,10 +529,12 @@ export const useInvasivesApi = () => {
   ): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'GET',
+      headers: { ...options.headers },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
-      data: pointsOfInterestSearchCriteria
+      params: {
+        query: JSON.stringify(pointsOfInterestSearchCriteria)
+      }
     });
     checkForErrors(data, status, url);
     if (DEBUG) {
@@ -671,7 +677,7 @@ export const useInvasivesApi = () => {
    * @param {string[]} media_keys
    * @return {*}  {Promise<any>}
    */
-   const getMedia = async (media_keys: string[]): Promise<any> => {
+  const getMedia = async (media_keys: string[]): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       headers: { ...options.headers },
@@ -1261,14 +1267,28 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
   const config = yield select(selectConfiguration);
   const options = getRequestOptions(config, requestOptions);
 
-  const { data, status, url } = yield Http.request({
-    method: method,
-    headers: { ...options.headers, 'Content-Type': 'application/json' },
-    url: options.baseUrl + endpoint,
-    data: payloadData
-  });
+  //this is a bit of a hack. this whole function needs a rewrite
+  if (method === 'GET') {
+    const { data, status, url } = yield Http.request({
+      method: method,
+      headers: { ...options.headers },
+      url: options.baseUrl + endpoint,
+      params: {
+        query: JSON.stringify(payloadData)
+      }
+    });
 
-  return { data, status, url };
+    return { data, status, url };
+  } else {
+    const { data, status, url } = yield Http.request({
+      method: method,
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + endpoint,
+      data: payloadData
+    });
+
+    return { data, status, url };
+  }
 }
 
 export function* getSimplifiedGeoJSON(url_geo: string, percentage: string) {

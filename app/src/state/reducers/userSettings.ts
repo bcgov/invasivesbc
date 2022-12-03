@@ -13,7 +13,8 @@ import {
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
+  USER_SETTINGS_SET_MAP_CENTER_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -25,6 +26,8 @@ class UserSettingsState {
   activeActivity: string;
   activeActivityDescription: string;
   activeIAPP: string;
+
+  mapCenter: [number, number];
 
   newRecordDialogState: INewRecordDialogState;
   recordSets: [
@@ -64,6 +67,7 @@ class UserSettingsState {
       ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
       : false;
     console.log('this.darkTheme', this.darkTheme);
+    this.mapCenter = [55, -128];
     this.newRecordDialogState = {
       recordCategory:
         JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
@@ -159,6 +163,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state,
           darkTheme: action.payload.enabled
         };
+      }
+      case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
+        return {
+          ...state,
+          mapCenter: action.payload.center
+        }
       }
       default:
         return state;

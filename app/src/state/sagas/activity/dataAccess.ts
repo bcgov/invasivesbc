@@ -34,7 +34,8 @@ import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_ADD_PHOTO_FAILURE,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_FAILURE
+  ACTIVITY_EDIT_PHOTO_FAILURE,
+  USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -248,9 +249,24 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action) {
   try {
+
+    const activityState = yield select(selectActivity)
+    const type = activityState?.activity?.activity_subtype
+
+
+
+
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
+    });
+
+
+    yield put({
+      type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+      payload: {
+        center: action.payload.activity?.geometry[0]?.geometry?.coordinates
+      }
     });
   } catch (e) {
     console.error(e);

@@ -9,7 +9,8 @@ import { AUTH_INITIALIZE_REQUEST } from './actions';
 import activityPageSaga from './sagas/activity';
 import userSettingsSaga from './sagas/userSettings';
 import tabsSaga from './sagas/tabs';
-import activitiesPageSaga from './sagas/activities';
+import activitiesPageSaga from './sagas/map';
+import iappPageSaga from './sagas/iappsite';
 
 const setupStore = (configuration: AppConfig) => {
   const sagaMiddleware = createSagaMiddleware();
@@ -29,6 +30,7 @@ const setupStore = (configuration: AppConfig) => {
   // run the sagas
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
+  sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
   sagaMiddleware.run(userSettingsSaga);
   sagaMiddleware.run(tabsSaga);
