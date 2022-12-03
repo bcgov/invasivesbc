@@ -73,20 +73,20 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   drawFeature: function (ctx, feature) {
     const type = feature.type;
 
-    let style: any = {};
-    let anyFiltersPassed = false;
+    ctx.beginPath();
+
     if (
       this.options.layerStyles?.output?.name
         .toString()
         .toLowerCase()
         .includes(feature.tags.layer?.toString().toLowerCase())
     ) {
-      /*   this.options.layerStyles?.output?.rules.forEach((rule) => {
+      this.options.layerStyles?.output?.rules.forEach((rule) => {
         if (rule.name && feature.tags.type.toString().toLowerCase() === rule.name?.toString().toLowerCase()) {
           this.options.style.color = rule.symbolizers[0].color;
           this.options.style.fillColor = rule.symbolizers[0].color;
         }
-      });*/
+      });
     } else {
       this.options.layerStyles?.output?.rules.forEach((rule) => {
         if (rule.filter) {
@@ -123,8 +123,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   },
 
   setStyle: function (ctx, style) {
-    //var stroke = style.stroke || true;
-    var stroke = style.stroke || false;
+    var stroke = style.stroke || true;
     if (stroke) {
       ctx.lineWidth = style.weight || 5;
       var color = this.setOpacity(style.color, style.opacity);
@@ -133,11 +132,9 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
       ctx.lineWidth = 0;
       ctx.strokeStyle = {};
     }
-    //    var fill = style.fill || true;
-    var fill = style.fill || false;
+    var fill = style.fill || true;
     if (fill) {
       ctx.fillStyle = style.fillColor || '#03f';
-
       var color1 = this.setOpacity(style.fillColor, style.fillOpacity);
       ctx.fillStyle = color1;
     } else {

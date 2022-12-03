@@ -338,17 +338,20 @@ function* handle_MAP_INIT_REQUEST(action) {
 
 function* handle_FILTER_STATE_UPDATE(action) {
   const authState = yield select(selectAuth);
+  const settingsState = yield select(selectUserSettings)
+  const recordSets = JSON.parse(JSON.stringify(settingsState.recordSets))
   for(const x in action.payload)
   {
     if(action.payload[x].type === 'POI')
     {
+
       const IAPP_filter = getSearchCriteriaFromFilters(
-        action.payload[x].advancedFilters,
+        action.payload?.[x]?.filters?.advancedFilters,
         authState.accessRoles,
-        [],
+        recordSets,
         x,
         true,
-        action.payload[x].gridFilters,
+        action.payload[x].filters.gridFilters,
         0,
         200000
       ); 
@@ -364,12 +367,12 @@ function* handle_FILTER_STATE_UPDATE(action) {
     else
     {
       const activityFilter = getSearchCriteriaFromFilters(
-        action.payload[x].advancedFilters,
+        action.payload?.[x]?.filters?.advancedFilters,
         authState.accessRoles,
-        [],
+        recordSets,
         x,
         false,
-        action.payload[x].gridFilters,
+        action.payload?.[x]?.filters?.gridFilters,
         0,
         200000
       ); 

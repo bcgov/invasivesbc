@@ -203,7 +203,7 @@ export const RecordSetLayersRenderer = (props: any) => {
         {Object.keys(mapState?.layers).map((layerKey) => {
       const layer = mapState.layers[layerKey];
       if(!layer) return <></>
-      if (layer?.mapToggle && layer.type !== 'POI') {
+      if (layer?.layerState?.mapToggle && layer?.type !== 'POI') {
         const filtered = mapState?.activitiesGeoJSON?.features.filter((row) => {
           return layer?.IDList?.includes(row.properties.id);
         });
@@ -212,7 +212,7 @@ export const RecordSetLayersRenderer = (props: any) => {
 
         return (
           <ActivitiesLayerV2
-            key={'activitiesv2filter' + layer.recordSetID}
+            key={'activitiesv2filter' + layerKey}
             activities={featureCollection}
             zIndex={999999999 - layer.layerState.drawOrder}
             color={layer.layerState.color}
