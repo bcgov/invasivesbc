@@ -160,7 +160,7 @@ export const LeafletCanvasMarker = (props) => {
 
 export const RecordSetLayersRenderer = (props: any) => {
   const { accessRoles } = useSelector(selectAuth);
-  const activitiesState = useSelector(selectMap);
+  const mapState = useSelector(selectMap);
 
   interface ILayerToRender {
     filter: IActivitySearchCriteria;
@@ -193,58 +193,74 @@ export const RecordSetLayersRenderer = (props: any) => {
     return <></>;
   };
 
-  return (
-    <>
-      {activitiesState?.activitiesGeoJSON?.map((l) => {
-        //if (l && l.layerState.color) {
-        if (l.layerState.enabled) {
-          return (
-            <ActivitiesLayerV2
-              key={'activitiesv2filter' + l.recordSetID}
-              activities={l.featureCollection}
-              zIndex={999999999 - l.layerState.drawOrder}
-              color={l.layerState.color}
-              opacity={0.8}
-            />
-          );
-        }
-      })}
-      {activitiesState?.IAPPGeoJSON?.length > 0 ? (
-        activitiesState?.IAPPGeoJSON?.map((l) => {
-          //if (l && l.layerState.color) {
-          if (l?.featureCollection?.features?.length > 0 && l.layerState.enabled && activitiesState?.IAPPRecordSetIDS) {
-            const filtered = {
-              ...l.featureCollection,
-              features: l.featureCollection.features.filter((row) => {
-                return activitiesState?.IAPPRecordSetIDS[l?.recordSetID]?.includes(row.properties.site_id);
-              })
-            };
-            {
-              /*<GLLayerPoints points={l.featureCollection}></GLLayerPoints>
-                <ActivitiesLayerV2
-                  key={'activitiesv2filter' + l.recordSetID}
-                  activities={l.featureCollection}
-                  zIndex={999999999 - l.layerState.drawOrder}
-                  ids={activitiesState?.IAPPRecordSetIDS[l?.recordSetID]}
-                  color={l.layerState.color}
-                  isIAPP={true}
-                  opacity={0.8}
-            />*/
-            }
-            return (
-              <LeafletCanvasMarker
-                key={'activitieslayerg2' + l.recordSetID}
-                points={filtered}
-                enabled={l.layerState.enabled}
-                colour={l.layerState.color}
-                zIndex={l.layerState.drawOrder + 10000}
+  const ActivitiesLayer = (props) => {
+    if(!mapState.layers || mapState.layers === null || mapState.layers === undefined)
+    {
+      return <></>;
+    }
+    return (
+      <>
+        {Object.keys(mapState?.layers).map((layerKey) => {
+      const layer = mapState.layers[layerKey];
+      if(!layer) return <></>
+      if (layer?.mapToggle && layer.type !== 'POI') {
+        const filtered = mapState?.activitiesGeoJSON?.features.filter((row) => {
+          return layer?.IDList?.includes(row.properties.id);
+        });
+
+        const featureCollection = { type: 'FeatureCollection', features: filtered };
+
+        return (
+          <ActivitiesLayerV2
+            key={'activitiesv2filter' + layer.recordSetID}
+            activities={featureCollection}
+            zIndex={999999999 - layer.layerState.drawOrder}
+            color={layer.layerState.color}
+            opacity={0.8}
               />
             );
           }
-        })
-      ) : (
-        <></>
-      )}
+        })}
+      </>
+    );
+  };
+
+  const IAPPLayer = (props) => {
+    if(!mapState.layers || mapState.layers === null || mapState.layers === undefined)
+    {
+      return <></>;
+    }
+    return (
+      <>
+        {Object.keys(mapState?.layers).map((layerKey) => {
+          const layer = mapState.layers[layerKey];
+          if(!layer) return <></>
+          if (layer.layerState.mapToggle && layer.type === 'POI') {
+            const filtered = mapState?.IAPPGeoJSON?.features.filter((row) => {
+              return layer?.IDList?.includes(row.properties.site_id);
+            });
+
+            const featureCollection = { type: 'FeatureCollection', features: filtered };
+
+            return (
+              <LeafletCanvasMarker
+                key={'POIlayerg2' + layerKey}
+                points={featureCollection}
+                enabled={layer.layerState.mapToggle}
+                colour={layer.layerState.color}
+                zIndex={layer.layerState.drawOrder + 10000}
+              />
+            );
+          }
+        })}
+      </>
+    );
+  };
+
+  return (
+    <>
+      <ActivitiesLayer />
+      <IAPPLayer />
     </>
   );
 };

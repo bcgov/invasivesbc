@@ -46,6 +46,7 @@ import { AppConfig } from '../config';
 class MapState {
   initialized: boolean;
   layers: object;
+  recordTables: object;
   error: boolean;
   activitiesGeoJSON: any;
   IAPPGeoJSON: any;

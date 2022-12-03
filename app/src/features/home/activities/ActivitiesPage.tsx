@@ -368,7 +368,7 @@ const PageContainer = (props) => {
             zoom={5}
             mapId={'mainMap'}
             geometryState={{ geometry, setGeometry }}>
-           {/* <RecordSetLayersRenderer /> */}
+            <RecordSetLayersRenderer /> 
           </MapContainer>
         </MapRecordsContextProvider>
       </Box>

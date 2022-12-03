@@ -588,23 +588,16 @@ const ActivityGrid = (props) => {
   }, [activities]);
 
   useEffect(() => {
-    if (!userSettings.recordSets[props.setName].expanded || !recordsState.IAPPTableRows) {
+    if (!userSettings.recordSets[props.setName].expanded || !recordsState?.recordTables?.[props.setName]?.rows) {
       return;
     }
     console.log('inside of hook');
-    const POIS = recordsState?.IAPPTableRows?.filter((row) => {
-      return row?.recordSetID === props.setName;
-    })[0]?.IAPPTableRows;
-    console.log('after filter', POIS?.length);
-    const newrows = mapPOI_IAPP_ToDataGridRows(POIS?.slice(0, 100));
+    const POIS = recordsState?.recordTables?.[props.setName]?.rows
+    const newrows = mapPOI_IAPP_ToDataGridRows(POIS);
     setRows(newrows);
     console.log('setting rows', newrows.length);
   }, [
-    JSON.stringify(
-      recordsState?.IAPPTableRows?.filter((row) => {
-        return row?.recordSetID === props.setName;
-      })[0]?.IAPPTableRows
-    )
+    JSON.stringify(recordsState?.recordTables?.[props.setName]?.rows), userSettings.recordSets[props.setName].expanded 
   ]);
 
   //TODO THEME MODE
