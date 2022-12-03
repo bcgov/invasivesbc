@@ -3,9 +3,7 @@ import Keycloak from 'keycloak-js';
 import {
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   ACTIVITIES_GEOJSON_GET_REQUEST,
-  ACTIVITIES_TABLE_ROW_GET_REQUEST,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_TABLE_ROW_GET_SUCCESS,
   ACTIVITIES_GEOJSON_GET_ONLINE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   IAPP_GEOJSON_GET_REQUEST,
@@ -24,13 +22,16 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  FILTER_STATE_UPDATE
+  FILTER_STATE_UPDATE,
+  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  ACTIVITIES_TABLE_ROWS_GET_ONLINE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import {
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST
@@ -38,6 +39,7 @@ import {
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
@@ -385,6 +387,34 @@ function* handle_FILTER_STATE_UPDATE(action) {
   }
 }
 
+function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
+  const authState = yield select(selectAuth);
+  const recordSetsState = yield select(selectUserSettings)
+  const recordSetID = action.payload.recordSetID
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
+  const isOpen = recordSet.expanded
+
+  if(!isOpen)
+  {
+    return
+  }
+
+  const filters = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        authState.accessRoles,
+        [],
+        recordSetID,
+        false,
+        recordSet.gridFilters,
+        0,
+        20,
+        //recordSet.sortColumns
+      ); 
+
+  //trigger get
+  yield put({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: {recordSetID: recordSetID, ActivityFilterCriteria: filters }})
+}
+
 function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const recordSetsState = yield select(selectUserSettings)
@@ -426,14 +456,16 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
+    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
+    takeEvery(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
+    takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
-    takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
+    takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE)
    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
-    takeEvery(ACTIVITIES_TABLE_ROW_GET_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST'))
   ]);
 }
 

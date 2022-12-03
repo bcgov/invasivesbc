@@ -33,7 +33,9 @@ import {
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  ACTIVITIES_TABLE_ROWS_GET_FAILURE,
+  ACTIVITIES_TABLE_ROWS_GET_ONLINE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -121,6 +123,28 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
+
+export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
+  try {
+    // if mobile or web
+    if (true) {
+      yield put({
+        type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
+        payload: {
+          ...action.payload
+        }
+      });
+    }
+    if (false) {
+      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_FAILURE });
+  }
+}
+
+
 export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // if mobile or web
