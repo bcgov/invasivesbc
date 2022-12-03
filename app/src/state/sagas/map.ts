@@ -115,8 +115,6 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   const compareObjects = (a, b) => {
-  console.log(JSON.stringify(a))
-  console.log(JSON.stringify(b))
   if(a && !b)
   {
     return false

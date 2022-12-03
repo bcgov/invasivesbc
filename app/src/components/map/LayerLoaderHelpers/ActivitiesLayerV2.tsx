@@ -66,8 +66,6 @@ export const ActivitiesLayerV2 = (props: any) => {
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
     let styles = await sldParser.readStyle(InvasivesBCSLD);
-    console.log('unadultered style');
-    console.dir(styles);
     return styles;
   };
 
@@ -122,9 +120,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     getActivitiesSLD();
   }, [props.color, props.ids]);
 
-  useEffect(() => {
-    console.dir(options);
-  }, [options]);
 
   /*
   useMemo(() => {
