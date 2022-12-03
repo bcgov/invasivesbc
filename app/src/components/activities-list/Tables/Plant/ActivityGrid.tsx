@@ -593,7 +593,7 @@ const ActivityGrid = (props) => {
     }
     console.log('inside of hook');
     const records = recordsState?.recordTables?.[props.setName]?.rows
-    const newrows = userSettings.recordSets[props.setName].recordSetType === 'POI'? mapPOI_IAPP_ToDataGridRows(records) : MapActivitiesToDataGridRows(rows, true)
+    const newrows = userSettings.recordSets[props.setName].recordSetType === 'POI'? mapPOI_IAPP_ToDataGridRows(records) : MapActivitiesToDataGridRows(records, true)
     setRows(newrows);
     console.log('setting rows', newrows.length);
   }, [

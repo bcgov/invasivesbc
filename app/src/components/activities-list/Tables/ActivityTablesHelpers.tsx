@@ -110,14 +110,11 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
 
   //console.log('Activities: ', activities);
 
-  if (!activities || activities.count === undefined) {
-    return [];
-  }
-  if (activities.code) {
+  if (!activities || !activities.length){
     return [];
   }
 
-  return activities?.rows?.map((activity, index) => {
+  return activities?.map((activity, index) => {
     let columns: any = {
       // id: index,
       activity_id: activity?.activity_id,
