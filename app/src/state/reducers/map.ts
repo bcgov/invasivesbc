@@ -38,7 +38,8 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   FILTER_STATE_UPDATE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
+  PAGE_OR_LIMIT_UPDATE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -101,6 +102,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           layers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
+      case PAGE_OR_LIMIT_UPDATE: {
+        const id = action.payload.recordSetID;
+        return {
+          ...state,
+          recordTables: {
+            ...state.recordTables,
+            [id]: {
+              ...state.recordTables[id],
+              page: action.payload.page ? action.payload.page : state.recordTables[id].page,
+              limit: action.payload.limit ? action.payload.limit : state.recordTables[id].limit
+            }
+          }
+        };
+      }
       case ACTIVITIES_GEOJSON_GET_SUCCESS: {
         return {
           ...state,
@@ -126,7 +141,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
-        let newState = (state.recordTables)? JSON.parse(JSON.stringify({ ...state.recordTables })): {recordTables: {}}
+        let newState = (state.recordTables)? JSON.parse(JSON.stringify({ ...state.recordTables })): {}
 
         if(newState?.[action.payload.recordSetID])
         {
@@ -138,13 +153,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           newState[action.payload.recordSetID].rows = action.payload.rows;
         }
 
+        // set defaults
+        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 1;
+        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 10;
+        
         return {
           ...state,
           recordTables: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {
-        let newState = (state.recordTables)? JSON.parse(JSON.stringify({ ...state.recordTables })): {recordTables: {}}
+        let newState = (state.recordTables) ? JSON.parse(JSON.stringify({ ...state.recordTables })): {};
 
         if(newState?.[action.payload.recordSetID])
         {
@@ -155,6 +174,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           newState[action.payload.recordSetID] = {}
           newState[action.payload.recordSetID].rows = action.payload.rows;
         }
+
+        // set defaults
+        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 1;
+        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 10;
 
         return {
           ...state,
