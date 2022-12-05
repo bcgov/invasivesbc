@@ -1,6 +1,6 @@
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
@@ -25,23 +25,32 @@ export const LeafletCanvasMarker = (props) => {
   const [markersCanvas, setMarkersCanvas] = useState();
   const [markers, setMarkers] = useState([]);
   const [cleanupCallback, setCleanupCallback] = useState();
-  const layerRef = useRef();
-  const groupRef = useRef();
+  //const layerRef = useRef();
+  //const groupRef = useRef();
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !props.layerRef?.current || !props.groupRef?.current) {
+      return;
+    } else {
+      console.log('stuff is ok');
+    }
     try {
       //console.dir(markersCanvas);
       //const clear = (markersCanvas as any)?.clear();
       //const remove = (markersCanvas as any)?.removeMarkers();
       //map.removeLayer(markersCanvas);
     } catch (e) {}
-    const container = context.layerContainer || context.map;
+    //const container = context.layerContainer || context.map;
 
-    layerRef.current = new (L as any).MarkersCanvas();
+    //layerRef.current = new (L as any).MarkersCanvas();
 
-    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
-    groupRef.current.setZIndex(props.zIndex);
+    //groupRef.current = (L as any).layerGroup().addLayer(layerRef.current, { pane: props.key }).addTo(container);
+    //  groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
+    // console.log('setting z index');
+    // console.log(props.zIndex);
+    // groupRef?.current?.setZIndex(props.zIndex);
+    // console.log('z index');
+    // console.log(groupRef.current.zIndex);
 
     //    container.addLayer(layerRef.current);
 
@@ -125,24 +134,33 @@ export const LeafletCanvasMarker = (props) => {
       map.removeLayer(ciLayer);
     };
     */
-    if (groupRef.current) layerRef?.current?.clear();
 
-    if (props.enabled && groupRef.current) {
-      layerRef?.current?.addMarkers(markers);
+    if (props.enabled && props.groupRef) {
+      if (props.layerRef) {
+        console.log('adding markers');
+      }
+      props.layerRef?.current?.clear();
+      props.groupRef?.current?.setZIndex(props.zIndex);
+      props.layerRef?.current?.addMarkers(markers);
+      props.groupRef?.current?.setZIndex(props.zIndex);
     }
 
+    // groupRef.current.setZIndex(props.zIndex);
     /*const acleanupCallback = () => mc.removeMarkers(markers);
     setCleanupCallback(acleanupCallback);
     */
 
     //setMarkersCanvas(mcLayer);
+    /*
     setTimeout(() => {
-      layerRef?.current?.redraw();
-    }, 5000);
 
+    }, 5000);
+    */
+    //props.layerRef?.current?.redraw();
     return () => {
+      console.log('in cleanup');
       //container.removeLayer(layerRef.current);
-      container.removeLayer(groupRef.current);
+      /*container.removeLayer(groupRef.current);
       if (container) {
         //layerRef.current.removeMarkers(markers);
       }
@@ -152,8 +170,10 @@ export const LeafletCanvasMarker = (props) => {
         // (markersCanvas as any)?.clear();
       } catch (e) {}
     };
+    */
+    };
     //}, [map]);
-  }, [props.colour, props.enabled, props.points]);
+  }, [props.colour, props.enabled, props.points, props.groupRef?.current, props.layerRef?.current]);
 
   return <></>;
 };
@@ -194,29 +214,28 @@ export const RecordSetLayersRenderer = (props: any) => {
   };
 
   const ActivitiesLayer = (props) => {
-    if(!mapState.layers || mapState.layers === null || mapState.layers === undefined)
-    {
+    if (!mapState.layers || mapState.layers === null || mapState.layers === undefined) {
       return <></>;
     }
     return (
       <>
         {Object.keys(mapState?.layers).map((layerKey) => {
-      const layer = mapState.layers[layerKey];
-      if(!layer) return <></>
-      if (layer?.layerState?.mapToggle && layer?.type !== 'POI') {
-        const filtered = mapState?.activitiesGeoJSON?.features.filter((row) => {
-          return layer?.IDList?.includes(row.properties.id);
-        });
+          const layer = mapState.layers[layerKey];
+          if (!layer) return <></>;
+          if (layer?.layerState?.mapToggle && layer?.type !== 'POI') {
+            const filtered = mapState?.activitiesGeoJSON?.features.filter((row) => {
+              return layer?.IDList?.includes(row.properties.id);
+            });
 
-        const featureCollection = { type: 'FeatureCollection', features: filtered };
+            const featureCollection = { type: 'FeatureCollection', features: filtered };
 
-        return (
-          <ActivitiesLayerV2
-            key={'activitiesv2filter' + layerKey}
-            activities={featureCollection}
-            zIndex={999999999 - layer.layerState.drawOrder}
-            color={layer.layerState.color}
-            opacity={0.8}
+            return (
+              <ActivitiesLayerV2
+                key={'activitiesv2filter' + layerKey}
+                activities={featureCollection}
+                zIndex={999999999 - layer.layerState.drawOrder}
+                color={layer.layerState.color}
+                opacity={0.8}
               />
             );
           }
@@ -226,25 +245,97 @@ export const RecordSetLayersRenderer = (props: any) => {
   };
 
   const IAPPLayer = (props) => {
-    if(!mapState.layers || mapState.layers === null || mapState.layers === undefined)
-    {
+    const map = useMap();
+    const context = useLeafletContext();
+    const layerRefs = useRef([]);
+    const groupRefs = useRef([]);
+    const [save, setSave] = useState(Math.random());
+    try {
+      //console.dir(markersCanvas);
+      //const clear = (markersCanvas as any)?.clear();
+      //const remove = (markersCanvas as any)?.removeMarkers();
+      //map.removeLayer(markersCanvas);
+    } catch (e) {}
+    const container = context.layerContainer || context.map;
+    /*
+    layerRef.current = new (L as any).MarkersCanvas();
+
+    //groupRef.current = (L as any).layerGroup().addLayer(layerRef.current, { pane: props.key }).addTo(container);
+    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
+    // console.log('setting z index');
+    // console.log(props.zIndex);
+    groupRef?.current?.setZIndex(props.zIndex);
+    */
+
+    useEffect(() => {
+      {
+        if (!map) return;
+        if (!mapState.layers || mapState.layers === null || mapState.layers === undefined) {
+          return;
+        }
+        Object.keys(mapState?.layers).map((layerKey) => {
+          if (layerRefs.current[layerKey]) {
+            if (groupRefs.current[layerKey]) {
+              groupRefs.current[layerKey].current.setZIndex(mapState.layers[layerKey].layerState.drawOrder);
+            }
+          } else {
+            layerRefs.current[layerKey] = createRef();
+            layerRefs.current[layerKey].current = new (L as any).MarkersCanvas();
+            groupRefs.current[layerKey] = createRef();
+            groupRefs.current[layerKey].current = (L as any)
+              .layerGroup()
+              .addLayer(layerRefs.current[layerKey].current)
+              .addTo(container);
+            console.log('draw order', mapState?.layers[layerKey].layerState.drawOrder);
+            groupRefs.current[layerKey].current.setZIndex(mapState.layers[layerKey].layerState.drawOrder);
+          }
+        });
+      }
+      console.dir(groupRefs?.current);
+      console.dir(groupRefs?.current[1]);
+      setSave(Math.random());
+      return () => {
+        layerRefs.current.map((lr) => {
+          container.removeLayer(lr.current);
+        });
+        groupRefs.current.map((lr) => {
+          container.removeLayer(lr.current);
+        });
+        //container.removeLayer(layerRef.current);
+        /*container.removeLayer(groupRef.current);
+         */
+      };
+      //`}, [mapState.layers]);
+    }, []);
+
+    if (!mapState.layers || mapState.layers === null || mapState.layers === undefined || !groupRefs.current) {
+      console.log('returning nothing');
       return <></>;
     }
+    console.log('returning something');
     return (
       <>
+        {save}
         {Object.keys(mapState?.layers).map((layerKey) => {
           const layer = mapState.layers[layerKey];
-          if(!layer) return <></>
+          if (!layer || !groupRefs.current[layerKey]) {
+            return <></>;
+          }
           if (layer.layerState.mapToggle && layer.type === 'POI') {
             const filtered = mapState?.IAPPGeoJSON?.features.filter((row) => {
               return layer?.IDList?.includes(row.properties.site_id);
             });
 
             const featureCollection = { type: 'FeatureCollection', features: filtered };
+            console.dir('group ref before render');
+            console.log(layerKey);
+            console.dir(groupRefs.current[layerKey]);
 
             return (
               <LeafletCanvasMarker
                 key={'POIlayerg2' + layerKey}
+                layerRef={layerRefs.current[layerKey]}
+                groupRef={groupRefs.current[layerKey]}
                 points={featureCollection}
                 enabled={layer.layerState.mapToggle}
                 colour={layer.layerState.color}

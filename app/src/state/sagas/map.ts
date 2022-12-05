@@ -72,7 +72,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
   const sets = {};
-  sets[action.payload.updatedSetName] = {...action.payload.updatedSet};
+  sets[action.payload.updatedSetName] = { ...action.payload.updatedSet };
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.updatedSet.advancedFilterRows,
     authState.accessRoles,
@@ -92,7 +92,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 
   const newFilterState = {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
-    gridFilters: {...action.payload.updatedSet.gridFilters}
+    gridFilters: { ...action.payload.updatedSet.gridFilters }
   };
 
   const testStateEqual = (a, b) => {
@@ -102,12 +102,12 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
-  
+
     // If you don't care about the order of the elements inside
     // the array, you should sort both arrays here.
     // Please note that calling sort on an array will modify that array.
     // you might want to clone your array first.
-  
+
     for (var i = 0; i < a.length; ++i) {
       if (a[i] !== b[i]) return false;
     }
@@ -115,17 +115,14 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   const compareObjects = (a, b) => {
-  if(a && !b)
-  {
-    return false
-  }
-  if(b && !a)
-  {
-    return false;
-  }
+    if (a && !b) {
+      return false;
+    }
+    if (b && !a) {
+      return false;
+    }
     for (const p in a) {
-      switch(typeof a[p])
-      {
+      switch (typeof a[p]) {
         case 'string':
           if (a[p] !== b[p]) {
             return false;
@@ -136,23 +133,23 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
             return false;
           }
           break;
-       default:
-        if(!arraysEqual(a[p], b[p]))
-        {
-            return false;
-        }
-        else
-        {
-          if(!compareObjects(a[p], b[p]))
-          {
+        case 'number':
+          if (a[p] !== b[p]) {
             return false;
           }
-        }
+          break;
+        default:
+          if (!arraysEqual(a[p], b[p])) {
+            return false;
+          } else {
+            if (!compareObjects(a[p], b[p])) {
+              return false;
+            }
+          }
       }
     }
     for (const p in b) {
-      switch(typeof b[p])
-      {
+      switch (typeof b[p]) {
         case 'string':
           if (a[p] !== b[p]) {
             return false;
@@ -163,29 +160,32 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
             return false;
           }
           break;
-       default:
-        if(!arraysEqual(a[p], b[p]))
-        {
-            return false;
-        }
-        else
-        {
-          if(!compareObjects(b[p], a[p]))
-          {
+        case 'number':
+          if (a[p] !== b[p]) {
             return false;
           }
-        }
+          break;
+        default:
+          if (!arraysEqual(a[p], b[p])) {
+            return false;
+          } else {
+            if (!compareObjects(b[p], a[p])) {
+              return false;
+            }
+          }
       }
     }
     return true;
   };
 
+  console.dir(mapState?.layers?.[action.payload.updatedSetName]?.layerState);
+  console.dir(layerState);
   if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
       type: LAYER_STATE_UPDATE,
       payload: {
         [action.payload.updatedSetName]: {
-          layerState: {...layerState},
+          layerState: { ...layerState },
           type: action.payload.updatedSet.recordSetType
         }
       }
@@ -193,10 +193,17 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.filters, newFilterState)) {
-      yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.updatedSetName]: { filters: {...newFilterState}, type: action.payload.updatedSet.recordSetType}} });
-    }   
+    yield put({
+      type: FILTER_STATE_UPDATE,
+      payload: {
+        [action.payload.updatedSetName]: {
+          filters: { ...newFilterState },
+          type: action.payload.updatedSet.recordSetType
+        }
+      }
+    });
+  }
 }
-
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -292,7 +299,7 @@ function* handle_MAP_INIT_REQUEST(action) {
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
-    let newLayerState = {}
+    let newLayerState = {};
     newLayerState = {
       color: recordSets[rs].color,
       mapToggle: recordSets[rs].mapToggle,
@@ -302,23 +309,23 @@ function* handle_MAP_INIT_REQUEST(action) {
       ...newLayerState
     };
 
-    let newFilters = {}
+    let newFilters = {};
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters
-
-    }
+    };
     newMapState[rs].filters = {
       ...newFilters
     };
 
-    const newLayer = {layerState: {...newLayerState},
-    filters: {...newFilters},
-    type: recordSets[rs].recordSetType ,
-    loaded: false
-  }
+    const newLayer = {
+      layerState: { ...newLayerState },
+      filters: { ...newFilters },
+      type: recordSets[rs].recordSetType,
+      loaded: false
+    };
 
-    newMapState[rs] = { ...newLayer}
+    newMapState[rs] = { ...newLayer };
   }
 
   yield put({
@@ -329,20 +336,15 @@ function* handle_MAP_INIT_REQUEST(action) {
   yield put({
     type: FILTER_STATE_UPDATE,
     payload: { ...newMapState }
-  })
-
+  });
 }
-
 
 function* handle_FILTER_STATE_UPDATE(action) {
   const authState = yield select(selectAuth);
-  const settingsState = yield select(selectUserSettings)
-  const recordSets = JSON.parse(JSON.stringify(settingsState.recordSets))
-  for(const x in action.payload)
-  {
-    if(action.payload[x].type === 'POI')
-    {
-
+  const settingsState = yield select(selectUserSettings);
+  const recordSets = JSON.parse(JSON.stringify(settingsState.recordSets));
+  for (const x in action.payload) {
+    if (action.payload[x].type === 'POI') {
       const IAPP_filter = getSearchCriteriaFromFilters(
         action.payload?.[x]?.filters?.advancedFilters,
         authState.accessRoles,
@@ -352,18 +354,15 @@ function* handle_FILTER_STATE_UPDATE(action) {
         action.payload[x].filters.gridFilters,
         0,
         200000
-      ); 
-   yield put({
-    type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-    payload: {
-      recordSetID: x,
-      IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
-    }
-  });
-
-    }
-    else
-    {
+      );
+      yield put({
+        type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+        payload: {
+          recordSetID: x,
+          IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
+        }
+      });
+    } else {
       const activityFilter = getSearchCriteriaFromFilters(
         action.payload?.[x]?.filters?.advancedFilters,
         authState.accessRoles,
@@ -373,7 +372,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
         action.payload?.[x]?.filters?.gridFilters,
         0,
         200000
-      ); 
+      );
       yield put({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: {
@@ -381,69 +380,66 @@ function* handle_FILTER_STATE_UPDATE(action) {
           ActivityFilterCriteria: { ...activityFilter, activity_id_only: true }
         }
       });
-
     }
-
-
   }
 }
 
 function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings)
-  const recordSetID = action.payload.recordSetID
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
-  const isOpen = recordSet.expanded
+  const recordSetsState = yield select(selectUserSettings);
+  const recordSetID = action.payload.recordSetID;
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
+  const isOpen = recordSet.expanded;
 
-  if(!isOpen)
-  {
-    return
+  if (!isOpen) {
+    return;
   }
 
   const filters = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        authState.accessRoles,
-        [],
-        recordSetID,
-        false,
-        recordSet.gridFilters,
-        0,
-        20,
-        //recordSet.sortColumns
-      ); 
+    recordSet.advancedFilters,
+    authState.accessRoles,
+    [],
+    recordSetID,
+    false,
+    recordSet.gridFilters,
+    0,
+    20
+    //recordSet.sortColumns
+  );
 
   //trigger get
-  yield put({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: {recordSetID: recordSetID, ActivityFilterCriteria: filters }})
+  yield put({
+    type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+    payload: { recordSetID: recordSetID, ActivityFilterCriteria: filters }
+  });
 }
 
 function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings)
-  const recordSetID = action.payload.recordSetID
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
-  const isOpen = recordSet.expanded
+  const recordSetsState = yield select(selectUserSettings);
+  const recordSetID = action.payload.recordSetID;
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
+  const isOpen = recordSet.expanded;
 
-  if(!isOpen)
-  {
-    return
+  if (!isOpen) {
+    return;
   }
 
   const filters = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        authState.accessRoles,
-        [],
-        recordSetID,
-        true,
-        recordSet.gridFilters,
-        0,
-        20,
-        //recordSet.sortColumns
-      ); 
+    recordSet.advancedFilters,
+    authState.accessRoles,
+    [],
+    recordSetID,
+    true,
+    recordSet.gridFilters,
+    0,
+    20
+    //recordSet.sortColumns
+  );
 
   //trigger get
-  yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {recordSetID: recordSetID, IAPPFilterCriteria: filters }})
+  yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: recordSetID, IAPPFilterCriteria: filters } });
 }
-
 
 function* activitiesPageSaga() {
   yield all([
@@ -465,7 +461,7 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE)
-   // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
