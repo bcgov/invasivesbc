@@ -89,8 +89,8 @@ biological_agent_presence_code,ST,Stem Feeding Damage,11
 biological_agent_presence_code,FE,Feeding,12
 biological_agent_presence_code,FR,Frass,13
 biological_agent_presence_code,GA,In Gall,14
-biological_agent_presence_code, PY, Previous Year Evidence,15
-biological_agent_presence_code, CY, Current Year Evidence,16
+biological_agent_presence_code,PY,Previous Year Evidence,15
+biological_agent_presence_code,CY,Current Year Evidence,16
 classified_area_code,X,unknown,1
 classified_area_code,C,Collection,2
 classified_area_code,R,Research,3
@@ -147,32 +147,32 @@ observation_geometry_code,GP,GPS tracking path,8
 observation_geometry_code,RA,Radio tracking path,9
 observation_geometry_code,WA,Water body outline,10
 observation_geometry_code,DR,Drone track,11
-specific_use_code,NO,None,1
-specific_use_code,NA,Fire guard,2
-specific_use_code,GP,Gravel pit,3
-specific_use_code,NS,No-spray zone,4
-specific_use_code,HW,Numbered highway,5
-specific_use_code,PL,Parking lot,6
-specific_use_code,RS,Rec site/trail,7
-specific_use_code,RA,Rest area,8
-specific_use_code,SS,Sensitive site,9
-specific_use_code,TS,Transfer station/landfill,10
-specific_use_code,WB,Within PFZ - water body,11
-specific_use_code,WE,Within PFZ - well,12
-specific_use_code,YD,Yard / ditching waste dump,13
-specific_use_code,QU,Quarry,14
-specific_use_code,RW,Railway,15
-specific_use_code,TL,Transmission line,16
-specific_use_code,CL,Cultivated land,17
+specific_use_code,AP,Apiary,1
+specific_use_code,BS,Burn scar,2
+specific_use_code,CP,Community pasture,3
+specific_use_code,CL,Cultivated land,4
+specific_use_code,NA,Fire guard,5
+specific_use_code,GP,Gravel pit,6
+specific_use_code,IS,Industrial site,7
+specific_use_code,MI,Mine site,8
+specific_use_code,MT,Mine tailings,9
+specific_use_code,NO,None,10
+specific_use_code,NS,No-spray zone,11
+specific_use_code,HW,Numbered highway,12
+specific_use_code,OF,Organic Farm,13
+specific_use_code,PL,Parking lot,14
+specific_use_code,QU,Quarry,15
+specific_use_code,RW,Railway,16
+specific_use_code,RS,Rec site/trail,17
 specific_use_code,RC,Research site,18
 specific_use_code,RV,Reservoir,19
-specific_use_code,MI,Mine site,20
-specific_use_code,MT,Mine tailings,21
-specific_use_code,BS,Burn scar,22
-specific_use_code,IS,Industrial site,23
-specific_use_code,CP,Community pasture,24
-specific_use_code,AP,Apiary,25
-specific_use_code,OF,Organic Farm,26
+specific_use_code,RA,Rest area,20
+specific_use_code,SS,Sensitive site,21
+specific_use_code,TS,Transfer station/landfill,22
+specific_use_code,TL,Transmission line,23
+specific_use_code,WB,Within PFZ - water body,24
+specific_use_code,WE,Within PFZ - well,25
+specific_use_code,YD,Yard / ditching waste dump,26
 aspect_code,FL,Flat,1
 aspect_code,NA,variable,2
 aspect_code,N,North facing,3
@@ -286,46 +286,47 @@ invasive_plant_aquatic_code,YC,Amphibious yellow cress (Rorippa amphibian),2
 invasive_plant_aquatic_code,RI,Bog bulrush / ricefield bulrush (Schoenoplectus mucronatus),3
 invasive_plant_aquatic_code,BO,Bohemian knotweed (Reynoutria / Fallopia x bohemica),4
 invasive_plant_aquatic_code,ED,Brazilian elodea (Egeria densa),5
-invasive_plant_aquatic_code,FC,Common frogbit (Hydrocharis morsus-range),7
-invasive_plant_aquatic_code,UP,Curly leaf pondweed (Potamogeton crispus),8
-invasive_plant_aquatic_code,DC,Dense-flowered cordgrass (Spartina densiflora),9
-invasive_plant_aquatic_code,DO,Dodder (Cuscuta spp.),10
-invasive_plant_aquatic_code,EC,English cordgrass (Spartina anglica),11
-invasive_plant_aquatic_code,EW,Eurasian watermilfoil (Myriophyllum spicatum),12
-invasive_plant_aquatic_code,EB,European beachgrass (Ammophila arenaria),13
-invasive_plant_aquatic_code,RC,European common reed (Phragmites australis subsp. australis),14
-invasive_plant_aquatic_code,MQ,European water clover (Marsilea quadrifolia),15
-invasive_plant_aquatic_code,WE,European waterlily (Nymphaea alba),16
-invasive_plant_aquatic_code,FW,Fanwort (Cabomba caroliniana),17
-invasive_plant_aquatic_code,FM,Feathered mosquito-fern (Azolla pinnata),18
-invasive_plant_aquatic_code,FR,Flowering rush (Butomus umbellatus),19
-invasive_plant_aquatic_code,FL,Fragrant waterlily (Nymphaea odorata subsp. odorata),20
-invasive_plant_aquatic_code,GL,Garden yellow loosestrife (Lysimachia vulgaris),21
-invasive_plant_aquatic_code,GK,Giant knotweed (Reynoutria / Fallopia sachalinensis),22
-invasive_plant_aquatic_code,SW,Giant mannagrass (Glyceria maxima),23
-invasive_plant_aquatic_code,AD,Giant reed / giant cane (Arundo donax),24
-invasive_plant_aquatic_code,SV,Giant salvinia (Salvinia molesta),25
-invasive_plant_aquatic_code,PO,Himalayan knotweed (Persicaria wallichii / Polygonum polystachyum),26
-invasive_plant_aquatic_code,HY,Hydrilla (Hydrilla verticillata),27
-invasive_plant_aquatic_code,JK,Japanese knotweed (Reynoutria / Fallopia japonica),28
-invasive_plant_aquatic_code,GJ,Johnsongrass (Sorghum halepense),29
-invasive_plant_aquatic_code,LL,Large yellow / spotted loosestrife (Lysimachia punctata),30
-invasive_plant_aquatic_code,OW,Major oxygen weed (Lagarosiphon),31
-invasive_plant_aquatic_code,PF,Parrot's feather / Brazilian watermilfoil (Myriophyllum aquaticum),32
-invasive_plant_aquatic_code,IM,Policeman's helmet / himalayan balsam (Impatiens glandulifera),33
-invasive_plant_aquatic_code,PL,Purple loosestrife (Lythrum salicaria),34
-invasive_plant_aquatic_code,RE,Reed canarygrass (Phalaris arundinacea),35
-invasive_plant_aquatic_code,SN,Salt-meadow cordgrass (Spartina patens),36
-invasive_plant_aquatic_code,SA,Smooth cordgrass (Spartina alterniflora),37
-invasive_plant_aquatic_code,LM,Variable leaf milfoil (Myriophyllum heterophyllum),38
-invasive_plant_aquatic_code,WL,Wand loosestrife (Lythrum virgatum),39
-invasive_plant_aquatic_code,TN,Water chestnut (Trapa natans),40
-invasive_plant_aquatic_code,NO,Common watercress (Nasturtium officinale),41
+invasive_plant_aquatic_code,FC,Common frogbit (Hydrocharis morsus-range),6
+invasive_plant_aquatic_code,TC,Common tansy (Tanacetum vulgare),7
+invasive_plant_aquatic_code,NO,Common watercress (Nasturtium officinale),8
+invasive_plant_aquatic_code,UP,Curly leaf pondweed (Potamogeton crispus),9
+invasive_plant_aquatic_code,DC,Dense-flowered cordgrass (Spartina densiflora),10
+invasive_plant_aquatic_code,DO,Dodder (Cuscuta spp.),11
+invasive_plant_aquatic_code,EC,English cordgrass (Spartina anglica),12
+invasive_plant_aquatic_code,EW,Eurasian watermilfoil (Myriophyllum spicatum),13
+invasive_plant_aquatic_code,EB,European beachgrass (Ammophila arenaria),14
+invasive_plant_aquatic_code,RC,European common reed (Phragmites australis subsp. australis),15
+invasive_plant_aquatic_code,MQ,European water clover (Marsilea quadrifolia),16
+invasive_plant_aquatic_code,WE,European waterlily (Nymphaea alba),17
+invasive_plant_aquatic_code,FW,Fanwort (Cabomba caroliniana),18
+invasive_plant_aquatic_code,FM,Feathered mosquito-fern (Azolla pinnata),19
+invasive_plant_aquatic_code,FR,Flowering rush (Butomus umbellatus),20
+invasive_plant_aquatic_code,FL,Fragrant waterlily (Nymphaea odorata subsp. odorata),21
+invasive_plant_aquatic_code,GL,Garden yellow loosestrife (Lysimachia vulgaris),22
+invasive_plant_aquatic_code,GK,Giant knotweed (Reynoutria / Fallopia sachalinensis),23
+invasive_plant_aquatic_code,SW,Giant mannagrass (Glyceria maxima),24
+invasive_plant_aquatic_code,AD,Giant reed / giant cane (Arundo donax),25
+invasive_plant_aquatic_code,SV,Giant salvinia (Salvinia molesta),26
+invasive_plant_aquatic_code,PO,Himalayan knotweed (Persicaria wallichii / Polygonum polystachyum),27
+invasive_plant_aquatic_code,HY,Hydrilla (Hydrilla verticillata),28
+invasive_plant_aquatic_code,JK,Japanese knotweed (Reynoutria / Fallopia japonica),29
+invasive_plant_aquatic_code,GJ,Johnsongrass (Sorghum halepense),30
+invasive_plant_aquatic_code,LL,Large yellow / spotted loosestrife (Lysimachia punctata),31
+invasive_plant_aquatic_code,OW,Major oxygen weed (Lagarosiphon),32
+invasive_plant_aquatic_code,PF,Parrot's feather / Brazilian watermilfoil (Myriophyllum aquaticum),33
+invasive_plant_aquatic_code,IM,Policeman's helmet / himalayan balsam (Impatiens glandulifera),34
+invasive_plant_aquatic_code,PL,Purple loosestrife (Lythrum salicaria),35
+invasive_plant_aquatic_code,RE,Reed canarygrass (Phalaris arundinacea),36
+invasive_plant_aquatic_code,SN,Salt-meadow cordgrass (Spartina patens),37
+invasive_plant_aquatic_code,SA,Smooth cordgrass (Spartina alterniflora),38
+invasive_plant_aquatic_code,LM,Variable leaf milfoil (Myriophyllum heterophyllum),39
+invasive_plant_aquatic_code,WL,Wand loosestrife (Lythrum virgatum),40
+invasive_plant_aquatic_code,TN,Water chestnut (Trapa natans),41
 invasive_plant_aquatic_code,WH,Water hyacinth (Eichhornia crassipes),42
 invasive_plant_aquatic_code,LW,Water lettuce (Pistia stratiotes),43
 invasive_plant_aquatic_code,AQ,Water soldier (Stratiotes aloides),44
-invasive_plant_aquatic_code,YI,Yellow iris (Iris pseudacorus),45
-invasive_plant_aquatic_code,YF,Yellow floating heart (Nymphoides peltata),46
+invasive_plant_aquatic_code,YF,Yellow floating heart (Nymphoides peltata),45
+invasive_plant_aquatic_code,YI,Yellow iris (Iris pseudacorus),46
 invasive_plant_code,AR,African rue / harmal (Peganum harmala),1
 invasive_plant_code,HB,Annual hawksbeard (Crepis tectorum),2
 invasive_plant_code,AS,Annual sow thistle (Sonchus oleraceus),3
@@ -333,7 +334,7 @@ invasive_plant_code,BN,American black nightshade (Solanum americanum),4
 invasive_plant_code,BY,Baby's breath (Gypsophila paniculata),5
 invasive_plant_code,BB,Bachelor's-button / Cornflower (Centaurea cyanus),6
 invasive_plant_code,BA,Barnyard grass (Echinochloa crusgalli),7
-invasive_plant_code,KB,Bighead / GIant knapweed (Centaurea macrocephala),8
+invasive_plant_code,KB,Bighead / Giant knapweed (Centaurea macrocephala),8
 invasive_plant_code,BP,Bigleaf / large periwinkle (Vinca major),9
 invasive_plant_code,BH,Black henbane (Hyoscyamus niger),10
 invasive_plant_code,BL,Black knapweed (Centaurea nigra),11
@@ -781,267 +782,267 @@ biological_agent_code,UROPSPP,UROPSPP [Urophora species],90
 biological_agent_code,UROPSTY,UROPSTY [Urophora stylata],91
 biological_agent_code,ZEUXGIA,ZEUXGIA [Zeuxidiplosis giardi],92
 invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada,1
-invasive_species_agency_code,APO,Apollo Forest Products Ltd.,2
-invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,3
-invasive_species_agency_code,BCH,BC Hydro and Power Authority,4
-invasive_species_agency_code,OGC,BC Oil and Gas Commission,5
-invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,6
-invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,7
-invasive_species_agency_code,CAN,Canfor,8
-invasive_species_agency_code,CAR,Carrier Lumber Ltd.,9
-invasive_species_agency_code,CPR,CP Rail,10
-invasive_species_agency_code,DND,Department of National Defense,11
-invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,12
-invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,13
-invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,14
-invasive_species_agency_code,FRS,FortisBC Inc.,15
-invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,16
-invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,17
-invasive_species_agency_code,KMC,Kinder Morgan Canada,18
-invasive_species_agency_code,LM,Lakeland Mills Ltd.,19
-invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,20
-invasive_species_agency_code,LKB,Lower Kootenay Band,21
-invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,22
-invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,23
-invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,24
-invasive_species_agency_code,OIB,Osoyoos Indian Band,25
-invasive_species_agency_code,PCAN,Parks Canada,26
-invasive_species_agency_code,POTA,Pope and Talbot Ltd.,27
-invasive_species_agency_code,PRIV,Private,28
-invasive_species_agency_code,RPC,Richmond Plywood Corporation Limited,29
-invasive_species_agency_code,RBCM,Royal BC Museum,30
-invasive_species_agency_code,SIGD,Sechelt Indian Government District,31
-invasive_species_agency_code,SIB,Skeetchestn Indian Band,32
-invasive_species_agency_code,SIFC,Slocan Integral Forestry Cooperative,33
-invasive_species_agency_code,WCE,Spectra Energy,34
-invasive_species_agency_code,TCP,Teal Cedar Products Ltd.,35
-invasive_species_agency_code,TER,Terasen Gas Inc,36
-invasive_species_agency_code,NCC,The Nature Conservancy of Canada,37
-invasive_species_agency_code,NTBC,The Nature Trust of BC,38
-invasive_species_agency_code,TRU,Thompson Rivers University,39
-invasive_species_agency_code,TNIPMC, Thompson Nicola Invasive Plant Management Committee,40
-invasive_species_agency_code,TPIB,Tobacco Plains Indian Band,41
-invasive_species_agency_code, TIL, Tolko Industries Ltd.,42
-invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,43
-invasive_species_agency_code,UBC,University of British Columbia,44
-invasive_species_agency_code, WFM, West Fraser Mills Ltd.,45
-invasive_species_agency_code,WFP,Western Forest Products Inc.,46
-invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,47
-invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,48
-invasive_species_agency_code,AGRI,BC Ministry of Agriculture and Food,49
-invasive_species_agency_code,CITZ,BC Ministry of Citizens' Services,50
-invasive_species_agency_code,EDU,BC Ministry of Education,51
-invasive_species_agency_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation,52
-invasive_species_agency_code,MOE,BC Ministry of Environment & Climate Change Strategy,53
-invasive_species_agency_code,MOF,BC Ministry of Forests,54
-invasive_species_agency_code,MOH,BC Ministry of Health,55
-invasive_species_agency_code,MIRR,BC Ministry of Indigenous Relations & Reconciliation,56
-invasive_species_agency_code,JERI,BC Ministry of Jobs Economic Recovery and Innovation,57
-invasive_species_agency_code,TACS,BC Ministry of Tourism Arts Culture and Sport,58
-invasive_species_agency_code,MOTI,BC Ministry of Transportation & Infrastructure,59
-invasive_species_agency_code,LWRS, BC Ministry of Land Water Resource Stewardship,60
-invasive_species_agency_code,BCPARKS, BC Parks,61
-invasive_species_agency_code,DOHMH,District of 100 Mile House,62
-invasive_species_agency_code,COABB,City of Abbotsford,63
-invasive_species_agency_code,VOALE,Village of Alert Bay,64
-invasive_species_agency_code,VOANM,Village of Anmore,65
-invasive_species_agency_code,COARM,City of Armstrong,66
-invasive_species_agency_code,VOASH,Village of Ashcroft,67
-invasive_species_agency_code,DOBAR,District of Barriere,68
-invasive_species_agency_code,VOBEL,Village of Belcarra,69
-invasive_species_agency_code,IOOF ,Island Municipality of Bowen Island,70
-invasive_species_agency_code,COBUR,City of Burnaby,71
-invasive_species_agency_code,VOBUR,Village of Burns Lake,72
-invasive_species_agency_code,VOCAC,Village of Cache Creek,73
-invasive_species_agency_code,COCAM,City of Campbell River,74
-invasive_species_agency_code,VOCAN,Village of Canal Flats,75
-invasive_species_agency_code,COCAS,City of Castlegar,76
-invasive_species_agency_code,DOCEN,District of Central Saanich,77
-invasive_species_agency_code,VOCHA,Villiage of Chase,78
-invasive_species_agency_code,DOCHE,District of Chetwynd,79
-invasive_species_agency_code,COCHI,City of Chilliwack,80
-invasive_species_agency_code,DOCLE,District of Clearwater,81
-invasive_species_agency_code,VOCLI,Villiage of Clinton,82
-invasive_species_agency_code,DOCOL,District of Coldstream,83
-invasive_species_agency_code,COCOL,City of Colwood,84
-invasive_species_agency_code,TOCOM,Town of Comox,85
-invasive_species_agency_code,COCOQ,City of Coquitlam,86
-invasive_species_agency_code,COCOU,City of Courtenay,87
-invasive_species_agency_code,COCRA,City of Cranbrook,88
-invasive_species_agency_code,TOCRE,Town of Creston,89
-invasive_species_agency_code,CODAW,City of Dawson Creek,90
-invasive_species_agency_code,CODEL,City of Delta,91
-invasive_species_agency_code,CODUN,City of Duncan ,92
-invasive_species_agency_code,DOELK,District of Elkford,93
-invasive_species_agency_code,COEND,City of Enderby,94
-invasive_species_agency_code,TOESQ,Township of Esquimalt,95
-invasive_species_agency_code,COFER,City of Fernie,96
+invasive_species_agency_code,ACRD,Alberni-Clayoquot Regional District,2
+invasive_species_agency_code,APO,Apollo Forest Products Ltd.,3
+invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,4
+invasive_species_agency_code,BCH,BC Hydro and Power Authority,5
+invasive_species_agency_code,AGRI,BC Ministry of Agriculture and Food,6
+invasive_species_agency_code,CITZ,BC Ministry of Citizens' Services,7
+invasive_species_agency_code,EDU,BC Ministry of Education,8
+invasive_species_agency_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation,9
+invasive_species_agency_code,MOE,BC Ministry of Environment & Climate Change Strategy,10
+invasive_species_agency_code,MOF,BC Ministry of Forests,11
+invasive_species_agency_code,MOH,BC Ministry of Health,12
+invasive_species_agency_code,MIRR,BC Ministry of Indigenous Relations & Reconciliation,13
+invasive_species_agency_code,JERI,BC Ministry of Jobs Economic Recovery and Innovation,14
+invasive_species_agency_code,LWRS,BC Ministry of Land Water Resource Stewardship,15
+invasive_species_agency_code,TACS,BC Ministry of Tourism Arts Culture and Sport,16
+invasive_species_agency_code,MOTI,BC Ministry of Transportation & Infrastructure,17
+invasive_species_agency_code,OGC,BC Oil and Gas Commission,18
+invasive_species_agency_code,BCP,BC Parks,19
+invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,20
+invasive_species_agency_code,BISS,Boundary Invasive Species Society,21
+invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,22
+invasive_species_agency_code,CAN,Canfor,23
+invasive_species_agency_code,CRD,Capital Regional District,24
+invasive_species_agency_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,25
+invasive_species_agency_code,CARD,Cariboo Regional District,26
+invasive_species_agency_code,CAR,Carrier Lumber Ltd.,27
+invasive_species_agency_code,CCRD,Central Coast Regional District,28
+invasive_species_agency_code,CKISS,Central Kootenay Invasive Species Society,29
+invasive_species_agency_code,COABB,City of Abbotsford,30
+invasive_species_agency_code,COARM,City of Armstrong,31
+invasive_species_agency_code,COBUR,City of Burnaby,32
+invasive_species_agency_code,COCAM,City of Campbell River,33
+invasive_species_agency_code,COCAS,City of Castlegar,34
+invasive_species_agency_code,COCHI,City of Chilliwack,35
+invasive_species_agency_code,COCOL,City of Colwood,36
+invasive_species_agency_code,COCOQ,City of Coquitlam,37
+invasive_species_agency_code,COCOU,City of Courtenay,38
+invasive_species_agency_code,COCRA,City of Cranbrook,39
+invasive_species_agency_code,CODAW,City of Dawson Creek,40
+invasive_species_agency_code,CODEL,City of Delta,41
+invasive_species_agency_code,CODUN,City of Duncan ,42
+invasive_species_agency_code,COEND,City of Enderby,43
+invasive_species_agency_code,COFER,City of Fernie,44
+invasive_species_agency_code,COFORT,City of Fort St. John,45
+invasive_species_agency_code,COGRA,City of Grandforks,46
+invasive_species_agency_code,COGRE,City of Greenwood,47
+invasive_species_agency_code,COKAM,City of Kamloops,48
+invasive_species_agency_code,COKEL,City of Kelowna,49
+invasive_species_agency_code,COKIM,City of Kimberley,50
+invasive_species_agency_code,COLANGF,City of Langford,51
+invasive_species_agency_code,COLANGLE,City of Langley,52
+invasive_species_agency_code,COMAP,City of Maple Ridge,53
+invasive_species_agency_code,COMER,City of Merritt,54
+invasive_species_agency_code,COMIS,City of Mission,55
+invasive_species_agency_code,CONAN,City of Nanaimo,56
+invasive_species_agency_code,CONEL,City of Nelson,57
+invasive_species_agency_code,CONEW,City of New Westminister,58
+invasive_species_agency_code,CONOR,City of North Vancouver,59
+invasive_species_agency_code,COPAR,City of Parksville,60
+invasive_species_agency_code,COPEN,City of Penticton,61
+invasive_species_agency_code,COPIT,City of Pitt Meadows,62
+invasive_species_agency_code,COPORALB,City of Port Alberni,63
+invasive_species_agency_code,COPORCOQ,City of Port Coquitlam,64
+invasive_species_agency_code,COPOR,City of Port Moody,65
+invasive_species_agency_code,COPOW,City of Powell River,66
+invasive_species_agency_code,COPRIGE,City of Prince George,67
+invasive_species_agency_code,COPRIRUP,City of Prince Rupert,68
+invasive_species_agency_code,COQUE,City of Quesnel,69
+invasive_species_agency_code,COREV,City of Revelstoke,70
+invasive_species_agency_code,CORIC,City of Richmond,71
+invasive_species_agency_code,COROS,City of Rossland,72
+invasive_species_agency_code,COSAL,City of Salmon Arm,73
+invasive_species_agency_code,COSUR,City of Surrey,74
+invasive_species_agency_code,COTER,City of Terrace,75
+invasive_species_agency_code,COTRA,City of Trail,76
+invasive_species_agency_code,COVAN,City of Vancouver,77
+invasive_species_agency_code,COVER,City of Vernon,78
+invasive_species_agency_code,COVIC,City of Victoria,79
+invasive_species_agency_code,COWES,City of West Kelowna,80
+invasive_species_agency_code,COWHI,City of White Rock,81
+invasive_species_agency_code,COWIL,City of Williams Lake,82
+invasive_species_agency_code,CISC,Coastal Invasive Species Committee Society,83
+invasive_species_agency_code,CSISS,Columbia Shuswap Invasive Species Society,84
+invasive_species_agency_code,CSRD,Columbia Shuswap Regional District,85
+invasive_species_agency_code,CVRD,Cowichan Valley Regional District,86
+invasive_species_agency_code,CPR,CP Rail,87
+invasive_species_agency_code,DND,Department of National Defense,88
+invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,89
+invasive_species_agency_code,DOHMH,District of 100 Mile House,90
+invasive_species_agency_code,DOBAR,District of Barriere,91
+invasive_species_agency_code,DOCEN,District of Central Saanich,92
+invasive_species_agency_code,DOCHE,District of Chetwynd,93
+invasive_species_agency_code,DOCLE,District of Clearwater,94
+invasive_species_agency_code,DOCOL,District of Coldstream,95
+invasive_species_agency_code,DOELK,District of Elkford,96
 invasive_species_agency_code,DOFORT,District of Fort St. James,97
-invasive_species_agency_code,COFORT,City of Fort St. John,98
-invasive_species_agency_code,VOFRA,Village of Fraser Lake,99
-invasive_species_agency_code,VOFRU,Village of Fruitvale,100
-invasive_species_agency_code,TOGIB,Town of Gibsons,101
-invasive_species_agency_code,VOGOL,Village of Gold River,102
-invasive_species_agency_code,TOGOL,Town of Golden,103
-invasive_species_agency_code,COGRA,City of Grandforks,104
-invasive_species_agency_code,VOGRA,Village of Granisle,105
-invasive_species_agency_code,COGRE,City of Greenwood,106
-invasive_species_agency_code,VOHAR,Village of Harrison Hot Springs,107
-invasive_species_agency_code,VOHAZ,Village of Hazelton,108
-invasive_species_agency_code,DOHIG,District of Highlands,109
-invasive_species_agency_code,DOHOP,District of Hope,110
-invasive_species_agency_code,DOHOU,District of Houston,111
-invasive_species_agency_code,DOHUD,District of Hudson's Hope,112
-invasive_species_agency_code,DOINV,District of Invermere,113
-invasive_species_agency_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,114
-invasive_species_agency_code,COKAM,City of Kamloops,115
-invasive_species_agency_code,VOKAS,Village of Kaslo,116
-invasive_species_agency_code,COKEL,City of Kelowna,117
-invasive_species_agency_code,DOKEN,District of Kent,118
-invasive_species_agency_code,VOKER,Village of Keremeos,119
-invasive_species_agency_code,COKIM,City of Kimberley,120
-invasive_species_agency_code,DOKIT,District of Kitimat,121
-invasive_species_agency_code,TOLAD,Town of Ladysmith,122
-invasive_species_agency_code,DOLAK,District of Lake Country,123
-invasive_species_agency_code,TOLAK,Town of Lake Cowichan,124
-invasive_species_agency_code,COLANGF,City of Langford,124
-invasive_species_agency_code,COLANGLE,City of Langley,125
-invasive_species_agency_code,TOLAN,Township of Langley,126
-invasive_species_agency_code,DOLAN,District of Lantzville,127
-invasive_species_agency_code,DOLIL,District of Lillooet,128
-invasive_species_agency_code,VOLIO,Village of Lions Bay,129
-invasive_species_agency_code,DOLOG,District of Logan Lake,130
-invasive_species_agency_code,VOLUM,Village of Lumby,131
-invasive_species_agency_code,VOLYT,Village of Lytton,132
-invasive_species_agency_code,DOMAC,District of Mackenzie,133
-invasive_species_agency_code,COMAP,City of Maple Ridge,134
-invasive_species_agency_code,VOMAS,Village of Masset,135
-invasive_species_agency_code,VOMCB,Village of McBride,136
-invasive_species_agency_code,COMER,City of Merritt,137
-invasive_species_agency_code,DOMET,District of Metchosin,138
-invasive_species_agency_code,VOMID,Village of Midway,139
-invasive_species_agency_code,COMIS,City of Mission,140
-invasive_species_agency_code,VOMON,Village of Montrose,141
-invasive_species_agency_code,VONAK,Village of Nakusp,142
-invasive_species_agency_code,CONAN,City of Nanaimo,143
-invasive_species_agency_code,CONEL,City of Nelson,144
-invasive_species_agency_code,VONEW,Village of New Denver,145
-invasive_species_agency_code,DONEW,District of New Hazelton,146
-invasive_species_agency_code,CONEW,City of New Westminister,147
-invasive_species_agency_code,DONORC,District of North Cowichan,148
-invasive_species_agency_code,DONORS,District of North Saanich,149
-invasive_species_agency_code,CONOR,City of North Vancouver,150
-invasive_species_agency_code,DONOR,District of North Vancouver,151
-invasive_species_agency_code,NOREG,Northern Rockies Regional Municipality ,152
-invasive_species_agency_code,DOOAK,District of Oak Bay,153
-invasive_species_agency_code,TOOLI,Town of Oliver,154
-invasive_species_agency_code,TOOSO,Town of Osoyoos,155
-invasive_species_agency_code,COPAR,City of Parksville,156
-invasive_species_agency_code,DOPEA,District of Peachland ,157
-invasive_species_agency_code,VOPEM,Village of Pemberton,158
-invasive_species_agency_code,COPEN,City of Penticton,159
-invasive_species_agency_code,COPIT,City of Pitt Meadows,160
-invasive_species_agency_code,COPORALB,City of Port Alberni,161
-invasive_species_agency_code,VOPORALICE,Village of Port Alice,162
-invasive_species_agency_code,VOPORCLEM,Village of Port Clements,163
-invasive_species_agency_code,COPORCOQ,City of Port Coquitlam,164
-invasive_species_agency_code,DOPOREDW,District of Port Edward,165
-invasive_species_agency_code,DOPORHARD,District of Port Hardy,166
-invasive_species_agency_code,TOPOR,Town of Port McNeill,167
-invasive_species_agency_code,COPOR,City of Port Moody,168
-invasive_species_agency_code,VOPOU,Village of Pouce Coupe,169
-invasive_species_agency_code,COPOW,City of Powell River,170
-invasive_species_agency_code,COPRIGE,City of Prince George,171
-invasive_species_agency_code,COPRIRUP,City of Prince Rupert,172
-invasive_species_agency_code,TOPRI,Town of Princeton,173
-invasive_species_agency_code,TOQUA,Town of Qualicum Beach,174
-invasive_species_agency_code,VOQUE,Village of Queen Charlotte,175
-invasive_species_agency_code,COQUE,City of Quesnel,176
-invasive_species_agency_code,VORAD,Village of Radium Hot Springs,177
-invasive_species_agency_code,COREV,City of Revelstoke,178
-invasive_species_agency_code,CORIC,City of Richmond,179
-invasive_species_agency_code,COROS,City of Rossland,180
-invasive_species_agency_code,DOSAA,District of Saanich,181
-invasive_species_agency_code,VOSAL,Village of Salmo,182
-invasive_species_agency_code,COSAL,City of Salmon Arm,183
-invasive_species_agency_code,VOSAY,Village of Sayward,184
-invasive_species_agency_code,DOSEC,District of Sechelt,185
-invasive_species_agency_code,SOGOV,Sechelt Indian Government District,186
-invasive_species_agency_code,DOSIC,District of Sicamous,187
-invasive_species_agency_code,TOSID,Town of Sidney,188
-invasive_species_agency_code,VOSIL,Village of Silverton,189
-invasive_species_agency_code,VOSLO,Village of Slocan,190
-invasive_species_agency_code,TOSMI,Town of Smithers,191
-invasive_species_agency_code,DOSOO,District of Sooke,192
-invasive_species_agency_code,TOSPA,Township of Spallumcheen,193
-invasive_species_agency_code,DOSPA,District of Sparwood,194
-invasive_species_agency_code,DOSQU,District of Squamish,195
-invasive_species_agency_code,DOSTE,District of Stewart,196
-invasive_species_agency_code,DOSUM,District of Summerland,197
-invasive_species_agency_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,198
-invasive_species_agency_code,COSUR,City of Surrey,199
-invasive_species_agency_code,VOTAH,Village of Tahsis,200
-invasive_species_agency_code,DOTAY,District of Taylor,201
-invasive_species_agency_code,VOTEL,Village of Telkwa,202
-invasive_species_agency_code,COTER,City of Terrace,203
-invasive_species_agency_code,DOTOF,District of Tofino,204
-invasive_species_agency_code,COTRA,City of Trail,205
-invasive_species_agency_code,DOTUM,District of Tumbler Ridge,206
-invasive_species_agency_code,DOUCL,District of Ucluelet,207
-invasive_species_agency_code,VOVAL,Village of Valemount,208
-invasive_species_agency_code,COVAN,City of Vancouver,209
-invasive_species_agency_code,DOVAN,District of Vanderhoof,210
-invasive_species_agency_code,COVER,City of Vernon,211
-invasive_species_agency_code,COVIC,City of Victoria,212
-invasive_species_agency_code,TOVIE,Town of View Royal,213
-invasive_species_agency_code,VOWAR,Village of Warfield,214
-invasive_species_agency_code,COWES,City of West Kelowna,215
-invasive_species_agency_code,DOWES,District of West Vancouver,216
-invasive_species_agency_code,ROOF ,Resort Municipality of Whistler,217
-invasive_species_agency_code,COWHI,City of White Rock,218
-invasive_species_agency_code,COWIL,City of Williams Lake,219
-invasive_species_agency_code,VOZEB,Village of Zeballos,220
-invasive_species_agency_code,BISS,Boundary Invasive Species Society,221
-invasive_species_agency_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,222
-invasive_species_agency_code,CKISS,Central Kootenay Invasive Species Society,223
-invasive_species_agency_code,CISC,Coastal Invasive Species Committee Society,224
-invasive_species_agency_code,CSISS,Columbia Shuswap Invasive Species Society,225
-invasive_species_agency_code,EKISC,East Kootenay Invasive Species Council,226
-invasive_species_agency_code,FVISS,Fraser Valley Invasive Species Society,227
-invasive_species_agency_code,ISCBC,Invasive Species Council of British Columbia Society,228
-invasive_species_agency_code,ISCMV,Invasive Species Council of Metro Vancouver Society,229
-invasive_species_agency_code,LRISS,Lillooet Regional Invasive Species Society,230
-invasive_species_agency_code,NWIPC,Northwest Invasive Plant Council,231
-invasive_species_agency_code,OASISS,Okanagan and Similkameen Invasive Species Society,232
-invasive_species_agency_code,SSISC,Sea to Sky Invasive Species Council,233
-invasive_species_agency_code, CRD, Capital Regional District,234
-invasive_species_agency_code, CARD, Cariboo Regional District,235
-invasive_species_agency_code, CVRD, Cowichan Valley Regional District,236
-invasive_species_agency_code, RDMW, Regional District of Mount Waddington,237
-invasive_species_agency_code, SCRD, Sunshine Coast Regional District,238
-invasive_species_agency_code, MVRD, Metro Vancouver Regional District,239
-invasive_species_agency_code, TNRD, Thompson Nicola Regional District,240
-invasive_species_agency_code, CSRD, Columbia Shuswap Regional District,241
-invasive_species_agency_code, PRRD, Peace River Regional District,242
-invasive_species_agency_code, FVRD, Fraser Valley Regional District,243
-invasive_species_agency_code, RDNO, Regional District North Okanagan,244
-invasive_species_agency_code, KBRD, Kootenay Boundary Regional District,245
-invasive_species_agency_code, RDCO, Regional District of Central Okanagan,246
-invasive_species_agency_code, ACRD, Alberni-Clayoquot Regional District,247
-invasive_species_agency_code, RDBN, Regional District of Bulkley-Nechako,248
-invasive_species_agency_code, CCRD, Central Coast Regional District,249
-invasive_species_agency_code, RDCK, Regional District of Central Kootenay,250
-invasive_species_agency_code, RDEK, Regional District of East Kootenay,251
-invasive_species_agency_code, RDFFG, Regional District of Fraser-Fort George,252
-invasive_species_agency_code, RDKS, Regional District of Kitimat-Stikine,253
-invasive_species_agency_code, RDN, Regional District of Nanaimo,254
-invasive_species_agency_code, NCRD, North Coast Regional District,255
-invasive_species_agency_code, RDOS, Regional District of Okanagan-Similkameen,256
-invasive_species_agency_code, qRD, qathet Regional District,257
-invasive_species_agency_code, SLRD, Squamish-Lillooet Regional District,258
-invasive_species_agency_code, SRD, Strathcona Regional District,259
-invasive_species_agency_code,ENB,Enbridge Inc.,260
-invasive_species_agency_code,NRQ,Not required,261
+invasive_species_agency_code,DOHIG,District of Highlands,98
+invasive_species_agency_code,DOHOP,District of Hope,99
+invasive_species_agency_code,DOHOU,District of Houston,100
+invasive_species_agency_code,DOHUD,District of Hudson's Hope,101
+invasive_species_agency_code,DOINV,District of Invermere,102
+invasive_species_agency_code,DOKEN,District of Kent,103
+invasive_species_agency_code,DOKIT,District of Kitimat,104
+invasive_species_agency_code,DOLAK,District of Lake Country,105
+invasive_species_agency_code,DOLAN,District of Lantzville,106
+invasive_species_agency_code,DOLIL,District of Lillooet,107
+invasive_species_agency_code,DOLOG,District of Logan Lake,108
+invasive_species_agency_code,DOMAC,District of Mackenzie,109
+invasive_species_agency_code,DOMET,District of Metchosin,110
+invasive_species_agency_code,DONEW,District of New Hazelton,111
+invasive_species_agency_code,DONORC,District of North Cowichan,112
+invasive_species_agency_code,DONORS,District of North Saanich,113
+invasive_species_agency_code,DONOR,District of North Vancouver,114
+invasive_species_agency_code,DOOAK,District of Oak Bay,115
+invasive_species_agency_code,DOPEA,District of Peachland ,116
+invasive_species_agency_code,DOPOREDW,District of Port Edward,117
+invasive_species_agency_code,DOPORHARD,District of Port Hardy,118
+invasive_species_agency_code,DOSAA,District of Saanich,119
+invasive_species_agency_code,DOSEC,District of Sechelt,120
+invasive_species_agency_code,DOSIC,District of Sicamous,121
+invasive_species_agency_code,DOSOO,District of Sooke,122
+invasive_species_agency_code,DOSPA,District of Sparwood,123
+invasive_species_agency_code,DOSQU,District of Squamish,124
+invasive_species_agency_code,DOSTE,District of Stewart,125
+invasive_species_agency_code,DOSUM,District of Summerland,126
+invasive_species_agency_code,DOTAY,District of Taylor,127
+invasive_species_agency_code,DOTOF,District of Tofino,128
+invasive_species_agency_code,DOTUM,District of Tumbler Ridge,129
+invasive_species_agency_code,DOUCL,District of Ucluelet,130
+invasive_species_agency_code,DOVAN,District of Vanderhoof,131
+invasive_species_agency_code,DOWES,District of West Vancouver,132
+invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,133
+invasive_species_agency_code,EKISC,East Kootenay Invasive Species Council,134
+invasive_species_agency_code,ENB,Enbridge Inc.,135
+invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,136
+invasive_species_agency_code,FRS,FortisBC Inc.,137
+invasive_species_agency_code,FVISS,Fraser Valley Invasive Species Society,138
+invasive_species_agency_code,FVRD,Fraser Valley Regional District,139
+invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,140
+invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,141
+invasive_species_agency_code,ISCBC,Invasive Species Council of British Columbia Society,142
+invasive_species_agency_code,ISCMV,Invasive Species Council of Metro Vancouver Society,143
+invasive_species_agency_code,IOOF ,Island Municipality of Bowen Island,144
+invasive_species_agency_code,KMC,Kinder Morgan Canada,145
+invasive_species_agency_code,KBRD,Kootenay Boundary Regional District,146
+invasive_species_agency_code,LM,Lakeland Mills Ltd.,147
+invasive_species_agency_code,LRISS,Lillooet Regional Invasive Species Society,148
+invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,149
+invasive_species_agency_code,LKB,Lower Kootenay Band,150
+invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,151
+invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,152
+invasive_species_agency_code,MVRD,Metro Vancouver Regional District,153
+invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,154
+invasive_species_agency_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,155
+invasive_species_agency_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,156
+invasive_species_agency_code,NCRD,North Coast Regional District,157
+invasive_species_agency_code,NOREG,Northern Rockies Regional Municipality ,158
+invasive_species_agency_code,NWIPC,Northwest Invasive Plant Council,159
+invasive_species_agency_code,NRQ,Not required,160
+invasive_species_agency_code,OASISS,Okanagan and Similkameen Invasive Species Society,161
+invasive_species_agency_code,OIB,Osoyoos Indian Band,162
+invasive_species_agency_code,PCAN,Parks Canada,163
+invasive_species_agency_code,PRRD,Peace River Regional District,164
+invasive_species_agency_code,POTA,Pope and Talbot Ltd.,165
+invasive_species_agency_code,PRIV,Private,166
+invasive_species_agency_code,qRD,qathet Regional District,167
+invasive_species_agency_code,RDNO,Regional District North Okanagan,168
+invasive_species_agency_code,RDBN,Regional District of Bulkley-Nechako,169
+invasive_species_agency_code,RDCK,Regional District of Central Kootenay,170
+invasive_species_agency_code,RDCO,Regional District of Central Okanagan,171
+invasive_species_agency_code,RDEK,Regional District of East Kootenay,172
+invasive_species_agency_code,RDFFG,Regional District of Fraser-Fort George,173
+invasive_species_agency_code,RDKS,Regional District of Kitimat-Stikine,174
+invasive_species_agency_code,RDMW,Regional District of Mount Waddington,175
+invasive_species_agency_code,RDN,Regional District of Nanaimo,176
+invasive_species_agency_code,RDOS,Regional District of Okanagan-Similkameen,177
+invasive_species_agency_code,ROOF ,Resort Municipality of Whistler,178
+invasive_species_agency_code,RPC,Richmond Plywood Corporation Limited,179
+invasive_species_agency_code,RBCM,Royal BC Museum,180
+invasive_species_agency_code,SSISC,Sea to Sky Invasive Species Council,181
+invasive_species_agency_code,SIGD,Sechelt Indian Government District,182
+invasive_species_agency_code,SOGOV,Sechelt Indian Government District,183
+invasive_species_agency_code,SIB,Skeetchestn Indian Band,184
+invasive_species_agency_code,SIFC,Slocan Integral Forestry Cooperative,185
+invasive_species_agency_code,WCE,Spectra Energy,186
+invasive_species_agency_code,SLRD,Squamish-Lillooet Regional District,187
+invasive_species_agency_code,SRD,Strathcona Regional District,188
+invasive_species_agency_code,SCRD,Sunshine Coast Regional District,189
+invasive_species_agency_code,TCP,Teal Cedar Products Ltd.,190
+invasive_species_agency_code,TER,Terasen Gas Inc,191
+invasive_species_agency_code,NCC,The Nature Conservancy of Canada,192
+invasive_species_agency_code,NTBC,The Nature Trust of BC,193
+invasive_species_agency_code,TNIPMC,Thompson Nicola Invasive Plant Management Committee,194
+invasive_species_agency_code,TNRD,Thompson Nicola Regional District,195
+invasive_species_agency_code,TRU,Thompson Rivers University,196
+invasive_species_agency_code,TPIB,Tobacco Plains Indian Band,197
+invasive_species_agency_code,TIL,Tolko Industries Ltd.,198
+invasive_species_agency_code,TOCOM,Town of Comox,199
+invasive_species_agency_code,TOCRE,Town of Creston,200
+invasive_species_agency_code,TOGIB,Town of Gibsons,201
+invasive_species_agency_code,TOGOL,Town of Golden,202
+invasive_species_agency_code,TOLAD,Town of Ladysmith,203
+invasive_species_agency_code,TOLAK,Town of Lake Cowichan,204
+invasive_species_agency_code,TOOLI,Town of Oliver,205
+invasive_species_agency_code,TOOSO,Town of Osoyoos,206
+invasive_species_agency_code,TOPOR,Town of Port McNeill,207
+invasive_species_agency_code,TOPRI,Town of Princeton,208
+invasive_species_agency_code,TOQUA,Town of Qualicum Beach,209
+invasive_species_agency_code,TOSID,Town of Sidney,210
+invasive_species_agency_code,TOSMI,Town of Smithers,211
+invasive_species_agency_code,TOVIE,Town of View Royal,212
+invasive_species_agency_code,TOESQ,Township of Esquimalt,213
+invasive_species_agency_code,TOLAN,Township of Langley,214
+invasive_species_agency_code,TOSPA,Township of Spallumcheen,215
+invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,216
+invasive_species_agency_code,UBC,University of British Columbia,217
+invasive_species_agency_code,VOALE,Village of Alert Bay,218
+invasive_species_agency_code,VOANM,Village of Anmore,219
+invasive_species_agency_code,VOASH,Village of Ashcroft,220
+invasive_species_agency_code,VOBEL,Village of Belcarra,221
+invasive_species_agency_code,VOBUR,Village of Burns Lake,222
+invasive_species_agency_code,VOCAC,Village of Cache Creek,223
+invasive_species_agency_code,VOCAN,Village of Canal Flats,224
+invasive_species_agency_code,VOFRA,Village of Fraser Lake,225
+invasive_species_agency_code,VOFRU,Village of Fruitvale,226
+invasive_species_agency_code,VOGOL,Village of Gold River,227
+invasive_species_agency_code,VOGRA,Village of Granisle,228
+invasive_species_agency_code,VOHAR,Village of Harrison Hot Springs,229
+invasive_species_agency_code,VOHAZ,Village of Hazelton,230
+invasive_species_agency_code,VOKAS,Village of Kaslo,231
+invasive_species_agency_code,VOKER,Village of Keremeos,232
+invasive_species_agency_code,VOLIO,Village of Lions Bay,233
+invasive_species_agency_code,VOLUM,Village of Lumby,234
+invasive_species_agency_code,VOLYT,Village of Lytton,235
+invasive_species_agency_code,VOMAS,Village of Masset,236
+invasive_species_agency_code,VOMCB,Village of McBride,237
+invasive_species_agency_code,VOMID,Village of Midway,238
+invasive_species_agency_code,VOMON,Village of Montrose,239
+invasive_species_agency_code,VONAK,Village of Nakusp,240
+invasive_species_agency_code,VONEW,Village of New Denver,241
+invasive_species_agency_code,VOPEM,Village of Pemberton,242
+invasive_species_agency_code,VOPORALICE,Village of Port Alice,243
+invasive_species_agency_code,VOPORCLEM,Village of Port Clements,244
+invasive_species_agency_code,VOPOU,Village of Pouce Coupe,245
+invasive_species_agency_code,VOQUE,Village of Queen Charlotte,246
+invasive_species_agency_code,VORAD,Village of Radium Hot Springs,247
+invasive_species_agency_code,VOSAL,Village of Salmo,248
+invasive_species_agency_code,VOSAY,Village of Sayward,249
+invasive_species_agency_code,VOSIL,Village of Silverton,250
+invasive_species_agency_code,VOSLO,Village of Slocan,251
+invasive_species_agency_code,VOTAH,Village of Tahsis,252
+invasive_species_agency_code,VOTEL,Village of Telkwa,253
+invasive_species_agency_code,VOVAL,Village of Valemount,254
+invasive_species_agency_code,VOWAR,Village of Warfield,255
+invasive_species_agency_code,VOZEB,Village of Zeballos,256
+invasive_species_agency_code,VOCHA,Villiage of Chase,257
+invasive_species_agency_code,VOCLI,Villiage of Clinton,258
+invasive_species_agency_code,WFM,West Fraser Mills Ltd.,259
+invasive_species_agency_code,WFP,Western Forest Products Inc.,260
+invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,261
+invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,262
 jurisdiction_code,MOF,Ministry of Forests,1
 jurisdiction_code,MOTI,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
@@ -1070,8 +1071,8 @@ jurisdiction_code,RD,Regional District owned land,25
 jurisdiction_code,OG,Oil and Gas Companies,26
 jurisdiction_code,PNG,Pacific Northern Gas,27
 jurisdiction_code,TRP,TransCanada Pipelines,28
-jurisdiction_code, LWRS, Ministry of Land Water Resource Stewardship,29
-jurisdiction_code, AAFC, Agriculture and Agri-Food Canada,30
+jurisdiction_code,LWRS,Ministry of Land Water Resource Stewardship,29
+jurisdiction_code,AAFC,Agriculture and Agri-Food Canada,30
 service_license_code,0,00000 BC Government Ministries,1
 service_license_code,19603,19603 A.R.M. CONTRACTORS,2
 service_license_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,3
@@ -1518,291 +1519,290 @@ invasive_plant_code_withbiocontrol,SJ,St. John's wort/Saint John's wort/ Goatwee
 invasive_plant_code_withbiocontrol,TR,Tansy ragwort (SENE JAC Senecio jacobaea),35
 invasive_plant_code_withbiocontrol,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),36
 invasive_plant_code_withbiocontrol,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),37
-employer_code,AEST,BC Ministry of Advanced Education and Skills Training,1
-employer_code,AGRI,BC Ministry of Agriculture and Food,2
-employer_code,AG,BC Attorney General,3
-employer_code,CFD,BC Ministry of Children & Family Development,4
-employer_code,CITZ,BC Ministry of Citizens' Services,5
-employer_code,EDU,BC Ministry of Education,6
-employer_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation,7
-employer_code,MOE,BC Ministry of Environment & Climate Change Strategy,8
-employer_code,FIN,BC Ministry of Finance,9
-employer_code,MOF,BC Ministry of Forests,10
-employer_code,MOH,BC Ministry of Health,11
-employer_code,MIRR,BC Ministry of Indigenous Relations & Reconciliation,12
-employer_code,JERI,BC Ministry of Jobs Economic Recovery and Innovation,13
-employer_code,LAB,BC Ministry of Labour,14
-employer_code,MHA,BC Ministry of Mental Health & Addictions,15
-employer_code,MUNI,BC Ministry of Municipal Affairs,16
-employer_code,PSSG,BC Ministry of Public Safety & Solicitor General & Emergency B.C.,17
-employer_code,SDPR,BC Ministry of Social Development & Poverty Reduction,18
-employer_code,TACS,BC Ministry of Tourism Arts Culture and Sport,19
-employer_code,MOTI,BC Ministry of Transportation & Infrastructure,20
+employer_code,AA,A & A Trading (HAIDA GWAII) LTD.,1
+employer_code,ARC,A Rocha Canada,2
+employer_code,AAFC,Agriculture and Agri-Food Canada,3
+employer_code,ACRD,Alberni-Clayoquot Regional District,4
+employer_code,ASP,Asplundh Canada ULC,5
+employer_code,AG,BC Attorney General,6
+employer_code,BCH,BC Hydro and Power Authority,7
+employer_code,AEST,BC Ministry of Advanced Education and Skills Training,8
+employer_code,AGRI,BC Ministry of Agriculture and Food,9
+employer_code,CFD,BC Ministry of Children & Family Development,10
+employer_code,CITZ,BC Ministry of Citizens' Services,11
+employer_code,EDU,BC Ministry of Education,12
+employer_code,EMLCI,BC Ministry of Energy Mines and Low Carbon Innovation,13
+employer_code,MOE,BC Ministry of Environment & Climate Change Strategy,14
+employer_code,FIN,BC Ministry of Finance,15
+employer_code,MOF,BC Ministry of Forests,16
+employer_code,MOH,BC Ministry of Health,17
+employer_code,MIRR,BC Ministry of Indigenous Relations & Reconciliation,18
+employer_code,JERI,BC Ministry of Jobs Economic Recovery and Innovation,19
+employer_code,LAB,BC Ministry of Labour,20
 employer_code,LWRS,BC Ministry of Land Water and Resource Stewardship,21
-employer_code,BCPARKS, BC Parks,22
-employer_code,DOHMH,District of 100 Mile House,21
-employer_code,COABB,City of Abbotsford,22
-employer_code,VOALE,Village of Alert Bay,23
-employer_code,VOANM,Village of Anmore,24
-employer_code,COARM,City of Armstrong,25
-employer_code,VOASH,Village of Ashcroft,26
-employer_code,DOBAR,District of Barriere,27
-employer_code,VOBEL,Village of Belcarra,28
-employer_code,IOOF,Island Municipality of Bowen Island,29
-employer_code,COBUR,City of Burnaby,30
-employer_code,VOBUR,Village of Burns Lake,31
-employer_code,VOCAC,Village of Cache Creek,32
-employer_code,COCAM,City of Campbell River,33
-employer_code,VOCAN,Village of Canal Flats,34
-employer_code,COCAS,City of Castlegar,35
-employer_code,DOCEN,District of Central Saanich,36
-employer_code,VOCHA,Village of Chase,37
-employer_code,DOCHE,District of Chetwynd,38
-employer_code,COCHI,City of Chilliwack,39
-employer_code,DOCLE,District of Clearwater,40
-employer_code,VOCLI,Village of Clinton,41
-employer_code,DOCOL,District of Coldstream,42
+employer_code,MHA,BC Ministry of Mental Health & Addictions,22
+employer_code,MUNI,BC Ministry of Municipal Affairs,23
+employer_code,PSSG,BC Ministry of Public Safety & Solicitor General & Emergency B.C.,24
+employer_code,SDPR,BC Ministry of Social Development & Poverty Reduction,25
+employer_code,TACS,BC Ministry of Tourism Arts Culture and Sport,26
+employer_code,MOTI,BC Ministry of Transportation & Infrastructure,27
+employer_code,BCP,BC Parks,28
+employer_code,BCTS,BC Timber Sales,29
+employer_code,BISS,Boundary Invasive Species Society,30
+employer_code,CFP,Canadian Forest Products Ltd.,31
+employer_code,CRD,Capital Regional District,32
+employer_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,33
+employer_code,CARD,Cariboo Regional District,34
+employer_code,CCRD,Central Coast Regional District,35
+employer_code,CKISS,Central Kootenay Invasive Species Society,36
+employer_code,COABB,City of Abbotsford,37
+employer_code,COARM,City of Armstrong,38
+employer_code,COBUR,City of Burnaby,39
+employer_code,COCAM,City of Campbell River,40
+employer_code,COCAS,City of Castlegar,41
+employer_code,COCHI,City of Chilliwack,42
 employer_code,COCOL,City of Colwood,43
-employer_code,TOCOM,Town of Comox,44
-employer_code,COCOQ,City of Coquitlam,45
-employer_code,COCOU,City of Courtenay,46
-employer_code,COCRA,City of Cranbrook,47
-employer_code,TOCRE,Town of Creston,48
-employer_code,CODAW,City of Dawson Creek,49
-employer_code,CODEL,City of Delta,50
-employer_code,CODUN,City of Duncan,51
-employer_code,DOELK,District of Elkford,52
-employer_code,COEND,City of Enderby,53
-employer_code,TOESQ,Township of Esquimalt,54
-employer_code,COFER,City of Fernie,55
-employer_code,DOFORT,District of Fort St. James,56
-employer_code,COFORT,City of Fort St. John,57
-employer_code,VOFRA,Village of Fraser Lake,58
-employer_code,VOFRU,Village of Fruitvale,59
-employer_code,TOGIB,Town of Gibsons,60
-employer_code,VOGOL,Village of Gold River,61
-employer_code,TOGOL,Town of Golden,62
-employer_code,COGRA,City of Grandforks,63
-employer_code,VOGRA,Village of Granisle,64
-employer_code,COGRE,City of Greenwood,65
-employer_code,VOHAR,Village of Harrison Hot Springs,66
-employer_code,VOHAZ,Village of Hazelton,67
-employer_code,DOHIG,District of Highlands,68
-employer_code,DOHOP,District of Hope,69
-employer_code,DOHOU,District of Houston,70
-employer_code,DOHUD,District of Hudson's Hope,71
-employer_code,DOINV,District of Invermere,72
-employer_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,73
-employer_code,COKAM,City of Kamloops,74
-employer_code,VOKAS,Village of Kaslo,75
-employer_code,COKEL,City of Kelowna,76
-employer_code,DOKEN,District of Kent,77
-employer_code,VOKER,Village of Keremeos,78
-employer_code,COKIM,City of Kimberley,79
-employer_code,DOKIT,District of Kitimat,80
-employer_code,TOLAD,Town of Ladysmith,81
-employer_code,DOLAK,District of Lake Country,82
-employer_code,TOLAK,Town of Lake Cowichan,83
-employer_code,COLANGF,City of Langford,84
-employer_code,COLANGLE,City of Langley,85
-employer_code,TOLAN,Township of Langley,86
-employer_code,DOLAN,District of Lantzville,87
-employer_code,DOLIL,District of Lillooet,88
-employer_code,VOLIO,Village of Lions Bay,89
-employer_code,DOLOG,District of Logan Lake,90
-employer_code,VOLUM,Village of Lumby,91
-employer_code,VOLYT,Village of Lytton,92
-employer_code,DOMAC,District of Mackenzie,93
-employer_code,COMAP,City of Maple Ridge,94
-employer_code,VOMAS,Village of Masset,95
-employer_code,VOMCB,Village of McBride,96
-employer_code,COMER,City of Merritt,97
-employer_code,DOMET,District of Metchosin,98
-employer_code,VOMID,Village of Midway,99
-employer_code,COMIS,City of Mission,100
-employer_code,VOMON,Village of Montrose,101
-employer_code,VONAK,Village of Nakusp,102
-employer_code,CONAN,City of Nanaimo,103
-employer_code,CONEL,City of Nelson,104
-employer_code,VONEW,Village of New Denver,105
-employer_code,DONEW,District of New Hazelton,106
-employer_code,CONEW,City of New Westminister,107
-employer_code,DONORC,District of North Cowichan,108
-employer_code,DONORS,District of North Saanich,109
-employer_code,CONOR,City of North Vancouver,110
-employer_code,DONOR,District of North Vancouver,111
-employer_code,NRRM,Northern Rockies Regional Municipality,112
-employer_code,DOOAK,District of Oak Bay,113
-employer_code,TOOLI,Town of Oliver,114
-employer_code,TOOSO,Town of Osoyoos,115
-employer_code,COPAR,City of Parksville,116
-employer_code,DOPEA,District of Peachland,117
-employer_code,VOPEM,Village of Pemberton,118
-employer_code,COPEN,City of Penticton,119
-employer_code,COPIT,City of Pitt Meadows,120
-employer_code,COPORALB,City of Port Alberni,121
-employer_code,VOPORALICE,Village of Port Alice,122
-employer_code,VOPORCLEM,Village of Port Clements,123
-employer_code,COPORCOQ,City of Port Coquitlam,124
-employer_code,DOPOREDW,District of Port Edward,125
-employer_code,DOPORHARD,District of Port Hardy,126
-employer_code,TOPOR,Town of Port McNeill,127
-employer_code,COPOR,City of Port Moody,128
-employer_code,VOPOU,Village of Pouce Coupe,129
-employer_code,COPOW,City of Powell River,130
-employer_code,COPRIGE,City of Prince George,131
-employer_code,COPRIRUP,City of Prince Rupert,132
-employer_code,TOPRI,Town of Princeton,133
-employer_code,TOQUA,Town of Qualicum Beach,134
-employer_code,VOQUE,Village of Queen Charlotte,135
-employer_code,COQUE,City of Quesnel,136
-employer_code,VORAD,Village of Radium Hot Springs,137
-employer_code,COREV,City of Revelstoke,138
-employer_code,CORIC,City of Richmond,139
-employer_code,COROS,City of Rossland,140
-employer_code,DOSAA,District of Saanich,141
-employer_code,VOSAL,Village of Salmo,142
-employer_code,COSAL,City of Salmon Arm,143
-employer_code,VOSAY,Village of Sayward,144
-employer_code,DOSEC,District of Sechelt,145
-employer_code,SOGOV,Sechelt Indian Government District,146
-employer_code,DOSIC,District of Sicamous,147
-employer_code,TOSID,Town of Sidney,148
-employer_code,VOSIL,Village of Silverton,149
-employer_code,VOSLO,Village of Slocan,150
-employer_code,TOSMI,Town of Smithers,151
-employer_code,DOSOO,District of Sooke,152
-employer_code,TOSPA,Township of Spallumcheen,153
-employer_code,DOSPA,District of Sparwood,154
-employer_code,DOSQU,District of Squamish,155
-employer_code,DOSTE,District of Stewart,156
-employer_code,DOSUM,District of Summerland,157
-employer_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,158
-employer_code,COSUR,City of Surrey,159
-employer_code,VOTAH,Village of Tahsis,160
-employer_code,DOTAY,District of Taylor,161
-employer_code,VOTEL,Village of Telkwa,162
-employer_code,COTER,City of Terrace,163
-employer_code,DOTOF,District of Tofino,164
-employer_code,COTRA,City of Trail,165
-employer_code,DOTUM,District of Tumbler Ridge,166
-employer_code,DOUCL,District of Ucluelet,167
-employer_code,VOVAL,Village of Valemount,168
-employer_code,COVAN,City of Vancouver,169
-employer_code,DOVAN,District of Vanderhoof,170
-employer_code,COVER,City of Vernon,171
-employer_code,COVIC,City of Victoria,172
-employer_code,TOVIE,Town of View Royal,173
-employer_code,VOWAR,Village of Warfield,174
-employer_code,COWES,City of West Kelowna,175
-employer_code,DOWES,District of West Vancouver,176
-employer_code,ROOF,Resort Municipality of Whistler,177
-employer_code,COWHI,City of White Rock,178
-employer_code,COWIL,City of Williams Lake,179
-employer_code,VOZEB,Village of Zeballos,180
-employer_code,BISS,Boundary Invasive Species Society,181
-employer_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,182
-employer_code,CKISS,Central Kootenay Invasive Species Society,183
-employer_code,CISC,Coastal Invasive Species Committee Society,184
-employer_code,CSISS,Columbia Shuswap Invasive Species Society,185
-employer_code,EKISS,East Kootenay Invasive Species Council,186
-employer_code,FVISS,Fraser Valley Invasive Species Society,187
-employer_code,ISCBC,Invasive Species Council of British Columbia Society,188
-employer_code,ISCMV,Invasive Species Council of Metro Vancouver Society,189
-employer_code,LRISS,Lillooet Regional Invasive Species Society,190
-employer_code,NWIPC,Northwest Invasive Plant Council,191
-employer_code,OOSIM,Okanagan and Similkameen Invasive Species Society,192
-employer_code,SSISC,Sea to Sky Invasive Species Council,193
-employer_code,TNIPMC,Thompson Nicola Invasive Plant Management Committee,194
-employer_code,PCAN,Parks Canada,195
-employer_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,196
-employer_code,TIL,Tolko Industries Ltd.,197
-employer_code,CFP,Canadian Forest Products Ltd.,198
-employer_code,GBL,Gorman Brothers Lumber Ltd.,199
-employer_code,LML,Lakeland Mills Ltd.,200
-employer_code,IFC,Interfor Corporation,201
-employer_code,UBC,University of British Columbia,202
-employer_code,TTL,Tanizul Timber Ltd.,203
-employer_code,LPC,Louisiana-Pacific Canada Ltd.,204
-employer_code,WCE,Westcoast Energy Inc.,205
-employer_code,SIB,Skeetchestn Indian Band,206
-employer_code,NCC,The Nature Conservancy of Canada,207
-employer_code,LKB,Lower Kootenay Band,208
-employer_code,BCH,BC Hydro and Power Authority,209
-employer_code,WFM,West Fraser Mills Ltd.,210
-employer_code,TCP,Teal Cedar Products Ltd.,211
-employer_code,JPE,Juno Peak Enterprises Ltd.,212
-employer_code,TRU,Thompson Rivers University,213
-employer_code,WFP,Western Forest Products Inc.,214
-employer_code,SIF,Slocan Integral Forestry Cooperative,215
+employer_code,COCOQ,City of Coquitlam,44
+employer_code,COCOU,City of Courtenay,45
+employer_code,COCRA,City of Cranbrook,46
+employer_code,CODAW,City of Dawson Creek,47
+employer_code,CODEL,City of Delta,48
+employer_code,CODUN,City of Duncan,49
+employer_code,COEND,City of Enderby,50
+employer_code,COFER,City of Fernie,51
+employer_code,COFORT,City of Fort St. John,52
+employer_code,COGRA,City of Grandforks,53
+employer_code,COGRE,City of Greenwood,54
+employer_code,COKAM,City of Kamloops,55
+employer_code,COKEL,City of Kelowna,56
+employer_code,COKIM,City of Kimberley,57
+employer_code,COLANGF,City of Langford,58
+employer_code,COLANGLE,City of Langley,59
+employer_code,COMAP,City of Maple Ridge,60
+employer_code,COMER,City of Merritt,61
+employer_code,COMIS,City of Mission,62
+employer_code,CONAN,City of Nanaimo,63
+employer_code,CONEL,City of Nelson,64
+employer_code,CONEW,City of New Westminister,65
+employer_code,CONOR,City of North Vancouver,66
+employer_code,COPAR,City of Parksville,67
+employer_code,COPEN,City of Penticton,68
+employer_code,COPIT,City of Pitt Meadows,69
+employer_code,COPORALB,City of Port Alberni,70
+employer_code,COPORCOQ,City of Port Coquitlam,71
+employer_code,COPOR,City of Port Moody,72
+employer_code,COPOW,City of Powell River,73
+employer_code,COPRIGE,City of Prince George,74
+employer_code,COPRIRUP,City of Prince Rupert,75
+employer_code,COQUE,City of Quesnel,76
+employer_code,COREV,City of Revelstoke,77
+employer_code,CORIC,City of Richmond,78
+employer_code,COROS,City of Rossland,79
+employer_code,COSAL,City of Salmon Arm,80
+employer_code,COSUR,City of Surrey,81
+employer_code,COTER,City of Terrace,82
+employer_code,COTRA,City of Trail,83
+employer_code,COVAN,City of Vancouver,84
+employer_code,COVER,City of Vernon,85
+employer_code,COVIC,City of Victoria,86
+employer_code,COWES,City of West Kelowna,87
+employer_code,COWHI,City of White Rock,88
+employer_code,COWIL,City of Williams Lake,89
+employer_code,CISC,Coastal Invasive Species Committee Society,90
+employer_code,CRE,CoastRange Environmental Ltd.,91
+employer_code,CSISS,Columbia Shuswap Invasive Species Society,92
+employer_code,CSRD,Columbia Shuswap Regional District,93
+employer_code,CFGP,Cortes Forestry General Partnership,94
+employer_code,CVRD,Cowichan Valley Regional District,95
+employer_code,CPR,CP Rail,96
+employer_code,CVWMA,Creston Valley Wildlife Management Area,97
+employer_code,DND,Department of National Defense,98
+employer_code,DOHMH,District of 100 Mile House,99
+employer_code,DOBAR,District of Barriere,100
+employer_code,DOCEN,District of Central Saanich,101
+employer_code,DOCHE,District of Chetwynd,102
+employer_code,DOCLE,District of Clearwater,103
+employer_code,DOCOL,District of Coldstream,104
+employer_code,DOELK,District of Elkford,105
+employer_code,DOFORT,District of Fort St. James,106
+employer_code,DOHIG,District of Highlands,107
+employer_code,DOHOP,District of Hope,108
+employer_code,DOHOU,District of Houston,109
+employer_code,DOHUD,District of Hudson's Hope,110
+employer_code,DOINV,District of Invermere,111
+employer_code,DOKEN,District of Kent,112
+employer_code,DOKIT,District of Kitimat,113
+employer_code,DOLAK,District of Lake Country,114
+employer_code,DOLAN,District of Lantzville,115
+employer_code,DOLIL,District of Lillooet,116
+employer_code,DOLOG,District of Logan Lake,117
+employer_code,DOMAC,District of Mackenzie,118
+employer_code,DOMET,District of Metchosin,119
+employer_code,DONEW,District of New Hazelton,120
+employer_code,DONORC,District of North Cowichan,121
+employer_code,DONORS,District of North Saanich,122
+employer_code,DONOR,District of North Vancouver,123
+employer_code,DOOAK,District of Oak Bay,124
+employer_code,DOPEA,District of Peachland,125
+employer_code,DOPOREDW,District of Port Edward,126
+employer_code,DOPORHARD,District of Port Hardy,127
+employer_code,DOSAA,District of Saanich,128
+employer_code,DOSEC,District of Sechelt,129
+employer_code,DOSIC,District of Sicamous,130
+employer_code,DOSOO,District of Sooke,131
+employer_code,DOSPA,District of Sparwood,132
+employer_code,DOSQU,District of Squamish,133
+employer_code,DOSTE,District of Stewart,134
+employer_code,DOSUM,District of Summerland,135
+employer_code,DOTAY,District of Taylor,136
+employer_code,DOTOF,District of Tofino,137
+employer_code,DOTUM,District of Tumbler Ridge,138
+employer_code,DOUCL,District of Ucluelet,139
+employer_code,DOVAN,District of Vanderhoof,140
+employer_code,DOWES,District of West Vancouver,141
+employer_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,142
+employer_code,EKISS,East Kootenay Invasive Species Council,143
+employer_code,ESI,Econics Services Inc.,144
+employer_code,EEC,Ecoscape Environmental Consultants Ltd.,145
+employer_code,ECCC,Environment and Climate Change Canada,146
+employer_code,FRS,FortisBC Inc.,147
+employer_code,FVISS,Fraser Valley Invasive Species Society,148
+employer_code,FVRD,Fraser Valley Regional District,149
+employer_code,GFS,Generous Forest Services,150
+employer_code,Gold,Golder Associates Ltd.,151
+employer_code,GBL,Gorman Brothers Lumber Ltd.,152
+employer_code,HC,Hatfield Consultants,153
+employer_code,HMV,High Mountain Ventures Ltd.,154
+employer_code,IFC,Interfor Corporation,155
+employer_code,ISCBC,Invasive Species Council of British Columbia Society,156
+employer_code,ISCMV,Invasive Species Council of Metro Vancouver Society,157
+employer_code,IOOF,Island Municipality of Bowen Island,158
+employer_code,JPE,Juno Peak Enterprises Ltd.,159
+employer_code,KMC,Kinder Morgan Canada,160
+employer_code,KBRD,Kootenay Boundary Regional District,161
+employer_code,KGM,Kootenay Ground Maintenance,162
+employer_code,KWIK,Kwikwetlem First Nation,163
+employer_code,LML,Lakeland Mills Ltd.,164
+employer_code,LRISS,Lillooet Regional Invasive Species Society,165
+employer_code,LPC,Louisiana-Pacific Canada Ltd.,166
+employer_code,LKB,Lower Kootenay Band,167
+employer_code,MSI,Matrix Solutions Inc.,168
+employer_code,MLMC,McLeod Lake Mackenzie Community Forest,169
+employer_code,MRMC,McTavish Resource & Management Consultants Ltd.,170
+employer_code,MVRD,Metro Vancouver Regional District,171
+employer_code,MBL,Morrow Bioscience Ltd.,172
+employer_code,MFM,Mosaic Forest Management,173
+employer_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,174
+employer_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,175
+employer_code,NCRD,North Coast Regional District,176
+employer_code,NRRM,Northern Rockies Regional Municipality,177
+employer_code,NWIPC,Northwest Invasive Plant Council,178
+employer_code,NRQ,Not required,179
+employer_code,NRE,Ntityix Resources,180
+employer_code,OOSIM,Okanagan and Similkameen Invasive Species Society,181
+employer_code,PCAN,Parks Canada,182
+employer_code,PEL,Pathfinder Endeavours Ltd.,183
+employer_code,PRRD,Peace River Regional District,184
+employer_code,qRD,qathet Regional District,185
+employer_code,QTS,Quartech Systems,186
+employer_code,RDNO,Regional District North Okanagan,187
+employer_code,RDBN,Regional District of Bulkley-Nechako,188
+employer_code,RDCK,Regional District of Central Kootenay,189
+employer_code,RDCO,Regional District of Central Okanagan,190
+employer_code,RDEK,Regional District of East Kootenay,191
+employer_code,RDFFG,Regional District of Fraser-Fort George,192
+employer_code,RDKS,Regional District of Kitimat-Stikine,193
+employer_code,RDMW,Regional District of Mount Waddington,194
+employer_code,RDN,Regional District of Nanaimo,195
+employer_code,RDOS,Regional District of Okanagan-Similkameen,196
+employer_code,ROOF,Resort Municipality of Whistler,197
+employer_code,RBCM,Royal BC Museum,198
+employer_code,SSISC,Sea to Sky Invasive Species Council,199
+employer_code,SOGOV,Sechelt Indian Government District,200
+employer_code,SIB,Skeetchestn Indian Band,201
+employer_code,SIF,Slocan Integral Forestry Cooperative,202
+employer_code,SNC,SNC-Lavalin Inc.,203
+employer_code,SFC,Somerville Forestry Consulting,204
+employer_code,SRG,Spectrum Resource Group Inc.,205
+employer_code,SLRD,Squamish-Lillooet Regional District,206
+employer_code,SRD,Strathcona Regional District,207
+employer_code,SCRD,Sunshine Coast Regional District,208
+employer_code,TTL,Tanizul Timber Ltd.,209
+employer_code,TCP,Teal Cedar Products Ltd.,210
+employer_code,NCC,The Nature Conservancy of Canada,211
+employer_code,NTBC,The Nature Trust of BC,212
+employer_code,TNIPMC,Thompson Nicola Invasive Plant Management Committee,213
+employer_code,TNRD,Thompson Nicola Regional District,214
+employer_code,TRU,Thompson Rivers University,215
 employer_code,TIB,Tobacco Plains Indian Band,216
-employer_code,NTBC,The Nature Trust of BC,217
-employer_code,AAFC,Agriculture and Agri-Food Canada,218
-employer_code,CFGP,Cortes Forestry General Partnership,219
-employer_code,ARC,A Rocha Canada,220
-employer_code,BCP,BC Parks,221
-employer_code,QTS,Quartech Systems,222
-employer_code,HMV,High Mountain Ventures Ltd.,223
-employer_code,MBL,Morrow Bioscience Ltd.,224
-employer_code,MFM,Mosaic Forest Management,225
-employer_code,NRE,Ntityix Resources,226
-employer_code,BCTS,BC Timber Sales,227
-employer_code,CRD,Capital Regional District,228
-employer_code,CARD,Cariboo Regional District,229
-employer_code,CVRD,Cowichan Valley Regional District,230
-employer_code,RDMW,Regional District of Mount Waddington,231
-employer_code,SCRD,Sunshine Coast Regional District,232
-employer_code,MVRD,Metro Vancouver Regional District,233
-employer_code,TNRD,Thompson Nicola Regional District,234
-employer_code,CSRD,Columbia Shuswap Regional District,235
-employer_code,PRRD,Peace River Regional District,236
-employer_code,FVRD,Fraser Valley Regional District,237
-employer_code,RDNO,Regional District North Okanagan,238
-employer_code,KBRD,Kootenay Boundary Regional District,239
-employer_code,RDCO,Regional District of Central Okanagan,240
-employer_code,RBCM,Royal BC Museum,241
-employer_code,WSP,Whitestar Property Services Ltd.,242
-employer_code,PEL,Pathfinder Endeavours Ltd.,243
-employer_code,ESI,Econics Services Inc.,244
-employer_code,SNC,SNC-Lavalin Inc.,245
-employer_code,SRG,Spectrum Resource Group Inc.,246
-employer_code,ACRD,Alberni-Clayoquot Regional District,247
-employer_code,RDBN,Regional District of Bulkley-Nechako,248
-employer_code,CCRD,Central Coast Regional District,249
-employer_code,RDCK,Regional District of Central Kootenay,250
-employer_code,RDEK,Regional District of East Kootenay,251
-employer_code,RDFFG,Regional District of Fraser-Fort George,252
-employer_code,RDKS,Regional District of Kitimat-Stikine,253
-employer_code,RDN,Regional District of Nanaimo,254
-employer_code,NCRD,North Coast Regional District,255
-employer_code,RDOS,Regional District of Okanagan-Similkameen,256
-employer_code,qRD,qathet Regional District,257
-employer_code,SLRD,Squamish-Lillooet Regional District,258
-employer_code,SRD,Strathcona Regional District,259
-employer_code,AA,A & A Trading (HAIDA GWAII) LTD.,260
-employer_code,TTM,Ts'elxweyeqw Tribe Management Ltd.,261
-employer_code,Gold,Golder Associates Ltd.,262
-employer_code,WFS,Woodlot Forestry Services Ltd.,263
-employer_code,MRMC,McTavish Resource & Management Consultants Ltd.,264
-employer_code,SFC,Somerville Forestry Consulting,265
-employer_code,KWIK,Kwikwetlem First Nation,266
-employer_code,EEC,Ecoscape Environmental Consultants Ltd.,267
-employer_code,KGM,Kootenay Ground Maintenance,268
-employer_code,ECCC,Environment and Climate Change Canada,269
-employer_code,TS,Trailmark Systems Inc.,270
-employer_code,FRS,FortisBC Inc.,271
-employer_code,CPR,CP Rail,272
-employer_code,DND,Department of National Defense,273
-employer_code,KMC,Kinder Morgan Canada,274
-employer_code,ASP,Asplundh Canada ULC,275
-employer_code,CRE,CoastRange Environmental Ltd.,276
-employer_code,MLMC,McLeod Lake Mackenzie Community Forest,277
-employer_code,CVWMA,Creston Valley Wildlife Management Area,278
-employer_code,HC,Hatfield Consultants,279
-employer_code,WSPG,WSP Global Inc.,280
-employer_code,GFS,Generous Forest Services,281
-employer_code,MSI,Matrix Solutions Inc.,282
-employer_code,NRQ,Not required,283
+employer_code,TIL,Tolko Industries Ltd.,217
+employer_code,TOCOM,Town of Comox,218
+employer_code,TOCRE,Town of Creston,219
+employer_code,TOGIB,Town of Gibsons,220
+employer_code,TOGOL,Town of Golden,221
+employer_code,TOLAD,Town of Ladysmith,222
+employer_code,TOLAK,Town of Lake Cowichan,223
+employer_code,TOOLI,Town of Oliver,224
+employer_code,TOOSO,Town of Osoyoos,225
+employer_code,TOPOR,Town of Port McNeill,226
+employer_code,TOPRI,Town of Princeton,227
+employer_code,TOQUA,Town of Qualicum Beach,228
+employer_code,TOSID,Town of Sidney,229
+employer_code,TOSMI,Town of Smithers,230
+employer_code,TOVIE,Town of View Royal,231
+employer_code,TOESQ,Township of Esquimalt,232
+employer_code,TOLAN,Township of Langley,233
+employer_code,TOSPA,Township of Spallumcheen,234
+employer_code,TS,Trailmark Systems Inc.,235
+employer_code,TTM,Ts'elxweyeqw Tribe Management Ltd.,236
+employer_code,UBC,University of British Columbia,237
+employer_code,VOALE,Village of Alert Bay,238
+employer_code,VOANM,Village of Anmore,239
+employer_code,VOASH,Village of Ashcroft,240
+employer_code,VOBEL,Village of Belcarra,241
+employer_code,VOBUR,Village of Burns Lake,242
+employer_code,VOCAC,Village of Cache Creek,243
+employer_code,VOCAN,Village of Canal Flats,244
+employer_code,VOCHA,Village of Chase,245
+employer_code,VOCLI,Village of Clinton,246
+employer_code,VOFRA,Village of Fraser Lake,247
+employer_code,VOFRU,Village of Fruitvale,248
+employer_code,VOGOL,Village of Gold River,249
+employer_code,VOGRA,Village of Granisle,250
+employer_code,VOHAR,Village of Harrison Hot Springs,251
+employer_code,VOHAZ,Village of Hazelton,252
+employer_code,VOKAS,Village of Kaslo,253
+employer_code,VOKER,Village of Keremeos,254
+employer_code,VOLIO,Village of Lions Bay,255
+employer_code,VOLUM,Village of Lumby,256
+employer_code,VOLYT,Village of Lytton,257
+employer_code,VOMAS,Village of Masset,258
+employer_code,VOMCB,Village of McBride,259
+employer_code,VOMID,Village of Midway,260
+employer_code,VOMON,Village of Montrose,261
+employer_code,VONAK,Village of Nakusp,262
+employer_code,VONEW,Village of New Denver,263
+employer_code,VOPEM,Village of Pemberton,264
+employer_code,VOPORALICE,Village of Port Alice,265
+employer_code,VOPORCLEM,Village of Port Clements,266
+employer_code,VOPOU,Village of Pouce Coupe,267
+employer_code,VOQUE,Village of Queen Charlotte,268
+employer_code,VORAD,Village of Radium Hot Springs,269
+employer_code,VOSAL,Village of Salmo,270
+employer_code,VOSAY,Village of Sayward,271
+employer_code,VOSIL,Village of Silverton,272
+employer_code,VOSLO,Village of Slocan,273
+employer_code,VOTAH,Village of Tahsis,274
+employer_code,VOTEL,Village of Telkwa,275
+employer_code,VOVAL,Village of Valemount,276
+employer_code,VOWAR,Village of Warfield,277
+employer_code,VOZEB,Village of Zeballos,278
+employer_code,WFM,West Fraser Mills Ltd.,279
+employer_code,WCE,Westcoast Energy Inc.,280
+employer_code,WFP,Western Forest Products Inc.,281
+employer_code,WSP,Whitestar Property Services Ltd.,282
+employer_code,WFS,Woodlot Forestry Services Ltd.,283
+employer_code,WSPG,WSP Global Inc.,284
 waterbody_use_code,R,Recreation,1
 waterbody_use_code,F,Fishing,2
 waterbody_use_code,B,Boating,3
