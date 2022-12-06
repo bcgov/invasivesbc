@@ -93,7 +93,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 
   const newFilterState = {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
-    gridFilters: { ...action.payload.updatedSet.gridFilters }
+    gridFilters: { ...action.payload.updatedSet.gridFilters },
+    searchBoundary: { ...action.payload.updatedSet.searchBoundary }
   };
 
   const testStateEqual = (a, b) => {
@@ -313,7 +314,8 @@ function* handle_MAP_INIT_REQUEST(action) {
     let newFilters = {};
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters
+      gridFilters: recordSets[rs].gridFilters,
+      searchBoundary: recordSets[rs].searchBoundary
     };
     newMapState[rs].filters = {
       ...newFilters
@@ -399,7 +401,7 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,
-    [],
+    recordSetsState.recordSets,
     recordSetID,
     false,
     recordSet.gridFilters,
@@ -429,7 +431,7 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,
-    [],
+    recordSetsState.recordSets,
     recordSetID,
     true,
     recordSet.gridFilters,
@@ -444,37 +446,41 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings)
-  const recordSetID = action.payload.recordSetID
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
+  const recordSetsState = yield select(selectUserSettings);
+  const recordSetID = action.payload.recordSetID;
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const type = recordSetsState.recordSets?.[recordSetID]?.recordSetType;
 
   const filters = getSearchCriteriaFromFilters(
-      recordSet.advancedFilters,
-      authState.accessRoles,
-      [],
-      recordSetID,
-      type === 'POI' ? true : false,
-      recordSet.gridFilters,
-      action.payload.page,
-      action.payload.limit,
-      //recordSet.sortColumns
-    ); 
-  
+    recordSet.advancedFilters,
+    authState.accessRoles,
+    recordSetsState.recordSets,
+    recordSetID,
+    type === 'POI' ? true : false,
+    recordSet.gridFilters,
+    action.payload.page,
+    action.payload.limit
+    //recordSet.sortColumns
+  );
+
   if (type === 'POI') {
-    yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {
-      recordSetID: recordSetID, 
-      IAPPFilterCriteria: filters
-    }});
+    yield put({
+      type: IAPP_TABLE_ROWS_GET_REQUEST,
+      payload: {
+        recordSetID: recordSetID,
+        IAPPFilterCriteria: filters
+      }
+    });
   } else {
-    yield put({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: {
-      recordSetID: recordSetID, 
-      ActivityFilterCriteria: filters
-    }});
+    yield put({
+      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+      payload: {
+        recordSetID: recordSetID,
+        ActivityFilterCriteria: filters
+      }
+    });
   }
-
 }
-
 
 function* activitiesPageSaga() {
   yield all([
@@ -497,7 +503,7 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE)
-   // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
