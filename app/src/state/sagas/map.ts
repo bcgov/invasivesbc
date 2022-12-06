@@ -426,6 +426,8 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
     return;
   }
 
+  console.log('here!');
+  console.dir(recordSet);
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,

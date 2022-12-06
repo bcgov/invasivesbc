@@ -334,59 +334,6 @@ const ActivityGrid = (props) => {
     setAccordionExpanded((prev) => !prev);
   };
 
-  const getActivities = async () => {
-    const filter = getSearchCriteriaFromFilters(
-      advancedFilterRows,
-      accessRoles,
-      userSettings?.recordSets,
-      props.setName,
-      false,
-      filters.enabled ? filters : null,
-      pageNumber - 1, //limit indexed at 0
-      20,
-      sortColumns.length ? [...sortColumns] : null
-    );
-
-    const act_list = await dataAccess.getActivities(filter);
-    if (act_list && !act_list.count) {
-      setConsole('Unable to fetch activities.');
-    }
-    if (act_list && act_list.code) {
-      setConsole('Unable to fetch activities.');
-    }
-    if (act_list && act_list.count === 0) {
-      setConsole('No data found.');
-    }
-
-    setActivities(act_list);
-  };
-
-  const getPOIs = async () => {
-    const filter = getSearchCriteriaFromFilters(
-      advancedFilterRows,
-      accessRoles,
-      userSettings?.recordSets,
-      props.setName,
-      true,
-      filters.enabled ? filters : null,
-      pageNumber - 1, //limit indexed at 0
-      20,
-      sortColumns.length ? [...sortColumns] : []
-    );
-
-    const act_list = await dataAccess.getPointsOfInterest(filter);
-    if (act_list && !act_list.count) {
-      setConsole('Unable to fetch points of interest.');
-    }
-    if (act_list && act_list.code) {
-      setConsole('Unable to fetch points of interest.');
-    }
-    if (act_list && act_list.count === 0) {
-      setConsole('No POI data found.');
-    }
-    setPOIs(act_list);
-  };
-
   const [rows, setRows] = useState([]);
 
   // set selected record to activity
@@ -430,17 +377,6 @@ const ActivityGrid = (props) => {
       event.stopPropagation();
     }
   }
-
-  /*
-  const developerOptions = useMemo(
-    () =>
-      Array.from(new Set(rows?.map((r) => r.developer))).map((d) => ({
-        label: d,
-        value: d
-      })),
-    [rows]
-  );
-  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
@@ -513,30 +449,6 @@ const ActivityGrid = (props) => {
   const iappColumns = useColumns(point_of_interest_iapp_default_headers);
   const actColumns = useColumns(ActivitiesDefaultHeaders());
   const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
-
-  //todo - tests need to take into account type, they're all strings right now
-  // const filteredRowsDynamic = useMemo(() => {
-  //   return rows?.filter((r) => {
-  //     // grab all keys except enabled
-  //     let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
-  //     // build a check for each
-  //     let tests = rowKeys.map((k) => {
-  //       if (filters[k] && r[k]) {
-  //         // this only works for strings
-  //         let field = r[k];
-  //         if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
-  //         if (field.includes(filters[k])) {
-  //           return true;
-  //         } else return false;
-  //       }
-  //       return true;
-  //     });
-  //     // check if they all pass
-  //     return tests.every((t) => {
-  //       return t === true;
-  //     });
-  //   });
-  // }, [rows, filters]);
 
   function clearFilters() {
     setFilters({
