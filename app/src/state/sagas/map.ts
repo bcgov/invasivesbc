@@ -180,8 +180,6 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     return true;
   };
 
-  console.dir(mapState?.layers?.[action.payload.updatedSetName]?.layerState);
-  console.dir(layerState);
   if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
       type: LAYER_STATE_UPDATE,

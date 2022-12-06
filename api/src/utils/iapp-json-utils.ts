@@ -158,10 +158,6 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
   }
 
   defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
-  defaultLog.debug({
-    label: 'getIAPPjson',
-    message: 'example site' + JSON.stringify(site_extract_table_response.rows[0])
-  });
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
