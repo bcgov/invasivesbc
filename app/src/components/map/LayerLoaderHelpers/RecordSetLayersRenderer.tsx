@@ -166,7 +166,6 @@ const IAPPCanvasLayerMemo = (props) => {
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
-    console.log('IN USE CALLBACK FILTER FEATEURES');
     let returnVal;
     if (mapState?.layers?.[props.layerKey]?.IDList) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
@@ -179,10 +178,7 @@ const IAPPCanvasLayerMemo = (props) => {
   };
 
   return useMemo(() => {
-    console.log('IN LEAFLAT USEMEMO');
-    console.dir(mapState.layers?.[props.layerKey]?.layerState);
     if (mapState.layers?.[props.layerKey]?.layerState) {
-      console.log(props.layerKey);
       return (
         <LeafletCanvasMarker
           key={'POICanvasLayermemo' + props.layerKey}
@@ -235,17 +231,13 @@ export const RecordSetLayersRenderer = (props: any) => {
   };
 
   const iappLayers = useCallback(() => {
-    console.log('IN USE CALLBACK GET LAYER LIST');
     const keys = Object.keys(mapState?.layers ? mapState.layers : {});
     const filtered = keys?.filter((key) => mapState?.layers[key]?.type === 'POI');
-    console.dir(mapState.layers);
     const sorted = filtered.sort((a, b) => {
       if (mapState.layers[a].layerState.drawOrder > mapState.layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
       if (mapState.layers[a].layerState.drawOrder === mapState.layers[b].layerState.drawOrder) return 0; // if values are equal
       if (mapState.layers[a].layerState.drawOrder < mapState.layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
     });
-    console.log('sorted');
-    console.dir(sorted);
     return sorted;
   }, [JSON.stringify(Object.keys(mapState?.layers ? mapState.layers : {}))]);
 
@@ -267,8 +259,6 @@ export const RecordSetLayersRenderer = (props: any) => {
       })*/}
       {iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
-          console.log('mapping over layers');
-          console.log(layerKey);
           return <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
         })
       ) : (
