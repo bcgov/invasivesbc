@@ -28,6 +28,7 @@ import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
+  PAGE_OR_LIMIT_UPDATE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
@@ -77,11 +78,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     inlineSize: '100%',
     padding: '4px',
     fontSize: '14px'
-  },
-  pagination: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center'
   }
 }));
 
@@ -655,9 +651,30 @@ const ActivityGrid = (props) => {
   };
 
   function Pagination() {
+    const recordSetsState = useSelector(selectUserSettings);
+    const mapState = useSelector(selectMap);
+    const recordSetID = props.setName;
+    const recordPageNumber = 
+      mapState?.recordTables && 
+      mapState?.recordTables[recordSetID] && 
+      mapState?.recordTables[recordSetID]?.page ? 
+        mapState?.recordTables[recordSetID]?.page : 0 ;
+    const recordPageLimit = 
+      mapState?.recordTables && 
+      mapState?.recordTables[recordSetID] && 
+      mapState?.recordTables[recordSetID]?.limit ? 
+        mapState?.recordTables[recordSetID]?.limit : 20 ;
+    const recordSetLength = 
+      mapState?.layers && 
+      mapState?.layers[recordSetID] && 
+      mapState?.layers[recordSetID]?.IDList && 
+      mapState?.layers[recordSetID]?.IDList.length > 0 ? 
+        mapState?.layers[recordSetID]?.IDList.length : 1 ;
+
     return (
-      <div className={classes.pagination}>
-        {pageNumber <= 1 ? (
+      <div key={'pagination-' + recordSetID}>
+        <div key={'paginationControls-' + recordSetID}>
+        {recordPageNumber <= 0 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
           </Button>
@@ -667,12 +684,19 @@ const ActivityGrid = (props) => {
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
-              setPageNumber(1);
+              dispatch({
+                type: PAGE_OR_LIMIT_UPDATE,
+                payload: {
+                  recordSetID: recordSetID,
+                  page: 0,
+                  limit: recordPageLimit
+                }
+              });
             }}>
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
           </Button>
         )}
-        {pageNumber <= 1 ? (
+        {recordPageNumber <= 0 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowLeftIcon></ArrowLeftIcon>
           </Button>
@@ -682,21 +706,45 @@ const ActivityGrid = (props) => {
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
-              setPageNumber(pageNumber - 1);
+              dispatch({
+                type: PAGE_OR_LIMIT_UPDATE,
+                payload: {
+                  recordSetID: recordSetID,
+                  page: recordPageNumber - 1,
+                  limit: recordPageLimit
+                }
+              });
             }}>
             <ArrowLeftIcon></ArrowLeftIcon>
           </Button>
         )}
-        <span>{pageNumber}</span>
-        <Button
-          sx={{ m: 1, p: 1 }}
-          size={'small'}
-          onClick={(e) => {
-            e.stopPropagation();
-            setPageNumber(pageNumber + 1);
-          }}>
-          <ArrowRightIcon></ArrowRightIcon>
-        </Button>
+        <span>{recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}</span>
+        {recordPageNumber + 1 * recordPageLimit > recordSetLength ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: PAGE_OR_LIMIT_UPDATE,
+                payload: {
+                  recordSetID: recordSetID,
+                  page: recordPageNumber + 1,
+                  limit: recordPageLimit
+                }
+              });
+            }}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        )}
+        </div>
+        <div key={'paginationRecords-' + recordSetID}>
+            <span>Showing records {(recordPageLimit * (recordPageNumber + 1)) - recordPageLimit + 1} - {recordSetLength < recordPageLimit ? recordSetLength : (recordPageLimit * (recordPageNumber + 1))} out of {recordSetLength}</span>
+        </div>
       </div>
     );
   }

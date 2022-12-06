@@ -24,7 +24,8 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   FILTER_STATE_UPDATE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_ONLINE
+  ACTIVITIES_TABLE_ROWS_GET_ONLINE,
+  PAGE_OR_LIMIT_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -441,6 +442,40 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: recordSetID, IAPPFilterCriteria: filters } });
 }
 
+function* handle_PAGE_OR_LIMIT_UPDATE(action) {
+  const authState = yield select(selectAuth);
+  const recordSetsState = yield select(selectUserSettings)
+  const recordSetID = action.payload.recordSetID
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
+  const type = recordSetsState.recordSets?.[recordSetID]?.recordSetType;
+
+  const filters = getSearchCriteriaFromFilters(
+      recordSet.advancedFilters,
+      authState.accessRoles,
+      [],
+      recordSetID,
+      type === 'POI' ? true : false,
+      recordSet.gridFilters,
+      action.payload.page,
+      action.payload.limit,
+      //recordSet.sortColumns
+    ); 
+  
+  if (type === 'POI') {
+    yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {
+      recordSetID: recordSetID, 
+      IAPPFilterCriteria: filters
+    }});
+  } else {
+    yield put({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: {
+      recordSetID: recordSetID, 
+      ActivityFilterCriteria: filters
+    }});
+  }
+
+}
+
+
 function* activitiesPageSaga() {
   yield all([
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
@@ -460,8 +495,9 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
-    takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE)
-    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+    takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
+    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE)
+   // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
