@@ -110,8 +110,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.recordTables,
             [id]: {
               ...state.recordTables[id],
-              page: action.payload.page ? action.payload.page : state?.recordTables[id]?.page,
-              limit: action.payload.limit ? action.payload.limit : state?.recordTables[id]?.limit
+              page: action.payload.page,
+              limit: action.payload.limit
             }
           }
         };
@@ -154,8 +154,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
 
         // set defaults
-        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 1;
-        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 10;
+        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 0;
+        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 20;
         
         return {
           ...state,
@@ -176,8 +176,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
 
         // set defaults
-        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 1;
-        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 10;
+        if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 0;
+        if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 20;
 
         return {
           ...state,

@@ -78,12 +78,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     inlineSize: '100%',
     padding: '4px',
     fontSize: '14px'
-  },
-  paginationControls: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center'
   }
 }));
 
@@ -664,12 +658,12 @@ const ActivityGrid = (props) => {
       mapState?.recordTables && 
       mapState?.recordTables[recordSetID] && 
       mapState?.recordTables[recordSetID]?.page ? 
-        mapState?.recordTables[recordSetID]?.page : 1 ;
+        mapState?.recordTables[recordSetID]?.page : 0 ;
     const recordPageLimit = 
       mapState?.recordTables && 
       mapState?.recordTables[recordSetID] && 
       mapState?.recordTables[recordSetID]?.limit ? 
-        mapState?.recordTables[recordSetID]?.limit : 10 ;
+        mapState?.recordTables[recordSetID]?.limit : 20 ;
     const recordSetLength = 
       mapState?.layers && 
       mapState?.layers[recordSetID] && 
@@ -678,9 +672,9 @@ const ActivityGrid = (props) => {
         mapState?.layers[recordSetID]?.IDList.length : 1 ;
 
     return (
-      <div>
-        <div className={classes.paginationControls}>
-        {recordPageNumber <= 1 ? (
+      <div key={'pagination-' + recordSetID}>
+        <div key={'paginationControls-' + recordSetID}>
+        {recordPageNumber <= 0 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
           </Button>
@@ -694,14 +688,15 @@ const ActivityGrid = (props) => {
                 type: PAGE_OR_LIMIT_UPDATE,
                 payload: {
                   recordSetID: recordSetID,
-                  page: 1
+                  page: 0,
+                  limit: recordPageLimit
                 }
               });
             }}>
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
           </Button>
         )}
-        {recordPageNumber <= 1 ? (
+        {recordPageNumber <= 0 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowLeftIcon></ArrowLeftIcon>
           </Button>
@@ -715,15 +710,16 @@ const ActivityGrid = (props) => {
                 type: PAGE_OR_LIMIT_UPDATE,
                 payload: {
                   recordSetID: recordSetID,
-                  page: recordPageNumber - 1
+                  page: recordPageNumber - 1,
+                  limit: recordPageLimit
                 }
               });
             }}>
             <ArrowLeftIcon></ArrowLeftIcon>
           </Button>
         )}
-        <span>{recordPageNumber} / {Math.ceil(recordSetLength / recordPageLimit)}</span>
-        {recordPageNumber * recordPageLimit > recordSetLength ? (
+        <span>{recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}</span>
+        {recordPageNumber + 1 * recordPageLimit > recordSetLength ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
@@ -737,7 +733,8 @@ const ActivityGrid = (props) => {
                 type: PAGE_OR_LIMIT_UPDATE,
                 payload: {
                   recordSetID: recordSetID,
-                  page: recordPageNumber + 1
+                  page: recordPageNumber + 1,
+                  limit: recordPageLimit
                 }
               });
             }}>
@@ -745,8 +742,8 @@ const ActivityGrid = (props) => {
           </Button>
         )}
         </div>
-        <div className={classes.paginationControls}>
-            <span>Showing {(recordPageLimit * recordPageNumber) - recordPageLimit + 1} - {(recordPageLimit * recordPageNumber)} records out of {recordSetLength}</span>
+        <div key={'paginationRecords-' + recordSetID}>
+            <span>Showing records {(recordPageLimit * (recordPageNumber + 1)) - recordPageLimit + 1} - {recordSetLength < recordPageLimit ? recordSetLength : (recordPageLimit * (recordPageNumber + 1))} out of {recordSetLength}</span>
         </div>
       </div>
     );
