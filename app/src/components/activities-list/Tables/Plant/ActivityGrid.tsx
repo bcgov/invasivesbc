@@ -79,8 +79,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '4px',
     fontSize: '14px'
   },
-  pagination: {
+  paginationControls: {
     display: 'flex',
+    width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'center'
   }
@@ -677,7 +678,8 @@ const ActivityGrid = (props) => {
         mapState?.layers[recordSetID]?.IDList.length : 1 ;
 
     return (
-      <div className={classes.pagination}>
+      <div>
+        <div className={classes.paginationControls}>
         {recordPageNumber <= 1 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
@@ -742,6 +744,10 @@ const ActivityGrid = (props) => {
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
         )}
+        </div>
+        <div className={classes.paginationControls}>
+            <span>Showing {(recordPageLimit * recordPageNumber) - recordPageLimit + 1} - {(recordPageLimit * recordPageNumber)} records out of {recordSetLength}</span>
+        </div>
       </div>
     );
   }
