@@ -368,7 +368,7 @@ const PageContainer = (props) => {
             zoom={5}
             mapId={'mainMap'}
             geometryState={{ geometry, setGeometry }}>
-            <RecordSetLayersRenderer /> 
+            <RecordSetLayersRenderer />
           </MapContainer>
         </MapRecordsContextProvider>
       </Box>
@@ -415,7 +415,7 @@ const PageContainer = (props) => {
             <RecordSetRenderer />
           ),
           [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
-          )}
+        )}
       </Box>
       <NewRecordDialog dialogOpen={newRecordDialog.dialogOpen} handleDialogClose={newRecordDialog.handleDialogClose} />
       <GeneralDialog
