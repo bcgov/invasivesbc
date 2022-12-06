@@ -1,10 +1,10 @@
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
-import { selectMap } from 'state/reducers/map';
+import { selectActivities } from 'state/reducers/activities';
 import { useMap } from 'react-leaflet';
 
 import L from 'leaflet';
@@ -16,6 +16,8 @@ import { glify } from 'react-leaflet-glify';
 import 'leaflet-markers-canvas';
 import { cleanup } from '@testing-library/react';
 import { useLeafletContext } from '@react-leaflet/core';
+import { selectMap } from 'state/reducers/map';
+import { AnyKindOfDictionary } from 'lodash';
 
 export const LeafletCanvasMarker = (props) => {
   const map = useMap();
@@ -25,32 +27,23 @@ export const LeafletCanvasMarker = (props) => {
   const [markersCanvas, setMarkersCanvas] = useState();
   const [markers, setMarkers] = useState([]);
   const [cleanupCallback, setCleanupCallback] = useState();
-  //const layerRef = useRef();
-  //const groupRef = useRef();
+  const layerRef = useRef();
+  const groupRef = useRef();
 
   useEffect(() => {
-    if (!map || !props.layerRef?.current || !props.groupRef?.current) {
-      return;
-    } else {
-      console.log('stuff is ok');
-    }
+    if (!map) return;
     try {
       //console.dir(markersCanvas);
       //const clear = (markersCanvas as any)?.clear();
       //const remove = (markersCanvas as any)?.removeMarkers();
       //map.removeLayer(markersCanvas);
     } catch (e) {}
-    //const container = context.layerContainer || context.map;
+    const container = context.layerContainer || context.map;
 
-    //layerRef.current = new (L as any).MarkersCanvas();
+    layerRef.current = new (L as any).MarkersCanvas();
 
-    //groupRef.current = (L as any).layerGroup().addLayer(layerRef.current, { pane: props.key }).addTo(container);
-    //  groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
-    // console.log('setting z index');
-    // console.log(props.zIndex);
-    // groupRef?.current?.setZIndex(props.zIndex);
-    // console.log('z index');
-    // console.log(groupRef.current.zIndex);
+    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
+    groupRef?.current?.setZIndex(props.zIndex);
 
     //    container.addLayer(layerRef.current);
 
@@ -72,11 +65,9 @@ export const LeafletCanvasMarker = (props) => {
 
     /*
     var icon = L.icon({
-
       iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
       iconSize: [12, 10],
       iconAnchor: [10, 9]
-
     });
     */
 
@@ -134,35 +125,29 @@ export const LeafletCanvasMarker = (props) => {
       map.removeLayer(ciLayer);
     };
     */
+    if (groupRef.current) layerRef?.current?.clear();
 
-    if (props.enabled && props.groupRef) {
-      if (props.layerRef) {
-        console.log('adding markers');
-      }
-      props.layerRef?.current?.clear();
-      props.groupRef?.current?.setZIndex(props.zIndex);
-      props.layerRef?.current?.addMarkers(markers);
-      props.groupRef?.current?.setZIndex(props.zIndex);
+    if (props.enabled && groupRef.current) {
+      layerRef?.current?.addMarkers(markers);
     }
 
-    // groupRef.current.setZIndex(props.zIndex);
     /*const acleanupCallback = () => mc.removeMarkers(markers);
     setCleanupCallback(acleanupCallback);
     */
 
+    layerRef?.current?.redraw();
     //setMarkersCanvas(mcLayer);
     /*
     setTimeout(() => {
-
+      layerRef?.current?.redraw();
     }, 5000);
     */
-    //props.layerRef?.current?.redraw();
+
     return () => {
-      console.log('in cleanup');
-      //container.removeLayer(layerRef.current);
-      /*container.removeLayer(groupRef.current);
       if (container) {
-        //layerRef.current.removeMarkers(markers);
+        layerRef.current.removeMarkers(markers);
+        container.removeLayer(layerRef.current);
+        container.removeLayer(groupRef.current);
       }
       try {
         //acleanupCallback();
@@ -170,12 +155,48 @@ export const LeafletCanvasMarker = (props) => {
         // (markersCanvas as any)?.clear();
       } catch (e) {}
     };
-    */
-    };
     //}, [map]);
-  }, [props.colour, props.enabled, props.points, props.groupRef?.current, props.layerRef?.current]);
+  }, [props.colour, props.enabled, props.points, props.zIndex]);
 
   return <></>;
+};
+
+const IAPPCanvasLayerMemo = (props) => {
+  const { accessRoles } = useSelector(selectAuth);
+  const mapState = useSelector(selectMap);
+
+  const filteredFeatures = () => {
+    console.log('IN USE CALLBACK FILTER FEATEURES');
+    let returnVal;
+    if (mapState?.layers?.[props.layerKey]?.IDList) {
+      returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
+        return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
+      });
+    } else {
+      returnVal = [];
+    }
+    return { type: 'FeatureCollection', features: returnVal };
+  };
+
+  return useMemo(() => {
+    console.log('IN LEAFLAT USEMEMO');
+    console.dir(mapState.layers?.[props.layerKey]?.layerState);
+    if (mapState.layers?.[props.layerKey]?.layerState) {
+      console.log(props.layerKey);
+      return (
+        <LeafletCanvasMarker
+          key={'POICanvasLayermemo' + props.layerKey}
+          points={filteredFeatures()}
+          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
+          colour={mapState.layers[props.layerKey].layerState.color}
+          zIndex={mapState.layers[props.layerKey].layerState.drawOrder + 10000}
+        />
+      );
+    } else return <></>;
+  }, [
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+  ]);
 };
 
 export const RecordSetLayersRenderer = (props: any) => {
@@ -213,145 +234,46 @@ export const RecordSetLayersRenderer = (props: any) => {
     return <></>;
   };
 
-  const ActivitiesLayer = (props) => {
-    if (!mapState.layers || mapState.layers === null || mapState.layers === undefined) {
-      return <></>;
-    }
-    return (
-      <>
-        {Object.keys(mapState?.layers).map((layerKey) => {
-          const layer = mapState.layers[layerKey];
-          if (!layer) return <></>;
-          if (layer?.layerState?.mapToggle && layer?.type !== 'POI') {
-            const filtered = mapState?.activitiesGeoJSON?.features.filter((row) => {
-              return layer?.IDList?.includes(row.properties.id);
-            });
-
-            const featureCollection = { type: 'FeatureCollection', features: filtered };
-
-            return (
-              <ActivitiesLayerV2
-                key={'activitiesv2filter' + layerKey}
-                activities={featureCollection}
-                zIndex={999999999 - layer.layerState.drawOrder}
-                color={layer.layerState.color}
-                opacity={0.8}
-              />
-            );
-          }
-        })}
-      </>
-    );
-  };
-
-  const IAPPLayer = (props) => {
-    const map = useMap();
-    const context = useLeafletContext();
-    const layerRefs = useRef([]);
-    const groupRefs = useRef([]);
-    const [save, setSave] = useState(Math.random());
-    try {
-      //console.dir(markersCanvas);
-      //const clear = (markersCanvas as any)?.clear();
-      //const remove = (markersCanvas as any)?.removeMarkers();
-      //map.removeLayer(markersCanvas);
-    } catch (e) {}
-    const container = context.layerContainer || context.map;
-    /*
-    layerRef.current = new (L as any).MarkersCanvas();
-
-    //groupRef.current = (L as any).layerGroup().addLayer(layerRef.current, { pane: props.key }).addTo(container);
-    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
-    // console.log('setting z index');
-    // console.log(props.zIndex);
-    groupRef?.current?.setZIndex(props.zIndex);
-    */
-
-    useEffect(() => {
-      {
-        if (!map) return;
-        if (!mapState.layers || mapState.layers === null || mapState.layers === undefined) {
-          return;
-        }
-        Object.keys(mapState?.layers).map((layerKey) => {
-          if (layerRefs.current[layerKey]) {
-            if (groupRefs.current[layerKey]) {
-              groupRefs.current[layerKey].current.setZIndex(mapState.layers[layerKey].layerState.drawOrder);
-            }
-          } else {
-            layerRefs.current[layerKey] = createRef();
-            layerRefs.current[layerKey].current = new (L as any).MarkersCanvas();
-            groupRefs.current[layerKey] = createRef();
-            groupRefs.current[layerKey].current = (L as any)
-              .layerGroup()
-              .addLayer(layerRefs.current[layerKey].current)
-              .addTo(container);
-            console.log('draw order', mapState?.layers[layerKey].layerState.drawOrder);
-            groupRefs.current[layerKey].current.setZIndex(mapState.layers[layerKey].layerState.drawOrder);
-          }
-        });
-      }
-      console.dir(groupRefs?.current);
-      console.dir(groupRefs?.current[1]);
-      setSave(Math.random());
-      return () => {
-        layerRefs.current.map((lr) => {
-          container.removeLayer(lr.current);
-        });
-        groupRefs.current.map((lr) => {
-          container.removeLayer(lr.current);
-        });
-        //container.removeLayer(layerRef.current);
-        /*container.removeLayer(groupRef.current);
-         */
-      };
-      //`}, [mapState.layers]);
-    }, []);
-
-    if (!mapState.layers || mapState.layers === null || mapState.layers === undefined || !groupRefs.current) {
-      console.log('returning nothing');
-      return <></>;
-    }
-    console.log('returning something');
-    return (
-      <>
-        {save}
-        {Object.keys(mapState?.layers).map((layerKey) => {
-          const layer = mapState.layers[layerKey];
-          if (!layer || !groupRefs.current[layerKey]) {
-            return <></>;
-          }
-          if (layer.layerState.mapToggle && layer.type === 'POI') {
-            const filtered = mapState?.IAPPGeoJSON?.features.filter((row) => {
-              return layer?.IDList?.includes(row.properties.site_id);
-            });
-
-            const featureCollection = { type: 'FeatureCollection', features: filtered };
-            console.dir('group ref before render');
-            console.log(layerKey);
-            console.dir(groupRefs.current[layerKey]);
-
-            return (
-              <LeafletCanvasMarker
-                key={'POIlayerg2' + layerKey}
-                layerRef={layerRefs.current[layerKey]}
-                groupRef={groupRefs.current[layerKey]}
-                points={featureCollection}
-                enabled={layer.layerState.mapToggle}
-                colour={layer.layerState.color}
-                zIndex={layer.layerState.drawOrder + 10000}
-              />
-            );
-          }
-        })}
-      </>
-    );
-  };
+  const iappLayers = useCallback(() => {
+    console.log('IN USE CALLBACK GET LAYER LIST');
+    const keys = Object.keys(mapState?.layers ? mapState.layers : {});
+    const filtered = keys?.filter((key) => mapState?.layers[key]?.type === 'POI');
+    console.dir(mapState.layers);
+    const sorted = filtered.sort((a, b) => {
+      if (mapState.layers[a].layerState.drawOrder > mapState.layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
+      if (mapState.layers[a].layerState.drawOrder === mapState.layers[b].layerState.drawOrder) return 0; // if values are equal
+      if (mapState.layers[a].layerState.drawOrder < mapState.layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
+    });
+    console.log('sorted');
+    console.dir(sorted);
+    return sorted;
+  }, [JSON.stringify(Object.keys(mapState?.layers ? mapState.layers : {}))]);
 
   return (
     <>
-      <ActivitiesLayer />
-      <IAPPLayer />
+      {/*activitiesState?.activitiesGeoJSON?.map((l) => {
+        //if (l && l.layerState.color) {
+        if (l.layerState.enabled) {
+          return (
+            <ActivitiesLayerV2
+              key={'activitiesv2filter' + l.recordSetID}
+              activities={l.featureCollection}
+              zIndex={999999999 - l.layerState.drawOrder}
+              color={l.layerState.color}
+              opacity={0.8}
+            />
+          );
+        }
+      })*/}
+      {iappLayers()?.length > 0 ? (
+        iappLayers()?.map((layerKey) => {
+          console.log('mapping over layers');
+          console.log(layerKey);
+          return <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
+        })
+      ) : (
+        <></>
+      )}
     </>
   );
 };
