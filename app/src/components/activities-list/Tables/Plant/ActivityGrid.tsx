@@ -28,7 +28,9 @@ import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
+  FILTER_STATE_UPDATE,
   PAGE_OR_LIMIT_UPDATE,
+  SORT_COLUMN_STATE_UPDATE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
@@ -235,7 +237,6 @@ const ActivityGrid = (props) => {
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
   const [cursorPos, setCursorPos] = useState(0);
-  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
 
   const dispatch = useDispatch();
@@ -315,18 +316,6 @@ const ActivityGrid = (props) => {
       }
     }
   }, [advancedFilterRows]);
-
-  /*
-  useEffect(() => {
-    if (userSettings?.recordSets?.[props.setName]) {
-      if (props.setType === 'POI') {
-        getPOIs();
-      } else {
-        getActivities();
-      }
-    }
-  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns, filters, pageNumber]);
-  */
 
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
@@ -778,8 +767,18 @@ const ActivityGrid = (props) => {
                   props.setType === 'POI' ? setPoiSelected(r) : setActivitiesSelected(r);
                 }}
                 columns={columnsDynamic}
-                sortColumns={sortColumns}
-                onSortColumnsChange={setSortColumns}
+                sortColumns={recordsState?.layers?.[props.setName]?.filters?.sortColumns}
+                onSortColumnsChange={
+                  (sortColumn) => {
+                    dispatch({
+                      type: SORT_COLUMN_STATE_UPDATE,
+                      payload: {
+                          id: props.setName,
+                          sortColumns: sortColumn
+                      }
+                    });
+                  }
+                }
                 components={{ rowRenderer: RowRenderer }}
               />
               <Pagination></Pagination>
@@ -803,7 +802,7 @@ const ActivityGrid = (props) => {
       advancedFilterRows,
       filters,
       activities,
-      sortColumns,
+      JSON.stringify(recordsState?.layers?.[props.setName]?.filters?.sortColumns),
       rows
     ]
   );
