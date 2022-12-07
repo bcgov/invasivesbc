@@ -52,7 +52,6 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     `/api/points-of-interest-lean/`,
     action.payload.IAPPFilterCriteria
   );
-  console.dir(networkReturn);
   let featureCollection = {
     type: 'FeatureCollection',
     features: networkReturn?.data?.result?.filter((row) => {
@@ -65,16 +64,15 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,
     payload: {
-   //   recordSetID: action.payload.recordSetID,
-      IAPPGeoJSON: featureCollection,
-   //   layerState: action.payload.layerState
+      //   recordSetID: action.payload.recordSetID,
+      IAPPGeoJSON: featureCollection
+      //   layerState: action.payload.layerState
     }
   });
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
-  console.dir(networkReturn);
 
   if (networkReturn.data.result) {
     yield put({
@@ -82,8 +80,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result
-      }}
-    );
+      }
+    });
   } else {
     put({
       type: ACTIVITIES_TABLE_ROWS_GET_FAILURE,
@@ -97,7 +95,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
-  console.dir(networkReturn);
 
   if (networkReturn.data.result.rows) {
     yield put({
@@ -105,8 +102,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result.rows
-      }}
-    );
+      }
+    });
   } else {
     put({
       type: IAPP_TABLE_ROWS_GET_FAILURE,
@@ -124,7 +121,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   if (networkReturn.data.result) {
     const IDList = networkReturn.data.result.map((row) => {
       return row.activity_id;
-    })
+    });
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -134,7 +131,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       }
     });
   } else {
-  /*  put({
+    /*  put({
       type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
       payload: {
         recordSetID: action.payload.recordSetID,
@@ -147,12 +144,11 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
-  console.dir(networkReturn);
 
   if (networkReturn.data.result.rows) {
     const IDList = networkReturn.data.result.rows.map((row) => {
       return row.site_id;
-    })
+    });
 
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -162,7 +158,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       }
     });
   } else {
-  /*  put({
+    /*  put({
       type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
       payload: {
         recordSetID: action.payload.recordSetID,

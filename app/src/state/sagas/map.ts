@@ -25,7 +25,8 @@ import {
   FILTER_STATE_UPDATE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  PAGE_OR_LIMIT_UPDATE
+  PAGE_OR_LIMIT_UPDATE,
+  SORT_COLUMN_STATE_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -93,7 +94,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 
   const newFilterState = {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
-    gridFilters: { ...action.payload.updatedSet.gridFilters }
+    gridFilters: { ...action.payload.updatedSet.gridFilters },
+    searchBoundary: { ...action.payload.updatedSet.searchBoundary }
   };
 
   const testStateEqual = (a, b) => {
@@ -179,8 +181,6 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     return true;
   };
 
-  console.dir(mapState?.layers?.[action.payload.updatedSetName]?.layerState);
-  console.dir(layerState);
   if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
     yield put({
       type: LAYER_STATE_UPDATE,
@@ -313,7 +313,8 @@ function* handle_MAP_INIT_REQUEST(action) {
     let newFilters = {};
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters
+      gridFilters: recordSets[rs].gridFilters,
+      searchBoundary: recordSets[rs].searchBoundary
     };
     newMapState[rs].filters = {
       ...newFilters
@@ -388,6 +389,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
 function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const recordSetsState = yield select(selectUserSettings);
+  const mapState = yield select(selectMap);
   const recordSetID = action.payload.recordSetID;
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const isOpen = recordSet.expanded;
@@ -399,13 +401,13 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,
-    [],
+    recordSetsState.recordSets,
     recordSetID,
     false,
     recordSet.gridFilters,
     0,
-    20
-    //recordSet.sortColumns
+    20,
+    mapState?.layers?.[recordSetID]?.filters?.sortColumns
   );
 
   //trigger get
@@ -418,6 +420,7 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
 function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const recordSetsState = yield select(selectUserSettings);
+  const mapState = yield select(selectMap);
   const recordSetID = action.payload.recordSetID;
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const isOpen = recordSet.expanded;
@@ -426,16 +429,18 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
     return;
   }
 
+  console.log('here!');
+  console.dir(recordSet);
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,
-    [],
+    recordSetsState.recordSets,
     recordSetID,
     true,
     recordSet.gridFilters,
     0,
-    20
-    //recordSet.sortColumns
+    20,
+    mapState?.layers?.[recordSetID]?.filters?.sortColumns
   );
 
   //trigger get
@@ -444,37 +449,62 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings)
-  const recordSetID = action.payload.recordSetID
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]))
+  const recordSetsState = yield select(selectUserSettings);
+  const mapState = yield select(selectMap);
+  const recordSetID = action.payload.recordSetID;
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const type = recordSetsState.recordSets?.[recordSetID]?.recordSetType;
 
   const filters = getSearchCriteriaFromFilters(
-      recordSet.advancedFilters,
-      authState.accessRoles,
-      [],
-      recordSetID,
-      type === 'POI' ? true : false,
-      recordSet.gridFilters,
-      action.payload.page,
-      action.payload.limit,
-      //recordSet.sortColumns
-    ); 
-  
-  if (type === 'POI') {
-    yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {
-      recordSetID: recordSetID, 
-      IAPPFilterCriteria: filters
-    }});
-  } else {
-    yield put({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: {
-      recordSetID: recordSetID, 
-      ActivityFilterCriteria: filters
-    }});
-  }
+    recordSet.advancedFilters,
+    authState.accessRoles,
+    recordSetsState.recordSets,
+    recordSetID,
+    type === 'POI' ? true : false,
+    recordSet.gridFilters,
+    action.payload.page,
+    action.payload.limit,
+    mapState?.layers?.[recordSetID]?.filters?.sortColumns
+  );
 
+  if (type === 'POI') {
+    yield put({
+      type: IAPP_TABLE_ROWS_GET_REQUEST,
+      payload: {
+        recordSetID: recordSetID,
+        IAPPFilterCriteria: filters
+      }
+    });
+  } else {
+    yield put({
+      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+      payload: {
+        recordSetID: recordSetID,
+        ActivityFilterCriteria: filters
+      }
+    });
+  }
 }
 
+function* handle_SORT_COLUMN_STATE_UPDATE(action) {
+  const mapState = yield select(selectMap);
+  const filters = mapState?.layers?.[action.payload.id]?.filters;
+  const newFilterState = {
+    advancedFilters: [...filters.advancedFilters],
+    gridFilters: { ...filters.gridFilters },
+    searchBoundary: { ...filters.searchBoundary },
+    sortColumns: action.payload.sortColumns
+  };
+  yield put({
+    type: FILTER_STATE_UPDATE,
+    payload: {
+      [action.payload.id]: {
+        filters: { ...newFilterState},
+        type: mapState?.layers?.[action.payload.id]?.type
+      }
+    }
+  });
+}
 
 function* activitiesPageSaga() {
   yield all([
@@ -496,8 +526,9 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
-    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE)
-   // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
+    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE)
+    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }

@@ -223,7 +223,6 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
     // include the total count of results that would be returned if the limit and offset constraints weren't applied
     sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
-
   }
 
   sqlStatement.append(
@@ -267,7 +266,9 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
   if (searchCriteria.grid_filters) {
     const gridFilters = searchCriteria.grid_filters;
-    if (gridFilters.enabled) {
+    //TBD if there's a legit reason to need this, client just shouldn't send if api doesn't need??
+    //if (gridFilters.enabled) {
+    if (true) {
       if (gridFilters.short_id) {
         sqlStatement.append(SQL` AND LOWER(a.activity_payload ->> 'short_id') LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.short_id})`);
@@ -285,14 +286,14 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       }
       if (gridFilters.received_timestamp) {
         //console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
-        sqlStatement.append(SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy, Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`);
+        sqlStatement.append(
+          SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy, Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
+        );
         sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.jurisdiction) {
-        sqlStatement.append(
-          SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`
-        );
+        sqlStatement.append(SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.jurisdiction})`);
         sqlStatement.append(SQL`||'%'`);
       }
@@ -326,9 +327,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       }
       if (gridFilters.agency) {
         // console.log('\n[INVASIVE SPECIES AGENCY CODE]: ', gridFilters.agency, '\n');
-        sqlStatement.append(
-          SQL` AND LOWER(a.agency) LIKE '%'||`
-        );
+        sqlStatement.append(SQL` AND LOWER(a.agency) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
         sqlStatement.append(SQL`||'%'`);
       }
@@ -338,9 +337,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         //   gridFilters.regional_invasive_species_organization_areas,
         //   '\n'
         // );
-        sqlStatement.append(
-          SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`
-        );
+        sqlStatement.append(SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization_areas})`);
         sqlStatement.append(SQL`||'%'`);
       }
@@ -449,7 +446,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     const columnMap = {
       short_id: 'short_id', //needs a migration because of the payload stuff
       type: 'activity_type',
-      subtype: 'activity_subtype',  //also in payload stuff (activity_type is too but different)
+      subtype: 'activity_subtype', //also in payload stuff (activity_type is too but different)
       received_timestamp: 'received_timestamp',
       jurisdiction: 'jurisdiction_display',
       species_positive: 'species_positive_full',
@@ -462,7 +459,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       regional_districts: 'regional_districts',
       biogeoclimatic_zones: 'biogeoclimatic_zones',
       elevation: 'elevation'
-    }
+    };
     const order = searchCriteria.order.map((column) => {
       return `${columnMap[column['columnKey']]} ${column['direction']}`;
     });

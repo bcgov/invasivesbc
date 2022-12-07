@@ -287,7 +287,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 <Tabs
                   indicatorColor="secondary"
                   textColor="inherit"
-                  value={activeTab}
+                  value={tabConfig[activeTab] ? activeTab : null}
                   color="primary"
                   centered
                   style={{ width: '80%', color: '#fff' }}>

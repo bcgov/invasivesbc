@@ -28,7 +28,9 @@ import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
+  FILTER_STATE_UPDATE,
   PAGE_OR_LIMIT_UPDATE,
+  SORT_COLUMN_STATE_UPDATE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
@@ -130,9 +132,7 @@ export const getSearchCriteriaFromFilters = (
     filter.activity_type = [props.formType];
   }
   */
-  if (gridFilters && gridFilters.enabled) {
-    filter.grid_filters = gridFilters;
-  }
+  filter.grid_filters = gridFilters;
 
   //search_feature
   if (recordSets[setName]?.searchBoundary) {
@@ -237,7 +237,6 @@ const ActivityGrid = (props) => {
   const [filters, setFilters] = useState<any>({});
   const [save, setSave] = useState(0);
   const [cursorPos, setCursorPos] = useState(0);
-  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
 
   const dispatch = useDispatch();
@@ -318,73 +317,8 @@ const ActivityGrid = (props) => {
     }
   }, [advancedFilterRows]);
 
-  /*
-  useEffect(() => {
-    if (userSettings?.recordSets?.[props.setName]) {
-      if (props.setType === 'POI') {
-        getPOIs();
-      } else {
-        getActivities();
-      }
-    }
-  }, [save, JSON.stringify(userSettings?.recordSets?.[props.setName]), sortColumns, filters, pageNumber]);
-  */
-
   const handleAccordionExpand = () => {
     setAccordionExpanded((prev) => !prev);
-  };
-
-  const getActivities = async () => {
-    const filter = getSearchCriteriaFromFilters(
-      advancedFilterRows,
-      accessRoles,
-      userSettings?.recordSets,
-      props.setName,
-      false,
-      filters.enabled ? filters : null,
-      pageNumber - 1, //limit indexed at 0
-      20,
-      sortColumns.length ? [...sortColumns] : null
-    );
-
-    const act_list = await dataAccess.getActivities(filter);
-    if (act_list && !act_list.count) {
-      setConsole('Unable to fetch activities.');
-    }
-    if (act_list && act_list.code) {
-      setConsole('Unable to fetch activities.');
-    }
-    if (act_list && act_list.count === 0) {
-      setConsole('No data found.');
-    }
-
-    setActivities(act_list);
-  };
-
-  const getPOIs = async () => {
-    const filter = getSearchCriteriaFromFilters(
-      advancedFilterRows,
-      accessRoles,
-      userSettings?.recordSets,
-      props.setName,
-      true,
-      filters.enabled ? filters : null,
-      pageNumber - 1, //limit indexed at 0
-      20,
-      sortColumns.length ? [...sortColumns] : []
-    );
-
-    const act_list = await dataAccess.getPointsOfInterest(filter);
-    if (act_list && !act_list.count) {
-      setConsole('Unable to fetch points of interest.');
-    }
-    if (act_list && act_list.code) {
-      setConsole('Unable to fetch points of interest.');
-    }
-    if (act_list && act_list.count === 0) {
-      setConsole('No POI data found.');
-    }
-    setPOIs(act_list);
   };
 
   const [rows, setRows] = useState([]);
@@ -430,17 +364,6 @@ const ActivityGrid = (props) => {
       event.stopPropagation();
     }
   }
-
-  /*
-  const developerOptions = useMemo(
-    () =>
-      Array.from(new Set(rows?.map((r) => r.developer))).map((d) => ({
-        label: d,
-        value: d
-      })),
-    [rows]
-  );
-  */
 
   const useColumns = (keyAndNameArray) =>
     useMemo(() => {
@@ -514,30 +437,6 @@ const ActivityGrid = (props) => {
   const actColumns = useColumns(ActivitiesDefaultHeaders());
   const columnsDynamic = props.setType === 'POI' ? iappColumns : actColumns;
 
-  //todo - tests need to take into account type, they're all strings right now
-  // const filteredRowsDynamic = useMemo(() => {
-  //   return rows?.filter((r) => {
-  //     // grab all keys except enabled
-  //     let rowKeys = Object.keys(filters as unknown as Object).filter((k) => k !== 'enabled');
-  //     // build a check for each
-  //     let tests = rowKeys.map((k) => {
-  //       if (filters[k] && r[k]) {
-  //         // this only works for strings
-  //         let field = r[k];
-  //         if (typeof(r[k]) === 'number') field = field.toString();    //convert to string if type is number
-  //         if (field.includes(filters[k])) {
-  //           return true;
-  //         } else return false;
-  //       }
-  //       return true;
-  //     });
-  //     // check if they all pass
-  //     return tests.every((t) => {
-  //       return t === true;
-  //     });
-  //   });
-  // }, [rows, filters]);
-
   function clearFilters() {
     setFilters({
       activity_id: '',
@@ -587,13 +486,15 @@ const ActivityGrid = (props) => {
     if (!userSettings.recordSets[props.setName].expanded || !recordsState?.recordTables?.[props.setName]?.rows) {
       return;
     }
-    console.log('inside of hook');
-    const records = recordsState?.recordTables?.[props.setName]?.rows
-    const newrows = userSettings.recordSets[props.setName].recordSetType === 'POI'? mapPOI_IAPP_ToDataGridRows(records) : MapActivitiesToDataGridRows(records, true)
+    const records = recordsState?.recordTables?.[props.setName]?.rows;
+    const newrows =
+      userSettings.recordSets[props.setName].recordSetType === 'POI'
+        ? mapPOI_IAPP_ToDataGridRows(records)
+        : MapActivitiesToDataGridRows(records, true);
     setRows(newrows);
-    console.log('setting rows', newrows.length);
   }, [
-    JSON.stringify(recordsState?.recordTables?.[props.setName]?.rows), userSettings.recordSets[props.setName].expanded 
+    JSON.stringify(recordsState?.recordTables?.[props.setName]?.rows),
+    userSettings.recordSets[props.setName].expanded
   ]);
 
   //TODO THEME MODE
@@ -654,96 +555,101 @@ const ActivityGrid = (props) => {
     const recordSetsState = useSelector(selectUserSettings);
     const mapState = useSelector(selectMap);
     const recordSetID = props.setName;
-    const recordPageNumber = 
-      mapState?.recordTables && 
-      mapState?.recordTables[recordSetID] && 
-      mapState?.recordTables[recordSetID]?.page ? 
-        mapState?.recordTables[recordSetID]?.page : 0 ;
-    const recordPageLimit = 
-      mapState?.recordTables && 
-      mapState?.recordTables[recordSetID] && 
-      mapState?.recordTables[recordSetID]?.limit ? 
-        mapState?.recordTables[recordSetID]?.limit : 20 ;
-    const recordSetLength = 
-      mapState?.layers && 
-      mapState?.layers[recordSetID] && 
-      mapState?.layers[recordSetID]?.IDList && 
-      mapState?.layers[recordSetID]?.IDList.length > 0 ? 
-        mapState?.layers[recordSetID]?.IDList.length : 1 ;
+    const recordPageNumber =
+      mapState?.recordTables && mapState?.recordTables[recordSetID] && mapState?.recordTables[recordSetID]?.page
+        ? mapState?.recordTables[recordSetID]?.page
+        : 0;
+    const recordPageLimit =
+      mapState?.recordTables && mapState?.recordTables[recordSetID] && mapState?.recordTables[recordSetID]?.limit
+        ? mapState?.recordTables[recordSetID]?.limit
+        : 20;
+    const recordSetLength =
+      mapState?.layers &&
+      mapState?.layers[recordSetID] &&
+      mapState?.layers[recordSetID]?.IDList &&
+      mapState?.layers[recordSetID]?.IDList.length > 0
+        ? mapState?.layers[recordSetID]?.IDList.length
+        : 1;
 
     return (
       <div key={'pagination-' + recordSetID}>
         <div key={'paginationControls-' + recordSetID}>
-        {recordPageNumber <= 0 ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 1, p: 1 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: PAGE_OR_LIMIT_UPDATE,
-                payload: {
-                  recordSetID: recordSetID,
-                  page: 0,
-                  limit: recordPageLimit
-                }
-              });
-            }}>
-            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
-          </Button>
-        )}
-        {recordPageNumber <= 0 ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <ArrowLeftIcon></ArrowLeftIcon>
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 1, p: 1 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: PAGE_OR_LIMIT_UPDATE,
-                payload: {
-                  recordSetID: recordSetID,
-                  page: recordPageNumber - 1,
-                  limit: recordPageLimit
-                }
-              });
-            }}>
-            <ArrowLeftIcon></ArrowLeftIcon>
-          </Button>
-        )}
-        <span>{recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}</span>
-        {recordPageNumber + 1 * recordPageLimit > recordSetLength ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <ArrowRightIcon></ArrowRightIcon>
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 1, p: 1 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: PAGE_OR_LIMIT_UPDATE,
-                payload: {
-                  recordSetID: recordSetID,
-                  page: recordPageNumber + 1,
-                  limit: recordPageLimit
-                }
-              });
-            }}>
-            <ArrowRightIcon></ArrowRightIcon>
-          </Button>
-        )}
+          {recordPageNumber <= 0 ? (
+            <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+              <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+            </Button>
+          ) : (
+            <Button
+              sx={{ m: 1, p: 1 }}
+              size={'small'}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({
+                  type: PAGE_OR_LIMIT_UPDATE,
+                  payload: {
+                    recordSetID: recordSetID,
+                    page: 0,
+                    limit: recordPageLimit
+                  }
+                });
+              }}>
+              <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+            </Button>
+          )}
+          {recordPageNumber <= 0 ? (
+            <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+              <ArrowLeftIcon></ArrowLeftIcon>
+            </Button>
+          ) : (
+            <Button
+              sx={{ m: 1, p: 1 }}
+              size={'small'}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({
+                  type: PAGE_OR_LIMIT_UPDATE,
+                  payload: {
+                    recordSetID: recordSetID,
+                    page: recordPageNumber - 1,
+                    limit: recordPageLimit
+                  }
+                });
+              }}>
+              <ArrowLeftIcon></ArrowLeftIcon>
+            </Button>
+          )}
+          <span>
+            {recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}
+          </span>
+          {recordPageNumber + 1 * recordPageLimit > recordSetLength ? (
+            <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+              <ArrowRightIcon></ArrowRightIcon>
+            </Button>
+          ) : (
+            <Button
+              sx={{ m: 1, p: 1 }}
+              size={'small'}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({
+                  type: PAGE_OR_LIMIT_UPDATE,
+                  payload: {
+                    recordSetID: recordSetID,
+                    page: recordPageNumber + 1,
+                    limit: recordPageLimit
+                  }
+                });
+              }}>
+              <ArrowRightIcon></ArrowRightIcon>
+            </Button>
+          )}
         </div>
         <div key={'paginationRecords-' + recordSetID}>
-            <span>Showing records {(recordPageLimit * (recordPageNumber + 1)) - recordPageLimit + 1} - {recordSetLength < recordPageLimit ? recordSetLength : (recordPageLimit * (recordPageNumber + 1))} out of {recordSetLength}</span>
+          <span>
+            Showing records {recordPageLimit * (recordPageNumber + 1) - recordPageLimit + 1} -{' '}
+            {recordSetLength < recordPageLimit ? recordSetLength : recordPageLimit * (recordPageNumber + 1)} out of{' '}
+            {recordSetLength}
+          </span>
         </div>
       </div>
     );
@@ -861,8 +767,18 @@ const ActivityGrid = (props) => {
                   props.setType === 'POI' ? setPoiSelected(r) : setActivitiesSelected(r);
                 }}
                 columns={columnsDynamic}
-                sortColumns={sortColumns}
-                onSortColumnsChange={setSortColumns}
+                sortColumns={recordsState?.layers?.[props.setName]?.filters?.sortColumns}
+                onSortColumnsChange={
+                  (sortColumn) => {
+                    dispatch({
+                      type: SORT_COLUMN_STATE_UPDATE,
+                      payload: {
+                          id: props.setName,
+                          sortColumns: sortColumn
+                      }
+                    });
+                  }
+                }
                 components={{ rowRenderer: RowRenderer }}
               />
               <Pagination></Pagination>
@@ -886,7 +802,7 @@ const ActivityGrid = (props) => {
       advancedFilterRows,
       filters,
       activities,
-      sortColumns,
+      JSON.stringify(recordsState?.layers?.[props.setName]?.filters?.sortColumns),
       rows
     ]
   );
