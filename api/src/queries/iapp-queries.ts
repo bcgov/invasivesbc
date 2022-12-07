@@ -83,7 +83,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   // grid filtering
   if (searchCriteria.grid_filters) {
     const gridFilters = searchCriteria.grid_filters;
-    if (gridFilters.enabled) {
+    //TBD if there's a legit reason to need this, client just shouldn't send if api doesn't need??
+    //if (gridFilters.enabled) {
+    if (true) {
       if (gridFilters.point_of_interest_id) {
         sqlStatement.append(SQL` AND i.site_id::text LIKE '%'||`);
         sqlStatement.append(SQL`${gridFilters.point_of_interest_id}`);

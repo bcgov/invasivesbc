@@ -130,9 +130,7 @@ export const getSearchCriteriaFromFilters = (
     filter.activity_type = [props.formType];
   }
   */
-  if (gridFilters && gridFilters.enabled) {
-    filter.grid_filters = gridFilters;
-  }
+  filter.grid_filters = gridFilters;
 
   //search_feature
   if (recordSets[setName]?.searchBoundary) {
