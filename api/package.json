@@ -55,7 +55,7 @@
     "pg": "~8.7.0",
     "pg-format": "^1.0.4",
     "proj4": "^2.6.3",
-    "qs": "~6.9.4",
+    "qs": "~6.9.7",
     "reproject": "^1.2.6",
     "simple-get": "^4.0.1",
     "sql-template-strings": "~2.2.2",
