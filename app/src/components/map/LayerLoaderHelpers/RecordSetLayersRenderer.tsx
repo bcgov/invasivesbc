@@ -144,12 +144,12 @@ export const LeafletCanvasMarker = (props) => {
     */
 
     return () => {
-      if (container) {
-        layerRef.current.removeMarkers(markers);
-        container.removeLayer(layerRef.current);
-        container.removeLayer(groupRef.current);
-      }
       try {
+        if (container && map) {
+          layerRef?.current?.removeMarkers(markers);
+          container?.removeLayer(layerRef.current);
+          container?.removeLayer(groupRef.current);
+        }
         //acleanupCallback();
         //(markersCanvas as any)?.removeMarkers();
         // (markersCanvas as any)?.clear();

@@ -36,7 +36,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 
 const OrderSelector = (props) => {
   return (
-    <Box sx={{ display: 'grid', height: 50, width: 100, pr: 5 }}>
+    <Box sx={{ display: 'grid', height: 20, width: 100, pr: 5 }}>
       <IconButton
         size={'small'}
         sx={{ gridColumn: 1, gridRow: 1, justifySelf: 'center' }}
@@ -166,8 +166,8 @@ const RecordSetAccordionSummary = (props) => {
         }}
         recordSets={recordSetsToDelete}
       />
-      <AccordionSummary>
-        <Box sx={{ pl: 5, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+      <AccordionSummary sx={{ height: '80px' }}>
+        <Box sx={{ pl: 5, pt: 0, pb: 0, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
           {MOBILE && props.recordSetName !== 'My Drafts' && (
             <Button
               sx={{ mr: 2 }}
