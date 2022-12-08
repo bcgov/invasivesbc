@@ -8,7 +8,8 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS
+  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
@@ -85,12 +86,14 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-  yield put({ type: ACTIVITY_SAVE_SUCCESS, payload: { 
-    activity: {
-      ...newActivity,
-      media_delete_keys: filtered_media_delete_keys
+  yield put({
+    type: ACTIVITY_SAVE_SUCCESS, payload: {
+      activity: {
+        ...newActivity,
+        media_delete_keys: filtered_media_delete_keys
+      }
     }
-  } });
+  });
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
@@ -106,18 +109,35 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
-
+  console.log('handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE.networkReturn', networkReturn);
   yield put({
     type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
     payload: { suggestedPersons: networkReturn.data.result }
   });
 }
 
+export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(action) {
+  console.log('handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE generator action:', action);
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`,
+    { activity_type: action.payload.activity_type }
+  );  //, action.payload.ActivityFilterCriteria
+  console.log('handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE.networkReturn', networkReturn);
+  yield put({
+    type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
+    payload: { suggestedTreatmentIDs: networkReturn.data.result }
+  });
+}
+
 export function* handle_ACTIVITY_GET_(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
-
+  console.log('handle_ACTIVITY_GET.networkReturn', networkReturn);
   yield put({
     type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
     payload: { suggestedPersons: networkReturn.data.result }
+  });
+
+  yield put({
+    type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
+    payload: { suggestedTreatmentIDs: networkReturn.data.result }
   });
 }

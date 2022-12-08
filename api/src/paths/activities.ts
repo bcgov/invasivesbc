@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
-import {createHash} from "crypto";
+import { createHash } from "crypto";
 import cacheService from "../utils/cache-service";
 
 const defaultLog = getLogger('activity');
@@ -24,10 +24,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -78,10 +78,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -141,6 +141,7 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    console.log('getActivitiesBySearchFilterCriteria CALLED req:', req);
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });

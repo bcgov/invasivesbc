@@ -2,12 +2,13 @@ import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
-import { throttle } from 'redux-saga/effects';
+// import { throttle } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   autofillBiocontrolCollectionTotalQuantity,
   autoFillNameByPAC,
+  autoFillTreatmentID,
   autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
@@ -26,6 +27,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_DEBUG,
   ACTIVITY_DELETE_PHOTO_REQUEST,
@@ -177,9 +180,33 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       // updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
     }
 
+
+    console.log('handle_ACTIVITY_ON_FORM_CHANGE_REQUEST ActivityType.Treatment beforeState.activity.activity_type:', beforeState.activity.activity_type);
+    console.log('ActivityType.Treatment:', ActivityType.Treatment);
+
     if (beforeState.activity.activity_type === ActivityType.Treatment) {
       updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
+
     }
+
+    if (
+      beforeState.activity.activity_type === ActivityType.Monitoring &&
+      // ActivitySubtype.Treatment_BiologicalPlant,
+      // ActivitySubtype.Monitoring_BiologicalDispersal,
+      // ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+      ([
+        'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+        'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'
+      ].includes(beforeActivity.activity_subtype))
+    ) {
+      console.log('beforeActivity.activity_subtype', beforeActivity.activity_subtype);
+      // ].includes(beforeActivity.activity_subtype)) {
+      console.log('ActivitySubtype', ActivitySubtype);
+      console.log('beforeActivity.suggestedTreatmentIDs', beforeActivity.suggestedTreatmentIDs);
+      // activityState.suggestedTreatmentIDs
+      updatedFormData = autoFillTreatmentID(updatedFormData, beforeState.suggestedTreatmentIDs);
+    }
+
     let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
 
     //handleRecordLinking(updatedFormData);
@@ -235,6 +262,9 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
+  console.log('handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST action:', action);
+  console.log('handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST action.payload:', action.payload);
+
   try {
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
@@ -246,28 +276,60 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
   }
 }
 
+export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
+  console.log('handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST action:', action);
+  console.log('handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST action.payload:', action.payload);
+  try {
+
+
+    // filter Treatments and/or Biocontrol
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+      payload: { activity_type: ActivityType.Treatment }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action) {
   try {
 
-    const activityState = yield select(selectActivity)
-    const type = activityState?.activity?.activity_subtype
+    const activityState = yield select(selectActivity);
+    const type = activityState?.activity?.activity_subtype;
 
-
-
-
+    console.log('ActivitySubtype', ActivitySubtype);
+    console.log('activityState', activityState);
+    console.log('activityState.suggestedTreatmentIDs', activityState.suggestedTreatmentIDs);
+    console.log('type', type);
+    // activity_subtype: "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"
+    // activity_type: "Monitoring"
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
     });
 
+    console.log('ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST.type', type);
+    if ([
+      //Activity_Monitoring_ChemicalTerrestrialAquaticPlant
+      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'
+    ].includes(type)) {
+      console.log('Filtered type', type);
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
+        payload: {}
+      });
+    }
+    // yield put({
+    //   type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+    //   payload: {
+    //     center: action.payload.activity?.geometry[0]?.geometry?.coordinates
+    //   }
+    // });
 
-    yield put({
-      type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-      payload: {
-        center: action.payload.activity?.geometry[0]?.geometry?.coordinates
-      }
-    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -289,7 +351,7 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
 export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
   try {
     if (action.payload.photo) {
-      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload}});
+      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload } });
     }
   } catch (e) {
     console.error(e);
@@ -318,7 +380,7 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
             return key !== action.payload.photo.media_key
           }
         });
-      } 
+      }
 
       let delete_keys = [];
       if (beforeActivity.media_delete_keys?.length) {
@@ -328,14 +390,16 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
         delete_keys.push(action.payload.photo.media_key);
       }
 
-      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
-        activity: {
-          ...beforeActivity,
-          media: media.length ? media : [],
-          media_keys: media_keys.length ? media_keys : [],
-          media_delete_keys: delete_keys
+      yield put({
+        type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
+          activity: {
+            ...beforeActivity,
+            media: media.length ? media : [],
+            media_keys: media_keys.length ? media_keys : [],
+            media_delete_keys: delete_keys
+          }
         }
-      }});
+      });
     }
   } catch (e) {
     console.error(e);
@@ -353,9 +417,11 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
       beforeActivity.media[photoIndex] = action.payload.photo;
     }
 
-    yield put({ type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
-      media: beforeActivity.media
-    }});
+    yield put({
+      type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
+        media: beforeActivity.media
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });

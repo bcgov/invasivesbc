@@ -279,88 +279,88 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       const subtypeSchema = components?.schemas?.[subtype];
       let modifiedSchema = subtypeSchema;
       // Handle activity_id linking fetches
-      try {
-        if (props.activity?.activity_type === 'Monitoring') {
-          if (MOBILE) {
-            uiSchema = {
-              ...uiSchema,
-              activity_type_data: {
-                ...uiSchema?.activity_type_data,
-                linked_id: {
-                  ...uiSchema?.activity_type_data?.linked_id,
-                  'ui:widget': undefined
-                }
-              }
-            };
-          } else {
-            let linkedActivitySubtypes = [];
+      // try {
+      //   if (props.activity?.activity_type === 'Monitoring') {
+      //     if (MOBILE) {
+      //       uiSchema = {
+      //         ...uiSchema,
+      //         activity_type_data: {
+      //           ...uiSchema?.activity_type_data,
+      //           linked_id: {
+      //             ...uiSchema?.activity_type_data?.linked_id,
+      //             'ui:widget': undefined
+      //           }
+      //         }
+      //       };
+      //     } else {
+      //       let linkedActivitySubtypes = [];
 
-            switch (subtype) {
-              case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-                linkedActivitySubtypes = [
-                  'Activity_Treatment_MechanicalPlantTerrestrial',
-                  'Activity_Treatment_MechanicalPlantAquatic'
-                ];
-                break;
-              case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-                linkedActivitySubtypes = [
-                  'Activity_Treatment_ChemicalPlantTerrestrial',
-                  'Activity_Treatment_ChemicalPlantAquatic'
-                ];
-                break;
-              case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-                linkedActivitySubtypes = ['Activity_Biocontrol_Release'];
-                break;
-              default:
-                break;
-            }
+      //       switch (subtype) {
+      //         case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+      //           linkedActivitySubtypes = [
+      //             'Activity_Treatment_MechanicalPlantTerrestrial',
+      //             'Activity_Treatment_MechanicalPlantAquatic'
+      //           ];
+      //           break;
+      //         case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+      //           linkedActivitySubtypes = [
+      //             'Activity_Treatment_ChemicalPlantTerrestrial',
+      //             'Activity_Treatment_ChemicalPlantAquatic'
+      //           ];
+      //           break;
+      //         case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+      //           linkedActivitySubtypes = ['Activity_Biocontrol_Release'];
+      //           break;
+      //         default:
+      //           break;
+      //       }
 
-            const treatments_response = await dataAccess.getActivities({
-              column_names: ['activity_id', 'created_timestamp', 'activity_subtype'],
-              activity_type: ['Treatment', 'Biocontrol'],
-              activity_subtype: linkedActivitySubtypes,
-              order: ['created_timestamp'],
-              user_roles: accessRoles
-            });
-            const treatments = treatments_response.rows.map((treatment, i) => {
-              const shortActID = getShortActivityID(treatment);
-              return {
-                label: shortActID,
-                title: shortActID,
-                value: treatment.activity_id,
-                'x-code_sort_order': i + 1
-              };
-            });
-            if (treatments?.length) {
-              modifiedSchema = {
-                ...modifiedSchema,
-                properties: {
-                  ...modifiedSchema?.properties,
-                  activity_type_data: {
-                    ...modifiedSchema?.properties.activity_type_data,
-                    properties: {
-                      ...modifiedSchema?.properties.activity_type_data.properties,
-                      linked_id: {
-                        ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
-                        options: treatments
-                      }
-                    }
-                  }
-                }
-              };
-              components = {
-                ...components,
-                schemas: {
-                  ...components.schemas,
-                  [props.activity.activity_subtype]: modifiedSchema
-                }
-              };
-            }
-          }
-        }
-      } catch (error) {
-        console.log('Could not load Activity IDs of linkable records');
-      }
+      //       const treatments_response = await dataAccess.getActivities({
+      //         column_names: ['activity_id', 'created_timestamp', 'activity_subtype'],
+      //         activity_type: ['Treatment', 'Biocontrol'],
+      //         activity_subtype: linkedActivitySubtypes,
+      //         order: ['created_timestamp'],
+      //         user_roles: accessRoles
+      //       });
+      //       const treatments = treatments_response.rows.map((treatment, i) => {
+      //         const shortActID = getShortActivityID(treatment);
+      //         return {
+      //           label: shortActID,
+      //           title: shortActID,
+      //           value: treatment.activity_id,
+      //           'x-code_sort_order': i + 1
+      //         };
+      //       });
+      //       if (treatments?.length) {
+      //         modifiedSchema = {
+      //           ...modifiedSchema,
+      //           properties: {
+      //             ...modifiedSchema?.properties,
+      //             activity_type_data: {
+      //               ...modifiedSchema?.properties.activity_type_data,
+      //               properties: {
+      //                 ...modifiedSchema?.properties.activity_type_data.properties,
+      //                 linked_id: {
+      //                   ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
+      //                   options: treatments
+      //                 }
+      //               }
+      //             }
+      //           }
+      //         };
+      //         components = {
+      //           ...components,
+      //           schemas: {
+      //             ...components.schemas,
+      //             [props.activity.activity_subtype]: modifiedSchema
+      //           }
+      //         };
+      //       }
+      //     }
+      //   }
+      // } catch (error) {
+      //   console.log('Could not load Activity IDs of linkable records');
+      // }
       setSchemas({
         schema: { ...modifiedSchema, components: components },
         uiSchema: uiSchema

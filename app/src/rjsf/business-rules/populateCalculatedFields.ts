@@ -249,6 +249,99 @@ export const autoFillNameByPAC = (formData: any, appUsers: any) => {
   return newFormData;
 };
 
+export const autoFillTreatmentID = (formData: any, treatmentActivities: any) => {
+  let newFormData = formData;
+  console.log('formData',);
+  console.log('formData.activity?.activity_type', formData.activity?.activity_type);
+  console.log('formData.activity?', formData.activity);
+  // console.log('formData.activity', formData.activity);
+  // console.log('',);
+  // console.log('',);
+  // console.log('',);
+  if (formData.activity?.activity_type === 'Monitoring') {
+    // if (MOBILE) {
+    //   uiSchema = {
+    //     ...uiSchema,
+    //     activity_type_data: {
+    //       ...uiSchema?.activity_type_data,
+    //       linked_id: {
+    //         ...uiSchema?.activity_type_data?.linked_id,
+    //         'ui:widget': undefined
+    //       }
+    //     }
+    //   };
+    // } else {
+    let linkedActivitySubtypes = [];
+
+    switch (subtype) {
+      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+        linkedActivitySubtypes = [
+          'Activity_Treatment_MechanicalPlantTerrestrial',
+          'Activity_Treatment_MechanicalPlantAquatic'
+        ];
+        break;
+      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+        linkedActivitySubtypes = [
+          'Activity_Treatment_ChemicalPlantTerrestrial',
+          'Activity_Treatment_ChemicalPlantAquatic'
+        ];
+        break;
+      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+        linkedActivitySubtypes = ['Activity_Biocontrol_Release'];
+        break;
+      default:
+        break;
+    }
+
+    // const treatments_response = await dataAccess.getActivities({
+    //   column_names: ['activity_id', 'created_timestamp', 'activity_subtype'],
+    //   activity_type: ['Treatment', 'Biocontrol'],
+    //   activity_subtype: linkedActivitySubtypes,
+    //   order: ['created_timestamp'],
+    //   user_roles: accessRoles
+    // });
+    // const treatments = treatments_response.rows.map((treatment, i) => {
+    //   const shortActID = getShortActivityID(treatment);
+    //   return {
+    //     label: shortActID,
+    //     title: shortActID,
+    //     value: treatment.activity_id,
+    //     'x-code_sort_order': i + 1
+    //   };
+    // });
+    // if (treatments?.length) {
+    //   modifiedSchema = {
+    //     ...modifiedSchema,
+    //     properties: {
+    //       ...modifiedSchema?.properties,
+    //       activity_type_data: {
+    //         ...modifiedSchema?.properties.activity_type_data,
+    //         properties: {
+    //           ...modifiedSchema?.properties.activity_type_data.properties,
+    //           linked_id: {
+    //             ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
+    //             options: treatments
+    //           }
+    //         }
+    //       }
+    //     }
+    //   };
+    //   components = {
+    //     ...components,
+    //     schemas: {
+    //       ...components.schemas,
+    //       [props.activity.activity_subtype]: modifiedSchema
+    //     }
+    //   };
+    // }
+  }
+  return newFormData;
+}
+
+
+
+
+
 export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   if (!lastField) {
     return formData;
@@ -474,7 +567,7 @@ export const autoFillBiocontrolPresent = (formData: any) => {
   const biological_agent_presence_code =
     releaseMonitoring === true
       ? formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
-          .biological_agent_presence_code
+        .biological_agent_presence_code
       : formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_presence_code;
 
   let biocontrol_present;
@@ -488,24 +581,24 @@ export const autoFillBiocontrolPresent = (formData: any) => {
   const newFormData =
     releaseMonitoring === true
       ? {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
-              biocontrol_present: biocontrol_present
-            }
+        ...formData,
+        activity_subtype_data: {
+          ...formData.activity_subtype_data,
+          Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
+            ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+            biocontrol_present: biocontrol_present
           }
         }
+      }
       : {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolDispersal_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
-              biocontrol_present: biocontrol_present
-            }
+        ...formData,
+        activity_subtype_data: {
+          ...formData.activity_subtype_data,
+          Monitoring_BiocontrolDispersal_Information: {
+            ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
+            biocontrol_present: biocontrol_present
           }
-        };
+        }
+      };
   return newFormData;
 };
