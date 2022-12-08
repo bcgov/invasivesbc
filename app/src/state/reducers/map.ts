@@ -8,7 +8,8 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   FILTER_STATE_UPDATE,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
-  PAGE_OR_LIMIT_UPDATE
+  PAGE_OR_LIMIT_UPDATE,
+  MAP_DELETE_LAYER
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -43,6 +44,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
         }
 
+        return {
+          ...state,
+          layers: JSON.parse(JSON.stringify({ ...newState }))
+        };
+      }
+      case MAP_DELETE_LAYER: {
+        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        delete newState[action.payload.recordSetID];
         return {
           ...state,
           layers: JSON.parse(JSON.stringify({ ...newState }))

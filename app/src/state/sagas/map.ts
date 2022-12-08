@@ -1,4 +1,15 @@
-import { all, call, delay, put, select, throttle, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  delay,
+  put,
+  select,
+  throttle,
+  take,
+  takeEvery,
+  takeLatest,
+  actionChannel
+} from 'redux-saga/effects';
 import Keycloak from 'keycloak-js';
 import {
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
@@ -26,7 +37,9 @@ import {
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   PAGE_OR_LIMIT_UPDATE,
-  SORT_COLUMN_STATE_UPDATE
+  SORT_COLUMN_STATE_UPDATE,
+  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+  MAP_DELETE_LAYER
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -499,17 +512,26 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
     type: FILTER_STATE_UPDATE,
     payload: {
       [action.payload.id]: {
-        filters: { ...newFilterState},
+        filters: { ...newFilterState },
         type: mapState?.layers?.[action.payload.id]?.type
       }
     }
   });
 }
 
+function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
+  yield put({ type: MAP_DELETE_LAYER, payload: { recordSetID: action.payload.deletedID } });
+}
+
+function* handle_MAP_DELETE_LAYER(action) {
+  yield put({ type: MAP_DELETE_LAYER, payload: { ...action.payload } });
+}
+
 function* activitiesPageSaga() {
   yield all([
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
+    takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
