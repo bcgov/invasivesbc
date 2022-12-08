@@ -4,6 +4,7 @@ import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activit
 import { put, select } from 'redux-saga/effects';
 import { throttle } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import center from '@turf/center';
 
 import {
   autofillBiocontrolCollectionTotalQuantity,
@@ -249,25 +250,26 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action) {
   try {
-
-    const activityState = yield select(selectActivity)
-    const type = activityState?.activity?.activity_subtype
-
-
-
+    const activityState = yield select(selectActivity);
+    const type = activityState?.activity?.activity_subtype;
 
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
     });
 
-
-    yield put({
-      type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-      payload: {
-        center: action.payload.activity?.geometry[0]?.geometry?.coordinates
-      }
-    });
+    // needs to be latlng expression
+    const isGeo = action.payload.activity?.geometry[0]?.geometry?.coordinates ? true : false;
+    //const centerPoint = center(action.payload.activity?.geometry[0]?.geometry?.coordinates);
+    const centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
+    if (centerPoint && isGeo) {
+      yield put({
+        type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+        payload: {
+          center: centerPoint.geometry.coordinates
+        }
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -289,7 +291,7 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
 export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
   try {
     if (action.payload.photo) {
-      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload}});
+      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload } });
     }
   } catch (e) {
     console.error(e);
@@ -305,9 +307,9 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
 
       const media = beforeActivity.media.filter((photo) => {
         if (photo.media_key) {
-          return photo.media_key !== action.payload.photo.media_key
+          return photo.media_key !== action.payload.photo.media_key;
         } else {
-          return photo.file_name !== action.payload.photo.file_name
+          return photo.file_name !== action.payload.photo.file_name;
         }
       });
 
@@ -315,10 +317,10 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
       if (beforeActivity.media_keys) {
         media_keys = beforeActivity.media_keys.filter((key) => {
           if (action.payload.photo.media_key) {
-            return key !== action.payload.photo.media_key
+            return key !== action.payload.photo.media_key;
           }
         });
-      } 
+      }
 
       let delete_keys = [];
       if (beforeActivity.media_delete_keys?.length) {
@@ -328,14 +330,17 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
         delete_keys.push(action.payload.photo.media_key);
       }
 
-      yield put({ type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
-        activity: {
-          ...beforeActivity,
-          media: media.length ? media : [],
-          media_keys: media_keys.length ? media_keys : [],
-          media_delete_keys: delete_keys
+      yield put({
+        type: ACTIVITY_DELETE_PHOTO_SUCCESS,
+        payload: {
+          activity: {
+            ...beforeActivity,
+            media: media.length ? media : [],
+            media_keys: media_keys.length ? media_keys : [],
+            media_delete_keys: delete_keys
+          }
         }
-      }});
+      });
     }
   } catch (e) {
     console.error(e);
@@ -353,9 +358,12 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
       beforeActivity.media[photoIndex] = action.payload.photo;
     }
 
-    yield put({ type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
-      media: beforeActivity.media
-    }});
+    yield put({
+      type: ACTIVITY_EDIT_PHOTO_SUCCESS,
+      payload: {
+        media: beforeActivity.media
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });
