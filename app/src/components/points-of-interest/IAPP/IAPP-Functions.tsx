@@ -1,8 +1,8 @@
 export const getJurisdictions = (surveys: any[]) => {
   const tempArr = [];
 
-  surveys.forEach((survey) => {
-    survey.jurisdictions.forEach((jurisdiction) => {
+  surveys?.forEach((survey) => {
+    survey?.jurisdictions?.forEach((jurisdiction) => {
       if (tempArr.length < 1) {
         tempArr.push(jurisdiction);
       } else {

@@ -116,9 +116,9 @@ export const SurveysTable = (props: any) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   React.useEffect(() => {
-    if (surveys.length > 0) {
+    if (surveys?.length > 0) {
       const tempArr = [];
-      surveys.forEach((survey) => {
+      surveys?.forEach((survey) => {
         tempArr.push(createData(survey));
       });
       setRows(sortArray(tempArr));
