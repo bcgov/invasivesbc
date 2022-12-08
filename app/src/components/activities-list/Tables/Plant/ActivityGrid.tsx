@@ -483,18 +483,18 @@ const ActivityGrid = (props) => {
   }, [activities]);
 
   useEffect(() => {
-    if (!userSettings.recordSets[props.setName].expanded || !recordsState?.recordTables?.[props.setName]?.rows) {
+    if (!userSettings?.recordSets[props.setName]?.expanded || !recordsState?.recordTables?.[props.setName]?.rows) {
       return;
     }
     const records = recordsState?.recordTables?.[props.setName]?.rows;
     const newrows =
-      userSettings.recordSets[props.setName].recordSetType === 'POI'
+      userSettings?.recordSets[props.setName]?.recordSetType === 'POI'
         ? mapPOI_IAPP_ToDataGridRows(records)
         : MapActivitiesToDataGridRows(records, true);
     setRows(newrows);
   }, [
     JSON.stringify(recordsState?.recordTables?.[props.setName]?.rows),
-    userSettings.recordSets[props.setName].expanded
+    userSettings?.recordSets[props.setName]?.expanded
   ]);
 
   //TODO THEME MODE
