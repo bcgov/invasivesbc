@@ -206,7 +206,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     });
   }
 
-  if (!compareObjects(mapState?.layers[action.payload.updatedSetName]?.filters, newFilterState)) {
+  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)) {
     yield put({
       type: FILTER_STATE_UPDATE,
       payload: {
