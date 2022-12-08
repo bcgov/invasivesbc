@@ -125,7 +125,10 @@ function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
       JSON.stringify({ recordSets: { ...newRecordSetState } })
     );
 
-    yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, payload: { recordSets: newRecordSetState } });
+    yield put({
+      type: USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+      payload: { recordSets: newRecordSetState, deletedID: action.payload.recordSetName }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_FAILURE });
@@ -224,9 +227,10 @@ function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
 
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: { 
+      payload: {
         ...action.payload,
-        activeActivity: action.payload.id }
+        activeActivity: action.payload.id
+      }
     });
   } catch (e) {
     console.error(e);
@@ -280,7 +284,7 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
     yield put({
       type: USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
       payload: action.payload
-    })
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_SET_MAP_CENTER_FAILURE });
