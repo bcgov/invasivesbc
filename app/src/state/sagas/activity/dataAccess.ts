@@ -261,7 +261,11 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry[0]?.geometry?.coordinates ? true : false;
     //const centerPoint = center(action.payload.activity?.geometry[0]?.geometry?.coordinates);
-    const centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
+
+    let centerPoint;
+    if (isGeo) {
+      centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
+    }
     if (centerPoint && isGeo) {
       yield put({
         type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
