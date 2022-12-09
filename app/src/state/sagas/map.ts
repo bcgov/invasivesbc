@@ -102,7 +102,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const layerState = {
     color: action.payload.updatedSet.color,
     drawOrder: action.payload.updatedSet.drawOrder,
-    mapToggle: action.payload.updatedSet.mapToggle
+    mapToggle: action.payload.updatedSet.mapToggle,
+    labelToggle: action.payload.updatedSet.labelToggle
   };
 
   const newFilterState = {
@@ -206,8 +207,10 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     });
   }
 
-  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) ||
-      !mapState?.recordTables?.[action.payload.updatedSetName]) {
+  if (
+    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)
+    //|| !mapState?.recordTables?.[action.payload.updatedSetName]
+  ) {
     yield put({
       type: FILTER_STATE_UPDATE,
       payload: {

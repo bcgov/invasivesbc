@@ -17,7 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import React, { useContext, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
-// Commented out due to module not being found, not sure what this is supposed to be
+import MessageIcon from '@mui/icons-material/Message'; // Commented out due to module not being found, not sure what this is supposed to be
 // import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -273,6 +273,17 @@ const RecordSetAccordionSummary = (props) => {
               <ColorLensIcon />
             </Button>
           )}
+          <Button onClick={(e) => e.stopPropagation()} variant="outlined">
+            <MessageIcon />
+            <Checkbox
+              style={{ height: 15 }}
+              checked={props.labelToggle}
+              onChange={(e) => {
+                e.stopPropagation();
+                props?.setLabelToggle((prev) => !prev);
+              }}
+            />
+          </Button>
           <Button onClick={(e) => e.stopPropagation()} variant="outlined">
             <LayersIcon />
             <Checkbox

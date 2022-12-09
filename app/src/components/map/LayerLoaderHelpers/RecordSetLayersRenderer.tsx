@@ -39,11 +39,11 @@ export const LeafletCanvasMarker = (props) => {
       //map.removeLayer(markersCanvas);
     } catch (e) {}
     const container = context.layerContainer || context.map;
-
     layerRef.current = new (L as any).MarkersCanvas();
-
-    groupRef.current = (L as any).layerGroup().addLayer(layerRef.current).addTo(container);
-    groupRef?.current?.setZIndex(props.zIndex);
+    groupRef.current = (L as any).layerGroup().setZIndex(props.zIndex);
+    // groupRef.current.setZIndex(props.zIndex);
+    groupRef.current.addLayer(layerRef.current).addTo(container);
+    //groupRef?.current?.setZIndex(props.zIndex);
 
     //    container.addLayer(layerRef.current);
 
@@ -156,7 +156,7 @@ export const LeafletCanvasMarker = (props) => {
       } catch (e) {}
     };
     //}, [map]);
-  }, [props.colour, props.enabled, props.points, props.zIndex]);
+  }, [props.colour, props.enabled, props.points, props.zIndex, props.redraw]);
 
   return <></>;
 };
@@ -185,7 +185,7 @@ const IAPPCanvasLayerMemo = (props) => {
           points={filteredFeatures()}
           enabled={mapState.layers[props.layerKey].layerState.mapToggle}
           colour={mapState.layers[props.layerKey].layerState.color}
-          zIndex={mapState.layers[props.layerKey].layerState.drawOrder + 10000}
+          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
         />
       );
     } else return <></>;

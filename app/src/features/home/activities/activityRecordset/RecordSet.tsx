@@ -31,6 +31,7 @@ export const RecordSet = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [drawOrder, setDrawOrder] = useState(0);
   const [mapToggle, setMapToggle] = useState(false);
+  const [labelToggle, setLabelToggle] = useState(false);
   const [color, setColor] = useState('#2A81CB');
   const [recordSetType, setRecordSetType] = useState('Activity');
   const [recordSetName, setRecordSetName] = useState(null);
@@ -40,7 +41,7 @@ export const RecordSet = (props) => {
   //const colours = [blue[500], green[500], red[500], brown[500], purple[500]];
   const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
   const userSettings = useSelector(selectUserSettings);
-  const mapAndRecordsState = useSelector(selectMap)
+  const mapAndRecordsState = useSelector(selectMap);
   const dispatch = useDispatch();
 
   const getInitialPropertyState = (propertyName) => {
@@ -63,6 +64,9 @@ export const RecordSet = (props) => {
           break;
         case 'mapToggle':
           setMapToggle(initial);
+          break;
+        case 'labelToggle':
+          setLabelToggle(initial);
           break;
         case 'color':
           setColor(initial);
@@ -106,6 +110,9 @@ export const RecordSet = (props) => {
           case 'mapToggle':
             newState['mapToggle'] = mapToggle;
             break;
+          case 'labelToggle':
+            newState['labelToggle'] = labelToggle;
+            break;
           case 'color':
             newState['color'] = color;
             break;
@@ -125,6 +132,7 @@ export const RecordSet = (props) => {
         newState['expanded'] !== initialState['expanded'] ||
         newState['drawOrder'] !== initialState['drawOrder'] ||
         newState['mapToggle'] !== initialState['mapToggle'] ||
+        newState['labelToggle'] !== initialState['labelToggle'] ||
         newState['color'] !== initialState['color'] ||
         newState['recordSetName'] !== initialState['recordSetName'] ||
         newState['isSelected'] !== initialState['isSelected'] ||
@@ -148,6 +156,7 @@ export const RecordSet = (props) => {
     getInitialPropertyState('expanded');
     getInitialPropertyState('drawOrder');
     getInitialPropertyState('mapToggle');
+    getInitialPropertyState('labelToggle');
     getInitialPropertyState('color');
     getInitialPropertyState('recordSetType');
     getInitialPropertyState('recordSetName');
@@ -160,6 +169,7 @@ export const RecordSet = (props) => {
       updatePropertyStates([
         'expanded',
         'mapToggle',
+        'labelToggle',
         'color',
         'recordSetName',
         'advancedFilters',
@@ -167,7 +177,7 @@ export const RecordSet = (props) => {
         'isSelected'
       ]);
     }
-  }, [expanded, mapToggle, color, recordSetName, advancedFilters, drawOrder, isSelected]);
+  }, [expanded, mapToggle, labelToggle, color, recordSetName, advancedFilters, drawOrder, isSelected]);
 
   return useMemo(
     () => (
@@ -186,7 +196,9 @@ export const RecordSet = (props) => {
             color={color}
             setColor={setColor}
             mapToggle={mapToggle}
+            labelToggle={labelToggle}
             setMapToggle={setMapToggle}
+            setLabelToggle={setLabelToggle}
             isSelected={isSelected}
             setIsSelected={setIsSelected}
             drawOrder={drawOrder}
@@ -202,20 +214,23 @@ export const RecordSet = (props) => {
           />
           <AccordionDetails>
             <Grid sx={{ pt: 2 }} xs={12} item>
-              {!mapAndRecordsState?.layers?.[props.setName]?.loaded? <>loading</> : <ActivityGrid
-                key={props.setName + 'ActivityGrid'}
-                setType={recordSetType}
-                setName={props.setName}
-                advancedFilters={advancedFilters}
-                setAdvancedFilters={setAdvancedFilters}
-                isSelected={isSelected}
-                setIsSelected={setIsSelected}
-                //  formType={formType}
-                // subType={subType}
-                //   filtersCallBack={setFilters}
-                //   initialFilters={filters}
-              />
-          }
+              {!mapAndRecordsState?.layers?.[props.setName]?.loaded ? (
+                <>loading</>
+              ) : (
+                <ActivityGrid
+                  key={props.setName + 'ActivityGrid'}
+                  setType={recordSetType}
+                  setName={props.setName}
+                  advancedFilters={advancedFilters}
+                  setAdvancedFilters={setAdvancedFilters}
+                  isSelected={isSelected}
+                  setIsSelected={setIsSelected}
+                  //  formType={formType}
+                  // subType={subType}
+                  //   filtersCallBack={setFilters}
+                  //   initialFilters={filters}
+                />
+              )}
             </Grid>
           </AccordionDetails>
         </Accordion>
