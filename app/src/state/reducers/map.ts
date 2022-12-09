@@ -9,7 +9,7 @@ import {
   FILTER_STATE_UPDATE,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   PAGE_OR_LIMIT_UPDATE,
-  MAP_DELETE_LAYER
+  MAP_DELETE_LAYER_AND_TABLE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -49,12 +49,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           layers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
-      case MAP_DELETE_LAYER: {
-        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
-        delete newState[action.payload.recordSetID];
+      case MAP_DELETE_LAYER_AND_TABLE: {
+        const newLayersState = JSON.parse(JSON.stringify({ ...state.layers }));
+        delete newLayersState[action.payload.recordSetID];
+        const newTablesState = JSON.parse(JSON.stringify({ ...state.recordTables }));
+        delete newTablesState[action.payload.recordSetID];
+
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
+          layers: JSON.parse(JSON.stringify({ ...newLayersState })),
+          recordTables: JSON.parse(JSON.stringify({ ...newTablesState }))
         };
       }
       case FILTER_STATE_UPDATE: {

@@ -39,7 +39,7 @@ import {
   PAGE_OR_LIMIT_UPDATE,
   SORT_COLUMN_STATE_UPDATE,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
-  MAP_DELETE_LAYER
+  MAP_DELETE_LAYER_AND_TABLE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -206,7 +206,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     });
   }
 
-  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)) {
+  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) ||
+      !mapState?.recordTables?.[action.payload.updatedSetName]) {
     yield put({
       type: FILTER_STATE_UPDATE,
       payload: {
@@ -520,11 +521,11 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
 }
 
 function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
-  yield put({ type: MAP_DELETE_LAYER, payload: { recordSetID: action.payload.deletedID } });
+  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { recordSetID: action.payload.deletedID } });
 }
 
 function* handle_MAP_DELETE_LAYER(action) {
-  yield put({ type: MAP_DELETE_LAYER, payload: { ...action.payload } });
+  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { ...action.payload } });
 }
 
 function* activitiesPageSaga() {
