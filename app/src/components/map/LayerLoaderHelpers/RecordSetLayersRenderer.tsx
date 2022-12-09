@@ -110,16 +110,57 @@ export const LeafletCanvasMarker = (props) => {
       iconAnchor: [10, 9]
     });
 
+    function svgText(txt1, txt2) {
+      return (
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80"><text x="0" y="30" style="font-size: 14px; fill: white">' +
+        '<tspan x="0" dy="1.2em">' +
+        txt1 +
+        '</tspan>' +
+        '<tspan x="0" dy="1.2em">' +
+        txt2 +
+        '</tspan>' +
+        '</text></svg>'
+      );
+    }
+
     var markers = [];
+
+    console.log('label toggle');
+    console.log(props.labelToggle);
     props.points?.features?.map((point) => {
-      if (!(point?.geometry?.coordinates?.length > 0)) {
-        return;
+      if (props.labelToggle) {
+        if (!(point?.geometry?.coordinates?.length > 0)) {
+          return;
+        }
+        var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
+          icon: icon
+        });
+
+        var labelImage =
+          'data:image/svg+xml,' +
+          encodeURIComponent(svgText(point.properties.site_id, point.properties.species_on_site));
+        var labelIcon = L.icon({
+          iconUrl: labelImage,
+          iconSize: [80, 80],
+          iconAnchor: [20, 15]
+        });
+
+        var labelMarker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
+          icon: labelIcon
+        }); // //?.bindPopup('I Am ' + point.properties);
+        markers.push(labelMarker);
+        markers.push(marker);
+      } else {
+        if (!(point?.geometry?.coordinates?.length > 0)) {
+          return;
+        }
+        var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
+          icon: icon
+        }); // //?.bindPopup('I Am ' + point.properties);
+        markers.push(marker);
       }
-      var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
-        icon: icon
-      }); //?.bindPopup('I Am ' + point.properties);
-      markers.push(marker);
     });
+
     /*    if (markers.length > 0) ciLayer.addLayers(markers);
     return () => {
       map.removeLayer(ciLayer);
@@ -156,7 +197,7 @@ export const LeafletCanvasMarker = (props) => {
       } catch (e) {}
     };
     //}, [map]);
-  }, [props.colour, props.enabled, props.points, props.zIndex, props.redraw]);
+  }, [props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
 
   return <></>;
 };
@@ -182,6 +223,7 @@ const IAPPCanvasLayerMemo = (props) => {
       return (
         <LeafletCanvasMarker
           key={'POICanvasLayermemo' + props.layerKey}
+          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
           enabled={mapState.layers[props.layerKey].layerState.mapToggle}
           colour={mapState.layers[props.layerKey].layerState.color}

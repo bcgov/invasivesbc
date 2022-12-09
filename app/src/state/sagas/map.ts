@@ -321,6 +321,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     newLayerState = {
       color: recordSets[rs].color,
       mapToggle: recordSets[rs].mapToggle,
+      labelToggle: recordSets[rs].labelToggle,
       drawOrder: recordSets[rs].drawOrder
     };
     newMapState[rs].layerState = {
