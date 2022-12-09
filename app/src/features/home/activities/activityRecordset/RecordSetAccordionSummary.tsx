@@ -17,7 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import React, { useContext, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
-// Commented out due to module not being found, not sure what this is supposed to be
+import MessageIcon from '@mui/icons-material/Message'; // Commented out due to module not being found, not sure what this is supposed to be
 // import Reorderer from 'reorderer';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -33,6 +33,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { selectMap } from 'state/reducers/map';
 
 const OrderSelector = (props) => {
   return (
@@ -74,6 +75,7 @@ const RecordSetAccordionSummary = (props) => {
   const { accessRoles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap);
   const dataAccess = useDataAccess();
   const dispatch = useDispatch();
 
@@ -273,6 +275,18 @@ const RecordSetAccordionSummary = (props) => {
               <ColorLensIcon />
             </Button>
           )}
+          <Button onClick={(e) => e.stopPropagation()} variant="outlined">
+            <MessageIcon />
+            <Checkbox
+              style={{ height: 15 }}
+              disabled={mapState?.layers?.[props.setName]?.IDList?.length > 1000}
+              checked={mapState?.layers?.[props.setName]?.IDList?.length < 1000 ? props.labelToggle : false}
+              onChange={(e) => {
+                e.stopPropagation();
+                props?.setLabelToggle((prev) => !prev);
+              }}
+            />
+          </Button>
           <Button onClick={(e) => e.stopPropagation()} variant="outlined">
             <LayersIcon />
             <Checkbox
