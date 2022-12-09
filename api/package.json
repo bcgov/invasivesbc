@@ -38,7 +38,7 @@
     "csv-parser": "^3.0.0",
     "db-migrate": "~0.11.11",
     "db-migrate-pg": "~1.2.2",
-    "express": "~4.17.1",
+    "express": "~4.17.3",
     "express-openapi": "~7.0.1",
     "faker": "^6.6.6",
     "fast-json-patch": "~3.0.0-1",
