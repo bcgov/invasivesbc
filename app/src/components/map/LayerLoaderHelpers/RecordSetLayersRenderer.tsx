@@ -128,7 +128,7 @@ export const LeafletCanvasMarker = (props) => {
     console.log('label toggle');
     console.log(props.labelToggle);
     props.points?.features?.map((point) => {
-      if (props.labelToggle) {
+      if (props.labelToggle && props.points?.features.length < 1000) {
         if (!(point?.geometry?.coordinates?.length > 0)) {
           return;
         }

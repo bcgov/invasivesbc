@@ -33,6 +33,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { selectMap } from 'state/reducers/map';
 
 const OrderSelector = (props) => {
   return (
@@ -74,6 +75,7 @@ const RecordSetAccordionSummary = (props) => {
   const { accessRoles } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap);
   const dataAccess = useDataAccess();
   const dispatch = useDispatch();
 
@@ -277,7 +279,8 @@ const RecordSetAccordionSummary = (props) => {
             <MessageIcon />
             <Checkbox
               style={{ height: 15 }}
-              checked={props.labelToggle}
+              disabled={mapState?.layers?.[props.setName]?.IDList?.length > 1000}
+              checked={mapState?.layers?.[props.setName]?.IDList?.length < 1000 ? props.labelToggle : false}
               onChange={(e) => {
                 e.stopPropagation();
                 props?.setLabelToggle((prev) => !prev);
