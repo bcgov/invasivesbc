@@ -112,7 +112,7 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
           );
         }
         return (
-          <g className={'donut-group'}>
+          <g key={'Donut-Key-g-' + Math.random()} className={'donut-group'}>
             <g className={'donut-label'}>
               <text x="100" y="84" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
                 {d.name}
