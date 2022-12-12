@@ -283,11 +283,12 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <b>InvasivesBC</b>
             </Box>
             <Box sx={{ flexGrow: 1, width: '100%', display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-              {tabConfig && tabConfig.length > 0 && tabsInitialized ? (
+              {/*isNAN hack is to deal with int value of 0 or 1 getting passed as a tab*/}
+              {tabConfig && tabConfig.length > 0 && tabsInitialized && isNaN(tabConfig[activeTab]) ? (
                 <Tabs
                   indicatorColor="secondary"
                   textColor="inherit"
-                  value={tabConfig[activeTab] ? activeTab : null}
+                  value={activeTab || false}
                   color="primary"
                   centered
                   style={{ width: '80%', color: '#fff' }}>
