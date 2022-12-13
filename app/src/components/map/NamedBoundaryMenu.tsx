@@ -68,6 +68,13 @@ const useToolbarContainerStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const NamedBoundaryMenu = (props) => {
+  const [rendered, setRendered] = useState(false);
+  useEffect(() => {
+    setRendered(true);
+    return () => {
+      setRendered(false);
+    };
+  }, []);
   const dataAccess = useDataAccess();
   const api = useInvasivesApi();
   // style
@@ -106,11 +113,13 @@ export const NamedBoundaryMenu = (props) => {
   };
 
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
-    getBoundaries();
-    getKMLs();
-  }, []);
+    if (rendered) {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+      getBoundaries();
+      getKMLs();
+    }
+  }, [rendered]);
 
   const setBoundaryIdCount = () => {
     if (userSettings?.boundaries && userSettings?.boundaries?.length > 0) {
@@ -140,9 +149,9 @@ export const NamedBoundaryMenu = (props) => {
         };
       });
 
-      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: mappedBoundaries} });
+      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: mappedBoundaries } });
     } else {
-      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: boundaryResults} });
+      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: boundaryResults } });
     }
   };
 
@@ -242,7 +251,7 @@ export const NamedBoundaryMenu = (props) => {
     await dataAccess.deleteBoundary(id);
     getBoundaries();
   };
-
+  if (!rendered) return <></>;
   return (
     <>
       <div ref={divRef} key={'toolbar2'} className={positionClass + ' leaflet-control'} style={{ display: 'static' }}>
@@ -322,7 +331,10 @@ export const NamedBoundaryMenu = (props) => {
             };
 
             dataAccess.addBoundary(boundaryFromKML);
-            dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: [...userSettings.boundaries, boundaryFromKML]} });
+            dispatch({
+              type: USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+              payload: { boundaries: [...userSettings.boundaries, boundaryFromKML] }
+            });
             setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
             setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
           }}>

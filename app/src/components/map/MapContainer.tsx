@@ -47,6 +47,8 @@ import centroid from '@turf/centroid';
 import { selectIappsite } from 'state/reducers/iappsite';
 import IappIconUrl from './Icons/iapp-icon.png';
 import ActivityIconUrl from './Icons/activity-icon.png';
+import { BaseMapToggle } from './Tools/ToolTypes/Nav/BaseMapToggle';
+import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -194,7 +196,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [mapRecordsContext]);
 
   useEffect(() => {
-    if (map && userSettingsState?.mapCenter) map.flyTo([userSettingsState?.mapCenter[1], userSettingsState?.mapCenter[0]]);
+    if (map && userSettingsState?.mapCenter)
+      map.flyTo([userSettingsState?.mapCenter[1], userSettingsState?.mapCenter[0]]);
   }, [userSettingsState?.mapCenter]);
 
   return (
@@ -255,12 +258,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>
-            {/*useMemo(
-              () => (
-                <Layers inputGeo={props.geometryState.geometry} />
-              ),
-              [props.geometryState.geometry]
-              )*/}
             <ZoomButtons position="bottomleft" />
             <ScaleControl position="bottomleft" imperial={false} />
 
@@ -270,30 +267,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               </FeatureGroup>
             )}
 
-            {/* Offline component */}
-            {/*useMemo(
-              () => (
-                <OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />
-              ),
-              [mapMaxNativeZoom]
-              )*/}
-            <OfflineMap {...props} mapMaxNativeZoom={mapMaxNativeZoom} map={map} />
+            <OfflineMap {...props} />
 
-            {/* List of functions is located in this component */}
-
-            {/* {useMemo(() => {
-              return (
-                <ToolbarContainer
-                  position="topright"
-                  id={props.activityId}
-                  map={map}
-                  inputGeo={props.geometryState.geometry}
-                  mapMaxNativeZoom={mapMaxNativeZoom}
-                  setMapMaxNativeZoom={setMapMaxNativeZoom}>
-                  <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
-                </ToolbarContainer>
-              );
-            }, [mapMaxNativeZoom, setMapMaxNativeZoom, props.geometryState.geometry, props.activityId, map])} */}
             {props?.showBoundaryMenu && (
               <NamedBoundaryMenu
                 {...props}
@@ -305,14 +280,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
-            {/*
-            <ToggleClickDetailsButton
-              clickDetailsEnabled={clickDetailsEnabled}
-              setClickDetailsEnabled={setClickDetailsEnabled}
-            />
-            <OnMapClickDetails clickDetailsEnabled={clickDetailsEnabled} />
-
-            */}
             {useMemo(
               () => (
                 <MapLocationControlGroup {...props} setMapMaxNativeZoom={setMapMaxNativeZoom} />
@@ -320,6 +287,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               [props.geometryState.geometry]
             )}
 
+            <BaseMapToggle />
+            <HDToggle />
             {props.children}
 
             {activityState?.activity?.geometry ? (
