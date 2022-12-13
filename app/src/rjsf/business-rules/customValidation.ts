@@ -210,21 +210,23 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     let areaLimit = Number.POSITIVE_INFINITY;
     const tenThousandAreaLimitSubtypes = [
-      'Activity_Treatment_MechanicalPlant',
+      'Activity_Treatment_MechanicalPlantTerrestrial',
+      'Activity_Treatment_MechanicalPlantAquatic',
       'Activity_Observation_PlantTerrestrial',
-      'Activity_Treatment_ChemicalPlant',
+      'Activity_Treatment_ChemicalPlantTerrestrial',
+      'Activity_Treatment_ChemicalPlantAquatic',
       'Activity_Observation_PlantAquatic',
-      'Activity_Treatment_BiologicalPlant',
+      'Activity_Biocontrol_Release',
       'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-      'Activity_Monitoring_BiologicalTerrestrialPlant',
-      'Activity_Monitoring_BiologicalDispersal',
+      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
       'Activity_AnimalActivity_AnimalTerrestrial',
       'Activity_AnimalActivity_AnimalAquatic',
       'Activity_Transect_FireMonitoring',
       'Activity_Transect_Vegetation',
       'Activity_Transect_BiocontrolEfficacy',
-      'Activity_Collection_Biocontrol'
+      'Activity_Biocontrol_Collection'
     ];
 
     if (tenThousandAreaLimitSubtypes.includes(activitySubtype)) {
