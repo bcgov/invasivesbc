@@ -9,13 +9,17 @@ import {
   FILTER_STATE_UPDATE,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   PAGE_OR_LIMIT_UPDATE,
-  MAP_DELETE_LAYER_AND_TABLE
+  MAP_DELETE_LAYER_AND_TABLE,
+  MAP_TOGGLE_BASEMAP,
+  MAP_TOGGLE_HD
 } from '../actions';
 
 import { AppConfig } from '../config';
 
 class MapState {
   initialized: boolean;
+  baseMapToggle: boolean;
+  HDToggle: boolean;
   layers: object;
   recordTables: object;
   error: boolean;
@@ -24,6 +28,8 @@ class MapState {
 
   constructor() {
     this.initialized = false;
+    this.baseMapToggle = false;
+    this.HDToggle = false;
   }
 }
 const initialState = new MapState();
@@ -47,6 +53,18 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           layers: JSON.parse(JSON.stringify({ ...newState }))
+        };
+      }
+      case MAP_TOGGLE_BASEMAP: {
+        return {
+          ...state,
+          baseMapToggle: !state.baseMapToggle
+        };
+      }
+      case MAP_TOGGLE_HD: {
+        return {
+          ...state,
+          HDToggle: !state.HDToggle
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {
