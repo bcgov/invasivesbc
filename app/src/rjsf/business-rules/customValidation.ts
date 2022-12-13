@@ -313,7 +313,11 @@ export function getWeatherCondTemperatureValidator(): rjsfValidator {
 */
 export function getWindValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (activitySubtype !== 'Activity_Treatment_ChemicalPlantTerrestrial') {
+    if (
+      !['Activity_Treatment_ChemicalPlantTerrestrial', 'Activity_Treatment_ChemicalPlantAquatic'].includes(
+        activitySubtype
+      )
+    ) {
       return errors;
     }
 
