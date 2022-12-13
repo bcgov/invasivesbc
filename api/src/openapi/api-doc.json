@@ -4584,7 +4584,7 @@
                     "not": { "const": 0 }
                   }
                 },
-                "required": ["wind_aspect"]
+                "required": ["wind_direction_code"]
               }
             ]
           }
@@ -4625,12 +4625,11 @@
             "minimum": 0,
             "x-tooltip-text": "Enter the average wind over the duration of the activity"
           },
-          "wind_aspect": {
-            "type": "number",
-            "minimum": 0,
-            "default": 0,
-            "title": "Wind Aspect",
-            "x-tooltip-text": "Describe the direction the wind is coming from in degrees"
+          "wind_direction_code": {
+            "type": "string",
+            "title": "Wind Direction",
+            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+            "x-tooltip-text": "Cardinal wind direction at time of treatment"
           },
           "weather_comments": {
             "type": "string",

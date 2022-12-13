@@ -363,9 +363,16 @@ const Weather_Conditions = {
   cloud_cover_code: { 'ui:widget': 'single-select-autocomplete' },
   precipitation_code: { 'ui:widget': 'single-select-autocomplete' },
   wind_speed: { validateOnBlur: true },
-  wind_aspect: {},
+  wind_direction: { 'ui:widget': 'single-select-autocomplete' },
   weather_comments: { 'ui:widget': 'textarea' },
-  'ui:order': ['temperature', 'cloud_cover_code', 'precipitation_code', 'wind_speed', 'wind_aspect', 'weather_comments']
+  'ui:order': [
+    'temperature',
+    'cloud_cover_code',
+    'precipitation_code',
+    'wind_speed',
+    'wind_direction_code',
+    'weather_comments'
+  ]
 };
 
 const Microsite_Conditions = {
