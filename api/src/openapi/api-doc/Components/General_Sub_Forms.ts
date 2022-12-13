@@ -372,7 +372,7 @@ export const Weather_Conditions = {
       }
     }
   },
-  then: { required: ['wind_aspect'] },
+  then: { required: ['wind_direction_code'] },
   properties: {
     temperature: {
       type: 'number',
@@ -409,11 +409,11 @@ export const Weather_Conditions = {
       minimum: 0,
       'x-tooltip-text': 'Enter the average wind over the duration of the activity'
     },
-    wind_aspect: {
-      type: 'number',
-      minimum: 0,
-      title: 'Wind Aspect (°)',
-      'x-tooltip-text': 'Direction wind is coming from'
+    wind_direction_code: {
+      type: 'string',
+      title: 'Wind Direction',
+      enum: ['No Wind', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+      'x-tooltip-text': 'Cardinal wind direction at time of treatment'
     },
     weather_comments: {
       type: 'string',
