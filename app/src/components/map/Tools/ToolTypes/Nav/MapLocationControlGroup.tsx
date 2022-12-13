@@ -19,6 +19,10 @@ import SdIcon from '@mui/icons-material/Sd';
 import { Divider, IconButton, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { calc_utm } from '../../../Tools/ToolTypes/Nav/DisplayPosition';
+import { selectMap } from 'state/reducers/map';
+import { useSelector } from 'state/utilities/use_selector';
+import { useDispatch } from 'react-redux';
+import { MAP_TOGGLE_BASEMAP } from 'state/actions';
 
 const useStyles = makeStyles((theme) => ({
   customHoverFocus: {
@@ -87,6 +91,10 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   const [baseMapGroup] = useState(L.layerGroup());
 
   const [map] = useState(useMap());
+
+  //refactor stuff for topo button
+  const mapState = useSelector(selectMap);
+  const dispatch = useDispatch();
 
   const topoMap = (L.tileLayer as any).offline(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
@@ -277,21 +285,21 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           width: '40px',
           height: '40px'
         }}>
-        <Tooltip title={showTopo ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
+        <Tooltip title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
           <span>
             <IconButton
               disabled={startTimer}
               onClick={() => {
-                setShowTopo(!showTopo);
+                dispatch({ type: MAP_TOGGLE_BASEMAP });
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 classes.customHoverFocus +
                 ' ' +
-                (showTopo ? classes.selected : classes.notSelected)
+                (mapState.baseMapToggle ? classes.selected : classes.notSelected)
               }
               sx={{ color: '#000' }}>
-              {showTopo ? <LayersClearIcon /> : <LayersIcon />}
+              {mapState.baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}
             </IconButton>
           </span>
         </Tooltip>
@@ -299,43 +307,40 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
     );
   }
 
-
-/**
+  /**
    * ZoomControlButton
    * @description Component to handle the max zoom resolution
    * @returns {void}
    */
-function ZoomControlButton() {
-  const divRef = useRef();
-  useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
-  }, []);
-  return (
-    <div
-      ref={divRef}
-      className="leaflet-bottom leaflet-right"
-      style={{
-        bottom: '230px',
-        width: '40px',
-        height: '40px'
-      }}>
-      <Tooltip title={`Max Zoom Resolution: ${isHighRes ? 'Low Def' : 'High Def'}`} placement="right-start">
-        <span>
-          <IconButton
-            disabled={startTimer}
-            onClick={toggleResolution}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              classes.customHoverFocus}
-            sx={{ color: '#000' }}>
-            { isHighRes ? <HdIcon /> : <SdIcon />}
-          </IconButton>
-        </span>
-      </Tooltip>
-    </div>
-  );
-}
+  function ZoomControlButton() {
+    const divRef = useRef();
+    useEffect(() => {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    }, []);
+    return (
+      <div
+        ref={divRef}
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '230px',
+          width: '40px',
+          height: '40px'
+        }}>
+        <Tooltip title={`Max Zoom Resolution: ${isHighRes ? 'Low Def' : 'High Def'}`} placement="right-start">
+          <span>
+            <IconButton
+              disabled={startTimer}
+              onClick={toggleResolution}
+              className={'leaflet-control-zoom leaflet-bar leaflet-control ' + classes.customHoverFocus}
+              sx={{ color: '#000' }}>
+              {isHighRes ? <HdIcon /> : <SdIcon />}
+            </IconButton>
+          </span>
+        </Tooltip>
+      </div>
+    );
+  }
 
   /**
    * drawCircle
@@ -487,7 +492,7 @@ function ZoomControlButton() {
     }
   };
 
-    /**
+  /**
    * toggleResolution
    * @description Toggles the high and low max zoom resolution.
    * @returns {number}
@@ -545,8 +550,8 @@ function ZoomControlButton() {
   }, []);
 
   useEffect(() => {
-    // If showTopo changes, disable or enable the circle
-    if (showTopo) {
+    // If mapState.baseMapToggle changes, disable or enable the circle
+    if (mapState.baseMapToggle) {
       baseMapGroup.clearLayers();
       baseMapGroup.addLayer(topoMap);
       map.addLayer(baseMapGroup);
@@ -556,7 +561,7 @@ function ZoomControlButton() {
       baseMapGroup.addLayer(placeoMap);
       map.addLayer(baseMapGroup);
     }
-  }, [showTopo]);
+  }, [mapState.baseMapToggle]);
 
   // If accuracy toggle changed, either hide or show accuracy circle
   useEffect(() => {
@@ -634,9 +639,9 @@ function ZoomControlButton() {
     <>
       {useMemo(
         () => (
-            <ZoomControlButton />
+          <ZoomControlButton />
         ),
-        [toggleResolution, startTimer, isHighRes, showTopo]
+        [toggleResolution, startTimer, isHighRes, mapState.baseMapToggle]
       )}
       {useMemo(
         () => (
@@ -662,7 +667,7 @@ function ZoomControlButton() {
         () => (
           <BaseMapToggleButton />
         ),
-        [showTopo, startTimer]
+        [mapState.baseMapToggle, startTimer]
       )}
       {useMemo(
         () => (
