@@ -13,7 +13,6 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
-import AttributionIcon from '@mui/icons-material/Attribution';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
 import { Divider, IconButton, Tooltip } from '@mui/material';
@@ -66,7 +65,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   const [isLoading, setIsLoading] = useState(true); // Keeps track of whether or not the map is loading
 
   const [isTracking, setIsTracking] = useState(false); // Toggle for track me button
-  const [accuracyOn, setAccuracyOn] = useState(false); // Toggle for find me button
 
   const [position, setPosition] = useState(null); // State variable for current position
   const [accuracy, setAccuracy] = useState(0); // State variable for position's accuracy
@@ -227,48 +225,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   }
 
   /**
-   * AccuracyButton
-   * @description Component to handle the functionality of the accuracy circle
-   * @returns {void}
-   */
-  function AccuracyButton() {
-    const divRef = useRef();
-    useEffect(() => {
-      L.DomEvent.disableClickPropagation(divRef?.current);
-      L.DomEvent.disableScrollPropagation(divRef?.current);
-    }, []);
-    return (
-      <div
-        ref={divRef}
-        className="leaflet-bottom leaflet-right"
-        style={{
-          bottom: '130px',
-          width: '40px',
-          height: '40px'
-        }}>
-        <Tooltip title={accuracyOn ? 'Hide Accuracy' : 'Show Accuracy'} placement="right-start">
-          <span>
-            <IconButton
-              disabled={startTimer}
-              onClick={() => {
-                setAccuracyOn(!accuracyOn);
-              }}
-              className={
-                'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                classes.customHoverFocus +
-                ' ' +
-                (accuracyOn ? classes.selected : classes.notSelected)
-              }
-              sx={{ color: '#000' }}>
-              <AttributionIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </div>
-    );
-  }
-
-  /**
    * drawCircle
    * @description Draws a circle at a position with a given radius
    * @returns {void}
@@ -327,7 +283,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         // Go to new position
         map.setView(pos, map.getZoom());
         // If accuracy is turned on, draw the accuracy circle. Otherwise, when it changes, remove it
-        if (accuracyOn) {
+        if (mapState?.accuracyToggle) {
           drawCircle(pos, radius);
         } else {
           if (circleDrawn) {
@@ -405,7 +361,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
           setLongitude(pos.coords.longitude);
           setAccuracy(pos.coords.accuracy);
           const foundPosition = L.latLng(pos.coords.latitude, pos.coords.longitude);
-          if (accuracyOn) {
+          if (mapState?.accuracyToggle) {
             drawCircle(foundPosition, pos.coords.accuracy);
           }
           map.setView(foundPosition, 18);
@@ -452,7 +408,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         Geolocation.clearWatch({ id: watchId });
       }
       setIsTracking(false);
-      setAccuracyOn(false);
       setShowTopo(false);
       setIsLoading(true);
     };
@@ -461,12 +416,12 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
   // If accuracy toggle changed, either hide or show accuracy circle
   useEffect(() => {
     // If accuracyOn changes, disable or enable the circle
-    if (accuracyOn && !!position && !!accuracy) {
+    if (mapState?.accuracyToggle && !!position && !!accuracy) {
       drawCircle(position, accuracy);
     } else {
       removeCircle();
     }
-  }, [accuracyOn, position, accuracy, drawCircle, removeCircle]);
+  }, [mapState?.accuracyToggle, position, accuracy, drawCircle, removeCircle]);
 
   // If tracking toggle is changed, handle appropriately
   useEffect(() => {
@@ -532,12 +487,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
 
   return (
     <>
-      {useMemo(
-        () => (
-          <AccuracyButton />
-        ),
-        [accuracyOn, startTimer]
-      )}
       {/*useMemo(
         () => (
           <TrackMeButton />
@@ -550,7 +499,7 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
             <LocationMarker />
           </>
         ),
-        [position, accuracyOn, isTracking, startTimer]
+        [position, mapState?.accuracyToggle, isTracking, startTimer]
       )}
 
       {useMemo(

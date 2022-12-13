@@ -11,7 +11,8 @@ import {
   PAGE_OR_LIMIT_UPDATE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_HD
+  MAP_TOGGLE_HD,
+  MAP_TOGGLE_ACCURACY
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -20,6 +21,7 @@ class MapState {
   initialized: boolean;
   baseMapToggle: boolean;
   HDToggle: boolean;
+  accuracyToggle: boolean;
   layers: object;
   recordTables: object;
   error: boolean;
@@ -30,6 +32,7 @@ class MapState {
     this.initialized = false;
     this.baseMapToggle = false;
     this.HDToggle = false;
+    this.accuracyToggle = false;
   }
 }
 const initialState = new MapState();
@@ -65,6 +68,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           HDToggle: !state.HDToggle
+        };
+      }
+      case MAP_TOGGLE_ACCURACY: {
+        return {
+          ...state,
+          accuracyToggle: !state.accuracyToggle
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {
