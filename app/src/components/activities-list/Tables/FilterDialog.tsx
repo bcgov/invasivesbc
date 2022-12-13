@@ -45,6 +45,7 @@ export const FilterDialog = (props: IFilterDialog) => {
   const [subChoice, setSubChoice] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
       const prevChoices = props.allFiltersBefore.filter((f) => {
         return f.filterKey === props.filterKey;
@@ -55,18 +56,7 @@ export const FilterDialog = (props: IFilterDialog) => {
 
     const getJurisdictionOptions = async () => {
       const data = props.setType === 'POI' ? await getIappJurisdictions() : await fetchCodeTable('jurisdiction_code');
-      setJurisdictionOptions((prev) => {
-        const newOptions = {};
-        data.forEach((d, i) => {
-          if (props.setType === 'POI') {
-            // separate because codes are currently null for iapp records
-            newOptions[i] = d.description;
-          } else {
-            newOptions[d.code] = d.description;
-          }
-        });
-        return newOptions;
-      });
+      return data;
     };
 
     const getSpeciesOptions = async () => {
@@ -74,25 +64,47 @@ export const FilterDialog = (props: IFilterDialog) => {
       const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
       const data = [...dataTerrestial, ...dataAquatic];
 
-      setSpeciesPOptions((prev) => {
-        const newOptions = {};
-        data.forEach((d) => {
-          newOptions[d.code] = d.description;
-        });
-        return newOptions;
-      });
-
-      setSpeciesNOptions((prev) => {
-        const newOptions = {};
-        data.forEach((d) => {
-          newOptions[d.code] = d.description;
-        });
-        return newOptions;
-      });
+      return data;
     };
 
-    getJurisdictionOptions();
-    getSpeciesOptions();
+    getJurisdictionOptions().then((data) => {
+      if (isMounted) {
+        setJurisdictionOptions((prev) => {
+          const newOptions = {};
+          data.forEach((d, i) => {
+            if (props.setType === 'POI') {
+              // separate because codes are currently null for iapp records
+              newOptions[i] = d.description;
+            } else {
+              newOptions[d.code] = d.description;
+            }
+          });
+          return newOptions;
+        });
+      }
+    });
+
+    getSpeciesOptions().then((data) => {
+      if (isMounted) {
+        setSpeciesPOptions((prev) => {
+          const newOptions = {};
+          data.forEach((d) => {
+            newOptions[d.code] = d.description;
+          });
+          return newOptions;
+        });
+  
+        setSpeciesNOptions((prev) => {
+          const newOptions = {};
+          data.forEach((d) => {
+            newOptions[d.code] = d.description;
+          });
+          return newOptions;
+        });
+      }
+    });
+
+    return () => { isMounted = false };
   }, [props.setType]);
 
   useEffect(() => {

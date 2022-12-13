@@ -259,7 +259,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     });
 
     // needs to be latlng expression
-    const isGeo = action.payload.activity?.geometry[0]?.geometry?.coordinates ? true : false;
+    const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
     //const centerPoint = center(action.payload.activity?.geometry[0]?.geometry?.coordinates);
 
     let centerPoint;
