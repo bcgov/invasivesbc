@@ -106,13 +106,13 @@ export const LeafletCanvasMarker = (props) => {
     var icon = L.icon({
       iconUrl:
         'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + colour + '.png',
-      iconSize: [12, 10],
-      iconAnchor: [10, 9]
+      iconSize: [12.5, 20.5],
+      iconAnchor: [0, 10]
     });
 
     function svgText(txt1, txt2) {
       return (
-        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80"><text x="0" y="30" style="font-size: 14px; fill: white">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="500"><text x="0" y="30" style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: white; stroke: black; stroke-width: 3px; paint-order: stroke;">' +
         '<tspan x="0" dy="1.2em">' +
         txt1 +
         '</tspan>' +
@@ -141,8 +141,8 @@ export const LeafletCanvasMarker = (props) => {
           encodeURIComponent(svgText(point.properties.site_id, point.properties.species_on_site));
         var labelIcon = L.icon({
           iconUrl: labelImage,
-          iconSize: [80, 80],
-          iconAnchor: [20, 15]
+          iconSize: [500, 500],
+          iconAnchor: [-15, 65]
         });
 
         var labelMarker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
