@@ -14,21 +14,7 @@ import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
-
-const useStyles = makeStyles((theme) => ({
-  /*customHoverFocus: {
-    backgroundColor: 'white',
-    '&:hover, &.Mui-focusVisible': { backgroundColor: 'skyblue' }
-  },*/
-  selected: {
-    backgroundColor: '#2196f3',
-    color: 'white'
-  },
-  notSelected: {
-    backgroundColor: 'white',
-    color: 'black'
-  }
-}));
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 export interface IMapLocationControlGroupProps {
   classes?: any;
@@ -45,7 +31,7 @@ export const BaseMapToggle = (props) => {
 
   // const map = useMap(); // Get the map from the context
   // const group = ; // Create a group to hold the drawn features
-  const classes = useStyles(); // Get the classes from the context
+  const toolClass = toolStyles(); // Get the classes from the context
 
   const divRef = useRef();
   useEffect(() => {
@@ -61,10 +47,10 @@ export const BaseMapToggle = (props) => {
       className="leaflet-bottom leaflet-right"
       style={{
         bottom: '180px',
-        width: '40px',
+        width: '50px',
         height: '40px'
       }}>
-      <Tooltip title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'} placement="right-start">
+      <Tooltip title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'} placement="left-start">
         <span>
           <IconButton
             onClick={() => {
@@ -74,7 +60,7 @@ export const BaseMapToggle = (props) => {
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
               //classes.customHoverFocus +
               ' ' +
-              (mapState.baseMapToggle ? classes.selected : classes.notSelected)
+              (mapState.baseMapToggle ? toolClass.selected : toolClass.notSelected)
             }
             sx={{ color: '#000' }}>
             {mapState.baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}
