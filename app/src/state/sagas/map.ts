@@ -109,7 +109,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const newFilterState = {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
     gridFilters: { ...action.payload.updatedSet.gridFilters },
-    searchBoundary: { ...action.payload.updatedSet.searchBoundary }
+    searchBoundary: { ...action.payload.updatedSet.searchBoundary },
+    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary.server_id }
   };
 
   const testStateEqual = (a, b) => {
@@ -332,7 +333,8 @@ function* handle_MAP_INIT_REQUEST(action) {
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters,
-      searchBoundary: recordSets[rs].searchBoundary
+      searchBoundary: recordSets[rs].searchBoundary,
+      serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
     };
     newMapState[rs].filters = {
       ...newFilters

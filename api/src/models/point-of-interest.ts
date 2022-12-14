@@ -95,6 +95,7 @@ export class PointOfInterestSearchCriteria {
   point_of_interest_ids: string[];
 
   search_feature: GeoJSON.FeatureCollection;
+  search_feature_server_id: number;
 
   column_names: string[];
 
@@ -130,6 +131,7 @@ export class PointOfInterestSearchCriteria {
     this.grid_filters = (obj && obj.grid_filters) || null;
 
     this.search_feature = (obj && obj.search_feature) || null;
+    this.search_feature_server_id = (obj && obj.search_feature_server_id) || null;
 
     this.column_names = (obj && obj.column_names) || [];
 

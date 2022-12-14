@@ -10,8 +10,8 @@ import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
-import cacheService from "../utils/cache-service";
-import {createHash} from "crypto";
+import cacheService from '../utils/cache-service';
+import { createHash } from 'crypto';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -82,7 +82,6 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({

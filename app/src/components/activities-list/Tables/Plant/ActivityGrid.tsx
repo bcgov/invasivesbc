@@ -135,11 +135,14 @@ export const getSearchCriteriaFromFilters = (
   filter.grid_filters = gridFilters;
 
   //search_feature
-  if (recordSets[setName]?.searchBoundary) {
+  if (recordSets[setName]?.searchBoundary && !recordSets[setName]?.searchBoundary?.server_id) {
     filter.search_feature = {
       type: 'FeatureCollection',
       features: recordSets[setName]?.searchBoundary.geos
     };
+  }
+  if (recordSets[setName]?.searchBoundary?.server_id) {
+    filter.search_feature_server_id = recordSets[setName]?.searchBoundary?.server_id;
   }
 
   if (recordSets[setName]?.advancedFilters) {
@@ -768,17 +771,15 @@ const ActivityGrid = (props) => {
                 }}
                 columns={columnsDynamic}
                 sortColumns={recordsState?.layers?.[props.setName]?.filters?.sortColumns}
-                onSortColumnsChange={
-                  (sortColumn) => {
-                    dispatch({
-                      type: SORT_COLUMN_STATE_UPDATE,
-                      payload: {
-                          id: props.setName,
-                          sortColumns: sortColumn
-                      }
-                    });
-                  }
-                }
+                onSortColumnsChange={(sortColumn) => {
+                  dispatch({
+                    type: SORT_COLUMN_STATE_UPDATE,
+                    payload: {
+                      id: props.setName,
+                      sortColumns: sortColumn
+                    }
+                  });
+                }}
                 components={{ rowRenderer: RowRenderer }}
               />
               <Pagination></Pagination>
