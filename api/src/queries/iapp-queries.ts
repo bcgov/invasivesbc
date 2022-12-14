@@ -12,8 +12,11 @@ const defaultLog = getLogger('point-of-interest');
 //NOSONAR
 export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL``;
-
-  if (searchCriteria.search_feature) {
+  if (searchCriteria.search_feature_server_id) {
+    sqlStatement.append(
+      SQL`WITH multi_polygon_cte AS (SELECT geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
+    );
+  } else if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
     FROM (
       SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
@@ -212,7 +215,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     }
   }
 
-  if (searchCriteria.search_feature) {
+  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(
         geog,

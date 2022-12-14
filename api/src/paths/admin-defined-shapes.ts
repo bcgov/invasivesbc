@@ -10,9 +10,9 @@ import { atob } from 'js-base64';
 import { QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
-import {InvasivesRequest} from "../utils/auth-utils";
+import { InvasivesRequest } from '../utils/auth-utils';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { simplifyGeojson } from  "../utils/map-shaper-util";
+import { simplifyGeojson } from '../utils/map-shaper-util';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -132,11 +132,11 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
           if (feature !== null && feature.coordinates !== null) {
             for (const multipolygon of feature.coordinates) {
               let convertedFeature = {
-                'type': 'Feature',
-                "properties": {},
-                "geometry": {
-                  "type": 'Polygon',
-                  'coordinates' : multipolygon
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: multipolygon
                 }
               };
 
@@ -230,12 +230,16 @@ function uploadShape(): RequestHandler {
           // Perform both get and create operations as a single transaction
           await connection.query('BEGIN');
 
-          const response : QueryResult = await connection.query(`insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
+          const response: QueryResult = await connection.query(
+            `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
             SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM             
               (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM 
                 (SELECT json_array_elements($1::json->'features') AS feat) AS f
-              ) AS geogs;`, [data, user_id, title]);
-  
+              ) AS geogs;`,
+            [data, user_id, title]
+          );
+
+          defaultLog.error(response);
           await connection.query('COMMIT');
 
           return res.status(201).json({
@@ -258,6 +262,6 @@ function uploadShape(): RequestHandler {
       } finally {
         connection.release();
       }
-    }); 
+    });
   };
 }

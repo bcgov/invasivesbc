@@ -23,77 +23,83 @@ const albersToGeog = (featureCollection) => {
 };
 
 async function simplifyGeojson(data, percentage, returnCallback) {
-    try {
-        // let result = null;
-        // await applyCommands(
-        //   `-i in.json -simplify dp interval=${percentage} -proj wgs84 -clean -o format=geojson geojson-type=FeatureCollection out.json`,
-        //   { 'in.json': albersToGeog(data) },
-        //   async function (err, output) {
-        //     if (output) {
-        //       const json = output['out.json'];
-        //       console.log("json: ", JSON.stringify(JSON.parse(json).features));
-        //       console.log("success");
-        //     //   return json;
-        //     result = json;
-        //     } else {
-        //         console.log("json: ", output);
-        //         console.log("failure");
-        //     //   return data;
-        //     result = data;
-        //     }
-        //   }
-        // );
+  try {
+    // let result = null;
+    // await applyCommands(
+    //   `-i in.json -simplify dp interval=${percentage} -proj wgs84 -clean -o format=geojson geojson-type=FeatureCollection out.json`,
+    //   { 'in.json': albersToGeog(data) },
+    //   async function (err, output) {
+    //     if (output) {
+    //       const json = output['out.json'];
+    //       console.log("json: ", JSON.stringify(JSON.parse(json).features));
+    //       console.log("success");
+    //     //   return json;
+    //     result = json;
+    //     } else {
+    //         console.log("json: ", output);
+    //         console.log("failure");
+    //     //   return data;
+    //     result = data;
+    //     }
+    //   }
+    // );
 
-        // return await result;
+    // return await result;
 
-        await applyCommands(`-i in.json -simplify dp interval=${percentage} -clean -o format=geojson geojson-type=FeatureCollection out.json`, 
-                                            { 'in.json': data }, 
-                                            function (err, output) {
-                                                if (output) {
-                                                    const json = output['out.json'];
-                                                    console.log("json: ", JSON.stringify(JSON.parse(json)));
-                                                    console.log("success");
-                                                    //   return json;
-                                                    // return json;
-                                                    //
-                                                    returnCallback(json);
-                                                } else {
-                                                    // console.log("json: ", output);
-                                                    console.log("failure");
-                                                    //   return data;
-                                                    return data;
-                                                }
-                                            });
+    await applyCommands(
+      `-i in.json -simplify dp interval=${percentage} -clean -o format=geojson geojson-type=FeatureCollection out.json`,
+      { 'in.json': data },
+      function (err, output) {
+        if (output) {
+          let json = output['out.json'];
+          let parsed = JSON.parse(json);
+          let parsedEdit = JSON.parse(JSON.stringify(parsed));
 
-        // if (output) {
-        //     const json = output['out.json'];
-        //     console.log("json: ", JSON.parse(json));
-        //     console.log("success");
-        //     //   return json;
-        //     return json;
-        // } else {
-        //     console.log("json: ", output);
-        //     console.log("failure");
-        //     //   return data;
-        //     return data;
-        // }
+          delete parsedEdit.features;
+          let newFeatures = parsed?.features?.map((feature) => {
+            if (typeof feature.properties === 'object' && feature.properties !== null) {
+              return feature;
+            } else {
+              return { ...feature, properties: {} };
+            }
+          });
+          parsedEdit.features = [...newFeatures];
 
-
-      } catch (e) {
-        console.log(e);
-        // return res.status(500).json({
-        //   message: 'Failed to get simplified GeoJSON',
-        //   request: req.query,
-        //   error: e,
-        //   namespace: 'map-shaper',
-        //   code: 500
-        // });
+          returnCallback(JSON.stringify(parsedEdit));
+        } else {
+          // console.log("json: ", output);
+          console.log('failure');
+          //   return data;
+          return data;
+        }
       }
+    );
+
+    // if (output) {
+    //     const json = output['out.json'];
+    //     console.log("json: ", JSON.parse(json));
+    //     console.log("success");
+    //     //   return json;
+    //     return json;
+    // } else {
+    //     console.log("json: ", output);
+    //     console.log("failure");
+    //     //   return data;
+    //     return data;
+    // }
+  } catch (e) {
+    console.log(e);
+    // return res.status(500).json({
+    //   message: 'Failed to get simplified GeoJSON',
+    //   request: req.query,
+    //   error: e,
+    //   namespace: 'map-shaper',
+    //   code: 500
+    // });
+  }
 }
 
 export { simplifyGeojson };
-
-
 
 // function getSimplifiedGeoJSON(){
 //   return async (req, res) => {
