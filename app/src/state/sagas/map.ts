@@ -337,17 +337,18 @@ function* handle_MAP_INIT_REQUEST(action) {
     //grab shapes from server here
     // grab shapes from sqlite here
     let newFilters = {};
-    const serverPatchedSearchBoundary = shapes.filter((s) => {
-      return s.id === recordSets[rs].searchBoundary?.server_id;
-    })[0];
-    const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary
-      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
-      : { ...recordSets[rs].searchBoundary };
+    // const serverPatchedSearchBoundary = shapes.filter((s) => {
+    //   return s.id === recordSets[rs].searchBoundary?.server_id;
+    // })[0];
+    // const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary
+    //   ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
+    //   : { ...recordSets[rs].searchBoundary };
 
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters,
-      searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
+      // searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
+      searchBoundary: recordSets[rs].searchBoundary,
       serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
     };
     newMapState[rs].filters = {
