@@ -77,7 +77,8 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     let sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
 
-    const patchedBoundary = { ...JSON.parse(action.payload.boundary), geos: current.searchBoundary?.server_id ? [] : [...JSON.parse(action.payload?.boundary)?.geos] };
+    const boundary = JSON.parse(action.payload?.boundary);
+    const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
     current.searchBoundary = patchedBoundary;
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
