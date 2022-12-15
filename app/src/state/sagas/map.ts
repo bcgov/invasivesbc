@@ -66,6 +66,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityStatus } from 'constants/activities';
 import userSettingsSaga from './userSettings';
 import userSettings from './userSettings';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -315,6 +316,10 @@ function* handle_MAP_INIT_REQUEST(action) {
   };
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
 
+  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes');
+  console.dir(serverShapesServerResponse);
+  const shapes = serverShapesServerResponse.data.result;
+
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
@@ -329,11 +334,20 @@ function* handle_MAP_INIT_REQUEST(action) {
       ...newLayerState
     };
 
+    //grab shapes from server here
+    // grab shapes from sqlite here
     let newFilters = {};
+    const serverPatchedSearchBoundary = shapes.filter((s) => {
+      return s.id === recordSets[rs].searchBoundary?.server_id;
+    })[0];
+    const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary
+      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
+      : { ...recordSets[rs].searchBoundary };
+
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters,
-      searchBoundary: recordSets[rs].searchBoundary,
+      searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
       serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
     };
     newMapState[rs].filters = {
