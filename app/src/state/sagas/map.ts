@@ -110,7 +110,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
     gridFilters: { ...action.payload.updatedSet.gridFilters },
     searchBoundary: { ...action.payload.updatedSet.searchBoundary },
-    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary.server_id }
+    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary?.server_id }
   };
 
   const testStateEqual = (a, b) => {
