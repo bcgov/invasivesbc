@@ -363,7 +363,7 @@ const Weather_Conditions = {
   cloud_cover_code: { 'ui:widget': 'single-select-autocomplete' },
   precipitation_code: { 'ui:widget': 'single-select-autocomplete' },
   wind_speed: { validateOnBlur: true },
-  wind_direction: { 'ui:widget': 'single-select-autocomplete' },
+  wind_direction_code: { 'ui:widget': 'single-select-autocomplete' },
   weather_comments: { 'ui:widget': 'textarea' },
   'ui:order': [
     'temperature',
