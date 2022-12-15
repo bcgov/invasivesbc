@@ -347,6 +347,45 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
   };
 }
 
+export function getWindValidatorBiocontrol(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      ![
+        'Activity_Biocontrol_Release',
+        'Activity_Biocontrol_Collection',
+        'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+        'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'
+      ].includes(activitySubtype)
+    ) {
+      return errors;
+    }
+
+    // validate wind speed with wind direction
+    errors.activity_subtype_data['Weather_Conditions']['wind_direction_code'].__errors = [];
+    const { wind_speed, wind_direction_code } = formData.activity_subtype_data['Weather_Conditions'];
+
+    if (wind_speed > 0 && wind_direction_code === 'No Wind') {
+      errors.activity_subtype_data['Weather_Conditions']['wind_direction_code'].addError(
+        'Must specify a wind direction when wind speed is > 0'
+      );
+    }
+
+    if (wind_speed === 0 && wind_direction_code !== 'No Wind') {
+      errors.activity_subtype_data['Weather_Conditions']['wind_direction_code'].addError(
+        'Cannot specify a wind direction when wind speed is 0'
+      );
+    }
+
+    //if user clicked proceed in the warning dialog, remove the error
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('wind_speed')) {
+      errors.activity_subtype_data['Weather_Conditions']['wind_speed'].__errors.pop();
+      return errors;
+    }
+
+    return errors;
+  };
+}
+
 /*
   Function to validate that the value selected for invasive plant in dropdown
   is one of the plants from the linked record

@@ -29,6 +29,7 @@ import {
   getWeatherCondTemperatureValidator,
   getTransectOffsetDistanceValidator,
   getWindValidator,
+  getWindValidatorBiocontrol,
   transferErrorsFromChemDetails,
   getPlotIdentificatiomTreesValidator
 } from '../../../rjsf/business-rules/customValidation';
@@ -503,6 +504,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getAreaValidator(activityInStore.activity.activity_subtype),
               getDateAndTimeValidator(activityInStore.activity.activity_subtype),
               getWindValidator(activityInStore.activity.activity_subtype),
+              getWindValidatorBiocontrol(activityInStore.activity.activity_subtype),
               getSlopeAspectBothFlatValidator(),
               //getTemperatureValidator(activityInStore.activity.activity_subtype),
               getPosAndNegObservationValidator(),
