@@ -17,17 +17,17 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
       },
       'x-tooltip-text': 'Target invasive plant species at this location'
     },
-    aquatic_invasive_plant_code: {
+    invasive_plant_aquatic_code: {
       type: 'string',
       title: 'Aquatic Invasive Plant',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'aquatic_invasive_plant_code',
+        'x-enum-code-header-name': 'invasive_plant_aquatic_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Target invasive plant species being treated at this location'
+      'x-tooltip-text': 'Target invasive plant species at this location'
     },
     // monitoring_details: {
     //   type: 'string',
@@ -129,17 +129,17 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
       },
       'x-tooltip-text': 'Target invasive plant species at this location'
     },
-    aquatic_invasive_plant_code: {
+    invasive_plant_aquatic_code: {
       type: 'string',
       title: 'Aquatic Invasive Plant',
       'x-enum-code': {
         'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'aquatic_invasive_plant_code',
+        'x-enum-code-header-name': 'invasive_plant_aquatic_code',
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
       },
-      'x-tooltip-text': 'Target invasive plant species being treated at this location'
+      'x-tooltip-text': 'Target invasive plant species at this location'
     },
     // monitoring_details: {
     //   type: 'string',
