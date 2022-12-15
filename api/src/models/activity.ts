@@ -119,6 +119,7 @@ export class ActivitySearchCriteria {
   activity_ids: string[];
 
   search_feature: GeoJSON.FeatureCollection;
+  search_feature_server_id: number;
 
   user_roles: string[];
 
@@ -164,7 +165,8 @@ export class ActivitySearchCriteria {
     this.activity_ids = (obj && obj.activity_ids) || [];
 
     this.search_feature = (obj && obj.search_feature) || null;
-
+    this.search_feature_server_id = (obj && obj.search_feature_server_id) || null;
+    
     this.user_roles = (obj && obj.user_roles) || [];
 
     this.column_names = (obj && obj.column_names) || [];
