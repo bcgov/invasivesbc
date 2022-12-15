@@ -22,10 +22,17 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
     ) AS anything) `);
   }
-
-  if (searchCriteria?.grid_filters?.jurisdictions && !searchCriteria.search_feature) {
+  if (
+    searchCriteria?.grid_filters?.jurisdictions &&
+    !searchCriteria.search_feature &&
+    !searchCriteria.search_feature_server_id
+  ) {
     sqlStatement.append(
       SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
+    );
+  } else if (searchCriteria?.grid_filters?.jurisdictions && searchCriteria.search_feature_server_id) {
+    sqlStatement.append(
+      SQL` strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
     );
   }
 
