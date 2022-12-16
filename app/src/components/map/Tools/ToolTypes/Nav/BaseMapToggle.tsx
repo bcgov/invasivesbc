@@ -14,6 +14,7 @@ import { MAP_TOGGLE_BASEMAP } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import { useMap } from 'react-leaflet';
 
 export interface IMapLocationControlGroupProps {
   classes?: any;
@@ -25,6 +26,7 @@ export interface IMapLocationControlGroupProps {
 
 export const BaseMapToggle = (props) => {
   //refactor stuff for topo button
+  const map = useMap();
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
 
@@ -36,10 +38,12 @@ export const BaseMapToggle = (props) => {
 
   const divRef = useRef();
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
+    try {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    } catch (e) {}
   }, []);
-  if (!mapState) {
+  if (!mapState || !map) {
     return <></>;
   }
   return (

@@ -26,40 +26,46 @@ export const HDToggle = (props) => {
 
   const divRef = useRef();
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
+    try {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    } catch (e) {}
   }, []);
-  return (
-    <div
-      ref={divRef}
-      className="leaflet-bottom leaflet-right"
-      style={{
-        bottom: '230px',
-        width: '50px',
-        height: '40px'
-      }}>
-      <Tooltip
-        open={show}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`}
-        placement="left-start">
-        <span>
-          <IconButton
-            //disabled={startTimer}
-            onClick={() => {
-              dispatch({ type: MAP_TOGGLE_HD });
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              ' ' +
-              (mapState.HDToggle ? toolClass.selected : toolClass.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            {mapState.HDToggle ? <HdIcon /> : <SdIcon />}
-          </IconButton>
-        </span>
-      </Tooltip>
-    </div>
-  );
+  if (mapState && !mapState?.baseMapToggle && map) {
+    return (
+      <div
+        ref={divRef}
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '230px',
+          width: '50px',
+          height: '40px'
+        }}>
+        <Tooltip
+          open={show}
+          onMouseEnter={() => setShow(true)}
+          onMouseLeave={() => setShow(false)}
+          title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`}
+          placement="left-start">
+          <span>
+            <IconButton
+              //disabled={startTimer}
+              onClick={() => {
+                dispatch({ type: MAP_TOGGLE_HD });
+              }}
+              className={
+                'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                ' ' +
+                (mapState.HDToggle ? toolClass.selected : toolClass.notSelected)
+              }
+              sx={{ color: '#000' }}>
+              {mapState.HDToggle ? <HdIcon /> : <SdIcon />}
+            </IconButton>
+          </span>
+        </Tooltip>
+      </div>
+    );
+  } else {
+    return <></>;
+  }
 };

@@ -3,7 +3,7 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 // Offline dependencies
 import MyLocationIcon from '@mui/icons-material/MyLocation';
-import { Divider, IconButton, Tooltip } from '@mui/material';
+import { CircularProgress, Divider, IconButton, Tooltip } from '@mui/material';
 import 'leaflet-editable';
 import 'leaflet.offline';
 import React, { useEffect, useRef, useState } from 'react';
@@ -34,39 +34,48 @@ export const FindMeToggle = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   }, []);
-  return (
-    <div
-      ref={divRef}
-      className="leaflet-bottom leaflet-right"
-      style={{
-        bottom: '30px',
-        width: '40px',
-        height: '40px'
-      }}>
-      <Tooltip
-        open={show}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title="Find Me"
-        placement="left-start">
-        <span>
-          <IconButton
-            onClick={() => {
-              setShow(false);
-              dispatch({ type: MAP_TOGGLE_TRACKING });
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              ' ' +
-              (mapState.positionTracking ? toolClass.selected : toolClass.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            <MyLocationIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </div>
-  );
+  if (mapState?.panned && map) {
+    // this is to stop user from clicking it again while things are happening
+    return (
+      <div
+        ref={divRef}
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '30px',
+          width: '40px',
+          height: '40px'
+        }}>
+        <Tooltip
+          open={show}
+          onMouseEnter={() => setShow(true)}
+          onMouseLeave={() => setShow(false)}
+          title="Find Me"
+          placement="left-start">
+          <span>
+            {mapState?.panned ? (
+              <IconButton
+                onClick={() => {
+                  setShow(false);
+                  dispatch({ type: MAP_TOGGLE_TRACKING });
+                }}
+                className={
+                  'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                  ' ' +
+                  (mapState.positionTracking ? toolClass.selected : toolClass.notSelected)
+                }
+                sx={{ color: '#000' }}>
+                <MyLocationIcon />
+              </IconButton>
+            ) : (
+              <></>
+            )}
+          </span>
+        </Tooltip>
+      </div>
+    );
+  } else {
+    return <></>;
+  }
 };
 
 export const PanToMe = (props) => {
