@@ -5,7 +5,6 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
 import { IconButton, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import 'leaflet-editable';
 import 'leaflet.offline';
 import React, { useEffect, useRef } from 'react';
@@ -23,6 +22,7 @@ export const HDToggle = (props) => {
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
   const toolClass = toolStyles();
+  const [show, setShow] = React.useState(false);
 
   const divRef = useRef();
   useEffect(() => {
@@ -38,7 +38,12 @@ export const HDToggle = (props) => {
         width: '50px',
         height: '40px'
       }}>
-      <Tooltip title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`} placement="left-start">
+      <Tooltip
+        open={show}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`}
+        placement="left-start">
         <span>
           <IconButton
             //disabled={startTimer}

@@ -22,7 +22,7 @@ import { AppConfig } from '../config';
 class MapState {
   initialized: boolean;
   positionTracking: boolean;
-  userCoords: object;
+  userCoords: any;
   userHeading: number;
   baseMapToggle: boolean;
   HDToggle: boolean;
@@ -61,14 +61,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       case MAP_SET_COORDS: {
         const userCoords = { ...action?.payload?.position?.coords };
-        console.log('raw payload');
-        console.dir(action.payload);
-        console.log('copied');
-        console.dir(userCoords);
         return {
           ...state,
-          userCoords: { lat: userCoords.latitude, long: userCoords.longitude },
-          userHeading: action?.payload?.userHeading
+          userCoords: {
+            lat: userCoords.latitude,
+            long: userCoords.longitude,
+            accuracy: userCoords.accuracy,
+            heading: userCoords.heading
+          },
+          userHeading: userCoords.heading
         };
       }
       case LAYER_STATE_UPDATE: {

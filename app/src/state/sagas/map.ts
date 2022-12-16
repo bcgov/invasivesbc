@@ -552,9 +552,13 @@ function* handle_MAP_DELETE_LAYER(action) {
   yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { ...action.payload } });
 }
 
-//function* handle_MAP_TOGGLE_TRACKING(action, dispatch) {
 function* handle_MAP_TOGGLE_TRACKING(action) {
   const state = yield select(selectMap);
+
+  if (!state.positionTracking) {
+    return;
+  }
+
   const coordChannel = channel();
 
   const callback = async (position) => {
@@ -562,14 +566,19 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
       if (!position) {
         return;
       } else {
-        setTimeout(() => {
-          coordChannel.put({
-            type: MAP_SET_COORDS,
-            payload: {
-              position: { coords: { latitude: position.coords.latitude, longitude: position.coords.longitude } }
+        coordChannel.put({
+          type: MAP_SET_COORDS,
+          payload: {
+            position: {
+              coords: {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                heading: position.coords.heading
+              }
             }
-          });
-        }, 100);
+          }
+        });
       }
     } catch (e) {
       console.log(JSON.stringify(e));
@@ -579,7 +588,7 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   const options = {
     enableHighAccuracy: true,
     timeout: 5000,
-    maximumAge: 0
+    maximumAge: 500
   };
   const watchID = yield Geolocation.watchPosition(options, callback);
 

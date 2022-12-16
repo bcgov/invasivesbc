@@ -5,11 +5,10 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import { IconButton, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { Feature } from 'geojson';
 import 'leaflet-editable';
 import 'leaflet.offline';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
@@ -28,6 +27,8 @@ export const BaseMapToggle = (props) => {
   //refactor stuff for topo button
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
+
+  const [show, setShow] = React.useState(false);
 
   // const map = useMap(); // Get the map from the context
   // const group = ; // Create a group to hold the drawn features
@@ -50,7 +51,12 @@ export const BaseMapToggle = (props) => {
         width: '50px',
         height: '40px'
       }}>
-      <Tooltip title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'} placement="left-start">
+      <Tooltip
+        open={show}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'}
+        placement="left-start">
         <span>
           <IconButton
             onClick={() => {
