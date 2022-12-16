@@ -39,7 +39,9 @@ import {
   PAGE_OR_LIMIT_UPDATE,
   SORT_COLUMN_STATE_UPDATE,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
-  MAP_DELETE_LAYER_AND_TABLE
+  MAP_DELETE_LAYER_AND_TABLE,
+  MAP_TOGGLE_TRACKING,
+  MAP_SET_COORDS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -67,7 +69,9 @@ import { ActivityStatus } from 'constants/activities';
 import userSettingsSaga from './userSettings';
 import userSettings from './userSettings';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-
+import L from 'leaflet';
+import { Geolocation } from '@capacitor/geolocation';
+import { channel } from 'redux-saga';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
@@ -548,12 +552,51 @@ function* handle_MAP_DELETE_LAYER(action) {
   yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { ...action.payload } });
 }
 
+//function* handle_MAP_TOGGLE_TRACKING(action, dispatch) {
+function* handle_MAP_TOGGLE_TRACKING(action) {
+  const state = yield select(selectMap);
+  const coordChannel = channel();
+
+  const callback = async (position) => {
+    try {
+      if (!position) {
+        return;
+      } else {
+        setTimeout(() => {
+          coordChannel.put({
+            type: MAP_SET_COORDS,
+            payload: {
+              position: { coords: { latitude: position.coords.latitude, longitude: position.coords.longitude } }
+            }
+          });
+        }, 100);
+      }
+    } catch (e) {
+      console.log(JSON.stringify(e));
+    }
+  };
+
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+  };
+  const watchID = yield Geolocation.watchPosition(options, callback);
+
+  while (state.positionTracking) {
+    const action = yield take(coordChannel);
+    yield put(action);
+  }
+  Geolocation.clearWatch(watchID);
+}
+
 function* activitiesPageSaga() {
   yield all([
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
+    takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),

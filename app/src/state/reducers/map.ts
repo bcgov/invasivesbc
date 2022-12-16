@@ -12,13 +12,18 @@ import {
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_TOGGLE_BASEMAP,
   MAP_TOGGLE_HD,
-  MAP_TOGGLE_ACCURACY
+  MAP_TOGGLE_ACCURACY,
+  MAP_SET_COORDS,
+  MAP_TOGGLE_TRACKING
 } from '../actions';
 
 import { AppConfig } from '../config';
 
 class MapState {
   initialized: boolean;
+  positionTracking: boolean;
+  userCoords: object;
+  userHeading: number;
   baseMapToggle: boolean;
   HDToggle: boolean;
   accuracyToggle: boolean;
@@ -30,9 +35,11 @@ class MapState {
 
   constructor() {
     this.initialized = false;
+    this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
     this.accuracyToggle = false;
+    this.positionTracking = false;
   }
 }
 const initialState = new MapState();
@@ -40,6 +47,30 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case MAP_TOGGLE_ACCURACY: {
+        return {
+          ...state,
+          accuracyToggle: !state.accuracyToggle
+        };
+      }
+      case MAP_TOGGLE_TRACKING: {
+        return {
+          ...state,
+          positionTracking: !state.positionTracking
+        };
+      }
+      case MAP_SET_COORDS: {
+        const userCoords = { ...action?.payload?.position?.coords };
+        console.log('raw payload');
+        console.dir(action.payload);
+        console.log('copied');
+        console.dir(userCoords);
+        return {
+          ...state,
+          userCoords: { lat: userCoords.latitude, long: userCoords.longitude },
+          userHeading: action?.payload?.userHeading
+        };
+      }
       case LAYER_STATE_UPDATE: {
         let newState = JSON.parse(JSON.stringify({ ...state.layers }));
         for (const x in action.payload) {
@@ -68,12 +99,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           HDToggle: !state.HDToggle
-        };
-      }
-      case MAP_TOGGLE_ACCURACY: {
-        return {
-          ...state,
-          accuracyToggle: !state.accuracyToggle
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {

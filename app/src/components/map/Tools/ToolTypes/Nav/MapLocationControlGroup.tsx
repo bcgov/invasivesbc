@@ -493,21 +493,6 @@ const MapLocationControlGroup: React.FC<IMapLocationControlGroupProps> = (props)
         ),
         [isTracking, startTimer]
         )*/}
-      {useMemo(
-        () => (
-          <>
-            <LocationMarker />
-          </>
-        ),
-        [position, mapState?.accuracyToggle, isTracking, startTimer]
-      )}
-
-      {useMemo(
-        () => (
-          <FindMeButton />
-        ),
-        [startTimer]
-      )}
     </>
   );
 };

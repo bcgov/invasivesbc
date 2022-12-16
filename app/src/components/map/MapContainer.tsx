@@ -50,6 +50,7 @@ import ActivityIconUrl from './Icons/activity-icon.png';
 import { BaseMapToggle } from './Tools/ToolTypes/Nav/BaseMapToggle';
 import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
 import { AccuracyToggle } from './Tools/ToolTypes/Nav/AccuracyToggle';
+import { FindMe } from './Tools/ToolTypes/Nav/FindMe';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -291,6 +292,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <AccuracyToggle />
             <BaseMapToggle />
             <HDToggle />
+            <FindMe />
             {props.children}
 
             {activityState?.activity?.geometry ? (
