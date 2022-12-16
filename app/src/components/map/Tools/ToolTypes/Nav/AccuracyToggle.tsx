@@ -22,45 +22,48 @@ export const AccuracyToggle = (props) => {
 
   const divRef = useRef();
   useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
+    try {
+      L.DomEvent.disableClickPropagation(divRef?.current);
+      L.DomEvent.disableScrollPropagation(divRef?.current);
+    } catch (e) {}
   }, []);
-  if (!mapState) {
+  if (!mapState || !mapState?.positionTracking) {
     return <></>;
+  } else {
+    return (
+      <div
+        ref={divRef}
+        className="leaflet-bottom leaflet-right"
+        style={{
+          bottom: '130px',
+          width: '50px',
+          height: '40px'
+        }}>
+        <Tooltip
+          open={show}
+          onMouseEnter={() => setShow(true)}
+          onMouseLeave={() => setShow(false)}
+          title={mapState?.accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
+          placement="left-start">
+          <span>
+            <IconButton
+              onClick={() => {
+                dispatch({ type: MAP_TOGGLE_ACCURACY });
+              }}
+              className={
+                'leaflet-control-zoom leaflet-bar leaflet-control ' +
+                // toolClass.customHoverFocus +
+                ' ' +
+                (mapState?.accuracyToggle ? toolClass.selected : toolClass.notSelected)
+              }
+              sx={{ color: '#000' }}>
+              <AttributionIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </div>
+    );
   }
-  return (
-    <div
-      ref={divRef}
-      className="leaflet-bottom leaflet-right"
-      style={{
-        bottom: '130px',
-        width: '50px',
-        height: '40px'
-      }}>
-      <Tooltip
-        open={show}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title={mapState?.accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
-        placement="left-start">
-        <span>
-          <IconButton
-            onClick={() => {
-              dispatch({ type: MAP_TOGGLE_ACCURACY });
-            }}
-            className={
-              'leaflet-control-zoom leaflet-bar leaflet-control ' +
-              // toolClass.customHoverFocus +
-              ' ' +
-              (mapState?.accuracyToggle ? toolClass.selected : toolClass.notSelected)
-            }
-            sx={{ color: '#000' }}>
-            <AttributionIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </div>
-  );
 };
 
 /**
@@ -79,7 +82,7 @@ export const AccuracyMarker = (props) => {
         color={'#00FF00'}
         fillColor={'#00FF00'}
         fillOpacity={0.2}
-        center={[mapState.userCoords.long, mapState.userCoords.lat]}
+        center={[mapState.userCoords.lat, mapState.userCoords.long]}
         radius={mapState.userCoords.accuracy}
       />
     );

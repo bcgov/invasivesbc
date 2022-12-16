@@ -14,7 +14,8 @@ import {
   MAP_TOGGLE_HD,
   MAP_TOGGLE_ACCURACY,
   MAP_SET_COORDS,
-  MAP_TOGGLE_TRACKING
+  MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_PANNED
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -23,6 +24,7 @@ class MapState {
   initialized: boolean;
   positionTracking: boolean;
   userCoords: any;
+  panned: boolean;
   userHeading: number;
   baseMapToggle: boolean;
   HDToggle: boolean;
@@ -40,6 +42,7 @@ class MapState {
     this.HDToggle = false;
     this.accuracyToggle = false;
     this.positionTracking = false;
+    this.panned = true;
   }
 }
 const initialState = new MapState();
@@ -70,6 +73,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             heading: userCoords.heading
           },
           userHeading: userCoords.heading
+        };
+      }
+      case MAP_TOGGLE_PANNED: {
+        return {
+          ...state,
+          panned: !state.panned
         };
       }
       case LAYER_STATE_UPDATE: {

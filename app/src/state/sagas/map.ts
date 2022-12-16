@@ -41,7 +41,8 @@ import {
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_TOGGLE_TRACKING,
-  MAP_SET_COORDS
+  MAP_SET_COORDS,
+  MAP_TOGGLE_PANNED
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -592,9 +593,18 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   };
   const watchID = yield Geolocation.watchPosition(options, callback);
 
+  let counter = 0;
   while (state.positionTracking) {
+    if (counter === 0) {
+      yield put({ type: MAP_TOGGLE_PANNED });
+    }
+    const currentMapState = yield select(selectMap);
+    if (!currentMapState.positionTracking) {
+      return;
+    }
     const action = yield take(coordChannel);
     yield put(action);
+    counter++;
   }
   Geolocation.clearWatch(watchID);
 }

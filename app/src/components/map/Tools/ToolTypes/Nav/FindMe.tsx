@@ -7,13 +7,14 @@ import { Divider, IconButton, Tooltip } from '@mui/material';
 import 'leaflet-editable';
 import 'leaflet.offline';
 import React, { useEffect, useRef, useState } from 'react';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker, Popup, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { MAP_TOGGLE_TRACKING } from 'state/actions';
+import { MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from './DisplayPosition';
+import { Geolocation } from '@capacitor/geolocation';
 
 const baseUrl = window.location.href.split('/home')[0]; // Base URL of application for hosted image
 
@@ -25,6 +26,7 @@ export const FindMeToggle = (props) => {
    * @returns {void}
    */
   const mapState = useSelector(selectMap);
+  const map = useMap();
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
@@ -50,13 +52,8 @@ export const FindMeToggle = (props) => {
         <span>
           <IconButton
             onClick={() => {
-              try {
-                dispatch({ type: MAP_TOGGLE_TRACKING });
-                setShow(false);
-                //zoomToLocation();
-              } catch (e) {
-                console.log('Map SetView error', e);
-              }
+              setShow(false);
+              dispatch({ type: MAP_TOGGLE_TRACKING });
             }}
             className={
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
@@ -70,6 +67,21 @@ export const FindMeToggle = (props) => {
       </Tooltip>
     </div>
   );
+};
+
+export const PanToMe = (props) => {
+  const mapState = useSelector(selectMap);
+  const map = useMap();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (map && mapState?.userCoords?.lat && mapState?.panned === false && mapState?.positionTracking) {
+      map.flyTo([mapState.userCoords.lat, mapState.userCoords.long]);
+      dispatch({ type: MAP_TOGGLE_PANNED });
+    }
+  }, [mapState?.panned, mapState?.positionTracking, mapState?.userCoords]);
+
+  return <></>;
 };
 
 //map.setView(pos, map.getZoom());
@@ -105,7 +117,7 @@ export const LocationMarker = (props) => {
   if (mapState?.positionTracking) {
     return (
       <Marker
-        position={[mapState.userCoords.long, mapState.userCoords.lat]}
+        position={[mapState.userCoords.lat, mapState.userCoords.long]}
         key={'locationmarkerforbluedot'}
         icon={L.icon({
           iconUrl: baseUrl + '/assets/icon/circle.png',
