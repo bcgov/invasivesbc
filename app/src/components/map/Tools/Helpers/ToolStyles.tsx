@@ -105,6 +105,14 @@ export const toolStyles = makeStyles((theme: Theme) => ({
     color: '#223f75',
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
     borderRadius: 5
+  },
+  selected: {
+    backgroundColor: '#2196f3',
+    color: 'white'
+  },
+  notSelected: {
+    backgroundColor: 'white',
+    color: 'black'
   }
 }));
 

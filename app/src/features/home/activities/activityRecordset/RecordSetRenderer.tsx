@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import React, { useContext, useState, useEffect, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RecordSet from './RecordSet';

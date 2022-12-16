@@ -5,7 +5,6 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
 import { IconButton, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import 'leaflet-editable';
 import 'leaflet.offline';
 import React, { useEffect, useRef } from 'react';
@@ -14,21 +13,7 @@ import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_HD } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
-
-const useStyles = makeStyles((theme) => ({
-  /*customHoverFocus: {
-    backgroundColor: 'white',
-    '&:hover, &.Mui-focusVisible': { backgroundColor: 'skyblue' }
-  },*/
-  selected: {
-    backgroundColor: '#2196f3',
-    color: 'white'
-  },
-  notSelected: {
-    backgroundColor: 'white',
-    color: 'black'
-  }
-}));
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const HDToggle = (props) => {
   const map = useMap();
@@ -36,7 +21,8 @@ export const HDToggle = (props) => {
   //refactor stuff for topo button
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
-  const classes = useStyles(); // Get the classes from the context
+  const toolClass = toolStyles();
+  const [show, setShow] = React.useState(false);
 
   const divRef = useRef();
   useEffect(() => {
@@ -49,10 +35,15 @@ export const HDToggle = (props) => {
       className="leaflet-bottom leaflet-right"
       style={{
         bottom: '230px',
-        width: '40px',
+        width: '50px',
         height: '40px'
       }}>
-      <Tooltip title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`} placement="right-start">
+      <Tooltip
+        open={show}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`}
+        placement="left-start">
         <span>
           <IconButton
             //disabled={startTimer}
@@ -62,7 +53,7 @@ export const HDToggle = (props) => {
             className={
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
               ' ' +
-              (mapState.HDToggle ? classes.selected : classes.notSelected)
+              (mapState.HDToggle ? toolClass.selected : toolClass.notSelected)
             }
             sx={{ color: '#000' }}>
             {mapState.HDToggle ? <HdIcon /> : <SdIcon />}

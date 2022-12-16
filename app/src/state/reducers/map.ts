@@ -11,15 +11,24 @@ import {
   PAGE_OR_LIMIT_UPDATE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_HD
+  MAP_TOGGLE_HD,
+  MAP_TOGGLE_ACCURACY,
+  MAP_SET_COORDS,
+  MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_PANNED
 } from '../actions';
 
 import { AppConfig } from '../config';
 
 class MapState {
   initialized: boolean;
+  positionTracking: boolean;
+  userCoords: any;
+  panned: boolean;
+  userHeading: number;
   baseMapToggle: boolean;
   HDToggle: boolean;
+  accuracyToggle: boolean;
   layers: object;
   recordTables: object;
   error: boolean;
@@ -28,8 +37,12 @@ class MapState {
 
   constructor() {
     this.initialized = false;
+    this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
+    this.accuracyToggle = false;
+    this.positionTracking = false;
+    this.panned = true;
   }
 }
 const initialState = new MapState();
@@ -37,6 +50,37 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case MAP_TOGGLE_ACCURACY: {
+        return {
+          ...state,
+          accuracyToggle: !state.accuracyToggle
+        };
+      }
+      case MAP_TOGGLE_TRACKING: {
+        return {
+          ...state,
+          positionTracking: !state.positionTracking
+        };
+      }
+      case MAP_SET_COORDS: {
+        const userCoords = { ...action?.payload?.position?.coords };
+        return {
+          ...state,
+          userCoords: {
+            lat: userCoords.latitude,
+            long: userCoords.longitude,
+            accuracy: userCoords.accuracy,
+            heading: userCoords.heading
+          },
+          userHeading: userCoords.heading
+        };
+      }
+      case MAP_TOGGLE_PANNED: {
+        return {
+          ...state,
+          panned: !state.panned
+        };
+      }
       case LAYER_STATE_UPDATE: {
         let newState = JSON.parse(JSON.stringify({ ...state.layers }));
         for (const x in action.payload) {
