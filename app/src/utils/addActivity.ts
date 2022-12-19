@@ -265,7 +265,7 @@ export async function createLinkedActivity(
 /*
   function to determine if a Monitoring activity subtype requires a linked treatment ID.
 */
-export function isLinkedTreatmentSubtype(subType:ActivitySubtype): Boolean {
+export function isLinkedTreatmentSubtype(subType:ActivitySubtype): boolean {
   return ([
     ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
     ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,

@@ -15,7 +15,6 @@ import {
 import { ISubmitEvent } from '@rjsf/core';
 import { MuiForm5 as Form } from '@rjsf/material-ui';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { select } from 'redux-saga/effects';
 import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { useDataAccess } from '../../hooks/useDataAccess';
@@ -81,7 +80,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const { roles, accessRoles, authenticated } = useSelector(selectAuth);
+  const { authenticated } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
 
   const dispatch = useDispatch();
