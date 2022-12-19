@@ -15,10 +15,10 @@ import {
 import { ISubmitEvent } from '@rjsf/core';
 import { MuiForm5 as Form } from '@rjsf/material-ui';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { select } from 'redux-saga/effects';
 import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { useDataAccess } from '../../hooks/useDataAccess';
-import { getShortActivityID } from 'utils/addActivity';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from '../../rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from '../../rjsf/templates/ObjectFieldTemplate';
@@ -280,6 +280,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       let modifiedSchema = subtypeSchema;
       // Handle activity_id linking fetches
       try {
+        const suggestedTreatmentIDs = activityStateInStore?.suggestedTreatmentIDs ?? [];
+
         if (props.activity?.activity_type === 'Monitoring') {
           if (MOBILE) {
             uiSchema = {
@@ -293,68 +295,35 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               }
             };
           } else {
-            let linkedActivitySubtypes = [];
-
-            switch (subtype) {
-              case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-                linkedActivitySubtypes = [
-                  'Activity_Treatment_MechanicalPlantTerrestrial',
-                  'Activity_Treatment_MechanicalPlantAquatic'
-                ];
-                break;
-              case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-                linkedActivitySubtypes = [
-                  'Activity_Treatment_ChemicalPlantTerrestrial',
-                  'Activity_Treatment_ChemicalPlantAquatic'
-                ];
-                break;
-              case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-                linkedActivitySubtypes = ['Activity_Biocontrol_Release'];
-                break;
-              default:
-                break;
-            }
-
-            const treatments_response = await dataAccess.getActivities({
-              column_names: ['activity_id', 'created_timestamp', 'activity_subtype'],
-              activity_type: ['Treatment', 'Biocontrol'],
-              activity_subtype: linkedActivitySubtypes,
-              order: ['created_timestamp'],
-              user_roles: accessRoles
-            });
-            const treatments = treatments_response.rows.map((treatment, i) => {
-              const shortActID = getShortActivityID(treatment);
-              return {
-                label: shortActID,
-                title: shortActID,
-                value: treatment.activity_id,
-                'x-code_sort_order': i + 1
-              };
-            });
-            if (treatments?.length) {
-              modifiedSchema = {
-                ...modifiedSchema,
-                properties: {
-                  ...modifiedSchema?.properties,
-                  activity_type_data: {
-                    ...modifiedSchema?.properties.activity_type_data,
-                    properties: {
-                      ...modifiedSchema?.properties.activity_type_data.properties,
-                      linked_id: {
-                        ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
-                        options: treatments
+            try {
+              // move this to action or reducer
+              if (suggestedTreatmentIDs?.length) {
+                modifiedSchema = {
+                  ...modifiedSchema,
+                  properties: {
+                    ...modifiedSchema?.properties,
+                    activity_type_data: {
+                      ...modifiedSchema?.properties.activity_type_data,
+                      properties: {
+                        ...modifiedSchema?.properties.activity_type_data.properties,
+                        linked_id: {
+                          ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
+                          options: suggestedTreatmentIDs
+                        }
                       }
                     }
                   }
-                }
-              };
-              components = {
-                ...components,
-                schemas: {
-                  ...components.schemas,
-                  [props.activity.activity_subtype]: modifiedSchema
-                }
-              };
+                };
+                components = {
+                  ...components,
+                  schemas: {
+                    ...components.schemas,
+                    [props.activity.activity_subtype]: modifiedSchema
+                  }
+                };
+              }
+            } catch (e) {
+              console.dir(e);
             }
           }
         }
@@ -369,7 +338,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activity_subtype, authenticated, props.activity.activity_subtype, MOBILE]);
+  }, [props.activity.activity_subtype, authenticated, MOBILE, activityStateInStore.suggestedTreatmentIDs]);
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
 

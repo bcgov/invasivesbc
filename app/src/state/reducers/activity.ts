@@ -30,6 +30,7 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
@@ -45,7 +46,7 @@ class ActivityState {
   activity: any;
   suggestedJurisdictions: [];
   suggestedPersons: [];
-
+  suggestedTreatmentIDs: [];
   constructor() {
     this.initialized = false;
   }
@@ -58,7 +59,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       case ACTIVITY_GET_SUCCESS: {
         return {
           ...state,
-          activity: { ...action.payload.activity }
+          activity: { ...action.payload.activity },
+          suggestedTreatmentIDs: []
         };
       }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {
@@ -116,6 +118,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           suggestedPersons: [...action.payload.suggestedPersons]
         };
       }
+      case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
+        return {
+          ...state,
+          suggestedTreatmentIDs: [...action.payload.suggestedTreatmentIDs]
+        };
+      }
       case ACTIVITY_CREATE_SUCCESS: {
         return {
           ...state,
@@ -125,7 +133,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       case ACTIVITY_SAVE_SUCCESS: {
         return {
           ...state,
-          activity: {...action.payload.activity}
+          activity: { ...action.payload.activity }
         };
       }
       case ACTIVITY_ADD_PHOTO_SUCCESS: {

@@ -2,7 +2,6 @@ import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { put, select } from 'redux-saga/effects';
-import { throttle } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import center from '@turf/center';
 
@@ -27,6 +26,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_DEBUG,
   ACTIVITY_DELETE_PHOTO_REQUEST,
@@ -40,7 +41,7 @@ import {
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
-import { generateDBActivityPayload, populateSpeciesArrays } from 'utils/addActivity';
+import { generateDBActivityPayload, populateSpeciesArrays, isLinkedTreatmentSubtype } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
@@ -211,11 +212,23 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
-    if (action.payload.geometry) {
+    const currentState = yield select(selectActivity);
+    const currentActivity = currentState.activity;
+ 
+    if (currentActivity?.geometry) {
       yield put({
         type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-        payload: { search_feature: action.payload.geometry }
+        payload: { search_feature: currentActivity.geometry }
       });
+      
+      if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
+        yield put({
+          type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
+          payload: {
+            activity: currentActivity,
+          }
+        });
+      }
     }
   } catch (e) {
     console.error(e);
@@ -241,6 +254,54 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
       payload: {}
     });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
+  const payloadActivity = action.payload.activity;
+  const AuthState = yield select(selectAuth);
+  try {
+    // filter Treatments and/or Biocontrol
+    let linkedActivitySubtypes = [];
+
+    switch(payloadActivity.activity_subtype) {
+      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+        linkedActivitySubtypes = [
+          ActivitySubtype.Treatment_MechanicalPlant,
+          ActivitySubtype.Treatment_MechanicalPlantAquatic
+        ];
+        break;
+      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+        linkedActivitySubtypes = [
+          ActivitySubtype.Treatment_ChemicalPlant,
+          ActivitySubtype.Treatment_ChemicalPlantAquatic
+        ];
+        break;
+      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+        linkedActivitySubtypes = [ActivitySubtype.Treatment_BiologicalPlant];        
+        break;
+      default:
+        break;
+    }
+
+    const search_feature = payloadActivity.geometry?.[0] ? {
+      type: 'FeatureCollection',
+      features: payloadActivity.geometry
+    } : false;
+    
+    if (linkedActivitySubtypes.length > 0 ) {
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+        payload: {
+          activity_subtype: linkedActivitySubtypes,
+          user_roles: AuthState.accessRoles,
+          search_feature,
+        }
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -274,6 +335,15 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
         }
       });
     }
+    if (isLinkedTreatmentSubtype(type)) {
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
+        payload: {
+          ...action.payload
+        }
+      });
+    }
+    
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -335,8 +405,7 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
       }
 
       yield put({
-        type: ACTIVITY_DELETE_PHOTO_SUCCESS,
-        payload: {
+        type: ACTIVITY_DELETE_PHOTO_SUCCESS, payload: {
           activity: {
             ...beforeActivity,
             media: media.length ? media : [],
@@ -363,8 +432,7 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
     }
 
     yield put({
-      type: ACTIVITY_EDIT_PHOTO_SUCCESS,
-      payload: {
+      type: ACTIVITY_EDIT_PHOTO_SUCCESS, payload: {
         media: beforeActivity.media
       }
     });

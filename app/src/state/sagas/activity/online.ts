@@ -8,11 +8,11 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS
+  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
-import { selectAuthHeaders } from 'state/reducers/auth';
-import { selectConfiguration } from 'state/reducers/configuration';
+import { getShortActivityID } from 'utils/addActivity';
 
 const checkForErrors = (response: any, status?: any, url?: any) => {
   if (response.code > 201) {
@@ -85,12 +85,14 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-  yield put({ type: ACTIVITY_SAVE_SUCCESS, payload: { 
-    activity: {
-      ...newActivity,
-      media_delete_keys: filtered_media_delete_keys
+  yield put({
+    type: ACTIVITY_SAVE_SUCCESS, payload: {
+      activity: {
+        ...newActivity,
+        media_delete_keys: filtered_media_delete_keys
+      }
     }
-  } });
+  });
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
@@ -113,11 +115,25 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
   });
 }
 
-export function* handle_ACTIVITY_GET_(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
+export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(action) {
+  const search_feature = action.payload.search_feature;
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, {
+    activity_subtype: action.payload.activity_subtype,
+    search_feature
+  });
 
+  const treatments = networkReturn.data.result.map((treatment, i) => {
+    const shortActID = getShortActivityID(treatment);
+    return {
+      label: shortActID,
+      title: shortActID,
+      value: treatment.activity_id,
+      'x-code_sort_order': i + 1
+    };
+  });
+  
   yield put({
-    type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-    payload: { suggestedPersons: networkReturn.data.result }
+    type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
+    payload: { suggestedTreatmentIDs: treatments, }
   });
 }

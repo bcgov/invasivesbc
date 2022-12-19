@@ -262,6 +262,16 @@ export async function createLinkedActivity(
   return doc;
 }
 
+/*
+  function to determine if a Monitoring activity subtype requires a linked treatment ID.
+*/
+export function isLinkedTreatmentSubtype(subType:ActivitySubtype): Boolean {
+  return ([
+    ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
+    ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
+    ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+  ].includes(subType));
+}
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 export function populateSpeciesArrays(record) {
   let species_positive = [];
