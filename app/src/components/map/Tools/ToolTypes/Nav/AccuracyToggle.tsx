@@ -74,7 +74,7 @@ export const AccuracyMarker = (props) => {
   const mapState = useSelector(selectMap);
   const map = useMap();
 
-  if (map && mapState?.accuracyToggle && mapState?.userCoords?.long) {
+  if (map && mapState?.accuracyToggle && mapState?.positionTracking && mapState?.userCoords?.long) {
     return (
       <Circle
         key={'circlekeyforaccuracymarker' + Math.random()}
