@@ -77,6 +77,7 @@ const IAPPCanvasLabelMemo = (props) => {
     if (mapState.layers?.[props.layerKey]?.layerState) {
       return (
         <LeafletCanvasLabel
+          layerType={'IAPP'}
           key={'POICanvasLayermemo' + props.layerKey}
           labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
@@ -116,6 +117,7 @@ const ActivityCanvasLabelMemo = (props) => {
     if (mapState.layers?.[props.layerKey]?.layerState) {
       return (
         <LeafletCanvasLabel
+          layerType={'ACTIVITY'}
           key={'activityCanvasLayermemo' + props.layerKey}
           labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
