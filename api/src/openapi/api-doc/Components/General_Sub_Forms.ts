@@ -413,7 +413,7 @@ export const Weather_Conditions = {
       type: 'string',
       title: 'Wind Direction',
       enum: ['No Wind', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
-      'x-tooltip-text': 'Cardinal wind direction at time of treatment'
+      'x-tooltip-text': 'Enter the average wind direction over the duration of the activity'
     },
     weather_comments: {
       type: 'string',

@@ -363,7 +363,7 @@ const Weather_Conditions = {
   cloud_cover_code: { 'ui:widget': 'single-select-autocomplete' },
   precipitation_code: { 'ui:widget': 'single-select-autocomplete' },
   wind_speed: { validateOnBlur: true },
-  wind_direction: { 'ui:widget': 'single-select-autocomplete' },
+  wind_direction_code: { 'ui:widget': 'single-select-autocomplete' },
   weather_comments: { 'ui:widget': 'textarea' },
   'ui:order': [
     'temperature',
@@ -970,7 +970,7 @@ const Observation_PlantAquatic_Information = {
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  invasive_plant_aquatic_code: { 'ui:widget': 'single-select-autocomplete' },
   // monitoring_details: {},
   efficacy_code: { 'ui:widget': 'single-select-autocomplete' },
   management_efficacy_rating: { 'ui:widget': 'single-select-autocomplete' },
@@ -980,7 +980,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   comment: {},
   'ui:order': [
     'invasive_plant_code',
-    'aquatic_invasive_plant_code',
+    'invasive_plant_aquatic_code',
     // 'monitoring_details',
     'evidence_of_treatment',
     'efficacy_code',
@@ -994,7 +994,7 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  aquatic_invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+  invasive_plant_aquatic_code: { 'ui:widget': 'single-select-autocomplete' },
   // monitoring_details: {},
   efficacy_code: { 'ui:widget': 'single-select-autocomplete' },
   management_efficacy_rating: { 'ui:widget': 'single-select-autocomplete' },
@@ -1004,7 +1004,7 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   comment: {},
   'ui:order': [
     'invasive_plant_code',
-    'aquatic_invasive_plant_code',
+    'invasive_plant_aquatic_code',
     // 'monitoring_details',
     'evidence_of_treatment',
     'efficacy_code',
