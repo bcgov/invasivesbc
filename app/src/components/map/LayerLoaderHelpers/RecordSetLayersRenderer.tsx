@@ -6,6 +6,7 @@ import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { selectActivities } from 'state/reducers/activities';
 import { useMap } from 'react-leaflet';
+import center from '@turf/center';
 
 import L from 'leaflet';
 
@@ -18,189 +19,7 @@ import { cleanup } from '@testing-library/react';
 import { useLeafletContext } from '@react-leaflet/core';
 import { selectMap } from 'state/reducers/map';
 import { AnyKindOfDictionary } from 'lodash';
-
-export const LeafletCanvasMarker = (props) => {
-  const map = useMap();
-
-  const context = useLeafletContext();
-
-  const [markersCanvas, setMarkersCanvas] = useState();
-  const [markers, setMarkers] = useState([]);
-  const [cleanupCallback, setCleanupCallback] = useState();
-  const layerRef = useRef();
-  const groupRef = useRef();
-
-  useEffect(() => {
-    if (!map) return;
-    try {
-      //console.dir(markersCanvas);
-      //const clear = (markersCanvas as any)?.clear();
-      //const remove = (markersCanvas as any)?.removeMarkers();
-      //map.removeLayer(markersCanvas);
-    } catch (e) {}
-    const container = context.layerContainer || context.map;
-    layerRef.current = new (L as any).MarkersCanvas();
-    groupRef.current = (L as any).layerGroup().setZIndex(props.zIndex);
-    // groupRef.current.setZIndex(props.zIndex);
-    groupRef.current.addLayer(layerRef.current).addTo(container);
-    //groupRef?.current?.setZIndex(props.zIndex);
-
-    //    container.addLayer(layerRef.current);
-
-    //const mcLayer = mc.addTo(map);
-
-    // if (markers?.length > 0) mcLayer.removeMarkers(markers);
-
-    //'canvas-marker' way:
-    //var ciLayer = (L as any).canvasIconLayer({}).addTo(map);
-
-    /*
-    ciLayer.addOnClickListener(function (e, data) {
-      console.log(data);
-    });
-    ciLayer.addOnHoverListener(function (e, data) {
-      console.log(data[0].data._leaflet_id);
-    });
-    */
-
-    /*
-    var icon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-      iconSize: [12, 10],
-      iconAnchor: [10, 9]
-    });
-    */
-
-    let colour = '';
-    switch (props.colour) {
-      case '#2A81CB':
-        colour = 'blue';
-        break;
-      case '#FFD326':
-        colour = 'gold';
-        break;
-      case '#CB2B3E':
-        colour = 'red';
-        break;
-      case '#2AAD27':
-        colour = 'green';
-        break;
-      case '#CB8427':
-        colour = 'orange';
-        break;
-      case '#CAC428':
-        colour = 'yellow';
-        break;
-      case '#9C2BCB':
-        colour = 'violet';
-        break;
-      case '#7B7B7B':
-        colour = 'grey';
-        break;
-      case '#3D3D3D':
-        colour = 'black';
-        break;
-      default:
-        colour = 'blue';
-    }
-    var icon = L.icon({
-      iconUrl:
-        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + colour + '.png',
-      iconSize: [12.5, 20.5],
-      iconAnchor: [0, 10]
-    });
-
-    function svgText(txt1, txt2) {
-      return (
-        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="500"><text x="0" y="30" style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: white; stroke: black; stroke-width: 3px; paint-order: stroke;">' +
-        '<tspan x="0" dy="1.2em">' +
-        txt1 +
-        '</tspan>' +
-        '<tspan x="0" dy="1.2em">' +
-        txt2 +
-        '</tspan>' +
-        '</text></svg>'
-      );
-    }
-
-    var markers = [];
-
-    console.log('label toggle');
-    console.log(props.labelToggle);
-    props.points?.features?.map((point) => {
-      if (props.labelToggle && props.points?.features.length < 1000) {
-        if (!(point?.geometry?.coordinates?.length > 0)) {
-          return;
-        }
-        var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
-          icon: icon
-        });
-
-        var labelImage =
-          'data:image/svg+xml,' +
-          encodeURIComponent(svgText(point.properties.site_id, point.properties.species_on_site));
-        var labelIcon = L.icon({
-          iconUrl: labelImage,
-          iconSize: [500, 500],
-          iconAnchor: [-15, 65]
-        });
-
-        var labelMarker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
-          icon: labelIcon
-        }); // //?.bindPopup('I Am ' + point.properties);
-        markers.push(labelMarker);
-        markers.push(marker);
-      } else {
-        if (!(point?.geometry?.coordinates?.length > 0)) {
-          return;
-        }
-        var marker = L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], {
-          icon: icon
-        }); // //?.bindPopup('I Am ' + point.properties);
-        markers.push(marker);
-      }
-    });
-
-    /*    if (markers.length > 0) ciLayer.addLayers(markers);
-    return () => {
-      map.removeLayer(ciLayer);
-    };
-    */
-    if (groupRef.current) layerRef?.current?.clear();
-
-    if (props.enabled && groupRef.current) {
-      layerRef?.current?.addMarkers(markers);
-    }
-
-    /*const acleanupCallback = () => mc.removeMarkers(markers);
-    setCleanupCallback(acleanupCallback);
-    */
-
-    layerRef?.current?.redraw();
-    //setMarkersCanvas(mcLayer);
-    /*
-    setTimeout(() => {
-      layerRef?.current?.redraw();
-    }, 5000);
-    */
-
-    return () => {
-      try {
-        if (container && map) {
-          layerRef?.current?.removeMarkers(markers);
-          container?.removeLayer(layerRef.current);
-          container?.removeLayer(groupRef.current);
-        }
-        //acleanupCallback();
-        //(markersCanvas as any)?.removeMarkers();
-        // (markersCanvas as any)?.clear();
-      } catch (e) {}
-    };
-    //}, [map]);
-  }, [props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
-
-  return <></>;
-};
+import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
 
 const IAPPCanvasLayerMemo = (props) => {
   const { accessRoles } = useSelector(selectAuth);
@@ -236,6 +55,82 @@ const IAPPCanvasLayerMemo = (props) => {
     JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
   ]);
 };
+
+const IAPPCanvasLabelMemo = (props) => {
+  const { accessRoles } = useSelector(selectAuth);
+  const mapState = useSelector(selectMap);
+
+  //CAP LABEL COUNT HERE
+  const filteredFeatures = () => {
+    let returnVal;
+    if (mapState?.layers?.[props.layerKey]?.IDList) {
+      returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
+        return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
+      });
+    } else {
+      returnVal = [];
+    }
+    return { type: 'FeatureCollection', features: returnVal };
+  };
+
+  return useMemo(() => {
+    if (mapState.layers?.[props.layerKey]?.layerState) {
+      return (
+        <LeafletCanvasLabel
+          key={'POICanvasLayermemo' + props.layerKey}
+          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
+          points={filteredFeatures()}
+          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
+          colour={mapState.layers[props.layerKey].layerState.color}
+          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
+        />
+      );
+    } else return <></>;
+  }, [
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+  ]);
+};
+
+const ActivityCanvasLabelMemo = (props) => {
+  const { accessRoles } = useSelector(selectAuth);
+  const mapState = useSelector(selectMap);
+
+  const filteredFeatures = () => {
+    let returnVal;
+    if (mapState?.layers?.[props.layerKey]?.IDList) {
+      returnVal = mapState?.activitiesGeoJSON?.features
+        .filter((row) => {
+          return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id);
+        })
+        .map((row) => {
+          return { ...row, geometry: center(row.geometry).geometry };
+        });
+    } else {
+      returnVal = [];
+    }
+    return { type: 'FeatureCollection', features: returnVal };
+  };
+
+  return useMemo(() => {
+    if (mapState.layers?.[props.layerKey]?.layerState) {
+      return (
+        <LeafletCanvasLabel
+          key={'activityCanvasLayermemo' + props.layerKey}
+          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
+          points={filteredFeatures()}
+          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
+          colour={mapState.layers[props.layerKey].layerState.color}
+          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
+        />
+      );
+    } else return <></>;
+  }, [
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+  ]);
+};
+
 const ActivityLayerMemo = (props) => {
   const { accessRoles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
@@ -337,14 +232,24 @@ export const RecordSetLayersRenderer = (props: any) => {
     <>
       {activityLayers()?.length > 0 ? (
         activityLayers()?.map((layerKey) => {
-          return <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
+          return (
+            <>
+              <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
+              <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+            </>
+          );
         })
       ) : (
         <></>
       )}
       {iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
-          return <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
+          return (
+            <>
+              <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
+              <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+            </>
+          );
         })
       ) : (
         <></>
