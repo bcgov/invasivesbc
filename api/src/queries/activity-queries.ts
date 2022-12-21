@@ -111,15 +111,17 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
     `);
   }
 
-  // if (activity.jurisdiction?.length) {
-  //   sqlStatement.append(SQL`
-  //     ,replace(replace(${activity.jurisdiction}::text, '{', '['), '}', ']')::jsonb
-  //   `);
-  // } else {
-  sqlStatement.append(SQL`
+  if (activity.jurisdiction?.length && activity.jurisdiction[0] !== null) {
+    sqlStatement.append(SQL` ,ARRAY [${activity.jurisdiction[0]}`);
+    for (let i = 1; i < activity.jurisdiction.length; i++) {
+      sqlStatement.append(SQL`, ${activity.jurisdiction[i]}`);
+    }
+    sqlStatement.append(SQL`]`);
+  } else {
+    sqlStatement.append(SQL`
       ,null
     `);
-  // }
+  }
 
   sqlStatement.append(SQL`
     )
