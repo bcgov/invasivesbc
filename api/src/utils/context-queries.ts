@@ -141,7 +141,7 @@ const saveInternal = (id: any, req: any) => {
         const connection = await getDBConnection();
         const sql = `
           update activity_incoming_data
-          set (${column}) = ('${attribute}')
+          set ${column} = '${attribute}'
           where activity_id = '${id}'
         `;
 
@@ -191,7 +191,7 @@ const saveElevation = (id: any, req: any) => {
       const connection = await getDBConnection();
       const sql = `
         update activity_incoming_data
-        set (elevation) = (round(${elevation},0))
+        set elevation = round(${elevation},0)
         where activity_id = '${id}'
       `;
 
