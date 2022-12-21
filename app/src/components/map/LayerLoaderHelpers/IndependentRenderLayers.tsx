@@ -4,8 +4,8 @@ import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
 import { RISOLayer } from './RISOLayer';
 import { AdminUploadsLayer } from './AdminUploadsLayer';
-import { selectNetworkConnected } from "../../../state/reducers/network";
-import { useSelector } from "../../../state/utilities/use_selector";
+import { selectNetworkConnected } from '../../../state/reducers/network';
+import { useSelector } from '../../../state/utilities/use_selector';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
@@ -24,26 +24,6 @@ export const IndependentLayer = (props) => {
   }
   if (Object.values(IndependentLayers).includes(props.layer_code)) {
     switch (props.layer_code) {
-      case 'LEAN_ACTIVITIES':
-        return (
-          <ActivitiesLayer
-            activity_subtype={props.activity_subtype}
-            color_code={props.color_code}
-            online={connected}
-            opacity={props.opacity}
-            zIndex={props.zIndex}
-          />
-        );
-      case 'LEAN_POI':
-        return (
-          <PoisLayer
-            poi_type={props.poi_type}
-            color_code={props.color_code}
-            online={connected}
-            opacity={props.opacity}
-            zIndex={props.zIndex}
-          />
-        );
       case 'JURISDICTION_LAYER':
         return (
           <JurisdictionsLayer
@@ -55,12 +35,7 @@ export const IndependentLayer = (props) => {
         );
       case 'RISO_BOUNDARIES':
         return (
-          <RISOLayer
-            color_code={props.color_code}
-            online={connected}
-            opacity={props.opacity}
-            zIndex={props.zIndex}
-          />
+          <RISOLayer color_code={props.color_code} online={connected} opacity={props.opacity} zIndex={props.zIndex} />
         );
       case 'ADMIN_UPLOADS':
         return (
