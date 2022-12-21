@@ -147,7 +147,10 @@ export const ActivitiesLayerV2 = (props: any) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
         markers.forEach((obj) => {
-          const marker = obj.options.children.props.bufferedGeo.features[0];
+          const marker = obj.options.children?.props?.bufferedGeo?.features[0];
+          if (!marker) {
+            return;
+          }
           if (data.length === 0) {
             data.push({ name: marker?.properties?.type, count: 1, fillColour: palette[marker?.properties?.type]});
           } else {
@@ -205,7 +208,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                     })}
                     position={[position[1], position[0]]}
                     key={'activity_marker' + a.properties.id}>
-                    <GeneratePopup bufferedGeo={bufferedGeo} />
+                    <>{/*} <GeneratePopup bufferedGeo={bufferedGeo} />*/}</>
                   </Marker>
                 );
             }

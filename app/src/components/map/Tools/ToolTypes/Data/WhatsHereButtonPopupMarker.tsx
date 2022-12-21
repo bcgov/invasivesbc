@@ -1,26 +1,15 @@
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Button,
-  Grid,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  TableContainer,
-  Typography
-} from '@mui/material';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer } from '@mui/material';
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
-import { point } from '@turf/helpers';
-import buffer from '@turf/buffer';
+import center from '@turf/center';
 import L from 'leaflet';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
-import binoculars from '../../../Icons/binoculars.png';
+import { useSelector } from 'react-redux';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import {
   createDataUTM,
   RenderTableActivity,
@@ -31,9 +20,6 @@ import {
 } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from '../Nav/DisplayPosition';
-import center from '@turf/center';
-import { useSelector } from 'react-redux';
-import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const GeneratePopup = (props) => {
   const { bufferedGeo, onCloseCallback = null } = props;
@@ -181,31 +167,7 @@ function SetPointOnClick() {
   });
 
   return (
-    <ListItem disableGutters className={toolClass.listItem}>
-      <ListItemButton
-        onClick={BoxDrawStartOnClick}
-        ref={divRef}
-        style={{
-          backgroundColor:
-            workflowStep === workflowStepEnum.BOX_DRAW_START || workflowStep === workflowStepEnum.BOX_DRAW_DONE
-              ? 'lightgray'
-              : null,
-          borderTopLeftRadius: 5,
-          borderTopRightRadius: 5,
-          marginTop: 5
-        }}>
-        <ListItemIcon>
-          <img
-            style={{ width: 32, height: 32 }}
-            color={darkTheme ? '#000' : 'white'}
-            src={binoculars}
-            aria-label="create-pin"
-          />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography className={toolClass.Font}>What's here?</Typography>
-        </ListItemText>
-      </ListItemButton>
+    <>
       {userGeo && workflowStep === workflowStepEnum.BOX_DRAW_DONE && (
         <Marker
           ref={markerRef}
@@ -219,7 +181,7 @@ function SetPointOnClick() {
           />
         </Marker>
       )}
-    </ListItem>
+    </>
   );
 }
 
