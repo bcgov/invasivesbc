@@ -13,7 +13,7 @@ export const insertWellDistanceSQL = (well: any): SQLStatement => {
 
   return SQL`
     update activity_incoming_data
-    set (well_proximity) = (round(${well.distance},0))
+    set well_proximity = round(${well.distance},0)
     where activity_id = ${well.id}
   `;
 };

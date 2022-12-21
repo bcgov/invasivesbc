@@ -381,3 +381,21 @@ export function populateSpeciesArrays(record) {
   };
   return returnVal;
 }
+
+export function populateJurisdictionArray(record) {
+  const jurisdictions = record?.form_data?.activity_data?.jurisdictions;
+
+  let jurisdiction = [];
+  if (jurisdictions) {
+    jurisdiction = jurisdictions?.map((j) => {
+      return j.jurisdiction_code;
+    });
+  } else {
+    return record;
+  }
+
+  return {
+    ...record,
+    jurisdiction: jurisdiction.sort() || []
+  };
+}

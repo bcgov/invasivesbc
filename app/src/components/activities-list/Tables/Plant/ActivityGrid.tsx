@@ -153,7 +153,7 @@ export const getSearchCriteriaFromFilters = (
     currentAdvFilters.forEach((filter) => {
       switch (filter.filterField) {
         case 'Jurisdiction': {
-          jurisdictions.push(Object.values(filter.filterValue)[0]);
+          jurisdictions.push(Object.keys(filter.filterValue)[0]);
           break;
         }
         case 'Species Positive': {
