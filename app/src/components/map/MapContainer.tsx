@@ -49,6 +49,7 @@ import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
+import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -317,6 +318,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <></>
             )}
 
+            <LayerSniffer />
             <LayerPickerBasic></LayerPickerBasic>
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>

@@ -4,23 +4,31 @@ import { Circle, FeatureGroup, LayerGroup, LayersControl, Marker, Popup, Rectang
 import { DataBCLayer, LayerMode } from './LayerLoaderHelpers/DataBCRenderLayer';
 import 'leaflet/dist/leaflet.css';
 import { JurisdictionsLayer } from './LayerLoaderHelpers/JurisdictionsLayer';
+import { ControlWithHooks } from './Tools/ToolTypes/Data/CustomLeafletPickerControl';
+import { selectMap } from 'state/reducers/map';
+import { useSelector } from 'react-redux';
 
 export const LayerPickerBasic = (props) => {
+  const mapState = useSelector(selectMap);
   const center: LatLngExpression = [51.505, -0.09];
   const rectangle: LatLngBoundsExpression = [
     [51.49, -0.08],
     [51.5, -0.06]
   ];
 
+  const layers = {
+    'Regional Districts': { layerCode: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP' }
+  };
+
   return (
     <LayersControl position="topright">
-      <LayersControl.Overlay checked={false} name="Regional Districts">
+      <LayersControl.Overlay checked={mapState?.simplePickerLayers?.['Regional Districts']} name="Regional Districts">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
             transparent={true}
             layer_mode={LayerMode.WMSOnline}
-            bcgw_code="WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP"
+            bcgw_code={layers['Regional Districts'].layerCode}
             opacity={0.3}
             zIndex={3501}
           />
