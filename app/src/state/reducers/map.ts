@@ -16,7 +16,8 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_PANNED,
-  LEAFLET_SET_WHOS_EDITING
+  LEAFLET_SET_WHOS_EDITING,
+  TOGGLE_BASIC_PICKER_LAYER
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -38,6 +39,7 @@ class MapState {
   HDToggle: boolean;
   accuracyToggle: boolean;
   layers: object;
+  simplePickerLayers: object;
   recordTables: object;
   error: boolean;
   activitiesGeoJSON: any;
@@ -95,6 +97,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           panned: !state.panned
+        };
+      }
+      case TOGGLE_BASIC_PICKER_LAYER: {
+        let newState = JSON.parse(JSON.stringify({ ...state.simplePickerLayers }));
+
+        for (const layerNameProperty in action.payload) {
+          //if exists, toggle
+          if (newState[layerNameProperty]) {
+            newState[layerNameProperty] = !newState[layerNameProperty];
+          } else {
+            // doesn't exist, getting turned on
+            newState[layerNameProperty] = true;
+          }
+        }
+
+        return {
+          ...state,
+          simplePickerLayers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case LAYER_STATE_UPDATE: {
