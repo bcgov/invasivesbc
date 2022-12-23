@@ -41,7 +41,7 @@ class MapState {
   HDToggle: boolean;
   accuracyToggle: boolean;
   layers: object;
-  whatsHere: object;
+  whatsHere: any;
   simplePickerLayers: object;
   recordTables: object;
   error: boolean;

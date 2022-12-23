@@ -159,7 +159,7 @@ export const RenderTableActivity = (props: any) => {
   ];
 
   useEffect(() => {
-    updateActivityRecords();
+    //    updateActivityRecords();
   }, [bufferedGeo]);
 
   // Don't know if needed anymore?

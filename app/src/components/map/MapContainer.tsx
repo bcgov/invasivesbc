@@ -26,6 +26,10 @@ import EditTools from './Tools/ToolTypes/Data/EditTools';
 
 import centroid from '@turf/centroid';
 import async from 'async';
+import 'leaflet-editable';
+import ReactLeafletEditable from 'react-leaflet-editable';
+import './MapContainer.css';
+
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
 import { useSelector } from 'react-redux';
@@ -45,13 +49,13 @@ import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
 
 //workaround for: https://github.com/vitejs/vite/issues/2139
 import ReactLeafletEditableFix from 'react-leaflet-editable';
+import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
 import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
+import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
+import { WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
-import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
-import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
-import { WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
