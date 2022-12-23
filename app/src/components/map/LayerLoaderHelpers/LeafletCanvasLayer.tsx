@@ -59,8 +59,8 @@ export const LeafletCanvasMarker = (props) => {
 
     var markers = [];
 
-    console.log('label toggle');
-    console.log(props.labelToggle);
+    //    console.log('label toggle');
+    //    console.log(props.labelToggle);
     props.points?.features?.map((point) => {
       if (props.labelToggle && props.points?.features.length < 1000) {
         if (!(point?.geometry?.coordinates?.length > 0)) {
@@ -132,8 +132,8 @@ export const LeafletCanvasLabel = (props) => {
 
     var markers = [];
 
-    console.log('label toggle');
-    console.log(props.labelToggle);
+    // console.log('label toggle');
+    // console.log(props.labelToggle);
     props.points?.features?.map((point) => {
       if (props.labelToggle && props.points?.features.length < 1000) {
         if (!(point?.geometry?.coordinates?.length > 0)) {

@@ -5,11 +5,10 @@ import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer 
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
 import center from '@turf/center';
-import L from 'leaflet';
-import React, { useEffect, useRef, useState } from 'react';
-import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Marker, Popup, useMap } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
+import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import {
@@ -20,7 +19,6 @@ import {
   RenderTablePOI,
   RenderTablePosition
 } from '../../Helpers/StyledTable';
-import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from '../Nav/DisplayPosition';
 
 export const WhatsHerePopUpContent = (props) => {
@@ -42,15 +40,7 @@ export const WhatsHerePopUpContent = (props) => {
   ];
 
   const hideElement = () => {
-    //onCloseCallback();
     map.closePopup();
-    /*setSection('position');
-    if (onCloseCallback) {
-      setTimeout(() => {
-        onCloseCallback();
-      }, 500);
-    }
-    */
   };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
@@ -89,45 +79,80 @@ export const WhatsHereMarker = (props) => {
   const map = useMap();
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
-  const markerRef = useRef(null);
+  const markerRef = useRef();
   const { darkTheme } = useSelector(selectUserSettings);
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [refReady, setRefReady] = useState(false);
   let popupRef = useRef();
+  const [position, setPosition] = useState(null);
 
   useEffect(() => {
-    if (refReady && map && (mapState?.whatsHere as any)?.toggle && (mapState?.whatsHere as any)?.feature) {
-      popupRef?.openOn(map);
+    let lat = null;
+    let lng = null;
+
+    if (mapState?.whatsHere?.feature?.geometry) {
+      lat = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[1]));
+      lng = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[0]));
+      setPosition({ lat: lat, lng: lng });
     }
 
     return () => {
-      setRefReady(false);
+      setPosition(null);
     };
-  }, [refReady, map, mapState?.whatsHere]);
+  }, [JSON.stringify(mapState?.whatsHere?.feature)]);
+
+  useEffect(() => {
+    if (
+      markerRef.current &&
+      popupRef &&
+      mapState?.whatsHere?.toggle &&
+      mapState?.whatsHere?.feature &&
+      refReady &&
+      map &&
+      position?.lat
+    ) {
+      try {
+        popupRef?.openOn(map);
+      } catch (e) {
+        console.log('the error!', e);
+      }
+    }
+
+    return () => {
+      map?.closePopup();
+    };
+  }, [refReady]);
+
+  const popupOnClose = () => {
+    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+  };
+
+  const refCallback = (r) => {
+    popupRef = r;
+    r === null ? setRefReady(false) : setRefReady(true);
+  };
+
+  const PopupMemo = (props) => {
+    return useMemo(() => {
+      return (
+        <Popup
+          ref={refCallback}
+          className={theme}
+          onClose={popupOnClose}
+          autoClose={false}
+          closeOnClick={true}
+          closeButton={false}>
+          <WhatsHerePopUpContent popupOnClose={popupOnClose} bufferedGeo={mapState?.whatsHere?.feature} />
+        </Popup>
+      );
+    }, [JSON.stringify(position)]);
+  };
 
   return (
     <>
-      {(mapState?.whatsHere as any)?.feature && map ? (
-        <Marker
-          ref={markerRef}
-          position={{
-            lat: center((mapState?.whatsHere as any)?.feature)?.geometry.coordinates[1],
-            lng: center((mapState?.whatsHere as any)?.feature)?.geometry.coordinates[0]
-          }}>
-          <Popup
-            ref={(r) => {
-              popupRef = r;
-              setRefReady(true);
-            }}
-            className={theme}
-            onClose={() => {
-              dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-            }}
-            autoClose={false}
-            closeOnClick={true}
-            closeButton={false}>
-            <WhatsHerePopUpContent bufferedGeo={(mapState?.whatsHere as any)?.feature} />
-          </Popup>
+      {position?.lat && map ? (
+        <Marker ref={markerRef} position={[position?.lat, position?.lng]}>
+          <PopupMemo />
         </Marker>
       ) : (
         <></>
