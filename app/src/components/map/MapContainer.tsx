@@ -50,6 +50,8 @@ const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
 import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
+import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
+import { WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -288,6 +290,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <FindMeToggle />
             <PanToMe />
             <WhatsHereButton />
+            <WhatsHereDrawComponent />
+            <WhatsHereMarker />
             {props.children}
 
             {activityState?.activity?.geometry ? (

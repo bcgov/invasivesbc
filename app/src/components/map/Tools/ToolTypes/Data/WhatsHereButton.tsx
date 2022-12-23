@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 
 export const WhatsHereButton = (props) => {
   const map = useMap();
@@ -29,7 +30,7 @@ export const WhatsHereButton = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  if (mapState && !mapState?.baseMapToggle && map) {
+  if (mapState && mapState?.whatsHere && map) {
     return (
       <div
         ref={divRef}
@@ -48,11 +49,13 @@ export const WhatsHereButton = (props) => {
           <span>
             <IconButton
               //disabled={startTimer}
-              onClick={() => {}}
+              onClick={() => {
+                dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+              }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' ' +
-                (mapState.HDToggle ? toolClass.selected : toolClass.notSelected)
+                ((mapState?.whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <DocumentScannerIcon />

@@ -17,7 +17,9 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_PANNED,
   LEAFLET_SET_WHOS_EDITING,
-  TOGGLE_BASIC_PICKER_LAYER
+  TOGGLE_BASIC_PICKER_LAYER,
+  MAP_TOGGLE_WHATS_HERE,
+  MAP_WHATS_HERE_FEATURE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -39,6 +41,7 @@ class MapState {
   HDToggle: boolean;
   accuracyToggle: boolean;
   layers: object;
+  whatsHere: object;
   simplePickerLayers: object;
   recordTables: object;
   error: boolean;
@@ -54,7 +57,11 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
+<<<<<<< HEAD
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
+=======
+    this.whatsHere = { toggle: false, feature: null };
+>>>>>>> 0cc4e21d (state management for whats here marker.  todo: state for popup content and open popup on mount)
   }
 }
 const initialState = new MapState();
@@ -62,10 +69,23 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+<<<<<<< HEAD
       case LEAFLET_SET_WHOS_EDITING: {
         return {
           ...state,
           LeafletWhosEditing: action.payload.LeafletWhosEditing
+=======
+      case MAP_WHATS_HERE_FEATURE: {
+        return {
+          ...state,
+          whatsHere: { toggle: state.whatsHere.toggle, feature: action.payload.feature }
+        };
+      }
+      case MAP_TOGGLE_WHATS_HERE: {
+        return {
+          ...state,
+          whatsHere: { toggle: !state.whatsHere.toggle, feature: null }
+>>>>>>> 0cc4e21d (state management for whats here marker.  todo: state for popup content and open popup on mount)
         };
       }
       case MAP_TOGGLE_ACCURACY: {
