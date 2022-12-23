@@ -16,7 +16,9 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_PANNED,
-  TOGGLE_BASIC_PICKER_LAYER
+  TOGGLE_BASIC_PICKER_LAYER,
+  MAP_TOGGLE_WHATS_HERE,
+  MAP_WHATS_HERE_FEATURE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -31,6 +33,7 @@ class MapState {
   HDToggle: boolean;
   accuracyToggle: boolean;
   layers: object;
+  whatsHere: object;
   simplePickerLayers: object;
   recordTables: object;
   error: boolean;
@@ -45,6 +48,7 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
+    this.whatsHere = { toggle: false, feature: null };
   }
 }
 const initialState = new MapState();
@@ -52,6 +56,18 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case MAP_WHATS_HERE_FEATURE: {
+        return {
+          ...state,
+          whatsHere: { toggle: state.whatsHere.toggle, feature: action.payload.feature }
+        };
+      }
+      case MAP_TOGGLE_WHATS_HERE: {
+        return {
+          ...state,
+          whatsHere: { toggle: !state.whatsHere.toggle, feature: null }
+        };
+      }
       case MAP_TOGGLE_ACCURACY: {
         return {
           ...state,
