@@ -44,9 +44,14 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
+<<<<<<< HEAD
   TABS_SET_ACTIVE_TAB_SUCCESS,
   TABS_GET_INITIAL_STATE_SUCCESS,
   LEAFLET_SET_WHOS_EDITING
+=======
+  MAP_WHATS_HERE_INIT_GET_POI,
+  MAP_WHATS_HERE_FEATURE
+>>>>>>> 3684629d (saga for filtering iapp data in whats here component)
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -56,7 +61,8 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_IAPP_TABLE_ROWS_GET_REQUEST
+  handle_IAPP_TABLE_ROWS_GET_REQUEST,
+  handle_MAP_WHATS_HERE_INIT_GET_POI
 } from './map/dataAccess';
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -64,7 +70,8 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE
+  handle_IAPP_TABLE_ROWS_GET_ONLINE,
+  handle_MAP_WHATS_HERE_GET_POI_ONLINE
 } from './map/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
@@ -550,6 +557,8 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   });
 }
 
+function* getPOIIDsOnline(feature, filterCriteria) {}
+
 function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
   yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { recordSetID: action.payload.deletedID } });
 }
@@ -640,11 +649,21 @@ function* leafletWhosEditing() {
     takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange),
   ])
 
+function* handle_WHATS_HERE_FEATURE(action) {
+  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
+}
+
+function* whatsHereSaga() {
+  yield all([
+    takeEvery(MAP_WHATS_HERE_INIT_GET_POI, handle_MAP_WHATS_HERE_INIT_GET_POI),
+    takeEvery(MAP_WHATS_HERE_FEATURE, handle_WHATS_HERE_FEATURE)
+  ]);
 }
 
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing)
   yield all([
+    fork(whatsHereSaga),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
