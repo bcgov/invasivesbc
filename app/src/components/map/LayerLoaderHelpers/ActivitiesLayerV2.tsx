@@ -45,6 +45,15 @@ export const ActivitiesLayerV2 = (props: any) => {
   };
   const [options, setOptions] = useState(initialOptions);
 
+  const initialPalette = {
+      Biocontrol : 'white',
+      FREP: '#939393',
+      Monitoring: 'purple',
+      Observation: 'pink',
+      Treatment: 'lime'
+  };
+  const [palette, setPalette] = useState(initialPalette);
+
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
     //    getActivitiesSLD();
@@ -69,6 +78,20 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   const getActivitiesSLD = () => {
     getSldStylesFromLocalFile().then((res) => {
+      const Biocontrol = res?.output.rules.find( o => o.name === 'Activity_Biocontrol_Release');
+      const FREP = res?.output.rules.find( o => o.name === '');
+      const Monitoring = res?.output.rules.find( o => o.name === 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant');
+      const Observation = res?.output.rules.find( o => o.name === 'Activity_Observation_PlantAquatic');
+      const Treatment = res?.output.rules.find( o => o.name === 'Activity_Treatment_ChemicalPlantAquatic');
+      
+      let sldPalette = palette;
+      sldPalette.Biocontrol = Biocontrol?.symbolizers[0].color ?? sldPalette.Biocontrol;
+      sldPalette.FREP = FREP?.symbolizers[0].color ?? sldPalette.FREP;
+      sldPalette.Monitoring = Monitoring?.symbolizers[0].color ?? sldPalette.Monitoring;
+      sldPalette.Observation = Observation?.symbolizers[0].color ?? sldPalette.Observation;
+      sldPalette.Treatment = Treatment?.symbolizers[0].color ?? sldPalette.Treatment;
+      setPalette(sldPalette);
+
       const rule = {
         name: 'iapp_ids_filter',
         filter: ['in', 'site_id', props.ids],
@@ -118,19 +141,6 @@ export const ActivitiesLayerV2 = (props: any) => {
     getActivitiesSLD();
   }, [props.color, props.ids]);
 
-
-  /*
-  useMemo(() => {
-    /*setOptions((prevOptions) => ({
-      ...prevOptions,
-      style: { ...prevOptions.style, fillColor: props?.color?.toUpperCase() }
-    }));
-    setOptions((prevOptions) => ({
-      ...prevOptions
-    }));
-  }, [props.color]);
-  */
-
   const MarkerMemo = useMemo(() => {
     if (props.activities && props.activities.features && props.color) {
       const createClusterCustomIcon = (cluster) => {
@@ -139,18 +149,19 @@ export const ActivitiesLayerV2 = (props: any) => {
         markers.forEach((obj) => {
           const marker = obj.options.children.props.bufferedGeo.features[0];
           if (data.length === 0) {
-            data.push({ name: marker?.properties?.type, count: 1 });
+            data.push({ name: marker?.properties?.type, count: 1, fillColour: palette[marker?.properties?.type]});
           } else {
             let flag = 0;
             for (let i of data) {
               if (marker?.properties?.type === i.name) {
                 flag = 1;
                 i.count += 1;
+                i.fillColour = palette[i.name];
                 break;
               }
             }
             if (flag === 0) {
-              data.push({ name: marker?.properties?.type, count: 1 });
+              data.push({ name: marker?.properties?.type, count: 1, fillColour: palette[marker?.properties?.type]});
             }
           }
         });
@@ -170,14 +181,27 @@ export const ActivitiesLayerV2 = (props: any) => {
                 type: 'FeatureCollection',
                 features: [a]
               };
-
               if (a.properties.id)
                 return (
                   <Marker
-                    icon={L.icon({
-                      iconUrl: mapIcon,
+                    icon={L.divIcon({
+                      html: `
+                        <svg
+                          width="40"
+                          height="40"
+                          viewBox="0 0 100 100"
+                          version="1.1"
+                          preserveAspectRatio="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M45 0C27.677 0 13.584 14.093 13.584 31.416a31.13 31.13 0 0 0 3.175 13.773c2.905 5.831 11.409 20.208 20.412 35.428l4.385 7.417a4 4 0 0 0 6.888 0l4.382-7.413c8.942-15.116 17.392-29.4 20.353-35.309.027-.051.055-.103.08-.155a31.131 31.131 0 0 0 3.157-13.741C76.416 14.093 62.323 0 45 0zm0 42.81c-6.892 0-12.5-5.607-12.5-12.5s5.608-12.5 12.5-12.5 12.5 5.608 12.5 12.5-5.608 12.5-12.5 12.5z"
+                            style="stroke:none;stroke-width:1;stroke-dasharray:none;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;
+                            fill:${palette[a.properties.type]};fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
+                          />
+                        </svg>`,
+                      className: "",
                       iconSize: [10, 17.5],
-                      iconAnchor: [5, 19]
+                      iconAnchor: [18, 35]
                     })}
                     position={[position[1], position[0]]}
                     key={'activity_marker' + a.properties.id}>
