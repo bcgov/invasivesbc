@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { useSelector } from 'state/utilities/use_selector';
 import { selectIappsite } from 'state/reducers/iappsite';
 
-export const ReferenceIAPPSitePage: React.FC = (props) => {
+const ReferenceIAPPSitePage: React.FC = (props) => {
   const iappsite = useSelector(selectIappsite);
 
   return (
@@ -24,3 +24,5 @@ export const ReferenceIAPPSitePage: React.FC = (props) => {
     </div>
   );
 };
+
+export default ReferenceIAPPSitePage;

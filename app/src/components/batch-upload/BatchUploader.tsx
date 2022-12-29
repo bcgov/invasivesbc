@@ -1,6 +1,6 @@
 import { Box, Button, Paper, Typography } from '@mui/material';
 import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+//import { useDropzone } from 'react-dropzone';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 
 export interface IBatchUploadRequest {
@@ -67,9 +67,9 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
     };
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop
-  });
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  //   onDrop
+  // });
 
   const api = useInvasivesApi();
 
@@ -88,37 +88,37 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
     });
     onUploadComplete();
   };
-
-  return (
-    <Paper>
-      <Box mx={3} my={3} py={3}>
-        <Typography variant={'h4'}>Batch Upload</Typography>
-        {uploadRequest.data != null && <span>{filename} ready to upload</span>}
-        {uploadRequest.data == null && (
-          <div style={dropzoneStyle}>
-            <input {...getInputProps()} />
-            {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
-          </div>
-        )}
-        {statusMessage != null && <p>{statusMessage}</p>}
-        <div>
-          <Button variant={'contained'} disabled={uploadRequest.data == null || uploading} onClick={() => doUpload()}>
-            Upload
-          </Button>
-          <Button
-            variant={'outlined'}
-            disabled={uploadRequest.data == null}
-            onClick={() => {
-              setUploadRequest({ data: null });
-              setFilename(null);
-              setStatusMessage(null);
-            }}>
-            Clear
-          </Button>
-        </div>
-      </Box>
-    </Paper>
-  );
+  //
+  // return (
+  //   <Paper>
+  //     <Box mx={3} my={3} py={3}>
+  //       <Typography variant={'h4'}>Batch Upload</Typography>
+  //       {uploadRequest.data != null && <span>{filename} ready to upload</span>}
+  //       {uploadRequest.data == null && (
+  //         <div style={dropzoneStyle}>
+  //           <input {...getInputProps()} />
+  //           {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
+  //         </div>
+  //       )}
+  //       {statusMessage != null && <p>{statusMessage}</p>}
+  //       <div>
+  //         <Button variant={'contained'} disabled={uploadRequest.data == null || uploading} onClick={() => doUpload()}>
+  //           Upload
+  //         </Button>
+  //         <Button
+  //           variant={'outlined'}
+  //           disabled={uploadRequest.data == null}
+  //           onClick={() => {
+  //             setUploadRequest({ data: null });
+  //             setFilename(null);
+  //             setStatusMessage(null);
+  //           }}>
+  //           Clear
+  //         </Button>
+  //       </div>
+  //     </Box>
+  //   </Paper>
+  // );
 };
 
 export default BatchUploader;

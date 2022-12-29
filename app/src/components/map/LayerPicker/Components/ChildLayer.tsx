@@ -4,11 +4,13 @@ import {getChild, updateChild} from '../Sorting/SortLayerOrder';
 import {LayerModeDialog, ColourDialog} from './DialogBoxes';
 import {MapRequestContext} from 'contexts/MapRequestsContext';
 import InfoIcon from '@mui/icons-material/Info';
-import {CONFIG} from "../../../../state/config";
+import { useSelector } from '../../../../state/utilities/use_selector';
+import { selectConfiguration } from '../../../../state/reducers/configuration';
 
 export const ChildLayer = (props) => {
   const {child, parent} = props;
   const {layers, setLayers} = React.useContext(MapRequestContext);
+  const { DEBUG } = useSelector(selectConfiguration);
 
   return (
     <Grid
@@ -32,7 +34,7 @@ export const ChildLayer = (props) => {
         />
       </Grid>
       <InfoTooltip child={child}/>
-      {CONFIG.DEBUG && <LayerModeDialog parent={parent} child={child}/>}
+      {DEBUG && <LayerModeDialog parent={parent} child={child}/>}
     </Grid>
   );
 };

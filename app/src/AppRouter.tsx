@@ -1,26 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Redirect, Switch, useHistory } from 'react-router-dom';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
 import { useSelector } from './state/utilities/use_selector';
 import { selectConfiguration } from './state/reducers/configuration';
 import AppRoute from './router/AppRoute';
-import LandingPage from 'features/home/landing/LandingPage';
-import MapPage from 'features/home/map/MapPage';
-import AccessRequestPage from 'features/home/accessRequest/AccessRequestPage';
-import DataSharingAgreementPage from 'features/home/dataSharingAgreement/DataSharingAgreementPage';
-import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
-import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
-import PlanPage from 'features/home/plan/PlanPage';
-import ActivitiesPage from 'features/home/activities/ActivitiesPage';
-import ActivityPage from 'features/home/activity/ActivityPage';
-import { EmbeddedReportsPage } from 'features/home/reports/EmbeddedReportsPage';
-import { ReferenceIAPPSitePage } from 'features/home/references/ReferenceIAPPSitePage';
-import UserAccessPage from 'features/admin/userAccess/UserAccessPage';
+
 import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { getDesignTokens } from 'utils/CustomThemeProvider';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { CssBaseline } from '@mui/material';
+import LandingPage from './features/home/landing/LandingPage';
+
+const MapPage = lazy(() => import('features/home/map/MapPage'));
+const AccessRequestPage = lazy(() => import('features/home/accessRequest/AccessRequestPage'));
+const DataSharingAgreementPage = lazy(() => import('features/home/dataSharingAgreement/DataSharingAgreementPage'));
+const BulkEditActivitiesPage = lazy(() => import('features/home/search/BulkEditActivitiesPage'));
+const ObservationCreationStepperPage = lazy(() => import('features/home/activity/ObservationCreationStepperPage'));
+const PlanPage = lazy(() => import('features/home/plan/PlanPage'));
+const ActivitiesPage = lazy(() => import('features/home/activities/ActivitiesPage'));
+const ActivityPage = lazy(() => import('features/home/activity/ActivityPage'));
+const EmbeddedReportsPage = lazy(() => import('features/home/reports/EmbeddedReportsPage'));
+const ReferenceIAPPSitePage = lazy(() => import('features/home/references/ReferenceIAPPSitePage'));
+const UserAccessPage = lazy(() => import('./features/admin/userAccess/UserAccessPage'));
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -157,6 +159,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           component={() => <Redirect to="/page-not-found" />}
         />
       </Switch>
+
     </ThemeProvider>
   );
 };

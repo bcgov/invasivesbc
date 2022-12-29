@@ -2,37 +2,30 @@ import AddIcon from '@mui/icons-material/Add';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import { useHistory } from 'react-router';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import CropFreeIcon from '@mui/icons-material/CropFree';
-import { Alert, Box, Button, Container, Snackbar, Theme } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import MapIcon from '@mui/icons-material/Map';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { Alert, Box, Button, Snackbar, Theme } from '@mui/material';
+import React, { lazy, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useDataAccess } from 'hooks/useDataAccess';
 import MenuOptions from './MenuOptions';
 import { RecordSetRenderer } from './activityRecordset/RecordSetRenderer';
 import NewRecordDialog, { INewRecordDialog } from 'components/activities-list/Tables/NewRecordDialog';
-import MapContainer from 'components/map/MapContainer';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 import makeStyles from '@mui/styles/makeStyles';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
-import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
-import {
-  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST
-} from 'state/actions';
-import { useDispatch } from 'react-redux';
+import { GeneralDialog, IGeneralDialog } from '../../../components/dialog/GeneralDialog';
+import { USER_SETTINGS_ADD_RECORD_SET_REQUEST, USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST } from 'state/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import SaveIcon from '@mui/icons-material/Save';
 import { getSearchCriteriaFromFilters } from '../../../components/activities-list/Tables/Plant/ActivityGrid';
 import { DocType } from 'constants/database';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
+import { DatabaseContext, upsert, UpsertType } from '../../../contexts/DatabaseContext';
 import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
-import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
+
+const MapContainer = lazy(() => import('components/map/MapContainer'));
+
 interface IStatusPageProps {
   classes?: any;
 }
@@ -359,17 +352,19 @@ const PageContainer = (props) => {
           height: userSettings.recordsExpanded ? 'calc(100% - 400px)' : '91.5%'
         }}>
         <MapRecordsContextProvider>
-          <MapContainer
-            classes={classes}
-            showDrawControls={showDrawControls}
-            setShowDrawControls={setShowDrawControls}
-            showBoundaryMenu={true}
-            center={userSettings?.mapCenter}
-            zoom={5}
-            mapId={'mainMap'}
-            geometryState={{ geometry, setGeometry }}>
-            <RecordSetLayersRenderer />
-          </MapContainer>
+          <Suspense fallback={<span>Map loading</span>}>
+            <MapContainer
+              classes={classes}
+              showDrawControls={showDrawControls}
+              setShowDrawControls={setShowDrawControls}
+              showBoundaryMenu={true}
+              center={userSettings?.mapCenter}
+              zoom={5}
+              mapId={'mainMap'}
+              geometryState={{ geometry, setGeometry }}>
+              <RecordSetLayersRenderer />
+            </MapContainer>
+          </Suspense>
         </MapRecordsContextProvider>
       </Box>
       <Box>

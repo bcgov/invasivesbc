@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -41,7 +41,16 @@ export default defineConfig({
   publicDir: '../public',
   build: {
     // Relative to the root
-    outDir: '../dist'
+    outDir: '../dist',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return "vendor"
+          }
+        }
+      }
+    }
   },
   define: {
     ...buildSpecificDefines()
@@ -55,7 +64,9 @@ export default defineConfig({
     })
   ],
   resolve: {
-    alias: [
-    ]
+    alias: {
+      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream'
+    }
   }
 });

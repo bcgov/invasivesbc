@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { Suspense, useContext, useEffect } from 'react';
 import { Route, RouteProps, useHistory } from 'react-router-dom';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { ErrorBanner } from '../components/error/ErrorBanner';
@@ -94,7 +94,9 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
                         );
                       })}
                     <CheckAccess accessLevel={accessLevel}>
-                      <Component {...renderProps} classes={classes} />
+                      <Suspense fallback={<>loading</>}>
+                        <Component {...renderProps} classes={classes} />
+                      </Suspense>
                     </CheckAccess>
                   </HomeLayout>
                 </>

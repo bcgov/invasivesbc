@@ -130,4 +130,4 @@ const EmbeddedReportsPage: React.FC = () => {
   );
 };
 
-export { EmbeddedReportsPage };
+export default EmbeddedReportsPage;

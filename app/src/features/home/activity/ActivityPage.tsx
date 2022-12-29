@@ -3,42 +3,36 @@ import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
 import { ActivityStatus, ActivitySubtype } from 'constants/activities';
 import { Feature } from 'geojson';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
-import { IGeneralDialog, GeneralDialog } from '../../../components/dialog/GeneralDialog';
+import { GeneralDialog, IGeneralDialog } from '../../../components/dialog/GeneralDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
 import { IPhoto } from '../../../components/photo/PhotoContainer';
-import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
   getAreaValidator,
   getCustomValidator,
   getDateAndTimeValidator,
-  getPosAndNegObservationValidator,
   getInvasivePlantsValidator,
-  getVegTransectPointsPercentCoverValidator,
-  getShorelineTypesPercentValidator,
   getJurisdictionPercentValidator,
+  getPestManagementPlanValidator,
+  getPlotIdentificatiomTreesValidator,
+  getPosAndNegObservationValidator,
+  getShorelineTypesPercentValidator,
   getSlopeAspectBothFlatValidator,
-  getTreatedAreaValidator,
-  getTemperatureValidator,
   getTargetPhenologySumValidator,
   getTerrestrialAquaticPlantsValidator,
-  getPestManagementPlanValidator,
-  getWeatherCondTemperatureValidator,
   getTransectOffsetDistanceValidator,
+  getTreatedAreaValidator,
+  getVegTransectPointsPercentCoverValidator,
   getWindValidator,
   getWindValidatorBiocontrol,
-  transferErrorsFromChemDetails,
-  getPlotIdentificatiomTreesValidator
+  transferErrorsFromChemDetails
 } from '../../../rjsf/business-rules/customValidation';
-import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import './scrollbar.css';
 import { useHistory } from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
-import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { selectActivity } from '../../../state/reducers/activity';
@@ -48,8 +42,8 @@ import { useDispatch } from 'react-redux';
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_SUBMIT_REQUEST
+  ACTIVITY_SUBMIT_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 

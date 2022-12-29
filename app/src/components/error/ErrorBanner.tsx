@@ -2,11 +2,13 @@ import React, {useState} from 'react';
 import {IErrorBanner, ErrorContext} from 'contexts/ErrorContext';
 import {Alert, AlertColor, AlertTitle, Box} from '@mui/material';
 import {useContext, useEffect} from 'react';
-import {CONFIG} from "../../state/config";
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectConfiguration } from '../../state/reducers/configuration';
 
 export const ErrorBanner = (props: IErrorBanner) => {
   const errorContext = useContext(ErrorContext);
   const [severity, setSeverity] = useState<AlertColor>('error');
+  const { DEBUG } = useSelector(selectConfiguration);
 
   const triggerOnClose = () => {
     errorContext.clearError({
@@ -34,7 +36,7 @@ export const ErrorBanner = (props: IErrorBanner) => {
     }
   }, [errorContext]);
 
-  const message = CONFIG.DEBUG && props.code + ' - ' + props.namespace;
+  const message = DEBUG && props.code + ' - ' + props.namespace;
 
   return (
     <Box margin={2}>
