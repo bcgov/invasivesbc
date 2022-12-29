@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import {Feature} from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -6,51 +6,43 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.offline';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   FeatureGroup,
   MapContainer as ReactLeafletMapContainer,
+  Marker,
+  Popup,
   ScaleControl,
   useMap,
-  GeoJSON,
-  WMSTileLayer,
-  ZoomControl as ZoomButtons,
-  Marker,
-  Popup
+  ZoomControl as ZoomButtons
 } from 'react-leaflet';
 import booleanWithin from '@turf/boolean-within';
 import booleanOverlap from '@turf/boolean-overlap';
-import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
+import {IPointOfInterestSearchCriteria} from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
 import './MapContainer.css';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
 import 'leaflet-editable';
 import ReactLeafletEditable from 'react-leaflet-editable';
 
-import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { MapRecordsContext } from 'contexts/MapRecordsContext';
-import MapRecordsDataGrid from './MapRecordsDataGrid';
+import {FlyToAndFadeContextProvider} from './Tools/ToolTypes/Nav/FlyToAndFade';
+import {MapRecordsContext} from 'contexts/MapRecordsContext';
 import OfflineMap from './OfflineMap';
-import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
-import Layers from './Layers/Layers';
-import MapLocationControlGroup from './Tools/ToolTypes/Nav/MapLocationControlGroup';
-import { NamedBoundaryMenu } from './NamedBoundaryMenu';
-import { OnMapClickDetails } from './Tools/ToolTypes/Data/OnMapClickDetails';
-import { ToggleClickDetailsButton } from './Tools/ToolTypes/Data/ToggleClickDetailsButton';
-import { LayerPickerBasic } from './LayerPickerBasic';
-import { JurisdictionsLayer } from './LayerLoaderHelpers/JurisdictionsLayer';
-import { RISOLayer } from './LayerLoaderHelpers/RISOLayer';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { useSelector } from 'react-redux';
-import { selectActivity } from 'state/reducers/activity';
+import {MapRequestContextProvider} from 'contexts/MapRequestsContext';
+import {NamedBoundaryMenu} from './NamedBoundaryMenu';
+import {LayerPickerBasic} from './LayerPickerBasic';
+import {selectUserSettings} from 'state/reducers/userSettings';
+import {useSelector} from 'react-redux';
+import {selectActivity} from 'state/reducers/activity';
 import centroid from '@turf/centroid';
-import { selectIappsite } from 'state/reducers/iappsite';
+import {selectIappsite} from 'state/reducers/iappsite';
 import IappIconUrl from './Icons/iapp-icon.png';
 import ActivityIconUrl from './Icons/activity-icon.png';
-import { BaseMapToggle } from './Tools/ToolTypes/Nav/BaseMapToggle';
-import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
-import { AccuracyMarker, AccuracyToggle } from './Tools/ToolTypes/Nav/AccuracyToggle';
-import { FindMe, FindMeToggle, LocationMarker, PanToMe } from './Tools/ToolTypes/Nav/FindMe';
+import {BaseMapToggle} from './Tools/ToolTypes/Nav/BaseMapToggle';
+import {HDToggle} from './Tools/ToolTypes/Nav/HDToggle';
+import {AccuracyMarker, AccuracyToggle} from './Tools/ToolTypes/Nav/AccuracyToggle';
+import {FindMeToggle, LocationMarker, PanToMe} from './Tools/ToolTypes/Nav/FindMe';
+import async from 'async';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -105,7 +97,6 @@ export const getZIndex = (doc) => {
   return zIndex;
 };
 
-export const async = require('async');
 export const q = async.queue(function async(task, callback) {
   console.log('Working on layer: ' + task.layer);
   console.log('Waiting to be processed: ' + q.length() + ' items.');

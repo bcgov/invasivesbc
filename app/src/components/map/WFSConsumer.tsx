@@ -1,12 +1,12 @@
 import '@capacitor-community/http';
-import { Http } from '@capacitor-community/http';
+import {Http} from '@capacitor-community/http';
 import SLDParser from 'geostyler-sld-parser';
 import proj4 from 'proj4';
 import reproject from 'reproject';
-import { IndependentLayers } from './LayerLoaderHelpers/IndependentRenderLayers';
+import {IndependentLayers} from './LayerLoaderHelpers/IndependentRenderLayers';
 import encode from 'urlencode';
-import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
-const { stringify } = require('wkt');
+import {getSimplifiedGeoJSON} from 'hooks/useInvasivesApi';
+import {stringify} from 'wkt';
 
 const getHTTP = async (url) => {
   // Example of a GET request

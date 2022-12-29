@@ -325,10 +325,11 @@ const EditTools = (props: any) => {
     };
 
     // Create drawing tool control
-    drawRef.current = new (L.Control as any).Draw(options);
+    //drawRef.current = new (L.Control as any).Draw(options);
 
     // Add drawing tools to the map
-    map.addControl(drawRef.current);
+    // @todo vite fixup
+    //map.addControl(drawRef.current);
   }
 
   return (

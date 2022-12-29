@@ -49,7 +49,7 @@ switch (CONFIGURATION_SOURCE) {
       }
     };
     break;
-  case 'Webpack':
+  case 'Provided':
     CONFIG = {
       DEBUG: true,
       MOBILE: JSON.parse(CONFIGURATION_IS_MOBILE) === true,

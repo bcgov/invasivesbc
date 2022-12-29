@@ -1,19 +1,20 @@
 import React from 'react';
-import { Checkbox, ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material';
-import { getChild, updateChild } from '../Sorting/SortLayerOrder';
-import { LayerModeDialog, ColourDialog } from './DialogBoxes';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
+import {Checkbox, ClickAwayListener, Grid, IconButton, Tooltip, Typography} from '@mui/material';
+import {getChild, updateChild} from '../Sorting/SortLayerOrder';
+import {LayerModeDialog, ColourDialog} from './DialogBoxes';
+import {MapRequestContext} from 'contexts/MapRequestsContext';
 import InfoIcon from '@mui/icons-material/Info';
+import {CONFIG} from "../../../../state/config";
 
 export const ChildLayer = (props) => {
-  const { child, parent } = props;
-  const { layers, setLayers } = React.useContext(MapRequestContext);
+  const {child, parent} = props;
+  const {layers, setLayers} = React.useContext(MapRequestContext);
 
   return (
     <Grid
       id={child.id}
       container
-      style={{ marginBottom: -5, marginTop: -5 }}
+      style={{marginBottom: -5, marginTop: -5}}
       key={'layer' + child.id + Math.random()}
       direction="row"
       alignItems="center">
@@ -30,20 +31,14 @@ export const ChildLayer = (props) => {
           }}
         />
       </Grid>
-      <InfoTooltip child={child} />
-      {/* Settings Dialog Box */}
-      {process.env.REACT_APP_REAL_NODE_ENV === 'development' && <LayerModeDialog parent={parent} child={child} />}
-      {process.env.REACT_APP_REAL_NODE_ENV === 'local' && <LayerModeDialog parent={parent} child={child} />}
-      {/*  <ColourDialog parent={parent} child={child} />*/}
-      {/* <Grid item xs={2} style={{ position: 'relative' }}>
-                  {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
-                        </Grid> */}
+      <InfoTooltip child={child}/>
+      {CONFIG.DEBUG && <LayerModeDialog parent={parent} child={child}/>}
     </Grid>
   );
 };
 
 const InfoTooltip = (props: any) => {
-  const { child } = props;
+  const {child} = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -51,7 +46,7 @@ const InfoTooltip = (props: any) => {
       <ClickAwayListener onClickAway={() => setOpen(false)}>
         <div>
           <Tooltip
-            sx={{ marginLeft: -7, zIndex: 9999 }}
+            sx={{marginLeft: -7, zIndex: 9999}}
             PopperProps={{
               disablePortal: true
             }}
@@ -62,7 +57,7 @@ const InfoTooltip = (props: any) => {
             placement="right"
             title={child.bcgw_code ? child.bcgw_code : child.layer_code}>
             <IconButton onClick={() => setOpen(!open)}>
-              <InfoIcon />
+              <InfoIcon/>
             </IconButton>
           </Tooltip>
           <Typography variant="caption">{child.name}</Typography>

@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
+  "type": "module",
   "engines": {
     "node": ">= 16.0.0",
     "npm": ">= 6.0.0"
@@ -216,6 +217,7 @@
     "@types/react-router": "^5.1.14",
     "@types/react-router-dom": "^5.3.2",
     "@types/uuid": "^8.3.0",
+    "@vitejs/plugin-react": "^3.0.0",
     "cypress": "^8.7.0",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
@@ -227,26 +229,25 @@
     "react": "^17.0.2",
     "react-error-overlay": "6.0.9",
     "react-leaflet-editable": "^0.2.2",
-    "react-sqlite-hook": "^2.1.3"
+    "react-sqlite-hook": "^2.1.3",
+    "vite": "^4.0.3",
+    "vite-tsconfig-paths": "^4.0.3"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "start": "node scripts/start.js max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
-    "start:fast": "node scripts/start.js --fast max_old_space_size=8128 DISABLE_ESLINT_PLUGIN=true",
     "prebuild:android": "node capacitor_config_prebuild.js android",
-    "build:android": "node scripts/build.js --mobile",
+    "build:android": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
     "prebuild:ios": "node capacitor_config_prebuild.js ios",
-    "build:ios": "node scripts/build.js --mobile",
-    "ionic:serve": "node scripts/start.js --mobile --jeepsqlite --max-old-space-size=8192",
+    "build:ios": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
     "test": "node scripts/test.js",
-    "start:ionic": "ionic serve --port 3000",
-    "start:ionic:reload": "ionic serve  --port 3000",
-    "build-prod": "node scripts/build.js --prod src/app --max-old-space-size=8192 --caddy",
-    "build-prod:legacy": "node scripts/build.js --prod src/app --max-old-space-size=8192",
-    "deploy_start": "npx serve -s build -l 8100",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "start": "CONFIGURATION_SOURCE=Provided vite serve --port 3000 --strictPort",
+    "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
+    "build": "CONFIGURATION_SOURCE=Provided vite build",
+    "build-prod": "CONFIGURATION_SOURCE=Caddy node scripts/build.js --prod src/app --max-old-space-size=8192 --caddy",
+    "preview": "CONFIGURATION_SOURCE=Provided vite preview --port 3000"
   },
   "browserslist": [
     ">0.2%",

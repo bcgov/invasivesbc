@@ -1,13 +1,13 @@
-import { Capacitor } from '@capacitor/core';
-import { GeoJSONObject } from '@turf/turf';
-import { DocType } from 'constants/database';
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import PQueue from 'p-queue/dist';
-import { useSQLite } from 'react-sqlite-hook/dist';
-import { useSelector } from '../state/utilities/use_selector';
-import { selectConfiguration } from '../state/reducers/configuration';
-import { WebOnly } from '../components/common/WebOnly';
-import { MobileOnly } from '../components/common/MobileOnly';
+import {GeoJSONObject} from '@turf/turf';
+import {DocType} from 'constants/database';
+import React, {useEffect, useRef, useState} from 'react';
+import PQueue from 'p-queue';
+import {useSQLite} from 'react-sqlite-hook';
+import {useSelector} from '../state/utilities/use_selector';
+import {selectConfiguration} from '../state/reducers/configuration';
+import {WebOnly} from '../components/common/WebOnly';
+import {MobileOnly} from '../components/common/MobileOnly';
+
 // Singleton SQLite Hook
 export let sqlite: any;
 // Existing Connections Store

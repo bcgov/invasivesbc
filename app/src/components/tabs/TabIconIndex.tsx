@@ -41,7 +41,7 @@ export const getTabIconByName = (iconName: TabIconName): React.ReactElement => {
         <>
           <img
             alt="iapp logo"
-            src={process.env.PUBLIC_URL + '/assets/iapp.gif'}
+            src={'/assets/iapp.gif'}
             style={{ maxWidth: '3.8rem', marginBottom: '0px' }}
           />
         </>

@@ -30,8 +30,6 @@ export const useInvasivesApi = () => {
   const errorContext = useContext(ErrorContext);
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
-  //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
-  //const API_BASE = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
@@ -48,7 +46,7 @@ export const useInvasivesApi = () => {
           ? response.message
           : "We're not sure what happened there. Try again in a few minutes.",
         code: status ? status : 500,
-        namespace: process.env.REACT_APP_REAL_NODE_ENV !== 'production' && url
+        namespace: url
       });
     }
   };

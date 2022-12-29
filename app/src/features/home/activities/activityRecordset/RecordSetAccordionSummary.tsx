@@ -188,7 +188,7 @@ const RecordSetAccordionSummary = (props) => {
           )}
           {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
           {props.recordSetType === 'POI' ? (
-            <img src={process.env.PUBLIC_URL + '/assets/iapp.gif'} style={{ maxWidth: '4rem', margin: '0 0.5rem' }} />
+            <img src={'/assets/iapp.gif'} style={{ maxWidth: '4rem', margin: '0 0.5rem' }} />
           ) : (
             <GrassIcon style={{ margin: '0 0.5rem' }} />
           )}

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { IErrorBanner, ErrorContext } from 'contexts/ErrorContext';
-import { Alert, AlertColor, AlertTitle, Box } from '@mui/material';
-import { useContext, useEffect } from 'react';
+import React, {useState} from 'react';
+import {IErrorBanner, ErrorContext} from 'contexts/ErrorContext';
+import {Alert, AlertColor, AlertTitle, Box} from '@mui/material';
+import {useContext, useEffect} from 'react';
+import {CONFIG} from "../../state/config";
 
 export const ErrorBanner = (props: IErrorBanner) => {
   const errorContext = useContext(ErrorContext);
-  const [severity, setSeverity]: AlertColor = useState('error');
+  const [severity, setSeverity] = useState<AlertColor>('error');
 
   const triggerOnClose = () => {
     errorContext.clearError({
@@ -33,7 +34,7 @@ export const ErrorBanner = (props: IErrorBanner) => {
     }
   }, [errorContext]);
 
-  const message = process.env.REACT_APP_REAL_NODE_ENV !== 'production' && props.code + ' - ' + props.namespace;
+  const message = CONFIG.DEBUG && props.code + ' - ' + props.namespace;
 
   return (
     <Box margin={2}>

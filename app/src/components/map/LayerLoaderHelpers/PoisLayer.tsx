@@ -9,9 +9,8 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { polygon } from '@turf/helpers';
 import iappLean from '../GeoTIFFs/zoom9.tiff'; // NOSONAR
-
-var parseGeoraster = require('georaster');
-var GeoRasterLayer = require('georaster-layer-for-leaflet');
+import parseGeoraster from 'georaster';
+import GeoRasterLayer from "georaster-layer-for-leaflet";
 
 const IAPPSite = L.icon({
   iconUrl: marker,
