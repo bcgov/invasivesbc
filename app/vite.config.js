@@ -26,7 +26,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_URL = JSON.stringify(process.env['SSO_URL']);
     defines.CONFIGURATION_REDIRECT_URI = JSON.stringify(process.env['REDIRECT_URI']);
 
-    defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify( isMobile ? 'capacitor' : 'web');
+    defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
   } else {
@@ -53,5 +53,9 @@ export default defineConfig({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}'
     })
-  ]
+  ],
+  resolve: {
+    alias: [
+    ]
+  }
 });
