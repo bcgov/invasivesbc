@@ -42,12 +42,18 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
+    minify: false,
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
             return "vendor"
           }
+          if (id.includes('state/config')) {
+            return "configuration"
+          }
+          console.dir(id);
         }
       }
     }
