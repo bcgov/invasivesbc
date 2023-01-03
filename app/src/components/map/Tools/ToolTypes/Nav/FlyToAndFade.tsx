@@ -63,7 +63,17 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
                 return geo;
               }
             });
-            var geosAsOne = union(...reprocessedForCircles);
+            // temporary crash fix. union() no longer takes a spread operator, but two polygons
+            // supposedly there will be a fix in the future (it is Jan 2022 as I'm writing this)
+            let geosAsOne;
+            if (reprocessedForCircles.length > 100) {
+              geosAsOne = union(reprocessedForCircles[0], reprocessedForCircles[1]);
+            } else if (reprocessedForCircles.length > 1) {
+              geosAsOne = reprocessedForCircles.reduce((a, b) => union(a, b), reprocessedForCircles[0]);
+            } else {
+              geosAsOne = reprocessedForCircles[0];
+            }
+
             var buffered = buffer(geosAsOne, 1, {
               units: 'meters'
             });
