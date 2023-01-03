@@ -320,16 +320,21 @@ const EditTools = (props: any) => {
       },
       edit: {
         featureGroup: context.layerContainer,
-        edit: true
+        edit: {
+          selectedPathOptions: {
+            maintainColor: true,
+            opacity: 0.3
+        }
+      }
       }
     };
 
     // Create drawing tool control
-    //drawRef.current = new (L.Control as any).Draw(options);
+    drawRef.current = new (L.Control as any).Draw(options);
 
     // Add drawing tools to the map
     // @todo vite fixup
-    //map.addControl(drawRef.current);
+    map.addControl(drawRef.current);
   }
 
   return (
