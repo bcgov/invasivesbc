@@ -11,6 +11,9 @@ import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 import { useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
 
+// Hacky fix for the type is not defined error https://github.com/Leaflet/Leaflet.draw/issues/1005
+(window as any).type = undefined;
+
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
     return L.circle(latLng, { radius: feature.properties.radius });
