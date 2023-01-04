@@ -1,8 +1,8 @@
 import React from 'react';
-import {Checkbox, ClickAwayListener, Grid, IconButton, Tooltip, Typography} from '@mui/material';
-import {getChild, updateChild} from '../Sorting/SortLayerOrder';
-import {LayerModeDialog, ColourDialog} from './DialogBoxes';
-import {MapRequestContext} from 'contexts/MapRequestsContext';
+import { Checkbox, ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { getChild, updateChild } from '../Sorting/SortLayerOrder';
+import { LayerModeDialog } from './DialogBoxes';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 import InfoIcon from '@mui/icons-material/Info';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectConfiguration } from '../../../../state/reducers/configuration';
