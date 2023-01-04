@@ -16,18 +16,13 @@ interface IDonutSVGProps {
 }
 
 export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 }) => {
-  const palette = [
-    '#67AC39',
-    '#A7E2D3',
-    '#0B0F22',
-    '#B63D73',
-    '#ACCE6C',
-    '#B289D8',
-    '#F4E4DE',
-    '#4270C0',
-    '#C2C44D',
-    '#3AADA3'
-  ];
+  const activityPalette = {
+    Biocontrol : '#845ec2',
+    FREP: '#de852c',
+    Monitoring: '#2138e0',
+    Observation: '#399c3e',
+    Treatment: '#c6c617'
+  };
 
   const segments = [];
 
@@ -83,17 +78,14 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
     startingBin++;
   }
 
-  let paletteColoursUsed = 0;
-
   return (
     <svg viewBox={`0 0 200 200`}>
       {sortedData.map((d, i) => {
-        let fillColour;
+        let fillColour;   
         if (!!d.fillColour) {
           fillColour = d.fillColour;
         } else {
-          fillColour = palette[paletteColoursUsed % palette.length];
-          paletteColoursUsed++;
+          fillColour = activityPalette[d.name];
         }
         const rendered = [];
         for (let s = d.startBin; s <= d.endBin; s++) {
