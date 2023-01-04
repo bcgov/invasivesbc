@@ -7,9 +7,9 @@ const defaultLog = getLogger('db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';
 const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER || 'hello';
+const DB_USERNAME: string = process.env.DB_USER || 'invasivebc';
 const DB_PASSWORD: string = process.env.DB_PASS || 'world';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'lucy';
+const DB_DATABASE: string = process.env.DB_DATABASE || 'invasives';
 const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
 
 const poolConfig: PoolConfig = {

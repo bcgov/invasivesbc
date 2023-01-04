@@ -309,7 +309,6 @@ const EditTools = (props: any) => {
       draw: {
         circlemarker: false,
         circle: false,
-        polyline: false,
         marker: {
           icon: DefaultIcon
         },

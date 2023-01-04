@@ -1,10 +1,7 @@
 {
-    "git.ignoreLimitWarning": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
     "workbench.colorCustomizations": {
-        "activityBar.background": "#10304A",
-        "titleBar.activeBackground": "#174368",
-        "titleBar.activeForeground": "#FAFCFE"
+        "activityBar.background": "#FFFFFF",
+        "titleBar.activeBackground": "#FFFFFF",
+        "titleBar.activeForeground": "#191919"
     }
 }
