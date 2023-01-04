@@ -1,7 +1,6 @@
 import { useLeafletContext } from '@react-leaflet/core';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
-import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -309,14 +308,11 @@ const EditTools = (props: any) => {
     const options = {
       draw: {
         circlemarker: false,
-
         circle: false,
-        polyline: {
-          disabled: true
-        },
         marker: {
           icon: DefaultIcon
-        }
+        },
+        rectangle: { showArea: false }
       },
       edit: {
         featureGroup: context.layerContainer,
@@ -324,8 +320,8 @@ const EditTools = (props: any) => {
           selectedPathOptions: {
             maintainColor: true,
             opacity: 0.3
+          }
         }
-      }
       }
     };
 
@@ -333,7 +329,6 @@ const EditTools = (props: any) => {
     drawRef.current = new (L.Control as any).Draw(options);
 
     // Add drawing tools to the map
-    // @todo vite fixup
     map.addControl(drawRef.current);
   }
 

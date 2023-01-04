@@ -1,9 +1,7 @@
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import L from 'leaflet';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Marker, useMap, useMapEvent, GeoJSON, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import center from '@turf/center';

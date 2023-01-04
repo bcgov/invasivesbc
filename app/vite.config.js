@@ -2,6 +2,11 @@ import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
+
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import inject from 'rollup-plugin-inject';
+
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
   const defines = {};
@@ -45,15 +50,22 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
     rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return "vendor"
-          }
-          if (id.includes('state/config')) {
-            return "configuration"
-          }
-          console.dir(id);
+      plugins: [
+        // inject({
+        //   Buffer: ['buffer'],
+        // }),
+        // Enable rollup polyfills plugin
+        // used during production bundling
+        rollupNodePolyFill()
+      ]
+    },
+    output: {
+      manualChunks(id) {
+        if (id.includes('node_modules')) {
+          return "vendor"
+        }
+        if (id.includes('state/config')) {
+          return "configuration"
         }
       }
     }
@@ -69,8 +81,16 @@ export default defineConfig({
       include: '**/*.{jsx,tsx}'
     })
   ],
+  optimizeDeps: {
+    esbuildOptions: {
+      plugins: [
+        NodeModulesPolyfillPlugin()
+      ]
+    }
+  },
   resolve: {
     alias: {
+      buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       stream: 'rollup-plugin-node-polyfills/polyfills/stream'
     }
