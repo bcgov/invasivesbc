@@ -11,7 +11,7 @@ log {
 }
 encode gzip
 
-try_files {path} /index.html
+try_files {path} /index.html /assets/*.js
 
 templates 
 
