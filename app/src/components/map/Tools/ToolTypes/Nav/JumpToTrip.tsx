@@ -87,14 +87,14 @@ export const JumpToTrip = (props) => {
         }}
         disableGutters>
         <ListItemText>
-          
-          <Typography className={toolClass.Font}>{props.name}{props.server_id && <span> (kml)</span>}</Typography>
+          <Typography className={toolClass.Font}>
+            {props.name}
+            {props.server_id && <span> (kml)</span>}
+          </Typography>
         </ListItemText>
+        <ListItemIcon>{checked && <CheckIcon />}</ListItemIcon>
         <ListItemIcon>
-          {checked && <CheckIcon />}
-        </ListItemIcon>
-        <ListItemIcon>
-          <Button onClick={() => props.deleteBoundary(props.id)}>
+          <Button onClick={() => props.deleteBoundary(props.id, props.server_id)}>
             <DeleteIcon />
           </Button>
         </ListItemIcon>

@@ -14,7 +14,9 @@ import {
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_SUCCESS
+  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
+  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
+  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -140,10 +142,17 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           recordSets: action.payload.recordSets
         };
       }
-      case USER_SETTINGS_SET_BOUNDARIES_REQUEST: {
+      case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
         return {
           ...state,
           boundaries: action.payload.boundaries
+        };
+      }
+      case USER_SETTINGS_DELETE_BOUNDARY_SUCCESS: {
+        const boundaries = state.boundaries.filter((boundary) => boundary.id !== action.payload.id);
+        return {
+          ...state,
+          boundaries: boundaries
         };
       }
       case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {

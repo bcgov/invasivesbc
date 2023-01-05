@@ -24,7 +24,11 @@ import KMLShapesUpload from 'components/map-buddy-components/KMLShapesUpload';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { USER_SETTINGS_SET_BOUNDARIES_REQUEST } from 'state/actions';
+import {
+  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
+  USER_SETTINGS_DELETE_KML_REQUEST,
+  USER_SETTINGS_SET_BOUNDARIES_REQUEST
+} from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 const POSITION_CLASSES = {
@@ -83,10 +87,7 @@ export const NamedBoundaryMenu = (props) => {
   const classes = useToolbarContainerStyles();
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
-  // const [boundaries, setBoundaries] = useState<Boundary[]>([]);
-  const [KMLs, setKMLs] = useState<Boundary[]>([]);
   const [idCount, setIdCount] = useState(0);
-  const [showKMLUpload, setShowKMLUpload] = useState<boolean>(false);
   const { MOBILE } = useSelector(selectConfiguration);
   const dispatch = useDispatch();
   const userSettings = useSelector(selectUserSettings);
@@ -114,15 +115,20 @@ export const NamedBoundaryMenu = (props) => {
     if (rendered) {
       L.DomEvent.disableClickPropagation(divRef?.current);
       L.DomEvent.disableScrollPropagation(divRef?.current);
-      getBoundaries();
-      getKMLs();
+      setBoundaries();
+      // updateKMLs();
     }
   }, [rendered]);
 
   const setBoundaryIdCount = () => {
     if (userSettings?.boundaries && userSettings?.boundaries?.length > 0) {
       //ensures id is not repeated on client side
-      const max = Math.max(...userSettings.boundaries.map((b) => b.id));
+      const max = Math.max(
+        ...userSettings.boundaries.map((b) => {
+          if (b.id) return b.id;
+          if (b.server_id) return b.server_id;
+        })
+      );
       setIdCount(max + 1);
     } else {
       setIdCount(idCount + 1);
@@ -133,11 +139,12 @@ export const NamedBoundaryMenu = (props) => {
     setBoundaryIdCount();
   }, [userSettings?.boundaries]);
 
-  const getBoundaries = async () => {
+  const setBoundaries = async () => {
+    let boundaries = [];
     const boundaryResults = await dataAccess.getBoundaries();
 
     if (MOBILE) {
-      const mappedBoundaries = boundaryResults.map((boundary) => {
+      const boundaries = boundaryResults.map((boundary) => {
         const jsonObject = JSON.parse(boundary.json);
         return {
           id: boundary.id,
@@ -146,17 +153,32 @@ export const NamedBoundaryMenu = (props) => {
           server_id: null
         };
       });
-
-      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: mappedBoundaries } });
     } else {
-      dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: boundaryResults } });
+      boundaries = boundaryResults;
+
+      //add kmls
+      const KMLResults = await api.getAdminUploadGeoJSONLayers();
+
+      if (KMLResults && KMLResults.length > 0) {
+        const KMLToBoundary = KMLResults.map((kml) => {
+          return {
+            id: null,
+            name: kml?.title,
+            geos: kml?.geojson?.features,
+            server_id: kml?.id
+          };
+        });
+
+        boundaries.push(...KMLToBoundary);
+      }
     }
+
+    dispatch({ type: USER_SETTINGS_SET_BOUNDARIES_REQUEST, payload: { boundaries: boundaries } });
   };
 
-  const getKMLs = async () => {
+  const updateKMLs = async () => {
     const KMLResults = await api.getAdminUploadGeoJSONLayers();
 
-    // map to match boundaries
     let KMLToBoundary = [];
     if (KMLResults && KMLResults.length > 0) {
       KMLToBoundary = KMLResults.map((kml) => {
@@ -167,53 +189,39 @@ export const NamedBoundaryMenu = (props) => {
           server_id: kml?.id
         };
       });
-    }
 
-    setKMLs(KMLToBoundary);
+      // update boundaries
+      let boundaries = [];
+      if (userSettings?.boundaries) boundaries.push(...userSettings?.boundaries);
+
+      KMLToBoundary.forEach((kml) => {
+        if (
+          !boundaries.find((boundary) => {
+            boundary.server_id === kml.server_id;
+          })
+        ) {
+          boundaries.push(kml);
+        }
+      });
+
+      dispatch({
+        type: USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+        payload: { boundaries: boundaries }
+      });
+    }
   };
 
   const createBoundary = () => {
-    setShowKMLUpload(false);
+    // setShowKMLUpload(false);
     setNewBoundaryDialog({
       dialogOpen: true,
-      dialogTitle: 'Create New User Boundary',
-      dialogContentText: 'How would you like to create a new user boundary?',
+      dialogTitle: 'Create New User Boundary From KML/KMZ',
+      dialogContentText: 'File size may effect speed. Lines and points will be removed.',
       dialogActions: [
-        {
-          actionName: 'Draw Shape',
-          actionOnClick: async () => {
-            props.setShowDrawControls(true);
-
-            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
-          }
-        },
-        {
-          actionName: 'Upload KML',
-          actionOnClick: async () => {
-            setShowKMLUpload(true);
-          }
-        },
-        {
-          actionName: 'Select KML',
-          actionOnClick: async () => {
-            setSelectKMLDialog({
-              ...selectKMLDialog,
-              dialogOpen: true,
-              dialogActions: [
-                {
-                  actionName: 'Cancel',
-                  actionOnClick: async () => {
-                    setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
-                  }
-                }
-              ]
-            });
-          }
-        },
         {
           actionName: 'Cancel',
           actionOnClick: async () => {
-            setShowKMLUpload(false);
+            // setShowKMLUpload(false);
             setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
           },
           autoFocus: true
@@ -223,7 +231,7 @@ export const NamedBoundaryMenu = (props) => {
   };
 
   const addBoundary = async (geoArray) => {
-    const name = prompt('Name:');
+    const name = prompt('Please enter a name for the boundary just created:');
 
     if (name) {
       const tempBoundary: Boundary = {
@@ -232,10 +240,17 @@ export const NamedBoundaryMenu = (props) => {
         geos: geoArray,
         server_id: null
       };
+      const boundaries = [];
+      if (userSettings?.boundaries) boundaries.push(...userSettings?.boundaries);
+      boundaries.push(tempBoundary);
 
+      dispatch({
+        type: USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+        payload: { boundaries: boundaries }
+      });
+
+      // saves in local store
       await dataAccess.addBoundary(tempBoundary);
-      // setBoundaries([...boundaries, tempBoundary]);
-      getBoundaries();
     }
   };
 
@@ -245,9 +260,16 @@ export const NamedBoundaryMenu = (props) => {
     }
   }, [props?.geometryState?.geometry]);
 
-  const deleteBoundary = async (id: number) => {
+  const deleteBoundary = async (id?: number, server_id?: number) => {
+    if (id !== null) {
+      dispatch({ type: USER_SETTINGS_DELETE_BOUNDARY_REQUEST, payload: { id: id } });
+    }
+    if (server_id !== null) {
+      dispatch({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: server_id } });
+    }
+
+    //remove from local store
     await dataAccess.deleteBoundary(id);
-    getBoundaries();
   };
   if (!rendered) return <></>;
   return (
@@ -277,7 +299,7 @@ export const NamedBoundaryMenu = (props) => {
                 <ExploreIcon />
               </ListItemIcon>
               <ListItemText>
-                <Typography className={toolClass.Font}>New Boundary</Typography>
+                <Typography className={toolClass.Font}>Upload KML</Typography>
               </ListItemText>
             </ListItemButton>
           </ListItem>
@@ -300,50 +322,7 @@ export const NamedBoundaryMenu = (props) => {
         dialogTitle={newBoundaryDialog.dialogTitle}
         dialogActions={newBoundaryDialog.dialogActions}
         dialogContentText={newBoundaryDialog.dialogContentText}>
-        {showKMLUpload && (
-          <Box>
-            <Typography>Shape Upload (KML/KMZ)</Typography>
-            <KMLShapesUpload callback={getKMLs} />
-            <Typography variant="h6">Note: File size may effect speed. Lines and points will be removed.</Typography>
-          </Box>
-        )}
-      </GeneralDialog>
-      <GeneralDialog
-        dialogOpen={selectKMLDialog.dialogOpen}
-        dialogTitle={selectKMLDialog.dialogTitle}
-        dialogActions={selectKMLDialog.dialogActions}
-        dialogContentText={selectKMLDialog.dialogContentText}>
-        <Select
-          // sx={{ minWidth: 150, mt: 3, mb: 3 }}
-          onChange={(e) => {
-            const kmlToUpload = KMLs.find((kml) => {
-              return kml.server_id === e.target.value;
-            });
-
-            const boundaryFromKML: Boundary = {
-              // id: kmlToUpload.id ? kmlToUpload.id : idCount,     ***Maybe id needs a bit of rethinking when dealing with the caching
-              id: idCount,
-              name: kmlToUpload.name,
-              geos: kmlToUpload.geos,
-              server_id: kmlToUpload.server_id
-            };
-
-            dataAccess.addBoundary(boundaryFromKML);
-            dispatch({
-              type: USER_SETTINGS_SET_BOUNDARIES_REQUEST,
-              payload: { boundaries: [...userSettings.boundaries, boundaryFromKML] }
-            });
-            setSelectKMLDialog({ ...selectKMLDialog, dialogOpen: false });
-            setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
-          }}>
-          {KMLs?.map((kml) => {
-            return (
-              <MenuItem key={kml.server_id} value={kml.server_id}>
-                {kml.name}
-              </MenuItem>
-            );
-          })}
-        </Select>
+        {<KMLShapesUpload callback={updateKMLs} />}
       </GeneralDialog>
     </>
   );
