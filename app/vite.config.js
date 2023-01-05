@@ -51,21 +51,17 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       plugins: [
-        // inject({
-        //   Buffer: ['buffer'],
-        // }),
-        // Enable rollup polyfills plugin
-        // used during production bundling
         rollupNodePolyFill()
-      ]
-    },
-    output: {
-      manualChunks(id) {
-        if (id.includes('node_modules')) {
-          return "vendor"
-        }
-        if (id.includes('state/config')) {
-          return "configuration"
+      ],
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return "vendor"
+          }
+          if (id.includes('state/config')) {
+            return "configuration"
+          }
+          return "auto";
         }
       }
     }

@@ -11,9 +11,11 @@ log {
 }
 encode gzip
 
-try_files {path} /index.html /assets/*.js
+try_files {path} /index.html
 
-templates 
+templates /assets/configuration* {
+  mime application/javascript
+}
 
 header /index.html {
   Cache-Control max-age=0,no-cache,no-store,must-revalidate
