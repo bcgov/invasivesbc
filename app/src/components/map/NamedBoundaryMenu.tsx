@@ -98,12 +98,6 @@ export const NamedBoundaryMenu = (props) => {
     dialogTitle: '',
     dialogContentText: null
   });
-  const [selectKMLDialog, setSelectKMLDialog] = useState<IGeneralDialog>({
-    dialogActions: [],
-    dialogOpen: false,
-    dialogTitle: 'Select which uploaded KML to add: ',
-    dialogContentText: null
-  });
 
   const handleExpand = () => {
     setExpanded((prev) => {
@@ -195,11 +189,7 @@ export const NamedBoundaryMenu = (props) => {
       if (userSettings?.boundaries) boundaries.push(...userSettings?.boundaries);
 
       KMLToBoundary.forEach((kml) => {
-        if (
-          !boundaries.find((boundary) => {
-            boundary.server_id === kml.server_id;
-          })
-        ) {
+        if (!boundaries.find((boundary) => boundary.server_id === kml.server_id)) {
           boundaries.push(kml);
         }
       });
@@ -212,7 +202,6 @@ export const NamedBoundaryMenu = (props) => {
   };
 
   const createBoundary = () => {
-    // setShowKMLUpload(false);
     setNewBoundaryDialog({
       dialogOpen: true,
       dialogTitle: 'Create New User Boundary From KML/KMZ',
@@ -221,7 +210,6 @@ export const NamedBoundaryMenu = (props) => {
         {
           actionName: 'Cancel',
           actionOnClick: async () => {
-            // setShowKMLUpload(false);
             setNewBoundaryDialog({ ...newBoundaryDialog, dialogOpen: false });
           },
           autoFocus: true
@@ -284,7 +272,7 @@ export const NamedBoundaryMenu = (props) => {
           ref={divRef}
           key={'toolbar2'}
           className={classes.innerToolBarContainer + ' leaflet-control'}
-          style={{ transform: expanded ? 'translateX(5%)' : 'translateX(-110%)' }}>
+          style={{ transform: expanded ? 'translateX(20%)' : 'translateX(-110%)' }}>
           <Divider />
           <ListItem disableGutters>
             <ListItemButton
