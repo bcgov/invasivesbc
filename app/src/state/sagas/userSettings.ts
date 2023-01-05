@@ -48,6 +48,7 @@ import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
+import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -134,9 +135,12 @@ function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
 
 function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
   try {
-    if (action.payload.boundaries !== null) {
-      // const newAppState = localStorage.setItem('boundaries', JSON.stringify(action.payload.boundaries));
-      // can't set local storage on kml set since some are too big...
+    // needs offline handling
+    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
+      server_id: action.payload.server_id
+    });
+
+    if (networkReturn) {
       yield put({ type: USER_SETTINGS_DELETE_KML_SUCCESS, payload: action.payload });
     }
   } catch (e) {

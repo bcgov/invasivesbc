@@ -267,9 +267,6 @@ export const NamedBoundaryMenu = (props) => {
     if (server_id !== null) {
       dispatch({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: server_id } });
     }
-
-    //remove from local store
-    await dataAccess.deleteBoundary(id);
   };
   if (!rendered) return <></>;
   return (

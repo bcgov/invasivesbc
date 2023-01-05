@@ -5,7 +5,10 @@ import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { SQLStatement } from 'sql-template-strings';
-import { getAdministrativelyDefinedShapesSQL } from '../queries/admin-defined-shapes';
+import {
+  deleteAdministrativelyDefinedShapesSQL,
+  getAdministrativelyDefinedShapesSQL
+} from '../queries/admin-defined-shapes';
 import { atob } from 'js-base64';
 import { QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
@@ -18,6 +21,7 @@ const defaultLog = getLogger('admin-defined-shapes');
 
 export const GET: Operation = [getAdministrativelyDefinedShapes()];
 export const POST: Operation = [uploadShape()];
+export const DELETE: Operation = [deleteShape()];
 
 GET.apiDoc = {
   description: 'Fetches a GeoJSON object to display boundaries of administratively-defined shapes (KML uploads)',
@@ -69,6 +73,44 @@ POST.apiDoc = {
             data: {
               description: 'base64-encoded binary data',
               type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    400: {
+      $ref: '#/components/responses/401'
+    },
+    503: {
+      $ref: '#/components/responses/503'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+DELETE.apiDoc = {
+  description: 'deletes new Administratively-defined shapes from KML/KMZ data',
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
+  requestBody: {
+    description: 'Delete KML/KMZ file',
+    content: {
+      'application/json': {
+        schema: {
+          description: 'Delete KML/KMZ file',
+          type: 'object',
+          properties: {
+            server_id: {
+              type: 'number'
             }
           }
         }
@@ -263,5 +305,62 @@ function uploadShape(): RequestHandler {
         connection.release();
       }
     });
+  };
+}
+
+/**
+ * Deletes administratively defined shape from KML or KMZ data
+ *
+ * @returns {RequestHandler}
+ */
+function deleteShape(): RequestHandler {
+  return async (req: InvasivesRequest, res) => {
+    const user_id = req.authContext.user.user_id;
+    const server_id = req.body.server_id;
+
+    const connection = await getDBConnection();
+
+    if (!connection) {
+      return res.status(500).json({
+        message: 'Failed to establish database connection',
+        request: req.body,
+        namespace: 'admin-defined-shapes',
+        code: 500
+      });
+    }
+
+    try {
+      const sqlStatement: SQLStatement = deleteAdministrativelyDefinedShapesSQL(user_id, server_id);
+      if (!sqlStatement) {
+        return res.status(500).json({
+          error: 'Failed to generate SQL statement',
+          request: req.body,
+          namespace: 'admin-defined-shapes',
+          code: 500
+        });
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      return res.status(200).json({
+        message: 'Deleted administratively defined shape',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'admin-defined-shapes',
+        code: 200
+      });
+    } catch (error) {
+      defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
+      return res.status(500).json({
+        message: 'Failed to delete administratively defined shape',
+        request: req.body,
+        error: error,
+        namespace: 'admin-defined-shapes',
+        code: 500
+      });
+    } finally {
+      connection.release();
+    }
   };
 }
