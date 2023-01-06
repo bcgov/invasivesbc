@@ -119,7 +119,7 @@
     "mui-color": "^2.0.0-beta.2",
     "mui-file-dropzone": "^4.0.1",
     "p-queue": "^7.1.0",
-    "proj4": "^2.7.2",
+    "proj4": "^2.8.0",
     "prompts": "2.4.0",
     "qs": "^6.10.1",
     "rbush": "^3.0.1",
