@@ -187,6 +187,9 @@
     "vite": "^4.0.3",
     "vite-tsconfig-paths": "^4.0.3"
   },
+  "overrides": {
+    "proj4-fully-loaded": "=0.2.0"
+  },
   "resolutions": {
     "react-error-overlay": "6.0.9"
   },
