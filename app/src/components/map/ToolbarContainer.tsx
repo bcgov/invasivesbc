@@ -1,19 +1,13 @@
-import { Capacitor } from '@capacitor/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
-import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
-import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
+import { IconButton, Divider, List, Theme } from '@mui/material';
 import L from 'leaflet';
-import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
 import MeasureToolContainer from './Tools/ToolTypes/Misc/MeasureToolContainer';
 
 const POSITION_CLASSES = {

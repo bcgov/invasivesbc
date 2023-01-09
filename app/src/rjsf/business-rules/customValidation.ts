@@ -1,4 +1,4 @@
-import { FormValidation } from '@rjsf/core';
+import { FormValidation } from "@rjsf/utils";
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -43,7 +43,7 @@ export function getPosAndNegObservationValidator(): rjsfValidator {
   };
 }
 /*
-  Function to validate that in case 'slope' field has 'flat' option 
+  Function to validate that in case 'slope' field has 'flat' option
   selected, 'aspect' field option has to be 'flat' as well (and vice versa)
 */
 export function getSlopeAspectBothFlatValidator(): rjsfValidator {
@@ -72,7 +72,7 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
     return errors;
   };
 }
-/* 
+/*
   Function to validate total percent value of vegetation transect points percent cover
 */
 export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
@@ -640,7 +640,7 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
   };
 }
 
-/* 
+/*
   function to validate frep form a BAF, fixed_area and full_count_area fields
  */
 export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rjsfValidator {
@@ -680,7 +680,7 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
   };
 }
 
-/* 
+/*
   function to validate that the sum of values of all target plant phenology fields equal to 100%
  */
 export function getTargetPhenologySumValidator(): rjsfValidator {
@@ -728,7 +728,7 @@ export function getTargetPhenologySumValidator(): rjsfValidator {
   };
 }
 
-/* 
+/*
   function to validate that the sum of values of all target plant phenology fields equal to 100%
  */
 export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
@@ -804,7 +804,7 @@ export function getPestManagementPlanValidator(): rjsfValidator {
   };
 }
 
-/* 
+/*
   function to transfer error state from chemical details form to main rjsf form
  */
 export function transferErrorsFromChemDetails(): rjsfValidator {

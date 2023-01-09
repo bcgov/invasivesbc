@@ -1,11 +1,9 @@
-import TextField from '@mui/material/TextField';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { WidgetProps } from '@rjsf/core';
+import { Typography, Box, TextField, Autocomplete } from '@mui/material';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
 import React, { useContext, useEffect, useState } from 'react';
+import { WidgetProps } from '@rjsf/utils';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import TextField from '@mui/material/TextField';
+import { Card, TextField } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import Card from '@mui/material/Card';
 
 const useStyles = makeStyles((theme: any) => ({
   container: {

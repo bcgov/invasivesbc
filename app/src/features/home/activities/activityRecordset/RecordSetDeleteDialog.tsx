@@ -1,8 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Typography, Divider, CircularProgress } from '@mui/material';
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import CircularProgress from '@mui/material/CircularProgress';
 
 interface IRecordSetDeleteDialog {
   isOpen: boolean;

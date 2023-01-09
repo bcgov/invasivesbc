@@ -1,6 +1,6 @@
 import { DeviceInfo } from '@capacitor/device';
 import { IonReactRouter } from '@ionic/react-router';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { ErrorContextProvider } from 'contexts/ErrorContext';
 import React from 'react';
 import AppRouter from './AppRouter';

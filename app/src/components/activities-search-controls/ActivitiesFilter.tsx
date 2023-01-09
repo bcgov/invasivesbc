@@ -1,14 +1,3 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
-import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
 import Add from '@mui/icons-material/Add';
 import DeleteForever from '@mui/icons-material/DeleteForever';
@@ -16,6 +5,7 @@ import DatePicker from '@mui/lab/DatePicker';
 import { DocType } from 'constants/database';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {Box, Button, Grid, InputLabel, List, ListItem, MenuItem, Paper, Select, Switch, TextField} from "@mui/material";
 
 interface IActivityChoices {
   activityType: string;

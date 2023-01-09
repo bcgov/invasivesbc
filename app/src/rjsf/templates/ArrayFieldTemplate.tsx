@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { ArrayFieldTemplateProps, IdSchema, utils } from '@rjsf/core';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import IconButton from 'rjsf/components/IconButton';
+import {Box, Grid, Paper} from "@mui/material";
+import {ArrayFieldTemplateProps, IdSchema, isMultiSelect} from "@rjsf/utils";
+import {getDefaultRegistry} from "@rjsf/core";
 
-const { isMultiSelect, getDefaultRegistry } = utils;
 
 const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
   const { schema, registry = getDefaultRegistry() } = props;

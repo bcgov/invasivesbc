@@ -2,11 +2,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '
 import { ExpandMore } from '@mui/icons-material';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
-import { ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import 'gridfix.css';
-import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export interface IActivityComponentProps extends IFormContainerProps, IPhotoContainerProps {
   classes?: any;
