@@ -3,12 +3,12 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState, useEffect, useMemo, createContext } from 'react';
-import DataGrid, { Row, SortColumn, HeaderRendererProps } from 'react-data-grid';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import DataGrid, { HeaderRendererProps, Row, SortColumn } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ActivitiesDefaultHeaders, ActivityRow, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
-import { point_of_interest_iapp_default_headers, POI_IAPP_Row, mapPOI_IAPP_ToDataGridRows } from '../POITablesHelpers';
+import { mapPOI_IAPP_ToDataGridRows, POI_IAPP_Row, point_of_interest_iapp_default_headers } from '../POITablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
@@ -17,7 +17,6 @@ import Box from '@mui/material/Box';
 import { FilterAltOff } from '@mui/icons-material';
 import { Chip, List } from '@mui/material';
 import { FilterDialog, IFilterDialog } from '../FilterDialog';
-import { DocType } from 'constants/database';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -28,18 +27,16 @@ import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
-  FILTER_STATE_UPDATE,
   PAGE_OR_LIMIT_UPDATE,
   SORT_COLUMN_STATE_UPDATE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-  USER_SETTINGS_SET_RECORD_SET_REQUEST,
-  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST
+  USER_SETTINGS_SET_RECORD_SET_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { select } from 'redux-saga/effects';
 import { selectMap } from 'state/reducers/map';
+import 'react-data-grid/lib/styles.css';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {

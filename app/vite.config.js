@@ -87,7 +87,8 @@ export default defineConfig({
     alias: {
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
-      stream: 'rollup-plugin-node-polyfills/polyfills/stream'
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
+      "@mui/styled-engine": "@mui/styled-engine-sc"
     }
   }
 });
