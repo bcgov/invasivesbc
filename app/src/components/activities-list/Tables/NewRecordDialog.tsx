@@ -1,12 +1,6 @@
 import makeStyles from '@mui/styles/makeStyles';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import { DocType } from 'constants/database';
-import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
+import { Button, FormControl, InputLabel, MenuItem, Select} from '@mui/material';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useHistory } from 'react-router-dom';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState, useContext } from 'react';
@@ -122,13 +116,13 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     // TODO: Update this to cache for mobile as well
     const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
     const cachedCategory = (cachedDialogState && JSON.parse(cachedDialogState).recordCategory) ?
-      JSON.parse(cachedDialogState).recordCategory : 
+      JSON.parse(cachedDialogState).recordCategory :
       '';
     const cachedType = (cachedDialogState && JSON.parse(cachedDialogState).recordType) ?
-      JSON.parse(cachedDialogState).recordType : 
+      JSON.parse(cachedDialogState).recordType :
       '';
     const cachedSubtype = (cachedDialogState && JSON.parse(cachedDialogState).recordSubtype) ?
-      JSON.parse(cachedDialogState).recordSubtype : 
+      JSON.parse(cachedDialogState).recordSubtype :
       '';
 
     setNewRecordDialogState({

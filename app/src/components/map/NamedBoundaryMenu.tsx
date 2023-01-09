@@ -1,14 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
 import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
 import ExploreIcon from '@mui/icons-material/Explore';
 import L from 'leaflet';
-import List from '@mui/material/List';
 import makeStyles from '@mui/styles/makeStyles';
 import {
   Box,
+  IconButton, Divider, List,
   ListItem,
   ListItemButton,
   ListItemIcon,

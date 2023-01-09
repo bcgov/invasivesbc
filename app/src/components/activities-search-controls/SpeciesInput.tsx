@@ -1,9 +1,9 @@
-import TextField from '@mui/material/TextField';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import TreeItem from '@mui/lab/TreeItem';
 import TreeView from '@mui/lab/TreeView';
 import React from 'react';
+import {TextField} from "@mui/material";
 
 export const SpeciesTree = () => {
   const data = {

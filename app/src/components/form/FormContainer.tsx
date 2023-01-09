@@ -12,9 +12,8 @@ import {
   ThemeProvider,
   Typography
 } from '@mui/material';
-import { ISubmitEvent } from '@rjsf/core';
-import { MuiForm5 as Form } from '@rjsf/material-ui';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Form } from '@rjsf/mui';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { useDataAccess } from '../../hooks/useDataAccess';
@@ -35,6 +34,7 @@ import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import validator from "@rjsf/validator-ajv6";
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -396,6 +396,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 }}
                 liveValidate={true}
                 validate={props.customValidation}
+                validator={validator}
                 showErrorList={true}
                 transformErrors={props.customErrorTransformer}
                 autoComplete="off"

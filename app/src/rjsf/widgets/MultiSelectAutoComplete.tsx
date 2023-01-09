@@ -1,9 +1,9 @@
-import { WidgetProps } from '@rjsf/core';
 import chroma from 'chroma-js';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { MultipleSelect } from 'react-select-material-ui';
 import { useSelector } from 'state/utilities/use_selector';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { WidgetProps } from "@rjsf/utils";
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   // @ts-ignore

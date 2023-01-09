@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { GridOverlay } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 
