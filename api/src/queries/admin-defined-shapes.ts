@@ -17,3 +17,16 @@ SELECT id, title, json_build_object(
   sqlStatement.values = [user_id];
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete administratively-defined shapes (from uploaded KML) for display
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteAdministrativelyDefinedShapesSQL = (user_id: string, id: number) => {
+  const sqlStatement: SQLStatement = SQL`
+  DELETE from invasivesbc.admin_defined_shapes WHERE created_by = ${user_id} AND id = ${id};
+  `;
+
+  return sqlStatement;
+};

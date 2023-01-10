@@ -33,12 +33,22 @@ import {
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_FAILURE
+  USER_SETTINGS_SET_MAP_CENTER_FAILURE,
+  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
+  USER_SETTINGS_SET_BOUNDARIES_FAILURE,
+  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
+  USER_SETTINGS_DELETE_KML_REQUEST,
+  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
+  USER_SETTINGS_DELETE_BOUNDARY_FAILURE,
+  USER_SETTINGS_DELETE_KML_SUCCESS,
+  USER_SETTINGS_DELETE_KML_FAILURE
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
+import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -87,6 +97,55 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE });
+  }
+}
+
+function* handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST(action) {
+  try {
+    if (action.payload.boundaries !== null) {
+      // const newAppState = localStorage.setItem('boundaries', JSON.stringify(action.payload.boundaries));
+      // can't set local storage on kml set since some are too big...
+      yield put({ type: USER_SETTINGS_SET_BOUNDARIES_SUCCESS, payload: action.payload });
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_SET_BOUNDARIES_FAILURE, payload: action.payload });
+  }
+}
+
+function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
+  try {
+    // needs mobile sqlite handling
+
+    // get local storage
+    const storedBoundaries = JSON.parse(localStorage.getItem('boundaries'));
+    // filter by id
+    const newBoundaries = storedBoundaries.filter((boundary) => {
+      return boundary.id !== action.payload.id;
+    });
+    // set local storage
+    localStorage.setItem('boundaries', JSON.stringify(newBoundaries));
+
+    yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_SUCCESS, payload: action.payload });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_FAILURE, payload: action.payload });
+  }
+}
+
+function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
+  try {
+    // needs offline handling
+    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
+      server_id: action.payload.server_id
+    });
+
+    if (networkReturn) {
+      yield put({ type: USER_SETTINGS_DELETE_KML_SUCCESS, payload: action.payload });
+    }
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_DELETE_KML_FAILURE, payload: action.payload });
   }
 }
 
@@ -307,6 +366,9 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_REQUEST, handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
+    takeEvery(USER_SETTINGS_SET_BOUNDARIES_REQUEST, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
+    takeEvery(USER_SETTINGS_DELETE_BOUNDARY_REQUEST, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
+    takeEvery(USER_SETTINGS_DELETE_KML_REQUEST, handle_USER_SETTINGS_DELETE_KML_REQUEST),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_REQUEST, handle_USER_SETTINGS_SET_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
     takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME),

@@ -85,7 +85,7 @@ const PageContainer = (props) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
   const [geometry, setGeometry] = useState<any[]>([]);
-  const [showDrawControls, setShowDrawControls] = useState<boolean>(false);
+  const [showDrawControls, setShowDrawControls] = useState<boolean>(true);
   const classes = useStyles();
   const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);

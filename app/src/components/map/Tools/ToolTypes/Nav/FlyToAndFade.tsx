@@ -4,7 +4,7 @@ import circle from '@turf/circle';
 import { Geometries } from '@turf/turf';
 import union from '@turf/union';
 import L, { LatLngExpression } from 'leaflet';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { GeoJSON, useMap } from 'react-leaflet';
 import { createPolygonFromBounds2 } from '../../../LayerLoaderHelpers/LtlngBoundsToPoly';
 
@@ -18,6 +18,12 @@ export interface IFlyToAndFadeItem {
   geometries?: any;
   colour?: string;
   transitionType: FlyToAndFadeItemTransitionType;
+}
+
+export interface DisplayPolygon {
+  geometry?: any;
+  properties?: any;
+  type?: string;
 }
 
 export enum FlyToAndFadeItemTransitionType {
@@ -41,7 +47,7 @@ export const getBoundsOfCircle = (circle: any) => {
 
 export const FlyToAndFadeContextProvider: React.FC = (props) => {
   const map = useMap();
-  const [displayPolygons, setDisplayPolygons] = useState<Array<any>>();
+  const [displayPolygons, setDisplayPolygons] = useState<Array<DisplayPolygon>>();
   const go = (items: Array<IFlyToAndFadeItem>, delayToNext?: number) => {
     if (!items || items.length === 0) {
       return;
@@ -63,7 +69,17 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
                 return geo;
               }
             });
-            var geosAsOne = union(...reprocessedForCircles);
+            // temporary crash fix. union() no longer takes a spread operator, but two polygons
+            // supposedly there will be a fix in the future (it is Jan 2022 as I'm writing this)
+            let geosAsOne;
+            if (reprocessedForCircles.length > 100) {
+              geosAsOne = union(reprocessedForCircles[0], reprocessedForCircles[1]);
+            } else if (reprocessedForCircles.length > 1) {
+              geosAsOne = reprocessedForCircles.reduce((a, b) => union(a, b), reprocessedForCircles[0]);
+            } else {
+              geosAsOne = reprocessedForCircles[0];
+            }
+
             var buffered = buffer(geosAsOne, 1, {
               units: 'meters'
             });
@@ -127,10 +143,26 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
     fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 200);
   };
 
+  const hashedKey = useCallback(()=> {
+    return hashCode(JSON.stringify(displayPolygons));
+  },[JSON.stringify(displayPolygons)])
+
+  function hashCode(str: string): number {
+    if(!str)
+    {
+      return
+    }
+    var h: number = 0;
+    for (var i = 0; i < str.length; i++) {
+        h = (h << 5) - h + str.charCodeAt(i);
+    }
+    return h & 0xFFFFFFFF;
+  }
+  
   return (
     <FlyToAndFadeContext.Provider value={{ go }}>
       {props.children}
-      <GeoJSON key={Math.random()} onEachFeature={fade} data={displayPolygons as unknown as Geometries}></GeoJSON>
+      <GeoJSON key={hashedKey()} onEachFeature={fade} data={displayPolygons as unknown as Geometries}></GeoJSON>
     </FlyToAndFadeContext.Provider>
   );
 };

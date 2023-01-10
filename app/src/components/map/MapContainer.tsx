@@ -259,11 +259,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <ZoomButtons position="bottomleft" />
             <ScaleControl position="bottomleft" imperial={false} />
 
-            {props.showDrawControls && (
+            {
               <FeatureGroup>
                 <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
               </FeatureGroup>
-            )}
+            }
 
             <OfflineMap {...props} />
 
