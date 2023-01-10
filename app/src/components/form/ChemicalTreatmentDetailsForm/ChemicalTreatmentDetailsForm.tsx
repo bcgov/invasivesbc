@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
 import {
@@ -22,10 +22,10 @@ import {
 import HerbicidesAccordion from './Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
-import { useFormStyles } from './formStyles';
-import { runValidation } from './Validation';
-import { performCalculation } from 'utils/herbicideCalculator';
-import { IGeneralDialog, GeneralDialog } from 'components/dialog/GeneralDialog';
+import {useFormStyles} from './formStyles';
+import {runValidation} from './Validation';
+import {performCalculation} from 'utils/herbicideCalculator';
+import {GeneralDialog, IGeneralDialog} from 'components/dialog/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {

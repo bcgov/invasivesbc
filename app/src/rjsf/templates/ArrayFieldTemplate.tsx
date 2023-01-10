@@ -2,7 +2,7 @@ import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import IconButton from 'rjsf/components/IconButton';
 import {Box, Grid, Paper} from "@mui/material";
-import {ArrayFieldTemplateProps, IdSchema, isMultiSelect} from "@rjsf/utils";
+import {ArrayFieldTemplateProps, getTemplate, IdSchema, isMultiSelect} from "@rjsf/utils";
 import {getDefaultRegistry} from "@rjsf/core";
 
 
@@ -106,11 +106,13 @@ const DefaultArrayItem = (props: any) => {
 };
 
 const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
+
   return (
     <fieldset className={props.className}>
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
-        TitleField={props.TitleField}
+        TitleField={TitleField}
         idSchema={props.idSchema}
         title={props.uiSchema['ui:title'] || props.title}
         required={props.required}
@@ -134,11 +136,14 @@ const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
 };
 
 const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
+  const DescriptionField = getTemplate("DescriptionFieldTemplate", props.registry, props.uiSchema);
+
   return (
     <Box>
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
-        TitleField={props.TitleField}
+        TitleField={TitleField}
         idSchema={props.idSchema}
         title={props.uiSchema['ui:title'] || props.title}
         required={props.required}
@@ -147,7 +152,7 @@ const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
       {(props.uiSchema['ui:description'] || props.schema.description) && (
         <ArrayFieldDescription
           key={`array-field-description-${props.idSchema.$id}`}
-          DescriptionField={props.DescriptionField}
+          DescriptionField={DescriptionField}
           idSchema={props.idSchema}
           description={props.uiSchema['ui:description'] || props.schema.description}
         />

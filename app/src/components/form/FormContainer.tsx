@@ -34,7 +34,7 @@ import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import validator from "@rjsf/validator-ajv6";
+import validator from '@rjsf/validator-ajv6';
 
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -75,7 +75,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dataAccess = useDataAccess();
   const [formData, setformData] = useState(props.activity?.form_data);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
-  const formRef = useRef(null);
+  const formRef = React.createRef();
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
@@ -87,14 +87,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const { darkTheme } = useSelector(selectUserSettings);
   const activityStateInStore = useSelector(selectActivity);
 
-  /*
-  useEffect(() => {
-    if (!activityStateInStore.activity.form_data) {
-      return;
-    }
-    setformData(props.activity?.formData);
-  }, [props.activity]);
-  */
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -141,29 +133,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     handleClose();
   };
 
-  //helper function to get field name from args
-  const getFieldNameFromArgs = (args): string => {
-    let argumentFieldName = '';
-    if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_')) {
-      argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_ntz_reduction_';
-    } else if (args[0].includes('root_activity_subtype_data_Treatment_ChemicalPlant_Information_')) {
-      argumentFieldName = 'root_activity_subtype_data_Treatment_ChemicalPlant_Information_';
-    } else if (
-      args[0].includes('root_activity_subtype_data_Weather_Conditions_') &&
-      !props.activity.activity_subtype.toString().toLowerCase().includes('biocontrol')
-    ) {
-      argumentFieldName = 'root_activity_subtype_data_Weather_Conditions_';
-    } else if (args[0].includes('root_activity_data_')) {
-      argumentFieldName = 'root_activity_data_';
-    }
-    if (args[0].includes('application_rate')) {
-      argumentFieldName = 'application_rate';
-    }
-    let fieldName = argumentFieldName ? args[0].substr(argumentFieldName.length) : args[0]; // else use the full arg name
-
-    return fieldName;
-  };
-
   const isActivityChemTreatment = () => {
     if (
       props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
@@ -175,96 +144,18 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
-  //herlper function to get the path to the field in an oject.
-  //if multiple found, stores multiple strings in array
-  const getPathToFieldName = (obj: any, predicate: Function) => {
-    const discoveredObjects = []; // For checking for cyclic object
-    const path = []; // The current path being searched
-    const results = []; // The array of paths that satify the predicate === true
-    if (!obj && (typeof obj !== 'object' || Array.isArray(obj))) {
-      throw new TypeError('First argument of finPropPath is not the correct type Object');
-    }
-    if (typeof predicate !== 'function') {
-      throw new TypeError('Predicate is not a function');
-    }
-    (function find(obj) {
-      for (const key of Object.keys(obj)) {
-        // use only enumrable own properties.
-        if (predicate(key, path, obj) === true) {
-          // Found a path
-          path.push(key); // push the key
-          results.push(path.join('.')); // Add the found path to results
-          path.pop(); // remove the key.
-        }
-        const o = obj[key]; // The next object to be searched
-        if (o && typeof o === 'object' && !Array.isArray(o)) {
-          // check for null then type object
-          if (!discoveredObjects.find((obj) => obj === o)) {
-            // check for cyclic link
-            path.push(key);
-            discoveredObjects.push(o);
-            find(o);
-            path.pop();
-          }
-        }
-      }
-    })(obj);
-    return results;
-  };
-
-  //helper function - find the value of the property given the path to it whithin the oject
-  const deepFind = (obj: any, path: string, newValue?: string) => {
-    let paths = path.split('.'),
-      current = obj;
-    for (let i = 0; i < paths.length; ++i) {
-      if (current[paths[i]] === undefined) {
-        return undefined;
-      } else {
-        current = current[paths[i]];
-      }
-    }
-    return current;
-  };
-
-  //handle blur the field
-  const blurHandler = (args: string[]) => {
-    const $this = formRef.current;
-    const field = getFieldNameFromArgs(args);
-    const { uiSchema } = $this.state;
-    let path = getPathToFieldName(uiSchema, (key) => key === field);
-    if (deepFind(uiSchema, path[0] + '')) {
-      if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
-        const { errorSchema } = $this.validate(activityStateInStore.activity.form_data);
-        let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
-        if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
-          setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
-          setField(field);
-          openDialog();
-        }
-      }
-    }
-  };
-
-  //handle focus the field
-  //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
-  //so that the user will be tasked to force the value out of range again
-  const focusHandler = (args: string[]) => {
-    if (formRef) {
-      let field = getFieldNameFromArgs(args);
-      setFocusedFieldArgs(args);
-      //const $this = formRef.current;
-      //const { formData } = $this.state;
-      const form_data = activityStateInStore?.activity?.form_data;
-      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
-        const index = formData.forceNoValidationFields.indexOf(field);
-        if (index > -1) {
-          formData.forceNoValidationFields.splice(index, 1);
-        }
-        $this.setState({ formData: formData }, () => {
-          props.onFormChange({ formData: formData }, formRef);
-        });
-      }
-    }
+  const ErrorListTemplate = (err) => {
+    return (
+      <div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <Typography color="error" variant="h6">
+          Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however save in
+          progress work, and come back later.
+        </Typography>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -353,7 +244,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 <PasteButtonComponent
                   onSubmit={() => {
                     //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
-                    (formRef.current as any).formElement.dispatchEvent(
+                    (formRef.current as any).formElement.current.dispatchEvent(
                       new CustomEvent('submit', {
                         cancelable: true,
                         bubbles: true // <-- actual fix
@@ -369,9 +260,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 />
               </Box>
               <Form
-                ObjectFieldTemplate={ObjectFieldTemplate}
-                FieldTemplate={FieldTemplate}
-                ArrayFieldTemplate={ArrayFieldTemplate}
+                templates={{
+                  ObjectFieldTemplate: ObjectFieldTemplate,
+                  FieldTemplate: FieldTemplate,
+                  ArrayFieldTemplate: ArrayFieldTemplate,
+                  ErrorListTemplate: ErrorListTemplate
+                }}
                 widgets={{
                   'multi-select-autocomplete': MultiSelectAutoComplete,
                   'single-select-autocomplete': SingleSelectAutoComplete
@@ -379,45 +273,18 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 readonly={props.isDisabled}
                 key={props.activity?._id}
                 disabled={isDisabled}
-                //formData={formData || null}
                 formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
-                /*onFocus={(...args: string[]) => {
-                  focusHandler(args);
-                }}*/
-                /*onBlur={(...args: string[]) => {
-                  setTimeout(() => {
-                    blurHandler(args);
-                  }, 500);
-                }}*/
                 uiSchema={schemas.uiSchema}
                 formContext={{
                   suggestedJurisdictions: props.suggestedJurisdictions || []
                 }}
                 liveValidate={true}
-                validate={props.customValidation}
+                customValidate={props.customValidation}
                 validator={validator}
-                showErrorList={true}
+                showErrorList={'top'}
                 transformErrors={props.customErrorTransformer}
                 autoComplete="off"
-                ErrorList={(err) => {
-                  return (
-                    <div>
-                      <br></br>
-                      <br></br>
-                      <br></br>
-                      <Typography color="error" variant="h6">
-                        Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can
-                        however save in progress work, and come back later.
-                      </Typography>
-                    </div>
-                  );
-                }}
-                onChange={(event) => {
-                  props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                    //setformData(updatedFormData);
-                  });
-                }}
                 onError={(error) => {
                   if (!props.onFormSubmitError) {
                     return;
@@ -434,17 +301,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     console.log(e);
                   }
                 }}
-                // `ref` does exist, but currently is missing from the `index.d.ts` types file.
-                // @ts-ignore: No overload matches this call ts(2769)
-                ref={(form) => {
-                  if (!form) {
-                    return;
-                  }
-                  if (props.setParentFormRef) {
-                    props.setParentFormRef(form);
-                  }
-                  formRef.current = form;
-                }}>
+                ref={formRef}
+                >
                 <React.Fragment />
               </Form>
 
@@ -476,8 +334,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <Box mt={3} style={{ paddingBottom: '50px' }}>
           <FormControlsComponent
             onSubmit={() => {
+              console.dir(formRef);
               //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
-              (formRef.current as any).formElement.dispatchEvent(
+              (formRef.current as any).formElement.current.dispatchEvent(
                 new CustomEvent('submit', {
                   cancelable: true,
                   bubbles: true // <-- actual fix

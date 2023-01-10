@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import {Grid, Tooltip} from "@mui/material";
-import {canExpand, ObjectFieldTemplateProps} from "@rjsf/utils";
+import {canExpand, getTemplate, ObjectFieldTemplateProps} from "@rjsf/utils";
 
 const useStyles = makeStyles({
   root: {
@@ -14,8 +14,9 @@ const useStyles = makeStyles({
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   const classes = useStyles();
 
-  const DescriptionField = props.DescriptionField;
-  const TitleField = props.TitleField;
+
+  const DescriptionField = getTemplate("DescriptionFieldTemplate", props.registry, props.uiSchema);
+  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
 
   return (
     <>
