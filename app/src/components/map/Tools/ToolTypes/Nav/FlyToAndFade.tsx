@@ -4,7 +4,7 @@ import circle from '@turf/circle';
 import { Geometries } from '@turf/turf';
 import union from '@turf/union';
 import L, { LatLngExpression } from 'leaflet';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { GeoJSON, useMap } from 'react-leaflet';
 import { createPolygonFromBounds2 } from '../../../LayerLoaderHelpers/LtlngBoundsToPoly';
 
@@ -137,10 +137,29 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
     fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 200);
   };
 
+  useEffect(()=> {
+    console.log('yup')
+  },[JSON.stringify(displayPolygons)])
+
+  const hashedKey = useCallback(()=> {
+    return hashCode(JSON.stringify(displayPolygons))
+  },[JSON.stringify(displayPolygons)])
+
+  function hashCode(str: string): number {
+    if(!str)
+    {
+      return
+    }
+    var h: number = 0;
+    for (var i = 0; i < str.length; i++) {
+        h = 31 * h + str.charCodeAt(i);
+    }
+    return h & 0xFFFFFFFF
+}
   return (
     <FlyToAndFadeContext.Provider value={{ go }}>
       {props.children}
-      <GeoJSON key={Math.random()} onEachFeature={fade} data={displayPolygons as unknown as Geometries}></GeoJSON>
+      <GeoJSON key={hashedKey()} onEachFeature={fade} data={displayPolygons as unknown as Geometries}></GeoJSON>
     </FlyToAndFadeContext.Provider>
   );
 };
