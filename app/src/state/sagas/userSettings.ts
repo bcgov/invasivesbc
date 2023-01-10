@@ -120,11 +120,11 @@ function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
     // get local storage
     const storedBoundaries = JSON.parse(localStorage.getItem('boundaries'));
     // filter by id
-    storedBoundaries.filter((boundary) => {
+    const newBoundaries = storedBoundaries.filter((boundary) => {
       return boundary.id !== action.payload.id;
     });
     // set local storage
-    localStorage.setItem('boundaries', JSON.stringify(storedBoundaries));
+    localStorage.setItem('boundaries', JSON.stringify(newBoundaries));
 
     yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_SUCCESS, payload: action.payload });
   } catch (e) {
