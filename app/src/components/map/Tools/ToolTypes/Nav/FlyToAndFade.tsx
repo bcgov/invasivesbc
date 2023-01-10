@@ -20,6 +20,12 @@ export interface IFlyToAndFadeItem {
   transitionType: FlyToAndFadeItemTransitionType;
 }
 
+export interface DisplayPolygon {
+  geometry?: any;
+  properties?: any;
+  type?: string;
+}
+
 export enum FlyToAndFadeItemTransitionType {
   zoomToBounds = 'ZOOM_TO_BOUNDS',
   zoomToGeometries = 'ZOOM_TO_GEOS',
@@ -41,7 +47,7 @@ export const getBoundsOfCircle = (circle: any) => {
 
 export const FlyToAndFadeContextProvider: React.FC = (props) => {
   const map = useMap();
-  const [displayPolygons, setDisplayPolygons] = useState<Array<any>>();
+  const [displayPolygons, setDisplayPolygons] = useState<Array<DisplayPolygon>>();
   const go = (items: Array<IFlyToAndFadeItem>, delayToNext?: number) => {
     if (!items || items.length === 0) {
       return;
@@ -137,12 +143,8 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
     fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 200);
   };
 
-  useEffect(()=> {
-    console.log('yup')
-  },[JSON.stringify(displayPolygons)])
-
   const hashedKey = useCallback(()=> {
-    return hashCode(JSON.stringify(displayPolygons))
+    return hashCode(JSON.stringify(displayPolygons));
   },[JSON.stringify(displayPolygons)])
 
   function hashCode(str: string): number {
@@ -152,10 +154,11 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
     }
     var h: number = 0;
     for (var i = 0; i < str.length; i++) {
-        h = 31 * h + str.charCodeAt(i);
+        h = (h << 5) - h + str.charCodeAt(i);
     }
-    return h & 0xFFFFFFFF
-}
+    return h & 0xFFFFFFFF;
+  }
+  
   return (
     <FlyToAndFadeContext.Provider value={{ go }}>
       {props.children}

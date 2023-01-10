@@ -30,6 +30,7 @@ import {
   USER_SETTINGS_SET_BOUNDARIES_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { IFlyToAndFadeItem, FlyToAndFadeItemTransitionType, useFlyToAndFadeContext } from './Tools/ToolTypes/Nav/FlyToAndFade';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -81,6 +82,7 @@ export const NamedBoundaryMenu = (props) => {
   const api = useInvasivesApi();
   // style
   const toolClass = toolStyles();
+  const flyToContext = useFlyToAndFadeContext();
   const [measureToolContainerOpen, setMeasureToolContainerOpen] = useState(false);
 
   const positionClass = (props.position && POSITION_CLASSES[props.position]) || POSITION_CLASSES.topright;
@@ -88,8 +90,9 @@ export const NamedBoundaryMenu = (props) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const divRef = useRef();
   const [idCount, setIdCount] = useState(0);
-  const { MOBILE } = useSelector(selectConfiguration);
+
   const dispatch = useDispatch();
+  const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
 
   const [newBoundaryDialog, setNewBoundaryDialog] = useState<IGeneralDialog>({
@@ -256,6 +259,24 @@ export const NamedBoundaryMenu = (props) => {
       dispatch({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: server_id } });
     }
   };
+
+  const jump = (boundary) => {
+    if (!boundary) {
+      return;
+    }
+
+    const flyToAndFadeItem : IFlyToAndFadeItem = {
+      name: 'TRIP: ' + boundary.name,
+      geometries: boundary.geos,
+      colour: 'red',
+      transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
+    }
+
+    if (flyToAndFadeItem.geometries) {
+      flyToContext.go([flyToAndFadeItem]);
+    }
+  }
+  
   if (!rendered) return <></>;
   return (
     <>
@@ -289,15 +310,20 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {userSettings?.boundaries?.map((b, index) => (
-            <JumpToTrip
-              boundary={b}
-              id={b.id}
-              name={b.name}
-              geos={b.geos}
-              server_id={b.server_id}
-              key={index}
-              deleteBoundary={deleteBoundary}
-            />
+            <ListItem
+              onClick={() => {
+                jump(b)}
+              }>
+              <JumpToTrip
+                boundary={b}
+                id={b.id}
+                name={b.name}
+                geos={b.geos}
+                server_id={b.server_id}
+                key={index}
+                deleteBoundary={deleteBoundary}
+              />
+            </ListItem>
           ))}
         </List>
       </div>
