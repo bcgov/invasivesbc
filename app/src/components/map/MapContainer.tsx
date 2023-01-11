@@ -27,7 +27,7 @@ import EditTools from './Tools/ToolTypes/Data/EditTools';
 import centroid from '@turf/centroid';
 import async from 'async';
 import 'leaflet-editable';
-import ReactLeafletEditable from 'react-leaflet-editable';
+// import ReactLeafletEditable from 'react-leaflet-editable';
 import './MapContainer.css';
 
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
