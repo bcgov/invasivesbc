@@ -14,6 +14,9 @@ import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
 
+//temporary fix to type is undefined error
+(window as any).type = undefined;
+
 export const WhatsHereDrawComponent = (props) => {
   const map = useMap();
   const dispatch = useDispatch();

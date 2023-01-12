@@ -17,6 +17,7 @@ import {
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
+import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -144,7 +145,10 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   const currentMapState = yield select(selectMap);
 
   const featuresFilteredByUserShape = currentMapState.IAPPGeoJSON.features.filter((feature) => {
-    return intersect(currentMapState.whatsHere.feature, feature);
+    // IAPP will always be a points
+    const pointToCheck = point(feature.geometry.coordinates);
+    const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
+    return booleanPointInPolygon(pointToCheck, polygonToCheck);
   });
 
   console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
