@@ -19,7 +19,8 @@ import {
   LEAFLET_SET_WHOS_EDITING,
   TOGGLE_BASIC_PICKER_LAYER,
   MAP_TOGGLE_WHATS_HERE,
-  MAP_WHATS_HERE_FEATURE
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -57,11 +58,8 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
-<<<<<<< HEAD
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
-=======
-    this.whatsHere = { toggle: false, feature: null };
->>>>>>> 0cc4e21d (state management for whats here marker.  todo: state for popup content and open popup on mount)
+    this.whatsHere = { toggle: false, feature: null, iappRows: null };
   }
 }
 const initialState = new MapState();
@@ -69,12 +67,12 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
-<<<<<<< HEAD
       case LEAFLET_SET_WHOS_EDITING: {
         return {
           ...state,
           LeafletWhosEditing: action.payload.LeafletWhosEditing
-=======
+        }
+        }
       case MAP_WHATS_HERE_FEATURE: {
         return {
           ...state,
@@ -84,8 +82,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case MAP_TOGGLE_WHATS_HERE: {
         return {
           ...state,
-          whatsHere: { toggle: !state.whatsHere.toggle, feature: null }
->>>>>>> 0cc4e21d (state management for whats here marker.  todo: state for popup content and open popup on mount)
+          whatsHere: { toggle: !state.whatsHere.toggle, feature: null, iappRows: null }
         };
       }
       case MAP_TOGGLE_ACCURACY: {
@@ -272,6 +269,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           IAPPGeoJSON: action.payload.IAPPGeoJSON
         };
+      }
+      case WHATS_HERE_IAPP_ROWS_SUCCESS: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            iappRows: action.payload.rows
+          }
+        }
       }
       default:
         return state;

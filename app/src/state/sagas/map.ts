@@ -47,11 +47,18 @@ import {
 <<<<<<< HEAD
   TABS_SET_ACTIVE_TAB_SUCCESS,
   TABS_GET_INITIAL_STATE_SUCCESS,
-  LEAFLET_SET_WHOS_EDITING
+  LEAFLET_SET_WHOS_EDITING,
+  WHATS_HERE_IAPP_ROWS_REQUEST
 =======
   MAP_WHATS_HERE_INIT_GET_POI,
+<<<<<<< HEAD
   MAP_WHATS_HERE_FEATURE
 >>>>>>> 3684629d (saga for filtering iapp data in whats here component)
+=======
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_REQUEST,
+  WHATS_HERE_IAPP_ROWS_SUCCESS
+>>>>>>> 2a79b2d3 (Add whats here unique features to state)
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -660,6 +667,23 @@ function* whatsHereSaga() {
   ]);
 }
 
+function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+  try {
+    const mapState = yield select(selectMap);
+    const iappRows = mapState?.IAPPGeoJSON?.features?.filter((feature) => {
+      return action.payload.IDs.includes(feature?.properties?.site_id);
+    });
+    yield put({ 
+      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+      payload: {
+        rows: iappRows
+      }
+    });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing)
   yield all([
@@ -685,7 +709,8 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE)
+    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
+    takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);

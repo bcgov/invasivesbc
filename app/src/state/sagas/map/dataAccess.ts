@@ -173,8 +173,13 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 
   console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
 
+  // Filter duplicates
+  const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
+  
+  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
+
   // online/offline agnostic paging
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: recordSetFilteredIDs } });
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
   while (currentMapState?.whatsHere?.toggle) {
     const currentMapState = yield select(selectMap);
     if (!currentMapState?.whatsHere?.toggle) {
