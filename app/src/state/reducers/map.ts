@@ -18,7 +18,8 @@ import {
   MAP_TOGGLE_PANNED,
   TOGGLE_BASIC_PICKER_LAYER,
   MAP_TOGGLE_WHATS_HERE,
-  MAP_WHATS_HERE_FEATURE
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -48,7 +49,7 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
-    this.whatsHere = { toggle: false, feature: null };
+    this.whatsHere = { toggle: false, feature: null, iappRows: null };
   }
 }
 const initialState = new MapState();
@@ -65,7 +66,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case MAP_TOGGLE_WHATS_HERE: {
         return {
           ...state,
-          whatsHere: { toggle: !state.whatsHere.toggle, feature: null }
+          whatsHere: { toggle: !state.whatsHere.toggle, feature: null, iappRows: null }
         };
       }
       case MAP_TOGGLE_ACCURACY: {
@@ -252,6 +253,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           IAPPGeoJSON: action.payload.IAPPGeoJSON
         };
+      }
+      case WHATS_HERE_IAPP_ROWS_SUCCESS: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            iappRows: action.payload.rows
+          }
+        }
       }
       default:
         return state;

@@ -45,7 +45,9 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_WHATS_HERE_INIT_GET_POI,
-  MAP_WHATS_HERE_FEATURE
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_REQUEST,
+  WHATS_HERE_IAPP_ROWS_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -627,6 +629,23 @@ function* whatsHereSaga() {
   ]);
 }
 
+function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+  try {
+    const mapState = yield select(selectMap);
+    const iappRows = mapState?.IAPPGeoJSON?.features?.filter((feature) => {
+      return action.payload.IDs.includes(feature?.properties?.site_id);
+    });
+    yield put({ 
+      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+      payload: {
+        rows: iappRows
+      }
+    });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
@@ -651,7 +670,8 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE)
+    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
+    takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
