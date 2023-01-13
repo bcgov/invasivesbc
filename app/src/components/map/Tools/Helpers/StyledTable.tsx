@@ -23,6 +23,8 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { selectMap } from 'state/reducers/map';
+import { USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
+import { useDispatch } from 'react-redux';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -342,7 +344,7 @@ export const RenderTableDataBC = ({ rows }) => {
 
 export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
-  const dataAccess = useDataAccess();
+  const dispatch = useDispatch();
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
@@ -387,37 +389,6 @@ export const RenderTablePOI = (props: any) => {
   }, [bufferedGeo]);
 
   const updatePOIRecords = React.useCallback(async () => {
-    // try {
-    //   const pointsofinterest = await dataAccess.getPointsOfInterestLean({
-    //     search_feature: bufferedGeo,
-    //     isIAPP: true,
-    //     limit: 500,
-    //     page: 0
-    //   });
-
-    //   if (!pointsofinterest) {
-    //     return;
-    //   }
-
-    //   // Removed for now: setPoisObj(pointsofinterest);
-    //   const tempArr = [];
-    //   pointsofinterest.forEach((poi) => {
-    //     const { site_id, reported_area } = poi.properties;
-    //     const jurisdictions: string = poi.properties.jurisdictions.join('\n');
-    //     const species: string[] = poi.properties.species_on_site.join(' ');
-    //     tempArr.push({
-    //       id: site_id,
-    //       site_id: site_id,
-    //       jurisdiction_code: jurisdictions,
-    //       species_code: species,
-    //       geometry: poi,
-    //       reported_area: reported_area
-    //     });
-    //   });
-    //   setRows(tempArr);
-    // } catch (e) {
-    //   console.log('Point of Interest error', e);
-    // }
     const arr = [];
     mapState?.whatsHere?.iappRows?.forEach((row) => {
       arr.push({
@@ -443,8 +414,15 @@ export const RenderTablePOI = (props: any) => {
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+          dispatch({
+            type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+            payload: {
+              description: 'IAPP-' + params.id,
+              id: params.id
+            }
+          });
           if (authenticated && roles.length > 0) {
-            history.push(`/home/iapp/${params.id}`);
+            history.push(`/home/iapp/`);
           } else {
             errorContext.pushError({
               message:
