@@ -285,6 +285,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 showErrorList={'top'}
                 transformErrors={props.customErrorTransformer}
                 autoComplete="off"
+                onChange={(event) => {
+                    props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
+                      //setformData(updatedFormData);
+                    });
+                  }}
                 onError={(error) => {
                   if (!props.onFormSubmitError) {
                     return;
