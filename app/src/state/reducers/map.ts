@@ -20,7 +20,8 @@ import {
   TOGGLE_BASIC_PICKER_LAYER,
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
-  WHATS_HERE_IAPP_ROWS_SUCCESS
+  WHATS_HERE_IAPP_ROWS_SUCCESS,
+  MAP_SET_WHATS_HERE_PAGE_LIMIT_POI
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -59,7 +60,7 @@ class MapState {
     this.positionTracking = false;
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
-    this.whatsHere = { toggle: false, feature: null, iappRows: null };
+    this.whatsHere = { toggle: false, feature: null, iappRows: null, limit: 20, page: 1 };
   }
 }
 const initialState = new MapState();
@@ -83,6 +84,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           whatsHere: { toggle: !state.whatsHere.toggle, feature: null, iappRows: null }
+        };
+      }
+      case MAP_SET_WHATS_HERE_PAGE_LIMIT_POI: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            page: action.payload.page,
+            limit: action.payload.limit
+          }
         };
       }
       case MAP_TOGGLE_ACCURACY: {

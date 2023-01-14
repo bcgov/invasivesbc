@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -23,8 +24,11 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { selectMap } from 'state/reducers/map';
-import { USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
+import { MAP_SET_WHATS_HERE_PAGE_LIMIT_POI, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -66,6 +70,107 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
     </TableFooter>
   );
 };
+
+function WhatsHerePagination() {
+  const dispatch = useDispatch();
+  const mapState = useSelector(selectMap);
+  const pageNumber =
+    mapState?.whatsHere &&
+    mapState?.whatsHere?.page
+      ? mapState?.whatsHere?.page
+      : 0;
+  const pageLimit =
+    mapState?.whatsHere &&
+    mapState?.whatsHere?.limit
+      ? mapState?.whatsHere?.limit
+      : 20;
+  const setLength =
+    mapState?.whatsHere &&
+    mapState?.whatsHere?.iappRows &&
+    mapState?.whatsHere?.iappRows.length > 0
+      ? mapState?.whatsHere?.iappRows.length
+      : 1;
+
+  return (
+    <div key={'pagination'}>
+      <div key={'paginationControls'}>
+        {pageNumber <= 0 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
+                payload: {
+                  page: 0,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        )}
+        {pageNumber <= 0 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
+                payload: {
+                  page: pageNumber - 1,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        )}
+        <span>
+          {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
+        </span>
+        {pageNumber + 1 * pageLimit > setLength ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
+                payload: {
+                  page: pageNumber + 1,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        )}
+      </div>
+      <div key={'paginationRecords'}>
+        <span>
+          Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
+          {setLength < pageLimit ? setLength : pageLimit * (pageNumber + 1)} out of{' '}
+          {setLength}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -405,12 +510,12 @@ export const RenderTablePOI = (props: any) => {
   }, [bufferedGeo]);
 
   return (
-    <div style={{ height: 300, minWidth: '100%' }}>
+    <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
       <DataGrid
         columns={columns}
         rows={rows}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        hideFooterPagination
+        hideFooter
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
@@ -432,10 +537,8 @@ export const RenderTablePOI = (props: any) => {
             });
           }
         }}
-        // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-        //   console.log('params', params);
-        // }}
-      />
+        />
+        <WhatsHerePagination></WhatsHerePagination>
     </div>
   );
 };
