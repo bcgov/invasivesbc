@@ -297,7 +297,7 @@ export const NamedBoundaryMenu = (props) => {
           className={classes.innerToolBarContainer + ' leaflet-control'}
           style={{ transform: expanded ? 'translateX(20%)' : 'translateX(-110%)' }}>
           <Divider />
-          <ListItem disableGutters>
+          <ListItem key="boundaryListCreate" disableGutters>
             <ListItemButton
               onClick={createBoundary}
               ref={divRef}
@@ -313,6 +313,7 @@ export const NamedBoundaryMenu = (props) => {
           </ListItem>
           {userSettings?.boundaries?.map((b, index) => (
             <ListItem
+            key={`boundaryListJump${index}`}
               onClick={() => {
                 jump(b)}
               }>

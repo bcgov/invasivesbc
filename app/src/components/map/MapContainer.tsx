@@ -293,9 +293,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
+
             <WhatsHereButton />
             <WhatsHereDrawComponent />
             <WhatsHereMarker />
+
             {props.children}
 
             {activityState?.activity?.geometry ? (
