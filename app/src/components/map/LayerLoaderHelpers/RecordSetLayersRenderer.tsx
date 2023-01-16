@@ -235,6 +235,10 @@ export const RecordSetLayersRenderer = (props: any) => {
     <>
       {activityLayers()?.length > 0 ? (
         activityLayers()?.map((layerKey) => {
+          if(!layerKey)
+          {
+            return <></>
+          }
           return (
             <>
               <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
@@ -247,6 +251,10 @@ export const RecordSetLayersRenderer = (props: any) => {
       )}
       {iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
+          if(!layerKey)
+          {
+            return <></>
+          }
           return (
             <>
               <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;

@@ -159,7 +159,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   console.log('featureFilteredIDS', featureFilteredIDS?.length);
 
   let unfilteredRecordSetIDs = [];
-  Object.keys(currentMapState.layers).map((id) => {
+  Object.keys(currentMapState?.layers).map((id) => {
     if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
     }

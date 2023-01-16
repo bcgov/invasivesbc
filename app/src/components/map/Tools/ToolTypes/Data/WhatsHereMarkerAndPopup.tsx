@@ -5,8 +5,10 @@ import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer 
 // Removed Temporarily until we figure out databc Table:
 // import StorageIcon from '@mui/icons-material/Storage';
 import center from '@turf/center';
+import L from 'leaflet';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Marker, Popup, useMap } from 'react-leaflet';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
@@ -28,10 +30,13 @@ export const WhatsHerePopUpContent = (props) => {
   const [section, setSection] = useState('position');
   const map = useMap();
   const position = center(bufferedGeo).geometry.coordinates;
+  const dispatch = useDispatch();
 
   // (NOSONAR)'d Temporarily until we figure out databc Table:
   // const [databc, setDataBC] = useState(null); // NOSONAR
-
+  const popupOnClose = () => {
+    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+  };
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -40,7 +45,7 @@ export const WhatsHerePopUpContent = (props) => {
   ];
 
   const hideElement = () => {
-    map.closePopup();
+    //    map.closePopup();
   };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
@@ -48,7 +53,9 @@ export const WhatsHerePopUpContent = (props) => {
   };
 
   return (
-    <div>
+    <div
+      id="whatsherepopup"
+      style={{ position: 'fixed', backgroundColor: 'white', left: props.left, top: props.top, zIndex: 1000000 }}>
       <TableContainer>
         {section === 'position' && <RenderTablePosition rows={utmRows} />}
         {section === 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
@@ -68,7 +75,7 @@ export const WhatsHerePopUpContent = (props) => {
       </Grid>
       <Grid container>
         <Grid item>
-          <Button onClick={hideElement}>Close</Button>
+          <Button onClick={popupOnClose}>Close</Button>
         </Grid>
       </Grid>
     </div>
@@ -78,7 +85,6 @@ export const WhatsHerePopUpContent = (props) => {
 export const WhatsHereMarker = (props) => {
   const map = useMap();
   const mapState = useSelector(selectMap);
-  const dispatch = useDispatch();
   const markerRef = useRef();
   const { darkTheme } = useSelector(selectUserSettings);
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -119,13 +125,10 @@ export const WhatsHereMarker = (props) => {
     }
 
     return () => {
-      map?.closePopup();
+      //console.log('whoops closing already')
+      //map?.closePopup();
     };
   }, [refReady]);
-
-  const popupOnClose = () => {
-    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-  };
 
   const refCallback = (r) => {
     popupRef = r;
@@ -133,27 +136,68 @@ export const WhatsHereMarker = (props) => {
   };
 
   const PopupMemo = (props) => {
-    return useMemo(() => {
-      return (
-        <Popup
-          ref={refCallback}
-          className={theme}
-          onClose={popupOnClose}
-          autoClose={false}
-          closeOnClick={true}
-          closeButton={false}>
-          <WhatsHerePopUpContent popupOnClose={popupOnClose} bufferedGeo={mapState?.whatsHere?.feature} />
-        </Popup>
-      );
-    }, [JSON.stringify(position)]);
+    const [DOMXY, setDOMXY] = useState([]);
+
+    const getDOMXY = () => {
+      const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
+      const boundingRect = markerElement?.getBoundingClientRect();
+      setDOMXY([boundingRect.left, boundingRect.top]);
+    };
+    useEffect(() => {
+      getDOMXY();
+    }, []);
+
+    const map = useMapEvent('drag', getDOMXY);
+
+    return (
+      <>
+        {position?.lat && DOMXY.length > 0 ? (
+          <WhatsHerePopUpContent left={DOMXY[0]} top={DOMXY[1]} bufferedGeo={mapState?.whatsHere?.feature} />
+        ) : (
+          <></>
+        )}
+      </>
+    );
   };
+
+  const icon = new L.DivIcon({
+    html: renderToStaticMarkup(
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 100 100"
+        version="1.1"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M45 0C27.677 0 13.584 14.093 13.584 31.416a31.13 31.13 0 0 0 3.175 13.773c2.905 5.831 11.409 20.208 20.412 35.428l4.385 7.417a4 4 0 0 0 6.888 0l4.382-7.413c8.942-15.116 17.392-29.4 20.353-35.309.027-.051.055-.103.08-.155a31.131 31.131 0 0 0 3.157-13.741C76.416 14.093 62.323 0 45 0zm0 42.81c-6.892 0-12.5-5.607-12.5-12.5s5.608-12.5 12.5-12.5 12.5 5.608 12.5 12.5-5.608 12.5-12.5 12.5z"
+          style={{
+            stroke: 'none',
+            strokeWidth: 1,
+            strokeDasharray: 'none',
+            strokeLinecap: 'butt',
+            strokeLinejoin: 'miter',
+            strokeMiterlimit: 10,
+            fill: '#00008B',
+            fillRule: 'nonzero',
+            opacity: 1
+          }}
+          transform="matrix(1 0 0 1 0 0)"
+        />
+      </svg>
+    ),
+    className: 'whatsHereMarkerClass',
+    iconSize: [50, 50],
+    iconAnchor: [50 / 2, 50 / 2]
+  });
 
   return (
     <>
       {position?.lat && map ? (
-        <Marker ref={markerRef} position={[position?.lat, position?.lng]}>
+        <>
+          <Marker icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
           <PopupMemo />
-        </Marker>
+        </>
       ) : (
         <></>
       )}
