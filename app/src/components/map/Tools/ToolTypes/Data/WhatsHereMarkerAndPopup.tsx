@@ -55,7 +55,7 @@ export const WhatsHerePopUpContent = (props) => {
   return (
     <div
       id="whatsherepopup"
-      style={{ position: 'fixed', backgroundColor: 'white', left: props.left, top: props.top, zIndex: 1000000 }}>
+      style={{ position: 'fixed', padding: 20, borderRadius: 20, backgroundColor: 'white', left: props.left, top: props.top, zIndex: 1000000 }}>
       <TableContainer>
         {section === 'position' && <RenderTablePosition rows={utmRows} />}
         {section === 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
@@ -141,7 +141,7 @@ export const WhatsHereMarker = (props) => {
     const getDOMXY = () => {
       const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
       const boundingRect = markerElement?.getBoundingClientRect();
-      setDOMXY([boundingRect.left, boundingRect.top]);
+      setDOMXY([(boundingRect.x - 250), (boundingRect.top - 100)]);
     };
     useEffect(() => {
       getDOMXY();

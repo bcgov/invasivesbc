@@ -202,10 +202,10 @@ export const RenderTablePosition = ({ rows }) => {
       {rows &&
         rows?.map((row) => (
           <StyledTableRow key={row.name}>
-            <StyledTableCell style={{ width: 150.5 }} component="th" scope="row">
+            <StyledTableCell style={{ width: 250 }} component="th" scope="row">
               {row.name}
             </StyledTableCell>
-            <StyledTableCell style={{ width: 150.5 }}>{row.value}</StyledTableCell>
+            <StyledTableCell style={{ width: 250 }}>{row.value}</StyledTableCell>
           </StyledTableRow>
         ))}
     </TableBody>
