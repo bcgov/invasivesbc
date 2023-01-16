@@ -312,7 +312,7 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {userSettings?.boundaries?.map((b, index) => (
-            <ListItem
+            <div
             key={`boundaryListJump${index}`}
               onClick={() => {
                 jump(b)}
@@ -326,7 +326,7 @@ export const NamedBoundaryMenu = (props) => {
                 key={index}
                 deleteBoundary={deleteBoundary}
               />
-            </ListItem>
+            </div>
           ))}
         </List>
       </div>
