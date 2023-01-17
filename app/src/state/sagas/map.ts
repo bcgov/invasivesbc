@@ -631,15 +631,9 @@ function* whatsHereSaga() {
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   try {
-    const mapState = yield select(selectMap);
-    const iappRows = mapState?.IAPPGeoJSON?.features?.filter((feature) => {
-      return action.payload.IDs.includes(feature?.properties?.site_id);
-    });
     yield put({ 
       type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: {
-        rows: iappRows
-      }
+      payload: action.payload
     });
   } catch(e) {
     console.error(e);
