@@ -61,7 +61,7 @@ class MapState {
     this.positionTracking = false;
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
-    this.whatsHere = { toggle: false, feature: null, section: 'position', iappRows: null, limit: 20, page: 1 };
+    this.whatsHere = { toggle: false, feature: null, section: 'position', iappRows: null, limit: 5, page: 0 };
   }
 }
 const initialState = new MapState();
@@ -92,7 +92,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             toggle: !state.whatsHere.toggle,
             feature: null,
-            iappRows: null
+            iappRows: null,
+            limit: 5,
+            page: 0
           }
         };
       }
@@ -305,7 +307,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            iappRows: action.payload.rows
+            iappRows: action.payload.IDs
           }
         }
       }

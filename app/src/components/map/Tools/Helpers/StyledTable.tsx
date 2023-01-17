@@ -139,7 +139,7 @@ function WhatsHerePagination() {
         <span>
           {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
         </span>
-        {pageNumber + 1 * pageLimit > setLength ? (
+        {(pageNumber + 1) * pageLimit > setLength ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
@@ -164,7 +164,7 @@ function WhatsHerePagination() {
       <div key={'paginationRecords'}>
         <span>
           Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
-          {setLength < pageLimit ? setLength : pageLimit * (pageNumber + 1)} out of{' '}
+          {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of{' '}
           {setLength}
         </span>
       </div>
@@ -495,16 +495,26 @@ export const RenderTablePOI = (props: any) => {
 
   const updatePOIRecords = React.useCallback(async () => {
     const arr = [];
-    mapState?.whatsHere?.iappRows?.forEach((row) => {
+    const startRecord =  mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
+    const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
+    for (
+      let i = startRecord;
+      i < endRecord && i < mapState?.whatsHere?.iappRows?.length;
+      i++) {
+      const id = mapState?.whatsHere?.iappRows?.[i];
+      const iappRecord = mapState?.IAPPGeoJSON?.features.find((feature) => {
+        return feature?.properties?.site_id === id;
+      });
+
       arr.push({
-        id: row.properties.site_id,
-        site_id: row.properties.site_id,
-        jurisdiction_code: row.properties.jurisdictions,
-        species_code: row.properties.species_on_site,
-        geometry: row.geometry,
-        reported_area: row.properties.reported_area
-      })
-    })
+        id: iappRecord?.properties.site_id,
+        site_id: iappRecord?.properties.site_id,
+        jurisdiction_code: iappRecord?.properties.jurisdictions,
+        species_code: iappRecord?.properties.species_on_site,
+        geometry: iappRecord?.geometry,
+        reported_area: iappRecord?.properties.reported_area
+      });
+    }
 
     setRows(arr);
   }, [bufferedGeo]);
