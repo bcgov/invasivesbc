@@ -152,6 +152,8 @@ export const WhatsHereMarker = (props) => {
     };
     useEffect(() => {
       getDOMXY();
+      var el = document.getElementById('no-scrolling-clicking');
+      L.DomEvent.disableScrollPropagation(el);
     }, []);
 
     const map = useMapEvent('drag', getDOMXY);
@@ -201,10 +203,10 @@ export const WhatsHereMarker = (props) => {
   return (
     <>
       {position?.lat && map ? (
-        <>
+        <div id='no-scrolling-clicking'>
           <Marker icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
           <PopupMemo />
-        </>
+        </div>
       ) : (
         <></>
       )}
