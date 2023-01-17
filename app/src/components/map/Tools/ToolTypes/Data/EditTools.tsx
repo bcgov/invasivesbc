@@ -10,6 +10,7 @@ import { useMapEvent } from 'react-leaflet';
 import { MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 import { useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { LeafletWhosEditingEnum, selectMap } from 'state/reducers/map';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -56,6 +57,7 @@ const EditTools = (props: any) => {
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
   const { MOBILE } = useSelector(selectConfiguration);
+  const mapState = useSelector(selectMap)
   /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
@@ -81,6 +83,11 @@ const EditTools = (props: any) => {
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
+
+    if(mapState.LeafletWhosEditing === LeafletWhosEditingEnum.ACTIVITY)
+    {
+
+    }
     // (context.layerContainer as any).clearLayers();
     var newLayer = e.layer;
 

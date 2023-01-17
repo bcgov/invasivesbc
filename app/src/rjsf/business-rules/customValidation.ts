@@ -202,6 +202,8 @@ export function getDateAndTimeValidator(activitySubtype: string): rjsfValidator 
   };
 }
 
+export const MAX_AREA = 500000;
+
 /*
   Function to validate that the net geo area selected does not exceed the limits
   specified by business area for various activity types
@@ -230,7 +232,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     ];
 
     if (tenThousandAreaLimitSubtypes.includes(activitySubtype)) {
-      areaLimit = 500000;
+      areaLimit = MAX_AREA;
     }
 
     // validate reported area limit

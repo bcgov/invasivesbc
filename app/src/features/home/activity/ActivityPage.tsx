@@ -27,6 +27,7 @@ import {
   getVegTransectPointsPercentCoverValidator,
   getWindValidator,
   getWindValidatorBiocontrol,
+  MAX_AREA,
   transferErrorsFromChemDetails
 } from '../../../rjsf/business-rules/customValidation';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
@@ -400,7 +401,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore?.activity?.geometry && activityInStore.activity.geometry[0]) {
-      setClosestWells();
+      if(activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA)
+      {
+        setClosestWells();
+      }
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
         if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
@@ -417,7 +421,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 actionName: 'OK',
                 actionOnClick: async () => {
                   setWarningDialog({ ...warningDialog, dialogOpen: false });
-                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+                 // dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
                 },
                 autoFocus: true
               }

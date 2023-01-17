@@ -15,10 +15,18 @@ import {
   MAP_TOGGLE_ACCURACY,
   MAP_SET_COORDS,
   MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_PANNED
+  MAP_TOGGLE_PANNED,
+  LEAFLET_SET_WHOS_EDITING
 } from '../actions';
 
 import { AppConfig } from '../config';
+
+export enum LeafletWhosEditingEnum {
+  ACTIVITY = 'ACTIVITY',
+  WHATSHERE = 'WHATSHERE',
+  BOUNDARY = 'BOUNDARY',
+  NONE = 'NONE',
+}
 
 class MapState {
   initialized: boolean;
@@ -34,6 +42,7 @@ class MapState {
   error: boolean;
   activitiesGeoJSON: any;
   IAPPGeoJSON: any;
+  LeafletWhosEditing: LeafletWhosEditingEnum
 
   constructor() {
     this.initialized = false;
@@ -43,6 +52,7 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
+    this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
   }
 }
 const initialState = new MapState();
@@ -50,6 +60,12 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case LEAFLET_SET_WHOS_EDITING: {
+        return {
+          ...state,
+          LeafletWhosEditing: action.payload.LeafletWhosEditing
+        };
+      }
       case MAP_TOGGLE_ACCURACY: {
         return {
           ...state,
