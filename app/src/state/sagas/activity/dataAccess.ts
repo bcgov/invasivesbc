@@ -48,6 +48,7 @@ import {
   populateJurisdictionArray
 } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
+import { MAX_AREA } from 'rjsf/business-rules/customValidation';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -67,29 +68,31 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
 
-    let wellInformationArr = [];
-    let nearestWells = null;
-    if (latitude && longitude) {
-      nearestWells = yield getClosestWells(action.payload.geometry, true);
-    }
-    if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
-      wellInformationArr = [
-        {
-          well_id: 'No wells found',
-          well_proximity: 'No wells found'
-        }
-      ];
-    } else {
-      const { well_objects, areWellsInside } = nearestWells;
-      console.dir(well_objects);
-      well_objects.forEach((well) => {
-        if (well.proximity || well.inside) {
-          wellInformationArr.push({
-            well_id: well.properties.WELL_TAG_NUMBER.toString(),
-            well_proximity: well.inside ? '0' : well.proximity.toString()
-          });
-        }
-      });
+      let wellInformationArr = [];
+    if (reported_area < MAX_AREA) {
+      let nearestWells = null;
+      if (latitude && longitude) {
+        nearestWells = yield getClosestWells(action.payload.geometry, true);
+      }
+      if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
+        wellInformationArr = [
+          {
+            well_id: 'No wells found',
+            well_proximity: 'No wells found'
+          }
+        ];
+      } else {
+        const { well_objects, areWellsInside } = nearestWells;
+        console.dir(well_objects);
+        well_objects.forEach((well) => {
+          if (well.proximity || well.inside) {
+            wellInformationArr.push({
+              well_id: well.properties.WELL_TAG_NUMBER.toString(),
+              well_proximity: well.inside ? '0' : well.proximity.toString()
+            });
+          }
+        });
+      }
     }
 
     yield put({
@@ -221,7 +224,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
 
-    if (currentActivity?.geometry) {
+    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA) {
       yield put({
         type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
         payload: { search_feature: currentActivity.geometry }

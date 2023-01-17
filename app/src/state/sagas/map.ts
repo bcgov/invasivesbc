@@ -8,7 +8,8 @@ import {
   take,
   takeEvery,
   takeLatest,
-  actionChannel
+  actionChannel,
+  fork
 } from 'redux-saga/effects';
 import Keycloak from 'keycloak-js';
 import {
@@ -42,7 +43,10 @@ import {
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_TOGGLE_TRACKING,
   MAP_SET_COORDS,
-  MAP_TOGGLE_PANNED
+  MAP_TOGGLE_PANNED,
+  TABS_SET_ACTIVE_TAB_SUCCESS,
+  TABS_GET_INITIAL_STATE_SUCCESS,
+  LEAFLET_SET_WHOS_EDITING
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -64,7 +68,7 @@ import {
 } from './map/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
-import { selectMap } from 'state/reducers/map';
+import { LeafletWhosEditingEnum, selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityStatus } from 'constants/activities';
 import userSettingsSaga from './userSettings';
@@ -73,6 +77,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
+import { selectTabs } from 'state/reducers/tabs';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
@@ -609,7 +614,36 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   Geolocation.clearWatch(watchID);
 }
 
+function* handleTabChange(action)
+{
+  const tabState = yield select(selectTabs)
+  const tab = tabState.tabConfig[tabState.activeTab]
+
+  switch(tab.label)
+  {
+    case 'Current Activity':
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY }})
+      break;
+    case 'Recorded Activities':
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY }})
+      break;
+    default:
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.NONE }})
+      break;
+  }
+}
+
+function* leafletWhosEditing() {
+
+  yield all([
+    takeEvery(TABS_SET_ACTIVE_TAB_SUCCESS, handleTabChange),
+    takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange),
+  ])
+
+}
+
 function* activitiesPageSaga() {
+  yield fork(leafletWhosEditing)
   yield all([
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
