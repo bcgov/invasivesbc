@@ -57,7 +57,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   useEffect(()=> {
     getActivitiesSLD()
-  },[])
+  },[props.color])
 
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
@@ -90,11 +90,23 @@ export const ActivitiesLayerV2 = (props: any) => {
       const Treatment = res?.output.rules.find( o => o.name === 'Activity_Treatment_ChemicalPlantAquatic');
       
       let sldPalette: any = {}//palette;
+      if( props.layerKey <= 2)
+      {
+
       sldPalette.Biocontrol = Biocontrol?.symbolizers[0].color ?? sldPalette.Biocontrol;
       sldPalette.FREP = FREP?.symbolizers[0].color ?? sldPalette.FREP;
       sldPalette.Monitoring = Monitoring?.symbolizers[0].color ?? sldPalette.Monitoring;
       sldPalette.Observation = Observation?.symbolizers[0].color ?? sldPalette.Observation;
       sldPalette.Treatment = Treatment?.symbolizers[0].color ?? sldPalette.Treatment;
+      }
+      else
+      {
+        sldPalette.Biocontrol = props.color
+        sldPalette.FREP = props.color
+        sldPalette.Monitoring = props.color
+        sldPalette.Observation = props.color
+        sldPalette.Treatment = props.color
+      }
       setPalette(sldPalette);
 
       const rule = {

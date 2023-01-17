@@ -154,6 +154,7 @@ const ActivityLayerMemo = (props) => {
       return (
         <ActivitiesLayerV2
           key={'activitiesv2filter' + props.layerKey}
+          layerKey={props.layerKey}
           activities={filteredFeatures()}
           enabled={mapState.layers[props.layerKey].layerState.mapToggle}
           color={mapState.layers[props.layerKey].layerState.color}
