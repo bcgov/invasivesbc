@@ -1470,10 +1470,11 @@ export const InvasivePlants = {
 export const Persons = {
   type: 'object',
   required: ['person_name'],
+  title: '',
   properties: {
+
     person_name: {
       type: 'string',
-      title: 'Person Name',
       pattern: '[A-Za-z -]+',
       'x-tooltip-text': 'Name of person'
     }
