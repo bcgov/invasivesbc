@@ -6,6 +6,7 @@ node_modules
 **/.config
 **.bash_history
 **/.vscode
+.vscode
 settings.json
 
 dist
