@@ -147,7 +147,7 @@ export const LeafletCanvasLabel = (props) => {
         } else {
           labelImage =
             'data:image/svg+xml,' +
-            encodeURIComponent(svgText(point.properties.short_id, point.properties.species_positive));
+            encodeURIComponent(svgText(point.properties.short_id, point.properties.species_positive || point.properties.species_treated));
         }
         var labelIcon = L.icon({
           iconUrl: labelImage,
