@@ -45,14 +45,19 @@ export const ActivitiesLayerV2 = (props: any) => {
   };
   const [options, setOptions] = useState(initialOptions);
 
+  /*&
   const initialPalette = {
       Biocontrol : 'white',
       FREP: '#939393',
       Monitoring: 'purple',
       Observation: 'pink',
       Treatment: 'lime'
-  };
-  const [palette, setPalette] = useState(initialPalette);
+  };*/
+  const [palette, setPalette] = useState(null);
+
+  useEffect(()=> {
+    getActivitiesSLD()
+  },[])
 
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
@@ -84,7 +89,7 @@ export const ActivitiesLayerV2 = (props: any) => {
       const Observation = res?.output.rules.find( o => o.name === 'Activity_Observation_PlantAquatic');
       const Treatment = res?.output.rules.find( o => o.name === 'Activity_Treatment_ChemicalPlantAquatic');
       
-      let sldPalette = palette;
+      let sldPalette: any = {}//palette;
       sldPalette.Biocontrol = Biocontrol?.symbolizers[0].color ?? sldPalette.Biocontrol;
       sldPalette.FREP = FREP?.symbolizers[0].color ?? sldPalette.FREP;
       sldPalette.Monitoring = Monitoring?.symbolizers[0].color ?? sldPalette.Monitoring;
@@ -137,12 +142,10 @@ export const ActivitiesLayerV2 = (props: any) => {
     });
   };
 
-  useEffect(() => {
-    getActivitiesSLD();
-  }, [props.color, props.ids]);
+
 
   const MarkerMemo = useMemo(() => {
-    if (props.activities && props.activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color && palette && props.enabled) {
       const createClusterCustomIcon = (cluster) => {
         const markers = cluster.getAllChildMarkers();
         const data = [];
@@ -181,7 +184,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                 type: 'FeatureCollection',
                 features: [a]
               };
-              if (a.properties.id)
+              if (a?.properties?.id && a?.properties?.type && a?.properties.type !== null && palette)
                 return (
                   <Marker
                     icon={L.divIcon({
@@ -196,7 +199,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                         >
                           <path d="M45 0C27.677 0 13.584 14.093 13.584 31.416a31.13 31.13 0 0 0 3.175 13.773c2.905 5.831 11.409 20.208 20.412 35.428l4.385 7.417a4 4 0 0 0 6.888 0l4.382-7.413c8.942-15.116 17.392-29.4 20.353-35.309.027-.051.055-.103.08-.155a31.131 31.131 0 0 0 3.157-13.741C76.416 14.093 62.323 0 45 0zm0 42.81c-6.892 0-12.5-5.607-12.5-12.5s5.608-12.5 12.5-12.5 12.5 5.608 12.5 12.5-5.608 12.5-12.5 12.5z"
                             style="stroke:none;stroke-width:1;stroke-dasharray:none;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;
-                            fill:${palette[a.properties.type]};fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
+                            fill:${palette[a?.properties?.type]};fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
                           />
                         </svg>`,
                       className: "",
@@ -213,7 +216,7 @@ export const ActivitiesLayerV2 = (props: any) => {
         </MarkerClusterGroup>
       );
     } else return <></>;
-  }, [props.color, props.activities]);
+  }, [props.color, props.activities?.features, palette, props.enabled]);
 
   /*  return (
     <>
@@ -230,7 +233,7 @@ export const ActivitiesLayerV2 = (props: any) => {
     if (props.isIAPP) {
       return GeoJSONMemo;
     }
-    if (props.activities && props.activities.features && props.color) {
+    if (props.activities && props.activities.features && props.color && props.enabled) {
       switch (zoomType) {
         case ZoomTypes.HIGH:
           return GeoJSONMemo;
@@ -244,9 +247,11 @@ export const ActivitiesLayerV2 = (props: any) => {
     } else return <></>;
   }, [
     JSON.stringify(props.color),
+    JSON.stringify(props.enabled),
     JSON.stringify(props.activities),
     props.zIndex,
     JSON.stringify(zoomType),
+    palette,
     props.ids
   ]);
 };
