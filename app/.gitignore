@@ -5,6 +5,8 @@ node_modules
 **/.npm
 **/.config
 **.bash_history
+**/.vscode
+settings.json
 
 dist
 build
