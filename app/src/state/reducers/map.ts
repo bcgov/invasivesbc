@@ -21,7 +21,8 @@ import {
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
-  MAP_SET_WHATS_HERE_PAGE_LIMIT_POI
+  MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
+  MAP_SET_WHATS_HERE_SECTION
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -60,7 +61,7 @@ class MapState {
     this.positionTracking = false;
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
-    this.whatsHere = { toggle: false, feature: null, iappRows: null, limit: 20, page: 1 };
+    this.whatsHere = { toggle: false, feature: null, section: 'position', iappRows: null, limit: 20, page: 1 };
   }
 }
 const initialState = new MapState();
@@ -77,13 +78,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case MAP_WHATS_HERE_FEATURE: {
         return {
           ...state,
-          whatsHere: { toggle: state.whatsHere.toggle, feature: action.payload.feature }
+          whatsHere: {
+            ...state.whatsHere,
+            toggle: state.whatsHere.toggle,
+            feature: action.payload.feature
+          }
         };
       }
       case MAP_TOGGLE_WHATS_HERE: {
         return {
           ...state,
-          whatsHere: { toggle: !state.whatsHere.toggle, feature: null, iappRows: null }
+          whatsHere: {
+            ...state.whatsHere,
+            toggle: !state.whatsHere.toggle,
+            feature: null,
+            iappRows: null
+          }
         };
       }
       case MAP_SET_WHATS_HERE_PAGE_LIMIT_POI: {
@@ -93,6 +103,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             page: action.payload.page,
             limit: action.payload.limit
+          }
+        };
+      }
+      case MAP_SET_WHATS_HERE_SECTION: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            section: action.payload.section
           }
         };
       }

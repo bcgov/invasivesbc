@@ -10,7 +10,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
+import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import {
@@ -27,45 +27,51 @@ export const WhatsHerePopUpContent = (props) => {
   const { bufferedGeo, onCloseCallback = null } = props;
   const { darkTheme } = useSelector(selectUserSettings);
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
-  const [section, setSection] = useState('position');
   const map = useMap();
   const position = center(bufferedGeo).geometry.coordinates;
-  const dispatch = useDispatch();
-
-  // (NOSONAR)'d Temporarily until we figure out databc Table:
-  // const [databc, setDataBC] = useState(null); // NOSONAR
-  const popupOnClose = () => {
-    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-  };
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
     createDataUTM('Easting', utmResult[1]),
     createDataUTM('Northing', utmResult[2])
   ];
+  const dispatch = useDispatch();
+  const mapState = useSelector(selectMap);
+
+  // (NOSONAR)'d Temporarily until we figure out databc Table:
+  // const [databc, setDataBC] = useState(null); // NOSONAR
+  const popupOnClose = () => {
+    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+  };
 
   const hideElement = () => {
     //    map.closePopup();
   };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
-    setSection(newSection);
+    dispatch({
+      type: MAP_SET_WHATS_HERE_SECTION,
+      payload: {
+        section: newSection
+      }
+    });
   };
 
   return (
+    <>{mapState?.whatsHere?.section?
     <div
       id="whatsherepopup"
       style={{ position: 'fixed', padding: 20, borderRadius: 20, backgroundColor: 'white', left: props.left, top: props.top, zIndex: 1000000 }}>
       <TableContainer>
-        {section === 'position' && <RenderTablePosition rows={utmRows} />}
-        {section === 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
+        {mapState?.whatsHere?.section === 'position' ? <RenderTablePosition rows={utmRows} /> : <></>}
+        {mapState?.whatsHere?.section === 'invasivesbc' && <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />}
         {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-        {section === 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />}
+        {mapState?.whatsHere?.section === 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />}
       </TableContainer>
       <Grid container>
         <BottomNavigation
           style={{ backgroundColor: darkTheme ? '#333' : null, width: 500 }}
-          value={section}
+          value={mapState?.whatsHere?.section}
           onChange={handleChange}>
           <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
           <BottomNavigationAction value="invasivesbc" label="InvasivesBC" icon={<FolderIcon />} />
@@ -79,6 +85,7 @@ export const WhatsHerePopUpContent = (props) => {
         </Grid>
       </Grid>
     </div>
+    : <></>}</>
   );
 };
 
