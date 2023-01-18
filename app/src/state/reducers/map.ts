@@ -21,7 +21,7 @@ import {
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
-  MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
+  MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_SET_WHATS_HERE_SECTION,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS
 } from '../actions';
@@ -107,7 +107,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
         };
       }
-      case MAP_SET_WHATS_HERE_PAGE_LIMIT_POI: {
+      case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
         return {
           ...state,
           whatsHere: {
@@ -122,7 +122,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            section: action.payload.section
+            section: action.payload.section,
+            page: 0,
+            limit: 5
           }
         };
       }
