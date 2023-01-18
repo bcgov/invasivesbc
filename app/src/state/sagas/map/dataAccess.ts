@@ -13,6 +13,7 @@ import {
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
+  WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
@@ -192,4 +193,50 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     const subset = [];
     yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: subset } });
   }
+}
+
+export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
+  const currentMapState = yield select(selectMap);
+
+  const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
+    // actvities can have points, polygons and all that
+    switch(feature?.geometry?.type) {
+      case "Point":
+        const pointToCheck = point(feature.geometry.coordinates);
+        const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
+        return booleanPointInPolygon(pointToCheck, polygonToCheck);
+      default:
+        return false;
+    }
+  });
+
+  console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
+  const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
+    return feature.properties.id;
+  });
+
+  console.log('featureFilteredIDS', featureFilteredIDS?.length);
+
+  let unfilteredRecordSetIDs = [];
+  Object.keys(currentMapState?.layers).map((id) => {
+    if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
+      unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
+    }
+  });
+
+  console.log('unfilteredRecordSetIDs', unfilteredRecordSetIDs?.length);
+
+  const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
+    return featureFilteredIDS.includes(id);
+  });
+
+  console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
+
+  // Filter duplicates
+  const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
+  
+  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
+
+  // online/offline agnostic paging
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
 }

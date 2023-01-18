@@ -21,7 +21,8 @@ import {
   MAP_WHATS_HERE_FEATURE,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   MAP_SET_WHATS_HERE_PAGE_LIMIT_POI,
-  MAP_SET_WHATS_HERE_SECTION
+  MAP_SET_WHATS_HERE_SECTION,
+  WHATS_HERE_ACTIVITY_ROWS_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -51,7 +52,15 @@ class MapState {
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
-    this.whatsHere = { toggle: false, feature: null, section: 'position', iappRows: null, limit: 5, page: 0 };
+    this.whatsHere = {
+      toggle: false,
+      feature: null,
+      section: 'position',
+      iappRows: null,
+      activityRows: null,
+      limit: 5,
+      page: 0
+    };
   }
 }
 const initialState = new MapState();
@@ -292,6 +301,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           whatsHere: {
             ...state.whatsHere,
             iappRows: action.payload.IDs
+          }
+        }
+      }
+      case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            activityRows: action.payload.IDs
           }
         }
       }
