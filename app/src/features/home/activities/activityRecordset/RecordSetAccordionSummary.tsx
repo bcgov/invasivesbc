@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   IconButton,
   MenuItem,
@@ -186,7 +187,7 @@ const RecordSetAccordionSummary = (props) => {
               />
             </Button>
           )}
-          {props.expanded ? <ExpandLess /> : <ExpandMoreIcon />}
+          {mapState.layers?.[props.setName]?.loaded? (props.expanded?  <ExpandLess /> : <ExpandMoreIcon />) : <CircularProgress sx={{ display: 'flex'}}/>}
           {props.recordSetType === 'POI' ? (
             <img src={'/assets/iapp.gif'} style={{ maxWidth: '4rem', margin: '0 0.5rem' }} />
           ) : (

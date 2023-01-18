@@ -23,7 +23,7 @@ export const RecordSetRenderer = (props) => {
         return keys;
       });
     }
-  }, [userSettings.recordSets]);
+  }, [Object.keys(userSettings?.recordSets)]);
 
   return useMemo(() => {
     return (
