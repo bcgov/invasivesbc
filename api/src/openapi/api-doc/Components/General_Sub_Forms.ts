@@ -174,6 +174,7 @@ export const Well_Information = {
   title: 'Wells Information',
   default: [{ well_id: 'No wells found', well_proximity: 'No wells found' }],
   items: {
+    title: '',
     properties: {
       well_id: {
         type: 'string',
@@ -243,6 +244,7 @@ export const Media = {
 };
 export const ProjectCode = {
   type: 'object',
+  title: '',
   properties: {
     description: {
       type: 'string',
@@ -364,7 +366,6 @@ export const Weather_Conditions = {
   type: 'object',
   title: 'Weather Conditions',
   required: ['temperature', 'cloud_cover_code', 'precipitation_code', 'wind_speed'],
-
   if: {
     properties: {
       wind_speed: {
@@ -597,6 +598,7 @@ export const Agent_Quantity_And_Life_Stage = {
 export const Jurisdiction = {
   type: 'object',
   required: ['jurisdiction_code', 'percent_covered'],
+  title: '',
   properties: {
     jurisdiction_code: {
       type: 'string',
@@ -636,6 +638,7 @@ export const ShorelineTypes = {
   title: 'Shoreline Types',
   default: [{}],
   items: {
+    title: '',
     properties: {
       shoreline_type: {
         type: 'string',
@@ -662,6 +665,7 @@ export const ShorelineTypes = {
 export const TerrestrialPlant = {
   type: 'object',
   required: ['invasive_plant_code', 'occurrence', 'voucher_specimen_collected'],
+  title: '',
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -1012,6 +1016,7 @@ export const AquaticAnimals = {
 export const AquaticPlant = {
   type: 'object',
   required: ['observation_type', 'invasive_plant_code'],
+  title: '',
   properties: {
     sample_point_id: {
       type: 'string',
@@ -1472,9 +1477,9 @@ export const Persons = {
   required: ['person_name'],
   title: '',
   properties: {
-
     person_name: {
       type: 'string',
+      title: 'Person Name',
       pattern: '[A-Za-z -]+',
       'x-tooltip-text': 'Name of person'
     }
