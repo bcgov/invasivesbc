@@ -147,14 +147,34 @@ export const ActivitiesLayerV2 = (props: any) => {
           }
         ]
       };
-      if (props.ids !== undefined) {
-        setOptions({
+      console.log('ids')
+      console.dir(props.ids)
+        let updatedOptions: any = {
           ...initialOptions,
-          layerStyles: { output: { ...res.output, rules: [...res.output.rules, rule, rule2] } }
+          }
+
+          if(props.layerKey > 2)
+          {
+            console.log('updating color')
+
+            updatedOptions.style = {
+                  ...initialOptions.style,
+                  fillColor: props.color,
+                 color: props.color,
+                strokeColor: props.color
+          }
+        }
+        else
+        {
+          updatedOptions.layerStyles = { output: { ...res.output, rules: [...res.output.rules, rule, rule2] } }
+        }
+
+        setOptions({
+          ...updatedOptions,
         });
-      } else {
+      /*} else {
         setOptions({ ...initialOptions, layerStyles: { output: { ...res.output, rules: [...res.output.rules] } } });
-      }
+      }*/
     });
   };
 
@@ -268,6 +288,7 @@ export const ActivitiesLayerV2 = (props: any) => {
     props.zIndex,
     JSON.stringify(zoomType),
     palette,
+    options,
     props.ids
   ]);
 };
