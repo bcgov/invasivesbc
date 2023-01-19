@@ -617,7 +617,7 @@ const ActivityGrid = (props) => {
           <span>
             {recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}
           </span>
-          {(recordPageNumber + 1) * recordPageLimit > recordSetLength ? (
+          {(recordPageNumber + 1) * recordPageLimit >= recordSetLength ? (
             <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
               <ArrowRightIcon></ArrowRightIcon>
             </Button>

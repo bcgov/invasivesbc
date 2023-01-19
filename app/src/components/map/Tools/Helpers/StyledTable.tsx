@@ -143,7 +143,7 @@ function WhatsHerePagination(props) {
         <span>
           {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
         </span>
-        {(pageNumber + 1) * pageLimit > setLength ? (
+        {((pageNumber + 1) * pageLimit) >= setLength ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
