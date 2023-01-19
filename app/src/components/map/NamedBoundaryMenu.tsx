@@ -142,6 +142,8 @@ export const NamedBoundaryMenu = (props) => {
     let boundaries = [];
     const boundaryResults = await dataAccess.getBoundaries();
 
+    if (boundaries === null) return;
+
     if (MOBILE) {
       const boundaries = boundaryResults.map((boundary) => {
         const jsonObject = JSON.parse(boundary.json);
