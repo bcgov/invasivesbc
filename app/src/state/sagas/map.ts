@@ -92,18 +92,6 @@ function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  //recordSets.filter(recordSetName
-  /* export const getSearchCriteriaFromFilters = (
-    advancedFilterRows: any,
-    rolesUserHasAccessTo: any,
-    recordSets: any,
-    setName: string,
-    isIAPP: boolean,
-    gridFilters: any,
-    page: number,
-    limit: number,
-    sortColumns: readonly SortColumn[]
-  ) => {*/
 
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
@@ -651,6 +639,7 @@ function* leafletWhosEditing() {
     takeEvery(TABS_SET_ACTIVE_TAB_SUCCESS, handleTabChange),
     takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange),
   ])
+}
 
 function* handle_WHATS_HERE_FEATURE(action) {
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
@@ -719,5 +708,6 @@ function* activitiesPageSaga() {
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
+
 
 export default activitiesPageSaga;
