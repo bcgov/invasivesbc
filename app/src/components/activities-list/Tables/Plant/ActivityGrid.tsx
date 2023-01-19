@@ -617,7 +617,7 @@ const ActivityGrid = (props) => {
           <span>
             {recordPageNumber + 1} / {Math.ceil(recordSetLength / recordPageLimit)}
           </span>
-          {recordPageNumber + 1 * recordPageLimit > recordSetLength ? (
+          {(recordPageNumber + 1) * recordPageLimit >= recordSetLength ? (
             <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
               <ArrowRightIcon></ArrowRightIcon>
             </Button>
@@ -643,7 +643,7 @@ const ActivityGrid = (props) => {
         <div key={'paginationRecords-' + recordSetID}>
           <span>
             Showing records {recordPageLimit * (recordPageNumber + 1) - recordPageLimit + 1} -{' '}
-            {recordSetLength < recordPageLimit ? recordSetLength : recordPageLimit * (recordPageNumber + 1)} out of{' '}
+            {recordSetLength < recordPageLimit * (recordPageNumber + 1)? recordSetLength : recordPageLimit * (recordPageNumber + 1)} out of{' '}
             {recordSetLength}
           </span>
         </div>

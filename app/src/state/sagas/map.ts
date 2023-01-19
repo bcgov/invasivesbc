@@ -46,7 +46,14 @@ import {
   MAP_TOGGLE_PANNED,
   TABS_SET_ACTIVE_TAB_SUCCESS,
   TABS_GET_INITIAL_STATE_SUCCESS,
-  LEAFLET_SET_WHOS_EDITING
+  LEAFLET_SET_WHOS_EDITING,
+  MAP_WHATS_HERE_INIT_GET_POI,
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_REQUEST,
+  WHATS_HERE_IAPP_ROWS_SUCCESS,
+  MAP_WHATS_HERE_INIT_GET_ACTIVITY,
+  WHATS_HERE_ACTIVITY_ROWS_REQUEST,
+  WHATS_HERE_ACTIVITY_ROWS_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -56,7 +63,9 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_IAPP_TABLE_ROWS_GET_REQUEST
+  handle_IAPP_TABLE_ROWS_GET_REQUEST,
+  handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
+  handle_MAP_WHATS_HERE_INIT_GET_POI
 } from './map/dataAccess';
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -64,7 +73,8 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE
+  handle_IAPP_TABLE_ROWS_GET_ONLINE,
+  handle_MAP_WHATS_HERE_GET_POI_ONLINE
 } from './map/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
@@ -82,18 +92,6 @@ function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  //recordSets.filter(recordSetName
-  /* export const getSearchCriteriaFromFilters = (
-    advancedFilterRows: any,
-    rolesUserHasAccessTo: any,
-    recordSets: any,
-    setName: string,
-    isIAPP: boolean,
-    gridFilters: any,
-    page: number,
-    limit: number,
-    sortColumns: readonly SortColumn[]
-  ) => {*/
 
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
@@ -550,6 +548,8 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   });
 }
 
+function* getPOIIDsOnline(feature, filterCriteria) {}
+
 function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
   yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { recordSetID: action.payload.deletedID } });
 }
@@ -639,12 +639,47 @@ function* leafletWhosEditing() {
     takeEvery(TABS_SET_ACTIVE_TAB_SUCCESS, handleTabChange),
     takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange),
   ])
+}
 
+function* handle_WHATS_HERE_FEATURE(action) {
+  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
+  yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
+}
+
+function* whatsHereSaga() {
+  yield all([
+    takeEvery(MAP_WHATS_HERE_INIT_GET_POI, handle_MAP_WHATS_HERE_INIT_GET_POI),
+    takeEvery(MAP_WHATS_HERE_INIT_GET_ACTIVITY, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
+    takeEvery(MAP_WHATS_HERE_FEATURE, handle_WHATS_HERE_FEATURE)
+  ]);
+}
+
+function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+  try {
+    yield put({ 
+      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+      payload: action.payload
+    });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
+  try {
+    yield put({ 
+      type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+      payload: action.payload
+    });
+  } catch(e) {
+    console.error(e);
+  }
 }
 
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing)
   yield all([
+    fork(whatsHereSaga),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
@@ -666,10 +701,13 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE)
+    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
+    takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
+    takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
+
 
 export default activitiesPageSaga;

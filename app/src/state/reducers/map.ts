@@ -16,7 +16,14 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_PANNED,
-  LEAFLET_SET_WHOS_EDITING
+  LEAFLET_SET_WHOS_EDITING,
+  TOGGLE_BASIC_PICKER_LAYER,
+  MAP_TOGGLE_WHATS_HERE,
+  MAP_WHATS_HERE_FEATURE,
+  WHATS_HERE_IAPP_ROWS_SUCCESS,
+  MAP_SET_WHATS_HERE_PAGE_LIMIT,
+  MAP_SET_WHATS_HERE_SECTION,
+  WHATS_HERE_ACTIVITY_ROWS_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -38,6 +45,8 @@ class MapState {
   HDToggle: boolean;
   accuracyToggle: boolean;
   layers: object;
+  whatsHere: any;
+  simplePickerLayers: object;
   recordTables: object;
   error: boolean;
   activitiesGeoJSON: any;
@@ -53,6 +62,15 @@ class MapState {
     this.positionTracking = false;
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
+    this.whatsHere = {
+      toggle: false,
+      feature: null,
+      section: 'position',
+      iappRows: null,
+      activityRows: null,
+      limit: 5,
+      page: 0
+    };
   }
 }
 const initialState = new MapState();
@@ -64,6 +82,50 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           LeafletWhosEditing: action.payload.LeafletWhosEditing
+        }
+        }
+      case MAP_WHATS_HERE_FEATURE: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            toggle: state.whatsHere.toggle,
+            feature: action.payload.feature
+          }
+        };
+      }
+      case MAP_TOGGLE_WHATS_HERE: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            toggle: !state.whatsHere.toggle,
+            feature: null,
+            iappRows: null,
+            limit: 5,
+            page: 0
+          }
+        };
+      }
+      case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            page: action.payload.page,
+            limit: action.payload.limit
+          }
+        };
+      }
+      case MAP_SET_WHATS_HERE_SECTION: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            section: action.payload.section,
+            page: 0,
+            limit: 5
+          }
         };
       }
       case MAP_TOGGLE_ACCURACY: {
@@ -95,6 +157,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           panned: !state.panned
+        };
+      }
+      case TOGGLE_BASIC_PICKER_LAYER: {
+        let newState = JSON.parse(JSON.stringify({ ...state.simplePickerLayers }));
+
+        for (const layerNameProperty in action.payload) {
+          //if exists, toggle
+          if (newState[layerNameProperty]) {
+            newState[layerNameProperty] = !newState[layerNameProperty];
+          } else {
+            // doesn't exist, getting turned on
+            newState[layerNameProperty] = true;
+          }
+        }
+
+        return {
+          ...state,
+          simplePickerLayers: JSON.parse(JSON.stringify({ ...newState }))
         };
       }
       case LAYER_STATE_UPDATE: {
@@ -232,6 +312,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           IAPPGeoJSON: action.payload.IAPPGeoJSON
         };
+      }
+      case WHATS_HERE_IAPP_ROWS_SUCCESS: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            iappRows: action.payload.IDs
+          }
+        }
+      }
+      case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            activityRows: action.payload.IDs
+          }
+        }
       }
       default:
         return state;

@@ -27,7 +27,7 @@ const IAPPCanvasLayerMemo = (props) => {
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.layers?.[props.layerKey].layerState?.mapToggle) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
         return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
@@ -52,7 +52,7 @@ const IAPPCanvasLayerMemo = (props) => {
     } else return <></>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList, mapState?.layers?.[props.layerKey].layerState?.mapToggle)
   ]);
 };
 
@@ -235,6 +235,10 @@ export const RecordSetLayersRenderer = (props: any) => {
     <>
       {activityLayers()?.length > 0 ? (
         activityLayers()?.map((layerKey) => {
+          if(!layerKey)
+          {
+            return <></>
+          }
           return (
             <>
               <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
@@ -247,6 +251,10 @@ export const RecordSetLayersRenderer = (props: any) => {
       )}
       {iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
+          if(!layerKey)
+          {
+            return <></>
+          }
           return (
             <>
               <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;

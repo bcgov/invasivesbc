@@ -2,7 +2,6 @@ import L from 'leaflet';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Marker, useMap, useMapEvent, GeoJSON, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { GeneratePopup } from '../Tools/ToolTypes/Data/InfoAreaDescription';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import center from '@turf/center';
 import SLDParser from 'geostyler-sld-parser';
@@ -15,6 +14,11 @@ enum ZoomTypes {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high'
+}
+
+const Dummy = (props) => {
+  return <></>
+
 }
 
 export const ActivitiesLayerV2 = (props: any) => {
@@ -220,7 +224,7 @@ export const ActivitiesLayerV2 = (props: any) => {
                     })}
                     position={[position[1], position[0]]}
                     key={'activity_marker' + a.properties.id}>
-                    <GeneratePopup bufferedGeo={bufferedGeo} />
+                      <Dummy bufferedGeo={bufferedGeo}/>
                   </Marker>
                 );
             }

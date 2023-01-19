@@ -1,46 +1,24 @@
-import { getClosestWells } from 'components/activity/closestWellsHelpers';
-import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
-import { put, select } from 'redux-saga/effects';
-import { throttle } from 'redux-saga/effects';
+import { TurnLeft } from '@mui/icons-material';
+import { put, select, take } from 'redux-saga/effects';
+import intersect from '@turf/intersect';
 
 import {
-  autofillBiocontrolCollectionTotalQuantity,
-  autoFillNameByPAC,
-  autoFillSlopeAspect,
-  autoFillTotalBioAgentQuantity,
-  autoFillTotalReleaseQuantity
-} from 'rjsf/business-rules/populateCalculatedFields';
-import {
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  ACTIVITY_SAVE_NETWORK_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_SUCCESS,
-  ACTIVITY_GET_NETWORK_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_CREATE_NETWORK,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  ACTIVITY_CREATE_FAILURE,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_DEBUG,
-  ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_OFFLINE,
-  IAPP_GEOJSON_GET_ONLINE,
-  IAPP_TABLE_ROWS_GET_ONLINE,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_ONLINE
+  ACTIVITIES_TABLE_ROWS_GET_ONLINE,
+  ACTIVITY_GET_INITIAL_STATE_FAILURE,
+  IAPP_GEOJSON_GET_ONLINE,
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+  IAPP_TABLE_ROWS_GET_ONLINE,
+  WHATS_HERE_ACTIVITY_ROWS_REQUEST,
+  WHATS_HERE_IAPP_ROWS_REQUEST,
+  WHATS_HERE_PAGE_POI
 } from 'state/actions';
-import { selectActivity } from 'state/reducers/activity';
-import { selectAuth } from 'state/reducers/auth';
-import { generateDBActivityPayload, populateSpeciesArrays } from 'utils/addActivity';
-import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
+import { selectMap } from 'state/reducers/map';
+import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -144,7 +122,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   }
 }
 
-
 export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // if mobile or web
@@ -163,4 +140,106 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
+}
+
+export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
+  const currentMapState = yield select(selectMap);
+
+  const featuresFilteredByUserShape = currentMapState.IAPPGeoJSON.features.filter((feature) => {
+    // IAPP will always be a points
+    const pointToCheck = point(feature.geometry.coordinates);
+    const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
+    return booleanPointInPolygon(pointToCheck, polygonToCheck);
+  });
+
+  console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
+  const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
+    return feature.properties.site_id;
+  });
+
+  console.log('featureFilteredIDS', featureFilteredIDS?.length);
+
+  let unfilteredRecordSetIDs = [];
+  Object.keys(currentMapState?.layers).map((id) => {
+    if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
+      unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
+    }
+  });
+
+  console.log('unfilteredRecordSetIDs', unfilteredRecordSetIDs?.length);
+
+  const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
+    return featureFilteredIDS.includes(id);
+  });
+
+  console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
+
+  // Filter duplicates
+  const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
+  
+  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
+
+  // online/offline agnostic paging
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
+  while (currentMapState?.whatsHere?.toggle) {
+    const currentMapState = yield select(selectMap);
+    if (!currentMapState?.whatsHere?.toggle) {
+      return;
+    }
+    // get slice here
+    const pageAction = yield take(WHATS_HERE_PAGE_POI); // maybe need to do takeAny and look for toggle
+    const page = pageAction.payload.page || 0;
+    const limit = pageAction.payload.limit || 0;
+    const subset = [];
+    yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: subset } });
+  }
+}
+
+export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
+  const currentMapState = yield select(selectMap);
+
+  const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
+    // activities can have points and polygons, lines are considered polygons
+    const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
+    switch(feature?.geometry?.type) {
+      case "Point":
+        const featurePoint = point(feature.geometry.coordinates);
+        return booleanPointInPolygon(featurePoint, boundaryPolygon);
+      case "Polygon":
+        const featurePolygon = polygon(feature.geometry.coordinates);
+        return intersect(featurePolygon, boundaryPolygon);
+      default:
+        return false;
+    }
+  });
+
+  console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
+  const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
+    return feature.properties.id;
+  });
+
+  console.log('featureFilteredIDS', featureFilteredIDS?.length);
+
+  let unfilteredRecordSetIDs = [];
+  Object.keys(currentMapState?.layers).map((id) => {
+    if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
+      unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
+    }
+  });
+
+  console.log('unfilteredRecordSetIDs', unfilteredRecordSetIDs?.length);
+
+  const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
+    return featureFilteredIDS.includes(id);
+  });
+
+  console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
+
+  // Filter duplicates
+  const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
+  
+  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
+
+  // online/offline agnostic paging
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
 }

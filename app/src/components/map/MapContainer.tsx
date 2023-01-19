@@ -3,6 +3,8 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 // Offline dependencies
+import booleanOverlap from '@turf/boolean-overlap';
+import booleanWithin from '@turf/boolean-within';
 import 'leaflet.offline';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -16,35 +18,41 @@ import {
   useMap,
   ZoomControl as ZoomButtons
 } from 'react-leaflet';
-import booleanWithin from '@turf/boolean-within';
-import booleanOverlap from '@turf/boolean-overlap';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
 import './MapContainer.css';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
 // import 'leaflet-editable';
 
-import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
+import centroid from '@turf/centroid';
+import async from 'async';
+import 'leaflet-editable';
+// import ReactLeafletEditable from 'react-leaflet-editable';
+import './MapContainer.css';
+
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
-import OfflineMap from './OfflineMap';
 import { MapRequestContextProvider } from 'contexts/MapRequestsContext';
-import { NamedBoundaryMenu } from './NamedBoundaryMenu';
-import { LayerPickerBasic } from './LayerPickerBasic';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'react-redux';
 import { selectActivity } from 'state/reducers/activity';
-import centroid from '@turf/centroid';
 import { selectIappsite } from 'state/reducers/iappsite';
-import IappIconUrl from './Icons/iapp-icon.png';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import ActivityIconUrl from './Icons/activity-icon.png';
-import { BaseMapToggle } from './Tools/ToolTypes/Nav/BaseMapToggle';
-import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
+import IappIconUrl from './Icons/iapp-icon.png';
+import { LayerPickerBasic } from './LayerPickerBasic';
+import { NamedBoundaryMenu } from './NamedBoundaryMenu';
+import OfflineMap from './OfflineMap';
 import { AccuracyMarker, AccuracyToggle } from './Tools/ToolTypes/Nav/AccuracyToggle';
+import { BaseMapToggle } from './Tools/ToolTypes/Nav/BaseMapToggle';
 import { FindMeToggle, LocationMarker, PanToMe } from './Tools/ToolTypes/Nav/FindMe';
-import async from 'async';
+import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
+import { HDToggle } from './Tools/ToolTypes/Nav/HDToggle';
 
 //workaround for: https://github.com/vitejs/vite/issues/2139
 import ReactLeafletEditableFix from 'react-leaflet-editable';
+import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
+import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
+import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
+import { WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -285,6 +293,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
+
+            <WhatsHereButton />
+            <WhatsHereDrawComponent />
+            <WhatsHereMarker />
+
             {props.children}
 
             {activityState?.activity?.geometry ? (
@@ -315,6 +328,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <></>
             )}
 
+            <LayerSniffer />
             <LayerPickerBasic></LayerPickerBasic>
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>

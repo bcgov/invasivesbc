@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -22,6 +23,12 @@ import {
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
+import { selectMap } from 'state/reducers/map';
+import { MAP_SET_WHATS_HERE_PAGE_LIMIT, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
+import { useDispatch } from 'react-redux';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -64,6 +71,111 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
   );
 };
 
+function WhatsHerePagination(props) {
+  const dispatch = useDispatch();
+  const mapState = useSelector(selectMap);
+  const pageNumber =
+    mapState?.whatsHere &&
+    mapState?.whatsHere?.page
+      ? mapState?.whatsHere?.page
+      : 0;
+  const pageLimit =
+    mapState?.whatsHere &&
+    mapState?.whatsHere?.limit
+      ? mapState?.whatsHere?.limit
+      : 20;
+  let setLength = 1;
+  if (mapState?.whatsHere) {
+    if (props.type === "activity" && mapState?.whatsHere?.activityRows &&
+    mapState?.whatsHere?.activityRows.length > 0) {
+      setLength = mapState?.whatsHere?.activityRows.length;
+    } else if (props.type === "iapp" && mapState?.whatsHere?.iappRows &&
+    mapState?.whatsHere?.iappRows.length > 0){
+      setLength = mapState?.whatsHere?.iappRows.length;
+    }
+  }
+
+  return (
+    <div key={'pagination'}>
+      <div key={'paginationControls'}>
+        {pageNumber <= 0 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                payload: {
+                  page: 0,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
+          </Button>
+        )}
+        {pageNumber <= 0 ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                payload: {
+                  page: pageNumber - 1,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <ArrowLeftIcon></ArrowLeftIcon>
+          </Button>
+        )}
+        <span>
+          {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
+        </span>
+        {((pageNumber + 1) * pageLimit) >= setLength ? (
+          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        ) : (
+          <Button
+            sx={{ m: 1, p: 1 }}
+            size={'small'}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                payload: {
+                  page: pageNumber + 1,
+                  limit: pageLimit
+                }
+              });
+            }}>
+            <ArrowRightIcon></ArrowRightIcon>
+          </Button>
+        )}
+      </div>
+      <div key={'paginationRecords'}>
+        <span>
+          Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
+          {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of{' '}
+          {setLength}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
     body: {
@@ -94,10 +206,10 @@ export const RenderTablePosition = ({ rows }) => {
       {rows &&
         rows?.map((row) => (
           <StyledTableRow key={row.name}>
-            <StyledTableCell style={{ width: 150.5 }} component="th" scope="row">
+            <StyledTableCell style={{ width: 250 }} component="th" scope="row">
               {row.name}
             </StyledTableCell>
-            <StyledTableCell style={{ width: 150.5 }}>{row.value}</StyledTableCell>
+            <StyledTableCell style={{ width: 250 }}>{row.value}</StyledTableCell>
           </StyledTableRow>
         ))}
     </TableBody>
@@ -113,6 +225,7 @@ export const RenderTableActivity = (props: any) => {
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
+  const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
@@ -159,7 +272,7 @@ export const RenderTableActivity = (props: any) => {
   ];
 
   useEffect(() => {
-    updateActivityRecords();
+       updateActivityRecords();
   }, [bufferedGeo]);
 
   // Don't know if needed anymore?
@@ -175,43 +288,43 @@ export const RenderTableActivity = (props: any) => {
 
   const updateActivityRecords = React.useCallback(async () => {
     try {
-      console.log('Getting activities in buffered geo: ', bufferedGeo);
-      const activities = await dataAccess.getActivitiesLean({
-        search_feature: bufferedGeo,
-        limit: 500,
-        page: 0
-      });
-      console.log(activities);
+      const arr = [];
+      const startRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
+      const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
 
-      const tempArr = [];
+      for (
+        let i = startRecord;
+        i < endRecord && i < mapState?.whatsHere?.activityRows?.length;
+        i++
+      ) {
+        const id = mapState?.whatsHere?.activityRows?.[i];
+        const activityRecord = mapState?.activitiesGeoJSON?.features?.find((feature) => {
+          return feature?.properties?.id === id;
+        });
 
-      for (const a of activities.rows) {
-        const id = a?.geojson?.properties?.id;
-        const short_id = a?.geojson?.properties?.short_id;
-        const activity_type = a?.geojson?.properties?.type;
-        const reported_area = a?.geojson?.properties?.reported_area;
         const jurisdiction_code = [];
-        a?.geojson?.properties?.jurisdiction?.forEach((item) => {
+        activityRecord?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
+
         const species_code = [];
-        switch (activity_type) {
+        switch (activityRecord?.properties?.type) {
           case 'Observation':
-            a?.geojson?.properties?.species_positive?.forEach((s) => {
-              species_code.push(s);
+            activityRecord?.properties?.species_positive?.forEach((s) => {
+              if (s !== null) species_code.push(s);
             });
-            a?.geojson?.properties?.species_negative?.forEach((s) => {
-              species_code.push(s);
+            activityRecord?.properties?.species_negative?.forEach((s) => {
+              if (s !== null) species_code.push(s);
             });
             break;
           case 'Biocontrol':
           case 'Treatment':
             if (
-              a.geojson.properties.species_treated &&
-              a.geojson.properties.species_treated.length > 0 &&
-              a.geojson.properties.species_treated[0] !== null
+              activityRecord?.properties.species_treated &&
+              activityRecord?.properties.species_treated.length > 0 &&
+              activityRecord?.properties.species_treated[0] !== null
             ) {
-              const treatmentTemp = JSON.parse(a.geojson.properties.species_treated);
+              const treatmentTemp = activityRecord?.properties.species_treated;
               if (treatmentTemp) {
                 treatmentTemp.forEach((s) => {
                   species_code.push(s);
@@ -221,11 +334,11 @@ export const RenderTableActivity = (props: any) => {
             break;
           case 'Monitoring':
             if (
-              a.geojson.properties.species_treated &&
-              a.geojson.properties.species_treated.length > 0 &&
-              a.geojson.properties.species_treated[0] !== null
+              activityRecord?.properties.species_treated &&
+              activityRecord?.properties.species_treated.length > 0 &&
+              activityRecord?.properties.species_treated[0] !== null
             ) {
-              const monitoringTemp = JSON.parse(a.geojson.properties.species_treated);
+              const monitoringTemp = JSON.parse(activityRecord?.properties.species_treated);
               if (monitoringTemp) {
                 monitoringTemp.forEach((s) => {
                   species_code.push(s);
@@ -234,25 +347,24 @@ export const RenderTableActivity = (props: any) => {
             }
             break;
         }
-        const geometry = a?.geojson;
 
-        tempArr.push({
-          id: id,
-          short_id: short_id,
-          activity_type: activity_type,
-          reported_area: reported_area ? reported_area : 0,
+        arr.push({
+          id: activityRecord?.properties?.id,
+          short_id: activityRecord?.properties?.short_id,
+          activity_type: activityRecord?.properties?.type,
+          reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
           jurisdiction_code: jurisdiction_code,
           species_code: species_code,
-          geometry: geometry
+          geometry: activityRecord?.geometry
         });
       }
 
-      setRows(tempArr);
+      setRows(arr);
     } catch (e) {
       console.log('Activities error', e);
       setRows([]);
     }
-  }, [bufferedGeo, dataAccess]);
+  }, [bufferedGeo]);
 
   const activityPage = async (params) => {
     const id = params.row.id;
@@ -261,12 +373,12 @@ export const RenderTableActivity = (props: any) => {
   };
 
   return (
-    <div style={{ height: 300, minWidth: '100%' }}>
+    <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
       <DataGrid
         columns={columns}
         rows={rows}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        hideFooterPagination
+        hideFooter
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
@@ -285,6 +397,7 @@ export const RenderTableActivity = (props: any) => {
         //   console.log('params', params);
         // }}
       />
+      <WhatsHerePagination type='activity'></WhatsHerePagination>
     </div>
   );
 };
@@ -341,10 +454,11 @@ export const RenderTableDataBC = ({ rows }) => {
 
 export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
-  const dataAccess = useDataAccess();
+  const dispatch = useDispatch();
   const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
+  const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
 
   const columns = [
@@ -385,51 +499,50 @@ export const RenderTablePOI = (props: any) => {
   }, [bufferedGeo]);
 
   const updatePOIRecords = React.useCallback(async () => {
-    try {
-      const pointsofinterest = await dataAccess.getPointsOfInterestLean({
-        search_feature: bufferedGeo,
-        isIAPP: true,
-        limit: 500,
-        page: 0
+    const arr = [];
+    const startRecord =  mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
+    const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
+    for (
+      let i = startRecord;
+      i < endRecord && i < mapState?.whatsHere?.iappRows?.length;
+      i++) {
+      const id = mapState?.whatsHere?.iappRows?.[i];
+      const iappRecord = mapState?.IAPPGeoJSON?.features.find((feature) => {
+        return feature?.properties?.site_id === id;
       });
 
-      if (!pointsofinterest) {
-        return;
-      }
-
-      // Removed for now: setPoisObj(pointsofinterest);
-      const tempArr = [];
-      pointsofinterest.forEach((poi) => {
-        const { site_id, reported_area } = poi.properties;
-        const jurisdictions: string = poi.properties.jurisdictions.join('\n');
-        const species: string[] = poi.properties.species_on_site.join(' ');
-        tempArr.push({
-          id: site_id,
-          site_id: site_id,
-          jurisdiction_code: jurisdictions,
-          species_code: species,
-          geometry: poi,
-          reported_area: reported_area
-        });
+      arr.push({
+        id: iappRecord?.properties.site_id,
+        site_id: iappRecord?.properties.site_id,
+        jurisdiction_code: iappRecord?.properties.jurisdictions,
+        species_code: iappRecord?.properties.species_on_site,
+        geometry: iappRecord?.geometry,
+        reported_area: iappRecord?.properties.reported_area
       });
-      setRows(tempArr);
-    } catch (e) {
-      console.log('Point of Interest error', e);
     }
+
+    setRows(arr);
   }, [bufferedGeo]);
 
   return (
-    <div style={{ height: 300, minWidth: '100%' }}>
+    <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
       <DataGrid
         columns={columns}
         rows={rows}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        hideFooterPagination
+        hideFooter
         getRowHeight={() => 'auto'}
         headerHeight={30}
         onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+          dispatch({
+            type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+            payload: {
+              description: 'IAPP-' + params.id,
+              id: params.id
+            }
+          });
           if (authenticated && roles.length > 0) {
-            history.push(`/home/iapp/${params.id}`);
+            history.push(`/home/iapp/`);
           } else {
             errorContext.pushError({
               message:
@@ -439,10 +552,8 @@ export const RenderTablePOI = (props: any) => {
             });
           }
         }}
-        // onCellDoubleClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-        //   console.log('params', params);
-        // }}
-      />
+        />
+        <WhatsHerePagination type='iapp'></WhatsHerePagination>
     </div>
   );
 };

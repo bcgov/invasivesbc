@@ -168,3 +168,30 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     */
   }
 }
+
+export function* handle_MAP_WHATS_HERE_GET_POI_ONLINE(action) {
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
+
+  if (networkReturn.data.result.rows) {
+    const IDList = networkReturn.data.result.rows.map((row) => {
+      return row.site_id;
+    });
+
+    yield put({
+      type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        IDList: IDList
+      }
+    });
+  } else {
+    /*  put({
+      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        error: networkReturn.data
+      }
+    });
+    */
+  }
+}

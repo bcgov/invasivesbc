@@ -31,6 +31,7 @@ import {
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { IFlyToAndFadeItem, FlyToAndFadeItemTransitionType, useFlyToAndFadeContext } from './Tools/ToolTypes/Nav/FlyToAndFade';
+import { selectMap } from 'state/reducers/map';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -94,6 +95,7 @@ export const NamedBoundaryMenu = (props) => {
   const dispatch = useDispatch();
   const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap);
 
   const [newBoundaryDialog, setNewBoundaryDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -246,7 +248,7 @@ export const NamedBoundaryMenu = (props) => {
   };
 
   useEffect(() => {
-    if (props?.geometryState?.geometry?.length > 0) {
+    if (props?.geometryState?.geometry?.length > 0 && !mapState?.whatsHere?.toggle) {
       addBoundary(props?.geometryState?.geometry);
     }
   }, [props?.geometryState?.geometry]);
@@ -295,7 +297,7 @@ export const NamedBoundaryMenu = (props) => {
           className={classes.innerToolBarContainer + ' leaflet-control'}
           style={{ transform: expanded ? 'translateX(20%)' : 'translateX(-110%)' }}>
           <Divider />
-          <ListItem disableGutters>
+          <ListItem key="boundaryListCreate" disableGutters>
             <ListItemButton
               onClick={createBoundary}
               ref={divRef}
@@ -310,7 +312,8 @@ export const NamedBoundaryMenu = (props) => {
             </ListItemButton>
           </ListItem>
           {userSettings?.boundaries?.map((b, index) => (
-            <ListItem
+            <div
+            key={`boundaryListJump${index}`}
               onClick={() => {
                 jump(b)}
               }>
@@ -323,7 +326,7 @@ export const NamedBoundaryMenu = (props) => {
                 key={index}
                 deleteBoundary={deleteBoundary}
               />
-            </ListItem>
+            </div>
           ))}
         </List>
       </div>
