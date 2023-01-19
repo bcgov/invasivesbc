@@ -40,7 +40,6 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const { darkTheme } = useSelector(selectUserSettings);
 
   const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
-  console.log('THEME:', theme);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };

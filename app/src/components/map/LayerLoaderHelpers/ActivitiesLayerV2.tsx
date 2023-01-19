@@ -147,15 +147,12 @@ export const ActivitiesLayerV2 = (props: any) => {
           }
         ]
       };
-      console.log('ids')
-      console.dir(props.ids)
         let updatedOptions: any = {
           ...initialOptions,
           }
 
           if(props.layerKey > 2)
           {
-            console.log('updating color')
 
             updatedOptions.style = {
                   ...initialOptions.style,

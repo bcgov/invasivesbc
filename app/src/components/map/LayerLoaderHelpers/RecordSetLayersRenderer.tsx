@@ -126,7 +126,7 @@ const ActivityCanvasLabelMemo = (props) => {
           zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
         />
       );
-    } else return <></>;
+    } else return <div key={Math.random()}></div>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
     JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
@@ -162,7 +162,7 @@ const ActivityLayerMemo = (props) => {
           opacity={0.8}
         />
       );
-    } else return <></>;
+    } else return <div key={Math.random()}></div>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
     JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
@@ -200,7 +200,7 @@ export const RecordSetLayersRenderer = (props: any) => {
         });
       }
     }, []);
-    return <></>;
+    return <div key={Math.random()}></div>;
   };
 
   const iappLayers = useCallback(() => {
@@ -235,35 +235,29 @@ export const RecordSetLayersRenderer = (props: any) => {
     <>
       {activityLayers()?.length > 0 ? (
         activityLayers()?.map((layerKey) => {
-          if(!layerKey)
-          {
-            return <></>
-          }
-          return (
-            <>
-              <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
-              <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey} />;
-            </>
-          );
+          if (layerKey)
+            return (
+              <div key={layerKey + 'activityLayerDivWrapper'}>
+                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
+                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+              </div>
+            );
         })
       ) : (
-        <></>
+        <div key={Math.random()}></div>
       )}
       {iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
-          if(!layerKey)
-          {
-            return <></>
-          }
-          return (
-            <>
-              <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
-              <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey} />;
-            </>
-          );
+          if (layerKey)
+            return (
+              <div key={layerKey + 'IAPPLayerDivWrapper'}>
+                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
+                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+              </div>
+            );
         })
       ) : (
-        <></>
+        <div key={Math.random()}></div>
       )}
     </>
   );

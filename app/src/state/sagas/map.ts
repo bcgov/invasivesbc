@@ -325,7 +325,6 @@ function* handle_MAP_INIT_REQUEST(action) {
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
 
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes');
-  console.dir(serverShapesServerResponse);
   const shapes = serverShapesServerResponse.data.result;
 
   let newMapState = {};
@@ -471,8 +470,6 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
     return;
   }
 
-  console.log('here!');
-  console.dir(recordSet);
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
     authState.accessRoles,
