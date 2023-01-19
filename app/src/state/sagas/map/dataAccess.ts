@@ -199,12 +199,15 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const currentMapState = yield select(selectMap);
 
   const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
-    // actvities can have points, polygons and all that
+    // activities can have points and polygons, lines are considered polygons
+    const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     switch(feature?.geometry?.type) {
       case "Point":
-        const pointToCheck = point(feature.geometry.coordinates);
-        const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-        return booleanPointInPolygon(pointToCheck, polygonToCheck);
+        const featurePoint = point(feature.geometry.coordinates);
+        return booleanPointInPolygon(featurePoint, boundaryPolygon);
+      case "Polygon":
+        const featurePolygon = polygon(feature.geometry.coordinates);
+        return intersect(featurePolygon, boundaryPolygon);
       default:
         return false;
     }
