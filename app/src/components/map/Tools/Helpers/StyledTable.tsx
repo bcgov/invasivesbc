@@ -24,7 +24,7 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { selectMap } from 'state/reducers/map';
-import { MAP_SET_WHATS_HERE_PAGE_LIMIT, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
+import { MAP_SET_WHATS_HERE_PAGE_LIMIT, MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -470,7 +470,18 @@ export const RenderTablePOI = (props: any) => {
     {
       field: 'site_id',
       headerName: 'IAPP ID',
-      width: 70
+      width: 70,
+      renderCell: (params) => {
+        return <div onMouseEnter={() => {
+          console.log(params.value);
+          dispatch({
+            type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+            payload: {
+              id: params.value
+            }
+          });
+        }}>{params.value}</div>
+      }
     },
     {
       field: 'reported_area',
