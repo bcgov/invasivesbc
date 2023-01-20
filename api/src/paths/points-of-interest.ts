@@ -12,6 +12,7 @@ import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-in
 import { getLogger } from '../utils/logger';
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -81,8 +82,16 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  * @return {RequestHandler}
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
-    const criteria = JSON.parse(<string>req.query['query']);
+  return async (req: InvasivesRequest, res) => {
+   const criteria: any = {}//JSON.parse(<string>req.query['query']);
+
+
+
+    /// check if public, check if site_id only
+    // boot out if includes name filters
+    const authstuff = (req as any).authContext
+    console.log('auth stuff')
+    console.log(authstuff)
 
     defaultLog.debug({
       label: 'point-of-interest',

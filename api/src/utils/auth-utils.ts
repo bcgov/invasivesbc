@@ -68,6 +68,7 @@ export const authenticate = async (req: InvasivesRequest) => {
           roles: [],
           filterForSelectable: filterForSelectable
         };
+
         console.log('got here')
         resolve();
       });
