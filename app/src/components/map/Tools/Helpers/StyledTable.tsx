@@ -24,7 +24,11 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { ErrorContext } from 'contexts/ErrorContext';
 import { selectMap } from 'state/reducers/map';
-import { MAP_SET_WHATS_HERE_PAGE_LIMIT, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST } from 'state/actions';
+import {
+  MAP_SET_WHATS_HERE_PAGE_LIMIT,
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST
+} from 'state/actions';
 import { useDispatch } from 'react-redux';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -74,23 +78,17 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 function WhatsHerePagination(props) {
   const dispatch = useDispatch();
   const mapState = useSelector(selectMap);
-  const pageNumber =
-    mapState?.whatsHere &&
-    mapState?.whatsHere?.page
-      ? mapState?.whatsHere?.page
-      : 0;
-  const pageLimit =
-    mapState?.whatsHere &&
-    mapState?.whatsHere?.limit
-      ? mapState?.whatsHere?.limit
-      : 20;
+  const pageNumber = mapState?.whatsHere && mapState?.whatsHere?.page ? mapState?.whatsHere?.page : 0;
+  const pageLimit = mapState?.whatsHere && mapState?.whatsHere?.limit ? mapState?.whatsHere?.limit : 20;
   let setLength = 1;
   if (mapState?.whatsHere) {
-    if (props.type === "activity" && mapState?.whatsHere?.activityRows &&
-    mapState?.whatsHere?.activityRows.length > 0) {
+    if (
+      props.type === 'activity' &&
+      mapState?.whatsHere?.activityRows &&
+      mapState?.whatsHere?.activityRows.length > 0
+    ) {
       setLength = mapState?.whatsHere?.activityRows.length;
-    } else if (props.type === "iapp" && mapState?.whatsHere?.iappRows &&
-    mapState?.whatsHere?.iappRows.length > 0){
+    } else if (props.type === 'iapp' && mapState?.whatsHere?.iappRows && mapState?.whatsHere?.iappRows.length > 0) {
       setLength = mapState?.whatsHere?.iappRows.length;
     }
   }
@@ -143,7 +141,7 @@ function WhatsHerePagination(props) {
         <span>
           {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
         </span>
-        {((pageNumber + 1) * pageLimit) >= setLength ? (
+        {(pageNumber + 1) * pageLimit >= setLength ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
@@ -168,8 +166,7 @@ function WhatsHerePagination(props) {
       <div key={'paginationRecords'}>
         <span>
           Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
-          {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of{' '}
-          {setLength}
+          {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of {setLength}
         </span>
       </div>
     </div>
@@ -272,7 +269,7 @@ export const RenderTableActivity = (props: any) => {
   ];
 
   useEffect(() => {
-       updateActivityRecords();
+    updateActivityRecords();
   }, [bufferedGeo]);
 
   // Don't know if needed anymore?
@@ -292,11 +289,7 @@ export const RenderTableActivity = (props: any) => {
       const startRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
       const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
 
-      for (
-        let i = startRecord;
-        i < endRecord && i < mapState?.whatsHere?.activityRows?.length;
-        i++
-      ) {
+      for (let i = startRecord; i < endRecord && i < mapState?.whatsHere?.activityRows?.length; i++) {
         const id = mapState?.whatsHere?.activityRows?.[i];
         const activityRecord = mapState?.activitiesGeoJSON?.features?.find((feature) => {
           return feature?.properties?.id === id;
@@ -397,7 +390,7 @@ export const RenderTableActivity = (props: any) => {
         //   console.log('params', params);
         // }}
       />
-      <WhatsHerePagination type='activity'></WhatsHerePagination>
+      <WhatsHerePagination type="activity"></WhatsHerePagination>
     </div>
   );
 };
@@ -460,52 +453,78 @@ export const RenderTablePOI = (props: any) => {
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
-
-  const columns = [
-    {
-      field: 'id',
-      headerName: 'IAPP ID',
-      hide: true
-    },
-    {
-      field: 'site_id',
-      headerName: 'IAPP ID',
-      width: 70
-    },
-    {
-      field: 'reported_area',
-      headerName: 'Reported Area',
-      minWidth: 115
-    },
-    {
-      field: 'jurisdiction_code',
-      headerName: 'Jurisdictions',
-      width: 200
-    },
-    {
-      field: 'species_code',
-      headerName: 'Species',
-      width: 120
-    },
-    {
-      field: 'geometry',
-      headerName: 'Geometry',
-      hide: true
-    }
-  ];
-
+  const [columns, setColumns] = useState(null);
   useEffect(() => {
     updatePOIRecords();
-  }, [bufferedGeo]);
+  }, [bufferedGeo, mapState?.whatsHere?.page]);
+
+  const dispatchUpdatedID = (params) => {
+                dispatch({
+                  type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+                  payload: {
+                    id: params.value,
+                    geo: rows.filter((row) => { 
+                      return row.site_id === params.value
+                    })[0]
+                  }
+                });
+  }
+
+  useEffect(() => {
+    console.log('rerender poi table')
+    let tcolumns = [
+      {
+        field: 'id',
+        headerName: 'IAPP ID',
+        hide: true
+      },
+      {
+        field: 'site_id',
+        headerName: 'IAPP ID',
+        width: 70,
+        renderCell: (params) => {
+          return (
+            <div
+              onMouseEnter={() => {
+                dispatchUpdatedID(params)
+              }}>
+              {params.value}
+            </div>
+          );
+        }
+      },
+      {
+        field: 'reported_area',
+        headerName: 'Reported Area',
+        minWidth: 115
+      },
+      {
+        field: 'jurisdiction_code',
+        headerName: 'Jurisdictions',
+        width: 200
+      },
+      {
+        field: 'species_code',
+        headerName: 'Species',
+        width: 120
+      },
+      {
+        field: 'geometry',
+        headerName: 'Geometry',
+        hide: true
+      }
+    ];
+
+    setColumns([...tcolumns]);
+  }, [rows]);
+
+
 
   const updatePOIRecords = React.useCallback(async () => {
     const arr = [];
-    const startRecord =  mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
+    const startRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
     const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
-    for (
-      let i = startRecord;
-      i < endRecord && i < mapState?.whatsHere?.iappRows?.length;
-      i++) {
+    for (let i = startRecord; i < endRecord && i < mapState?.whatsHere?.iappRows?.length; i++) {
       const id = mapState?.whatsHere?.iappRows?.[i];
       const iappRecord = mapState?.IAPPGeoJSON?.features.find((feature) => {
         return feature?.properties?.site_id === id;
@@ -522,38 +541,45 @@ export const RenderTablePOI = (props: any) => {
     }
 
     setRows(arr);
-  }, [bufferedGeo]);
+  }, [bufferedGeo, mapState?.whatsHere?.page]);
+
 
   return (
-    <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
-      <DataGrid
-        columns={columns}
-        rows={rows}
-        hideFooterPagination
-        hideFooter
-        getRowHeight={() => 'auto'}
-        headerHeight={30}
-        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          dispatch({
-            type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-            payload: {
-              description: 'IAPP-' + params.id,
-              id: params.id
-            }
-          });
-          if (authenticated && roles.length > 0) {
-            history.push(`/home/iapp/`);
-          } else {
-            errorContext.pushError({
-              message:
-                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
-              code: 401,
-              namespace: ''
-            });
-          }
-        }}
-        />
-        <WhatsHerePagination type='iapp'></WhatsHerePagination>
-    </div>
+    <>
+      {columns?.length > 0 ? (
+        <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+          <DataGrid
+            columns={columns}
+            rows={rows}
+            hideFooterPagination
+            hideFooter
+            getRowHeight={() => 'auto'}
+            headerHeight={30}
+            onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+              dispatch({
+                type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+                payload: {
+                  description: 'IAPP-' + params.id,
+                  id: params.id
+                }
+              });
+              if (authenticated && roles.length > 0) {
+                history.push(`/home/iapp/`);
+              } else {
+                errorContext.pushError({
+                  message:
+                    'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
+                  code: 401,
+                  namespace: ''
+                });
+              }
+            }}
+          />
+          <WhatsHerePagination type="iapp"></WhatsHerePagination>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };

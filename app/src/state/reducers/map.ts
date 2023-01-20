@@ -23,7 +23,9 @@ import {
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_SET_WHATS_HERE_SECTION,
-  WHATS_HERE_ACTIVITY_ROWS_SUCCESS
+  WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -125,6 +127,28 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             section: action.payload.section,
             page: 0,
             limit: 5
+          }
+        };
+      }
+      case MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            highlightedIAPP: action.payload.id,
+            highlightedACTIVITY: null,
+            highlightedGeo: action.payload.geo
+          }
+        };
+      }
+      case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            highlightedIAPP: null,
+            highlightedACTIVITY: action.payload.id,
+            highlightedGeo: action.payload.geo
           }
         };
       }
