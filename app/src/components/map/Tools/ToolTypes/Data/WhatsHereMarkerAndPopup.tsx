@@ -106,7 +106,9 @@ export const WhatsHereMarker = (props) => {
     if (mapState?.whatsHere?.feature?.geometry) {
       lat = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[1]));
       lng = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[0]));
-      setPosition({ lat: lat, lng: lng });
+      const coord = mapState?.whatsHere?.feature?.geometry?.coordinates[0];
+      const coord2 = coord[1];
+      setPosition({ lat: coord2[1], lng: lng });
     }
 
     return () => {
@@ -148,7 +150,7 @@ export const WhatsHereMarker = (props) => {
     const getDOMXY = () => {
       const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
       const boundingRect = markerElement?.getBoundingClientRect();
-      setDOMXY([(boundingRect.x - 250), (boundingRect.top - 100)]);
+      setDOMXY([(boundingRect.x - 250), (boundingRect.top - 270)]);
     };
     useEffect(() => {
       getDOMXY();
