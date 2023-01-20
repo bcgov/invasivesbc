@@ -22,6 +22,7 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string
     roles: string[];
+    isPublicUser?: boolean
   };
 }
 
@@ -72,8 +73,10 @@ export const authenticate = async (req: InvasivesRequest) => {
           preferredUsername: null,
           friendlyUsername: null,
           user: null,
-          roles: []
+          roles: [],
+          isPublicUser: true
         };
+
         console.log('got here')
         resolve();
       });
