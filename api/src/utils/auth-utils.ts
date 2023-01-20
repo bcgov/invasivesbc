@@ -68,20 +68,22 @@ export const authenticate = async (req: InvasivesRequest) => {
           roles: [],
           filterForSelectable: filterForSelectable
         };
+        console.log('got here')
         resolve();
       });
     }
-  }
-
-  if (authHeader.includes('undefined')) {
+  } else if (authHeader ===  undefined  && !isPublicURL) {
     throw {
       code: 401,
       message: 'Missing Authorization header',
       namespace: 'auth-utils'
     };
   }
+  console.log('didnt get here')
 
-  const token = authHeader.split(/\s/)[1];
+
+
+  const token = authHeader.split(/\s/)[1] 
 
   if (!token) {
     defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
