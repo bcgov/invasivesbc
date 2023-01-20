@@ -62,10 +62,8 @@ export const WhatsHerePopUpContent = (props) => {
   const { darkTheme } = useSelector(selectUserSettings);
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const map = useMap();
-  if(!bufferedGeo){
-    return;
-  }
-  const position = center(bufferedGeo).geometry.coordinates;
+
+  const position = (bufferedGeo)? center(bufferedGeo)?.geometry.coordinates : [0,0] 
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -96,7 +94,7 @@ export const WhatsHerePopUpContent = (props) => {
 
   return (
     <>
-      {mapState?.whatsHere?.section ? (
+      {mapState?.whatsHere?.section && bufferedGeo ? (
         <div
           id="whatsherepopup"
           style={{
@@ -148,26 +146,18 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
   useEffect(() => {
     const isIAPP = mapState?.whatsHere?.highlightedIAPP ? true : false;
 
-    let geo;
-    if (isIAPP) {
-      geo = mapState?.IAPPGeoJSON?.features?.filter((feature) => {
-        return feature.properties.site_id === mapState.whatsHere.highlightedIAPP;
-      })[0];
-    } else {
-      geo = mapState?.activitiesGeoJSON?.features?.filter((feature) => {
-        return feature.properties.id === mapState.whatsHere.highlightedACTIVITY;
-      })[0];
-    }
+    const geo = mapState?.whatsHere?.highlightedGeo
 
     const isPoint = isIAPP || geo?.geometry?.type === 'Point' ? true : false;
 
     if (!isPoint && geo) {
       setHighlightedGeo({ ...geo });
-      const centerOfGeo = center({ ...geo }).geometry.coordinates;
+      const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
     }
     else if (isPoint && geo) {
-      const centerOfGeo = center({ ...geo }).geometry.coordinates;
+      console.log('hello', geo)
+      const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
     }
     else return;
@@ -177,7 +167,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     console.log('isiapp', isIAPP)
     console.log('highlightedGeo', highlightedGeo)
 
-  }, [mapState?.whatsHere?.highlightedIAPP, mapState?.whatsHere?.highlightedACTIVITY]);
+  }, [mapState?.whatsHere?.highlightedIAPP, mapState?.whatsHere?.highlightedACTIVITY, mapState?.whatsHere?.highlightedGeo]);
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(

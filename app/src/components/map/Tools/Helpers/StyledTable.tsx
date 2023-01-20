@@ -454,13 +454,18 @@ export const RenderTablePOI = (props: any) => {
   const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
   const [columns, setColumns] = useState(null);
-
+  useEffect(() => {
+    updatePOIRecords();
+  }, [bufferedGeo, mapState?.whatsHere?.page]);
 
   const dispatchUpdatedID = (params) => {
                 dispatch({
                   type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
                   payload: {
-                    id: params.value
+                    id: params.value,
+                    geo: rows.filter((row) => { 
+                      return row.site_id === params.value
+                    })[0]
                   }
                 });
   }
@@ -511,11 +516,9 @@ export const RenderTablePOI = (props: any) => {
     ];
 
     setColumns([...tcolumns]);
-  }, []);
+  }, [rows]);
 
-  useEffect(() => {
-    updatePOIRecords();
-  }, [bufferedGeo]);
+
 
   const updatePOIRecords = React.useCallback(async () => {
     const arr = [];
@@ -538,7 +541,7 @@ export const RenderTablePOI = (props: any) => {
     }
 
     setRows(arr);
-  }, [bufferedGeo]);
+  }, [bufferedGeo, mapState?.whatsHere?.page]);
 
 
   return (
