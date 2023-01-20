@@ -401,8 +401,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore?.activity?.geometry && activityInStore.activity.geometry[0]) {
-      if(activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA)
-      {
+      if (activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA) {
         setClosestWells();
       }
       //if geometry is withing british columbia boundries, save it
@@ -421,7 +420,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
                 actionName: 'OK',
                 actionOnClick: async () => {
                   setWarningDialog({ ...warningDialog, dialogOpen: false });
-                 // dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+                  // dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
                 },
                 autoFocus: true
               }
@@ -431,6 +430,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }, 500);
     }
   }, [JSON.stringify(activityInStore?.activity?.geometry)]);
+
+  const getTitle = (inputSubtype) => {
+    switch (inputSubtype) {
+      case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
+        return 'Activity Monitoring Mechanical Terrestrial or Aquatic Plant';
+        break;
+      case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
+        return 'Activity Monitoring Chemical Terrestrial or Aquatic Plant';
+        break;
+      default:
+        return inputSubtype
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/_/g, '')
+          .replace(/^./, function (str) {
+            return str.toUpperCase();
+          });
+    }
+  };
 
   return (
     <Container className={props.classes.container}>
@@ -449,15 +466,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
-              {activityInStore.activity.activity_subtype &&
-              activityInStore.activity.activity_subtype == ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant
-                ? 'Activity Monitoring Chemical Terrestrial or Aquatic Plant'
-                : activityInStore.activity.activity_subtype
-                    .replace(/([A-Z])/g, ' $1')
-                    .replace(/_/g, '')
-                    .replace(/^./, function (str) {
-                      return str.toUpperCase();
-                    })}
+              {activityInStore.activity.activity_subtype && getTitle(activityInStore.activity.activity_subtype)}
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
