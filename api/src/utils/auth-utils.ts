@@ -55,8 +55,18 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   const authHeader = req.header('Authorization');
 
-  if (req.originalUrl === '/api/activities-lean/' || req.originalUrl === '/api/points-of-interest-lean/') {
-    if (authHeader.includes('undefined')) {
+
+
+  const isPublicURL = (req.originalUrl.includes('/api/activities-lean/') || req.originalUrl.includes('/api/points-of-interest-lean/') || req.originalUrl.includes('/api/points-of-interest/')) 
+
+  console.log(isPublicURL)
+
+
+
+
+  // add url
+  if (authHeader === undefined  && isPublicURL) {
+    {
       return new Promise<void>((resolve: any) => {
         req.authContext = {
           preferredUsername: null,
@@ -64,20 +74,22 @@ export const authenticate = async (req: InvasivesRequest) => {
           user: null,
           roles: []
         };
+        console.log('got here')
         resolve();
       });
     }
-  }
-
-  if (authHeader.includes('undefined')) {
+  } else if (authHeader ===  undefined  && !isPublicURL) {
     throw {
       code: 401,
       message: 'Missing Authorization header',
       namespace: 'auth-utils'
     };
   }
+  console.log('didnt get here')
 
-  const token = authHeader.split(/\s/)[1];
+
+
+  const token = authHeader.split(/\s/)[1] 
 
   if (!token) {
     defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
