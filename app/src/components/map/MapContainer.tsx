@@ -52,7 +52,7 @@ import ReactLeafletEditableFix from 'react-leaflet-editable';
 import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
 import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
 import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
-import { WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
+import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -297,6 +297,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <WhatsHereButton />
             <WhatsHereDrawComponent />
             <WhatsHereMarker />
+            <WhatsHereCurrentRecordHighlighted />
 
             {props.children}
 

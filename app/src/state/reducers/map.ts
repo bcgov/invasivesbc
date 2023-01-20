@@ -135,7 +135,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            highlightedIAPP: action.payload.id
+            highlightedIAPP: action.payload.id,
+            highlightedACTIVITY: null
           }
         };
       }
@@ -144,6 +145,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
+            highlightedIAPP: null,
             highlightedACTIVITY: action.payload.id
           }
         };
