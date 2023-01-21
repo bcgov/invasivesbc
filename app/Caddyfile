@@ -20,8 +20,8 @@ route {
 }
 
 route {
+  try_files {path} /index.html
   header /index.html {
     Cache-Control max-age=0,no-cache,no-store,must-revalidate
   }
-  try_files {path} /index.html
 }
