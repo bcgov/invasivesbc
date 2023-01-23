@@ -58,8 +58,23 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   const filterForSelectable = req.header('filterforselectable') === 'true'? true: false
 
-  if (req.originalUrl === '/api/activities-lean/' || req.originalUrl === '/api/points-of-interest-lean/') {
-    if (authHeader.includes('undefined')) {
+  const isPublicURL = ([
+    // '/api/activities-lean/',
+    // '/api/points-of-interest-lean/',
+    '/api/points-of-interest/',
+    // '/api/activities/',
+    // '/api/activity/',
+    // '/api/iapp-jurisdictions/',
+    // '/api/code_tables/invasive_plant_code/',
+    // '/api/code_tables/jurisdiction_code/',
+  ].includes(window.location.pathname));
+
+    console.log(isPublicURL)
+    console.log('window.location.pathname',window.location.pathname)
+
+  // add url
+  if (authHeader === undefined  && isPublicURL) {
+    {
       return new Promise<void>((resolve: any) => {
         req.authContext = {
           preferredUsername: null,
