@@ -23,40 +23,37 @@ import {
 } from '../../Helpers/StyledTable';
 import { calc_utm } from '../Nav/DisplayPosition';
 
-  const PopupMemo = (props) => {
-    const [DOMXY, setDOMXY] = useState([]);
-    const mapState = useSelector(selectMap)
+const PopupMemo = (props) => {
+  const [DOMXY, setDOMXY] = useState([]);
+  const mapState = useSelector(selectMap);
 
-    const getDOMXY = () => {
-      const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
-      const boundingRect = markerElement?.getBoundingClientRect();
-      setDOMXY([boundingRect.x - 250, boundingRect.top - 370]);
-    };
-    useEffect(() => {
-      getDOMXY();
-      var el = document.getElementById('no-scrolling-clicking');
-      L.DomEvent.disableScrollPropagation(el);
-
-    }, []);
-
-    const map = useMapEvent('drag', getDOMXY);
-
-
-    useEffect(()=> {
-      console.log('popupmemo level comp render')
-    },[])
-
-    return (
-      <>
-        {DOMXY.length > 0 ? (
-          <WhatsHerePopUpContent left={DOMXY[0]} top={DOMXY[1]} bufferedGeo={mapState?.whatsHere?.feature} />
-        ) : (
-          <></>
-        )}
-      </>
-    );
+  const getDOMXY = () => {
+    const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
+    const boundingRect = markerElement?.getBoundingClientRect();
+    setDOMXY([boundingRect.x - 250, boundingRect.top - 470]);
   };
+  useEffect(() => {
+    getDOMXY();
+    var el = document.getElementById('no-scrolling-clicking');
+    L.DomEvent.disableScrollPropagation(el);
+  }, []);
 
+  const map = useMapEvent('drag', getDOMXY);
+
+  useEffect(() => {
+    console.log('popupmemo level comp render');
+  }, []);
+
+  return (
+    <>
+      {DOMXY.length > 0 ? (
+        <WhatsHerePopUpContent left={DOMXY[0]} top={DOMXY[1]} bufferedGeo={mapState?.whatsHere?.feature} />
+      ) : (
+        <></>
+      )}
+    </>
+  );
+};
 
 export const WhatsHerePopUpContent = (props) => {
   const { bufferedGeo, onCloseCallback = null } = props;
@@ -64,7 +61,7 @@ export const WhatsHerePopUpContent = (props) => {
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const map = useMap();
 
-  const position = (bufferedGeo)? center(bufferedGeo)?.geometry.coordinates : [0,0] 
+  const position = bufferedGeo ? center(bufferedGeo)?.geometry.coordinates : [0, 0];
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -88,7 +85,6 @@ export const WhatsHerePopUpContent = (props) => {
       }
     });
   };
-
 
   return (
     <>
@@ -144,7 +140,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
   useEffect(() => {
     const isIAPP = mapState?.whatsHere?.highlightedIAPP ? true : false;
 
-    const geo = mapState?.whatsHere?.highlightedGeo
+    const geo = mapState?.whatsHere?.highlightedGeo;
 
     const isPoint = isIAPP || geo?.geometry?.type === 'Point' ? true : false;
 
@@ -152,16 +148,15 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       setHighlightedGeo({ ...geo });
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
-    }
-    else if (isPoint && geo) {
+    } else if (isPoint && geo) {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
-    }
-    else return;
-
-
-
-  }, [mapState?.whatsHere?.highlightedIAPP, mapState?.whatsHere?.highlightedACTIVITY, mapState?.whatsHere?.highlightedGeo]);
+    } else return;
+  }, [
+    mapState?.whatsHere?.highlightedIAPP,
+    mapState?.whatsHere?.highlightedACTIVITY,
+    mapState?.whatsHere?.highlightedGeo
+  ]);
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(
@@ -194,7 +189,9 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     iconAnchor: [50 / 2, 50 / 2]
   });
 
-  return <>{highlightedMarkerLtLng? <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng}/> : <></>}</>;
+  return (
+    <>{highlightedMarkerLtLng  && mapState?.whatsHere?.toggle ? <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} /> : <></>}</>
+  );
 };
 
 export const WhatsHereMarker = (props) => {
@@ -202,6 +199,7 @@ export const WhatsHereMarker = (props) => {
   const mapState = useSelector(selectMap);
   const markerRef = useRef();
   const { darkTheme } = useSelector(selectUserSettings);
+  const [panned, setPanned] = useState(false);
   const theme = darkTheme ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [refReady, setRefReady] = useState(false);
   let popupRef = useRef();
@@ -224,7 +222,13 @@ export const WhatsHereMarker = (props) => {
     };
   }, [JSON.stringify(mapState?.whatsHere?.feature)]);
 
-
+  useEffect(() => {
+    if (!position) {
+      return;
+    }
+    map.setView(position, map.getZoom());
+    setTimeout(() => setPanned(true), 1000);
+  }, position);
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(
@@ -257,16 +261,19 @@ export const WhatsHereMarker = (props) => {
     iconAnchor: [50 / 2, 50 / 2]
   });
 
-
-  useEffect(()=> {
-    console.log('top level comp render')
-  },[])
+  useEffect(() => {
+    console.log('top level comp render');
+  }, []);
 
   return (
     <>
-      {position?.lat && map ? (
+      {position?.lat && map && panned ? (
         <div id="no-scrolling-clicking">
-          <Marker icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
+          {mapState?.whatsHere?.toggle ? (
+            <Marker key={Math.random()} icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
+          ) : (
+            <></>
+          )}
           <PopupMemo />
         </div>
       ) : (

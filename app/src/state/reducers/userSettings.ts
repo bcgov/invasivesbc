@@ -17,7 +17,8 @@ import {
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
   USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
-  USER_SETTINGS_DELETE_KML_SUCCESS
+  USER_SETTINGS_DELETE_KML_SUCCESS,
+  MAP_TOGGLE_WHATS_HERE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -85,6 +86,11 @@ const initialState = new UserSettingsState();
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case MAP_TOGGLE_WHATS_HERE: {
+        return {...state,
+        recordsExpanded: (action.payload?.toggle)? false: state.recordsExpanded
+        }
+      }
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         return {
           ...state,

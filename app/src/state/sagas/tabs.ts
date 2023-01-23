@@ -2,6 +2,7 @@ import { TabIconName } from 'components/tabs/TabIconIndex';
 import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { selectMap } from 'state/reducers/map';
 import { selectTabs } from 'state/reducers/tabs';
 import {
   TABS_SET_ACTIVE_TAB_REQUEST,
@@ -9,7 +10,8 @@ import {
   TABS_SET_ACTIVE_TAB_FAILURE,
   TABS_GET_INITIAL_STATE_REQUEST,
   TABS_GET_INITIAL_STATE_SUCCESS,
-  TABS_GET_INITIAL_STATE_FAILURE
+  TABS_GET_INITIAL_STATE_FAILURE,
+  MAP_TOGGLE_WHATS_HERE
 } from '../actions';
 
 function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
@@ -104,12 +106,18 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
 function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
   try {
     const tabs = yield select(selectTabs);
+    const mapState = yield select(selectMap)
     if (tabs.initialized) {
       yield localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
       yield console.log('tabs', tabs);
       yield console.log('activeTab: ', action.payload.activeTab);
       yield localStorage.setItem('TABS_CURRENT_TAB_PATH', tabs.tabConfig[action.payload.activeTab].path); // Causing error
       yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
+
+      if(mapState.whatsHere.toggle)
+      {
+        yield put({ type: MAP_TOGGLE_WHATS_HERE});
+      }
     }
   } catch (e) {
     console.error(e);

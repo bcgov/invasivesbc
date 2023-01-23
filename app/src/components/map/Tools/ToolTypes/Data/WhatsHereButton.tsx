@@ -50,7 +50,7 @@ export const WhatsHereButton = (props) => {
             <IconButton
               //disabled={startTimer}
               onClick={() => {
-                dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+                dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !mapState.whatsHere.toggle} });
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
