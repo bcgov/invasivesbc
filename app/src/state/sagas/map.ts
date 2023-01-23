@@ -53,7 +53,8 @@ import {
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
-  WHATS_HERE_ACTIVITY_ROWS_SUCCESS
+  WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+  WHATS_HERE_PAGE_POI
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -652,14 +653,43 @@ function* whatsHereSaga() {
 }
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+  const mapState = yield select(selectMap)
   try {
+    const startRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
+    const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
+    const slice = mapState?.whatsHere?.IAPPIDs.slice(startRecord, endRecord)
+
+
+    const sliceWithData = mapState?.IAPPGeoJSON?.features?.filter((row) => {
+      return slice.includes(row?.properties?.site_id)
+    })
+
+    console.dir(sliceWithData)
+
+    const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => 
+    {
+      return {
+        id: iappRecord?.properties.site_id,
+        site_id: iappRecord?.properties.site_id,
+        jurisdiction_code: iappRecord?.properties.jurisdictions,
+        species_code: iappRecord?.properties.species_on_site,
+        geometry: iappRecord?.geometry,
+        reported_area: iappRecord?.properties.reported_area
+      };
+    })
+
     yield put({ 
       type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: action.payload
+      payload: { data: mappedToWhatsHereColumns}
     });
   } catch(e) {
     console.error(e);
   }
+}
+
+function* handle_WHATS_HERE_PAGE_POI(action) {
+ // WHATS_HERE_IAPP_ROWS_REQUEST
+ yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST})
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
@@ -700,6 +730,7 @@ function* activitiesPageSaga() {
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
+    takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),

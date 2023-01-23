@@ -13,6 +13,7 @@ import {
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
+  MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_PAGE_POI
@@ -152,12 +153,10 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     return booleanPointInPolygon(pointToCheck, polygonToCheck);
   });
 
-  console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
   const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
     return feature.properties.site_id;
   });
 
-  console.log('featureFilteredIDS', featureFilteredIDS?.length);
 
   let unfilteredRecordSetIDs = [];
   Object.keys(currentMapState?.layers).map((id) => {
@@ -166,33 +165,19 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     }
   });
 
-  console.log('unfilteredRecordSetIDs', unfilteredRecordSetIDs?.length);
 
   const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
     return featureFilteredIDS.includes(id);
   });
 
-  console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
 
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
   
-  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
+  
+  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0} });
 
-  // online/offline agnostic paging
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
-  while (currentMapState?.whatsHere?.toggle) {
-    const currentMapState = yield select(selectMap);
-    if (!currentMapState?.whatsHere?.toggle) {
-      return;
-    }
-    // get slice here
-    const pageAction = yield take(WHATS_HERE_PAGE_POI); // maybe need to do takeAny and look for toggle
-    const page = pageAction.payload.page || 0;
-    const limit = pageAction.payload.limit || 0;
-    const subset = [];
-    yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { IDs: subset } });
-  }
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
@@ -213,12 +198,10 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     }
   });
 
-  console.log('featuresFilteredByUserShape', featuresFilteredByUserShape?.length);
   const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
     return feature.properties.id;
   });
 
-  console.log('featureFilteredIDS', featureFilteredIDS?.length);
 
   let unfilteredRecordSetIDs = [];
   Object.keys(currentMapState?.layers).map((id) => {
@@ -227,18 +210,15 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     }
   });
 
-  console.log('unfilteredRecordSetIDs', unfilteredRecordSetIDs?.length);
 
   const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
     return featureFilteredIDS.includes(id);
   });
 
-  console.log('recordSetFilteredIDs', recordSetFilteredIDs?.length);
 
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
   
-  console.log('recordSetUniqueFilteredIDs', recordSetUniqueFilteredIDs?.length);
 
   // online/offline agnostic paging
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
