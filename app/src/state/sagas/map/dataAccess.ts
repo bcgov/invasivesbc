@@ -143,6 +143,13 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   }
 }
 
+function largePush(src, dest){
+  const len = src.length
+  for(let i = 0; i < len; i++){
+      dest.push(src[i])
+  }
+}
+
 export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   const currentMapState = yield select(selectMap);
 
@@ -159,9 +166,10 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 
 
   let unfilteredRecordSetIDs = [];
+
   Object.keys(currentMapState?.layers).map((id) => {
     if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
-      unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
+      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs)
     }
   });
 
