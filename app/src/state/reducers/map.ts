@@ -118,7 +118,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            IAPPIDs: [...action.payload.IDs]
+            IAPPIDs: [...action.payload.IDs],
+            iappRows: null,
+            IAPPPage: 0,
+            IAPPLimit: 5,
           }
         };
       }
