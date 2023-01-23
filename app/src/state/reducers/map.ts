@@ -25,7 +25,9 @@ import {
   MAP_SET_WHATS_HERE_SECTION,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
+  MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
+  WHATS_HERE_PAGE_POI
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -70,6 +72,8 @@ class MapState {
       section: 'position',
       iappRows: null,
       activityRows: null,
+      IAPPPage: 0,
+      IAPPLimit: 5,
       limit: 5,
       page: 0
     };
@@ -109,6 +113,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
         };
       }
+      case MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            IAPPIDs: [...action.payload.IDs]
+          }
+        };
+      }
+      
       case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
         return {
           ...state,
@@ -116,6 +130,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             page: action.payload.page,
             limit: action.payload.limit
+          }
+        };
+      }
+      case WHATS_HERE_PAGE_POI: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            IAPPPage: action.payload.page,
+            IAPPLimit: action.payload.limit
           }
         };
       }
@@ -137,7 +161,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             highlightedIAPP: action.payload.id,
             highlightedACTIVITY: null,
-            highlightedGeo: action.payload.geo
+            highlightedGeo: state?.whatsHere?.iappRows.filter((row) => { 
+              return row.site_id === action.payload.id
+            })[0]
           }
         };
       }
@@ -342,7 +368,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            iappRows: action.payload.IDs
+            iappRows: [...action.payload.data]
           }
         }
       }

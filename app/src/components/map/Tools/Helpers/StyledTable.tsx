@@ -27,7 +27,8 @@ import { selectMap } from 'state/reducers/map';
 import {
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+  WHATS_HERE_PAGE_POI
 } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -78,8 +79,8 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 function WhatsHerePagination(props) {
   const dispatch = useDispatch();
   const mapState = useSelector(selectMap);
-  const pageNumber = mapState?.whatsHere && mapState?.whatsHere?.page ? mapState?.whatsHere?.page : 0;
-  const pageLimit = mapState?.whatsHere && mapState?.whatsHere?.limit ? mapState?.whatsHere?.limit : 20;
+  const pageNumber = mapState?.whatsHere && mapState?.whatsHere?.IAPPPage ? mapState?.whatsHere?.IAPPPage : 0;
+  const pageLimit = mapState?.whatsHere && mapState?.whatsHere?.IAPPLimit ? mapState?.whatsHere?.IAPPLimit : 20;
   let setLength = 1;
   if (mapState?.whatsHere) {
     if (
@@ -88,8 +89,8 @@ function WhatsHerePagination(props) {
       mapState?.whatsHere?.activityRows.length > 0
     ) {
       setLength = mapState?.whatsHere?.activityRows.length;
-    } else if (props.type === 'iapp' && mapState?.whatsHere?.iappRows && mapState?.whatsHere?.iappRows.length > 0) {
-      setLength = mapState?.whatsHere?.iappRows.length;
+    } else if (props.type === 'iapp' && mapState?.whatsHere?.IAPPIDs && mapState?.whatsHere?.IAPPIDs.length > 0) {
+      setLength = mapState?.whatsHere?.IAPPIDs.length;
     }
   }
 
@@ -107,7 +108,7 @@ function WhatsHerePagination(props) {
             onClick={(e) => {
               e.stopPropagation();
               dispatch({
-                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                type: WHATS_HERE_PAGE_POI,
                 payload: {
                   page: 0,
                   limit: pageLimit
@@ -128,7 +129,7 @@ function WhatsHerePagination(props) {
             onClick={(e) => {
               e.stopPropagation();
               dispatch({
-                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                type: WHATS_HERE_PAGE_POI,
                 payload: {
                   page: pageNumber - 1,
                   limit: pageLimit
@@ -152,7 +153,7 @@ function WhatsHerePagination(props) {
             onClick={(e) => {
               e.stopPropagation();
               dispatch({
-                type: MAP_SET_WHATS_HERE_PAGE_LIMIT,
+                type: WHATS_HERE_PAGE_POI,
                 payload: {
                   page: pageNumber + 1,
                   limit: pageLimit
@@ -448,7 +449,6 @@ export const RenderTableDataBC = ({ rows }) => {
 export const RenderTablePOI = (props: any) => {
   const { bufferedGeo } = props;
   const dispatch = useDispatch();
-  const [rows, setRows] = useState([]);
   const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
@@ -463,15 +463,11 @@ export const RenderTablePOI = (props: any) => {
                   type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
                   payload: {
                     id: params.value,
-                    geo: rows.filter((row) => { 
-                      return row.site_id === params.value
-                    })[0]
                   }
                 });
   }
 
   useEffect(() => {
-    console.log('rerender poi table')
     let tcolumns = [
       {
         field: 'id',
@@ -516,31 +512,12 @@ export const RenderTablePOI = (props: any) => {
     ];
 
     setColumns([...tcolumns]);
-  }, [rows]);
+  }, []);
 
 
 
   const updatePOIRecords = React.useCallback(async () => {
-    const arr = [];
-    const startRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1) - mapState?.whatsHere?.limit;
-    const endRecord = mapState?.whatsHere?.limit * (mapState?.whatsHere?.page + 1);
-    for (let i = startRecord; i < endRecord && i < mapState?.whatsHere?.iappRows?.length; i++) {
-      const id = mapState?.whatsHere?.iappRows?.[i];
-      const iappRecord = mapState?.IAPPGeoJSON?.features.find((feature) => {
-        return feature?.properties?.site_id === id;
-      });
 
-      arr.push({
-        id: iappRecord?.properties.site_id,
-        site_id: iappRecord?.properties.site_id,
-        jurisdiction_code: iappRecord?.properties.jurisdictions,
-        species_code: iappRecord?.properties.species_on_site,
-        geometry: iappRecord?.geometry,
-        reported_area: iappRecord?.properties.reported_area
-      });
-    }
-
-    setRows(arr);
   }, [bufferedGeo, mapState?.whatsHere?.page]);
 
 
@@ -550,7 +527,7 @@ export const RenderTablePOI = (props: any) => {
         <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
-            rows={rows}
+            rows={mapState?.whatsHere?.iappRows}
             hideFooterPagination
             hideFooter
             getRowHeight={() => 'auto'}

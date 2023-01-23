@@ -37,13 +37,14 @@ import { calc_utm } from '../Nav/DisplayPosition';
       var el = document.getElementById('no-scrolling-clicking');
       L.DomEvent.disableScrollPropagation(el);
 
-      console.log('popupmemo')
     }, []);
 
     const map = useMapEvent('drag', getDOMXY);
 
 
-    
+    useEffect(()=> {
+      console.log('popupmemo level comp render')
+    },[])
 
     return (
       <>
@@ -88,9 +89,6 @@ export const WhatsHerePopUpContent = (props) => {
     });
   };
 
-  useEffect(()=> {
-    console.log('popup rerender')
-  },[])
 
   return (
     <>
@@ -156,16 +154,12 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
     }
     else if (isPoint && geo) {
-      console.log('hello', geo)
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
     }
     else return;
 
 
-    console.log('ltlng', highlightedMarkerLtLng)
-    console.log('isiapp', isIAPP)
-    console.log('highlightedGeo', highlightedGeo)
 
   }, [mapState?.whatsHere?.highlightedIAPP, mapState?.whatsHere?.highlightedACTIVITY, mapState?.whatsHere?.highlightedGeo]);
 
@@ -231,10 +225,6 @@ export const WhatsHereMarker = (props) => {
   }, [JSON.stringify(mapState?.whatsHere?.feature)]);
 
 
-  useEffect(()=> {
-    console.log('outermost whatshere')
-  },[])
-
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(
@@ -266,6 +256,11 @@ export const WhatsHereMarker = (props) => {
     iconSize: [50, 50],
     iconAnchor: [50 / 2, 50 / 2]
   });
+
+
+  useEffect(()=> {
+    console.log('top level comp render')
+  },[])
 
   return (
     <>
