@@ -24,6 +24,7 @@ export interface InvasivesRequest extends Request {
     roles: string[];
     filterForSelectable: boolean;
   };
+  originalUrl: string;
 }
 
 const jwks = jwksRsa({
