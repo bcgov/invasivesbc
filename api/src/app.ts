@@ -10,6 +10,8 @@ import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
 import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
+import loggingConfig from './loggingconfig.json'
+import { getuid } from 'process';
 
 const defaultLog = getLogger('app');
 
@@ -49,6 +51,41 @@ app.use(function (req: any, res: any, next: any) {
 
   next();
 });
+
+app.use(function (req: any, res: any, next: any) {
+  //  defaultLog.info(`${req.method} ${req.url}`);
+    console.log('this is the og req url')
+    console.log(req.url)
+
+    const transactionID = uuidv4();
+
+    res.transactionID = transactionID
+
+    
+
+
+    console.log('this is the edited one')
+    const withoutQParams = req.url.split('?')[0]
+    console.log(withoutQParams)
+  
+
+    let templatedLoggingString = `these are some ${req.url} values`
+
+    if(loggingConfig.endpoint_configs[withoutQParams]['request-body'])
+    {
+      console.log('req bodyJSON.stringify(req.body)')
+    }
+
+
+    if(loggingConfig.endpoint_configs[withoutQParams]['request-time'])
+
+
+
+
+    console.log('\n\n\n')
+
+    next();
+  });
 
 // Initialize express-openapi framework
 initialize({
@@ -95,3 +132,7 @@ adminApp.get('/metabase_groups', getMetabaseGroupMappings);
 adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
 
 export { adminApp, app };
+  function uuidv4() {
+    throw new Error('Function not implemented.');
+  }
+
