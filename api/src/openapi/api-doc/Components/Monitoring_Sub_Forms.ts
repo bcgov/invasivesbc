@@ -3,7 +3,7 @@ import { Biological_Agent_Stage } from './General_Sub_Forms';
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   title: 'Chemical Treatment Monitoring Information',
   type: 'object',
-  required: ['efficacy_code', 'management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
+  required: ['management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
     invasive_plant_code: {
       type: 'string',
@@ -106,7 +106,8 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
               },
               'x-tooltip-text': 'Choose the efficacy of the treatment for the area that was treated.'
             }
-          }
+          },
+          required: ['efficacy_code']
         }
       ]
     }
