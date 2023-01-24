@@ -1,0 +1,333 @@
+{
+  "endpoint_configs": {
+    "activity": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "activities": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "activities-lean": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "point-of-interest ": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "points-of-interest ": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "points-of-interest-lean": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "admin-defined-shapes": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "access-request": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "access-request-read": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "agency-codes": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "code-tables": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "employer-codes": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "iapp-jurisdictions": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "jurisdictions": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "map-shaper": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "media": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "metabase-query": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "riso": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "roles": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "species": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "update-request": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    },
+
+    "user-access": {
+      "user-metadata": false,
+      "query-string-params": false,
+      "request-body": false,
+      "request-time": false,
+      "response-body": false,
+      "response-time": false,
+      "sql-query-start-time": false,
+      "sql-query-source": false,
+      "sql-params": false,
+      "sql-results": false,
+      "sql-response-time": false,
+      "errors": false
+    }
+  }
+}
