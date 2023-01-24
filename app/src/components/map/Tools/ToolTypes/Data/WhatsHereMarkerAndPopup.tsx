@@ -101,12 +101,10 @@ export const WhatsHerePopUpContent = (props) => {
             zIndex: 1000000
           }}>
           <TableContainer>
-            {mapState?.whatsHere?.section === 'position' ? <RenderTablePosition rows={utmRows} /> : <></>}
-            {mapState?.whatsHere?.section === 'invasivesbc' && (
-              <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />
-            )}
+            <RenderTablePosition rows={utmRows} />
+            <RenderTableActivity bufferedGeo={bufferedGeo} map={map} />
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            {mapState?.whatsHere?.section === 'iapp' && <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />}
+            <RenderTablePOI bufferedGeo={bufferedGeo} map={map} />
           </TableContainer>
           <Grid container>
             <BottomNavigation

@@ -27,7 +27,9 @@ import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
-  WHATS_HERE_PAGE_POI
+  WHATS_HERE_PAGE_POI,
+  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
+  WHATS_HERE_PAGE_ACTIVITY
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -70,10 +72,14 @@ class MapState {
       toggle: false,
       feature: null,
       section: 'position',
-      iappRows: null,
-      activityRows: null,
+      iappRows: [],
+      activityRows: [],
       IAPPPage: 0,
       IAPPLimit: 5,
+      ActivityPage: 0,
+      ActivityLimit: 5,
+      IAPPIDs: [],
+      ActivityIDs: [],
       limit: 5,
       page: 0
     };
@@ -107,7 +113,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             toggle: !state.whatsHere.toggle,
             feature: null,
-            iappRows: null,
+            iappRows: [],
+            activityRows: [],
             limit: 5,
             page: 0
           }
@@ -119,13 +126,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           whatsHere: {
             ...state.whatsHere,
             IAPPIDs: [...action.payload.IDs],
-            iappRows: null,
+            iappRows: [],
             IAPPPage: 0,
             IAPPLimit: 5,
           }
         };
       }
-      
+      case MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            ActivityIDs: [...action.payload.IDs],
+            activityRows: [],
+            ActivityPage: 0,
+            ActivityLimit: 5,
+          }
+        };
+      }
       case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
         return {
           ...state,
@@ -143,6 +161,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             IAPPPage: action.payload.page,
             IAPPLimit: action.payload.limit
+          }
+        };
+      }
+      case WHATS_HERE_PAGE_ACTIVITY: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            ActivityPage: action.payload.page,
+            ActivityLimit: action.payload.limit
           }
         };
       }
@@ -177,7 +205,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             highlightedIAPP: null,
             highlightedACTIVITY: action.payload.id,
-            highlightedGeo: action.payload.geo
+            highlightedGeo: state?.whatsHere?.activityRows.filter((row) => { 
+              return row.short_id === action.payload.id
+            })[0]
           }
         };
       }
@@ -380,7 +410,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
-            activityRows: action.payload.IDs
+            activityRows: [...action.payload.data]
           }
         }
       }

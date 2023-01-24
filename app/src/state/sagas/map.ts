@@ -54,7 +54,8 @@ import {
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-  WHATS_HERE_PAGE_POI
+  WHATS_HERE_PAGE_POI,
+  WHATS_HERE_PAGE_ACTIVITY
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -653,18 +654,16 @@ function* whatsHereSaga() {
 }
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
-  const mapState = yield select(selectMap)
   try {
+    const mapState = yield select(selectMap);
     const startRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
     const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const slice = mapState?.whatsHere?.IAPPIDs.slice(startRecord, endRecord)
+    const slice = mapState?.whatsHere?.IAPPIDs.slice(startRecord, endRecord);
 
 
     const sliceWithData = mapState?.IAPPGeoJSON?.features?.filter((row) => {
       return slice.includes(row?.properties?.site_id)
     })
-
-    console.dir(sliceWithData)
 
     const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => 
     {
@@ -694,13 +693,83 @@ function* handle_WHATS_HERE_PAGE_POI(action) {
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
   try {
+    const mapState = yield select(selectMap);
+    const startRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
+    const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
+    const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
+    const sliceWithData = mapState?.activitiesGeoJSON?.features?.filter((row) => {
+      return slice.includes(row?.properties?.id);
+    })
+
+    const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
+      const jurisdiction_code = [];
+      activityRecord?.properties?.jurisdiction?.forEach((item) => {
+        jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+      });
+
+      const species_code = [];
+      switch (activityRecord?.properties?.type) {
+        case 'Observation':
+          activityRecord?.properties?.species_positive?.forEach((s) => {
+            if (s !== null) species_code.push(s);
+          });
+          activityRecord?.properties?.species_negative?.forEach((s) => {
+            if (s !== null) species_code.push(s);
+          });
+          break;
+        case 'Biocontrol':
+        case 'Treatment':
+          if (
+            activityRecord?.properties.species_treated &&
+            activityRecord?.properties.species_treated.length > 0 &&
+            activityRecord?.properties.species_treated[0] !== null
+          ) {
+            const treatmentTemp = activityRecord?.properties.species_treated;
+            if (treatmentTemp) {
+              treatmentTemp.forEach((s) => {
+                species_code.push(s);
+              });
+            }
+          }
+          break;
+        case 'Monitoring':
+          if (
+            activityRecord?.properties.species_treated &&
+            activityRecord?.properties.species_treated.length > 0 &&
+            activityRecord?.properties.species_treated[0] !== null
+          ) {
+            const monitoringTemp = JSON.parse(activityRecord?.properties.species_treated);
+            if (monitoringTemp) {
+              monitoringTemp.forEach((s) => {
+                species_code.push(s);
+              });
+            }
+          }
+          break;
+      }
+
+      return {
+        id: activityRecord?.properties?.id,
+            short_id: activityRecord?.properties?.short_id,
+            activity_type: activityRecord?.properties?.type,
+            reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
+            jurisdiction_code: jurisdiction_code,
+            species_code: species_code,
+            geometry: activityRecord?.geometry
+      }
+    });
+
     yield put({ 
       type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-      payload: action.payload
+      payload: { data: mappedToWhatsHereColumns}
     });
   } catch(e) {
     console.error(e);
   }
+}
+
+function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
 }
 
 function* activitiesPageSaga() {
@@ -731,6 +800,7 @@ function* activitiesPageSaga() {
     takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
+    takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
