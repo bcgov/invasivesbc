@@ -751,7 +751,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
       : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
-    if (!informationObject.aquatic_invasive_plant_code && !informationObject.invasive_plant_code) {
+    if (!informationObject.invasive_plant_aquatic_code && !informationObject.invasive_plant_code) {
       errors['activity_subtype_data'][
         isChemical
           ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
@@ -759,7 +759,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       ].addError('Either Aquatic or Terrestrial plant has to be specified.');
     }
 
-    if (informationObject.aquatic_invasive_plant_code && informationObject.invasive_plant_code) {
+    if (informationObject.invasive_plant_aquatic_code && informationObject.invasive_plant_code) {
       errors['activity_subtype_data'][
         isChemical
           ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
