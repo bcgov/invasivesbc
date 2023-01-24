@@ -160,7 +160,8 @@ export const authenticate = async (req: InvasivesRequest) => {
           req.authContext = {
             preferredUsername: null,
             user: null,
-            roles: []
+            roles: [],
+            isPublicUser: false,
           };
           req.authContext.preferredUsername = decoded['preferred_username'];
           let idir_userid;
