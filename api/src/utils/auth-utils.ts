@@ -44,18 +44,11 @@ function retrieveKey(header, callback) {
     }
 
     const signingKey = key.getPublicKey();
-<<<<<<< HEAD
     try {
       callback(null, signingKey);
     } catch (e) {
       defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
     }
-=======
-    // hack to stop bod from crashing
-    try {
-      callback(null, signingKey);
-    } catch (e) {}
->>>>>>> 2272c8b7 (remove package.json commit clean-up of auth)
   });
 }
 
