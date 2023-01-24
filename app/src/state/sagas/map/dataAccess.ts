@@ -13,6 +13,7 @@ import {
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
+  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
   MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_REQUEST,
@@ -164,7 +165,6 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     return feature.properties.site_id;
   });
 
-
   let unfilteredRecordSetIDs = [];
 
   Object.keys(currentMapState?.layers).map((id) => {
@@ -178,14 +178,11 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     return featureFilteredIDS.includes(id);
   });
 
-
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
   
-  
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
   yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0} });
-
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
@@ -210,7 +207,6 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     return feature.properties.id;
   });
 
-
   let unfilteredRecordSetIDs = [];
   Object.keys(currentMapState?.layers).map((id) => {
     if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
@@ -218,16 +214,13 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     }
   });
 
-
   const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
     return featureFilteredIDS.includes(id);
   });
 
-
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
-  
 
-  // online/offline agnostic paging
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { IDs: recordSetUniqueFilteredIDs } });
+  yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { page: 0} });
 }
