@@ -54,23 +54,22 @@ function retrieveKey(header, callback) {
 export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
-  const authHeader = req.header('Authorization');
 
   const filterForSelectable = req.header('filterforselectable') === 'true'? true: false
+  const urlSplit = req.originalUrl.split('?');
+  const rawPath = urlSplit?.[0] ?? req.originalUrl;
+  const authHeader = req.header('Authorization'); 
 
   const isPublicURL = ([
-    // '/api/activities-lean/',
-    // '/api/points-of-interest-lean/',
+    '/api/activities-lean/',
+    '/api/points-of-interest-lean/',
     '/api/points-of-interest/',
     // '/api/activities/',
     // '/api/activity/',
     // '/api/iapp-jurisdictions/',
     // '/api/code_tables/invasive_plant_code/',
     // '/api/code_tables/jurisdiction_code/',
-  ].includes(window.location.pathname));
-
-    console.log(isPublicURL)
-    console.log('window.location.pathname',window.location.pathname)
+  ].includes(rawPath));
 
   // add url
   if (authHeader === undefined  && isPublicURL) {
@@ -84,7 +83,6 @@ export const authenticate = async (req: InvasivesRequest) => {
           filterForSelectable: filterForSelectable
         };
 
-        console.log('got here')
         resolve();
       });
     }
@@ -95,9 +93,6 @@ export const authenticate = async (req: InvasivesRequest) => {
       namespace: 'auth-utils'
     };
   }
-  console.log('didnt get here')
-
-
 
   const token = authHeader.split(/\s/)[1] 
 
