@@ -208,18 +208,25 @@ export const createDataUTM = (name: string, value: any) => {
 };
 
 export const RenderTablePosition = ({ rows }) => {
+  const mapState = useSelector(selectMap);
   return (
-    <TableBody>
-      {rows &&
-        rows?.map((row) => (
-          <StyledTableRow key={row.name}>
-            <StyledTableCell style={{ width: 250 }} component="th" scope="row">
-              {row.name}
-            </StyledTableCell>
-            <StyledTableCell style={{ width: 250 }}>{row.value}</StyledTableCell>
-          </StyledTableRow>
-        ))}
-    </TableBody>
+    <>
+      {mapState?.whatsHere?.section === "position" ? 
+        <TableBody>
+          {rows &&
+            rows?.map((row) => (
+              <StyledTableRow key={row.name}>
+                <StyledTableCell style={{ width: 250 }} component="th" scope="row">
+                  {row.name}
+                </StyledTableCell>
+                <StyledTableCell style={{ width: 250 }}>{row.value}</StyledTableCell>
+              </StyledTableRow>
+            ))}
+        </TableBody>
+      :
+        <></>
+      }
+    </>
   );
 };
 
@@ -300,29 +307,35 @@ export const RenderTableActivity = (props: any) => {
   };
 
   return (
-    <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
-      <DataGrid
-        columns={columns}
-        rows={mapState?.whatsHere?.activityRows}
-        hideFooterPagination
-        hideFooter
-        getRowHeight={() => 'auto'}
-        headerHeight={30}
-        onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-          if (authenticated && roles.length > 0) {
-            activityPage(params);
-          } else {
-            errorContext.pushError({
-              message:
-                'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
-              code: 401,
-              namespace: ''
-            });
-          }
-        }}
-      />
-      <WhatsHerePagination type="activity"></WhatsHerePagination>
-    </div>
+    <>
+      {mapState?.whatsHere?.section === "invasivesbc" ? 
+        <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+          <DataGrid
+            columns={columns}
+            rows={mapState?.whatsHere?.activityRows}
+            hideFooterPagination
+            hideFooter
+            getRowHeight={() => 'auto'}
+            headerHeight={30}
+            onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+              if (authenticated && roles.length > 0) {
+                activityPage(params);
+              } else {
+                errorContext.pushError({
+                  message:
+                    'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
+                  code: 401,
+                  namespace: ''
+                });
+              }
+            }}
+          />
+          <WhatsHerePagination type="activity"></WhatsHerePagination>
+        </div>
+      :
+      <></>
+    }
+    </>
   );
 };
 
@@ -443,7 +456,7 @@ export const RenderTablePOI = (props: any) => {
 
   return (
     <>
-      {columns?.length > 0 ? (
+      {mapState?.whatsHere?.section === "iapp" ? 
         <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
@@ -474,9 +487,9 @@ export const RenderTablePOI = (props: any) => {
           />
           <WhatsHerePagination type="iapp"></WhatsHerePagination>
         </div>
-      ) : (
+      :
         <></>
-      )}
+      }
     </>
   );
 };
