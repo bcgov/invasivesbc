@@ -44,11 +44,18 @@ function retrieveKey(header, callback) {
     }
 
     const signingKey = key.getPublicKey();
+<<<<<<< HEAD
     try {
       callback(null, signingKey);
     } catch (e) {
       defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
     }
+=======
+    // hack to stop bod from crashing
+    try {
+      callback(null, signingKey);
+    } catch (e) {}
+>>>>>>> 2272c8b7 (remove package.json commit clean-up of auth)
   });
 }
 
@@ -83,12 +90,11 @@ export const authenticate = async (req: InvasivesRequest) => {
           roles: [],
           filterForSelectable: filterForSelectable
         };
+
         resolve();
       });
     }
-  }
-
-  if (authHeader.includes('undefined')) {
+  } else if (authHeader ===  undefined  && !isPublicURL) {
     throw {
       code: 401,
       message: 'Missing Authorization header',
@@ -96,7 +102,7 @@ export const authenticate = async (req: InvasivesRequest) => {
     };
   }
 
-  const token = authHeader.split(/\s/)[1];
+  const token = authHeader.split(/\s/)[1] 
 
   if (!token) {
     defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
