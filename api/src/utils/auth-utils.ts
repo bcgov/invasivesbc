@@ -22,8 +22,9 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string
     roles: string[];
-    isPublicUser?: boolean
+    isPublicUser?: boolean;
   };
+  originalUrl: string;
 }
 
 const jwks = jwksRsa({
