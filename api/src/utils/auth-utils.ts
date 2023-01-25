@@ -22,7 +22,7 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string
     roles: string[];
-    isPublicUser?: boolean;
+    isAuth?: boolean;   // if fails to exist later, fails closed or secure default - fail safe
   };
   originalUrl: string;
 }
@@ -44,60 +44,53 @@ function retrieveKey(header, callback) {
     }
 
     const signingKey = key.getPublicKey();
-<<<<<<< HEAD
     try {
       callback(null, signingKey);
     } catch (e) {
       defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
     }
-=======
-    // hack to stop bod from crashing
-    try {
-      callback(null, signingKey);
-    } catch (e) {}
->>>>>>> 2272c8b7 (remove package.json commit clean-up of auth)
   });
 }
 
 export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
-  const urlSplit = req.originalUrl.split('?');
-  const rawPath = urlSplit?.[0] ?? req.originalUrl;
   const authHeader = req.header('Authorization'); 
+  if (authHeader === undefined) {
 
-  const isPublicURL = ([
-    '/api/activities-lean/',
-    '/api/points-of-interest-lean/',
-    '/api/points-of-interest/',
-    // '/api/activities/',
-    // '/api/activity/',
-    // '/api/iapp-jurisdictions/',
-    // '/api/code_tables/invasive_plant_code/',
-    // '/api/code_tables/jurisdiction_code/',
-  ].includes(rawPath));
+    const isPublicURL = ([
+      '/api/activities-lean/',
+      '/api/points-of-interest-lean/',
+      '/api/points-of-interest/',
+      // '/api/activities/',
+      // '/api/activity/',
+      // '/api/iapp-jurisdictions/',
+      // '/api/code_tables/invasive_plant_code/',
+      // '/api/code_tables/jurisdiction_code/',
+    ].includes(req.originalUrl.split('?')?.[0]));
 
-  // add url
-  if (authHeader === undefined  && isPublicURL) {
-    {
-      return new Promise<void>((resolve: any) => {
-        req.authContext = {
-          preferredUsername: null,
-          friendlyUsername: null,
+    // add url
+    if (isPublicURL) {
+      {
+        return new Promise<void>((resolve: any) => {
+          req.authContext = {
+            preferredUsername: null,
+            friendlyUsername: null,
           user: null,
-          roles: [],
-          isPublicUser: true
-        };
+            roles: [],
+            isAuth: false
+          };
 
-        resolve();
-      });
+          resolve();
+        });
+      }
+    } else {
+      throw {
+        code: 401,
+        message: 'Missing Authorization header',
+        namespace: 'auth-utils'
+      };
     }
-  } else if (authHeader ===  undefined  && !isPublicURL) {
-    throw {
-      code: 401,
-      message: 'Missing Authorization header',
-      namespace: 'auth-utils'
-    };
   }
 
   const token = authHeader.split(/\s/)[1] 
@@ -161,7 +154,7 @@ export const authenticate = async (req: InvasivesRequest) => {
             preferredUsername: null,
             user: null,
             roles: [],
-            isPublicUser: false,
+            isAuth: true,
           };
           req.authContext.preferredUsername = decoded['preferred_username'];
           let idir_userid;

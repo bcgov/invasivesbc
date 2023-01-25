@@ -83,15 +83,12 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-   const criteria: any = {}//JSON.parse(<string>req.query['query']);
-
-
-
     /// check if public, check if site_id only
     // boot out if includes name filters
-    const authstuff = (req as any).authContext
-    console.log('auth stuff')
-    console.log(authstuff)
+    const isAuth = (req as any).authContext?.isAuth;
+    // no criteria if public until defined allowed fields.
+    // const criteria: any = JSON.parse(<string>req.query['query']);
+    const criteria: any = isAuth ? JSON.parse(<string>req.query['query']) : {};
 
     defaultLog.debug({
       label: 'point-of-interest',
@@ -115,6 +112,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
+    console.log('sanitizedSearchCriteria',sanitizedSearchCriteria);
     const connection = await getDBConnection();
 
     if (!connection) {
