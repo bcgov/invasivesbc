@@ -396,7 +396,7 @@ export const RenderTablePOI = (props: any) => {
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
-  const [columns, setColumns] = useState(null);
+  // const [columns, setColumns] = useState(null);
 
   const dispatchUpdatedID = (params) => {
                 dispatch({
@@ -407,8 +407,7 @@ export const RenderTablePOI = (props: any) => {
                 });
   }
 
-  useEffect(() => {
-    let tcolumns = [
+    let columns = [
       {
         field: 'id',
         headerName: 'IAPP ID',
@@ -450,9 +449,6 @@ export const RenderTablePOI = (props: any) => {
         hide: true
       }
     ];
-
-    setColumns([...tcolumns]);
-  }, []);
 
   return (
     <>
