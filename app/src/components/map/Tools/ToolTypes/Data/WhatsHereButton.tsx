@@ -36,7 +36,7 @@ export const WhatsHereButton = (props) => {
         ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '230px',
+          bottom: '330px',
           width: '50px',
           height: '40px'
         }}>
