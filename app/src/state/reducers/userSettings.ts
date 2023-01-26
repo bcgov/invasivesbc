@@ -70,7 +70,6 @@ class UserSettingsState {
     this.darkTheme = localStorage.getItem('USER_SETTINGS_DARK_THEME')
       ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
       : false;
-    console.log('this.darkTheme', this.darkTheme);
     this.mapCenter = [55, -128];
     this.newRecordDialogState = {
       recordCategory:
@@ -96,7 +95,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state,
           activeActivity: action.payload.activeActivity,
           activeIAPP: action.payload.activeIAPP,
-          recordSets: action.payload.recordSets,
+          recordSets: {...action.payload.recordSets},
           recordsExpanded: action.payload.recordsExpanded
         };
       }
@@ -122,13 +121,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: action.payload.recordSets
+          recordSets: {...action.payload.recordSets}
         };
       }
       case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: action.payload.recordSets
+          recordSets: {...action.payload.recordSets}
         };
       }
       case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
@@ -140,13 +139,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: action.payload.recordSets
+          recordSets: {...action.payload.recordSets}
         };
       }
       case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: action.payload.recordSets
+          recordSets: {...action.payload.recordSets}
         };
       }
       case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
@@ -172,7 +171,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: action.payload.recordSets
+          recordSets: {...action.payload.recordSets}
         };
       }
       case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {

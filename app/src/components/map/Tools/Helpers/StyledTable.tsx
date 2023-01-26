@@ -304,7 +304,6 @@ export const RenderTableActivity = (props: any) => {
   const activityPage = async (params) => {
     const id = params.row.id;
     const short_id = params.row.short_id;
-    await dataAccess.setAppState({ activeActivity: id });
     dispatch({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
       payload: {
