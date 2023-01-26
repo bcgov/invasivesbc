@@ -58,8 +58,10 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   const activityPageState = useSelector(selectActivity)
+
+  
   let enumOptions = // @ts-ignore
-    (props.schema.options as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
+    (JSON.parse(JSON.stringify(props?.schema?.options || [])) as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
 
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
@@ -138,14 +140,16 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   return (
     <div >
       <Autocomplete
+        
         autoHighlight
         autoSelect={props.required}
         blurOnSelect
         openOnFocus
-        renderOption={(props, option) => {
+        renderOption={(props, option) => 
+          {
           return (
             //@ts-ignore
-            <Box {...props} style={{ display: 'flex', flexDirection: 'row' }}>
+            <Box {...props} key={ `rjsfSingleSelect${Math.random()}`} style={{ display: 'flex', flexDirection: 'row' }}>
               {optionValueSuggested[option] && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
               <Typography>
                 {option ? optionValueLabels[option] : ''}
