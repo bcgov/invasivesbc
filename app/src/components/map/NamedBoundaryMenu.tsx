@@ -142,8 +142,6 @@ export const NamedBoundaryMenu = (props) => {
     let boundaries = [];
     const boundaryResults = await dataAccess.getBoundaries();
 
-    if (boundaries === null) return;
-
     if (MOBILE) {
       const boundaries = boundaryResults.map((boundary) => {
         const jsonObject = JSON.parse(boundary.json);
@@ -155,7 +153,7 @@ export const NamedBoundaryMenu = (props) => {
         };
       });
     } else {
-      boundaries = boundaryResults;
+      boundaries = boundaryResults ? boundaryResults : [];
 
       //add kmls
       const KMLResults = await api.getAdminUploadGeoJSONLayers();
