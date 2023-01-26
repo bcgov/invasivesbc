@@ -276,9 +276,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
-                formContext={{
-                  suggestedJurisdictions: props.suggestedJurisdictions || []
-                }}
                 liveValidate={true}
                 customValidate={props.customValidation}
                 validator={validator}
