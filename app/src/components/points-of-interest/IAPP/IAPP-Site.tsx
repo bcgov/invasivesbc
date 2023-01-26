@@ -5,6 +5,7 @@ import React from 'react';
 import { TreatmentsTable } from './ExtractTables';
 import { getJurisdictions } from './IAPP-Functions';
 import { SurveysTable } from './SurveyTable';
+import IAPPPhotoContainer from 'components/photo/IAPPPhotoContainer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -144,6 +145,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               {ifApplicable(site?.general_comment)}
             </Grid>
           </Grid>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion defaultExpanded={false}>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
+          <Typography className={classes.heading}>IAPP Photos</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <IAPPPhotoContainer />
         </AccordionDetails>
       </Accordion>
 

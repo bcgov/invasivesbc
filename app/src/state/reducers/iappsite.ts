@@ -1,4 +1,5 @@
 import {
+  IAPP_GET_MEDIA_SUCCESS,
   IAPP_GET_SUCCESS,
 } from '../actions';
 
@@ -8,9 +9,11 @@ class IappsiteState {
   initialized: boolean;
   // error: boolean;
   IAPP: any;
+  media: [];
 
   constructor() {
     this.initialized = false;
+    this.media = [];
   }
 }
 const initialState = new IappsiteState();
@@ -23,6 +26,12 @@ function createIappsiteReducer(configuration: AppConfig): (IappsiteState, AnyAct
           ...state,
           IAPP: { ...action.payload.iapp }
         };
+      }
+      case IAPP_GET_MEDIA_SUCCESS: {
+        return {
+          ...state,
+          media: [...state.media, action.payload.media]
+        }
       }
       default:
         return state;
