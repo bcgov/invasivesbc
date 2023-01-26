@@ -2,7 +2,7 @@ import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
 import { Typography, Box, TextField, Autocomplete } from '@mui/material';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
 import { selectActivity } from 'state/reducers/activity';
 import { useSelector } from 'react-redux';
@@ -136,7 +136,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   }, []);
 
   return (
-    <div key={Math.random()}>
+    <div >
       <Autocomplete
         autoHighlight
         autoSelect={props.required}
