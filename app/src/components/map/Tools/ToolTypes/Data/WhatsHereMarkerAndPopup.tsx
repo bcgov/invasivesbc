@@ -8,7 +8,7 @@ import center from '@turf/center';
 import L from 'leaflet';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
+import { GeoJSON, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
@@ -156,6 +156,12 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     mapState?.whatsHere?.highlightedGeo
   ]);
 
+  const highlight = (feature, layer) => {
+    layer.setStyle({
+      color: 'yellow'
+    });
+  }
+
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(
       <svg
@@ -188,7 +194,12 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
   });
 
   return (
-    <>{highlightedMarkerLtLng  && mapState?.whatsHere?.toggle ? <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} /> : <></>}</>
+    <>
+      {highlightedMarkerLtLng  && mapState?.whatsHere?.toggle ? <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} /> : <></>}
+      {highlightedGeo  && mapState?.whatsHere?.toggle ? 
+      <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
+      : <></>}
+    </>
   );
 };
 
@@ -258,10 +269,6 @@ export const WhatsHereMarker = (props) => {
     iconSize: [50, 50],
     iconAnchor: [50 / 2, 50 / 2]
   });
-
-  useEffect(() => {
-    console.log('top level comp render');
-  }, []);
 
   return (
     <>

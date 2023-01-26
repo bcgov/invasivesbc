@@ -28,6 +28,7 @@ import {
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI
@@ -302,7 +303,15 @@ export const RenderTableActivity = (props: any) => {
 
   const activityPage = async (params) => {
     const id = params.row.id;
+    const short_id = params.row.short_id;
     await dataAccess.setAppState({ activeActivity: id });
+    dispatch({
+      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+      payload: {
+        description: 'Activity-' + short_id,
+        id: id
+      }
+    });
     history.push({ pathname: `/home/activity` });
   };
 
@@ -396,7 +405,7 @@ export const RenderTablePOI = (props: any) => {
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
   const errorContext = useContext(ErrorContext);
-  const [columns, setColumns] = useState(null);
+  // const [columns, setColumns] = useState(null);
 
   const dispatchUpdatedID = (params) => {
                 dispatch({
@@ -407,8 +416,7 @@ export const RenderTablePOI = (props: any) => {
                 });
   }
 
-  useEffect(() => {
-    let tcolumns = [
+    let columns = [
       {
         field: 'id',
         headerName: 'IAPP ID',
@@ -450,9 +458,6 @@ export const RenderTablePOI = (props: any) => {
         hide: true
       }
     ];
-
-    setColumns([...tcolumns]);
-  }, []);
 
   return (
     <>
