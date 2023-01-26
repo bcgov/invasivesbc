@@ -738,7 +738,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
             activityRecord?.properties.species_treated.length > 0 &&
             activityRecord?.properties.species_treated[0] !== null
           ) {
-            const monitoringTemp = JSON.parse(activityRecord?.properties.species_treated);
+            const monitoringTemp = activityRecord?.properties.species_treated;
             if (monitoringTemp) {
               monitoringTemp.forEach((s) => {
                 species_code.push(s);
