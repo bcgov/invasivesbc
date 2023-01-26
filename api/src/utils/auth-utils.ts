@@ -55,8 +55,9 @@ function retrieveKey(header, callback) {
 export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
-  const authHeader = req.header('Authorization'); 
-  if (authHeader === undefined) {
+  const authHeader = req.header('Authorization');
+  
+  if (!authHeader || authHeader.includes('undefined')) {
 
     const isPublicURL = ([
       '/api/activities-lean/',
