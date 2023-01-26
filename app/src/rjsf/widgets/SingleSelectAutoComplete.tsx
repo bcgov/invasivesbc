@@ -4,6 +4,8 @@ import { Typography, Box, TextField, Autocomplete } from '@mui/material';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
+import { selectActivity } from 'state/reducers/activity';
+import { useSelector } from 'react-redux';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 
@@ -55,13 +57,14 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
+  const activityPageState = useSelector(selectActivity)
   let enumOptions = // @ts-ignore
     (props.schema.options as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
 
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
-    const suggestedJurisdictions = props.formContext.suggestedJurisdictions
-      ? props.formContext.suggestedJurisdictions
+    const suggestedJurisdictions = activityPageState?.suggestedJurisdictions
+      ? activityPageState?.suggestedJurisdictions
       : [];
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
@@ -133,7 +136,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   }, []);
 
   return (
-    <div>
+    <div key={Math.random()}>
       <Autocomplete
         autoHighlight
         autoSelect={props.required}
