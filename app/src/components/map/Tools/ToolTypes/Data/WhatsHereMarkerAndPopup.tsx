@@ -30,7 +30,7 @@ const PopupMemo = (props) => {
   const getDOMXY = () => {
     const markerElement = document.getElementsByClassName('whatsHereMarkerClass')[0];
     const boundingRect = markerElement?.getBoundingClientRect();
-    setDOMXY([boundingRect.x - 250, boundingRect.top - 470]);
+    setDOMXY([boundingRect.x + 50, boundingRect.top - 100]);
   };
   useEffect(() => {
     getDOMXY();
@@ -39,6 +39,7 @@ const PopupMemo = (props) => {
   }, []);
 
   const map = useMapEvent('drag', getDOMXY);
+  const map2 = useMapEvent('moveend', getDOMXY);
 
   useEffect(() => {
     console.log('popupmemo level comp render');
@@ -220,8 +221,9 @@ export const WhatsHereMarker = (props) => {
 
     if (mapState?.whatsHere?.feature?.geometry) {
       lat = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[1]));
-      lng = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[0]));
+      //lng = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[0]));
       const coord = mapState?.whatsHere?.feature?.geometry?.coordinates[0];
+      lng = coord[2][0]
       const coord2 = coord[1];
       setPosition({ lat: coord2[1], lng: lng });
     }
