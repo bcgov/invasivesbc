@@ -118,7 +118,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         />
         <AppRoute
           exact
-          accessLevel={AccessLevel.USER}
+          accessLevel={AccessLevel.PUBLIC}
           path="/home/activities"
           title={getTitle('Activities')}
           component={ActivitiesPage}
