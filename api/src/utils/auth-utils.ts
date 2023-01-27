@@ -35,14 +35,16 @@ function retrieveKey(header, callback) {
     defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
 
     if (err) {
+      defaultLog.error({ label: 'authenticate', message: 'error retrieving key', error: err });
       callback(err, null);
+      return;
     }
 
     const signingKey = key.getPublicKey();
     try {
       callback(null, signingKey);
     } catch (e) {
-      defaultLog.error({ label: 'authenticate', message: 'authenticating user' });
+      defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
     }
   });
 }
