@@ -1116,7 +1116,7 @@ export const useInvasivesApi = () => {
     const { data, status, url } = await Http.request({
       headers: { ...options.headers },
       method: 'GET',
-      url: options.baseUrl + `/api/admin-defined-shapes`
+      url: options.baseUrl + `/api/admin-defined-shapes/`
     });
     checkForErrors(data, status, url);
     if (DEBUG) {
@@ -1138,7 +1138,7 @@ export const useInvasivesApi = () => {
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: uploadRequest,
-      url: `${options.baseUrl}/api/admin-defined-shapes`
+      url: `${options.baseUrl}/api/admin-defined-shapes/`
     });
     checkForErrors(data, status, url);
     if (DEBUG) {

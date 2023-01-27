@@ -326,7 +326,7 @@ function* handle_MAP_INIT_REQUEST(action) {
   };
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
 
-  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes');
+  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
 
   let newMapState = {};
