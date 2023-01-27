@@ -34,7 +34,10 @@ function shouldCompress(req, res) {
 }
 // Enable CORS
 app.use(function (req: any, res: any, next: any) {
-  defaultLog.info(`${req.method} ${req.url}`);
+  if (req.url !== '/api/misc/version') {
+    // filter out health check for log brevity
+    defaultLog.info(`${req.method} ${req.url}`);
+  }
 
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader(

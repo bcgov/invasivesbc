@@ -1,6 +1,6 @@
 'use strict';
 
-import { verify } from 'jsonwebtoken';
+import { verify, VerifyCallback } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
 import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
@@ -32,15 +32,18 @@ const jwks = jwksRsa({
 
 function retrieveKey(header, callback) {
   jwks.getSigningKey(header.kid, function (err, key) {
+    defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
+
     if (err) {
-      throw err;
+      callback(err, null);
     }
 
     const signingKey = key.getPublicKey();
-    // hack to stop bod from crashing
     try {
       callback(null, signingKey);
-    } catch (e) {}
+    } catch (e) {
+      defaultLog.error({ label: 'authenticate', message: 'authenticating user' });
+    }
   });
 }
 
