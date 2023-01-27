@@ -38,14 +38,9 @@ function retrieveKey(header, callback) {
 
     const signingKey = key.getPublicKey();
     // hack to stop bod from crashing
-    try{
-    callback(null, signingKey);
-
-    }
-    catch(e)
-    {
-      
-    }
+    try {
+      callback(null, signingKey);
+    } catch (e) {}
   });
 }
 
@@ -78,6 +73,8 @@ export const authenticate = async (req: InvasivesRequest) => {
   const token = authHeader.split(/\s/)[1];
 
   if (!token) {
+    defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
+
     throw {
       code: 401,
       message: 'Authorization header parse failure',
@@ -88,7 +85,7 @@ export const authenticate = async (req: InvasivesRequest) => {
   return new Promise<void>((resolve, reject) => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
-        defaultLog.error(error);
+        defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
         reject({
           code: 401,
           message: 'Token decode failure',
@@ -117,6 +114,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       getUserByKeycloakID(accountType, id).then((user) => {
         const createIfNeeded = new Promise((resolve: any) => {
           if (!user) {
+            defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
             createUser(decoded, accountType, id).then(() => {
               getUserByKeycloakID(accountType, id).then((newUser) => {
                 user = newUser;
@@ -136,10 +134,16 @@ export const authenticate = async (req: InvasivesRequest) => {
           };
           req.authContext.preferredUsername = decoded['preferred_username'];
           req.authContext.user = user;
-          getRolesForUser(user.user_id).then((roles) => {
-            req.authContext.roles = roles;
-            resolve();
-          });
+          getRolesForUser(user.user_id)
+            .then((roles) => {
+              req.authContext.roles = roles;
+              defaultLog.debug({ label: 'authenticate', message: 'auth pass complete, context set!' });
+              resolve();
+            })
+            .catch((error) => {
+              defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
+              reject(error);
+            });
         });
       });
     });
