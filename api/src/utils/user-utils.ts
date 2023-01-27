@@ -32,7 +32,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
       keycloakToken.preferred_username,
       keycloakToken.email
     );
-    console.log('SQL statemenet to create user: ', sqlStatement);
+    console.log('SQL statement to create user: ', sqlStatement);
     if (!sqlStatement) {
       throw {
         code: 500,

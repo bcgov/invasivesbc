@@ -102,18 +102,18 @@ export const authenticate = async (req: InvasivesRequest) => {
 
       let accountType, id;
 
-      if (decoded.idir_userid) {
+      if (decoded.identity_provider === 'idir') {
         accountType = KeycloakAccountType.idir;
-        id = decoded.idir_userid;
-      } else if (decoded.bceid_userid) {
+        id = decoded.idir_user_guid;
+      } else if (decoded.identity_provider === 'bceidbusiness') {
         accountType = KeycloakAccountType.bceid;
-        id = decoded.bceid_userid;
+        id = decoded.bceid_user_guid;
       } else {
-        throw {
+        reject({
           code: 401,
           message: 'Invalid token - missing idir_userid or bceid_userid',
           namespace: 'auth-utils'
-        };
+        });
       }
 
       getUserByKeycloakID(accountType, id).then((user) => {
