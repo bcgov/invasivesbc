@@ -26,13 +26,13 @@ class Cache {
   }
 }
 
-class CacheService {
+export class CacheService {
   caches: Map<string, Cache> = new Map();
 
-  constructor() {
+  constructor(interval?: number) {
     setInterval(() => {
       this.cleanCaches();
-    }, 60000);
+    }, interval? interval: 600000);
   }
 
   private cleanCaches() {

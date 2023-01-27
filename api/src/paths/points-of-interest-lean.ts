@@ -13,8 +13,11 @@ import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries
 import { getLogger } from '../utils/logger';
 import { isIAPPrelated } from './points-of-interest';
 import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
-import cacheService from "../utils/cache-service";
+import { CacheService }  from "../utils/cache-service";
 import {createHash} from "crypto";
+
+
+const POILeanCacheInstance = new CacheService(1440000); // one day
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -100,7 +103,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     const responseCacheHeaders = {};
     let ETag = null;
     // server-side cache
-    const cache = cacheService.getCache('poi-lean');
+    const cache = POILeanCacheInstance.getCache('poi-lean');
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
