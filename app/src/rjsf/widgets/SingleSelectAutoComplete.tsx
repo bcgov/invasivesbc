@@ -57,11 +57,17 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
+ // console.dir(props)
   const activityPageState = useSelector(selectActivity)
+  const isenums = (props.options.enumOptions?.length > 0)? true:false
+  let enumOptions;
+  if (isenums) {
+    enumOptions = JSON.parse(JSON.stringify(props.options.enumOptions || []))
+  }
+  else { 
+    enumOptions = JSON.parse(JSON.stringify(props?.schema?.options || []))
+  }
 
-  
-  let enumOptions = // @ts-ignore
-    (JSON.parse(JSON.stringify(props?.schema?.options || [])) as AutoCompleteSelectOption[]) || (props.options.enumOptions as AutoCompleteSelectOption[]);
 
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
