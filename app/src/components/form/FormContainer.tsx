@@ -81,6 +81,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
   const { authenticated } = useSelector(selectAuth);
+    const  authState  = useSelector(selectAuth);
+
   const { MOBILE } = useSelector(selectConfiguration);
 
   const dispatch = useDispatch();
