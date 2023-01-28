@@ -232,10 +232,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    const notMine = authState.username !== activityStateInStore.activity.created_by;
+    const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
     console.log('notmine', notMine);
     const notAdmin =
-      authState.accessRoles.filter((role) => {
+      authState?.accessRoles?.filter((role) => {
         return role.role_id === 18
       }).length === 0;
     console.log('not admin', notAdmin);
@@ -244,7 +244,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     } else {
       setIsDisabled(false);
     }
-  }, [JSON.stringify(authState.accessRoles), JSON.stringify(authState.username)]);
+  }, [JSON.stringify(authState?.accessRoles), JSON.stringify(authState?.username)]);
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
