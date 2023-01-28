@@ -230,7 +230,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   }, [props.activity.activity_subtype, authenticated, MOBILE, activityStateInStore.suggestedTreatmentIDs]);
 
-  const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SAVE_SUCCESSFUL || false;
+  const [isDisabled, setIsDisabled] = useState(false);
+  useEffect(() => {
+    const notMine = authState.username !== activityStateInStore.activity.created_by;
+    console.log('notmine', notMine);
+    const notAdmin =
+      authState.accessRoles.filter((role) => {
+        return role.role_id === 18
+      }).length === 0;
+    console.log('not admin', notAdmin);
+    if (notAdmin && notMine) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [JSON.stringify(authState.accessRoles), JSON.stringify(authState.username)]);
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
