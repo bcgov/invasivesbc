@@ -96,9 +96,9 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   const authenticated = keycloakInstance.authenticated;
 
   if (keycloakInstance.idTokenParsed) {
-    if (keycloakInstance.idTokenParsed['idir_userid']) idir_userid = keycloakInstance.idTokenParsed['idir_userid'];
-    if (keycloakInstance.idTokenParsed['bceid_userid']) bceid_userid = keycloakInstance.idTokenParsed['bceid_userid'];
-    username = keycloakInstance.idTokenParsed['preferred_username'];
+    if (keycloakInstance.idTokenParsed['idir_username']) idir_userid = keycloakInstance.idTokenParsed['idir_username'];
+    if (keycloakInstance.idTokenParsed['bceid_username']) bceid_userid = keycloakInstance.idTokenParsed['bceid_username'];
+    username = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
     if (
       'display_name' in keycloakInstance.idTokenParsed &&
       keycloakInstance.idTokenParsed['display_name'] !== null &&
