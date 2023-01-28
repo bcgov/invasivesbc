@@ -31,7 +31,9 @@ export class ActivityPostRequestBody {
   form_status: string;
   sync_status: string;
   created_by: string;
+  created_by_with_guid?: string;
   updated_by: string;
+  updated_by_with_guid?: string;
 
   review_status: string;
   reviewed_by: string;

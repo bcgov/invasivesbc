@@ -274,8 +274,10 @@ function createActivity(): RequestHandler {
     const data = { ...req.body, media_keys: req['media_keys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by = req.authContext?.preferredUsername;
-    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
+    sanitizedActivityData.created_by = req.authContext?.friendlyUsername;
+    sanitizedActivityData.created_by_with_guid = req.authContext?.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
+    sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 

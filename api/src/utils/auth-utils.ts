@@ -20,6 +20,7 @@ export interface InvasivesRequest extends Request {
   authContext: {
     preferredUsername: string;
     user: any;
+    friendlyUsername?: string
     roles: string[];
   };
 }
@@ -59,6 +60,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       return new Promise<void>((resolve: any) => {
         req.authContext = {
           preferredUsername: null,
+          friendlyUsername: null,
           user: null,
           roles: []
         };
@@ -138,6 +140,11 @@ export const authenticate = async (req: InvasivesRequest) => {
             roles: []
           };
           req.authContext.preferredUsername = decoded['preferred_username'];
+          let idir_userid;
+          let bceid_userid;
+          if (decoded['idir_username']) idir_userid = decoded['idir_username'];
+          if (decoded['bceid_username']) bceid_userid = decoded['bceid_username'];
+          req.authContext.friendlyUsername = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
           req.authContext.user = user;
           getRolesForUser(user.user_id)
             .then((roles) => {
