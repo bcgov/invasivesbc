@@ -4,20 +4,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { getIAPPsites, getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from '../utils/iapp-json-utils';
-import { SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
 
 import { getLogger } from '../utils/logger';
-import { isIAPPrelated } from './points-of-interest';
-import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
-import { CacheService }  from "../utils/cache-service";
-import {createHash} from "crypto";
-
-
-const POILeanCacheInstance = new CacheService(1440000); // one day
+import cacheService from '../utils/cache-service';
+import { createHash } from 'crypto';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -81,7 +74,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-
     defaultLog.debug({
       label: 'point-of-interest-lean',
       message: 'getPointsOfInterestBySearchFilterCriteria',
@@ -103,7 +95,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     const responseCacheHeaders = {};
     let ETag = null;
     // server-side cache
-    const cache = POILeanCacheInstance.getCache('poi-lean');
+    const cache = cacheService.getCache('poi-lean');
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
@@ -192,7 +184,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       }
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);
-
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({

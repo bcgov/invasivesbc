@@ -14,7 +14,7 @@ class Cache {
 
   get(key: string): any | null {
     try {
-      return this.get(key).data;
+      return this.data.get(key);
     } catch {
       return null;
     }
