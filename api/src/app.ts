@@ -24,6 +24,7 @@ export { HOST, PORT };
 const app: express.Express = express();
 
 app.use(compression({ filter: shouldCompress }));
+app.use(express.json());
 
 function shouldCompress(req, res) {
   if (req.headers['x-no-compression']) {
@@ -34,6 +35,11 @@ function shouldCompress(req, res) {
   // fallback to standard filter function
   return compression.filter(req, res);
 }
+
+function uuidv4() {
+  throw new Error('Function not implemented.');
+}
+
 // Enable CORS
 app.use(function (req: any, res: any, next: any) {
   if (req.url !== '/api/misc/version') {
@@ -48,44 +54,94 @@ app.use(function (req: any, res: any, next: any) {
   );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
-
   next();
 });
 
-app.use(function (req: any, res: any, next: any) {
-  //  defaultLog.info(`${req.method} ${req.url}`);
-    console.log('this is the og req url')
-    console.log(req.url)
+app.use(function (req: InvasivesRequest, res: any, next: any) {
+  // const transactionID = uuidv4();
+  // res.transactionID = transactionID;
+  loggingPublic(req, res, next);
+  next();
+});
 
-    const transactionID = uuidv4();
+const loggingHandler = (isAuthed: boolean) => function(req: any, res, next) {
+  const endpoint = req.url.split('/')[2];
+  const endpointConfigObj = loggingConfig.endpoint_configs[endpoint];
+  const logger = getLogger(endpoint);
 
-    res.transactionID = transactionID
-
-    
-
-
-    console.log('this is the edited one')
-    const withoutQParams = req.url.split('?')[0]
-    console.log(withoutQParams)
-  
-
-    let templatedLoggingString = `these are some ${req.url} values`
-
-    if(loggingConfig.endpoint_configs[withoutQParams]['request-body'])
+  if(isAuthed)
+  {
+    //user metadata
+    if(endpointConfigObj["user-metadata"])
     {
-      console.log('req bodyJSON.stringify(req.body)')
+      const token = req.keycloakToken;
+      const authContext = req.authContext;
+      const metadata = {
+        'token': token,
+        'auth': authContext
+      }
+      if (token && authContext) {
+        logger.log({
+          level: 'info',
+          message: JSON.parse(JSON.stringify(metadata))
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: "There is a problem with either token or AuthContext"
+        });
+      }
     }
+  }
 
+  if(!isAuthed)
+  {
+    //query string params
+    if(endpointConfigObj["query-string-params"])
+    {
+      const queryParams = req.query.query;
+      if (queryParams && queryParams !== 'undefined') {
+        logger.log({
+          level: 'debug',
+          message: JSON.parse(queryParams)
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: "There are no query parameters."
+        });
+      }
+    }
+    
+    // req body
+    if(endpointConfigObj["request-body"])
+    {
+      const body = req.body;
+      if (body && JSON.stringify(body) !== '{}') {
+        logger.log({
+          level: 'debug',
+          message: body
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: "Body is empty."
+        })
+      }
+    }
+  }
+}
+  
+  
+const loggingAuthd = function(req: InvasivesRequest, res: any, next: any)
+{
+  return loggingHandler(true)(req, res, next);
+}
 
-    if(loggingConfig.endpoint_configs[withoutQParams]['request-time'])
-
-
-
-
-    console.log('\n\n\n')
-
-    next();
-  });
+const loggingPublic = function(req: any, res: any, next: any)
+{
+  return loggingHandler(false)(req, res, next);
+}
 
 // Initialize express-openapi framework
 initialize({
@@ -101,9 +157,10 @@ initialize({
     'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
   },
   securityHandlers: {
-    Bearer: async function (req) {
+    Bearer: async function (req, res, next) {
       await authenticate(<InvasivesRequest>req);
-    //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+      await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+      loggingAuthd(<InvasivesRequest>req, res, next);
       return true;
     }
   },
@@ -132,7 +189,5 @@ adminApp.get('/metabase_groups', getMetabaseGroupMappings);
 adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
 
 export { adminApp, app };
-  function uuidv4() {
-    throw new Error('Function not implemented.');
-  }
+  
 
