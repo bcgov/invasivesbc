@@ -52,9 +52,11 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     `/api/points-of-interest-lean/`,
     action.payload.IAPPFilterCriteria
   );
+  // have no idea why but i'm getting both types back today:
+  const rows = (networkReturn?.data?.data?.result)? networkReturn?.data?.data?.result: networkReturn?.data?.result
   let featureCollection = {
     type: 'FeatureCollection',
-    features: networkReturn?.data?.data?.result?.filter((row) => {
+    features: rows?.filter((row) => {
       if (row !== undefined && row?.geometry?.coordinates) {
         return row;
       }
