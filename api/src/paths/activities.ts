@@ -148,11 +148,16 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
+    const isAuth = req.authContext?.isAuth ?? false;
 
     if (!roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
+    }
+    if (!isAuth){
+      sanitizedSearchCriteria.created_by = [];
+      sanitizedSearchCriteria.updated_by = [];
     }
 
     const connection = await getDBConnection();
@@ -210,7 +215,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
+      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
 
       if (!sqlStatement) {
         return res
@@ -218,7 +223,20 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
           .json({ message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500 });
       }
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      // needs to be mutable
+      let response = await connection.query(sqlStatement.text, sqlStatement.values);
+      if (!isAuth) {
+        if (response.rows.length > 0) {
+          // remove sensitive data from json obj
+          for (var i in response.rows) {
+            response.rows[i].activity_payload.created_by = null;
+            response.rows[i].activity_payload.updated_by = null;
+            response.rows[i].activity_payload.reviewed_by = null;
+            response.rows[i].activity_payload.user_role = [];
+            response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+          }
+        }
+      }
 
       const responseBody = {
         message: 'Got activities by search filter criteria',
