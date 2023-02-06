@@ -63,7 +63,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       '/api/activities-lean/',
       '/api/points-of-interest-lean/',
       '/api/points-of-interest/',
-      // '/api/activities/',
+      '/api/activities/',
       // '/api/activity/',
       // '/api/iapp-jurisdictions/',
       // '/api/code_tables/invasive_plant_code/',
