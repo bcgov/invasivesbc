@@ -59,8 +59,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     authState.displayName.split(' ')[0].replace(',', '') ? authState.displayName.split(',')[0].replace(',', '') : ''
   );
   const [email, setEmail] = React.useState(authState.email ? authState.email : '');
-  const idir_userid = authState?.idir_userid ? authState?.idir_userid : '';
-  const bceid_userid = authState?.bceid_userid ? authState?.bceid_userid : '';
+  const idir_userid = authState?.idir_user_guid ? authState?.idir_user_guid : '';
+  const bceid_userid = authState?.bceid_user_guid ? authState?.bceid_user_guid : '';
   const [phone, setPhone] = React.useState('');
   const [pacNumber, setPacNumber] = React.useState('');
   const [psn1, setPsn1] = React.useState('');
@@ -283,7 +283,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name).code_description;
-  
+
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
       target: { value }
@@ -493,7 +493,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
                             <>
-                              <InputLabel 
+                              <InputLabel
                                 htmlFor="funding-agency"
                               >
                                 Funding Agencies

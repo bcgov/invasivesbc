@@ -22,7 +22,10 @@ class AuthState {
   displayName: string;
   username: string;
   idir_userid: string;
+  idir_user_guid: string;
+
   bceid_userid: string;
+  bceid_user_guid: string;
 
   requestHeaders: {
     authorization: string;
@@ -92,12 +95,16 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
   let email = '';
   let bceid_userid = '';
   let idir_userid = '';
+  let bceid_user_guid = '';
+  let idir_user_guid = '';
 
   const authenticated = keycloakInstance.authenticated;
 
   if (keycloakInstance.idTokenParsed) {
     if (keycloakInstance.idTokenParsed['idir_username']) idir_userid = keycloakInstance.idTokenParsed['idir_username'];
+    if (keycloakInstance.idTokenParsed['idir_user_guid']) idir_user_guid = keycloakInstance.idTokenParsed['idir_user_guid'];
     if (keycloakInstance.idTokenParsed['bceid_username']) bceid_userid = keycloakInstance.idTokenParsed['bceid_username'];
+    if (keycloakInstance.idTokenParsed['bceid_user_guid']) bceid_user_guid = keycloakInstance.idTokenParsed['bceid_user_guid'];
     username = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
     if (
       'display_name' in keycloakInstance.idTokenParsed &&
@@ -123,7 +130,9 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
     username,
     email,
     idir_userid,
-    bceid_userid
+    bceid_userid,
+    idir_user_guid,
+    bceid_user_guid
   };
 }
 
