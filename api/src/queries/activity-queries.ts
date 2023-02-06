@@ -164,7 +164,7 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  * @returns {SQLStatement} sql query object
  */
 //NOSONAR
-export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean): SQLStatement => {
+export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean, isAuth: boolean = false): SQLStatement => {
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature_server_id) {
@@ -211,6 +211,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   `);
   } else {
     if (searchCriteria.activity_id_only) {
+      // nullify the column_names just in case they are loaded
+      searchCriteria.column_names = [];   // it will be too late to use them anyways, next
       sqlStatement.append(SQL` a.activity_id`);
     } else if (searchCriteria.column_names && searchCriteria.column_names.length) {
       // do not include the `SQL` template string prefix, as column names can not be parameterized
@@ -325,12 +327,12 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
         sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.created_by) {
+      if (isAuth && gridFilters.created_by) {
         sqlStatement.append(SQL` AND LOWER(a.created_by)::text LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.created_by})`);
         sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.updated_by) {
+      if (isAuth && gridFilters.updated_by) {
         sqlStatement.append(SQL` AND LOWER(a.updated_by)::text LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.updated_by})`);
         sqlStatement.append(SQL`||'%'`);
@@ -371,7 +373,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     }
   }
 
-  if (searchCriteria.created_by && searchCriteria.created_by.length) {
+  if (isAuth && searchCriteria.created_by && searchCriteria.created_by.length) {
     sqlStatement.append(SQL` AND created_by IN (`);
     sqlStatement.append(SQL`${searchCriteria.created_by[0]}`);
     for (let idx = 1; idx < searchCriteria.created_by.length; idx++) {
