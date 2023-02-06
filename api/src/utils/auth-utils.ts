@@ -10,9 +10,9 @@ const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL ||
-  'https://dev.oidc.gov.bc.ca/auth/realms/onestopauth-business/protocol/openid-connect/certs';
+  'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs';
 
-const KEYCLOAK_CLIENT_ID = 'invasives-bc-1849';
+const KEYCLOAK_CLIENT_ID = 'invasives-bc-4565';
 
 // so we have type information available to endpoints
 export interface InvasivesRequest extends Request {
