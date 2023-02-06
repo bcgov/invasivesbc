@@ -255,7 +255,7 @@ const WaterQuality = {
 const TerrestrialPlant = {
   ...ThreeColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  occurrence: { 'ui:widget': 'single-select-autocomplete' },
+  observation_type: {},
   edna_sample: { 'ui:widget': 'single-select-autocomplete' },
   invasive_plant_density_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_plant_distribution_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -276,7 +276,7 @@ const TerrestrialPlant = {
   },
   'ui:order': [
     'invasive_plant_code',
-    'occurrence',
+    'observation_type',
     'edna_sample',
     'invasive_plant_density_code',
     'invasive_plant_distribution_code',

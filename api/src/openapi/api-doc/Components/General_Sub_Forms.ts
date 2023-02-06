@@ -664,7 +664,7 @@ export const ShorelineTypes = {
 };
 export const TerrestrialPlant = {
   type: 'object',
-  required: ['invasive_plant_code', 'occurrence', 'voucher_specimen_collected'],
+  required: ['invasive_plant_code', 'observation_type', 'voucher_specimen_collected'],
   title: '',
   properties: {
     invasive_plant_code: {
@@ -680,22 +680,29 @@ export const TerrestrialPlant = {
       'x-tooltip-text':
         'Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location'
     },
-    occurrence: {
+    observation_type: {
       type: 'string',
       title: 'Observation Type',
-      enum: ['Positive occurrence', 'Negative occurrence'],
-      default: 'Positive occurrence',
+      enum: ['Positive Observation', 'Negative Observation'],
+      default: 'Positive Observation',
       'x-tooltip-text':
         'The observation describes the presence or absence of target invasive plants within a defined area'
     }
   },
   dependencies: {
-    occurrence: {
+    observation_type: {
       oneOf: [
         {
           properties: {
-            occurrence: {
-              enum: ['Positive occurrence']
+            observation_type: {
+              enum: ['Negative Observation']
+            }
+          }
+        },
+        {
+          properties: {
+            observation_type: {
+              enum: ['Positive Observation']
             },
             // edna_sample: {
             //   title: 'eDNA sample',
@@ -882,13 +889,6 @@ export const TerrestrialPlant = {
             'plant_life_stage_code',
             'voucher_specimen_collected'
           ]
-        },
-        {
-          properties: {
-            occurrence: {
-              enum: ['Negative occurrence']
-            }
-          }
         }
       ]
     }
@@ -896,11 +896,7 @@ export const TerrestrialPlant = {
 };
 export const TerrestrialPlants = {
   type: 'array',
-  default: [
-    {
-      occurrence: 'Positive occurrence'
-    }
-  ],
+  default: [{}],
   title: 'Terrestrial Invasive Plants',
   minItems: 1,
   items: {
