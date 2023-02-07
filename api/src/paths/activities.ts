@@ -150,7 +150,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
     const isAuth = req.authContext?.isAuth ?? false;
 
-    if (!roleName || roleName.includes('animal')) {
+    if (!isAuth || !roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
