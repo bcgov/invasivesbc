@@ -1,4 +1,5 @@
-import { FormValidation } from "@rjsf/utils";
+import { FormValidation } from '@rjsf/utils';
+import { ActivitySubtype } from 'constants/activities';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -180,6 +181,16 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
       );
     }
 
+    const jurCodes = [];
+
+    formData.activity_data.jurisdictions.forEach((jurCode) => {
+      if (jurCodes.includes(jurCode.jurisdiction_code)) {
+        errors.activity_data['jurisdictions'].addError('You cannot have two of the same jurisdiction.');
+      } else {
+        jurCodes.push(jurCode.jurisdiction_code);
+      }
+    });
+
     return errors;
   };
 }
@@ -197,6 +208,157 @@ export function getDateAndTimeValidator(activitySubtype: string): rjsfValidator 
           `Date and time cannot be later than your current date and time`
         );
       }
+    }
+    return errors;
+  };
+}
+
+export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    const subtypeData = formData?.activity_subtype_data;
+
+    switch (activitySubtype) {
+      case ActivitySubtype.Collection_Biocontrol:
+        errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].__errors = [];
+        errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].__errors = [];
+
+        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['start_time'])) {
+          errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+
+        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['stop_time'])) {
+          errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Monitoring_BiologicalDispersal:
+        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].__errors = [];
+        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].__errors = [];
+
+        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
+          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+
+        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
+          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Treatment_BiologicalPlant:
+        errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].__errors = [];
+
+        if (Date.now() < Date.parse(subtypeData.Biocontrol_Release_Information['collection_date'])) {
+          errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
+        errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].__errors =
+          [];
+        errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].__errors =
+          [];
+
+        if (
+          Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'])
+        ) {
+          errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+
+        if (
+          Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'])
+        ) {
+          errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Treatment_ChemicalPlant:
+        errors.activity_subtype_data.Treatment_ChemicalPlant_Information['application_start_time'].__errors = [];
+
+        if (Date.now() < Date.parse(subtypeData.Treatment_ChemicalPlant_Information['application_start_time'])) {
+          errors.activity_subtype_data.Treatment_ChemicalPlant_Information['application_start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Treatment_ChemicalPlantAquatic:
+        errors.activity_subtype_data.Treatment_ChemicalPlant_Information['application_start_time'].__errors = [];
+
+        if (Date.now() < Date.parse(subtypeData.Treatment_ChemicalPlant_Information['application_start_time'])) {
+          errors.activity_subtype_data.Treatment_ChemicalPlant_Information['application_start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
+        break;
+      case ActivitySubtype.Observation_PlantTerrestrial:
+        if (
+          !formData ||
+          !formData.activity_subtype_data ||
+          !formData?.activity_subtype_data?.TerrestrialPlants?.[0]?.['voucher_specimen_collection_information']
+        ) {
+          return errors;
+        }
+
+        if (
+          Date.now() <
+          Date.parse(
+            subtypeData.TerrestrialPlants[0]['voucher_specimen_collection_information']['date_voucher_collected']
+          )
+        ) {
+          errors['activity_subtype_data']['TerrestrialPlants'][0]['voucher_specimen_collection_information'][
+            'date_voucher_collected'
+          ].addError(`Date and time cannot be later than your current date and time`);
+        }
+
+        if (
+          Date.now() <
+          Date.parse(
+            subtypeData.TerrestrialPlants[0]['voucher_specimen_collection_information']['date_voucher_verified']
+          )
+        ) {
+          errors['activity_subtype_data']['TerrestrialPlants'][0]['voucher_specimen_collection_information'][
+            'date_voucher_verified'
+          ].addError(`Date and time cannot be later than your current date and time`);
+        }
+        break;
+      case ActivitySubtype.Observation_PlantAquatic:
+        if (
+          !formData ||
+          !formData.activity_subtype_data ||
+          !formData?.activity_subtype_data?.AquaticPlants?.[0]?.['voucher_specimen_collection_information']
+        ) {
+          return errors;
+        }
+
+        if (
+          Date.now() <
+          Date.parse(subtypeData.AquaticPlants[0]['voucher_specimen_collection_information']['date_voucher_collected'])
+        ) {
+          errors['activity_subtype_data']['AquaticPlants'][0]['voucher_specimen_collection_information'][
+            'date_voucher_collected'
+          ].addError(`Date and time cannot be later than your current date and time`);
+        }
+
+        if (
+          Date.now() <
+          Date.parse(subtypeData.AquaticPlants[0]['voucher_specimen_collection_information']['date_voucher_verified'])
+        ) {
+          errors['activity_subtype_data']['AquaticPlants'][0]['voucher_specimen_collection_information'][
+            'date_voucher_verified'
+          ].addError(`Date and time cannot be later than your current date and time`);
+        }
+        break;
+      default:
+        break;
     }
     return errors;
   };

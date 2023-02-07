@@ -132,8 +132,10 @@ export const Treatment_Chemical = {
           {
             properties: {
               applicator_license: {
-                type: 'string',
+                type: 'number',
                 title: 'Pesticide Applicator Certificate Number',
+                minimum: 0,
+                maximum: 999999,
                 'x-tooltip-text': 'Valid pesticide applicator certificate number'
               }
             }
