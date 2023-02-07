@@ -225,7 +225,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       // needs to be mutable
       let response = await connection.query(sqlStatement.text, sqlStatement.values);
-      if (!isAuth) {
+      if (!sanitizedSearchCriteria.activity_id_only && !isAuth) {
         if (response.rows.length > 0) {
           // remove sensitive data from json obj
           for (var i in response.rows) {
