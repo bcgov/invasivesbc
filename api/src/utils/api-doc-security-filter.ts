@@ -34,7 +34,7 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
     }
 
     // the apiDoc that updates will be applied to
-    const apiDoc = req['apiDoc'];
+    const apiDoc = JSON.parse(JSON.stringify(req['apiDoc']))
 
     let initialPass = true;
 
@@ -61,7 +61,7 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
     });
 
     // re-assign the updated apiDoc to the req
-    req['apiDoc'] = apiDoc;
+    req['apiDoc'] =  JSON.parse(JSON.stringify(apiDoc))
   } catch (error) {
     defaultLog.debug({ label: 'applyApiDocSecurityFilters', message: 'error', error });
     throw error;
