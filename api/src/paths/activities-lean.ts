@@ -28,7 +28,7 @@ POST.apiDoc = {
       ]
     : [],
   requestBody: {
-    description: 'Activities search filter criteria object.',
+    description: 'Activities lean search filter criteria object.',
     content: {
       'application/json': {
         schema: {
@@ -108,7 +108,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Activity get response object array.',
+      description: 'Activities lean get response object array.',
       content: {
         'application/json': {
           schema: {
@@ -212,16 +212,19 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    const authContext = (req as any)?.authContext;
+    const isAuth = authContext?.isAuth ?? false;
+
     defaultLog.debug({
       label: 'activity',
       message: 'getActivitiesBySearchFilterCriteria',
       body: req.body
     });
 
-    const roleName = (req as any).authContext.roles[0]?.role_name;
+    const roleName = authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
 
-    if (!roleName || roleName.includes('animal')) {
+    if (!isAuth || !roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
@@ -239,7 +242,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true);
+      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
 
       // Check for sql and role:
       // console.log('========================= activities-lean.ts 232', sqlStatement.text);
