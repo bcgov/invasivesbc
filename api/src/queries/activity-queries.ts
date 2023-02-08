@@ -157,6 +157,19 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
 };
 
 /**
+ * column names SQL SELECT string formatted and joined.
+ *
+ * @param {columnNames} string[]
+ * @returns {string} SQL query string
+ */
+const getColumnNamesSQL = (columnNames:string[]):string => {
+  const newColumnNames = columnNames.map((name) => 'a.' + name);
+  console.log('columnNames POST Sanitize', columnNames);
+  console.log('columnNames sanitized and not lean, newColumnNames', newColumnNames);
+  return ` ${newColumnNames.join(', ')}`;
+}
+
+/**
  * SQL query to fetch activity records based on search criteria.
  *
  * @param {ActivitySearchCriteria} searchCriteria
@@ -180,56 +193,123 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
   sqlStatement.append(SQL`SELECT`);
 
+  let columnNames = (searchCriteria.column_names && searchCriteria.column_names?.length > 0) ? searchCriteria.column_names : [];
+
+  if (!isAuth && columnNames.length > 0) {
+    //columns_names were requested for either activities full or lean
+    // remove restricted column_names if NOT auth
+    // console.log('columnNames', columnNames);
+    const blockedColumns = ['created_by', 'updated_by', 'reviewed_by'];
+    let indexOf;
+    // console.log('define: indexOf', indexOf);
+    for (const column of blockedColumns) {
+      // console.log('blockedColumns column', column);
+      indexOf = columnNames?.indexOf(column);
+      // console.log('indexOf', indexOf);
+      if (indexOf !== undefined) {
+        columnNames.splice(indexOf,1);
+      }
+    }
+  }
   // Build lean object
   if (lean) {
-    sqlStatement.append(SQL`
-    jsonb_build_object (
-      'type', 'Feature',
-      'properties', json_build_object(
-        'id', a.activity_id,
-        'type', activity_type,
-        'subtype', activity_subtype,
-        'created', created_timestamp,
-        'bec', biogeoclimatic_zones,
-        'riso', regional_invasive_species_organization_areas,
-        'ipma', invasive_plant_management_areas,
-        'own', ownership,
-        'regionalDist', regional_districts,
-        'flnroDist', flnro_districts,
-        'motiDist', moti_districts,
-        'elev', elevation,
-        'wellProx', well_proximity,
-        'species_positive', species_positive,
-        'species_negative', species_negative,
-        'species_treated', species_treated,
-        'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
-        'reported_area', a.activity_payload::json->'form_data'->'activity_data'->'reported_area',
-        'short_id', a.activity_payload::json->'short_id'
-      ),
-      'geometry', public.st_asGeoJSON(geog)::jsonb
-    ) as "geojson"
-  `);
+    if (columnNames.length > 0) {
+      // do we even allow columnNames request to lean???
+      // do we remove payload or is it not included as lean???
+      sqlStatement.append(getColumnNamesSQL(columnNames));
+      // we need to remove data if lean is allowed to return activity payload
+    } else {
+      // column names are empty, use default output
+      sqlStatement.append(SQL`
+        jsonb_build_object (
+          'type', 'Feature',
+          'properties', json_build_object(
+            'id', a.activity_id,
+            'type', activity_type,
+            'subtype', activity_subtype,
+            'created', created_timestamp,
+            'bec', biogeoclimatic_zones,
+            'riso', regional_invasive_species_organization_areas,
+            'ipma', invasive_plant_management_areas,
+            'own', ownership,
+            'regionalDist', regional_districts,
+            'flnroDist', flnro_districts,
+            'motiDist', moti_districts,
+            'elev', elevation,
+            'wellProx', well_proximity,
+            'species_positive', species_positive,
+            'species_negative', species_negative,
+            'species_treated', species_treated,
+            'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
+            'reported_area', a.activity_payload::json->'form_data'->'activity_data'->'reported_area',
+            'short_id', a.activity_payload::json->'short_id'
+          ),
+          'geometry', public.st_asGeoJSON(geog)::jsonb
+        ) as "geojson"
+      `);
+    }
   } else {
     if (searchCriteria.activity_id_only) {
-      // nullify the column_names just in case they are loaded
-      searchCriteria.column_names = [];   // it will be too late to use them anyways, next
+      // empty column_names just in case they are loaded and will stop append later
+      columnNames = [];
       sqlStatement.append(SQL` a.activity_id`);
-    } else if (searchCriteria.column_names && searchCriteria.column_names.length) {
-      // do not include the `SQL` template string prefix, as column names can not be parameterized
-      const newColumnNames = searchCriteria.column_names.map((name) => {
-        return 'a.' + name;
-      });
-      sqlStatement.append(` ${newColumnNames.join(', ')}`);
     } else {
-      if (searchCriteria.column_names && searchCriteria.column_names.length) {
-        // do not include the `SQL` template string prefix, as column names can not be parameterized
-        const newColumnNames = searchCriteria.column_names.map((name) => {
-          return 'a.' + name;
-        });
-        sqlStatement.append(` ${newColumnNames.join(', ')}`);
-      } else {
-        // if no column_names specified, select all
-        sqlStatement.append(SQL` *`);
+      if (columnNames?.length == 0) {
+        // console.log('No column_names and not lean');
+        if (isAuth) {
+          // if no column_names specified, select all
+          sqlStatement.append(SQL` *`);
+        } else {
+          // NO columnames and we are also NOT authenticated
+          // set default sanitized column names, public list, allow list
+          columnNames = [
+            'activity_incoming_data_id',
+            'activity_id',
+            '"version"',
+            'activity_type',
+            'activity_subtype',
+            'created_timestamp',
+            'received_timestamp',
+            'deleted_timestamp',
+            'geom',
+            'geog',
+            'media_keys',
+            'activity_payload',
+            'biogeoclimatic_zones',
+            'regional_invasive_species_organization_areas',
+            'invasive_plant_management_areas',
+            'ownership',
+            'regional_districts',
+            'flnro_districts',
+            'moti_districts',
+            'elevation',
+            'well_proximity',
+            'utm_zone',
+            'utm_northing',
+            'utm_easting',
+            'albers_northing',
+            'albers_easting',
+            'form_status',
+            'sync_status',
+            'review_status',
+            'reviewed_at',
+            'species_positive',
+            'species_negative',
+            'jurisdiction',
+            'species_treated',
+            'species_positive_full',
+            'species_negative_full',
+            'species_treated_full',
+            'agency',
+            'jurisdiction_display',
+            'short_id',
+          ];
+        }
+        // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
+      }
+      if (columnNames.length > 0) {
+        // console.log('columnNames at append', columnNames);
+        sqlStatement.append(getColumnNamesSQL(columnNames));
       }
     }
 
