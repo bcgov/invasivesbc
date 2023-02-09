@@ -40,7 +40,8 @@ function* initializeAuthentication() {
     checkLoginIframe: false,
     adapter: config.KEYCLOAK_ADAPTER,
     redirectUri: config.REDIRECT_URI,
-    onLoad: 'check-sso',
+    //onLoad: 'check-sso',
+    onLoad: 'login-required',
     pkceMethod: 'S256'
   });
 
