@@ -62,7 +62,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const idir_userid = authState?.idir_user_guid ? authState?.idir_user_guid : '';
   const bceid_userid = authState?.bceid_user_guid ? authState?.bceid_user_guid : '';
   const [phone, setPhone] = React.useState('');
-  const [pacNumber, setPacNumber] = React.useState('');
+  const [pacNumber, setPacNumber] = React.useState<number>(null);
   const [psn1, setPsn1] = React.useState('');
   const [psn2, setPsn2] = React.useState('');
   const [employer, setEmployer] = React.useState(null);
@@ -538,7 +538,13 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
                               value={pacNumber}
-                              onChange={(e) => setPacNumber(e.target.value)}
+                              type={'number'}
+                              onChange={(e) => {
+                                const inputnumber = Number.parseInt(e.target.value);
+                                if (inputnumber) {
+                                  setPacNumber(inputnumber);
+                                }
+                              }}
                               style={{ width: 320 }}
                               variant="outlined"
                               id="pac-number"

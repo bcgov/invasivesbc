@@ -822,15 +822,21 @@ export const TerrestrialPlant = {
                           properties: {
                             utm_zone: {
                               title: 'UTM Zone',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 7,
+                              maximum: 11
                             },
                             utm_easting: {
                               title: 'UTM Easting',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 280000,
+                              maximum: 720000
                             },
                             utm_northing: {
                               title: 'UTM Northing',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 5350000,
+                              maximum: 6652000
                             }
                           }
                         }
@@ -1183,15 +1189,21 @@ export const AquaticPlant = {
                           properties: {
                             utm_zone: {
                               title: 'UTM Zone',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 7,
+                              maximum: 11
                             },
                             utm_easting: {
                               title: 'UTM Easting',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 280000,
+                              maximum: 720000
                             },
                             utm_northing: {
                               title: 'UTM Northing',
-                              type: 'number'
+                              type: 'number',
+                              minimum: 5350000,
+                              maximum: 6652000
                             }
                           }
                         }

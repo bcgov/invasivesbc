@@ -13,6 +13,7 @@ import {
   getAreaValidator,
   getCustomValidator,
   getDateAndTimeValidator,
+  getDateAndTimeValidatorOther,
   getInvasivePlantsValidator,
   getJurisdictionPercentValidator,
   getPestManagementPlanValidator,
@@ -510,6 +511,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             customValidation={getCustomValidator([
               getAreaValidator(activityInStore.activity.activity_subtype),
               getDateAndTimeValidator(activityInStore.activity.activity_subtype),
+              getDateAndTimeValidatorOther(activityInStore.activity.activity_subtype),
               getWindValidator(activityInStore.activity.activity_subtype),
               getWindValidatorBiocontrol(activityInStore.activity.activity_subtype),
               getSlopeAspectBothFlatValidator(),
