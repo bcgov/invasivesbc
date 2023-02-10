@@ -398,9 +398,12 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     }
 
     // validate reported area limit
-    errors.activity_data['reported_area'].__errors = [];
-    if (formData.activity_data['reported_area'] > areaLimit) {
-      errors.activity_data['reported_area'].addError(`Area cannot exceed ${areaLimit} m\u00B2`);
+    if(errors.activity_data['reported_area'])
+    {
+      errors.activity_data['reported_area'].__errors = [];
+      if (formData.activity_data['reported_area'] > areaLimit) {
+        errors.activity_data['reported_area'].addError(`Area cannot exceed ${areaLimit} m\u00B2`);
+      }
     }
 
     return errors;
