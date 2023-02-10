@@ -1,4 +1,4 @@
-import { all, put, select, takeEvery } from 'redux-saga/effects';
+import { all, put, select, takeEvery, take } from 'redux-saga/effects';
 import {
   AUTH_INITIALIZE_COMPLETE,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE,
@@ -42,7 +42,10 @@ import {
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_BOUNDARY_FAILURE,
   USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_DELETE_KML_FAILURE
+  USER_SETTINGS_DELETE_KML_FAILURE,
+  GET_API_DOC_REQUEST,
+  GET_API_DOC_SUCCESS,
+  GET_API_DOC_ONLINE
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
@@ -266,6 +269,10 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
     const recordsExpanded = recordsExpandedState ? recordsExpandedState : false;
 
+    yield put({ type: GET_API_DOC_REQUEST });
+    yield take(GET_API_DOC_SUCCESS);
+    console.log('%cDIDNT WAIT', 'color: yellow');
+
     yield put({
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
       payload: {
@@ -352,10 +359,28 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   }
 }
 
+function* handle_GET_API_DOC_REQUEST(action) {
+  // TODO decide online or not
+  yield put({ type: GET_API_DOC_ONLINE });
+}
+
+function* handle_GET_API_DOC_ONLINE(action) {
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+  const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+  const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+  const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+  yield put({
+    type: GET_API_DOC_SUCCESS,
+    payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
+  });
+}
+
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
+    takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
+    takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
     takeEvery(

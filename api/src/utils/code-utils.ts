@@ -19,14 +19,14 @@ export interface IAllCodeEntities {
   codes: QueryResultRow[];
 }
 
-export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> {
+export async function getAllCodeEntities(user?: any, filterForSelectable?: boolean): Promise<IAllCodeEntities> {
   const connection = await getDBConnection();
   const pesticideServiceNumbers = [];
   const employers = [];
   const agencies = [];
 
   // Fetch user info from params
-  if (user) {
+  if (user && filterForSelectable) {
     if (user.pac_service_number_1) {
       pesticideServiceNumbers.push(user.pac_service_number_1.replace(/^0+(\d)/, ''));
     }
@@ -91,7 +91,7 @@ export async function getAllCodeEntities(user?: any): Promise<IAllCodeEntities> 
       return null;
     }
 
-    if (user) {
+    if (user && filterForSelectable) {
       // From responses[3].rows, filter out any employer codes that are not in the user's list of employers
       const filteredEmployerCodes = responses[3].rows.filter((employerCode: any) => {
         return employers.includes(employerCode.code_name);
