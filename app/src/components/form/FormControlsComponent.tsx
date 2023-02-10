@@ -170,6 +170,19 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
               </Tooltip>
             </Grid>
           )}
+          {props.onPaste && (
+            <Grid item>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title="Paste the data to the new record from the previously copied fields.">
+                <span>
+                  <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
+                    Paste Form Data
+                  </Button>
+                </span>
+              </Tooltip>
+            </Grid>
+          )}
 
           {/*
           {props.onSave && (

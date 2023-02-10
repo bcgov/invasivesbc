@@ -33,6 +33,9 @@ export function getFieldsToCopy(activityData: any, activitySubtypeData: any, act
   delete activityDataToCopy.latitude;
   delete activityDataToCopy.longitude;
   delete activityDataToCopy.reported_area;
+  delete activityDataToCopy.utm_easting;
+  delete activityDataToCopy.utm_northing;
+  delete activityDataToCopy.utm_zone;
 
-  return { activity_data: activityDataToCopy, activitySubtypeData: activitySubtypeDataToCopy };
+  return { activityData: activityDataToCopy, activitySubtypeData: activitySubtypeDataToCopy };
 }

@@ -313,8 +313,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //TODO redux copy and paste
   const pasteFormData = async () => {
     dispatch({
-      type: ACTIVITY_PASTE_REQUEST,
-     // payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: retrieveFormDataFromSession() }
+      type: ACTIVITY_PASTE_REQUEST
     });
     setAlertPastedOpen(true);
   };
@@ -325,7 +324,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const copyFormData = () => {
     dispatch({type: ACTIVITY_COPY_REQUEST})
   //  const { form_data, activity_subtype } = activityInStore?.activity;
-    saveFormDataToSession(form_data, activity_subtype);
+    // saveFormDataToSession(activityInStore.activity.form_data, activity_subtype);
     setAlertCopiedOpen(true);
   };
 

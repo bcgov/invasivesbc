@@ -67,7 +67,7 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
 
 export function* handle_ACTIVITY_COPY_REQUEST(action) {
   try {
-    const activityState = yield select(selectActivity)
+  const activityState = yield select(selectActivity)
   const activityData = { ...activityState.activity.form_data.activity_data };
   const activitySubtypeData = { ...activityState.activity.form_data.activity_subtype_data };
 
@@ -75,10 +75,12 @@ export function* handle_ACTIVITY_COPY_REQUEST(action) {
   const activityDataToCopy = getFieldsToCopy(activityData, activitySubtypeData).activityData;
 
   const formDataToCopy = {
-    ...formData,
+    ...activityState.activity.form_data,
     activity_data: activityDataToCopy
   };
-    yield put({ type: ACTIVITY_COPY_SUCCESS, payload: {} });
+    yield put({ type: ACTIVITY_COPY_SUCCESS, payload: {
+      form_data: formDataToCopy
+    } });
   } catch (e) {
     yield put({ type: ACTIVITY_COPY_FAILURE, payload: {} });
   }
