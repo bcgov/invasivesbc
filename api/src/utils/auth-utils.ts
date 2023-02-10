@@ -74,6 +74,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       return new Promise<void>((resolve: any) => {
         req.authContext = {
           preferredUsername: null,
+          friendlyUsername: null,
           user: null,
           roles: [],
           isAuth: false
@@ -148,6 +149,7 @@ export const authenticate = async (req: InvasivesRequest) => {
         createIfNeeded.then(() => {
           req.authContext = {
             preferredUsername: null,
+            friendlyUsername: null,
             user: null,
             roles: [],
             isAuth: true,
