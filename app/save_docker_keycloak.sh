@@ -1,0 +1,4 @@
+docker commit ca2bae02b674 keycloakwithidir
+docker tag keycloakwithidir michealwwells/invasiveslocalkeycloakidir:latest
+docker push michealwwells/invasiveslocalkeycloakidir:latest
+
