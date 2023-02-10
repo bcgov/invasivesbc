@@ -34,5 +34,5 @@ export function getFieldsToCopy(activityData: any, activitySubtypeData: any, act
   delete activityDataToCopy.longitude;
   delete activityDataToCopy.reported_area;
 
-  return { activityData: activityDataToCopy, activitySubtypeData: activitySubtypeDataToCopy };
+  return { activity_data: activityDataToCopy, activitySubtypeData: activitySubtypeDataToCopy };
 }

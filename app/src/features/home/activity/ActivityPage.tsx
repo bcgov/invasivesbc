@@ -42,7 +42,10 @@ import { selectNetworkConnected } from '../../../state/reducers/network';
 import { selectConfiguration } from '../../../state/reducers/configuration';
 import { useDispatch } from 'react-redux';
 import {
+  ACTIVITY_COPY_REQUEST,
+  ACTIVITY_COPY_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST
@@ -310,8 +313,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //TODO redux copy and paste
   const pasteFormData = async () => {
     dispatch({
-      type: ACTIVITY_SAVE_REQUEST,
-      payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: retrieveFormDataFromSession() }
+      type: ACTIVITY_PASTE_REQUEST,
+     // payload: { activity_id: activityInStore.activity.activity_id, updatedFormData: retrieveFormDataFromSession() }
     });
     setAlertPastedOpen(true);
   };
@@ -320,7 +323,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Copy form data into session storage
    */
   const copyFormData = () => {
-    const { form_data, activity_subtype } = activityInStore?.activity;
+    dispatch({type: ACTIVITY_COPY_REQUEST})
+  //  const { form_data, activity_subtype } = activityInStore?.activity;
     saveFormDataToSession(form_data, activity_subtype);
     setAlertCopiedOpen(true);
   };
