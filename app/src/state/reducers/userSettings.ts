@@ -18,7 +18,8 @@ import {
   USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_KML_SUCCESS,
-  MAP_TOGGLE_WHATS_HERE
+  MAP_TOGGLE_WHATS_HERE,
+  GET_API_DOC_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -30,9 +31,10 @@ class UserSettingsState {
   activeActivity: string;
   activeActivityDescription: string;
   activeIAPP: string;
+  apiDocsWithViewOptions: object;
+  apiDocsWithSelectOptions: object;
 
   mapCenter: [number, number];
-
   newRecordDialogState: INewRecordDialogState;
   recordSets: [
     {
@@ -85,17 +87,22 @@ const initialState = new UserSettingsState();
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case GET_API_DOC_SUCCESS: {
+        return {
+          ...state,
+          apiDocsWithViewOptions: action.payload.apiDocsWithViewOptions,
+          apiDocsWithSelectOptions: action.payload.apiDocsWithSelectOptions
+        };
+      }
       case MAP_TOGGLE_WHATS_HERE: {
-        return {...state,
-        recordsExpanded: (action.payload?.toggle)? false: state.recordsExpanded
-        }
+        return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
       }
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         return {
           ...state,
           activeActivity: action.payload.activeActivity,
           activeIAPP: action.payload.activeIAPP,
-          recordSets: {...action.payload.recordSets},
+          recordSets: { ...action.payload.recordSets },
           recordsExpanded: action.payload.recordsExpanded
         };
       }
@@ -121,13 +128,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: {...action.payload.recordSets}
+          recordSets: { ...action.payload.recordSets }
         };
       }
       case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: {...action.payload.recordSets}
+          recordSets: { ...action.payload.recordSets }
         };
       }
       case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
@@ -139,13 +146,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: {...action.payload.recordSets}
+          recordSets: { ...action.payload.recordSets }
         };
       }
       case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: {...action.payload.recordSets}
+          recordSets: { ...action.payload.recordSets }
         };
       }
       case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
@@ -171,7 +178,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
         return {
           ...state,
-          recordSets: {...action.payload.recordSets}
+          recordSets: { ...action.payload.recordSets }
         };
       }
       case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
@@ -190,7 +197,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           mapCenter: action.payload.center
-        }
+        };
       }
       default:
         return state;

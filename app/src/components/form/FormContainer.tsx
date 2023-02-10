@@ -81,14 +81,15 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
   const { authenticated } = useSelector(selectAuth);
-    const  authState  = useSelector(selectAuth);
+  const authState = useSelector(selectAuth);
 
   const { MOBILE } = useSelector(selectConfiguration);
 
   const dispatch = useDispatch();
   const { darkTheme } = useSelector(selectUserSettings);
-  const activityStateInStore = useSelector(selectActivity);
+  const userSettingsState = useSelector(selectUserSettings);
 
+  const activityStateInStore = useSelector(selectActivity);
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -164,8 +165,21 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     const getApiSpec = async () => {
       const subtype = props.activity?.activity_subtype || props.activity?.activitySubtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
-      const response = await dataAccess.getCachedApiSpec();
-      let components = response.components;
+      let components;
+      const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
+      const notAdmin =
+        authState?.accessRoles?.filter((role) => {
+          return role.role_id === 18;
+        }).length === 0;
+      if (notAdmin && notMine) {
+        components = (userSettingsState.apiDocsWithViewOptions as any).components;
+      } else if(!notAdmin && notMine) {
+        components = (userSettingsState.apiDocsWithViewOptions as any).components;
+      }
+      else
+      {
+        components = (userSettingsState.apiDocsWithSelectOptions as any).components;
+      }
 
       let uiSchema = RootUISchemas[subtype];
       const subtypeSchema = components?.schemas?.[subtype];
@@ -235,12 +249,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
     const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
-    console.log('notmine', notMine);
     const notAdmin =
       authState?.accessRoles?.filter((role) => {
-        return role.role_id === 18
+        return role.role_id === 18;
       }).length === 0;
-    console.log('not admin', notAdmin);
     if (notAdmin && notMine) {
       setIsDisabled(true);
     } else {
@@ -299,10 +311,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 transformErrors={props.customErrorTransformer}
                 autoComplete="off"
                 onChange={(event) => {
-                    props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                      //setformData(updatedFormData);
-                    });
-                  }}
+                  props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
+                    //setformData(updatedFormData);
+                  });
+                }}
                 onError={(error) => {
                   if (!props.onFormSubmitError) {
                     return;
@@ -319,8 +331,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     console.log(e);
                   }
                 }}
-                ref={formRef}
-                >
+                ref={formRef}>
                 <React.Fragment />
               </Form>
 

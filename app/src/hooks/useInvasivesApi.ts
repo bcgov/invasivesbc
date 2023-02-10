@@ -1259,7 +1259,7 @@ export const getRequestOptions = (config, requestHeaders) => {
   };
 };
 
-export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
+export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?) {
   // get config and request setup from store
   const requestOptions = yield select(selectAuthHeaders);
   const config = yield select(selectConfiguration);
@@ -1269,7 +1269,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?) {
   if (method === 'GET') {
     const { data, status, url } = yield Http.request({
       method: method,
-      headers: { ...options.headers },
+      headers: { ...options.headers, ...additionalHeaders },
       url: options.baseUrl + endpoint,
       params: {
         query: JSON.stringify(payloadData)
