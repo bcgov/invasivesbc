@@ -14,8 +14,9 @@ const defaultLog = getLogger('api-doc-security-filter');
  * @param {*} req
  * @return {*} req
  */
-export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
+export async function applyApiDocSecurityFilters(req: InvasivesRequest, res) {
   try {
+    await authenticate(<InvasivesRequest>req);
     let user = req.authContext.user;
     const roles = req.authContext.roles;
 
@@ -67,7 +68,7 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest) {
     throw error;
   }
 
-  return req;
+  return res.status(200).json(req['apiDoc']);;
 }
 
 /**

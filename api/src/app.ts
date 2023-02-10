@@ -53,7 +53,7 @@ app.use(function (req: any, res: any, next: any) {
 // Initialize express-openapi framework
 initialize({
   validateApiDoc: false,
-  apiDoc: JSON.stringify(api_doc), // base open api spec
+  apiDoc: api_doc as any, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
@@ -66,10 +66,12 @@ initialize({
   securityHandlers: {
     Bearer: async function (req) {
       await authenticate(<InvasivesRequest>req);
-      await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+    //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
       return true;
     }
   },
+  
+  securityFilter: applyApiDocSecurityFilters,
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
