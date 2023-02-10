@@ -73,13 +73,10 @@ export const authenticate = async (req: InvasivesRequest) => {
       // '/api/code_tables/jurisdiction_code/',
     ].includes(req.originalUrl.split('?')?.[0]));
 
-    // add url
-    if (isPublicURL) {
-      {
-        return new Promise<void>((resolve: any) => {
-          req.authContext = {
-            preferredUsername: null,
-            friendlyUsername: null,
+    if (isPublicURL && (req.method === 'GET' || req.method === 'POST')) {
+      return new Promise<void>((resolve: any) => {
+        req.authContext = {
+          preferredUsername: null,
           user: null,
           roles: [],
           filterForSelectable: filterForSelectable
@@ -95,7 +92,6 @@ export const authenticate = async (req: InvasivesRequest) => {
         namespace: 'auth-utils'
       };
     }
-  }
 
   const token = authHeader.split(/\s/)[1] 
 
