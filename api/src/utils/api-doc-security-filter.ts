@@ -25,7 +25,13 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest, res) {
       if (roles.length > 0) {
         user = { ...user, roles };
       }
-      allCodeEntities = await getAllCodeEntities(user, req.authContext.filterForSelectable);
+      const isApiDocCall = req.originalUrl.includes('api-docs')
+      let shouldFilter = true;
+      if(isApiDocCall && !req.authContext.filterForSelectable)
+      {
+        shouldFilter = false
+      }
+      allCodeEntities = await getAllCodeEntities(user,shouldFilter);
     } else {
       allCodeEntities = await getAllCodeEntities();
     }
