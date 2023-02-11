@@ -79,11 +79,9 @@ export async function getAllCodeEntities(user?: any, filterForSelectable?: boole
     promises.push(connection.query(codeCategoriesSQL.text, codeCategoriesSQL.values));
     promises.push(connection.query(codeHeadersSQL.text, codeHeadersSQL.values));
     promises.push(connection.query(codesSQL.text, codesSQL.values));
-    if (user) {
-      promises.push(connection.query(employerCodesSql.text, employerCodesSql.values));
-      promises.push(connection.query(agencyCodesSql.text, agencyCodesSql.values));
-      promises.push(connection.query(psnCodesSql.text, psnCodesSql.values));
-    }
+    promises.push(connection.query(employerCodesSql.text, employerCodesSql.values));
+    promises.push(connection.query(agencyCodesSql.text, agencyCodesSql.values));
+    promises.push(connection.query(psnCodesSql.text, psnCodesSql.values));
 
     const responses: QueryResult[] = await Promise.all(promises);
 
