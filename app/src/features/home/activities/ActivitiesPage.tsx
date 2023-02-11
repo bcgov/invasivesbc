@@ -23,6 +23,7 @@ import RecordSetSaveDialog from './activityRecordset/RecordSetSaveDialog';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { selectMap } from 'state/reducers/map';
 
 const MapContainer = lazy(() => import('components/map/MapContainer'));
 
@@ -100,6 +101,7 @@ const PageContainer = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const { MOBILE } = useSelector(selectConfiguration);
   const userSettings = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
 
   const updateWidth = () => {
@@ -362,7 +364,7 @@ const PageContainer = (props) => {
               zoom={5}
               mapId={'mainMap'}
               geometryState={{ geometry, setGeometry }}>
-              <RecordSetLayersRenderer />
+              {mapState.IAPPGeoJSON?.features.length? <RecordSetLayersRenderer /> : <></>}
             </MapContainer>
           </Suspense>
         </MapRecordsContextProvider>
