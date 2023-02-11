@@ -56,7 +56,7 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   const authHeader = req.header('Authorization');
 
-  const filterForSelectable = req.header('FilterForSelectable')
+  const filterForSelectable = req.header('filterforselectable') === 'true'? true: false
 
   if (req.originalUrl === '/api/activities-lean/' || req.originalUrl === '/api/points-of-interest-lean/') {
     if (authHeader.includes('undefined')) {
@@ -66,7 +66,7 @@ export const authenticate = async (req: InvasivesRequest) => {
           friendlyUsername: null,
           user: null,
           roles: [],
-          filterForSelectable: false
+          filterForSelectable: filterForSelectable
         };
         resolve();
       });
@@ -105,6 +105,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       }
 
       req.keycloakToken = decoded;
+
 
       let accountType, id;
 
@@ -147,10 +148,8 @@ export const authenticate = async (req: InvasivesRequest) => {
           req.authContext.preferredUsername = decoded['preferred_username'];
           let idir_userid;
           let bceid_userid;
-          let filterForSelectable;
           if (decoded['idir_username']) idir_userid = decoded['idir_username'];
           if (decoded['bceid_username']) bceid_userid = decoded['bceid_username'];
-          if (decoded['filterForSelectable']) filterForSelectable = decoded['filterForSelectable'];
           req.authContext.filterForSelectable = filterForSelectable;
           req.authContext.friendlyUsername = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
           req.authContext.user = user;

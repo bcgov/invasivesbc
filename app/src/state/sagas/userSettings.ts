@@ -365,7 +365,7 @@ function* handle_GET_API_DOC_REQUEST(action) {
 }
 
 function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/',{}, {'filterForSelectable': true});
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
   const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
   const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
