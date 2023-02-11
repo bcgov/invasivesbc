@@ -102,7 +102,7 @@ const ActivityCanvasLabelMemo = (props) => {
     if (mapState?.layers?.[props.layerKey]?.IDList) {
       returnVal = mapState?.activitiesGeoJSON?.features
         .filter((row) => {
-          return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id);
+          return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
         })
         .map((row) => {
           return { ...row, geometry: center(row.geometry).geometry };

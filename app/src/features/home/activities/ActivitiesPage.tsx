@@ -409,7 +409,7 @@ const PageContainer = (props) => {
         />
         {useMemo(
           () => (
-            <RecordSetRenderer />
+           userSettings?.recordSets?  <RecordSetRenderer /> :<></>
           ),
           [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
         )}
