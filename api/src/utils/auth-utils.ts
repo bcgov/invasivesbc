@@ -60,7 +60,6 @@ export const authenticate = async (req: InvasivesRequest) => {
   const urlSplit = req.originalUrl.split('?');
   const rawPath = urlSplit?.[0] ?? req.originalUrl;
   const authHeader = req.header('Authorization'); 
-  if (authHeader === undefined) {
 
     const isPublicURL = ([
       '/api/activities-lean/',
@@ -86,13 +85,6 @@ export const authenticate = async (req: InvasivesRequest) => {
           resolve();
         });
       }
-    } else {
-      throw {
-        code: 401,
-        message: 'Missing Authorization header',
-        namespace: 'auth-utils'
-      };
-    }
 
   const token = authHeader.split(/\s/)[1] 
 
