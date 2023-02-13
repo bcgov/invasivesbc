@@ -53,6 +53,7 @@ import { LayerSniffer } from './Tools/ToolTypes/Data/LeafetPickerListener';
 import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
 import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
 import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
+import { selectTabs } from 'state/reducers/tabs';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -206,6 +207,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       map.flyTo([userSettingsState?.mapCenter[1], userSettingsState?.mapCenter[0]]);
   }, [userSettingsState?.mapCenter]);
 
+  const tabsState = useSelector(selectTabs);
+
   return (
     <ReactLeafletEditable
       ref={editRef}
@@ -294,10 +297,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <FindMeToggle />
             <PanToMe />
 
-            <WhatsHereButton />
-            <WhatsHereDrawComponent />
-            <WhatsHereMarker />
-            <WhatsHereCurrentRecordHighlighted />
+            {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
+              <>
+                <WhatsHereButton />
+                <WhatsHereDrawComponent />
+                <WhatsHereMarker />
+                <WhatsHereCurrentRecordHighlighted />
+              </>
+            ) : (
+              <></>
+            )}
 
             {props.children}
 
