@@ -78,7 +78,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ActivitiesPage: React.FC<IStatusPageProps> = (props) => {
   const classes = useStyles();
 
-  return <PageContainer originalActivityPageClassName={classes.pageContainer} />;
+  const userSettings = useSelector(selectUserSettings);
+  return (
+    <>{userSettings?.recordSets ? <PageContainer originalActivityPageClassName={classes.pageContainer} /> : <></>}</>
+  );
 };
 
 // main page component - moved everything in here so it could be wrapped in a context local to this page.
@@ -364,7 +367,7 @@ const PageContainer = (props) => {
               zoom={5}
               mapId={'mainMap'}
               geometryState={{ geometry, setGeometry }}>
-              {mapState.IAPPGeoJSON?.features.length? <RecordSetLayersRenderer /> : <></>}
+              {mapState.IAPPGeoJSON?.features.length ? <RecordSetLayersRenderer /> : <></>}
             </MapContainer>
           </Suspense>
         </MapRecordsContextProvider>
@@ -408,9 +411,7 @@ const PageContainer = (props) => {
           options={options}
         />
         {useMemo(
-          () => (
-           userSettings?.recordSets?  <RecordSetRenderer /> :<></>
-          ),
+          () => (userSettings?.recordSets ? <RecordSetRenderer /> : <></>),
           [userSettings?.recordSets?.length, userSettings?.activeIAPP, userSettings?.activeActivity]
         )}
       </Box>

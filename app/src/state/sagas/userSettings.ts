@@ -271,7 +271,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
     yield put({ type: GET_API_DOC_REQUEST });
     yield take(GET_API_DOC_SUCCESS);
-    console.log('%cDIDNT WAIT', 'color: yellow');
 
     yield put({
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
