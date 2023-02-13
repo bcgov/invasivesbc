@@ -10,8 +10,8 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
-import {createHash} from "crypto";
-import cacheService from "../utils/cache-service";
+import { createHash } from "crypto";
+import cacheService, { versionedKey } from "../utils/cache-service";
 
 const defaultLog = getLogger('activity');
 
@@ -24,10 +24,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -78,10 +78,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -171,7 +171,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
-      const cacheQueryResult = await connection.query(`select updated_at from cache_versions where cache_name = $1`, [
+      const cacheQueryResult = await connection.query(`select updated_at
+                                                       from cache_versions
+                                                       where cache_name = $1`, [
         'activity'
       ]);
       const cacheVersion = cacheQueryResult.rows[0].updated_at;
@@ -180,7 +182,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       // tuple: (cacheVersion, parameters, roleName)
       // hash it for brevity and to obscure the real modification date
 
-      const cacheTagStr = `${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`;
+      const cacheTagStr = versionedKey(`${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
 
       ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 

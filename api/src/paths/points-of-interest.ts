@@ -10,7 +10,7 @@ import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
-import cacheService from '../utils/cache-service';
+import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 
 const defaultLog = getLogger('point-of-interest');
@@ -134,7 +134,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       // tuple: (cacheVersion, parameters)
       // hash it for brevity and to obscure the real modification date
 
-      const cacheTagStr = `${cacheVersion} ${JSON.stringify(criteria)}`;
+      const cacheTagStr = versionedKey(`${cacheVersion} ${JSON.stringify(criteria)}`);
 
       ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
