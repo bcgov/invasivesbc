@@ -20,7 +20,7 @@ export interface InvasivesRequest extends Request {
   authContext: {
     preferredUsername: string;
     user: any;
-    friendlyUsername?: string
+    friendlyUsername?: string;
     roles: string[];
     filterForSelectable: boolean;
   };
@@ -55,38 +55,38 @@ function retrieveKey(header, callback) {
 export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
-
-  const filterForSelectable = req.header('filterforselectable') === 'true'? true: false
+  const filterForSelectable = req.header('filterforselectable') === 'true' ? true : false;
   const urlSplit = req.originalUrl.split('?');
   const rawPath = urlSplit?.[0] ?? req.originalUrl;
-  const authHeader = req.header('Authorization'); 
+  const authHeader = req.header('Authorization');
 
-    const isPublicURL = ([
-      '/api/activities-lean/',
-      '/api/points-of-interest-lean/',
-      '/api/points-of-interest/',
-      '/api/activities/',
-      // '/api/activity/',
-      // '/api/iapp-jurisdictions/',
-      // '/api/code_tables/invasive_plant_code/',
-      // '/api/code_tables/jurisdiction_code/',
-    ].includes(req.originalUrl.split('?')?.[0]));
+  const isPublicURL = [
+    '/api/activities-lean/',
+    '/api/points-of-interest-lean/',
+    '/api/points-of-interest/',
+    '/api/activities/'
+    // '/api/activity/',
+    // '/api/iapp-jurisdictions/',
+    // '/api/code_tables/invasive_plant_code/',
+    // '/api/code_tables/jurisdiction_code/',
+  ].includes(req.originalUrl.split('?')?.[0]);
 
-    if (isPublicURL && (req.method === 'GET' || req.method === 'POST')) {
-      return new Promise<void>((resolve: any) => {
-        req.authContext = {
-          preferredUsername: null,
-          friendlyUsername: null,
-          user: null,
-          roles: [],
-          filterForSelectable: filterForSelectable
-        };
+  const token = authHeader.split(/\s/)[1];
 
-          resolve();
-        });
-      }
+  if (isPublicURL && (req.method === 'GET' || req.method === 'POST') && !token) {
+    return new Promise<void>((resolve: any) => {
+      req.authContext = {
+        preferredUsername: null,
+        friendlyUsername: null,
+        user: null,
+        roles: [],
+        filterForSelectable: filterForSelectable
+      };
 
-  const token = authHeader.split(/\s/)[1] 
+      resolve();
+    });
+  }
+
 
   if (!token) {
     defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
@@ -110,7 +110,6 @@ export const authenticate = async (req: InvasivesRequest) => {
       }
 
       req.keycloakToken = decoded;
-
 
       let accountType, id;
 
@@ -157,7 +156,9 @@ export const authenticate = async (req: InvasivesRequest) => {
           if (decoded['idir_username']) idir_userid = decoded['idir_username'];
           if (decoded['bceid_username']) bceid_userid = decoded['bceid_username'];
           req.authContext.filterForSelectable = filterForSelectable;
-          req.authContext.friendlyUsername = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
+          req.authContext.friendlyUsername = idir_userid
+            ? idir_userid.toLowerCase() + '@idir'
+            : bceid_userid.toLowerCase() + '@bceid-business';
           req.authContext.user = user;
           getRolesForUser(user.user_id)
             .then((roles) => {

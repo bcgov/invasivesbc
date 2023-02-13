@@ -10,8 +10,8 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
-import { createHash } from "crypto";
-import cacheService, { versionedKey } from "../utils/cache-service";
+import { createHash } from 'crypto';
+import cacheService, { versionedKey } from '../utils/cache-service';
 
 const defaultLog = getLogger('activity');
 
@@ -24,10 +24,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -78,10 +78,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -148,14 +148,17 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-    const isAuth = req.authContext?.user ?? false;
+    const isAuth = req.authContext?.user !== null ? true:  false;
+
+
+
 
     if (!isAuth || !roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
     }
-    if (!isAuth){
+    if (!isAuth) {
       sanitizedSearchCriteria.created_by = [];
       sanitizedSearchCriteria.updated_by = [];
     }
@@ -176,11 +179,12 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
-      const cacheQueryResult = await connection.query(`select updated_at
+      const cacheQueryResult = await connection.query(
+        `select updated_at
                                                        from cache_versions
-                                                       where cache_name = $1`, [
-        'activity'
-      ]);
+                                                       where cache_name = $1`,
+        ['activity']
+      );
       const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
       // because we have parameters and user roles, the actual resource cache tag is
@@ -227,7 +231,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       // needs to be mutable
       let response = await connection.query(sqlStatement.text, sqlStatement.values);
-      if (!sanitizedSearchCriteria.activity_id_only && !isAuth) {
+      if (!isAuth) {
         if (response.rows.length > 0) {
           // remove sensitive data from json obj
           for (var i in response.rows) {
@@ -235,7 +239,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
             response.rows[i].activity_payload.updated_by = null;
             response.rows[i].activity_payload.reviewed_by = null;
             response.rows[i].activity_payload.user_role = [];
-            response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+            if (response.rows[i].activity_payload.form_data.activity_type_data) {
+              response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+            }
           }
         }
       }
