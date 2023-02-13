@@ -173,11 +173,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         }).length === 0;
       if (notAdmin && notMine) {
         components = (userSettingsState.apiDocsWithViewOptions as any).components;
-      } else if(!notAdmin && notMine) {
+      } else if (!notAdmin && notMine) {
         components = (userSettingsState.apiDocsWithViewOptions as any).components;
-      }
-      else
-      {
+      } else {
         components = (userSettingsState.apiDocsWithSelectOptions as any).components;
       }
 
@@ -260,6 +258,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   }, [JSON.stringify(authState?.accessRoles), JSON.stringify(authState?.username)]);
 
+  // hack to make fields rerender only on paste event
+  const [keyInt, setKeyInt] = useState(0);
+  const pasteCallback = () => {
+    props.pasteFormData();
+    setTimeout(() => {setKeyInt(keyInt + Math.random())}, 1500);
+  };
+
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
   } else {
@@ -268,25 +273,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
-              <Box mt={3}>
-                <PasteButtonComponent
-                  onSubmit={() => {
-                    //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
-                    (formRef.current as any).formElement.current.dispatchEvent(
-                      new CustomEvent('submit', {
-                        cancelable: true,
-                        bubbles: true // <-- actual fix
-                      })
-                    );
-                  }}
-                  isDisabled={isDisabled}
-                  activity_subtype={props.activity.activity_subtype}
-                  onCopy={props.copyFormData ? () => props.copyFormData() : null}
-                  onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
-                  {...props}
-                  onSubmitAsOfficial={props.onSubmitAsOfficial ? () => props.onSubmitAsOfficial() : null}
-                />
-              </Box>
               <Form
                 templates={{
                   ObjectFieldTemplate: ObjectFieldTemplate,
@@ -299,7 +285,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
                 readonly={props.isDisabled}
-                key={props.activity?._id}
+                key={props.activity?._id + keyInt.toString()}
                 disabled={isDisabled}
                 formData={activityStateInStore.activity.form_data || null}
                 schema={schemas.schema}
@@ -375,7 +361,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             isDisabled={isDisabled}
             activitySubtype={props.activity.activity_subtype}
             onCopy={props.copyFormData ? () => props.copyFormData() : null}
-            onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
+            onPaste={pasteCallback}
             {...props}
             onSubmitAsOfficial={props.onSubmitAsOfficial ? () => props.onSubmitAsOfficial() : null}
           />

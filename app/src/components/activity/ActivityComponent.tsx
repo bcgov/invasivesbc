@@ -22,29 +22,7 @@ export interface IActivityComponentProps extends IFormContainerProps, IPhotoCont
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const onSave = async () => {
-    /* try {
-      // NOTE: duplicate code from RecordTables.  Should be moved to a common Actions definitions file
-      if (
-        props.activity.formStatus !== FormValidationStatus.VALID ||
-        props.activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
-      ) {
-        return;
-      }
-      const dbActivity: any = await dataAccess.getActivityById(props.activity.activityId);
-      console.dir('dbActivity', dbActivity);
-      const result = await dataAccess.updateActivity(
-        sanitizeRecord({
-          ...dbActivity,
-          sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
-        })
-      );
-      if (!result?.activity_id) console.log('');
-      //notifyError(databaseContext, 'Count not save to database.');
-      // else window.location.reload();
-    } catch (error) {
-      //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
-    }
-    */
+
   };
 
   return (

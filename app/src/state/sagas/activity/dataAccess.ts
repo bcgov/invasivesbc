@@ -37,7 +37,11 @@ import {
   ACTIVITY_ADD_PHOTO_FAILURE,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_FAILURE,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST
+  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+  ACTIVITY_COPY_SUCCESS,
+  ACTIVITY_COPY_FAILURE,
+  ACTIVITY_PASTE_SUCCESS,
+  ACTIVITY_PASTE_FAILURE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -49,6 +53,7 @@ import {
 } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { MAX_AREA } from 'rjsf/business-rules/customValidation';
+import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -60,6 +65,34 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
   }
 }
 
+export function* handle_ACTIVITY_COPY_REQUEST(action) {
+  try {
+  const activityState = yield select(selectActivity)
+  const activityData = { ...activityState.activity.form_data.activity_data };
+  const activitySubtypeData = { ...activityState.activity.form_data.activity_subtype_data };
+
+  // call business rule function to exclude certain fields of the activity_data of the form data
+  const activityDataToCopy = getFieldsToCopy(activityData, activitySubtypeData).activityData;
+
+  const formDataToCopy = {
+    ...activityState.activity.form_data,
+    activity_data: activityDataToCopy
+  };
+    yield put({ type: ACTIVITY_COPY_SUCCESS, payload: {
+      form_data: formDataToCopy
+    } });
+  } catch (e) {
+    yield put({ type: ACTIVITY_COPY_FAILURE, payload: {} });
+  }
+}
+
+export function* handle_ACTIVITY_PASTE_REQUEST(action) {
+  try {
+    yield put({ type: ACTIVITY_PASTE_SUCCESS, payload: {} });
+  } catch (e) {
+    yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
+  }
+}
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo

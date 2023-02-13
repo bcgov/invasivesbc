@@ -35,7 +35,9 @@ import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_ADD_PHOTO_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_SUCCESS
+  ACTIVITY_EDIT_PHOTO_SUCCESS,
+  ACTIVITY_COPY_SUCCESS,
+  ACTIVITY_PASTE_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -134,6 +136,26 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         return {
           ...state,
           activity: { ...action.payload.activity }
+        };
+      }
+      case ACTIVITY_COPY_SUCCESS: {
+        return {
+          ...state,
+          activity_copy_buffer: {
+            form_data: action.payload.form_data
+          }
+        };
+      }
+      case ACTIVITY_PASTE_SUCCESS: {
+        const newFormData = JSON.parse(JSON.stringify(state.activity_copy_buffer.form_data))
+        return {
+          ...state,
+          activity: {
+            ...state.activity,
+            form_data: {
+              ...newFormData
+            }
+          },
         };
       }
       case ACTIVITY_ADD_PHOTO_SUCCESS: {
