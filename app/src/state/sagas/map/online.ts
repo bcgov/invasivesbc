@@ -119,8 +119,6 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
-  console.log('%cRIGHT HERE', 'color:red')
-  console.dir(networkReturn)
 
   if (networkReturn.data.result || networkReturn.data?.data?.result) {
     const list = networkReturn.data?.data?.result? networkReturn.data?.data?.result: networkReturn.data?.result
