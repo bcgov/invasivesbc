@@ -147,14 +147,15 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_PASTE_SUCCESS: {
+        const newFormData = JSON.parse(JSON.stringify(state.activity_copy_buffer.form_data))
         return {
           ...state,
           activity: {
             ...state.activity,
             form_data: {
-              ...state.activity_copy_buffer.form_data
+              ...newFormData
             }
-          }
+          },
         };
       }
       case ACTIVITY_ADD_PHOTO_SUCCESS: {
