@@ -11,7 +11,7 @@ import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries'
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const POST: Operation = [createActivities()];
 
@@ -195,7 +195,7 @@ POST.apiDoc = {
  */
 function createActivities(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'createActivities', body: req.params });
+    // defaultLog.debug({ label: 'activity', message: 'createActivities', body: req.params });
 
     const sanitizedActions = [];
 
@@ -271,7 +271,7 @@ function createActivities(): RequestHandler {
         });
       }
     } catch (error) {
-      defaultLog.debug({ label: 'createActivities', message: 'error', error });
+      // defaultLog.debug({ label: 'createActivities', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to create activity.',
         request: req.body,
