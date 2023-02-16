@@ -6,7 +6,7 @@ import { getLogger } from './logger';
 import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
 import { Request } from 'express';
 
-const defaultLog = getLogger('auth-utils');
+// const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL ||
@@ -35,10 +35,10 @@ const jwks = jwksRsa({
 
 function retrieveKey(header, callback) {
   jwks.getSigningKey(header.kid, function (err, key) {
-    defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
+    // defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
 
     if (err) {
-      defaultLog.error({ label: 'authenticate', message: 'error retrieving key', error: err });
+      // defaultLog.error({ label: 'authenticate', message: 'error retrieving key', error: err });
       callback(err, null);
       return;
     }
@@ -47,13 +47,13 @@ function retrieveKey(header, callback) {
     try {
       callback(null, signingKey);
     } catch (e) {
-      defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
+      // defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
     }
   });
 }
 
 export const authenticate = async (req: InvasivesRequest) => {
-  defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
+  // defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const filterForSelectable = req.header('filterforselectable') === 'true' ? true : false;
   const urlSplit = req.originalUrl.split('?');
@@ -89,7 +89,7 @@ export const authenticate = async (req: InvasivesRequest) => {
 
 
   if (!token) {
-    defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
+    // defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
 
     throw {
       code: 401,
@@ -101,7 +101,7 @@ export const authenticate = async (req: InvasivesRequest) => {
   return new Promise<void>((resolve, reject) => {
     verify(token, retrieveKey, {}, function (error, decoded) {
       if (error) {
-        defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
+        // defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
         reject({
           code: 401,
           message: 'Token decode failure',
@@ -165,7 +165,7 @@ export const authenticate = async (req: InvasivesRequest) => {
       getUserByKeycloakID(accountType, id).then((user) => {
         const createIfNeeded = new Promise((resolve: any) => {
           if (!user) {
-            defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
+            // defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
             createUser(decoded, accountType, id).then(() => {
               getUserByKeycloakID(accountType, id).then((newUser) => {
                 user = newUser;
@@ -198,11 +198,11 @@ export const authenticate = async (req: InvasivesRequest) => {
           getRolesForUser(user.user_id)
             .then((roles) => {
               req.authContext.roles = roles;
-              defaultLog.debug({ label: 'authenticate', message: 'auth pass complete, context set!' });
+              // defaultLog.debug({ label: 'authenticate', message: 'auth pass complete, context set!' });
               resolve();
             })
             .catch((error) => {
-              defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
+              // defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
               reject(error);
             });
         });
