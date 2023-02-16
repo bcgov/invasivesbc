@@ -13,7 +13,7 @@ import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin
 import loggingConfig from './loggingconfig.json'
 import { getuid } from 'process';
 
-const defaultLog = getLogger('app');
+// const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
@@ -44,7 +44,7 @@ function uuidv4() {
 app.use(function (req: any, res: any, next: any) {
   if (req.url !== '/api/misc/version') {
     // filter out health check for log brevity
-    defaultLog.info(`${req.method} ${req.url}`);
+    // defaultLog.info(`${req.method} ${req.url}`);
   }
 
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -167,7 +167,7 @@ initialize({
   securityFilter: applyApiDocSecurityFilters,
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
+    // defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
   // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
@@ -176,7 +176,7 @@ initialize({
     if (!error.status) {
       // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
       // log any unintentionally thrown errors (where no status has been set)
-      defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
+      // defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
     }
 
     res.status(error.status || error.code || 500).json(error);
