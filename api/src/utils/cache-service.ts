@@ -1,7 +1,7 @@
 // naive in-memory cache. reimplement this with something more robust (weakrefs, memcache, redis, in-database caching).
 import { getLogger } from './logger';
 
-const defaultLog = getLogger('cache');
+// const defaultLog = getLogger('cache');
 
 class Cache {
   data: Map<string, { data: any; ttl: number }> = new Map();
@@ -39,7 +39,7 @@ export class CacheService {
   }
 
   private cleanCaches() {
-    defaultLog.debug('expiring old cache entries');
+    // defaultLog.debug('expiring old cache entries');
     for (const c of this.caches.values()) {
       c.expireEntries();
     }
@@ -64,7 +64,7 @@ export function versionedKey(key: string) {
     computedKey = `${process.pid}-${key}`;
   }
 
-  defaultLog.debug(`computed cache key: ${computedKey}`);
+  // defaultLog.debug(`computed cache key: ${computedKey}`);
 
   return computedKey;
 }
