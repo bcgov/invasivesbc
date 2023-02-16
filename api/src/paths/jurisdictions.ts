@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getJurisdictionsSQL } from '../queries/jurisdiction-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('jurisdictions');
+// const defaultLog = getLogger('jurisdictions');
 
 export const POST: Operation = [getJurisdictionsBySearchFilterCriteria()];
 
@@ -86,12 +86,12 @@ POST.apiDoc = {
  */
 function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({
-      label: 'jurisdictions',
-      message: 'getJurisdictionsBySearchFilterCriteria',
-      body: req.body,
-      namespace: 'jurisdictions'
-    });
+    // defaultLog.debug({
+    //   label: 'jurisdictions',
+    //   message: 'getJurisdictionsBySearchFilterCriteria',
+    //   body: req.body,
+    //   namespace: 'jurisdictions'
+    // });
 
     const sanitizedSearchCriteria = new JurisdictionSearchCriteria(req.body);
     const connection = await getDBConnection();
@@ -128,7 +128,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getJurisdictionsBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getJurisdictionsBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get jurisdictions by search filter criteria',
         request: req.body,
