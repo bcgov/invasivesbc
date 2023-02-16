@@ -3,7 +3,7 @@
 import { Pool, PoolConfig, PoolClient } from 'pg';
 
 import { getLogger } from '../utils/logger';
-const defaultLog = getLogger('db');
+// const defaultLog = getLogger('db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';
 const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
@@ -23,14 +23,14 @@ const poolConfig: PoolConfig = {
   idleTimeoutMillis: 10000 // default
 };
 
-defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
+// defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
 
 let pool: Pool = null;
 
 try {
   pool = new Pool(poolConfig);
 } catch (error) {
-  defaultLog.error({ label: 'create db pool', message: 'failed to create pool', error, poolConfig });
+  // defaultLog.error({ label: 'create db pool', message: 'failed to create pool', error, poolConfig });
   process.exit(1);
 }
 
@@ -50,7 +50,7 @@ export const getDBConnection = async function (): Promise<PoolClient> {
 
     await client.query(`SET search_path TO ${client.escapeLiteral(DB_SCHEMA)}, public;`);
   } catch (error) {
-    defaultLog.error({ label: 'getDBConnection', message: 'error', error });
+    // defaultLog.error({ label: 'getDBConnection', message: 'error', error });
     throw error;
   }
 
