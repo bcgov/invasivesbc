@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getRISOsSQL } from '../queries/riso-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('risos');
+// const defaultLog = getLogger('risos');
 
 export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 
@@ -86,11 +86,11 @@ POST.apiDoc = {
  */
 function getRISOsBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({
-      label: 'riso',
-      message: 'getRISOsBySearchFilterCriteria',
-      body: req.body
-    });
+    // defaultLog.debug({
+    //   label: 'riso',
+    //   message: 'getRISOsBySearchFilterCriteria',
+    //   body: req.body
+    // });
 
     const sanitizedSearchCriteria = new RISOSearchCriteria(req.body);
     const connection = await getDBConnection();
@@ -127,7 +127,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getRISOsBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getRISOsBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error fetching RISOs',
         request: req.body,
