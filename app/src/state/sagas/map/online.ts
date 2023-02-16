@@ -47,13 +47,25 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call(
+/*  const networkReturn = yield InvasivesAPI_Call(
     'GET',
     `/api/points-of-interest-lean/`,
     action.payload.IAPPFilterCriteria
   );
+  */
+
+
+  const networkReturn = yield Http.request({
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip', 'Access-Control-Allow-Origin': '*' },
+    url: 'https://nrs.objectstore.gov.bc.ca/seeds/x'
+  });
+
+
+
+  const parsed = JSON.parse(networkReturn.data)
   // have no idea why but i'm getting both types back today:
-  const rows = (networkReturn?.data?.data?.result)? networkReturn?.data?.data?.result: networkReturn?.data?.result
+  const rows = (parsed?.result)? parsed?.result: parsed?.data.result
   let featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {
