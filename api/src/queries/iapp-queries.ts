@@ -2,7 +2,7 @@ import { getDBConnection } from '../database/db';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getLogger } from '../utils/logger';
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 /**
  * SQL query to fetch point_of_interest records based on search criteria.
  *
@@ -279,11 +279,11 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
  * @returns {SQLStatement} sql query object
  */
 export const iapp_extract_sql = (site_id: number[], extractName: string): SQLStatement => {
-  const defaultLog = getLogger('point-of-interest');
+  // const defaultLog = getLogger('point-of-interest');   // defined and set twice?, see above
 
-  defaultLog.debug({ label: 'help', message: JSON.stringify(site_id[0]) });
+  // defaultLog.debug({ label: 'help', message: JSON.stringify(site_id[0]) });
   //stupid lib doesn't let you dynamically pass table name
-  console.log(JSON.stringify(site_id[0]));
+  // console.log(JSON.stringify(site_id[0]));
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   switch (extractName) {
