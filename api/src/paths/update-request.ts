@@ -15,7 +15,7 @@ import {
 } from '../queries/update-request-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('update-request');
+// const defaultLog = getLogger('update-request');
 
 export const POST: Operation = [postHandler()];
 export const GET: Operation = [getUpdateRequests()];
@@ -125,7 +125,7 @@ function getUpdateRequests(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getUpdateRequests', message: 'error', error });
+      // defaultLog.debug({ label: 'getUpdateRequests', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get update requests',
         req: req.body,
@@ -166,7 +166,7 @@ function postHandler(): RequestHandler {
  */
 async function createUpdateRequest(req, res, next, newUpdateRequest) {
   // TODO: Ensure user exists before creating update request
-  defaultLog.debug({ label: 'update-request', message: 'create', body: newUpdateRequest });
+  // defaultLog.debug({ label: 'update-request', message: 'create', body: newUpdateRequest });
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
@@ -196,7 +196,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
       code: 201
     });
   } catch (error) {
-    defaultLog.debug({ label: 'create', message: 'error', error });
+    // defaultLog.debug({ label: 'create', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to create update request',
       req: req.body,
@@ -269,7 +269,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'batchApproveUpdateRequests', message: 'error', error });
+    // defaultLog.debug({ label: 'batchApproveUpdateRequests', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to approve update requests',
       req: req.body,
@@ -313,7 +313,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'declineUpdateRequest', message: 'error', error });
+    // defaultLog.debug({ label: 'declineUpdateRequest', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to decline update request',
       req: req.body,
