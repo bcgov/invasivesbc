@@ -9,7 +9,7 @@ import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
 import { retrieveGetDoc } from '../docs/getDoc';
 
-const defaultLog = getLogger('species');
+// const defaultLog = getLogger('species');
 
 /**
  * GET api/species?key=123;key=456;key=789
@@ -69,7 +69,7 @@ function getSpeciesDetails(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getSpecies', message: 'error', error });
+      // defaultLog.debug({ label: 'getSpecies', message: 'error', error });
       return res.status(500).json({
         message: 'Unable to fetch species.',
         request: req.body,
