@@ -4,7 +4,7 @@ import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_UR
 import axios from 'axios';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('admin/metabase_groups');
+// const defaultLog = getLogger('admin/metabase_groups');
 
 // used internally
 interface IMetabaseToInvasivesGroupMapping {
@@ -82,7 +82,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       group.metabaseGroupId = matchedGroup.id;
     }
 
-    defaultLog.debug('resolved metabase groups as: ', GROUP_MAPPING);
+    // defaultLog.debug('resolved metabase groups as: ', GROUP_MAPPING);
 
     // get all active metabase users for comparison to our own user data
     const users = await axios({
@@ -128,7 +128,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.debug(`Total actions required to align metabase permissions with ours: ${totalActionsRequired}`);
+    // defaultLog.debug(`Total actions required to align metabase permissions with ours: ${totalActionsRequired}`);
 
     // we now know what needs to be done. make it so.
     const actionsTaken: IActionTaken[] = [];
@@ -136,11 +136,11 @@ async function postSyncMetabaseGroupMappings(req, res) {
     // first the additions
     for (const matchedUser of usersFoundInMetabase) {
       for (const groupToAdd of matchedUser.groupsToAdd) {
-        defaultLog.debug(
-          `Calling out to metabase to add ${matchedUser.email} to group ${
-            GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToAdd).metabaseGroup
-          }`
-        );
+        // defaultLog.debug(
+        //   `Calling out to metabase to add ${matchedUser.email} to group ${
+        //     GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToAdd).metabaseGroup
+        //   }`
+        // );
 
         await axios({
           method: 'post',
@@ -155,7 +155,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
           timeout: METABASE_TIMEOUT
         });
 
-        defaultLog.debug('Metabase request completed successfully');
+        // defaultLog.debug('Metabase request completed successfully');
 
         actionsTaken.push({
           action: 'ADDED',
@@ -184,17 +184,17 @@ async function postSyncMetabaseGroupMappings(req, res) {
 
         if (!membershipId) {
           // odd. it was there when we checked earlier.
-          defaultLog.warn(
-            `Could not resolve ${matchedUser.email}'s membership in group ${
-              GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToRemove).metabaseGroup
-            }, will not delete`
-          );
+          // defaultLog.warn(
+          //   `Could not resolve ${matchedUser.email}'s membership in group ${
+          //     GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToRemove).metabaseGroup
+          //   }, will not delete`
+          // );
         } else {
-          defaultLog.debug(
-            `Resolved ${matchedUser.email}'s membership in group ${
-              GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToRemove).metabaseGroup
-            } to membership_id ${membershipId}, calling out to metabase to delete it`
-          );
+          // defaultLog.debug(
+          //   `Resolved ${matchedUser.email}'s membership in group ${
+          //     GROUP_MAPPING.find((g) => g.metabaseGroupId === groupToRemove).metabaseGroup
+          //   } to membership_id ${membershipId}, calling out to metabase to delete it`
+          // );
 
           await axios({
             method: 'delete',
@@ -205,7 +205,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
             timeout: METABASE_TIMEOUT
           });
 
-          defaultLog.debug('Metabase request completed successfully');
+          // defaultLog.debug('Metabase request completed successfully');
 
           actionsTaken.push({
             action: 'DELETED',
@@ -216,7 +216,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.info(`Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`);
+    // defaultLog.info(`Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`);
 
     // return some useful info for logging in the calling cron job
     return res.status(200).json({
@@ -226,7 +226,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       actionsTaken
     });
   } catch (error) {
-    defaultLog.error('Error in metabase permission synchronization run', error);
+    // defaultLog.error('Error in metabase permission synchronization run', error);
     return res.status(500).json({ error });
   } finally {
     await closeMetabaseSession();
