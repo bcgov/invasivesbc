@@ -6,7 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getContext()];
 
@@ -102,7 +102,7 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
     const target = response.rows[0]?.target || '';
     res.status(200).json({ target });
   } catch (error) {
-    defaultLog.debug({ label: 'getContext', message: 'error', error });
+    // defaultLog.debug({ label: 'getContext', message: 'error', error });
     return res.status(500).json({
       message: 'Error fetching context',
       error: error,
@@ -155,6 +155,6 @@ function getContext(): RequestHandler {
         });
     }
 
-    defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
+    // defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
   };
 }
