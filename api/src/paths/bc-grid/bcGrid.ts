@@ -8,7 +8,7 @@ import { getDBConnection } from '../../database/db';
 import { getOverlappingBCGridCellsSQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('bc-grid/bcGrid');
+// const defaultLog = getLogger('bc-grid/bcGrid');
 
 export const POST: Operation = [getOverlapingBCGridCells()];
 
@@ -82,7 +82,7 @@ POST.apiDoc = {
  */
 export function getOverlapingBCGridCells(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'bcGrid', message: 'getOverlapingBCGridCells', body: req.body });
+    // defaultLog.debug({ label: 'bcGrid', message: 'getOverlapingBCGridCells', body: req.body });
 
     const geometry = req.body.geometry;
     const largeGrid = req.body.largeGrid;
@@ -122,7 +122,7 @@ export function getOverlapingBCGridCells(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getOverlappingBCGridCells', message: 'error', error });
+      // defaultLog.debug({ label: 'getOverlappingBCGridCells', message: 'error', error });
       return res.status(500).json({
         message: 'Unable to fetch overlapping grid cells.',
         request: req.body,
