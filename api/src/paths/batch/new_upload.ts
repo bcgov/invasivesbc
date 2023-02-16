@@ -15,7 +15,7 @@ import { getDBConnection } from '../../database/db';
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const defaultLog = getLogger('batch');
+// const defaultLog = getLogger('batch');
 
 export const POST: Operation = [upload()];
 
@@ -185,7 +185,7 @@ function upload(): RequestHandler {
         createdId = response.rows[0]['id'];
       } catch (error) {
         await connection.query('ROLLBACK');
-        defaultLog.error({ label: 'batchUpload', message: 'error', error });
+        // defaultLog.error({ label: 'batchUpload', message: 'error', error });
         return res.status(500).json({
           message: 'Error creating batch upload',
           request: req.body,
@@ -218,7 +218,7 @@ function upload(): RequestHandler {
 
     await readComplete;
 
-    defaultLog.info(`submitting batch: ${batch}`);
+    // defaultLog.info(`submitting batch: ${batch}`);
 
     await fetch(`http://${HOST}:${PORT}/activity/batch`, {
       method: 'POST',
