@@ -8,7 +8,7 @@ import { undeleteActivitiesSQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
 import { DELETE as activitiesDeleteApiDoc } from '../activities';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const POST: Operation = [undeleteActivitiesByIds()];
 
@@ -24,7 +24,7 @@ POST.apiDoc = {
  */
 function undeleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'activity', message: 'undeleteActivitiesByIds', body: req.body });
+    // defaultLog.debug({ label: 'activity', message: 'undeleteActivitiesByIds', body: req.body });
 
     const ids = Object.values(req.query.id) as string[];
 
@@ -65,7 +65,7 @@ function undeleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'undeleteActivitiesByIds', message: 'error', error });
+      // defaultLog.debug({ label: 'undeleteActivitiesByIds', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to un-delete activities',
         request: req.body,
