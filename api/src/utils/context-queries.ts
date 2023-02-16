@@ -5,7 +5,7 @@ import { getWell } from '../paths/context/well';
 import { insertWellDistanceSQL } from './../queries/context-queries';
 import { SQL, SQLStatement } from 'sql-template-strings';
 
-const defaultLog = getLogger('context-queries');
+// const defaultLog = getLogger('context-queries');
 
 /**
  * Insert contextual data for the new activity record from
@@ -71,7 +71,7 @@ const saveBCGW = async (id: any, req: any) => {
         `);
       })
       .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
+        // defaultLog.debug({ label: 'addingContext', message: 'error', error });
       });
   };
 
@@ -157,7 +157,7 @@ const saveInternal = (id: any, req: any) => {
         connection.release();
       })
       .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
+        // defaultLog.debug({ label: 'addingContext', message: 'error', error });
       });
   }
 };
@@ -207,7 +207,7 @@ const saveElevation = (id: any, req: any) => {
       connection.release();
     })
     .catch((error) => {
-      defaultLog.debug({ label: 'addingContext', message: 'error', error });
+      // defaultLog.debug({ label: 'addingContext', message: 'error', error });
     });
 };
 
