@@ -11,7 +11,7 @@ import {
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 
 const getSurveyObj = (row: any, map_code: any) => {
   const leftBracket = row.invasive_plant.indexOf('(');
@@ -103,7 +103,7 @@ export const getSpeciesRef = async () => {
 
     return response.rows;
   } catch (error) {
-    defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
+    // defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get species ref',
@@ -129,11 +129,11 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
 
 const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   const species_ref: any[] = await getSpeciesRef();
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
+  // defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
-  defaultLog.debug({ label: 'getIAPPjson', message: 'site ids: ' + JSON.stringify(site_ids) });
+  // defaultLog.debug({ label: 'getIAPPjson', message: 'site ids: ' + JSON.stringify(site_ids) });
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
   let all_site_selection_extracts = [];
@@ -159,7 +159,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
     all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
   }
 
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
+  // defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
@@ -170,10 +170,10 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
     if (searchCriteria.site_id_only) {
       return iapp_site;
     }
-    defaultLog.debug({
-      label: 'getIAPPjson',
-      message: 'getting species codes'
-    });
+    // defaultLog.debug({
+    //   label: 'getIAPPjson',
+    //   message: 'getting species codes'
+    // });
     (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
       row['all_species_on_site'],
       species_ref
@@ -374,9 +374,9 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
-    defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
+    // defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
+    // defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
     var returnVal = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
 
@@ -385,7 +385,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
       count: returnVal.length
     };
   } catch (error) {
-    defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
+    // defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get IAPP sites',
