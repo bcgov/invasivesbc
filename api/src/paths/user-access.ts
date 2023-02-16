@@ -13,7 +13,7 @@ import {
 } from '../queries/role-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('user-access');
+// const defaultLog = getLogger('user-access');
 
 export const POST: Operation = [batchGrantRoleToUser()];
 export const DELETE: Operation = [revokeRoleFromUser()];
@@ -176,7 +176,7 @@ function decideGET() {
 
 function batchGrantRoleToUser(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
+    // defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
@@ -209,7 +209,7 @@ function batchGrantRoleToUser(): RequestHandler {
         });
       }
     } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
+      // defaultLog.debug({ label: 'create', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to grant role to user',
         request: req.body,
@@ -225,7 +225,7 @@ function batchGrantRoleToUser(): RequestHandler {
 
 function revokeRoleFromUser(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
+    // defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
@@ -255,7 +255,7 @@ function revokeRoleFromUser(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
+      // defaultLog.debug({ label: 'create', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to revoke role from user',
         request: req.body,
@@ -270,7 +270,7 @@ function revokeRoleFromUser(): RequestHandler {
 }
 
 async function getUsersForRole(req, res, next, roleId) {
-  defaultLog.debug({ label: '{userId}', message: 'getUsersForRole', body: req.query });
+  // defaultLog.debug({ label: '{userId}', message: 'getUsersForRole', body: req.query });
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
@@ -300,7 +300,7 @@ async function getUsersForRole(req, res, next, roleId) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'getUsersForRole', message: 'error', error });
+    // defaultLog.debug({ label: 'getUsersForRole', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to retrieve users for role',
       request: req.body,
@@ -314,7 +314,7 @@ async function getUsersForRole(req, res, next, roleId) {
 }
 
 async function getRolesForUser(req, res, next, userId) {
-  defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
+  // defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
   const connection = await getDBConnection();
   console.dir('got db connection');
   if (!connection) {
@@ -345,7 +345,7 @@ async function getRolesForUser(req, res, next, userId) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
+    // defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to retrieve roles for user',
       request: req.body,
