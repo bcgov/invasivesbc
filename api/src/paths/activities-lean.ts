@@ -11,7 +11,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const POST: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -215,11 +215,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const authContext = (req as any)?.authContext;
     const isAuth = authContext?.isAuth ?? false;
 
-    defaultLog.debug({
-      label: 'activity',
-      message: 'getActivitiesBySearchFilterCriteria',
-      body: req.body
-    });
+    // defaultLog.debug({
+    //   label: 'activity',
+    //   message: 'getActivitiesBySearchFilterCriteria',
+    //   body: req.body
+    // });
 
     const roleName = authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
@@ -264,11 +264,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-      defaultLog.info({
-        label: 'activities-lean',
-        message: 'response',
-        body: count
-      });
+      // defaultLog.info({
+      //   label: 'activities-lean',
+      //   message: 'response',
+      //   body: count
+      // });
 
       return res.status(200).json({
         message: 'Got activities by search filter criteria',
@@ -279,7 +279,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error: error,
@@ -300,7 +300,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
+    // defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
     const ids = Object.values(req.query.id) as string[];
 
@@ -343,7 +343,7 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
+      // defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
       return res.status(500).json({
         message: 'Error deleting activities by ids',
         error: error,
