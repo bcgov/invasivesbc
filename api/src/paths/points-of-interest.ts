@@ -14,7 +14,7 @@ import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 import { InvasivesRequest } from 'utils/auth-utils';
 
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -85,11 +85,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-    defaultLog.debug({
-      label: 'point-of-interest',
-      message: 'getPointsOfInterestBySearchFilterCriteria',
-      body: criteria
-    });
+    // defaultLog.debug({
+    //   label: 'point-of-interest',
+    //   message: 'getPointsOfInterestBySearchFilterCriteria',
+    //   body: criteria
+    // });
 
     // get proper names from mapping table
     if (criteria.species_positive) {
@@ -213,7 +213,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get points of interest by search filter criteria',
         request: criteria,
