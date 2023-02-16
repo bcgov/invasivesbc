@@ -12,7 +12,7 @@ import { getLogger } from '../utils/logger';
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -74,11 +74,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-    defaultLog.debug({
-      label: 'point-of-interest-lean',
-      message: 'getPointsOfInterestBySearchFilterCriteria',
-      body: criteria
-    });
+    // defaultLog.debug({
+    //   label: 'point-of-interest-lean',
+    //   message: 'getPointsOfInterestBySearchFilterCriteria',
+    //   body: criteria
+    // });
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
     const connection = await getDBConnection();
 
@@ -185,7 +185,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);
     } catch (error) {
-      defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting points of interest by search filter criteria',
         request: criteria,
