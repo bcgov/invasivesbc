@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getJurisdictionsSQL } from '../queries/iapp-jurisdiction-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('iapp-jurisdictions');
+// const defaultLog = getLogger('iapp-jurisdictions');
 
 export const GET: Operation = [getJurisdictions()];
 
@@ -57,11 +57,11 @@ GET.apiDoc = {
  */
 function getJurisdictions(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({
-      label: 'iapp-jurisdictions',
-      message: 'getJurisdictions',
-      body: req.body
-    });
+    // defaultLog.debug({
+    //   label: 'iapp-jurisdictions',
+    //   message: 'getJurisdictions',
+    //   body: req.body
+    // });
 
     const connection = await getDBConnection();
 
@@ -94,11 +94,11 @@ function getJurisdictions(): RequestHandler {
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
 
-      defaultLog.debug({
-        label: 'iapp-jurisdictions',
-        message: 'getJurisdictions',
-        body: rows
-      });
+      // defaultLog.debug({
+      //   label: 'iapp-jurisdictions',
+      //   message: 'getJurisdictions',
+      //   body: rows
+      // });
 
       return res.status(200).json({
         message: 'Got iapp jurisdictions',
@@ -109,7 +109,7 @@ function getJurisdictions(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getJurisdictions', message: 'error', error });
+      // defaultLog.debug({ label: 'getJurisdictions', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get iapp jurisdictions',
         request: req.body,
