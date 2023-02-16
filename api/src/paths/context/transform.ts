@@ -6,7 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getContext()];
 
@@ -123,7 +123,7 @@ function getContext(): RequestHandler {
       const payload = { target: response.rows[0] };
       res.status(200).json({ message: 'Got context', request: req.query, result: payload, code: 200 });
     } catch (error) {
-      defaultLog.debug({ label: 'getContext', message: 'error', error });
+      // defaultLog.debug({ label: 'getContext', message: 'error', error });
       return res.status(500).json({
         message: 'Error fetching context',
         error: error,
@@ -134,6 +134,6 @@ function getContext(): RequestHandler {
       connection.release();
     }
 
-    defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
+    // defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
   };
 }
