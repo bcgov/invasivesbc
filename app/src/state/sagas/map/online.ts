@@ -55,9 +55,10 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   */
 
 
+  // no cache set to get around request origin being cached incorrectly accross tabs (dev/test/prod)
   const networkReturn = yield Http.request({
     method: 'GET',
-    headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip', 'Access-Control-Allow-Origin': '*' },
+    headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-cache' },
     url: 'https://nrs.objectstore.gov.bc.ca/seeds/x'
   });
 
