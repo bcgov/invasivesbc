@@ -14,7 +14,7 @@ import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 import { InvasivesRequest } from '../utils/auth-utils';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const POST: Operation = [uploadMedia(), createActivity()];
 
@@ -269,7 +269,7 @@ PUT.apiDoc = {
  */
 function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
+    // defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
     const data = { ...req.body, media_keys: req['media_keys'] };
 
@@ -354,7 +354,7 @@ function createActivity(): RequestHandler {
         code: 201
       });
     } catch (error) {
-      defaultLog.debug({ label: 'createActivity', message: 'error', error });
+      // defaultLog.debug({ label: 'createActivity', message: 'error', error });
       return res.status(500).json({
         message: 'Error creating activity.',
         request: req.body,
@@ -377,7 +377,7 @@ function createActivity(): RequestHandler {
  */
 function updateActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
+    // defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
 
     const data = { ...req.body, media_keys: req['media_keys'] };
 
@@ -463,7 +463,7 @@ function updateActivity(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'updateActivity', message: 'error', error });
+      // defaultLog.debug({ label: 'updateActivity', message: 'error', error });
       return res.status(500).json({
         message: 'Error updating activity.',
         request: req.body,
