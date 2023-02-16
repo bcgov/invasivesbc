@@ -568,27 +568,27 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   sqlStatement.append(SQL`;`);
-  const defaultLog = getLogger('activities');
-  defaultLog.info({
-    label: 'activities',
-    message: 'sql',
-    body: sqlStatement.sql
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'values',
-    body: sqlStatement.values
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'text',
-    body: sqlStatement.text
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'jsonstr',
-    body: JSON.stringify(sqlStatement)
-  });
+  // const defaultLog = getLogger('activities');
+  // defaultLog.info({
+  //   label: 'activities',
+  //   message: 'sql',
+  //   body: sqlStatement.sql
+  // });
+  // defaultLog.info({
+  //   label: 'activities',
+  //   message: 'values',
+  //   body: sqlStatement.values
+  // });
+  // defaultLog.info({
+  //   label: 'activities',
+  //   message: 'text',
+  //   body: sqlStatement.text
+  // });
+  // defaultLog.info({
+  //   label: 'activities',
+  //   message: 'jsonstr',
+  //   body: JSON.stringify(sqlStatement)
+  // });
 
   return sqlStatement;
 };
