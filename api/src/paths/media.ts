@@ -8,7 +8,7 @@ import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { retrieveGetDoc } from '../docs/getDoc';
 
-const defaultLog = getLogger('media');
+// const defaultLog = getLogger('media');
 
 /**
  * GET api/media?key=123;key=456;key=789
@@ -59,7 +59,7 @@ function getMedia(): RequestHandler {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
+    // defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
 
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
@@ -79,7 +79,7 @@ export function uploadMedia(): RequestHandler {
       try {
         media = new MediaBase64(rawMedia);
       } catch (error) {
-        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+        // defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
         return res.status(400).json({
           message: 'Included media was invalid/encoded incorrectly',
           request: req.query,
