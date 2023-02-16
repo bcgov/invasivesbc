@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getElevation()];
 
@@ -80,7 +80,7 @@ function getElevation(): RequestHandler {
       });
     }
 
-    defaultLog.debug({ label: 'elevation', message: 'getElevation', body: req.body });
+    // defaultLog.debug({ label: 'elevation', message: 'getElevation', body: req.body });
 
     const url = `https://geogratis.gc.ca/services/elevation/cdem/altitude?lat=${lat}&lon=${lon}`;
 
@@ -96,7 +96,7 @@ function getElevation(): RequestHandler {
         });
       })
       .catch((error) => {
-        defaultLog.debug({ label: 'getElevation', message: 'error', error, namespace: 'context/elevation' });
+        // defaultLog.debug({ label: 'getElevation', message: 'error', error, namespace: 'context/elevation' });
         return res.status(500).json({
           message: 'Error getting elevation',
           request: req.query,
