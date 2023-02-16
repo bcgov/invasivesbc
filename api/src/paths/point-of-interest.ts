@@ -10,7 +10,7 @@ import { postPointOfInterestSQL, postPointsOfInterestSQL } from '../queries/poin
 import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 
 export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 
@@ -104,7 +104,7 @@ POST.apiDoc = {
  */
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
+    // defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
@@ -142,7 +142,7 @@ function createPointOfInterest(): RequestHandler {
         code: 201
       });
     } catch (error) {
-      defaultLog.debug({ label: 'createPointOfInterest', message: 'error', error });
+      // defaultLog.debug({ label: 'createPointOfInterest', message: 'error', error });
       throw error;
     } finally {
       connection.release();
