@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getAllRolesSQL } from '../queries/role-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('roles');
+// const defaultLog = getLogger('roles');
 
 export const GET: Operation = [getRoles()];
 
@@ -84,7 +84,7 @@ function getRoles(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getRoles', message: 'error', error });
+      // defaultLog.debug({ label: 'getRoles', message: 'error', error });
       return res.status(500).json({
         message: 'Error fetching roles.',
         request: req.body,
