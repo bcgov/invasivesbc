@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('activity/{activityId}');
+// const defaultLog = getLogger('activity/{activityId}');
 
 export const GET: Operation = [getHandler()];
 
@@ -104,7 +104,7 @@ async function getUsers(req, res, next) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'getUsers', message: 'error', error });
+    // defaultLog.debug({ label: 'getUsers', message: 'error', error });
     return res
       .status(500)
       .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
@@ -114,7 +114,7 @@ async function getUsers(req, res, next) {
 }
 
 async function getUserByBCEID(req, res, next, bceid) {
-  defaultLog.debug({ label: '{bceid}', message: 'getUserByBCEID', body: req.query });
+  // defaultLog.debug({ label: '{bceid}', message: 'getUserByBCEID', body: req.query });
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
@@ -144,7 +144,7 @@ async function getUserByBCEID(req, res, next, bceid) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
+    // defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
     return res
       .status(500)
       .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
@@ -154,7 +154,7 @@ async function getUserByBCEID(req, res, next, bceid) {
 }
 
 async function getUserByIDIR(req, res, next, idir) {
-  defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
+  // defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
@@ -184,7 +184,7 @@ async function getUserByIDIR(req, res, next, idir) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
+    // defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
     return res
       .status(500)
       .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
