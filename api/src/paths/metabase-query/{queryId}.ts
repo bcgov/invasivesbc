@@ -7,7 +7,7 @@ import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import {closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL} from "../../utils/metabase-session";
 
-const defaultLog = getLogger('metabase-query/{queryId}');
+// const defaultLog = getLogger('metabase-query/{queryId}');
 
 export const GET: Operation = [getMetabaseQueryResults()];
 
@@ -78,7 +78,7 @@ GET.apiDoc = {
  */
 function getMetabaseQueryResults(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: '{queryId}', message: 'getMetabaseQueryResults', body: req.params });
+    // defaultLog.debug({ label: '{queryId}', message: 'getMetabaseQueryResults', body: req.params });
 
     try {
       const queryId = req?.params?.queryId;
@@ -131,7 +131,7 @@ function getMetabaseQueryResults(): RequestHandler {
     } catch (error) {
       // reset session on error (just in case):
       closeMetabaseSession();
-      defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
+      // defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting metabase query results',
         error: error,
