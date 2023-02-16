@@ -5,7 +5,7 @@ import { getAllCodeEntities, IAllCodeEntities } from './code-utils';
 import { getLogger } from './logger';
 import { authenticate, InvasivesRequest } from './auth-utils';
 
-const defaultLog = getLogger('api-doc-security-filter');
+// const defaultLog = getLogger('api-doc-security-filter');
 
 /**
  * Apply updates/filters to req.apiDoc.
@@ -70,7 +70,7 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest, res) {
     // re-assign the updated apiDoc to the req
     req['apiDoc'] = apiDoc;
   } catch (error) {
-    defaultLog.debug({ label: 'applyApiDocSecurityFilters', message: 'error', error });
+    // defaultLog.debug({ label: 'applyApiDocSecurityFilters', message: 'error', error });
     throw error;
   }
 
