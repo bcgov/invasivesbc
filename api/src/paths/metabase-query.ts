@@ -13,7 +13,7 @@ import {
   METABASE_TIMEOUT, METABASE_URL
 } from '../utils/metabase-session';
 
-const defaultLog = getLogger('metabase-query');
+// const defaultLog = getLogger('metabase-query');
 
 export const POST: Operation = [createMetabaseQuery()];
 export const GET: Operation = [getMetabaseQueryOptions()];
@@ -157,7 +157,7 @@ GET.apiDoc = {
 function createMetabaseQuery(): RequestHandler {
   //NOSONAR
   return async (req, res) => {
-    defaultLog.debug({ label: 'metabase', message: 'createMetabaseQuery', body: req.body });
+    // defaultLog.debug({ label: 'metabase', message: 'createMetabaseQuery', body: req.body });
 
     try {
       let { activity_ids, point_of_interest_ids } = req?.body;
@@ -304,7 +304,7 @@ function createMetabaseQuery(): RequestHandler {
     } catch (error) {
       // reset session on error (just in case):
       closeMetabaseSession();
-      defaultLog.debug({ label: 'createMetabaseQuery', message: 'error', error });
+      // defaultLog.debug({ label: 'createMetabaseQuery', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to create query',
         error: error,
@@ -322,7 +322,7 @@ function createMetabaseQuery(): RequestHandler {
  */
 function getMetabaseQueryOptions(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'metabase', message: 'getMetabaseQueryOptions', body: req.body });
+    // defaultLog.debug({ label: 'metabase', message: 'getMetabaseQueryOptions', body: req.body });
 
     try {
       const session = await getMetabaseSession();
@@ -360,7 +360,7 @@ function getMetabaseQueryOptions(): RequestHandler {
     } catch (error) {
       // reset session on error (just in case):
       closeMetabaseSession();
-      defaultLog.debug({ label: 'getMetabaseQueryOptions', message: 'error', error });
+      // defaultLog.debug({ label: 'getMetabaseQueryOptions', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get query options',
         error: error,
