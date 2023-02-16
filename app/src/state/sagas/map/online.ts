@@ -60,8 +60,12 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip', 'Access-Control-Allow-Origin': '*' },
     url: 'https://nrs.objectstore.gov.bc.ca/seeds/x'
   });
+
+
+
+  const parsed = JSON.parse(networkReturn.data)
   // have no idea why but i'm getting both types back today:
-  const rows = (networkReturn?.data?.data?.result)? networkReturn?.data?.data?.result: networkReturn?.data?.result
+  const rows = (parsed?.result)? parsed?.result: parsed?.data.result
   let featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {
