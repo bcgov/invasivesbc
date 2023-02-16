@@ -10,7 +10,7 @@ import proj4 from 'proj4';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = proxyWell();
 
@@ -95,7 +95,7 @@ function getWell(req, res, next) {
     });
   }
 
-  defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
+  // defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
   /*
     Here is the projection definition of the well layer
@@ -161,7 +161,7 @@ function getWell(req, res, next) {
     @return {object} The express response object or the axios return
     */
   const failure = (error) => {
-    defaultLog.debug({ label: 'getWell', message: 'error', error });
+    // defaultLog.debug({ label: 'getWell', message: 'error', error });
     const err = { error };
     if (res) {
       return res.status(501).json({
