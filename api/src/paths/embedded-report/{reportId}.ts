@@ -8,7 +8,7 @@ import { sign } from 'jsonwebtoken';
 import { getDBConnection } from '../../database/db';
 import { getEmbeddedReport } from '../../queries/embedded-report-queries';
 
-const defaultLog = getLogger('metabase-query/{reportId}');
+// const defaultLog = getLogger('metabase-query/{reportId}');
 
 const METABASE_URL: string = process.env.METABASE_URL || 'http://localhost:2000';
 const EMBEDDING_KEY: string = process.env.METABASE_EMBEDDING_KEY || null;
@@ -67,7 +67,7 @@ GET.apiDoc = {
  */
 function getMetabaseEmbeddedReport(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: '{reportId}', message: 'getMetabaseEmbeddedReport', body: req.params });
+    // defaultLog.debug({ label: '{reportId}', message: 'getMetabaseEmbeddedReport', body: req.params });
 
     const connection = await getDBConnection();
     if (!connection) {
@@ -119,7 +119,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         embeddedUrl
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getMetabaseEmbeddedReport', message: 'error', error });
+      // defaultLog.debug({ label: 'getMetabaseEmbeddedReport', message: 'error', error });
 
       return res.status(500).json({
         message: 'Error getting metabase url',
