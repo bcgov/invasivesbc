@@ -8,7 +8,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('activity/{activityId}');
+// const defaultLog = getLogger('activity/{activityId}');
 
 export const POST: Operation = [renewUser()];
 
@@ -52,7 +52,7 @@ POST.apiDoc = {
 
 function renewUser(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'application-user', message: 'renewUser', body: req.query });
+    // defaultLog.debug({ label: 'application-user', message: 'renewUser', body: req.query });
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({ message: 'Database connection unavailable', request: req.body, code: 503 });
@@ -78,7 +78,7 @@ function renewUser(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
+      // defaultLog.debug({ label: 'create', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to renew user',
         request: req.body,
