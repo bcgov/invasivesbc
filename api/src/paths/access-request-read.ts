@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getAccessRequestForUserSQL } from '../queries/access-request-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('access-request');
+// const defaultLog = getLogger('access-request');
 
 export const POST: Operation = [getAccessRequestData()];
 
@@ -60,7 +60,7 @@ POST.apiDoc = {
  */
 function getAccessRequestData(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
+    // defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
 
     const connection = await getDBConnection();
     if (!connection) {
@@ -100,7 +100,7 @@ function getAccessRequestData(): RequestHandler {
         });
       }
     } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
+      // defaultLog.debug({ label: 'create', message: 'error', error });
       return res.status(500).json({
         message: 'Database encountered an error',
         request: req.body,
