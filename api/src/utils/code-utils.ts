@@ -11,7 +11,7 @@ import {
 } from '../queries/code-queries';
 import { getLogger } from './logger';
 
-const defaultLog = getLogger('code-utils');
+// const defaultLog = getLogger('code-utils');
 
 export interface IAllCodeEntities {
   categories: QueryResultRow[];
@@ -157,7 +157,7 @@ export async function getAllCodeEntities(user?: any, filterForSelectable?: boole
       };
     }
   } catch (error) {
-    defaultLog.debug({ label: 'getAllCodeEntities', message: 'error', error });
+    // defaultLog.debug({ label: 'getAllCodeEntities', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get all code entities',
