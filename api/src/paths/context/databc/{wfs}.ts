@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getDataBC()];
 
@@ -84,7 +84,7 @@ function getDataBC(): RequestHandler {
       });
     }
 
-    defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
+    // defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
     // Convert point coordinates into a bounding box
     const coords = `${lon},${lat},${parseFloat(lon as string) + 0.00001},${parseFloat(lat as string) + 0.00001}`;
@@ -104,7 +104,7 @@ function getDataBC(): RequestHandler {
         });
       })
       .catch((error) => {
-        return defaultLog.debug({ label: 'getDataBC', message: 'error', error });
+        return; // defaultLog.debug({ label: 'getDataBC', message: 'error', error });
       });
   };
 }
