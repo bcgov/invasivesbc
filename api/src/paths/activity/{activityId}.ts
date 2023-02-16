@@ -11,7 +11,7 @@ import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
 
-const defaultLog = getLogger('activity/{activityId}');
+// const defaultLog = getLogger('activity/{activityId}');
 
 export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
@@ -66,7 +66,7 @@ GET.apiDoc = {
  */
 function getActivity(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
+    // defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;
 
@@ -99,11 +99,11 @@ function getActivity(): RequestHandler {
 
       const result = (response && response.rows && response.rows[0]) || null;
 
-      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result)});
+      // defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result)});
 
       req['activity'] = result
     } catch (error) {
-      defaultLog.debug({ label: 'getActivity', message: 'error', error });
+      // defaultLog.debug({ label: 'getActivity', message: 'error', error });
       return res.status(500).json({
         message: 'Unable to fetch activity.',
         request: req.body,
@@ -121,7 +121,7 @@ function getActivity(): RequestHandler {
 
 function getMedia(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
+    // defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
 
     const activity = req['activity'];
 
