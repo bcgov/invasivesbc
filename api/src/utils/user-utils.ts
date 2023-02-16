@@ -6,7 +6,7 @@ import { getLogger } from './logger';
 import { RequestHandler } from 'express';
 import { InvasivesRequest } from './auth-utils';
 
-const defaultLog = getLogger('user-utils');
+// const defaultLog = getLogger('user-utils');
 
 export enum KeycloakAccountType {
   idir = 'idir',
@@ -44,7 +44,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
     const result = (response && response.rows) || null;
     return result;
   } catch (error) {
-    defaultLog.debug({ label: 'create', message: 'error', error });
+    // defaultLog.debug({ label: 'create', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to create user',
@@ -56,7 +56,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
 }
 
 export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: string) {
-  defaultLog.debug({ label: '{' + accountType + '}', message: 'getUserByKeycloakID' });
+  // defaultLog.debug({ label: '{' + accountType + '}', message: 'getUserByKeycloakID' });
   const connection = await getDBConnection();
   if (!connection) {
     throw {
@@ -83,7 +83,7 @@ export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: 
       return null;
     }
   } catch (error) {
-    defaultLog.debug({ label: 'getUserByKeycloakID', message: 'error', error });
+    // defaultLog.debug({ label: 'getUserByKeycloakID', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get user by Keycloak ID',
@@ -116,7 +116,7 @@ export async function getRolesForUser(userId) {
     const result = (response && response.rows) || null;
     return result;
   } catch (error) {
-    defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
+    // defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get roles for user',
