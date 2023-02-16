@@ -17,7 +17,7 @@ import { InvasivesRequest } from '../utils/auth-utils';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { simplifyGeojson } from '../utils/map-shaper-util';
 
-const defaultLog = getLogger('admin-defined-shapes');
+// const defaultLog = getLogger('admin-defined-shapes');
 
 export const GET: Operation = [getAdministrativelyDefinedShapes()];
 export const POST: Operation = [uploadShape()];
@@ -198,7 +198,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
+      // defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get administratively defined shapes',
         request: req.body,
@@ -245,7 +245,7 @@ function uploadShape(): RequestHandler {
           });
       }
     } catch (err) {
-      defaultLog.error(err);
+      // defaultLog.error(err);
       return res.status(500).json({
         message: 'Error parsing KML/KMZ data',
         request: req.body,
@@ -281,7 +281,7 @@ function uploadShape(): RequestHandler {
             [data, user_id, title]
           );
 
-          defaultLog.error(response);
+          // defaultLog.error(response);
           await connection.query('COMMIT');
 
           return res.status(201).json({
@@ -292,7 +292,7 @@ function uploadShape(): RequestHandler {
           });
         } catch (error) {
           await connection.query('ROLLBACK');
-          defaultLog.error(error);
+          // defaultLog.error(error);
           return res.status(500).json({
             message: 'Failed to create administratively defined shape',
             request: req.body,
@@ -351,7 +351,7 @@ function deleteShape(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
+      // defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to delete administratively defined shape',
         request: req.body,
