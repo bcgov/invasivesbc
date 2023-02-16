@@ -15,7 +15,7 @@ import {
 } from '../queries/access-request-queries';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('access-request');
+// const defaultLog = getLogger('access-request');
 
 export const POST: Operation = [postHandler()];
 export const GET: Operation = [getAccessRequests()];
@@ -127,7 +127,7 @@ function getAccessRequests(): RequestHandler {
         code: 200
       }); // TODO: UPDATE THIS
     } catch (error) {
-      defaultLog.debug({ label: 'getAccessRequests', message: 'error', error });
+      // defaultLog.debug({ label: 'getAccessRequests', message: 'error', error });
       return res.status(500).json({
         message: 'Database encountered an error',
         request: req.body,
@@ -167,7 +167,7 @@ function postHandler(): RequestHandler {
  * Create an access request
  */
 async function createAccessRequest(req, res, next, newAccessRequest) {
-  defaultLog.debug({ label: 'access-request', message: 'create', body: newAccessRequest });
+  // defaultLog.debug({ label: 'access-request', message: 'create', body: newAccessRequest });
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
@@ -197,7 +197,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'create', message: 'error', error });
+    // defaultLog.debug({ label: 'create', message: 'error', error });
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
@@ -273,7 +273,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       });
     }
   } catch (error) {
-    defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
+    // defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
@@ -317,7 +317,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       code: 200
     });
   } catch (error) {
-    defaultLog.debug({ label: 'declineAccessRequest', message: 'error', error });
+    // defaultLog.debug({ label: 'declineAccessRequest', message: 'error', error });
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
