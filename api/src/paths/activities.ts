@@ -13,7 +13,7 @@ import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';
 
-const defaultLog = getLogger('activity');
+// const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -143,7 +143,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+    // defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
 
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
@@ -165,7 +165,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const connection = await getDBConnection();
     if (!connection) {
-      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+      // defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
       return res
         .status(503)
         .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
@@ -262,7 +262,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);
     } catch (error) {
-      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      // defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error,
@@ -282,7 +282,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
+    // defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria({
       keycloakToken: req.keycloakToken
@@ -351,7 +351,7 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
+      // defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
       return res
         .status(500)
         .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
