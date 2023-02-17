@@ -283,7 +283,6 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
 
   // defaultLog.debug({ label: 'help', message: JSON.stringify(site_id[0]) });
   //stupid lib doesn't let you dynamically pass table name
-  // console.log(JSON.stringify(site_id[0]));
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   switch (extractName) {
