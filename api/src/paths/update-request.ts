@@ -13,7 +13,7 @@ import {
   getUpdateRequestsSQL,
   updateUpdateRequestStatusSQL
 } from '../queries/update-request-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 
 // const defaultLog = getLogger('update-request');
 

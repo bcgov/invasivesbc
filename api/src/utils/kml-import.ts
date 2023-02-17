@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import * as GeoJSON from '@mapbox/togeojson';
-import { getLogger } from './logger';
+// import { getLogger } from './logger';
 import AdmZip from 'adm-zip';
 import { FeatureCollection } from 'geojson';
 

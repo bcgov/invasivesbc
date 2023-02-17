@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 import { SQLStatement } from 'sql-template-strings';
 import {
   deleteAdministrativelyDefinedShapesSQL,

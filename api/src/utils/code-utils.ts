@@ -9,7 +9,7 @@ import {
   getFundingAgencyCodesSQL,
   getServiceLicenseCodesSQL
 } from '../queries/code-queries';
-import { getLogger } from './logger';
+// import { getLogger } from './logger';
 
 // const defaultLog = getLogger('code-utils');
 

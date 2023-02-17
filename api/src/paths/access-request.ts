@@ -13,7 +13,7 @@ import {
   getAccessRequestsSQL,
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 
 // const defaultLog = getLogger('access-request');
 

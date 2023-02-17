@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+// import { getLogger } from '../../utils/logger';
 import { PlantFormSubmissionFromData } from '../../utils/batch/plant_form_submit_template';
 import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';

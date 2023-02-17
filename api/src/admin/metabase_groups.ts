@@ -2,7 +2,7 @@ import { getDBConnection } from '../database/db';
 import { getMetabaseGroupsSQL } from '../queries/role-queries';
 import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL } from '../utils/metabase-session';
 import axios from 'axios';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 
 // const defaultLog = getLogger('admin/metabase_groups');
 

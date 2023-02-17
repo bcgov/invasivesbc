@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { RISOSearchCriteria } from '../models/riso';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getRISOsSQL } from '../queries/riso-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 
 // const defaultLog = getLogger('risos');
 

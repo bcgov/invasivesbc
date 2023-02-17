@@ -8,7 +8,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+// import { getLogger } from '../../utils/logger';
 
 // const defaultLog = getLogger('activity');
 

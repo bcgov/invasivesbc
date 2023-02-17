@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
+// import { getLogger } from '../../utils/logger';
 
 // const defaultLog = getLogger('activity');
 

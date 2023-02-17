@@ -7,7 +7,7 @@ import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { postPointOfInterestSQL, postPointsOfInterestSQL } from '../queries/point-of-interest-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
 // const defaultLog = getLogger('point-of-interest');

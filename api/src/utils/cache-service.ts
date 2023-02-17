@@ -1,5 +1,5 @@
 // naive in-memory cache. reimplement this with something more robust (weakrefs, memcache, redis, in-database caching).
-import { getLogger } from './logger';
+// import { getLogger } from './logger';
 
 // const defaultLog = getLogger('cache');
 

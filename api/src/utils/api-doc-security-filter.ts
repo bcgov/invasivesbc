@@ -2,7 +2,7 @@ import jsonpatch from 'fast-json-patch';
 import traverse from 'json-schema-traverse';
 import { X_API_DOC_KEYS, X_ENUM_CODE } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from './code-utils';
-import { getLogger } from './logger';
+// import { getLogger } from './logger';
 import { authenticate, InvasivesRequest } from './auth-utils';
 
 // const defaultLog = getLogger('api-doc-security-filter');

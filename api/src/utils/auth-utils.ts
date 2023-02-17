@@ -2,7 +2,7 @@
 
 import { verify, VerifyCallback } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
-import { getLogger } from './logger';
+// import { getLogger } from './logger';
 import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
 import { Request } from 'express';
 

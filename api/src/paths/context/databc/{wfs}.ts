@@ -4,7 +4,7 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getLogger } from '../../../utils/logger';
+// import { getLogger } from '../../../utils/logger';
 
 // const defaultLog = getLogger('activity');
 

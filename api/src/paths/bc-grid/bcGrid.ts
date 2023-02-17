@@ -6,7 +6,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { getOverlappingBCGridCellsSQL } from '../../queries/activity-queries';
-import { getLogger } from '../../utils/logger';
+// import { getLogger } from '../../utils/logger';
 
 // const defaultLog = getLogger('bc-grid/bcGrid');
 

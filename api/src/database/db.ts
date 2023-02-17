@@ -2,7 +2,7 @@
 
 import { Pool, PoolConfig, PoolClient } from 'pg';
 
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 // const defaultLog = getLogger('db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';

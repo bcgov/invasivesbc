@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { JurisdictionSearchCriteria } from '../models/jurisdiction';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getJurisdictionsSQL } from '../queries/jurisdiction-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 
 // const defaultLog = getLogger('jurisdictions');
 

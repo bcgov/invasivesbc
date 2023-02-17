@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
+// import { getLogger } from '../../utils/logger';
 import { atob } from 'js-base64';
 import {InvasivesRequest} from "../../utils/auth-utils";
 

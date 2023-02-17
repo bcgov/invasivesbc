@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';

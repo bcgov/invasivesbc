@@ -10,7 +10,7 @@ import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { commit as commitContext } from '../utils/context-queries';
-import { getLogger } from '../utils/logger';
+// import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 import { InvasivesRequest } from '../utils/auth-utils';
 
