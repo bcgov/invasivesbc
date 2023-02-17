@@ -245,8 +245,6 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
 
       // Check for sql and role:
-      // console.log('========================= activities-lean.ts 232', sqlStatement.text);
-      // console.log('========================= activities-lean.ts 232 roleName', roleName);
 
       if (!sqlStatement) {
         return res.status(500).json({
