@@ -13,12 +13,12 @@ proj4.defs(
 const albersToGeog = (featureCollection) => {
   try {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
-    // console.log("reprojected: ", JSON.stringify(reprojected) );
     return reprojected;
   } catch (e) {
-    console.log('error converting back to geog from albers:');
-    console.log(JSON.stringify(e));
-    console.log(e);
+    // console.log("reprojected: ", JSON.stringify(reprojected) );
+    // console.log('error converting back to geog from albers:');
+    // console.log(JSON.stringify(e));
+    // console.log(e);
   }
 };
 
