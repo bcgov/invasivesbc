@@ -72,7 +72,7 @@ const loggingHandler = (isAuthed: boolean) => function(req: any, res, next) {
   if(isAuthed)
   {
     //user metadata
-    if(endpointConfigObj["user-metadata"])
+    if(endpointConfigObj?.["user-metadata"])
     {
       const token = req.keycloakToken;
       const authContext = req.authContext;
@@ -97,7 +97,7 @@ const loggingHandler = (isAuthed: boolean) => function(req: any, res, next) {
   if(!isAuthed)
   {
     //query string params
-    if(endpointConfigObj["query-string-params"])
+    if(endpointConfigObj?.["query-string-params"])
     {
       const queryParams = req.query.query;
       if (queryParams && queryParams !== 'undefined') {
@@ -114,7 +114,7 @@ const loggingHandler = (isAuthed: boolean) => function(req: any, res, next) {
     }
     
     // req body
-    if(endpointConfigObj["request-body"])
+    if(endpointConfigObj?.["request-body"])
     {
       const body = req.body;
       if (body && JSON.stringify(body) !== '{}') {
