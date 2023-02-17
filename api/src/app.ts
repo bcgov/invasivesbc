@@ -8,7 +8,7 @@ import { initialize } from 'express-openapi';
 import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from './utils/auth-utils';
-// import { getLogger } from './utils/logger';
+import { getLogger } from './utils/logger';
 import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
 import loggingConfig from './loggingconfig.json'
 import { getuid } from 'process';
