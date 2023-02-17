@@ -1,6 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 // import { getLogger } from '../utils/logger';
-const defaultLog = getLogger('point-of-interest');
+// const defaultLog = getLogger('point-of-interest');
 
 /**
  * SQL query to insert a new point_of_interest, and return the inserted record.
