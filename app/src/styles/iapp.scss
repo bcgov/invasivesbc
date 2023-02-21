@@ -1,0 +1,13 @@
+.iapp-photo-container {
+  display: flex;
+  flex-direction: column;
+}
+
+img.iapp-photo {
+  margin-bottom: 20px;
+  box-shadow: 4px 4px 2px lightgrey;
+  max-width: 80%;
+  min-width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
