@@ -45,12 +45,17 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   if (searchCriteria.site_id_only) {
     sqlStatement.append(SQL`SELECT i.site_id `);
   } else {
-    sqlStatement.append(SQL`SELECT *, public.st_asGeoJSON(s.geog)::jsonb as geo`);
+    sqlStatement.append(
+      SQL`SELECT *,
+       ARRAY(SELECT image.media_key from iapp_imported_images image where image.site_id=i.site_id) as imported_image_keys,
+       public.st_asGeoJSON(s.geog)::jsonb as geo`
+    );
   }
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
-    JOIN iapp_spatial s 
+    JOIN iapp_spatial s
       ON i.site_id = s.site_id`
+
     // JOIN point_of_interest_incoming_data p
     //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
@@ -166,8 +171,8 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       }
       if (gridFilters.monitored) {
         sqlStatement.append(SQL` AND (
-          (has_biological_treatment_monitorings = TRUE 
-          OR has_chemical_treatment_monitorings = TRUE 
+          (has_biological_treatment_monitorings = TRUE
+          OR has_chemical_treatment_monitorings = TRUE
           OR has_mechanical_treatment_monitorings = TRUE
           )
         AND LOWER('Yes') LIKE '%'||`);
