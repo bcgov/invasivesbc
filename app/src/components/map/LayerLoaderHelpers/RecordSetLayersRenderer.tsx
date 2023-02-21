@@ -1,28 +1,28 @@
-import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
-import { useSelector } from '../../../state/utilities/use_selector';
-import { selectAuth } from '../../../state/reducers/auth';
-import { selectActivities } from 'state/reducers/activities';
-import { useMap } from 'react-leaflet';
+import {getSearchCriteriaFromFilters} from 'components/activities-list/Tables/Plant/ActivityGrid';
+import {IActivitySearchCriteria} from 'interfaces/useInvasivesApi-interfaces';
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import {ActivitiesLayerV2} from './ActivitiesLayerV2';
+import {useSelector} from '../../../state/utilities/use_selector';
+import {selectAuth} from '../../../state/reducers/auth';
+import {selectActivities} from 'state/reducers/activities';
+import {useMap} from 'react-leaflet';
 import center from '@turf/center';
 
 import L from 'leaflet';
 
 //const  glify } = require('react-leaflet-glify');
 //import glify from 'react-leaflet-glify';
-import { glify } from 'react-leaflet-glify';
+import {glify} from 'react-leaflet-glify';
 //import 'leaflet-canvas-marker';
 import 'leaflet-markers-canvas';
-import { cleanup } from '@testing-library/react';
-import { useLeafletContext } from '@react-leaflet/core';
-import { selectMap } from 'state/reducers/map';
-import { AnyKindOfDictionary } from 'lodash';
-import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
+import {cleanup} from '@testing-library/react';
+import {useLeafletContext} from '@react-leaflet/core';
+import {selectMap} from 'state/reducers/map';
+import {AnyKindOfDictionary} from 'lodash';
+import {LeafletCanvasLabel, LeafletCanvasMarker} from './LeafletCanvasLayer';
 
 const IAPPCanvasLayerMemo = (props) => {
-  const { accessRoles } = useSelector(selectAuth);
+  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
@@ -34,7 +34,7 @@ const IAPPCanvasLayerMemo = (props) => {
     } else {
       returnVal = [];
     }
-    return { type: 'FeatureCollection', features: returnVal };
+    return {type: 'FeatureCollection', features: returnVal};
   };
 
   return useMemo(() => {
@@ -57,7 +57,7 @@ const IAPPCanvasLayerMemo = (props) => {
 };
 
 const IAPPCanvasLabelMemo = (props) => {
-  const { accessRoles } = useSelector(selectAuth);
+  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   //CAP LABEL COUNT HERE
@@ -70,7 +70,7 @@ const IAPPCanvasLabelMemo = (props) => {
     } else {
       returnVal = [];
     }
-    return { type: 'FeatureCollection', features: returnVal };
+    return {type: 'FeatureCollection', features: returnVal};
   };
 
   return useMemo(() => {
@@ -94,7 +94,7 @@ const IAPPCanvasLabelMemo = (props) => {
 };
 
 const ActivityCanvasLabelMemo = (props) => {
-  const { accessRoles } = useSelector(selectAuth);
+  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
@@ -105,12 +105,22 @@ const ActivityCanvasLabelMemo = (props) => {
           return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
         })
         .map((row) => {
-          return { ...row, geometry: center(row.geometry).geometry };
+          let computedCenter = null;
+          try {
+            // center() function can throw an error
+            if (row?.geometry != null) {
+              computedCenter = center(row.geometry).geometry;
+            }
+          } catch (e) {
+            console.dir(row.geometry);
+            console.error(e);
+          }
+          return {...row, geometry: computedCenter};
         });
     } else {
       returnVal = [];
     }
-    return { type: 'FeatureCollection', features: returnVal };
+    return {type: 'FeatureCollection', features: returnVal};
   };
 
   return useMemo(() => {
@@ -134,7 +144,7 @@ const ActivityCanvasLabelMemo = (props) => {
 };
 
 const ActivityLayerMemo = (props) => {
-  const { accessRoles } = useSelector(selectAuth);
+  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
@@ -146,7 +156,7 @@ const ActivityLayerMemo = (props) => {
     } else {
       returnVal = [];
     }
-    return { type: 'FeatureCollection', features: returnVal };
+    return {type: 'FeatureCollection', features: returnVal};
   };
 
   return useMemo(() => {
@@ -169,7 +179,7 @@ const ActivityLayerMemo = (props) => {
   ]);
 };
 export const RecordSetLayersRenderer = (props: any) => {
-  const { accessRoles } = useSelector(selectAuth);
+  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   interface ILayerToRender {
@@ -215,7 +225,7 @@ export const RecordSetLayersRenderer = (props: any) => {
   }, [
     JSON.stringify(
       Object.keys(mapState?.layers ? mapState.layers : {}).map((l) => {
-        return { id: l, order: mapState?.layers?.[l]?.layerState?.drawOrder };
+        return {id: l, order: mapState?.layers?.[l]?.layerState?.drawOrder};
       })
     )
   ]);
@@ -238,8 +248,8 @@ export const RecordSetLayersRenderer = (props: any) => {
           if (layerKey)
             return (
               <div key={layerKey + 'activityLayerDivWrapper'}>
-                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey} />;
-                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey}/>;
+                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey}/>;
               </div>
             );
         })
@@ -251,8 +261,8 @@ export const RecordSetLayersRenderer = (props: any) => {
           if (layerKey)
             return (
               <div key={layerKey + 'IAPPLayerDivWrapper'}>
-                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey} />;
-                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey} />;
+                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey}/>;
+                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey}/>;
               </div>
             );
         })
