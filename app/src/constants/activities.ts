@@ -115,8 +115,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical Treatment Monitoring',
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = 'Biocontrol Dispersal Monitoring',
-  Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical animal',
-  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical mon',
+  Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical Monitoring Animal Terrestrial',
+  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical Monitoring Animal Terrestrial',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
