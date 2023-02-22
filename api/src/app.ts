@@ -8,12 +8,7 @@ import { initialize } from 'express-openapi';
 import { api_doc } from './openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from './utils/auth-utils';
-import { getLogger } from './utils/logger';
 import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
-import loggingConfig from './loggingconfig.json'
-import { getuid } from 'process';
-
-// const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
@@ -56,92 +51,6 @@ app.use(function (req: any, res: any, next: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
-
-app.use(function (req: InvasivesRequest, res: any, next: any) {
-  // const transactionID = uuidv4();
-  // res.transactionID = transactionID;
-  loggingPublic(req, res, next);
-  next();
-});
-
-const loggingHandler = (isAuthed: boolean) => function(req: any, res, next) {
-  const endpoint = req.url.split('/')[2];
-  const endpointConfigObj = loggingConfig.endpoint_configs[endpoint];
-  const logger = getLogger(endpoint);
-
-  if(isAuthed)
-  {
-    //user metadata
-    if(endpointConfigObj?.["user-metadata"])
-    {
-      const token = req.keycloakToken;
-      const authContext = req.authContext;
-      const metadata = {
-        'token': token,
-        'auth': authContext
-      }
-      if (token && authContext) {
-        logger.log({
-          level: 'info',
-          message: JSON.parse(JSON.stringify(metadata))
-        });
-      } else {
-        logger.log({
-          level: 'warn',
-          message: "There is a problem with either token or AuthContext"
-        });
-      }
-    }
-  }
-
-  if(!isAuthed)
-  {
-    //query string params
-    if(endpointConfigObj?.["query-string-params"])
-    {
-      const queryParams = req.query.query;
-      if (queryParams && queryParams !== 'undefined') {
-        logger.log({
-          level: 'debug',
-          message: JSON.parse(queryParams)
-        });
-      } else {
-        logger.log({
-          level: 'warn',
-          message: "There are no query parameters."
-        });
-      }
-    }
-    
-    // req body
-    if(endpointConfigObj?.["request-body"])
-    {
-      const body = req.body;
-      if (body && JSON.stringify(body) !== '{}') {
-        logger.log({
-          level: 'debug',
-          message: body
-        });
-      } else {
-        logger.log({
-          level: 'warn',
-          message: "Body is empty."
-        })
-      }
-    }
-  }
-}
-  
-  
-const loggingAuthd = function(req: InvasivesRequest, res: any, next: any)
-{
-  return loggingHandler(true)(req, res, next);
-}
-
-const loggingPublic = function(req: any, res: any, next: any)
-{
-  return loggingHandler(false)(req, res, next);
-}
 
 // Initialize express-openapi framework
 initialize({

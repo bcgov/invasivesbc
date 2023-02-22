@@ -9,7 +9,7 @@ import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint } from '../utils/logger';
 
 // const defaultLog = getLogger('activity');
 
@@ -214,7 +214,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const authContext = (req as any)?.authContext;
     const isAuth = authContext?.isAuth ?? false;
-
+    logEndpoint(isAuth)(req,res);
     // defaultLog.debug({
     //   label: 'activity',
     //   message: 'getActivitiesBySearchFilterCriteria',

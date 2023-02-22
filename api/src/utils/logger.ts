@@ -1,5 +1,7 @@
 import winston from 'winston';
-
+import loggingConfig from '../loggingconfig.json'
+import { authenticate, InvasivesRequest } from './auth-utils';
+import { hrtime } from 'process';
 /**
  * Logger input.
  *
@@ -92,7 +94,7 @@ const prettyPrint = (item: any): string => {
  * @param {string} logLabel common label for the instance of the logger.
  * @returns
  */
-export const getLogger = function (logLabel: string) {
+const getLogger = function (logLabel: string) {
   return winston.loggers.get(logLabel || 'default', {
     transports: [
       new winston.transports.Console({
@@ -119,3 +121,156 @@ export const getLogger = function (logLabel: string) {
     ]
   });
 };
+
+/**
+ * Calculates the duration in milliseconds. Format helper.
+ *
+ * @param {[number,number]} diff
+ * @returns {number} Returns the duration in milliseconds.
+ */
+
+const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e9 + diff[1]) / 1e6;
+
+
+const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
+  const endpoint = req.url.split('/')[2];
+  const endpointConfigObj = loggingConfig.endpoint_configs[endpoint];
+  const logger = getLogger(endpoint);
+    
+  if(endpointConfigObj) {
+    // console.log('endpoint',endpoint);
+    // console.log('endpointConfigObj',endpointConfigObj);
+    if(isAuthd)
+    {
+      //user metadata
+      if(endpointConfigObj?.['user-metadata'])
+      {
+        const token = req.keycloakToken;
+        const authContext = req.authContext;
+        // console.log('authContext',authContext);
+        const metadata = {
+          'token': token,
+          'auth': authContext
+        }
+        if (token && authContext) {
+          logger.log({
+            level: 'info',
+            message: JSON.parse(JSON.stringify(metadata))
+          });
+        } else {
+          logger.log({
+            level: 'warn',
+            message: 'There is a problem with either token or AuthContext'
+          });
+        }
+      }
+    }
+
+    // if(!isAuthd)
+    // {
+      //query string params
+    if(endpointConfigObj?.['query-string-params'])
+    {
+      const queryParams = req.query.query;
+      if (queryParams && queryParams !== 'undefined') {
+        logger.log({
+          level: 'debug',
+          message: JSON.parse(queryParams)
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: 'There are no query parameters.'
+        });
+      }
+    }
+    
+    // req body
+    if(endpointConfigObj?.['request-body'])
+    {
+      const body = req.body;
+      if (body && JSON.stringify(body) !== '{}') {
+        logger.log({
+          level: 'debug',
+          message: body
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: 'Body is empty.'
+        })
+      }
+    }
+    
+    // console.log("endpointConfigObj?.['request-time']",endpointConfigObj?.['request-time']);
+    if(endpointConfigObj?.['request-time'])
+    {
+      logger.log({
+        level: 'debug',
+        message: `${req.method} [STARTED] ${new Date().toISOString()}` 
+        // message: `${req.method} ${req.originalUrl} [STARTED] ${new Date().toISOString()}` 
+      }); 
+    }
+
+    // 
+    if(endpointConfigObj?.['response-time'])
+    {
+      const start = hrtime();
+
+      res.on('finish', () => {
+          const durationInMilliseconds = getDurationInMilliseconds(hrtime(start));
+
+          logger.log({
+            level: 'debug',
+            message: `${req.method} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            // message: `${req.method} ${req.originalUrl} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+          }); 
+
+      })
+    
+      res.on('close', () => {
+          const durationInMilliseconds = getDurationInMilliseconds(hrtime(start));
+
+          logger.log({
+            level: 'debug',
+            message: `${req.method} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            // message: `${req.method} ${req.originalUrl} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+          }); 
+      })
+    }
+    // }
+  }
+
+}
+
+  
+// const loggingAuthd = function(req: unknown, res: unknown, next: unknown) 
+const loggingAuthd = (req: InvasivesRequest, res: unknown) =>
+{
+  // console.log('req.authContext ',req.authContext);
+  // console.log('loggingAuthd');
+  loggingHandler(true)(req, res);
+}
+
+const loggingPublic = (req: InvasivesRequest, res: unknown) =>
+{
+  // console.log('loggingPublic');
+  // console.log('req.authContext ',req.authContext);
+  loggingHandler(false)(req, res);
+}
+
+const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: unknown) =>
+{
+  // const authContext = (req as any)?.authContext;
+  // const isAuth = (req as any)?.authContext?.isAuth ?? isAuthd;
+  loggingHandler((req as any)?.authContext?.isAuth ?? isAuthd)(req, res);
+  // if (isAuthd) {
+  // loggingAuthd(req, res);
+  // }
+  // loggingPublic(req, res);
+}
+const logDataPoint = (endpoint: string, msg: unknown) => {
+
+}
+
+export { logEndpoint, logDataPoint, loggingAuthd, loggingPublic };
