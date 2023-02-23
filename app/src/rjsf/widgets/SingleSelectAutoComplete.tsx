@@ -72,7 +72,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
     const suggestedJurisdictions = activityPageState?.suggestedJurisdictions
-      ? activityPageState?.suggestedJurisdictions
+      ? JSON.parse(JSON.stringify(activityPageState?.suggestedJurisdictions))
       : [];
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
@@ -143,10 +143,21 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     setLastFieldChanged({ id: props.id, option: value });
   }, []);
 
+
+  const [renderKey, setRenderKey] = useState(props.id.toString() + Math.random())
+
+  useEffect(()=> {
+    if(props.id.toString().includes('jurisdiction_code'))
+    {
+      setRenderKey(props.id.toString() + Math.random())
+    }
+  },[JSON.stringify(activityPageState.suggestedJurisdictions)])
+
+
   return (
     <div >
       <Autocomplete
-        
+        key={renderKey}
         autoHighlight
         autoSelect={props.required}
         blurOnSelect
