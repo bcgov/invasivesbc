@@ -123,7 +123,9 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           <Grid item>
             <Tooltip placement="top" title={deleteTooltipString()}>
               <span>
-                <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+                <Button
+                disabled={isDisabled}
+                variant="contained" color="primary" onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
               </span>
