@@ -46,6 +46,26 @@ const prettyPrint = (item: any): string => {
 };
 
 /**
+ * Supported log data capture metrics.
+ *
+ * @export
+ * @enum {string}
+ */
+export enum logMetrics {
+  USER_METADATA = "user-metadata",
+  QUERY_STRING_PARAMS = "query-string-params",
+  REQUEST_BODY = "request-body",
+  REQUEST_TIME = "request-time",
+  RESPONSE_BODY = "response-body",
+  RESPONSE_TIME = "response-time",
+  SQL_QUERY_START_TIME = "sql-query-start-time",
+  SQL_QUERY_SOURCE = "sql-query-source",
+  SQL_PARAMS = "sql-params",
+  SQL_RESULTS = "sql-results",
+  SQL_RESPONSE_TIME = "sql-response-time",
+  ERRORS = "errors",
+}
+/**
  * Get or create a logger for the given logLabel.
  *
  * Centralized logger that uses Winston 3.x.
@@ -143,7 +163,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
     if(isAuthd)
     {
       //user metadata
-      if(endpointConfigObj?.['user-metadata'])
+      if(endpointConfigObj?.[logMetrics.USER_METADATA])
       {
         const token = req.keycloakToken;
         const authContext = req.authContext;
@@ -155,7 +175,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         if (token && authContext) {
           logger.log({
             level: 'info',
-            message: JSON.parse(JSON.stringify(metadata))
+            message: `${logMetrics.USER_METADATA} ${JSON.parse(JSON.stringify(metadata))}`
           });
         } else {
           logger.log({
@@ -169,51 +189,66 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
     // if(!isAuthd)
     // {
       //query string params
-    if(endpointConfigObj?.['query-string-params'])
+    if(endpointConfigObj?.[logMetrics.QUERY_STRING_PARAMS])
     {
       const queryParams = req.query.query;
       if (queryParams && queryParams !== 'undefined') {
         logger.log({
           level: 'debug',
-          message: JSON.parse(queryParams)
+          message: `${logMetrics.QUERY_STRING_PARAMS} ${JSON.parse(queryParams)}`
         });
       } else {
         logger.log({
           level: 'warn',
-          message: 'There are no query parameters.'
+          message: `${logMetrics.QUERY_STRING_PARAMS} There are no query parameters.`
         });
       }
     }
     
     // req body
-    if(endpointConfigObj?.['request-body'])
+    if(endpointConfigObj?.[logMetrics.REQUEST_BODY])
     {
       const body = req.body;
       if (body && JSON.stringify(body) !== '{}') {
         logger.log({
           level: 'debug',
-          message: body
+          message: `${logMetrics.REQUEST_BODY} ${body}`
         });
       } else {
         logger.log({
           level: 'warn',
-          message: 'Body is empty.'
+          message: `${logMetrics.REQUEST_BODY} Body is empty.`
         })
       }
     }
     
     // console.log("endpointConfigObj?.['request-time']",endpointConfigObj?.['request-time']);
-    if(endpointConfigObj?.['request-time'])
+    if(endpointConfigObj?.[logMetrics.REQUEST_TIME])
     {
       logger.log({
         level: 'debug',
-        message: `${req.method} [STARTED] ${new Date().toISOString()}` 
+        message: `${logMetrics.REQUEST_TIME} ${req.method} [STARTED] ${new Date().toISOString()}`
         // message: `${req.method} ${req.originalUrl} [STARTED] ${new Date().toISOString()}` 
       }); 
     }
 
+    if(endpointConfigObj?.[logMetrics.RESPONSE_BODY])
+    {
+      const body = res.body;
+      if (body && JSON.stringify(body) !== '{}') {
+        logger.log({
+          level: 'debug',
+          message: `${logMetrics.RESPONSE_BODY} ${body}`
+        });
+      } else {
+        logger.log({
+          level: 'warn',
+          message: `${logMetrics.RESPONSE_BODY} Body is empty.`
+        })
+      }
+    }
     // 
-    if(endpointConfigObj?.['response-time'])
+    if(endpointConfigObj?.[logMetrics.RESPONSE_TIME])
     {
       const start = hrtime();
 
@@ -222,8 +257,8 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: `${req.method} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
-            // message: `${req.method} ${req.originalUrl} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            message: `${logMetrics.RESPONSE_TIME} ${req.method} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            // message: `${logMetrics.RESPONSE_TIME} ${req.method} ${req.originalUrl} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
           }); 
 
       })
@@ -233,8 +268,8 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: `${req.method} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
-            // message: `${req.method} ${req.originalUrl} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            message: `${logMetrics.RESPONSE_TIME} ${req.method} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            // message: `${logMetrics.RESPONSE_TIME} ${req.method} ${req.originalUrl} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
           }); 
       })
     }
