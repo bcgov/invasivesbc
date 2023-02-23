@@ -382,9 +382,11 @@ function updateActivity(): RequestHandler {
     const data = { ...req.body, media_keys: req['media_keys'] };
 
     const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
-    const preferredUsername = req.authContext?.preferredUsername;
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.updated_by = req.authContext?.preferredUsername;
+    sanitizedActivityData.created_by = req.authContext?.friendlyUsername;
+    sanitizedActivityData.created_by_with_guid = req.authContext?.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
+    sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
 
     const connection = await getDBConnection();
 
@@ -412,7 +414,7 @@ function updateActivity(): RequestHandler {
     const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
 
     if (!isAdmin) {
-      if (preferredUsername !== response.rows[0].created_by_with_guid) {
+      if (sanitizedActivityData.updated_by_with_guid !== response.rows[0].created_by_with_guid) {
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',
           request: req.body,

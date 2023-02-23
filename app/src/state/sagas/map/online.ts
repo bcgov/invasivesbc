@@ -44,7 +44,12 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
       layerState: action.payload.layerState
     }
   });
+
 }
+
+
+
+
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 /*  const networkReturn = yield InvasivesAPI_Call(
