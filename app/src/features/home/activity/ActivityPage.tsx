@@ -431,7 +431,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             ]
           });
         }
-      }, 500);
+      }, 1000);
     }
   }, [JSON.stringify(activityInStore?.activity?.geometry)]);
 
