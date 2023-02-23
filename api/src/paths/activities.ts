@@ -313,8 +313,8 @@ function deleteActivitiesByIds(): RequestHandler {
 
       if (response.rows.length > 0) {
         for (var i in response.rows) {
-          if (response.rows[i].created_by !== preferred_username) {
-            console.log(response.rows[i].created_by);
+          if (response.rows[i].created_by_with_guid !== preferred_username) {
+            console.log(response.rows[i].created_by_with_guid);
             return res.status(401).json({
               message: 'Invalid request, user is not authorized to delete this record', // better message
               request: req.body,
