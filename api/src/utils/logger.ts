@@ -151,6 +151,9 @@ const getLogger = function (logLabel: string) {
 
 const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e9 + diff[1]) / 1e6;
 
+const padL = (dt) => ('0' + dt).slice(-2);
+const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
+const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `RES-TIME-${event}: ${formatDate(dt)} ${duration} ms`;
 
 const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
   const endpoint = req.url.split('/')[2];
@@ -174,7 +177,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         }
         if (token && authContext) {
           logger.log({
-            level: 'info',
+            level: 'debug',
             message: `${logMetrics.USER_METADATA} ${JSON.parse(JSON.stringify(metadata))}`
           });
         } else {
@@ -186,8 +189,6 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       }
     }
 
-    // if(!isAuthd)
-    // {
       //query string params
     if(endpointConfigObj?.[logMetrics.QUERY_STRING_PARAMS])
     {
@@ -212,23 +213,22 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       if (body && JSON.stringify(body) !== '{}') {
         logger.log({
           level: 'debug',
-          message: `${logMetrics.REQUEST_BODY} ${body}`
+          message: `REQ-BODY:`,
+          body
         });
       } else {
         logger.log({
           level: 'warn',
-          message: `${logMetrics.REQUEST_BODY} Body is empty.`
+          message: `REQ-BODY: Body is empty.`
         })
       }
     }
     
-    // console.log("endpointConfigObj?.['request-time']",endpointConfigObj?.['request-time']);
     if(endpointConfigObj?.[logMetrics.REQUEST_TIME])
     {
       logger.log({
         level: 'debug',
-        message: `${logMetrics.REQUEST_TIME} ${req.method} [STARTED] ${new Date().toISOString()}`
-        // message: `${req.method} ${req.originalUrl} [STARTED] ${new Date().toISOString()}` 
+        message: `"${req.originalUrl}" ${req.method} REQ-TIME: ${formatDate(new Date())} USER: ${req.authContext.friendlyUsername}`
       }); 
     }
 
@@ -238,12 +238,13 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       if (body && JSON.stringify(body) !== '{}') {
         logger.log({
           level: 'debug',
-          message: `${logMetrics.RESPONSE_BODY} ${body}`
+          message: `RES-BODY:`,
+          body
         });
       } else {
         logger.log({
           level: 'warn',
-          message: `${logMetrics.RESPONSE_BODY} Body is empty.`
+          message: `RES-BODY: Body is empty.`
         })
       }
     }
@@ -251,14 +252,12 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
     if(endpointConfigObj?.[logMetrics.RESPONSE_TIME])
     {
       const start = hrtime();
-
       res.on('finish', () => {
           const durationInMilliseconds = getDurationInMilliseconds(hrtime(start));
 
           logger.log({
             level: 'debug',
-            message: `${logMetrics.RESPONSE_TIME} ${req.method} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
-            // message: `${logMetrics.RESPONSE_TIME} ${req.method} ${req.originalUrl} [FINISHED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            message: formatResTimeMsg('FINISHED',new Date(), durationInMilliseconds.toLocaleString())
           }); 
 
       })
@@ -268,12 +267,10 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: `${logMetrics.RESPONSE_TIME} ${req.method} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
-            // message: `${logMetrics.RESPONSE_TIME} ${req.method} ${req.originalUrl} [CLOSED] ${new Date().toISOString()} [response-time] ${durationInMilliseconds.toLocaleString()} ms` 
+            message: formatResTimeMsg('CLOSE',new Date(), durationInMilliseconds.toLocaleString())
           }); 
       })
     }
-    // }
   }
 
 }
@@ -307,5 +304,4 @@ const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: u
 const logDataPoint = (endpoint: string, msg: unknown) => {
 
 }
-
-export { logEndpoint, logDataPoint, loggingAuthd, loggingPublic };
+export { logEndpoint, logDataPoint };
