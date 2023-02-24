@@ -107,7 +107,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
-    console.log('sanitizedSearchCriteria',sanitizedSearchCriteria);
+
     const connection = await getDBConnection();
 
     if (!connection) {
