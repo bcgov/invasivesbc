@@ -153,7 +153,7 @@ const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e
 
 const padL = (dt) => ('0' + dt).slice(-2);
 const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
-const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `RES-TIME-${event}: ${formatDate(dt)} ${duration} ms`;
+const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `RES-T-${event}: ${formatDate(dt)} ${duration} ms`;
 
 const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
   const endpoint = req.url.split('/')[2];
@@ -178,12 +178,13 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         if (token && authContext) {
           logger.log({
             level: 'debug',
-            message: `${logMetrics.USER_METADATA} ${JSON.parse(JSON.stringify(metadata))}`
+            message: 'USR-META:',
+            metadata
           });
         } else {
           logger.log({
             level: 'warn',
-            message: 'There is a problem with either token or AuthContext'
+            message: 'USR-META: There is a problem with either token or AuthContext'
           });
         }
       }
@@ -192,16 +193,17 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       //query string params
     if(endpointConfigObj?.[logMetrics.QUERY_STRING_PARAMS])
     {
-      const queryParams = req.query.query;
-      if (queryParams && queryParams !== 'undefined') {
+      if (req.query?.query && req.query.query !== 'undefined') {
+        const queryParams = JSON.parse(req.query.query);
         logger.log({
           level: 'debug',
-          message: `${logMetrics.QUERY_STRING_PARAMS} ${JSON.parse(queryParams)}`
+          message: 'QRY-STR-PRMS:',
+          queryParams
         });
       } else {
         logger.log({
           level: 'warn',
-          message: `${logMetrics.QUERY_STRING_PARAMS} There are no query parameters.`
+          message: 'QRY-STR-PRMS: There are no query parameters.'
         });
       }
     }
@@ -213,7 +215,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       if (body && JSON.stringify(body) !== '{}') {
         logger.log({
           level: 'debug',
-          message: `REQ-BODY:`,
+          message: 'REQ-BODY:',
           body
         });
       } else {
@@ -228,7 +230,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
     {
       logger.log({
         level: 'debug',
-        message: `"${req.originalUrl}" ${req.method} REQ-TIME: ${formatDate(new Date())} USER: ${req.authContext.friendlyUsername}`
+        message: `${req.method} REQ-TIME: ${formatDate(new Date())} USER: ${req.authContext.friendlyUsername}`
       }); 
     }
 
@@ -238,7 +240,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       if (body && JSON.stringify(body) !== '{}') {
         logger.log({
           level: 'debug',
-          message: `RES-BODY:`,
+          message: 'RES-BODY:',
           body
         });
       } else {
