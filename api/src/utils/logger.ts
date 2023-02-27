@@ -275,22 +275,6 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
 }
 
-  
-// const loggingAuthd = function(req: unknown, res: unknown, next: unknown) 
-const loggingAuthd = (req: InvasivesRequest, res: unknown) =>
-{
-  // console.log('req.authContext ',req.authContext);
-  // console.log('loggingAuthd');
-  loggingHandler(true)(req, res);
-}
-
-const loggingPublic = (req: InvasivesRequest, res: unknown) =>
-{
-  // console.log('loggingPublic');
-  // console.log('req.authContext ',req.authContext);
-  loggingHandler(false)(req, res);
-}
-
 const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: unknown) =>
 {
   // const authContext = (req as any)?.authContext;
