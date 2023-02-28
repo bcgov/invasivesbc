@@ -154,7 +154,7 @@ const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e
 
 const padL = (dt) => ('0' + dt).slice(-2);
 const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
-const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `RES-T-${event}: ${formatDate(dt)} ${duration} ms`;
+const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `${event}: ${formatDate(dt)} ${duration} ms`;
 
 const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
   const endpoint = req.url.split('/')[2];
@@ -260,7 +260,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: formatResTimeMsg('FINISHED',new Date(), durationInMilliseconds.toLocaleString())
+            message: formatResTimeMsg('RES-T-FINISHED',new Date(), durationInMilliseconds.toLocaleString())
           }); 
 
       })
@@ -270,7 +270,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: formatResTimeMsg('CLOSE',new Date(), durationInMilliseconds.toLocaleString())
+            message: formatResTimeMsg('RES-T-CLOSE',new Date(), durationInMilliseconds.toLocaleString())
           }); 
       })
     }
