@@ -343,7 +343,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
-    sqlStatement.append(SQL` AND activity_subtype IN (`);
+    sqlStatement.append(SQL` AND activity_subtype_full IN (`);
 
     // add the first activity subtype, which does not get a comma prefix
     sqlStatement.append(SQL`${searchCriteria.activity_subtype[0]}`);
@@ -372,7 +372,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.subtype) {
-        sqlStatement.append(SQL` AND LOWER(a.activity_subtype::text) LIKE '%'||`);
+        sqlStatement.append(SQL` AND LOWER(a.activity_subtype_full::text) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.subtype})`);
         sqlStatement.append(SQL`||'%'`);
       }
@@ -538,7 +538,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
     const columnMap = {
       short_id: 'short_id', //needs a migration because of the payload stuff
       type: 'activity_type',
-      subtype: 'activity_subtype', //also in payload stuff (activity_type is too but different)
+      subtype: 'activity_subtype_full', //also in payload stuff (activity_type is too but different) ((with subtype update, activity_subtype is also different now))
       received_timestamp: 'received_timestamp',
       jurisdiction: 'jurisdiction_display',
       species_positive: 'species_positive_full',
