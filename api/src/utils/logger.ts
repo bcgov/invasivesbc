@@ -52,18 +52,19 @@ const prettyPrint = (item: any): string => {
  * @enum {string}
  */
 export enum logMetrics {
-  USER_METADATA = "user-metadata",
-  QUERY_STRING_PARAMS = "query-string-params",
-  REQUEST_BODY = "request-body",
-  REQUEST_TIME = "request-time",
-  RESPONSE_BODY = "response-body",
-  RESPONSE_TIME = "response-time",
-  SQL_QUERY_START_TIME = "sql-query-start-time",
-  SQL_QUERY_SOURCE = "sql-query-source",
-  SQL_PARAMS = "sql-params",
-  SQL_RESULTS = "sql-results",
-  SQL_RESPONSE_TIME = "sql-response-time",
-  ERRORS = "errors",
+  USER_METADATA = 'user-metadata',
+  QUERY_STRING_PARAMS = 'query-string-params',
+  REQUEST_BODY = 'request-body',
+  REQUEST_TIME = 'request-time',
+  RESPONSE_BODY = 'response-body',
+  RESPONSE_TIME = 'response-time',
+  SQL_QUERY_START_TIME = 'sql-query-start-time',
+  SQL_QUERY_SOURCE = 'sql-query-source',
+  SQL_PARAMS = 'sql-params',
+  SQL_RESULTS = 'sql-results',
+  SQL_RESPONSE_TIME = 'sql-response-time',
+  LABEL_DATA = 'label-data',
+  ERRORS = 'errors',
 }
 /**
  * Get or create a logger for the given logLabel.
