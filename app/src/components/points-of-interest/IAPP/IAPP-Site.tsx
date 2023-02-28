@@ -1,12 +1,12 @@
-import {Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography} from '@mui/material';
-import {ExpandMore} from '@mui/icons-material';
-import {makeStyles} from '@mui/styles';
+import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
-import {TreatmentsTable} from './ExtractTables';
-import {getJurisdictions} from './IAPP-Functions';
-import {SurveysTable} from './SurveyTable';
-import {Photos} from "./Photos";
-import {RequiresNetwork} from "../../common/RequiresNetwork";
+import { TreatmentsTable } from './ExtractTables';
+import { getJurisdictions } from './IAPP-Functions';
+import { SurveysTable } from './SurveyTable';
+import { Photos } from "./Photos";
+import { RequiresNetwork } from "../../common/RequiresNetwork";
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -31,12 +31,12 @@ export interface IAPPSitePropType {
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
   const form_data = props?.record?.point_of_interest_payload?.form_data;
-  const media = props?.record?.point_of_interest_payload?.media || [];
+  const media = props?.record?.point_of_interest_payload?.importedMedia || [];
   const site = {
     ...form_data?.point_of_interest_data,
     ...form_data?.point_of_interest_type_data
   };
-  const {surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals} =
+  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals } =
     form_data;
   const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
@@ -48,9 +48,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
 
   return (
-    <Container style={{paddingBottom: '50px'}}>
+    <Container style={{ paddingBottom: '50px' }}>
       <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore/>} aria-controls="panel-map-content" id="panel-map-header">
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Legacy IAPP Site: {site?.site_id}</Typography>
         </AccordionSummary>
 
@@ -129,7 +129,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 return (
                   <>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
-                    <br/>
+                    <br />
                   </>
                 );
               }) || 'Not Provided'}
@@ -152,23 +152,23 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       </Accordion>
 
       <RequiresNetwork networkRequirement={'connected'}>
-        <Photos media={media}/>
+        <Photos media={media} />
       </RequiresNetwork>
 
       {/* oldRecords Table <IAPPSurveyTable rows={surveys} /> */}
-      <SurveysTable surveys={surveys}/>
+      <SurveysTable surveys={surveys} />
 
       {/* oldRecords Table {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
-      <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments}/>
+      <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments} />
 
       {/* oldRecords Table {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
-      <TreatmentsTable type={'Chemical'} treatments={chemical_treatments}/>
+      <TreatmentsTable type={'Chemical'} treatments={chemical_treatments} />
 
       {/* oldRecords Table {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
-      <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments}/>
+      <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />
 
       {/* oldRecords Table {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />} */}
-      <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals}/>
+      <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
     </Container>
   );
 };

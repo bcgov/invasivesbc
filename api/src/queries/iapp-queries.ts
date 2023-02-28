@@ -47,7 +47,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   } else {
     sqlStatement.append(
       SQL`SELECT *,
-       ARRAY(SELECT image.media_key from iapp_imported_images image where image.site_id=i.site_id) as imported_image_keys,
+                 ARRAY(select row_to_json(j) from (SELECT image.media_key, image.comments, image.image_date, image.perspective_code, image.reference_no from invasivesbc.iapp_imported_images image where image.site_id=i.site_id) as j) as imported_images,
        public.st_asGeoJSON(s.geog)::jsonb as geo`
     );
   }

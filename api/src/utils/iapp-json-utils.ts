@@ -274,7 +274,8 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
         properties: {}
       },
       point_of_interest_payload: {
-        media: row['imported_image_keys'],
+        media: [],
+        importedMedia: row['imported_images'],
         geometry: [
           {
             type: 'Feature',
