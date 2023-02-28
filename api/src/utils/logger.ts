@@ -195,11 +195,11 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
     if(endpointConfigObj?.[logMetrics.QUERY_STRING_PARAMS])
     {
       if (req.query?.query && req.query.query !== 'undefined') {
-        const queryParams = JSON.parse(req.query.query);
+        const query = req.query.query;
         logger.log({
           level: 'debug',
           message: 'QRY-STR-PRMS:',
-          queryParams
+          query: JSON.parse(query)
         });
       } else {
         logger.log({
