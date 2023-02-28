@@ -66,6 +66,12 @@ export enum logMetrics {
   LABEL_DATA = 'label-data',
   ERRORS = 'errors',
 }
+
+/**
+ * linefeeds after value is output. provides spacing and read ability.
+ */
+const LINES_NEXT = '\n\n';
+
 /**
  * Get or create a logger for the given logLabel.
  *
@@ -135,7 +141,7 @@ const getLogger = function (logLabel: string) {
             const optionalOther =
               (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
 
-            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
+            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}${LINES_NEXT}`;
           })
         )
       })
