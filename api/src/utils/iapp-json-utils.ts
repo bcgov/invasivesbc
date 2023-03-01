@@ -45,6 +45,8 @@ const getSurveyObj = (row: any, map_code: any) => {
     map_code: map_code, // Could not see (Maybe from project code)
     survey_id: row.surveyid,
     common_name: common_name,
+    surveyor_name: row.primary_surveyor,
+    survey_paper_file_id: row.survey_paper_file_id,
     survey_date: row.survey_date,
     weeds_found: row.estimated_area > 0 ? true : false,
     distribution: row.distribution,
@@ -301,6 +303,10 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
             updated_date_on_device: null // Nothing for now
           },
           point_of_interest_type_data: {
+            utm_zone: extract.utm_zone,
+            utm_northing: extract.utm_northing,
+            utm_easting: extract.utm_easting,
+            range_unit_id: extract.range_unit_id,
             slope: extract.slope,
             aspect: extract.aspect,
             site_id: row['site_id'],

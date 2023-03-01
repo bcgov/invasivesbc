@@ -22,7 +22,7 @@ export const distributionMap = {
 export const mapSlope = (slope) => {
   if (slope === '') return 'NA';
   slope = Number(slope);
-  if (!slope) return 'FL';
+  if (!slope) return '';
   if (slope < 5) return 'NF';
   if (slope < 10) return 'GS';
   if (slope < 15) return 'MS';
@@ -36,6 +36,7 @@ export const mapSlope = (slope) => {
 
 export const mapAspect = (aspect) => {
   aspect = Number(aspect);
+  if (!aspect) return '';
   if ((aspect > 333.5 && aspect <= 360) || aspect <= 22.5) return 'N';
   if (aspect <= 67.5) return 'NE';
   if (aspect <= 112.5) return 'E';
@@ -45,4 +46,11 @@ export const mapAspect = (aspect) => {
   if (aspect <= 292.5) return 'W';
   if (aspect <= 333.5) return 'NW';
   return 'NA';
+};
+
+export const mapTankMix = (mix) => {
+  if (mix === 'Y') return 'Yes';
+  if (!mix) return 'No';
+  if (mix === '') return 'No';
+  return 'No';
 };

@@ -2,7 +2,14 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 import React from 'react';
 
 interface MonitoringColumn {
-  id: 'monitoring_id' | 'inspection_date' | 'agency' | 'paper_file_id' | 'efficiency_rating' | 'general_comment';
+  id:
+    | 'monitoring_id'
+    | 'monitoring_date'
+    | 'invasive_species_agency_code'
+    | 'project_code'
+    | 'primary_surveyor'
+    | 'efficacy_rating'
+    | 'general_comment';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -10,12 +17,11 @@ interface MonitoringColumn {
 }
 
 export const monitoringColumns: readonly MonitoringColumn[] = [
-  { id: 'monitoring_id', label: 'Monitoring ID', minWidth: 150 },
-  { id: 'inspection_date', label: 'Inspection Date', minWidth: 200 },
-  { id: 'agency', label: 'Agency', minWidth: 200 },
-  { id: 'paper_file_id', label: 'Paper File ID', minWidth: 200 },
-  { id: 'efficiency_rating', label: 'Efficiency Rating', minWidth: 100 },
-  { id: 'general_comment', label: 'General Comment (No data atm)', minWidth: 250 }
+  { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
+  { id: 'project_code', label: 'Paper File ID', minWidth: 100 },
+  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
+  { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 }
 ];
 
 export const MonitoringRow = (props) => {
