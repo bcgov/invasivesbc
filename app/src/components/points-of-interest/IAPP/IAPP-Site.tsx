@@ -11,7 +11,12 @@ import { RequiresNetwork } from "../../common/RequiresNetwork";
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: theme.typography.fontWeightBold,
+    align: 'center'
+  },
+  subHeading: {
+    fontSize: theme.typography.pxToRem(16),
+    fontWeight: theme.typography.fontWeightBold,
     align: 'center'
   },
   wideCell: {
@@ -57,74 +62,101 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionDetails>
           <Grid container spacing={1}>
             <Grid item xs={3} sm={2}>
-              Created
+              <Typography className={classes.subHeading}>Created:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(date_created)}
             </Grid>
             <Grid item xs={3} sm={2}>
-              Slope
-            </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.slope_code)}
-            </Grid>
-
-            <Grid item xs={3} sm={2}>
-              PaperFile
+              <Typography className={classes.subHeading}>Paper File ID:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(site?.project_code[0]?.description)}
             </Grid>
+
             <Grid item xs={3} sm={2}>
-              Aspect
+              <Typography className={classes.subHeading}>Mapsheet:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.aspect_code)}
+              {ifApplicable(site?.map_sheet)}
+            </Grid>
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>UTM Zone:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.utm_zone)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
-              Longitude
+              <Typography className={classes.subHeading}>UTM Easting:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.utm_easting)}
+            </Grid>
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>UTM Northing:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.utm_northing)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Longitude:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(longitude)}
             </Grid>
             <Grid item xs={3} sm={2}>
-              Latitude
+              <Typography className={classes.subHeading}>Latitude:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(latitude)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
-              Elevation
+              <Typography className={classes.subHeading}>Elevation (m):</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(site?.site_elevation)}
             </Grid>
             <Grid item xs={3} sm={2}>
-              Specific Use
+              <Typography className={classes.subHeading}>Range Unit ID:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.range_unit_id)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Site Specific Use:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(site?.specific_use_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
-              Mapsheet
+              <Typography className={classes.subHeading}>Aspect:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.map_sheet)}
+              {ifApplicable(site?.aspect_code)}
             </Grid>
             <Grid item xs={3} sm={2}>
-              Soil Texture
+              <Typography className={classes.subHeading}>Slope (%):</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.slope_code)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Soil Texture:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
               {ifApplicable(site?.soil_texture_code)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
-              Jurisdiction
+              <Typography className={classes.subHeading}>Jurisdictions:</Typography>
             </Grid>
-            <Grid item xs={9}>
+            <Grid item xs={9} sm={4}>
               {jurisdictions.map((jurisdiction) => {
                 return (
                   <>
@@ -134,15 +166,15 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 );
               }) || 'Not Provided'}
             </Grid>
-            <Grid item xs={3} sm={2}>
-              Access Description
-            </Grid>
-            <Grid item xs={9} sm={10}>
-              {ifApplicable(site?.access_description)}
-            </Grid>
 
             <Grid item xs={3} sm={2}>
-              Comments
+              <Typography className={classes.subHeading}>Site Location Details:</Typography>{' '}
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.access_description)}
+            </Grid>
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Site Comments:</Typography>
             </Grid>
             <Grid item xs={9} sm={10}>
               {ifApplicable(site?.general_comment)}
@@ -159,10 +191,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       <SurveysTable surveys={surveys} />
 
       {/* oldRecords Table {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
-      <TreatmentsTable type={'Mechanical'} treatments={mechanical_treatments} />
+      <TreatmentsTable type={'Mechanical Treatment'} treatments={mechanical_treatments} />
 
       {/* oldRecords Table {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
-      <TreatmentsTable type={'Chemical'} treatments={chemical_treatments} />
+      <TreatmentsTable type={'Chemical Treatment'} treatments={chemical_treatments} />
 
       {/* oldRecords Table {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
       <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />

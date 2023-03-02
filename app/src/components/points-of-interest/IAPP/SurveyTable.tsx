@@ -23,6 +23,8 @@ interface SurveyColumn {
     | 'genus'
     | 'survey_date'
     | 'invasive_species_agency_code'
+    | 'survey_paper_file_id'
+    | 'surveyor_name'
     | 'reported_area'
     | 'density'
     | 'distribution'
@@ -34,15 +36,14 @@ interface SurveyColumn {
 }
 
 const surveyColumns: readonly SurveyColumn[] = [
-  { id: 'survey_id', label: 'Survey ID', minWidth: 150 },
-  { id: 'invasive_plant_code', label: 'Invasive Plant Code', minWidth: 150 },
-  { id: 'species_common_name', label: 'Common Name', minWidth: 150 },
-  { id: 'genus', label: 'Genus', minWidth: 150 },
   { id: 'survey_date', label: 'Survey Date', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Invasive Species Agency Code', minWidth: 350 },
-  { id: 'reported_area', label: 'Reported Area', minWidth: 150 },
+  { id: 'survey_paper_file_id', label: 'Survey Paper File ID', minWidth: 150 },
+  { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
+  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 350 },
+  { id: 'reported_area', label: 'Reported Area (ha)', minWidth: 150 },
   { id: 'density', label: 'Density', minWidth: 150 },
   { id: 'distribution', label: 'Distribution', minWidth: 350 },
+  { id: 'surveyor_name', label: 'Surveyor Name', minWidth: 150 },
   { id: 'general_comment', label: 'General Comment', minWidth: 350 }
 ];
 
@@ -148,9 +149,11 @@ export const SurveysTable = (props: any) => {
       invasive_plant_code: survey.invasive_plant_code,
       species_common_name: survey.common_name,
       genus: survey.genus,
-      survey_date: survey.survey_date,
+      survey_date: survey.survey_date.substring(0, survey.survey_date.indexOf('T')),
       invasive_species_agency_code: survey.invasive_species_agency_code,
       reported_area: getReportedAreaOutput(survey.reported_area),
+      survey_paper_file_id: survey.survey_paper_file_id,
+      surveyor_name: survey.surveyor_name,
       density: survey.density,
       distribution: survey.distribution,
       general_comment: survey.general_comment
@@ -161,7 +164,7 @@ export const SurveysTable = (props: any) => {
     <Accordion expanded={expanded} style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary
         onClick={() => setExpanded(!expanded)}
-        style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
+        style={{ fontWeight: 'bold', fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
         Survey Details
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
