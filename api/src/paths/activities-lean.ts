@@ -11,7 +11,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { logEndpoint } from '../utils/logger';
 
-// const defaultLog = getLogger('activity');
+const namespace = 'activities-lean';
 
 export const POST: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -236,7 +236,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'activities-lean',
+        namespace,
         code: 503
       });
     }
@@ -250,7 +250,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
-          namespace: 'activities-lean',
+          namespace,
           code: 500
         });
       }
@@ -273,7 +273,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         request: req.body,
         result: rows,
         count: count,
-        namespace: 'activities-lean',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -282,7 +282,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         message: 'Error getting activities by search filter criteria',
         error: error,
         request: req.body,
-        namespace: 'activities-lean',
+        namespace,
         code: 500
       });
     } finally {
@@ -305,7 +305,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!ids || !ids.length) {
       return res
         .status(400)
-        .json({ message: 'No ids provided', request: req.body, namespace: 'activities-lean', code: 400 });
+        .json({ message: 'No ids provided', request: req.body, namespace, code: 400 });
     }
 
     const connection = await getDBConnection();
@@ -313,7 +313,7 @@ function deleteActivitiesByIds(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'activities-lean',
+        namespace,
         code: 503
       });
     }
@@ -325,7 +325,7 @@ function deleteActivitiesByIds(): RequestHandler {
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
-          namespace: 'activities-lean',
+          namespace,
           code: 500
         });
       }
@@ -337,7 +337,7 @@ function deleteActivitiesByIds(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'activities-lean',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -346,7 +346,7 @@ function deleteActivitiesByIds(): RequestHandler {
         message: 'Error deleting activities by ids',
         error: error,
         request: req.body,
-        namespace: 'activities-lean',
+        namespace,
         code: 500
       });
     } finally {
