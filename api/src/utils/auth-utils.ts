@@ -107,17 +107,51 @@ export const authenticate = async (req: InvasivesRequest) => {
           message: 'Token decode failure',
           namespace: 'auth-utils'
         });
+        return;
+      }
+      if (!decoded) {
+        reject({
+          code: 401,
+          message: 'Token decode failure',
+          namespace: 'auth-utils'
+        });
+        return;
       }
 
       req.keycloakToken = decoded;
 
       let accountType, id;
 
+      if (!decoded['identity_provider']) {
+        reject({
+          code: 401,
+          message: 'Invalid token - missing identity provider',
+          namespace: 'auth-utils'
+        });
+        return;
+      }
+
       if (decoded.identity_provider === 'idir') {
         accountType = KeycloakAccountType.idir;
+        if (!decoded['idir_user_guid']) {
+          reject({
+            code: 401,
+            message: 'Invalid token - missing idir guid',
+            namespace: 'auth-utils'
+          });
+          return;
+        }
         id = decoded.idir_user_guid;
       } else if (decoded.identity_provider === 'bceidbusiness') {
         accountType = KeycloakAccountType.bceid;
+        if (!decoded['bceid_user_guid']) {
+          reject({
+            code: 401,
+            message: 'Invalid token - missing bceid guid',
+            namespace: 'auth-utils'
+          });
+          return;
+        }
         id = decoded.bceid_user_guid;
       } else {
         reject({
@@ -125,6 +159,7 @@ export const authenticate = async (req: InvasivesRequest) => {
           message: 'Invalid token - missing idir_userid or bceid_userid',
           namespace: 'auth-utils'
         });
+        return;
       }
 
       getUserByKeycloakID(accountType, id).then((user) => {
@@ -151,14 +186,14 @@ export const authenticate = async (req: InvasivesRequest) => {
             filterForSelectable: false
           };
           req.authContext.preferredUsername = decoded['preferred_username'];
-          let idir_userid;
-          let bceid_userid;
-          if (decoded['idir_username']) idir_userid = decoded['idir_username'];
-          if (decoded['bceid_username']) bceid_userid = decoded['bceid_username'];
+          if (decoded['idir_username']) {
+            req.authContext.friendlyUsername = decoded['idir_username'].toLowerCase() + '@idir';
+          }
+          if (decoded['bceid_username']) {
+            req.authContext.friendlyUsername = decoded['bceid_username'].toLowerCase() + '@bceid-business';
+          }
+
           req.authContext.filterForSelectable = filterForSelectable;
-          req.authContext.friendlyUsername = idir_userid
-            ? idir_userid.toLowerCase() + '@idir'
-            : bceid_userid.toLowerCase() + '@bceid-business';
           req.authContext.user = user;
           getRolesForUser(user.user_id)
             .then((roles) => {
