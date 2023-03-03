@@ -70,7 +70,7 @@ export enum logMetrics {
 /**
  * linefeeds after value is output. provides spacing and read ability.
  */
-const LINES_NEXT = '\n\n';
+const LINES_NEXT = '\n';
 
 /**
  * Get or create a logger for the given logLabel.
