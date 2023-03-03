@@ -160,7 +160,8 @@ const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e
 
 const padL = (dt) => ('0' + dt).slice(-2);
 const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
-const formatResTimeMsg = (event: string, dt: Date, duration: string): string => `${event}: ${formatDate(dt)} ${duration} ms`;
+const formatResTimeMsg = (dt: Date, duration: string, event?: string ): string => event.length > 0 ?
+  `${event}: ${formatDate(dt)} :: ${duration} ms` : `${formatDate(dt)} :: ${duration} ms`;
 
 const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
   const endpoint = req.url.split('/')[2];
