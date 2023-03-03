@@ -160,8 +160,9 @@ const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e
 
 const padL = (dt) => ('0' + dt).slice(-2);
 const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
-const formatResTimeMsg = (dt: Date, duration: string, event?: string ): string => event.length > 0 ?
-  `${event}: ${formatDate(dt)} :: ${duration} ms` : `${formatDate(dt)} :: ${duration} ms`;
+const formatResTimeMsg = (dt: Date, duration: string, event: string = ''): string => event.length > 0 ?
+  `${event}: ${formatDate(dt)} :: ${duration} ms` :
+  `${formatDate(dt)} :: ${duration} ms`;
 
 const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void => {
   const endpoint = req.url.split('/')[2];
@@ -267,7 +268,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: formatResTimeMsg('RES-T-FINISHED',new Date(), durationInMilliseconds.toLocaleString())
+            message: formatResTimeMsg(new Date(), durationInMilliseconds.toLocaleString(),'RES-T-FINISHED')
           }); 
 
       })
@@ -277,25 +278,105 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 
           logger.log({
             level: 'debug',
-            message: formatResTimeMsg('RES-T-CLOSE',new Date(), durationInMilliseconds.toLocaleString())
+            message: formatResTimeMsg(new Date(), durationInMilliseconds.toLocaleString(),'RES-T-CLOSE')
           }); 
       })
     }
+    console.log(LINES_NEXT+LINES_NEXT);
   }
 
 }
 
+/**
+ * Log endpoint wrapper function
+ * @param isAuthd
+ * @param req 
+ * @param res  
+ * 
+ * @returns void
+ */
 const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: unknown) =>
 {
-  // const authContext = (req as any)?.authContext;
-  // const isAuth = (req as any)?.authContext?.isAuth ?? isAuthd;
   loggingHandler((req as any)?.authContext?.isAuth ?? isAuthd)(req, res);
-  // if (isAuthd) {
-  // loggingAuthd(req, res);
-  // }
-  // loggingPublic(req, res);
 }
-const logDataPoint = (endpoint: string, msg: unknown) => {
 
+const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
+  endpoint: string = '', 
+  logMetric: string,
+  value: any
+) => {
+  // console.log('logData endpoint',endpoint);
+  // endpoint = req?.originalUrl.split('/')[2] || endpoint;
+  // console.log('logData isAuthd',isAuthd);
+  // console.log('logData req?.originalUrl',req?.originalUrl);
+  // console.log('logData logMetric',logMetric);
+  // console.log('logData value',value);
+
+  const endpointConfigObj = loggingConfig?.endpoint_configs[endpoint];
+  // console.log('logData endpointConfigObj',endpointConfigObj);
+  if (endpointConfigObj !== undefined) {
+    //  SQL_QUERY_START_TIME:"sql-query-start-time"
+    //  SQL_QUERY_SOURCE:"sql-query-source"
+    //  SQL_PARAMS:"sql-params"
+    //  SQL_RESULTS:"sql-results"
+    //  SQL_RESPONSE_TIME:"sql-response-time"
+    //  ERRORS:"errors"
+    let metricLabel = '';
+    switch (logMetric) {
+      case logMetrics.SQL_QUERY_START_TIME:
+        metricLabel = `SQL-QRY-STRT-T`;
+        value = formatDate(value);
+        break;
+      case logMetrics.SQL_QUERY_SOURCE:
+        metricLabel = `SQL-QRY-SRC`;
+        break;
+      case logMetrics.SQL_PARAMS:
+        metricLabel = `SQL-PRMS`;
+        break;
+      case logMetrics.SQL_RESULTS:
+        metricLabel = `SQL-RSLTS`;
+        break; 
+      case logMetrics.SQL_RESPONSE_TIME:
+        metricLabel = `SQL-RES-T`;
+        value = formatResTimeMsg(new Date(), getDurationInMilliseconds(hrtime(value)).toLocaleString());
+        break;
+      case logMetrics.ERRORS:
+        metricLabel = 'ERR';
+        break;
+      default:
+        metricLabel = 'LOG-ERR';
+        value = 'log metric does not exist';
+        logMetric = 'errors';
+    }
+
+    if(endpointConfigObj?.[logMetric] || logMetric == logMetrics.LABEL_DATA || logMetric == 'LOG-ERR')
+    {
+      getLogger(endpoint).log({
+        level: 'debug',
+        message: `${metricLabel}:\n${value}`,
+      }); 
+    }
+  }
 }
-export { logEndpoint, logDataPoint };
+
+/**
+ * A log errors wrapper function
+ * @param requireAuthd 
+ * @param isAuthd 
+ * @returns void
+ */
+const logErr  = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
+  endpoint: string = '',
+  value: any
+) => logData(isAuthd, requireAuthd)(endpoint, logMetrics.ERRORS, value);
+
+/**
+ * get the start time from node to return on end to calculate duration time.
+ * @returns [number, number] current time value
+ */
+const getStartTime = (namespace:string):[number, number] => { 
+  logData()(namespace,logMetrics.SQL_QUERY_START_TIME,new Date());
+  return hrtime();
+}
+
+export { logEndpoint, logData, logErr, getStartTime };
