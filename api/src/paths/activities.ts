@@ -312,9 +312,8 @@ function deleteActivitiesByIds(): RequestHandler {
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
       if (response.rows.length > 0) {
-        for (var i in response.rows) {
-          if (response.rows[i].created_by_with_guid !== preferred_username) {
-            console.log(response.rows[i].created_by_with_guid);
+        response.rows.forEach((row, i) => {
+          if (row.activity_payload.created_by_with_guid !== preferred_username) {
             return res.status(401).json({
               message: 'Invalid request, user is not authorized to delete this record', // better message
               request: req.body,
@@ -322,7 +321,7 @@ function deleteActivitiesByIds(): RequestHandler {
               code: 401
             });
           }
-        }
+        });
       }
     }
 
