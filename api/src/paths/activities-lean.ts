@@ -9,7 +9,7 @@ import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-import { logEndpoint } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 
 const namespace = 'activities-lean';
 
@@ -212,14 +212,11 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    const startTime = getStartTime(namespace);
     const authContext = (req as any)?.authContext;
-    const isAuth = authContext?.isAuth ?? false;
+    const isAuth = !!authContext?.friendlyUsername ?? false;
+
     logEndpoint(isAuth)(req,res);
-    // defaultLog.debug({
-    //   label: 'activity',
-    //   message: 'getActivitiesBySearchFilterCriteria',
-    //   body: req.body
-    // });
 
     const roleName = authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
@@ -233,6 +230,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -243,10 +241,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
-
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
       // Check for sql and role:
 
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
@@ -262,11 +261,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-      // defaultLog.info({
-      //   label: 'activities-lean',
-      //   message: 'response',
-      //   body: count
-      // });
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
         message: 'Got activities by search filter criteria',
@@ -277,7 +272,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      logErr()(namespace,`Error getting activities by search filter criteria\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error: error,
@@ -298,7 +293,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
+    logEndpoint()(req as InvasivesRequest,res);
 
     const ids = Object.values(req.query.id) as string[];
 
@@ -320,8 +315,8 @@ function deleteActivitiesByIds(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = deleteActivitiesSQL(ids);
-
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement for deleting activities by Ids\n${req?.body}`);
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
@@ -341,7 +336,7 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
+      logErr()(namespace,`Error delete Activities By Ids:\n${error}`);
       return res.status(500).json({
         message: 'Error deleting activities by ids',
         error: error,
