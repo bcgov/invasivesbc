@@ -296,9 +296,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
  * @returns void
  */
 const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: unknown) =>
-{
   loggingHandler((req as any)?.authContext?.isAuth ?? isAuthd)(req, res);
-}
 
 const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
   endpoint: string = '', 
@@ -321,24 +319,27 @@ const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
     //  SQL_RESULTS:"sql-results"
     //  SQL_RESPONSE_TIME:"sql-response-time"
     //  ERRORS:"errors"
-    let metricLabel = '';
+    let metricLabel: string = '';
+    let nextLine: boolean = true;
     switch (logMetric) {
       case logMetrics.SQL_QUERY_START_TIME:
-        metricLabel = `SQL-QRY-STRT-T`;
+        metricLabel = 'SQL-QRY-STRT-T';
         value = formatDate(value);
+        nextLine = false;
         break;
       case logMetrics.SQL_QUERY_SOURCE:
-        metricLabel = `SQL-QRY-SRC`;
+        metricLabel = 'SQL-QRY-SRC';
         break;
       case logMetrics.SQL_PARAMS:
-        metricLabel = `SQL-PRMS`;
+        metricLabel = 'SQL-PRMS';
         break;
       case logMetrics.SQL_RESULTS:
-        metricLabel = `SQL-RSLTS`;
+        metricLabel = 'SQL-RSLTS';
         break; 
       case logMetrics.SQL_RESPONSE_TIME:
-        metricLabel = `SQL-RES-T`;
+        metricLabel = 'SQL-RES-T';
         value = formatResTimeMsg(new Date(), getDurationInMilliseconds(hrtime(value)).toLocaleString());
+        nextLine = false;
         break;
       case logMetrics.ERRORS:
         metricLabel = 'ERR';
@@ -349,11 +350,11 @@ const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
         logMetric = 'errors';
     }
 
-    if(endpointConfigObj?.[logMetric] || logMetric == logMetrics.LABEL_DATA || logMetric == 'LOG-ERR')
+    if(endpointConfigObj?.[logMetric] || logMetric === 'LOG-ERR')
     {
       getLogger(endpoint).log({
         level: 'debug',
-        message: `${metricLabel}:\n${value}`,
+        message: `${metricLabel}:${nextLine ? '\n' : ' '}${value}`,
       }); 
     }
   }
