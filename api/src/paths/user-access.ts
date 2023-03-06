@@ -13,7 +13,7 @@ import {
 } from '../queries/role-queries';
 // import { getLogger } from '../utils/logger';
 
-// const defaultLog = getLogger('user-access');
+const namespace = ('user-access');
 
 export const POST: Operation = [batchGrantRoleToUser()];
 export const DELETE: Operation = [revokeRoleFromUser()];

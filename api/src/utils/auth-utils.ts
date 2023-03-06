@@ -6,7 +6,7 @@ import jwksRsa from 'jwks-rsa';
 import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
 import { Request } from 'express';
 
-// const defaultLog = getLogger('auth-utils');
+const namespace = ('auth-utils');
 
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL ||

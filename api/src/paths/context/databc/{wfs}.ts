@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 // import { getLogger } from '../../../utils/logger';
 
-// const defaultLog = getLogger('activity');
+const namespace = ('activity');
 
 export const GET: Operation = [getDataBC()];
 

@@ -5,7 +5,7 @@ import AdmZip from 'adm-zip';
 import { FeatureCollection } from 'geojson';
 
 function KMZToKML(data: Buffer): Buffer {
-  // const log = getLogger('KML');
+  const namespace = ('KML');
 
   const zipFile = new AdmZip(data);
 
@@ -35,7 +35,7 @@ function KMZToKML(data: Buffer): Buffer {
 }
 
 function GeoJSONFromKML(data: Buffer) {
-  // const log = getLogger('KML');
+  const namespace = ('KML');
 
   // log.info(`parsing: ${data.length} bytes`);
 

@@ -14,7 +14,7 @@ import { commit as commitContext } from '../utils/context-queries';
 import { uploadMedia } from './media';
 import { InvasivesRequest } from '../utils/auth-utils';
 
-// const defaultLog = getLogger('activity');
+const namespace = ('activity');
 
 export const POST: Operation = [uploadMedia(), createActivity()];
 

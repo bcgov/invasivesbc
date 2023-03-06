@@ -10,7 +10,7 @@ import { postPointOfInterestSQL, postPointsOfInterestSQL } from '../queries/poin
 // import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
-// const defaultLog = getLogger('point-of-interest');
+const namespace = ('point-of-interest');
 
 export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 

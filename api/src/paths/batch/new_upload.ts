@@ -15,7 +15,7 @@ import { getDBConnection } from '../../database/db';
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-// const defaultLog = getLogger('batch');
+const namespace = ('batch');
 
 export const POST: Operation = [upload()];
 

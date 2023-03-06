@@ -11,7 +11,7 @@ import {
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
-// const defaultLog = getLogger('point-of-interest');
+const namespace = ('point-of-interest');
 
 const getSurveyObj = (row: any, map_code: any) => {
   const leftBracket = row.invasive_plant.indexOf('(');

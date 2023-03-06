@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 // import { getLogger } from '../utils/logger';
 
-// const defaultLog = getLogger('activity/{activityId}');
+const namespace = ('activity/{activityId}');
 
 export const GET: Operation = [getHandler()];
 

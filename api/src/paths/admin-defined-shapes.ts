@@ -17,7 +17,7 @@ import { InvasivesRequest } from '../utils/auth-utils';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { simplifyGeojson } from '../utils/map-shaper-util';
 
-// const defaultLog = getLogger('admin-defined-shapes');
+const namespace = ('admin-defined-shapes');
 
 export const GET: Operation = [getAdministrativelyDefinedShapes()];
 export const POST: Operation = [uploadShape()];

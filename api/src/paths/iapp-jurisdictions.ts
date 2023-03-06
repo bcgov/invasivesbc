@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getJurisdictionsSQL } from '../queries/iapp-jurisdiction-queries';
 // import { getLogger } from '../utils/logger';
 
-// const defaultLog = getLogger('iapp-jurisdictions');
+const namespace = ('iapp-jurisdictions');
 
 export const GET: Operation = [getJurisdictions()];
 

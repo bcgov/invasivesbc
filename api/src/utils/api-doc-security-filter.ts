@@ -5,7 +5,7 @@ import { getAllCodeEntities, IAllCodeEntities } from './code-utils';
 // import { getLogger } from './logger';
 import { authenticate, InvasivesRequest } from './auth-utils';
 
-// const defaultLog = getLogger('api-doc-security-filter');
+const namespace = ('api-doc-security-filter');
 
 /**
  * Apply updates/filters to req.apiDoc.

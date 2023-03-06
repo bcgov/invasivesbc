@@ -8,7 +8,7 @@ import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
 // import { getLogger } from '../utils/logger';
 import { retrieveGetDoc } from '../docs/getDoc';
 
-// const defaultLog = getLogger('media');
+const namespace = ('media');
 
 /**
  * GET api/media?key=123;key=456;key=789

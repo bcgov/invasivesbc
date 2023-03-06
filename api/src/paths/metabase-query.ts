@@ -13,7 +13,7 @@ import {
   METABASE_TIMEOUT, METABASE_URL
 } from '../utils/metabase-session';
 
-// const defaultLog = getLogger('metabase-query');
+const namespace = ('metabase-query');
 
 export const POST: Operation = [createMetabaseQuery()];
 export const GET: Operation = [getMetabaseQueryOptions()];

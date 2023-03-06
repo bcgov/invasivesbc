@@ -7,7 +7,7 @@ import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
 // import { getLogger } from '../../utils/logger';
 import {closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL} from "../../utils/metabase-session";
 
-// const defaultLog = getLogger('metabase-query/{queryId}');
+const namespace = ('metabase-query/{queryId}');
 
 export const GET: Operation = [getMetabaseQueryResults()];
 

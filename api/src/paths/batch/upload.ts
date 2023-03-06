@@ -9,7 +9,7 @@ import { getDBConnection } from '../../database/db';
 import { atob } from 'js-base64';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-// const defaultLog = getLogger('batch');
+const namespace = ('batch');
 
 export const GET: Operation = [listBatches()];
 

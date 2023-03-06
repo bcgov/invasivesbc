@@ -14,7 +14,7 @@ import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 import { InvasivesRequest } from 'utils/auth-utils';
 
-// const defaultLog = getLogger('point-of-interest');
+const namespace = ('point-of-interest');
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 

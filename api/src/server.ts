@@ -4,7 +4,7 @@ const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
 const ADMIN_PORT = 8500;
 // Start api
-// const defaultLog = getLogger('app');
+const namespace = ('app');
 
 try {
   app.listen(PORT, () => {
