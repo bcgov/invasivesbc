@@ -11,7 +11,7 @@ import {
 } from '../queries/code-queries';
 // import { getLogger } from './logger';
 
-const namespace = ('code-utils');
+const namespace = 'code-utils';
 
 export interface IAllCodeEntities {
   categories: QueryResultRow[];

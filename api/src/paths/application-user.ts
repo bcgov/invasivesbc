@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('application-user');
+const namespace = 'application-user';
 
 export const GET: Operation = [getHandler()];
 

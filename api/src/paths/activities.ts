@@ -13,7 +13,7 @@ import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';
 
-const namespace = ('activities');
+const namespace = 'activities';
 
 export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 

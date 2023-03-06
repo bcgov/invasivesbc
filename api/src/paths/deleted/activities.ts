@@ -8,7 +8,7 @@ import { undeleteActivitiesSQL } from '../../queries/activity-queries';
 // import { getLogger } from '../../utils/logger';
 import { DELETE as activitiesDeleteApiDoc } from '../activities';
 
-const namespace = ('deleted/activities');
+const namespace = 'deleted/activities';
 
 export const POST: Operation = [undeleteActivitiesByIds()];
 

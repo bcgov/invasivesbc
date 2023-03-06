@@ -12,7 +12,7 @@ import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 
-const namespace = ('points-of-interest-lean');
+const namespace = 'points-of-interest-lean';
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 

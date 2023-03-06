@@ -5,7 +5,7 @@ import { getWell } from '../paths/context/well';
 import { insertWellDistanceSQL } from './../queries/context-queries';
 import { SQL, SQLStatement } from 'sql-template-strings';
 
-const namespace = ('context-queries');
+const namespace = 'context-queries';
 
 /**
  * Insert contextual data for the new activity record from

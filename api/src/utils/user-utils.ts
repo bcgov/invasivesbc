@@ -6,7 +6,7 @@ import { getUserByBCEIDSQL, getUserByIDIRSQL, createUserSQL } from '../queries/u
 import { RequestHandler } from 'express';
 import { InvasivesRequest } from './auth-utils';
 
-const namespace = ('user-utils');
+const namespace = 'user-utils';
 
 export enum KeycloakAccountType {
   idir = 'idir',

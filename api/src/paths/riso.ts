@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getRISOsSQL } from '../queries/riso-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('riso');
+const namespace = 'riso';
 
 export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 

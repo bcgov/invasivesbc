@@ -12,7 +12,7 @@ import {
   revokeRoleFromUserSQL
 } from '../queries/role-queries';
 
-const namespace = ('user-access');
+const namespace = 'user-access';
 
 export const POST: Operation = [batchGrantRoleToUser()];
 export const DELETE: Operation = [revokeRoleFromUser()];

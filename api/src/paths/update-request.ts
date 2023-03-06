@@ -15,7 +15,7 @@ import {
 } from '../queries/update-request-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('update-request');
+const namespace = 'update-request';
 
 export const POST: Operation = [postHandler()];
 export const GET: Operation = [getUpdateRequests()];

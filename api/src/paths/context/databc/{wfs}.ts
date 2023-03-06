@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 // import { getLogger } from '../../../utils/logger';
 
-const namespace = ('context/databc/{wfs}');
+const namespace = 'context/databc/{wfs}';
 
 export const GET: Operation = [getDataBC()];
 

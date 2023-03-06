@@ -9,7 +9,7 @@ import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
 import { retrieveGetDoc } from '../docs/getDoc';
 
-const namespace = ('species');
+const namespace = 'species';
 
 /**
  * GET api/species?key=123;key=456;key=789

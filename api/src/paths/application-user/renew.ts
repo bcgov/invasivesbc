@@ -8,7 +8,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('application-user/renew');
+const namespace = 'application-user/renew';
 
 export const POST: Operation = [renewUser()];
 

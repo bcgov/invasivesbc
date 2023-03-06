@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('context/elevation');
+const namespace = 'context/elevation';
 
 export const GET: Operation = [getElevation()];
 

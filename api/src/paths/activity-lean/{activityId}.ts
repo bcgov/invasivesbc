@@ -9,7 +9,7 @@ import { getFileFromS3 } from './../../utils/file-utils';
 // import { getLogger } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
 
-const namespace = ('activity-lean/{activityId}');
+const namespace = 'activity-lean/{activityId}';
 
 export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 

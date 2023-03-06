@@ -10,7 +10,7 @@ import proj4 from 'proj4';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('context/well');
+const namespace = 'context/well';
 
 export const GET: Operation = proxyWell();
 

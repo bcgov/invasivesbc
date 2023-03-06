@@ -550,7 +550,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   sqlStatement.append(SQL`;`);
-  const namespace = ('activities');
+  const namespace = 'activities';
   // defaultLog.info({
   //   label: 'activities',
   //   message: 'sql',

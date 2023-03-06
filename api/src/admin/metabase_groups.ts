@@ -4,7 +4,7 @@ import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_UR
 import axios from 'axios';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('admin/metabase_groups');
+const namespace = 'admin/metabase_groups';
 
 // used internally
 interface IMetabaseToInvasivesGroupMapping {

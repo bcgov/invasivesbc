@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getAllRolesSQL } from '../queries/role-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('roles');
+const namespace = 'roles';
 
 export const GET: Operation = [getRoles()];
 

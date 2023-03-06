@@ -15,7 +15,7 @@ import {
 } from '../queries/access-request-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('access-request');
+const namespace = 'access-request';
 
 export const POST: Operation = [postHandler()];
 export const GET: Operation = [getAccessRequests()];

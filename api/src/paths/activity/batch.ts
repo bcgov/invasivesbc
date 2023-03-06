@@ -11,7 +11,7 @@ import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries'
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('activity/batch');
+const namespace = 'activity/batch';
 
 export const POST: Operation = [createActivities()];
 

@@ -15,7 +15,7 @@ import { getDBConnection } from '../../database/db';
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('batch/new_upload');
+const namespace = 'batch/new_upload';
 
 export const POST: Operation = [upload()];
 

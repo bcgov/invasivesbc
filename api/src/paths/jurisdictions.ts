@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getJurisdictionsSQL } from '../queries/jurisdiction-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('jurisdictions');
+const namespace = 'jurisdictions';
 
 export const POST: Operation = [getJurisdictionsBySearchFilterCriteria()];
 

@@ -6,7 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
 // import { getLogger } from '../../../utils/logger';
 
-const namespace = ('context/internal/{target}');
+const namespace = 'context/internal/{target}';
 
 export const GET: Operation = [getContext()];
 

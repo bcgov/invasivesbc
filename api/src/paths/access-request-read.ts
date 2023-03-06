@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getAccessRequestForUserSQL } from '../queries/access-request-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('access-request-read');
+const namespace = 'access-request-read';
 
 export const POST: Operation = [getAccessRequestData()];
 

@@ -1,7 +1,7 @@
 // naive in-memory cache. reimplement this with something more robust (weakrefs, memcache, redis, in-database caching).
 // import { getLogger } from './logger';
 
-const namespace = ('cache');
+const namespace = 'cache';
 
 class Cache {
   data: Map<string, { data: any; ttl: number }> = new Map();

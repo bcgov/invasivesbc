@@ -9,7 +9,7 @@ import { getDBConnection } from '../../database/db';
 import { atob } from 'js-base64';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('batch/upload');
+const namespace = 'batch/upload';
 
 export const GET: Operation = [listBatches()];
 
