@@ -213,7 +213,7 @@ DELETE.apiDoc = {
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const authContext = (req as any)?.authContext;
-    const isAuth = authContext?.isAuth ?? false;
+    const isAuth = authContext?.user
 
     defaultLog.debug({
       label: 'activity',
