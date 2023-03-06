@@ -448,7 +448,7 @@ export const TreatmentsTable = (props) => {
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
-          <Table size="small" stickyHeader aria-label="treatments table">
+          <Table size="small" aria-label="treatments table">
             <TableHead>
               <TableRow>
                 <TreatmentTableHead />
