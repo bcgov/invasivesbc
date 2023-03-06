@@ -297,7 +297,9 @@ const ActivityGrid = (props) => {
             : thereAreOldAdvancedFilters
             ? [...userSettings.recordSets?.[props.setName]?.advancedFilters]
             : [];
-          dispatch({
+
+            //force user to hit the save button to be consistent with grid filter workflow.
+          /*dispatch({
             type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
             payload: {
               updatedSet: {
@@ -307,7 +309,7 @@ const ActivityGrid = (props) => {
               },
               setName: props.setName
             }
-          });
+          });*/
         }
       }
     }
@@ -719,6 +721,25 @@ const ActivityGrid = (props) => {
               </Button>
               <Button
                 onClick={() => {
+
+                const thereAreNewAdvancedFilters =
+                  advancedFilterRows !== null &&
+                  JSON.stringify(userSettings.recordSets?.[props.setName].advancedFilters) !==
+                    JSON.stringify(advancedFilterRows)
+                    ? true
+                    : false;
+        
+                const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length
+                  ? true
+                  : false;
+        
+
+                  const updatedAdvancedFilters = thereAreNewAdvancedFilters
+                    ? [...advancedFilterRows]
+                    : thereAreOldAdvancedFilters
+                    ? [...userSettings.recordSets?.[props.setName]?.advancedFilters]
+                    : [];
+        
                   dispatch({
                     type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
                     payload: {
@@ -726,7 +747,8 @@ const ActivityGrid = (props) => {
                         ...userSettings.recordSets?.[props.setName],
                         gridFilters: {
                           ...filters
-                        }
+                        },
+                        advancedFilters: updatedAdvancedFilters
                       },
                       setName: props.setName
                     }
