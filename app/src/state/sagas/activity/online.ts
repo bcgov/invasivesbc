@@ -122,16 +122,19 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     search_feature
   });
 
-  const treatments = networkReturn.data.result.map((treatment, i) => {
-    const shortActID = getShortActivityID(treatment);
-    return {
-      label: shortActID,
-      title: shortActID,
-      value: treatment.activity_id,
-      'x-code_sort_order': i + 1
-    };
-  });
-  
+  let treatments = [];
+  if (networkReturn?.data?.result && networkReturn?.data?.result > 0) {
+    treatments = networkReturn?.data?.result?.map((treatment, i) => {
+      const shortActID = getShortActivityID(treatment);
+      return {
+        label: shortActID,
+        title: shortActID,
+        value: treatment.activity_id,
+        'x-code_sort_order': i + 1
+      };
+    });
+  }
+
   yield put({
     type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
     payload: { suggestedTreatmentIDs: treatments, }
