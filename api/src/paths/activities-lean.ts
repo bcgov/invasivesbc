@@ -212,11 +212,11 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const startTime = getStartTime(namespace);
     const authContext = (req as any)?.authContext;
     const isAuth = !!authContext?.friendlyUsername ?? false;
 
     logEndpoint(isAuth)(req,res);
+    const startTime = getStartTime(namespace);
 
     const roleName = authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
@@ -245,7 +245,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       // Check for sql and role:
 
       if (!sqlStatement) {
-        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
+        logErr()(namespace,`Error generating activities lean SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
@@ -264,7 +264,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
-        message: 'Got activities by search filter criteria',
+        message: 'Got activities lean by search filter criteria',
         request: req.body,
         result: rows,
         count: count,
@@ -272,7 +272,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      logErr()(namespace,`Error getting activities by search filter criteria\n${req?.body}\n${error}`);
+      logErr()(namespace,`Error getting activities lean by search filter criteria\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error: error,
