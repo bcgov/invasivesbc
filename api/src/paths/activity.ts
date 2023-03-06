@@ -10,11 +10,11 @@ import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { commit as commitContext } from '../utils/context-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import { uploadMedia } from './media';
 import { InvasivesRequest } from '../utils/auth-utils';
 
-const namespace = ('activity');
+const namespace = 'activity';
 
 export const POST: Operation = [uploadMedia(), createActivity()];
 
@@ -269,8 +269,10 @@ PUT.apiDoc = {
  */
 function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    // defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
-
+    const authContext = (req as any)?.authContext;
+    const isAuth = !!authContext?.friendlyUsername ?? false;
+    logEndpoint(isAuth)(req,res);
+    const startTime = getStartTime(namespace);
     const data = { ...req.body, media_keys: req['media_keys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
@@ -282,6 +284,7 @@ function createActivity(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
@@ -293,8 +296,11 @@ function createActivity(): RequestHandler {
     try {
       const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
       const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,getActivitySQLStatement.sql);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,createActivitySQLStatement.sql);
 
       if (!getActivitySQLStatement || !createActivitySQLStatement) {
+        logErr()(namespace,`Failed to build SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement.',
           request: req.body,
@@ -343,6 +349,7 @@ function createActivity(): RequestHandler {
 
       // kick off asynchronous context collection activities
       if (req.body.form_data.activity_data.latitude) commitContext(result, req);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(201).json({
         message: 'Activity created.',
@@ -354,7 +361,7 @@ function createActivity(): RequestHandler {
         code: 201
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'createActivity', message: 'error', error });
+      logErr()(namespace,`Error creating activity.\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Error creating activity.',
         request: req.body,
