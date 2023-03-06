@@ -12,7 +12,6 @@
       "sql-params": false,
       "sql-results": false,
       "sql-response-time": false,
-      "label-data": false,
       "errors": false
     },
 
@@ -28,7 +27,6 @@
       "sql-params": false,
       "sql-results": false,
       "sql-response-time": false,
-      "label-data": false,
       "errors": false
     },
 
@@ -44,7 +42,6 @@
       "sql-params": false,
       "sql-results": false,
       "sql-response-time": false,
-      "label-data": false,
       "errors": false
     },
 
@@ -60,7 +57,6 @@
       "sql-params": false,
       "sql-results": false,
       "sql-response-time": false,
-      "label-data": false,
       "errors": false
     },
 
@@ -76,7 +72,6 @@
       "sql-params": false,
       "sql-results": false,
       "sql-response-time": false,
-      "label-data": false,
       "errors": false
     },
 
