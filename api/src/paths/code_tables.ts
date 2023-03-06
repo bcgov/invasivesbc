@@ -7,6 +7,8 @@ import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { listCodeTablesSQL } from '../queries/code-queries';
 
+const namespace = 'code_tables';
+
 export const GET: Operation = [listCodeTables()];
 
 const LIST_API_DOC = {
@@ -32,7 +34,7 @@ function listCodeTables(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'code_tables',
+        namespace,
         code: 503
       });
     }
@@ -44,7 +46,7 @@ function listCodeTables(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'code_tables',
+          namespace,
           code: 500
         });
       }
@@ -56,7 +58,7 @@ function listCodeTables(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'code_tables',
+        namespace,
         code: 200
       });
     } finally {

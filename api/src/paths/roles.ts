@@ -60,7 +60,7 @@ function getRoles(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'roles',
+        namespace,
         code: 503
       });
     }
@@ -70,7 +70,7 @@ function getRoles(): RequestHandler {
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
-          namespace: 'roles',
+          namespace,
           code: 500
         });
       }
@@ -80,7 +80,7 @@ function getRoles(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'roles',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -89,7 +89,7 @@ function getRoles(): RequestHandler {
         message: 'Error fetching roles.',
         request: req.body,
         error: error,
-        namespace: 'roles',
+        namespace,
         code: 500
       });
     } finally {

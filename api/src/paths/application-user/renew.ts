@@ -8,7 +8,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('activity/{activityId}');
+const namespace = ('application-user/renew');
 
 export const POST: Operation = [renewUser()];
 
@@ -64,7 +64,7 @@ function renewUser(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'application-user/renew',
+          namespace,
           code: 500
         });
       }
@@ -74,7 +74,7 @@ function renewUser(): RequestHandler {
         request: req.body,
         result: result.rows,
         count: result.rowCount,
-        namespace: 'application-user/renew',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -83,7 +83,7 @@ function renewUser(): RequestHandler {
         message: 'Failed to renew user',
         request: req.body,
         error: error,
-        namespace: 'application-user/renew',
+        namespace,
         code: 500
       });
     } finally {

@@ -101,7 +101,7 @@ function getUpdateRequests(): RequestHandler {
       return res.status(503).json({
         message: 'Failed to establish database connection',
         req: req.body,
-        namespace: 'update-request',
+        namespace,
         code: 503
       });
     }
@@ -111,7 +111,7 @@ function getUpdateRequests(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           req: req.body,
-          namespace: 'update-request',
+          namespace,
           code: 500
         });
       }
@@ -121,7 +121,7 @@ function getUpdateRequests(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'update-request',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -130,7 +130,7 @@ function getUpdateRequests(): RequestHandler {
         message: 'Failed to get update requests',
         req: req.body,
         error: error,
-        namespace: 'update-request',
+        namespace,
         code: 500
       });
     } finally {
@@ -154,7 +154,7 @@ function postHandler(): RequestHandler {
       return res.status(400).json({
         message: 'Invalid request - specify either approvedUpdateRequests, declinedUpdateRequest or newUpdateRequest',
         req: req.body,
-        namespace: 'update-request',
+        namespace,
         code: 400
       });
     }
@@ -172,7 +172,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
       req: req.body,
-      namespace: 'update-request',
+      namespace,
       code: 503
     });
   }
@@ -182,7 +182,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         req: req.body,
-        namespace: 'update-request',
+        namespace,
         code: 500
       });
     }
@@ -192,7 +192,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
       request: req.body,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'update-request',
+      namespace,
       code: 201
     });
   } catch (error) {
@@ -201,7 +201,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
       message: 'Failed to create update request',
       req: req.body,
       error: error,
-      namespace: 'update-request',
+      namespace,
       code: 500
     });
   } finally {
@@ -215,7 +215,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
     return res.status(503).json({
       message: 'Failed to establish database connection',
       req: req.body,
-      namespace: 'update-request',
+      namespace,
       code: 503
     });
   }
@@ -229,7 +229,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           req: req.body,
-          namespace: 'update-request',
+          namespace,
           code: 500
         });
       }
@@ -241,7 +241,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           req: req.body,
-          namespace: 'update-request',
+          namespace,
           code: 500
         });
       }
@@ -253,7 +253,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
           return res.status(500).json({
             message: 'Failed to build SQL statement',
             req: req.body,
-            namespace: 'update-request',
+            namespace,
             code: 500
           });
         }
@@ -265,7 +265,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
       request: req.body,
       result: requests,
       count: requests.length,
-      namespace: 'update-request',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -274,7 +274,7 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
       message: 'Failed to approve update requests',
       req: req.body,
       error: error,
-      namespace: 'update-request',
+      namespace,
       code: 500
     });
   } finally {
@@ -288,7 +288,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
       req: req.body,
-      namespace: 'update-request',
+      namespace,
       code: 503
     });
   }
@@ -299,7 +299,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         req: req.body,
-        namespace: 'update-request',
+        namespace,
         code: 500
       });
     }
@@ -309,7 +309,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       request: req.body,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'update-request',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -318,7 +318,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       message: 'Failed to decline update request',
       req: req.body,
       error: error,
-      namespace: 'update-request',
+      namespace,
       code: 500
     });
   } finally {

@@ -87,7 +87,7 @@ function getMetabaseQueryResults(): RequestHandler {
         return res.status(400).json({
           message: 'Bad request - missing queryId',
           request: req.params,
-          namespace: 'metabase-query/{queryId}',
+          namespace,
           code: 400
         });
       }
@@ -107,7 +107,7 @@ function getMetabaseQueryResults(): RequestHandler {
       if (!response || !response.data || !response.data.length) {
         return res.status(404).json({
           message: 'No results',
-          namespace: 'metabase-query/{queryId}',
+          namespace,
           code: 404
         });
       }
@@ -116,7 +116,7 @@ function getMetabaseQueryResults(): RequestHandler {
       return res.status(200).json({
         message: 'Got results',
         request: req.params,
-        namespace: 'metabase-query/{queryId}',
+        namespace,
         code: 200,
         activity_ids: response.data
           .map((row) => row['Activity ID'])
@@ -135,7 +135,7 @@ function getMetabaseQueryResults(): RequestHandler {
       return res.status(500).json({
         message: 'Error getting metabase query results',
         error: error,
-        namespace: 'metabase-query/{queryId}',
+        namespace,
         code: 500
       });
     }

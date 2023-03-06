@@ -42,7 +42,7 @@ function getMedia(): RequestHandler {
       message: 'Successfully got media',
       request: req.query,
       result: getMediaItemsList(response, keys),
-      namespace: 'media',
+      namespace,
       code: 200
     });
   };
@@ -84,7 +84,7 @@ export function uploadMedia(): RequestHandler {
           message: 'Included media was invalid/encoded incorrectly',
           request: req.query,
           error: error,
-          namespace: 'media',
+          namespace,
           code: 400
         });
       }

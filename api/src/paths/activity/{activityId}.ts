@@ -76,7 +76,7 @@ function getActivity(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'activity/{activityId}',
+        namespace,
         code: 503
       });
 
@@ -90,7 +90,7 @@ function getActivity(): RequestHandler {
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
-          namespace: 'activity/{activityId}',
+          namespace,
           code: 500
         });
       }
@@ -108,7 +108,7 @@ function getActivity(): RequestHandler {
         message: 'Unable to fetch activity.',
         request: req.body,
         error: error,
-        namespace: 'activity/{activityId}',
+        namespace,
         code: 500
       });
     } finally {

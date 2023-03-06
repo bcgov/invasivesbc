@@ -14,7 +14,7 @@ import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 import { InvasivesRequest } from 'utils/auth-utils';
 
-const namespace = ('point-of-interest');
+const namespace = ('points-of-interest');
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -114,7 +114,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: criteria,
-        namespace: 'points-of-interest',
+        namespace,
         code: 503
       });
     }
@@ -183,7 +183,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           return res.status(500).json({
             message: 'Failed to build SQL statement',
             request: criteria,
-            namespace: 'points-of-interest',
+            namespace,
             code: 500
           });
         }
@@ -201,7 +201,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           request: criteria,
           result: rows,
           count: count,
-          namespace: 'points-of-interest',
+          namespace,
           code: 200
         };
 
@@ -218,7 +218,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         message: 'Failed to get points of interest by search filter criteria',
         request: criteria,
         error: error,
-        namespace: 'points-of-interest',
+        namespace,
         code: 500
       });
     } finally {

@@ -7,6 +7,7 @@ import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { getEmployerCodesSQL } from '../queries/code-queries';
 // import { getEmployers, getFundingAgencies } from '../utils/code-utils';
+const namespace = 'employer_codes';
 
 export const GET: Operation = [getEmployerCodes()];
 
@@ -55,7 +56,7 @@ function getEmployerCodes(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'employer_codes',
+        namespace,
         code: 503
       });
     }
@@ -67,7 +68,7 @@ function getEmployerCodes(): RequestHandler {
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'employer_codes',
+          namespace,
           code: 500
         });
       }
@@ -79,7 +80,7 @@ function getEmployerCodes(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'employer_codes',
+        namespace,
         code: 200
       });
     } finally {

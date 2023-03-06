@@ -74,7 +74,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'embedded-report',
+        namespace,
         code: 503
       });
     }
@@ -86,7 +86,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         return res.status(400).json({
           message: 'Bad request - missing reportId',
           request: req.params,
-          namespace: 'embedded-report/{reportId}',
+          namespace,
           code: 400
         });
       }
@@ -99,7 +99,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         return res.status(400).json({
           message: 'Invalid report requested',
           request: req.params,
-          namespace: 'embedded-report/{reportId}',
+          namespace,
           code: 400
         });
       }
@@ -124,7 +124,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
       return res.status(500).json({
         message: 'Error getting metabase url',
         error: error,
-        namespace: 'embedded-report/{reportId}',
+        namespace,
         code: 500
       });
     }

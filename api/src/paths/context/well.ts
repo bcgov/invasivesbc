@@ -10,7 +10,7 @@ import proj4 from 'proj4';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('activity');
+const namespace = ('context/well');
 
 export const GET: Operation = proxyWell();
 
@@ -146,7 +146,7 @@ function getWell(req, res, next) {
         message: 'Got closest well',
         result: bundle,
         request: req.query,
-        namespace: 'context/well',
+        namespace,
         code: 201
       });
     } else {
@@ -168,7 +168,7 @@ function getWell(req, res, next) {
         message: 'Failed to get well',
         request: req.query,
         error: err,
-        namespace: 'context/well',
+        namespace,
         code: 501
       });
     } else {

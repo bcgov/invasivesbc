@@ -6,6 +6,8 @@ import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { getAllEmbeddedReports } from '../queries/embedded-report-queries';
 
+const namespace = 'embedded-report';
+
 export const GET: Operation = [listValidEmbeddedReports()];
 
 const LIST_API_DOC = {
@@ -31,7 +33,7 @@ function listValidEmbeddedReports(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'embedded-report',
+        namespace,
         code: 503
       });
     }
@@ -46,7 +48,7 @@ function listValidEmbeddedReports(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'reports',
+        namespace,
         code: 200
       });
     } finally {

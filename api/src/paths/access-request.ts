@@ -103,7 +103,7 @@ function getAccessRequests(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'access-request',
+        namespace,
         code: 503
       });
     }
@@ -113,7 +113,7 @@ function getAccessRequests(): RequestHandler {
         return res.status(400).json({
           message: 'Invalid request',
           request: req.body,
-          namespace: 'access-request',
+          namespace,
           code: 400
         });
       }
@@ -123,7 +123,7 @@ function getAccessRequests(): RequestHandler {
         message: 'Access requests retrieved',
         request: req.body,
         result: result,
-        namespace: 'access-request',
+        namespace,
         code: 200
       }); // TODO: UPDATE THIS
     } catch (error) {
@@ -132,7 +132,7 @@ function getAccessRequests(): RequestHandler {
         message: 'Database encountered an error',
         request: req.body,
         error: error,
-        namespace: 'access-request',
+        namespace,
         code: 500
       });
     } finally {
@@ -156,7 +156,7 @@ function postHandler(): RequestHandler {
       return res.status(400).json({
         message: 'Invalid request, no approvedAccessRequests, declinedAccessRequest or newAccessRequest specified',
         request: req.body,
-        namespace: 'access-request',
+        namespace,
         code: 400
       });
     }
@@ -173,7 +173,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
-      namespace: 'access-request',
+      namespace,
       code: 503
     });
   }
@@ -183,7 +183,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.body,
-        namespace: 'access-request',
+        namespace,
         code: 500
       });
     }
@@ -193,7 +193,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       message: 'Access request created',
       request: req.body,
       result: result,
-      namespace: 'access-request',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -202,7 +202,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       message: 'Database encountered an error',
       request: req.body,
       error: error,
-      namespace: 'access-request',
+      namespace,
       code: 500
     });
   } finally {
@@ -216,7 +216,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
-      namespace: 'access-request',
+      namespace,
       code: 503
     });
   }
@@ -230,7 +230,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
-          namespace: 'access-request',
+          namespace,
           code: 500
         });
       }
@@ -243,7 +243,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
-          namespace: 'access-request',
+          namespace,
           code: 500
         });
       }
@@ -256,7 +256,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           return res.status(500).json({
             message: 'Failed to build SQL statement',
             request: req.body,
-            namespace: 'access-request',
+            namespace,
             code: 500
           });
         }
@@ -268,7 +268,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         message: 'Access request approved',
         request: req.body,
         result: { result1, result2 },
-        namespace: 'access-request',
+        namespace,
         code: 201
       });
     }
@@ -278,7 +278,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       message: 'Database encountered an error',
       request: req.body,
       error: error,
-      namespace: 'access-request',
+      namespace,
       code: 500
     });
   } finally {
@@ -292,7 +292,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
-      namespace: 'access-request',
+      namespace,
       code: 503
     });
   }
@@ -303,7 +303,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.body,
-        namespace: 'access-request',
+        namespace,
         code: 500
       });
     }
@@ -313,7 +313,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       message: 'Access request declined',
       request: req.body,
       result: result,
-      namespace: 'access-request',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -322,7 +322,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       message: 'Database encountered an error',
       request: req.body,
       error: error,
-      namespace: 'access-request',
+      namespace,
       code: 500
     });
   } finally {

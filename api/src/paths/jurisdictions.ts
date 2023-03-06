@@ -100,7 +100,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'jurisdictions',
+        namespace,
         code: 503
       });
     }
@@ -112,7 +112,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'jurisdictions',
+          namespace,
           code: 500
         });
       }
@@ -124,7 +124,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'jurisdictions',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -133,7 +133,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         message: 'Failed to get jurisdictions by search filter criteria',
         request: req.body,
         error: error,
-        namespace: 'jurisdictions',
+        namespace,
         code: 500
       });
     } finally {

@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 // import { getLogger } from '../../../utils/logger';
 
-const namespace = ('activity');
+const namespace = ('context/databc/{wfs}');
 
 export const GET: Operation = [getDataBC()];
 
@@ -79,7 +79,7 @@ function getDataBC(): RequestHandler {
       return res.status(400).json({
         message: 'Bad request - missing coordinates',
         request: req.query,
-        namespace: 'context/databc/{wfs}',
+        namespace,
         code: 400
       });
     }
@@ -99,7 +99,7 @@ function getDataBC(): RequestHandler {
           message: 'Got DataBC Layer',
           request: req.body,
           result: response.data?.features?.[0]?.properties,
-          namespace: 'context/databc/{wfs}',
+          namespace,
           code: 200
         });
       })

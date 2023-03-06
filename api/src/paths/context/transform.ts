@@ -6,7 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('activity');
+const namespace = ('context/transform');
 
 export const GET: Operation = [getContext()];
 
@@ -82,7 +82,7 @@ function getContext(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.query,
-        namespace: 'context/transform',
+        namespace,
         code: 503
       });
     }
@@ -95,7 +95,7 @@ function getContext(): RequestHandler {
       return res.status(400).json({
         message: 'Did not supply valid coordinates or epsg code',
         request: req.query,
-        namespace: 'context/transform',
+        namespace,
         code: 400
       });
     }
@@ -127,7 +127,7 @@ function getContext(): RequestHandler {
       return res.status(500).json({
         message: 'Error fetching context',
         error: error,
-        namespace: 'context/transform',
+        namespace,
         code: 500
       });
     } finally {

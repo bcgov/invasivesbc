@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('activity/{activityId}');
+const namespace = ('application-user');
 
 export const GET: Operation = [getHandler()];
 
@@ -58,7 +58,7 @@ function getHandler() {
       return res.status(400).json({
         message: 'Cannot specify both BCEID ID and IDIR IDs',
         request: req.query,
-        namespace: 'application-user',
+        namespace,
         code: 400
       });
     } else if (bceid) {
@@ -83,7 +83,7 @@ async function getUsers(req, res, next) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
       request: req.query,
-      namespace: 'application-user',
+      namespace,
       code: 503
     });
   }
@@ -100,14 +100,14 @@ async function getUsers(req, res, next) {
       request: req.query,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'application-user',
+      namespace,
       code: 200
     });
   } catch (error) {
     // defaultLog.debug({ label: 'getUsers', message: 'error', error });
     return res
       .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace, code: 500 });
   } finally {
     connection.release();
   }
@@ -120,7 +120,7 @@ async function getUserByBCEID(req, res, next, bceid) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
       request: req.query,
-      namespace: 'application-user',
+      namespace,
       code: 503
     });
   }
@@ -130,7 +130,7 @@ async function getUserByBCEID(req, res, next, bceid) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.query,
-        namespace: 'application-user',
+        namespace,
         code: 500
       });
     }
@@ -140,14 +140,14 @@ async function getUserByBCEID(req, res, next, bceid) {
       request: req.query,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'application-user',
+      namespace,
       code: 200
     });
   } catch (error) {
     // defaultLog.debug({ label: 'getUserByBCEID', message: 'error', error });
     return res
       .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace, code: 500 });
   } finally {
     connection.release();
   }
@@ -160,7 +160,7 @@ async function getUserByIDIR(req, res, next, idir) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
       request: req.query,
-      namespace: 'application-user',
+      namespace,
       code: 503
     });
   }
@@ -170,7 +170,7 @@ async function getUserByIDIR(req, res, next, idir) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.query,
-        namespace: 'application-user',
+        namespace,
         code: 500
       });
     }
@@ -180,14 +180,14 @@ async function getUserByIDIR(req, res, next, idir) {
       request: req.query,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'application-user',
+      namespace,
       code: 200
     });
   } catch (error) {
     // defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
     return res
       .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+      .json({ message: 'Failed to fetch users', error, request: req.query, namespace, code: 500 });
   } finally {
     connection.release();
   }

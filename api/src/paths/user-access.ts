@@ -11,7 +11,6 @@ import {
   grantRoleToUserSQL,
   revokeRoleFromUserSQL
 } from '../queries/role-queries';
-// import { getLogger } from '../utils/logger';
 
 const namespace = ('user-access');
 
@@ -160,7 +159,7 @@ function decideGET() {
       return res.status(400).json({
         error: 'Only one of roleId or userId may be provided',
         request: req.body,
-        namespace: 'user-access',
+        namespace,
         code: 400
       });
     }
@@ -182,7 +181,7 @@ function batchGrantRoleToUser(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'user-access',
+        namespace,
         code: 503
       });
     }
@@ -193,7 +192,7 @@ function batchGrantRoleToUser(): RequestHandler {
           return res.status(500).json({
             error: 'Failed to generate SQL statement',
             request: req.body,
-            namespace: 'user-access',
+            namespace,
             code: 500
           });
         }
@@ -204,7 +203,7 @@ function batchGrantRoleToUser(): RequestHandler {
           request: req.body,
           result: result,
           count: response.rowCount,
-          namespace: 'user-access',
+          namespace,
           code: 201
         });
       }
@@ -214,7 +213,7 @@ function batchGrantRoleToUser(): RequestHandler {
         message: 'Failed to grant role to user',
         request: req.body,
         error: error,
-        namespace: 'user-access',
+        namespace,
         code: 500
       });
     } finally {
@@ -231,7 +230,7 @@ function revokeRoleFromUser(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'user-access',
+        namespace,
         code: 503
       });
     }
@@ -241,7 +240,7 @@ function revokeRoleFromUser(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'user-access',
+          namespace,
           code: 500
         });
       }
@@ -251,7 +250,7 @@ function revokeRoleFromUser(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'user-access',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -260,7 +259,7 @@ function revokeRoleFromUser(): RequestHandler {
         message: 'Failed to revoke role from user',
         request: req.body,
         error: error,
-        namespace: 'user-access',
+        namespace,
         code: 500
       });
     } finally {
@@ -276,7 +275,7 @@ async function getUsersForRole(req, res, next, roleId) {
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
-      namespace: 'user-access',
+      namespace,
       code: 503
     });
   }
@@ -286,7 +285,7 @@ async function getUsersForRole(req, res, next, roleId) {
       return res.status(500).json({
         message: 'Failed to generate SQL statement',
         request: req.body,
-        namespace: 'user-access',
+        namespace,
         code: 500
       });
     }
@@ -296,7 +295,7 @@ async function getUsersForRole(req, res, next, roleId) {
       request: req.body,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'user-access',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -305,7 +304,7 @@ async function getUsersForRole(req, res, next, roleId) {
       message: 'Failed to retrieve users for role',
       request: req.body,
       error: error,
-      namespace: 'user-access',
+      namespace,
       code: 500
     });
   } finally {
@@ -321,7 +320,7 @@ async function getRolesForUser(req, res, next, userId) {
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
-      namespace: 'user-access',
+      namespace,
       code: 503
     });
   }
@@ -331,7 +330,7 @@ async function getRolesForUser(req, res, next, userId) {
       return res.status(500).json({
         message: 'Failed to generate SQL statement',
         request: req.body,
-        namespace: 'user-access',
+        namespace,
         code: 500
       });
     }
@@ -341,7 +340,7 @@ async function getRolesForUser(req, res, next, userId) {
       request: req.body,
       result: response.rows,
       count: response.rowCount,
-      namespace: 'user-access',
+      namespace,
       code: 200
     });
   } catch (error) {
@@ -350,7 +349,7 @@ async function getRolesForUser(req, res, next, userId) {
       message: 'Failed to retrieve roles for user',
       request: req.body,
       error: error,
-      namespace: 'user-access',
+      namespace,
       code: 500
     });
   } finally {
@@ -377,7 +376,7 @@ async function getRolesForSelf(req, res, next) {
       }
     },
     count: 1,
-    namespace: 'user-access',
+    namespace,
     code: 200
   });
 }

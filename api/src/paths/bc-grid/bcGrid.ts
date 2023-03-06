@@ -94,7 +94,7 @@ export function getOverlapingBCGridCells(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'bc-grid/bcGrid',
+        namespace,
         code: 503
       });
     }
@@ -106,7 +106,7 @@ export function getOverlapingBCGridCells(): RequestHandler {
         return res.status(500).json({
           message: 'SQL statement could not be generated.',
           request: req.body,
-          namespace: 'bc-grid/bcGrid',
+          namespace,
           code: 500
         });
       }
@@ -118,7 +118,7 @@ export function getOverlapingBCGridCells(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'bc-grid/bcGrid',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -127,7 +127,7 @@ export function getOverlapingBCGridCells(): RequestHandler {
         message: 'Unable to fetch overlapping grid cells.',
         request: req.body,
         error: error,
-        namespace: 'bc-grid/bcGrid',
+        namespace,
         code: 500
       });
     } finally {

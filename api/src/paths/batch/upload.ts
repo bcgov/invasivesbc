@@ -9,7 +9,7 @@ import { getDBConnection } from '../../database/db';
 import { atob } from 'js-base64';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('batch');
+const namespace = ('batch/upload');
 
 export const GET: Operation = [listBatches()];
 
@@ -37,7 +37,7 @@ function listBatches(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'batch/upload',
+        namespace,
         code: 503
       });
     }
@@ -59,7 +59,7 @@ function listBatches(): RequestHandler {
           request: req.body,
           result: response.rows,
           count: response.rowCount,
-          namespace: 'batch/upload',
+          namespace,
           code: 200
         });
       } catch (error) {
@@ -68,7 +68,7 @@ function listBatches(): RequestHandler {
           message: 'Error creating batch upload',
           request: req.body,
           error: error,
-          namespace: 'batch/upload',
+          namespace,
           code: 500
         });
       }
@@ -78,7 +78,7 @@ function listBatches(): RequestHandler {
         message: 'Error creating batch upload',
         request: req.body,
         error: error,
-        namespace: 'batch/upload',
+        namespace,
         code: 500
       });
     } finally {

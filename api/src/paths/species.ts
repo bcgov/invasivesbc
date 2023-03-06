@@ -37,7 +37,7 @@ function getSpeciesDetails(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'species',
+        namespace,
         code: 503
       });
     }
@@ -65,7 +65,7 @@ function getSpeciesDetails(): RequestHandler {
         request: req.body,
         result: species,
         count: species.length,
-        namespace: 'species',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -74,7 +74,7 @@ function getSpeciesDetails(): RequestHandler {
         message: 'Unable to fetch species.',
         request: req.body,
         error: error,
-        namespace: 'species',
+        namespace,
         code: 500
       });
     } finally {

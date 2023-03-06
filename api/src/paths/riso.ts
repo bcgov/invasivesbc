@@ -10,7 +10,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getRISOsSQL } from '../queries/riso-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('risos');
+const namespace = ('riso');
 
 export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 
@@ -99,7 +99,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'riso',
+        namespace,
         code: 503
       });
     }
@@ -111,7 +111,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
-          namespace: 'riso',
+          namespace,
           code: 500
         });
       }
@@ -123,7 +123,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'riso',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -132,7 +132,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
         message: 'Error fetching RISOs',
         request: req.body,
         error: error,
-        namespace: 'riso',
+        namespace,
         code: 500
       });
     } finally {

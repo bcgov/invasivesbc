@@ -167,7 +167,7 @@ function createMetabaseQuery(): RequestHandler {
       if (!activity_ids && !point_of_interest_ids) {
         return res.status(400).json({
           message: 'Missing activity_ids and point_of_interest_ids',
-          namespace: 'metabase-query',
+          namespace,
           code: 400
         });
       }
@@ -250,7 +250,7 @@ function createMetabaseQuery(): RequestHandler {
         if (!activitesResponse || !activitesResponse.data) {
           return res.status(500).json({
             message: 'Failed to create activities query',
-            namespace: 'metabase-query',
+            namespace,
             code: 500
           });
         }
@@ -286,7 +286,7 @@ function createMetabaseQuery(): RequestHandler {
         if (!poiResponse || !poiResponse.data) {
           return res.status(500).json({
             message: 'Failed to create points of interest query',
-            namespace: 'metabase-query',
+            namespace,
             code: 500
           });
         }
@@ -294,7 +294,7 @@ function createMetabaseQuery(): RequestHandler {
 
       return res.status(200).json({
         message: 'Successfully created query',
-        namespace: 'metabase-query',
+        namespace,
         code: 200,
         activity_query_id: activitesResponse?.data?.id,
         activity_query_name: activitesResponse?.data?.name,
@@ -308,7 +308,7 @@ function createMetabaseQuery(): RequestHandler {
       return res.status(500).json({
         message: 'Failed to create query',
         error: error,
-        namespace: 'metabase-query',
+        namespace,
         code: 500
       });
     }
@@ -342,7 +342,7 @@ function getMetabaseQueryOptions(): RequestHandler {
       if (!response || !response.data) {
         return res.status(500).json({
           message: 'Failed to get query options',
-          namespace: 'metabase-query',
+          namespace,
           code: 500
         });
       }
@@ -364,7 +364,7 @@ function getMetabaseQueryOptions(): RequestHandler {
       return res.status(500).json({
         message: 'Failed to get query options',
         error: error,
-        namespace: 'metabase-query',
+        namespace,
         code: 500
       });
     }

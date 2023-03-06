@@ -285,7 +285,7 @@ function createActivity(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'activity',
+        namespace,
         code: 503
       });
     }
@@ -298,7 +298,7 @@ function createActivity(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to build SQL statement.',
           request: req.body,
-          namespace: 'activity',
+          namespace,
           code: 500
         });
       }
@@ -321,7 +321,7 @@ function createActivity(): RequestHandler {
           return res.status(409).json({
             message: 'Resource with matching activity_id already exists.',
             request: req.body,
-            namespace: 'activity',
+            namespace,
             code: 409
           });
         }
@@ -334,7 +334,7 @@ function createActivity(): RequestHandler {
           message: 'Failed to create activity.',
           error: error,
           request: req.body,
-          namespace: 'activity',
+          namespace,
           code: 500
         });
       }
@@ -350,7 +350,7 @@ function createActivity(): RequestHandler {
         activity_id: result.activity_id,
         count: createResponse.rowCount,
         result: createResponse.rows,
-        namespace: 'activity',
+        namespace,
         code: 201
       });
     } catch (error) {
@@ -359,7 +359,7 @@ function createActivity(): RequestHandler {
         message: 'Error creating activity.',
         request: req.body,
         error: error,
-        namespace: 'activity',
+        namespace,
         code: 500
       });
     } finally {
@@ -394,7 +394,7 @@ function updateActivity(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'activity',
+        namespace,
         code: 503
       });
     }
@@ -406,7 +406,7 @@ function updateActivity(): RequestHandler {
       return res.status(500).json({
         message: 'Failed to build SQL statement.',
         request: req.body,
-        namespace: 'activity',
+        namespace,
         code: 500
       });
     }
@@ -418,7 +418,7 @@ function updateActivity(): RequestHandler {
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',
           request: req.body,
-          namespace: 'activity',
+          namespace,
           code: 401
         })
       }
@@ -431,7 +431,7 @@ function updateActivity(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to build SQL statement.',
           request: req.body,
-          namespace: 'activity',
+          namespace,
           code: 500
         });
       }
@@ -451,7 +451,7 @@ function updateActivity(): RequestHandler {
           message: 'Error updating activity.',
           request: req.body,
           error: error,
-          namespace: 'activity',
+          namespace,
           code: 500
         });
       }
@@ -468,7 +468,7 @@ function updateActivity(): RequestHandler {
         message: 'Error updating activity.',
         request: req.body,
         error: error,
-        namespace: 'activity',
+        namespace,
         code: 500
       });
     } finally {

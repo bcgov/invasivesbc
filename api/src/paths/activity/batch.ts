@@ -11,7 +11,7 @@ import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries'
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('activity');
+const namespace = ('activity/batch');
 
 export const POST: Operation = [createActivities()];
 
@@ -212,7 +212,7 @@ function createActivities(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to generate SQL for activity creation.',
           request: req.body,
-          namespace: 'activity/batch',
+          namespace,
           code: 500
         });
       }
@@ -230,7 +230,7 @@ function createActivities(): RequestHandler {
       return res.status(503).json({
         message: 'Failed to get database connection.',
         request: req.body,
-        namespace: 'activity/batch',
+        namespace,
         code: 503
       });
     }
@@ -250,7 +250,7 @@ function createActivities(): RequestHandler {
             return res.status(409).json({
               message: `Resource with matching activity_id ${item.sanitized.activity_id} already exists.`,
               request: req.body,
-              namespace: 'activity/batch',
+              namespace,
               code: 409
             });
           }
@@ -266,7 +266,7 @@ function createActivities(): RequestHandler {
           message: 'Failed to create activity.',
           request: req.body,
           error: error,
-          namespace: 'activity/batch',
+          namespace,
           code: 500
         });
       }
@@ -276,7 +276,7 @@ function createActivities(): RequestHandler {
         message: 'Failed to create activity.',
         request: req.body,
         error: error,
-        namespace: 'activity/batch',
+        namespace,
         code: 500
       });
     } finally {
@@ -288,7 +288,7 @@ function createActivities(): RequestHandler {
       request: req.body,
       result: creationResults,
       count: creationResults.length,
-      namespace: 'activity/batch',
+      namespace,
       code: 200
     });
   };

@@ -15,7 +15,7 @@ import { getDBConnection } from '../../database/db';
 import { QueryResult } from 'pg';
 import {InvasivesRequest} from "../../utils/auth-utils";
 
-const namespace = ('batch');
+const namespace = ('batch/new_upload');
 
 export const POST: Operation = [upload()];
 
@@ -161,7 +161,7 @@ function upload(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'batch/new_upload',
+        namespace,
         code: 503
       });
     }
@@ -190,7 +190,7 @@ function upload(): RequestHandler {
           message: 'Error creating batch upload',
           request: req.body,
           error: error,
-          namespace: 'batch/new_upload',
+          namespace,
           code: 500
         });
       }
@@ -234,7 +234,7 @@ function upload(): RequestHandler {
       message: 'Upload successful',
       request: req.body,
       batchId: createdId,
-      namespace: 'batch/new_upload',
+      namespace,
       code: 201
     });
   };

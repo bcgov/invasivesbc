@@ -110,7 +110,7 @@ function createPointOfInterest(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'point-of-interest',
+        namespace,
         code: 503
       });
     }
@@ -126,7 +126,7 @@ function createPointOfInterest(): RequestHandler {
         return res.status(400).json({
           message: 'Failed to build SQL statement',
           request: req.body,
-          namespace: 'point-of-interest',
+          namespace,
           code: 400
         });
       }
@@ -138,7 +138,7 @@ function createPointOfInterest(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'point-of-interest',
+        namespace,
         code: 201
       });
     } catch (error) {

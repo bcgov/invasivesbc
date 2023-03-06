@@ -69,7 +69,7 @@ function getJurisdictions(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'iapp-jurisdiction',
+        namespace,
         code: 503
       });
     }
@@ -81,7 +81,7 @@ function getJurisdictions(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
-          namespace: 'iapp-jurisdiction',
+          namespace,
           code: 500
         });
       }
@@ -105,7 +105,7 @@ function getJurisdictions(): RequestHandler {
         request: req.body,
         result: rows.rows,
         count: count,
-        namespace: 'iapp-jurisdiction',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -114,7 +114,7 @@ function getJurisdictions(): RequestHandler {
         message: 'Failed to get iapp jurisdictions',
         request: req.body,
         error: error,
-        namespace: 'iapp-jurisdiction',
+        namespace,
         code: 500
       });
     } finally {

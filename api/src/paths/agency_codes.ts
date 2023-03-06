@@ -7,7 +7,7 @@ import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { getFundingAgencyCodesSQL } from '../queries/code-queries';
 // import { getEmployers, getFundingAgencies } from '../utils/code-utils';
-
+const namespace = 'agency-codes';
 export const GET: Operation = [getAgencyCodes()];
 
 GET.apiDoc = {
@@ -55,7 +55,7 @@ function getAgencyCodes(): RequestHandler {
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
-        namespace: 'agency-codes',
+        namespace,
         code: '503'
       });
     }
@@ -70,7 +70,7 @@ function getAgencyCodes(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'agency-codes',
+        namespace,
         code: '200'
       });
     } finally {

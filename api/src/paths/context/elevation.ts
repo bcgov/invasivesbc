@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 // import { getLogger } from '../../utils/logger';
 
-const namespace = ('activity');
+const namespace = ('context/elevation');
 
 export const GET: Operation = [getElevation()];
 
@@ -75,7 +75,7 @@ function getElevation(): RequestHandler {
       return res.status(400).json({
         message: 'Bad request - missing coordinates',
         request: req.query,
-        namespace: 'context/elevation',
+        namespace,
         code: 400
       });
     }
@@ -91,7 +91,7 @@ function getElevation(): RequestHandler {
           message: 'Got elevation',
           request: req.query,
           result: response.data?.altitude,
-          namespace: 'context/elevation',
+          namespace,
           code: 200
         });
       })
@@ -101,7 +101,7 @@ function getElevation(): RequestHandler {
           message: 'Error getting elevation',
           request: req.query,
           error,
-          namespace: 'context/elevation',
+          namespace,
           code: 500
         });
       });

@@ -6,6 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getS3SignedURL } from '../../utils/file-utils';
 
 export const GET: Operation = [getSignedURL()];
+const namespace = 'media/{key}';
 
 GET.apiDoc = {
   description: 'Fetches a signed url for a single media item based on its key.',
@@ -54,7 +55,7 @@ function getSignedURL(): RequestHandler {
       return res.status(400).json({
         message: 'Missing key',
         request: req.body,
-        namespace: 'media/{key}',
+        namespace,
         code: 400
       });
     }
@@ -65,7 +66,7 @@ function getSignedURL(): RequestHandler {
       message: 'Signed url',
       request: req.body,
       result: result,
-      namespace: 'media/{key}',
+      namespace,
       code: 200
     });
   };

@@ -13,7 +13,7 @@ import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';
 
-const namespace = ('activity');
+const namespace = ('activities');
 
 export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -167,7 +167,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       // defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
       return res
         .status(503)
-        .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
+        .json({ message: 'Database connection unavailable', request: criteria, namespace, code: 503 });
     }
 
     // we'll send it later, overriding cache headers as appropriate
@@ -223,7 +223,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500 });
+          .json({ message: 'Unable to generate SQL statement', request: criteria, namespace, code: 500 });
       }
 
       // needs to be mutable
@@ -248,7 +248,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         request: criteria,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'activities',
+        namespace,
         code: 200
       };
 
@@ -263,7 +263,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error,
-        namespace: 'activities',
+        namespace,
         code: 500
       });
     } finally {
@@ -294,7 +294,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!connection) {
       return res
         .status(503)
-        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
+        .json({ message: 'Database connection unavailable', request: req.body, namespace, code: 503 });
     }
 
     if (isAdmin === false) {
@@ -303,7 +303,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace, code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -314,7 +314,7 @@ function deleteActivitiesByIds(): RequestHandler {
             return res.status(401).json({
               message: 'Invalid request, user is not authorized to delete this record', // better message
               request: req.body,
-              namespace: 'activities',
+              namespace,
               code: 401
             });
           }
@@ -325,7 +325,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!ids || !ids.length) {
       return res
         .status(400)
-        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
+        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace, code: 400 });
     }
 
     try {
@@ -334,7 +334,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace, code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -344,14 +344,14 @@ function deleteActivitiesByIds(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'activities',
+        namespace,
         code: 200
       });
     } catch (error) {
       // defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
       return res
         .status(500)
-        .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
+        .json({ message: 'Error deleting activities by ids', error, namespace, code: 500 });
     } finally {
       connection.release();
     }

@@ -145,7 +145,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
       return res.status(503).json({
         error: 'Failed to establish database connection',
         request: req.body,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 503
       });
     }
@@ -157,7 +157,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'admin-defined-shapes',
+          namespace,
           code: 500
         });
       }
@@ -194,7 +194,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -203,7 +203,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         message: 'Failed to get administratively defined shapes',
         request: req.body,
         error: error,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 500
       });
     } finally {
@@ -240,7 +240,7 @@ function uploadShape(): RequestHandler {
           return res.status(400).json({
             message: `Unrecognized type ${data.type}`,
             request: req.body,
-            namespace: 'admin-defined-shapes',
+            namespace,
             code: 400
           });
       }
@@ -249,7 +249,7 @@ function uploadShape(): RequestHandler {
       return res.status(500).json({
         message: 'Error parsing KML/KMZ data',
         request: req.body,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 500
       });
     }
@@ -260,7 +260,7 @@ function uploadShape(): RequestHandler {
       return res.status(500).json({
         message: 'Failed to establish database connection',
         request: req.body,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 500
       });
     }
@@ -287,7 +287,7 @@ function uploadShape(): RequestHandler {
           return res.status(201).json({
             message: 'Created administratively defined shape',
             request: req.body,
-            namespace: 'admin-defined-shapes',
+            namespace,
             code: 201
           });
         } catch (error) {
@@ -297,7 +297,7 @@ function uploadShape(): RequestHandler {
             message: 'Failed to create administratively defined shape',
             request: req.body,
             error: error,
-            namespace: 'admin-defined-shapes',
+            namespace,
             code: 500
           });
         }
@@ -324,7 +324,7 @@ function deleteShape(): RequestHandler {
       return res.status(500).json({
         message: 'Failed to establish database connection',
         request: req.body,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 500
       });
     }
@@ -335,7 +335,7 @@ function deleteShape(): RequestHandler {
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'admin-defined-shapes',
+          namespace,
           code: 500
         });
       }
@@ -347,7 +347,7 @@ function deleteShape(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -356,7 +356,7 @@ function deleteShape(): RequestHandler {
         message: 'Failed to delete administratively defined shape',
         request: req.body,
         error: error,
-        namespace: 'admin-defined-shapes',
+        namespace,
         code: 500
       });
     } finally {

@@ -6,7 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
 // import { getLogger } from '../../../utils/logger';
 
-const namespace = ('activity');
+const namespace = ('context/internal/{target}');
 
 export const GET: Operation = [getContext()];
 
@@ -80,7 +80,7 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
   if (!connection) {
     return res.status(503).json({
       message: 'Database connection unavailable',
-      namespace: 'context/internal/{target}',
+      namespace,
       code: 503
     });
   }
@@ -106,7 +106,7 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
     return res.status(500).json({
       message: 'Error fetching context',
       error: error,
-      namespace: 'context/internal/{target}',
+      namespace,
       code: 500
     });
   } finally {
@@ -129,7 +129,7 @@ function getContext(): RequestHandler {
       return res.status(400).json({
         message: 'Invalid coordinates provided',
         request: req.query,
-        namespace: 'context/internal/{target}',
+        namespace,
         code: 400
       });
     }
@@ -150,7 +150,7 @@ function getContext(): RequestHandler {
         res.status(401).json({
           message: 'Please specify a target dataset',
           request: req.params,
-          namespace: 'context/internal/{target}',
+          namespace,
           code: 401
         });
     }

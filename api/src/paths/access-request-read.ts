@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { getAccessRequestForUserSQL } from '../queries/access-request-queries';
 // import { getLogger } from '../utils/logger';
 
-const namespace = ('access-request');
+const namespace = ('access-request-read');
 
 export const POST: Operation = [getAccessRequestData()];
 
@@ -67,7 +67,7 @@ function getAccessRequestData(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'access-request-read',
+        namespace,
         code: 503
       });
     }
@@ -78,7 +78,7 @@ function getAccessRequestData(): RequestHandler {
         return res.status(400).json({
           message: 'Invalid request',
           request: req.body,
-          namespace: 'access-request-read',
+          namespace,
           code: 400
         });
       }
@@ -88,14 +88,14 @@ function getAccessRequestData(): RequestHandler {
         return res.status(200).json({
           message: 'Got access request for user',
           code: 200,
-          namespace: 'access-request-read',
+          namespace,
           result: response.rows[0]
         });
       } else {
         return res.status(200).json({
           message: 'No access request for user',
           code: 200,
-          namespace: 'access-request-read',
+          namespace,
           result: {}
         });
       }
@@ -105,7 +105,7 @@ function getAccessRequestData(): RequestHandler {
         message: 'Database encountered an error',
         request: req.body,
         error: error,
-        namespace: 'access-request-read',
+        namespace,
         code: 500
       });
     } finally {

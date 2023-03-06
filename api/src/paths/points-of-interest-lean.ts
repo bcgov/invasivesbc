@@ -12,7 +12,7 @@ import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 
-const namespace = ('point-of-interest');
+const namespace = ('points-of-interest-lean');
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -86,7 +86,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: criteria,
-        namespace: 'points-of-interest-lean',
+        namespace,
         code: 503
       });
     }
@@ -143,7 +143,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(500).json({
           message: 'Unable to generate SQL statement',
           request: criteria,
-          namespace: 'points-of-interest-lean',
+          namespace,
           code: 500
         });
       }
@@ -174,7 +174,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         request: criteria,
         result: returnVal,
         count: returnVal.length,
-        namespace: 'points-of-interest-lean',
+        namespace,
         code: 200
       };
 
@@ -190,7 +190,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         message: 'Error getting points of interest by search filter criteria',
         request: criteria,
         error: error,
-        namespace: 'points-of-interest-lean',
+        namespace,
         code: 500
       });
     } finally {

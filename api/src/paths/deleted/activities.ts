@@ -8,7 +8,7 @@ import { undeleteActivitiesSQL } from '../../queries/activity-queries';
 // import { getLogger } from '../../utils/logger';
 import { DELETE as activitiesDeleteApiDoc } from '../activities';
 
-const namespace = ('activity');
+const namespace = ('deleted/activities');
 
 export const POST: Operation = [undeleteActivitiesByIds()];
 
@@ -32,7 +32,7 @@ function undeleteActivitiesByIds(): RequestHandler {
       return res.status(400).json({
         message: 'No ids provided',
         request: req.body,
-        namespace: 'deleted/activities',
+        namespace,
         code: 400
       });
     }
@@ -49,7 +49,7 @@ function undeleteActivitiesByIds(): RequestHandler {
         return res.status(500).json({
           message: 'Failed to generate SQL statement',
           request: req.body,
-          namespace: 'deleted/activities',
+          namespace,
           code: 500
         });
       }
@@ -61,7 +61,7 @@ function undeleteActivitiesByIds(): RequestHandler {
         request: req.body,
         result: response.rows,
         count: response.rowCount,
-        namespace: 'deleted/activities',
+        namespace,
         code: 200
       });
     } catch (error) {
@@ -70,7 +70,7 @@ function undeleteActivitiesByIds(): RequestHandler {
         message: 'Failed to un-delete activities',
         request: req.body,
         error: error,
-        namespace: 'deleted/activities',
+        namespace,
         code: 500
       });
     } finally {

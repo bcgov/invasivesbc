@@ -9,7 +9,7 @@ import { getFileFromS3 } from './../../utils/file-utils';
 // import { getLogger } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
 
-const namespace = ('activity/{activityId}');
+const namespace = ('activity-lean/{activityId}');
 
 export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
@@ -74,7 +74,7 @@ function getActivity(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
-        namespace: 'activity-lean/{activityId}',
+        namespace,
         code: 503
       });
     }
@@ -108,7 +108,7 @@ function getActivity(): RequestHandler {
       return res.status(500).json({
         message: 'Error fetching activity',
         request: req.body,
-        namespace: 'activity-lean/{activityId}',
+        namespace,
         code: 500
       });
     } finally {

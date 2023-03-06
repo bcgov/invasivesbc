@@ -7,6 +7,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { fetchCodeTablesSQL } from '../../queries/code-queries';
 
+const namespace = 'code_tables/{codeHeaderName}';
 export const GET: Operation = [getCodeTableValues()];
 
 GET.apiDoc = {
@@ -35,7 +36,7 @@ function getCodeTableValues(): RequestHandler {
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
-        namespace: 'code_tables/{codeHeaderName}',
+        namespace,
         code: 503
       });
     }
@@ -50,7 +51,7 @@ function getCodeTableValues(): RequestHandler {
           request: req.body,
           result: response.rows,
           count: response.rowCount,
-          namespace: 'code_tables/{codeHeaderName}',
+          namespace,
           code: 200
         });
       } else if (req.headers.accept === 'text/csv') {
@@ -63,14 +64,14 @@ function getCodeTableValues(): RequestHandler {
           request: req.body,
           result: csvResult,
           count: csvResult.length,
-          namespace: 'code_tables/{codeHeaderName}',
+          namespace,
           code: 200
         });
       } else {
         return res.status(415).json({
           message: 'Unacceptable response type: ' + req.headers.accept,
           request: req.body,
-          namespace: 'code_tables/{codeHeaderName}',
+          namespace,
           code: 415
         });
       }
@@ -79,7 +80,7 @@ function getCodeTableValues(): RequestHandler {
         message: 'Failed to fetch code table values',
         request: req.body,
         error: error,
-        namespace: 'code_tables/{codeHeaderName}',
+        namespace,
         code: 500
       });
     } finally {
