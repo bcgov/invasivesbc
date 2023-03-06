@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logMetrics } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';
@@ -150,8 +150,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
     const isAuth = req.authContext?.user !== null ? true:  false;
 
-
-
+    // logEndpoint(isAuth)(req,res);
 
     if (!isAuth || !roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
