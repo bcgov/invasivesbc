@@ -269,9 +269,7 @@ PUT.apiDoc = {
  */
 function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const authContext = (req as any)?.authContext;
-    const isAuth = !!authContext?.friendlyUsername ?? false;
-    logEndpoint(isAuth)(req,res);
+    logEndpoint()(req,res);
     const startTime = getStartTime(namespace);
     const data = { ...req.body, media_keys: req['media_keys'] };
 
