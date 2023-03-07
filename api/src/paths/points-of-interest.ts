@@ -9,7 +9,7 @@ import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 import { InvasivesRequest } from 'utils/auth-utils';

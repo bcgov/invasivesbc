@@ -6,7 +6,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { getAllRolesSQL } from '../queries/role-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 
 const namespace = 'roles';
 

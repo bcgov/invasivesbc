@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import { cached } from '../utils/utils';
 import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';

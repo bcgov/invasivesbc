@@ -2,7 +2,7 @@ import { getRolesForUserSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { getUserByBCEIDSQL, getUserByIDIRSQL, createUserSQL } from '../queries/user-queries';
-// import { getLogger } from './logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from './logger';
 import { RequestHandler } from 'express';
 import { InvasivesRequest } from './auth-utils';
 

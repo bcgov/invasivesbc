@@ -4,7 +4,7 @@ import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
-// import { getLogger } from '../../../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../../../utils/logger';
 
 const namespace = 'context/internal/{target}';
 

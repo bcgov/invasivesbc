@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 const namespace = 'point-of-interest';
 
 /**

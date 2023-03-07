@@ -8,7 +8,7 @@ import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
 
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import cacheService, { versionedKey } from '../utils/cache-service';
 import { createHash } from 'crypto';
 

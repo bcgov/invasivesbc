@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import geoJSON_Feature_Schema from '../../openapi/geojson-feature-doc.json';
-// import { getLogger } from '../../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../../utils/logger';
 import { ActivityPostRequestBody } from '../../models/activity';
 import { getDBConnection } from '../../database/db';
 import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries';

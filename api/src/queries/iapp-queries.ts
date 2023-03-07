@@ -1,7 +1,7 @@
 import { getDBConnection } from '../database/db';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 const namespace = 'point-of-interest';
 /**
  * SQL query to fetch point_of_interest records based on search criteria.

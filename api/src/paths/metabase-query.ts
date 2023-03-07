@@ -5,7 +5,7 @@ import moment from 'moment';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../constants/misc';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import {
   closeMetabaseSession,
   getMetabaseSession,

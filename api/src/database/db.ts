@@ -2,8 +2,8 @@
 
 import { Pool, PoolConfig, PoolClient } from 'pg';
 
-// import { getLogger } from '../utils/logger';
-// const defaultLog = getLogger('db');
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
+const namespace = 'db';
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';
 const DB_PORT: number = Number(process.env.DB_PORT) || 5432;

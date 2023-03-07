@@ -3,7 +3,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
-// import { getLogger } from './logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from './logger';
 import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
   biologicalTreatmentsJSON,

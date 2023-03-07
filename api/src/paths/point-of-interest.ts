@@ -7,7 +7,7 @@ import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { postPointOfInterestSQL, postPointsOfInterestSQL } from '../queries/point-of-interest-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import { uploadMedia } from './media';
 
 const namespace = 'point-of-interest';
@@ -16,7 +16,7 @@ export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 
 POST.apiDoc = {
   description: 'Create a new point of interest.',
-  tags: ['point-of-interest'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -105,6 +105,10 @@ POST.apiDoc = {
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
     // defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
+    logEndpoint(isAuth)(req,res);
+    const startTime = getStartTime(namespace);
+   
+   
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({

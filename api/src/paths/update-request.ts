@@ -13,7 +13,7 @@ import {
   getUpdateRequestsSQL,
   updateUpdateRequestStatusSQL
 } from '../queries/update-request-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 
 const namespace = 'update-request';
 

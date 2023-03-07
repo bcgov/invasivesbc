@@ -13,7 +13,7 @@ import {
   getAccessRequestsSQL,
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 
 const namespace = 'access-request';
 

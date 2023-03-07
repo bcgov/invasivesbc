@@ -9,7 +9,7 @@ import {
   getFundingAgencyCodesSQL,
   getServiceLicenseCodesSQL
 } from '../queries/code-queries';
-// import { getLogger } from './logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from './logger';
 
 const namespace = 'code-utils';
 

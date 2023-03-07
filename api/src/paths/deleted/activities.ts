@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../../database/db';
 import { undeleteActivitiesSQL } from '../../queries/activity-queries';
-// import { getLogger } from '../../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../../utils/logger';
 import { DELETE as activitiesDeleteApiDoc } from '../activities';
 
 const namespace = 'deleted/activities';

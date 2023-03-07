@@ -4,7 +4,7 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
-// import { getLogger } from '../../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../../utils/logger';
 import {closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL} from "../../utils/metabase-session";
 
 const namespace = 'metabase-query/{queryId}';

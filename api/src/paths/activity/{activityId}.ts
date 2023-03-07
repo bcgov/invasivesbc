@@ -8,7 +8,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from './../../database/db';
 import { getActivitySQL } from './../../queries/activity-queries';
 import { getFileFromS3 } from './../../utils/file-utils';
-// import { getLogger } from './../../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
 
 const namespace = 'activity/{activityId}';

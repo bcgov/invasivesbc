@@ -1,6 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { InvasivesRequest } from 'utils/auth-utils';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity';
 
 /**

@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { IMediaItem, MediaBase64 } from '../models/media';
 import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
-// import { getLogger } from '../utils/logger';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import { retrieveGetDoc } from '../docs/getDoc';
 
 const namespace = 'media';
