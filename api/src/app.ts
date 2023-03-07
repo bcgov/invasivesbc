@@ -68,7 +68,6 @@ initialize({
   securityHandlers: {
     Bearer: async function (req, res, next) {
       await authenticate(<InvasivesRequest>req);
-      //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
       return true;
     }
   },
