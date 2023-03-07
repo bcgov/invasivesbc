@@ -1,0 +1,42 @@
+div.template-description {
+  text-align: center;
+  border: 1px solid #444;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  h5 {
+    display: inline;
+    padding-right: 2rem;
+    font-size: 14pt;
+    vertical-align: middle;
+  }
+}
+table.template-preview {
+  width: 100%;
+  border-collapse: collapse;
+
+  tbody {
+
+    tr:nth-child(2n) {
+      background: #eeeeee;
+    }
+
+    tr:hover {
+      background: #d2daef;
+    }
+
+    tr {
+      td:first-child {
+        text-align: left;
+        width: 60%;
+      }
+
+      td:not(:first-child) {
+        text-align: center;
+      }
+    }
+  }
+
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
