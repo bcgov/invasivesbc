@@ -58,18 +58,6 @@ export const LayerPickerBasic = (props) => {
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="First Nations Treaty Lands">
-        <LayerGroup>
-          <DataBCLayer
-            enabled={true}
-            transparent={true}
-            layer_mode={LayerMode.WMSOnline}
-            bcgw_code="WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_LAND_SP"
-            opacity={0.3}
-            zIndex={3503}
-          />
-        </LayerGroup>
-      </LayersControl.Overlay>
       <LayersControl.Overlay checked={false} name="BC Major Watersheds">
         <LayerGroup>
           <DataBCLayer
