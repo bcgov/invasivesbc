@@ -402,7 +402,7 @@ function updateActivity(): RequestHandler {
     const sanitizedSearchCriteria: string = data._id;
     const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
 
-    if (!sqlStatementForCheck) { 
+    if (!sqlStatementForCheck) {
       return res.status(500).json({
         message: 'Failed to build SQL statement.',
         request: req.body,
@@ -420,8 +420,40 @@ function updateActivity(): RequestHandler {
           request: req.body,
           namespace: 'activity',
           code: 401
-        })
+        });
       }
+    }
+
+    if (response.rows[0].activity_type === 'Monitoring') {
+      // get its species
+      const species_treated = response.rows[0].species_treated? response.rows[0].species_treated: []
+
+      // query for the linked activity
+      const linked_id = response.rows[0].activity_payload.form_data?.activity_type_data?.linked_id;
+
+      // get linked species
+      const sanitizedSearchCriteria: string = linked_id;
+      const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
+      const response2 = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+      const linked_species_treated = response2.rows[0].species_treated;
+
+      // make sure monitoring a subset
+      species_treated.forEach((species) => {
+        console.log('species check')
+        console.log(species)
+
+        if (linked_species_treated.includes(species) === false) {
+          console.log(JSON.stringify(linked_species_treated))
+          // otherwise throw 400
+          return res.status(400).json({
+            message: 'Invalid request, species in monitoring not included in linked treatment',
+            request: req.body,
+            namespace: 'activity',
+            code: 401
+          });
+        }
+      }
+    )
     }
 
     try {
