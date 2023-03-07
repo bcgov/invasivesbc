@@ -16,7 +16,7 @@ export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 
 POST.apiDoc = {
   description: 'Create a new point of interest.',
-  tags: [namespace],
+  tags: [namespace],  // no poi tag.  activity? or add more tags
   security: SECURITY_ON
     ? [
         {
@@ -105,12 +105,13 @@ POST.apiDoc = {
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
     // defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
-    logEndpoint(isAuth)(req,res);
+    logEndpoint()(req,res);
     const startTime = getStartTime(namespace);
    
    
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -125,17 +126,20 @@ function createPointOfInterest(): RequestHandler {
             req.body.map((poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] }))
           )
         : postPointOfInterestSQL(new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] }));
+        logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
 
       if (!sqlStatement) {
-        return res.status(400).json({
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
+        return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
           namespace,
-          code: 400
+          code: 500
         });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(201).json({
         message: 'Point of interest created',
@@ -146,7 +150,7 @@ function createPointOfInterest(): RequestHandler {
         code: 201
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'createPointOfInterest', message: 'error', error });
+      logErr()(namespace,`Error creating point of interest\n${req?.body}\n${error}`);
       throw error;
     } finally {
       connection.release();
