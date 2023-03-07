@@ -295,8 +295,8 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
  * 
  * @returns void
  */
-const logEndpoint = (isAuthd: boolean = false) => (req: InvasivesRequest, res: unknown) =>
-  loggingHandler((req as any)?.authContext?.friendlyUsername ?? isAuthd)(req, res);
+const logEndpoint = (isAuthd: boolean = false) => (req: any, res: unknown) =>
+  loggingHandler(req?.authContext?.friendlyUsername ?? isAuthd)(req, res);
 
 const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
   endpoint: string = '', 
