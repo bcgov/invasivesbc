@@ -3,9 +3,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { HEADERS } from './new_upload';
+import {templateList} from "../../utils/batch/template-utils";
 
-export const GET: Operation = [getTemplate()];
+export const GET: Operation = [listTemplates()];
 
 const GET_API_DOC = {
   tags: ['batch', 'template'],
@@ -19,16 +19,12 @@ const GET_API_DOC = {
 };
 
 GET.apiDoc = {
-  description: 'Get a CSV template for uploading batch plant forms',
+  description: 'Get the list of all available templates',
   ...GET_API_DOC
 };
 
-function getTemplate(): RequestHandler {
+function listTemplates(): RequestHandler {
   return async (req, res) => {
-    const headerRow = HEADERS.join(',');
-    return res
-      .status(200)
-      .contentType('text/csv')
-      .send(headerRow + '\n');
+    return res.status(200).json(templateList);
   };
 }

@@ -11,6 +11,7 @@ import { getDesignTokens } from 'utils/CustomThemeProvider';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { CssBaseline } from '@mui/material';
 import LandingPage from './features/home/landing/LandingPage';
+import BatchUploadPage from "./features/home/batch/BatchUploadPage";
 
 const MapPage = lazy(() => import('features/home/map/MapPage'));
 const AccessRequestPage = lazy(() => import('features/home/accessRequest/AccessRequestPage'));
@@ -150,6 +151,13 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           path="/home/admin"
           title={getTitle('User Access')}
           component={UserAccessPage}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/batch"
+          title={getTitle('Batch Upload')}
+          component={BatchUploadPage}
         />
         <AppRoute
           accessLevel={AccessLevel.PUBLIC}

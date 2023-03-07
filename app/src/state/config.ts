@@ -15,6 +15,7 @@ export interface AppConfig {
   FEATURE_GATE: {
     PLAN_MY_TRIP: boolean;
     EMBEDDED_REPORTS: boolean;
+    BATCH: boolean;
   };
 }
 
@@ -45,7 +46,8 @@ switch (CONFIGURATION_SOURCE) {
       REDIRECT_URI: '{{env "REDIRECT_URI"}}',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
-        EMBEDDED_REPORTS: true
+        EMBEDDED_REPORTS: true,
+        BATCH: false
       }
     };
     break;
@@ -61,7 +63,8 @@ switch (CONFIGURATION_SOURCE) {
       REDIRECT_URI: CONFIGURATION_REDIRECT_URI,
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
-        EMBEDDED_REPORTS: true
+        EMBEDDED_REPORTS: true,
+        BATCH: true
       }
     };
     break;
@@ -78,7 +81,8 @@ switch (CONFIGURATION_SOURCE) {
       REDIRECT_URI: 'http://localhost:3000/home/landing',
       FEATURE_GATE: {
         PLAN_MY_TRIP: false,
-        EMBEDDED_REPORTS: true
+        EMBEDDED_REPORTS: true,
+        BATCH: true
       }
     };
     break;

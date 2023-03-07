@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import CodeTablePreview from './CodeTablePreview';
 
 const CodeTablesDownload: React.FC = () => {
   const api = useInvasivesApi();
@@ -49,9 +48,6 @@ const CodeTablesDownload: React.FC = () => {
                     onClick={() => downloadCodeTable(code.code_table, code.title)}>
                     Download (CSV)
                   </span>
-                </td>
-                <td>
-                  <CodeTablePreview codeTableId={code.code_table} />
                 </td>
               </tr>
             ))}

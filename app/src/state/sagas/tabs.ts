@@ -1,9 +1,9 @@
-import { TabIconName } from 'components/tabs/TabIconIndex';
-import { all, put, select, takeEvery } from 'redux-saga/effects';
-import { selectAuth } from 'state/reducers/auth';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { selectMap } from 'state/reducers/map';
-import { selectTabs } from 'state/reducers/tabs';
+import {TabIconName} from 'components/tabs/TabIconIndex';
+import {all, put, select, takeEvery} from 'redux-saga/effects';
+import {selectAuth} from 'state/reducers/auth';
+import {selectConfiguration} from 'state/reducers/configuration';
+import {selectMap} from 'state/reducers/map';
+import {selectTabs} from 'state/reducers/tabs';
 import {
   TABS_SET_ACTIVE_TAB_REQUEST,
   TABS_SET_ACTIVE_TAB_SUCCESS,
@@ -69,6 +69,15 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
           icon: TabIconName.IAPP
         }
       );
+      if (configuration.FEATURE_GATE.BATCH) {
+        tabConfig.push(
+          {
+            label: 'Batch Uploads',
+            path: '/home/batch',
+            icon: TabIconName.Batch
+          }
+        );
+      }
     }
 
     if (isMasterAdmin || isPlantPerson) {
@@ -81,7 +90,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
       }
 
     }
-    if (isMasterAdmin ) {
+    if (isMasterAdmin) {
       tabConfig.push({
         label: 'Admin',
         path: '/home/admin',
@@ -99,7 +108,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
     });
   } catch (e) {
     console.error(e);
-    yield put({ type: TABS_GET_INITIAL_STATE_FAILURE });
+    yield put({type: TABS_GET_INITIAL_STATE_FAILURE});
   }
 }
 
@@ -112,16 +121,15 @@ function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
       yield console.log('tabs', tabs);
       yield console.log('activeTab: ', action.payload.activeTab);
       yield localStorage.setItem('TABS_CURRENT_TAB_PATH', tabs.tabConfig[action.payload.activeTab].path); // Causing error
-      yield put({ type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload });
+      yield put({type: TABS_SET_ACTIVE_TAB_SUCCESS, payload: action.payload});
 
-      if(mapState.whatsHere.toggle)
-      {
-        yield put({ type: MAP_TOGGLE_WHATS_HERE});
+      if (mapState.whatsHere.toggle) {
+        yield put({type: MAP_TOGGLE_WHATS_HERE});
       }
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: TABS_SET_ACTIVE_TAB_FAILURE });
+    yield put({type: TABS_SET_ACTIVE_TAB_FAILURE});
   }
 }
 
