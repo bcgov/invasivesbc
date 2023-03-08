@@ -7,7 +7,7 @@ import { DropzoneArea } from 'mui-file-dropzone';
 import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 
 export const KML_TYPES = {
   KML: 'kml',
