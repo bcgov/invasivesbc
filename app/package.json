@@ -65,6 +65,7 @@
     "@types/react-leaflet": "^2.8.2",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
+    "@xmldom/xmldom": "^0.8.6",
     "async": "^3.2.4",
     "axios": "^0.27.2",
     "bfj": "^7.0.2",
@@ -152,8 +153,7 @@
     "unzipper": "^0.10.11",
     "urlencode": "^1.1.0",
     "uuid": "^8.3.0",
-    "wkt": "^0.1.1",
-    "xmldom": "^0.6.0"
+    "wkt": "^0.1.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^3.4.1",
