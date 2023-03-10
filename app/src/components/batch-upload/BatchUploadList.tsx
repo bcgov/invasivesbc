@@ -1,72 +1,64 @@
-import { Box, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import {Box, Paper, Typography} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {useSelector} from "../../state/utilities/use_selector";
+import {selectBatch} from "../../state/reducers/batch";
+import {useDispatch} from "react-redux";
+import {BATCH_LIST_REQUEST} from "../../state/actions";
+import Spinner from "../spinner/Spinner";
+import {Error} from "@mui/icons-material";
 
-const batchTableStyle = {
-  width: '100%'
-};
+const BatchUploadList = () => {
 
-type BatchUploadListProps = {
-  serial?: number;
-};
-
-const BatchUploadList: React.FC<BatchUploadListProps> = ({ serial }) => {
-  const api = useInvasivesApi();
-
-  const [batchUploads, setBatchUploads] = useState([]);
-  const [expandedRow, setExpandedRow] = useState(null);
+  const {working, error, list} = useSelector(selectBatch);
+  const dispatch = useDispatch();
+  const [serial, setSerial] = useState(1);
 
   useEffect(() => {
-    api.getBatchUploads().then((data) => {
-      if (data) {
-        setBatchUploads(data);
-        setExpandedRow(null);
-      }
-    });
-  }, [serial, api]);
+    dispatch({type: BATCH_LIST_REQUEST});
+  }, [serial]);
+
+  function renderContent() {
+    if (working) {
+      return (<Spinner/>);
+    }
+    if (error) {
+      return (<Error/>);
+    }
+    if (list !== null && list.length === 0) {
+      return (<span>No batches found</span>);
+    }
+    return (
+      <>
+        <p>Batch uploads. Click a row for a detailed view.</p>
+        <table>
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          {list.map(b => (
+            <tr key={b.id}>
+              <td>{b.id}</td>
+              <td>{b.status}</td>
+              <td>{b.created_at}</td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+      </>
+    )
+
+
+  }
 
   return (
     <Paper>
       <Box mx={3} my={3} py={3}>
         <Typography variant={'h4'}>Batch Uploads</Typography>
-        <p>The last 10 batch uploads. Click a row to expand validation messages.</p>
-        <table style={batchTableStyle}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Validated?</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {batchUploads.map((d, i) => (
-              <>
-                <tr
-                  key={`row-${i}`}
-                  onClick={() => {
-                    if (expandedRow === i) {
-                      setExpandedRow(null);
-                    } else {
-                      setExpandedRow(i);
-                    }
-                  }}>
-                  <td>{d.id}</td>
-                  <td>{d.status}</td>
-                  <td>{d.validation_status}</td>
-                  <td>{d.created_at}</td>
-                </tr>
-                {expandedRow === i && (
-                  <tr key={`validation-${i}`}>
-                    <td colSpan={5}>
-                      <pre>{JSON.stringify(d.validation_messages, null, 2)}</pre>
-                    </td>
-                  </tr>
-                )}
-              </>
-            ))}
-          </tbody>
-        </table>
+        {renderContent()}
       </Box>
     </Paper>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Box, Container, Typography} from '@mui/material';
 import TemplateDownloadList from "../../../components/batch-upload/TemplateDownloadList";
+import BatchUploadList from "../../../components/batch-upload/BatchUploadList";
 
 const BatchUploadPage = () => {
 
@@ -11,6 +12,8 @@ const BatchUploadPage = () => {
       </Box>
 
       <TemplateDownloadList/>
+
+      <BatchUploadList/>
 
     </Container>
 
