@@ -1,20 +1,39 @@
-import React from 'react';
-import {Box, Container, Typography} from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import TemplateDownloadList from "../../../components/batch-upload/TemplateDownloadList";
 import BatchUploadList from "../../../components/batch-upload/BatchUploadList";
+import BatchOverview from '../../../components/batch-upload/BatchOverview';
 
 const BatchUploadPage = () => {
 
+  const [displayMode, setDisplayMode] = useState('overview');
+
   return (
-    <Container>
-      <Box display="flex" justifyContent="space-between">
-        <Typography variant="h4">Batch Uploads</Typography>
-      </Box>
+    <Container fixed sx={{paddingTop: '2rem', marginBottom: '5rem'}}>
 
-      <TemplateDownloadList/>
+      <Grid container spacing={1}>
+        <Grid item xs={3}>
+          <Typography variant={'overline'}>Navigation</Typography>
 
-      <BatchUploadList/>
+          <Stack>
+            <Button onClick={() => setDisplayMode('batches')}>My Batches</Button>
+            <Button onClick={() => setDisplayMode('create')}>Create New</Button>
+            <Button onClick={() => setDisplayMode('templates')}>Templates</Button>
+          </Stack>
 
+        </Grid>
+        <Grid item xs={9}>
+
+          {displayMode === 'overview' && <BatchOverview />}
+
+          {displayMode === 'templates' && <TemplateDownloadList />}
+
+          {displayMode === 'batches' && <BatchUploadList />}
+
+        </Grid>
+
+
+      </Grid>
     </Container>
 
   );

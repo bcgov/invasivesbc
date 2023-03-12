@@ -13,10 +13,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : []
 };
 
