@@ -16,7 +16,7 @@ export const POST: Operation = [getJurisdictionsBySearchFilterCriteria()];
 
 POST.apiDoc = {
   description: 'Fetches all jurisdictions based on search criteria.',
-  tags: ['jurisdictions'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -86,17 +86,14 @@ POST.apiDoc = {
  */
 function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({
-    //   label: 'jurisdictions',
-    //   message: 'getJurisdictionsBySearchFilterCriteria',
-    //   body: req.body,
-    //   namespace: 'jurisdictions'
-    // });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const sanitizedSearchCriteria = new JurisdictionSearchCriteria(req.body);
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
@@ -107,8 +104,10 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getJurisdictionsSQL(sanitizedSearchCriteria);
-
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
@@ -118,7 +117,8 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Got jurisdictions by search filter criteria',
         request: req.body,
@@ -128,7 +128,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getJurisdictionsBySearchFilterCriteria', message: 'error', error });
+      logErr()(namespace,`Error getting jurisdictions by search filter criteria\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to get jurisdictions by search filter criteria',
         request: req.body,
