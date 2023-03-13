@@ -14,7 +14,7 @@ export const POST: Operation = [getAccessRequestData()];
 
 POST.apiDoc = {
   description: 'Get access request record.',
-  tags: ['access-request'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -60,10 +60,12 @@ POST.apiDoc = {
  */
 function getAccessRequestData(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -74,7 +76,9 @@ function getAccessRequestData(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getAccessRequestForUserSQL(req.body.username, req.body.email);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(400).json({
           message: 'Invalid request',
           request: req.body,
@@ -84,23 +88,27 @@ function getAccessRequestData(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      if (response.rows.length > 0) {
+      const haveRows = response.rows.length > 0;
+      const resMsg = haveRows ? 'Got access request for user' : 'No access request for user';
+      logData()(namespace,logMetrics.SQL_RESULTS,`${resMsg}\n${response}`);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
+      if (haveRows) {
         return res.status(200).json({
-          message: 'Got access request for user',
+          message: resMsg,
           code: 200,
           namespace,
           result: response.rows[0]
         });
       } else {
         return res.status(200).json({
-          message: 'No access request for user',
+          message: resMsg,
           code: 200,
           namespace,
           result: {}
         });
       }
     } catch (error) {
-      // defaultLog.debug({ label: 'create', message: 'error', error });
+      logErr()(namespace,`Error on read\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Database encountered an error',
         request: req.body,
