@@ -192,6 +192,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         }
         row.geojson.features = newFeatureArr;
       }
+      logData()(namespace,logMetrics.SQL_RESULTS,rows);
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({

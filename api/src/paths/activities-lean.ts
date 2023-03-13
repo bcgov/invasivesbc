@@ -245,7 +245,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       // Check for sql and role:
 
       if (!sqlStatement) {
-        logErr()(namespace,`Error generating activities lean SQL statement: 500\n${req?.body}`);
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Error generating SQL statement',
           request: req.body,
