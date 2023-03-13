@@ -242,6 +242,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       // Check for sql and role:
 
       if (!sqlStatement) {

@@ -69,6 +69,7 @@ function getEmployerCodes(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getEmployerCodesSQL();
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
         logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);

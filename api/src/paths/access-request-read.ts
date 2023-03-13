@@ -77,6 +77,7 @@ function getAccessRequestData(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getAccessRequestForUserSQL(req.body.username, req.body.email);
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
         logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(400).json({

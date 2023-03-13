@@ -68,6 +68,7 @@ function getAgencyCodes(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getFundingAgencyCodesSQL();
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       logData()(namespace,logMetrics.SQL_RESULTS,response);

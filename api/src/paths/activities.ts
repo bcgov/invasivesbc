@@ -221,6 +221,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
         logErr()(namespace,'Unable to generate activities SQL statement: 500');

@@ -345,6 +345,7 @@ function deleteShape(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = deleteAdministrativelyDefinedShapesSQL(user_id, server_id);
       logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
         logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);

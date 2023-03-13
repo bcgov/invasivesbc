@@ -126,6 +126,7 @@ function createPointOfInterest(): RequestHandler {
           )
         : postPointOfInterestSQL(new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] }));
         logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+        logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
         logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
