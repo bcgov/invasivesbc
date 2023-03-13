@@ -138,10 +138,12 @@ DELETE.apiDoc = {
 function getAdministrativelyDefinedShapes(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
-
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Failed to establish database connection',
         request: req.body,
@@ -152,8 +154,10 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getAdministrativelyDefinedShapesSQL(user_id);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
 
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
@@ -188,6 +192,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         }
         row.geojson.features = newFeatureArr;
       }
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
         message: 'Got administratively defined shapes',
@@ -198,7 +203,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
+      logErr()(namespace,`Error getting shapes\n${req?.body}\n${error}`);      
       return res.status(500).json({
         message: 'Failed to get administratively defined shapes',
         request: req.body,
@@ -223,7 +228,8 @@ function uploadShape(): RequestHandler {
     const user_id = data.user_id;
     const title = data.title;
     let geoJSON: FeatureCollection;
-
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     try {
       switch (data.type) {
         case 'kmz':
@@ -245,7 +251,8 @@ function uploadShape(): RequestHandler {
           });
       }
     } catch (err) {
-      // defaultLog.error(err);
+      logErr()(namespace,`Error parsing KML/KMZ data\n${req?.body}\n${err}`);
+
       return res.status(500).json({
         message: 'Error parsing KML/KMZ data',
         request: req.body,
@@ -257,6 +264,7 @@ function uploadShape(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to establish database connection',
         request: req.body,
@@ -280,9 +288,9 @@ function uploadShape(): RequestHandler {
               ) AS geogs;`,
             [data, user_id, title]
           );
-
-          // defaultLog.error(response);
+          logData()(namespace,logMetrics.SQL_QUERY_SOURCE,response);
           await connection.query('COMMIT');
+          logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
           return res.status(201).json({
             message: 'Created administratively defined shape',
@@ -292,7 +300,7 @@ function uploadShape(): RequestHandler {
           });
         } catch (error) {
           await connection.query('ROLLBACK');
-          // defaultLog.error(error);
+          logErr()(namespace,`Failed to create administratively defined shape\n${req?.body}\n${error}`);      
           return res.status(500).json({
             message: 'Failed to create administratively defined shape',
             request: req.body,
@@ -317,10 +325,13 @@ function deleteShape(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
     const server_id = req.body.server_id;
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to establish database connection',
         request: req.body,
@@ -331,7 +342,10 @@ function deleteShape(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = deleteAdministrativelyDefinedShapesSQL(user_id, server_id);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
@@ -341,7 +355,7 @@ function deleteShape(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Deleted administratively defined shape',
         request: req.body,
@@ -351,7 +365,7 @@ function deleteShape(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
+      logErr()(namespace,`Failed to delete administratively defined shape\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to delete administratively defined shape',
         request: req.body,
