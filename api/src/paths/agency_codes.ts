@@ -13,7 +13,7 @@ export const GET: Operation = [getAgencyCodes()];
 
 GET.apiDoc = {
   description: 'Fetches agency codes',
-  tags: ['agency_codes'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {

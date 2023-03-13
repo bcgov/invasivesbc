@@ -22,7 +22,7 @@ export const GET: Operation = [getAccessRequests()];
 
 POST.apiDoc = {
   description: 'Create a new access request.',
-  tags: ['access-request'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
