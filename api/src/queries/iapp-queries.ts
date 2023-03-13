@@ -14,7 +14,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   const sqlStatement: SQLStatement = SQL``;
   if (searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL`WITH multi_polygon_cte AS (SELECT geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
+      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
     );
   } else if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
@@ -62,6 +62,15 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria?.grid_filters?.jurisdictions) {
     sqlStatement.append(SQL` INNER JOIN strings j ON i.site_id = j.site_id`);
+  }
+
+  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
+    sqlStatement.append(SQL`
+      join multi_polygon_cte c on public.ST_INTERSECTS2(
+        s.geog,
+        c.geog
+      )
+    `);
   }
 
   sqlStatement.append(SQL` WHERE 1 = 1 `);
@@ -225,15 +234,6 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       const string = `%${searchCriteria.jurisdiction[i]}%`; // separate variable to get over data type issue
       sqlStatement.append(SQL`AND array_to_string(jurisdictions, ', ') LIKE ${string} `);
     }
-  }
-
-  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
-    sqlStatement.append(SQL`
-      AND public.ST_INTERSECTS(
-        geog,
-        (SELECT geog FROM multi_polygon_cte)
-      )
-    `);
   }
 
   if (searchCriteria.order && searchCriteria.order?.length > 0) {
