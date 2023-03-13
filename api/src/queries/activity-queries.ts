@@ -162,12 +162,12 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  * @param {columnNames} string[]
  * @returns {string} SQL query string
  */
-const getColumnNamesSQL = (columnNames:string[]):string => {
+const getColumnNamesSQL = (columnNames: string[]): string => {
   const newColumnNames = columnNames.map((name) => 'a.' + name);
   console.log('columnNames POST Sanitize', columnNames);
   console.log('columnNames sanitized and not lean, newColumnNames', newColumnNames);
   return ` ${newColumnNames.join(', ')}`;
-}
+};
 
 /**
  * SQL query to fetch activity records based on search criteria.
@@ -176,13 +176,17 @@ const getColumnNamesSQL = (columnNames:string[]):string => {
  * @param {lean} lean - if true, return a lean object
  * @returns {SQLStatement} sql query object
  */
-//NOSONAR
-export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: boolean, isAuth: boolean = false): SQLStatement => {
+//NOSONA
+export const getActivitiesSQL = (
+  searchCriteria: ActivitySearchCriteria,
+  lean: boolean,
+  isAuth: boolean = false
+): SQLStatement => {
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL`WITH multi_polygon_cte AS (SELECT geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
+      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
     );
   } else if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
@@ -193,7 +197,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
   sqlStatement.append(SQL`SELECT`);
 
-  let columnNames = (searchCriteria.column_names && searchCriteria.column_names?.length > 0) ? searchCriteria.column_names : [];
+  let columnNames =
+    searchCriteria.column_names && searchCriteria.column_names?.length > 0 ? searchCriteria.column_names : [];
 
   if (!isAuth && columnNames.length > 0) {
     //columns_names were requested for either activities full or lean
@@ -207,7 +212,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
       indexOf = columnNames?.indexOf(column);
       // console.log('indexOf', indexOf);
       if (indexOf !== undefined) {
-        columnNames.splice(indexOf,1);
+        columnNames.splice(indexOf, 1);
       }
     }
   }
@@ -302,7 +307,7 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
             'species_treated_full',
             'agency',
             'jurisdiction_display',
-            'short_id',
+            'short_id'
           ];
         }
         // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
@@ -318,8 +323,19 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
   }
 
   sqlStatement.append(
-    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id WHERE 1 = 1`
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id `
   );
+
+  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
+    sqlStatement.append(SQL`
+      join multi_polygon_cte c on public.ST_INTERSECTS2(
+        a.geog,
+        c.geog
+      )
+    `);
+  }
+
+  sqlStatement.append(SQL` where 1 = 1`);
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
@@ -523,15 +539,6 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, lean: b
 
   if (searchCriteria.hideTreatmentsAndMonitoring) {
     sqlStatement.append(SQL` AND activity_type NOT IN ('Monitoring', 'Treatment', 'Biocontrol')`);
-  }
-
-  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
-    sqlStatement.append(SQL`
-      AND public.ST_INTERSECTS(
-        a.geog,
-        (SELECT geog FROM multi_polygon_cte)
-      )
-    `);
   }
 
   if (searchCriteria.order && searchCriteria.order?.length > 0) {
