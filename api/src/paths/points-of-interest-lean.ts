@@ -18,7 +18,7 @@ export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
 GET.apiDoc = {
   description: 'Fetches all ponts of interest based on search criteria.',
-  tags: ['point-of-interest'],
+  tags: [namespace],
   responses: {
     200: {
       description: 'Point Of Interest get response object array.',
@@ -72,17 +72,15 @@ GET.apiDoc = {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    const criteria = JSON.parse(<string>req.query['query']);
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
-    // defaultLog.debug({
-    //   label: 'point-of-interest-lean',
-    //   message: 'getPointsOfInterestBySearchFilterCriteria',
-    //   body: criteria
-    // });
+    const criteria = JSON.parse(<string>req.query['query']);
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: criteria,
@@ -129,9 +127,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
+        logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
+      logErr()(namespace,`Caught an error while checking cache. this is odd but continuing with request as though no cache present.\n${e}`);
       console.log(
         'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
       );
@@ -139,6 +139,8 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Unable to generate SQL statement',
@@ -185,7 +187,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);
     } catch (error) {
-      // defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
+      logErr()(namespace,`Error getting points of interest by search filter criteria\n${criteria}\n${error}`);
       return res.status(500).json({
         message: 'Error getting points of interest by search filter criteria',
         request: criteria,
