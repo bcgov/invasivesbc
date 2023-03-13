@@ -6,6 +6,7 @@ import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { getFundingAgencyCodesSQL } from '../queries/code-queries';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 // import { getEmployers, getFundingAgencies } from '../utils/code-utils';
 const namespace = 'agency-codes';
 export const GET: Operation = [getAgencyCodes()];
@@ -50,8 +51,12 @@ GET.apiDoc = {
 
 function getAgencyCodes(): RequestHandler {
   return async (req, res) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
@@ -62,8 +67,11 @@ function getAgencyCodes(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getFundingAgencyCodesSQL();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
         message: 'Successfully fetched agency codes',
