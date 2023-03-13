@@ -55,7 +55,10 @@ import {
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_PAGE_ACTIVITY
+  WHATS_HERE_PAGE_ACTIVITY,
+  RECORD_SET_TO_EXCEL_REQUEST,
+  RECORD_SET_TO_EXCEL_SUCCESS,
+  RECORD_SET_TO_EXCEL_FAILURE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -772,6 +775,75 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
 }
 
+function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
+  const authState = yield select(selectAuth);
+  const mapState = yield select(selectMap);
+  const userSettings = yield select(selectUserSettings);
+  const set = userSettings?.recordSets?.[action.payload.id];
+  try {
+    let rows = [];
+    let networkReturn;
+    if (set.recordSetType === "POI") {
+      const filters = getSearchCriteriaFromFilters(
+        set?.advancedFilters ? set?.advancedFilters : null,
+        authState?.accessRoles,
+        userSettings?.recordSets ? userSettings?.recordSets : null,
+        action.payload.id,
+        true,
+        set?.gridFilters ? set?.gridFilters : null,
+        0,
+        10000,
+        mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
+      );
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters);
+      // console.log(networkReturn);
+      
+      rows = networkReturn?.data?.result?.rows?.map((row) => {
+        return [row.point_of_interest_id]
+      });
+    } else {
+      const filters = getSearchCriteriaFromFilters(
+        set.advancedFilters,
+        authState.accessRoles,
+        userSettings?.recordSets,
+        action.payload.id,
+        false,
+        set?.gridFilters,
+        0,
+        null,
+        mapState?.layers?.[action.payload.id]?.filters?.sortColumns
+      );
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters);
+
+      rows = networkReturn?.data?.result?.map((row) => {
+        return [row.short_id]
+      });
+    }
+    /*
+    TODO: needs a download box
+    - might prevent the issue of many issues halting and forgetting to download
+      - this might be fixed with another endpoint as well
+    - also allows for naming this way
+    */
+
+    // transform to csv
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + rows.map(elem => elem.join(",")).join("\n");
+
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+
+    yield put({
+      type: RECORD_SET_TO_EXCEL_SUCCESS
+    });
+  } catch(e) {
+    console.error(e);
+    yield put({
+      type: RECORD_SET_TO_EXCEL_FAILURE
+    })
+  }
+}
+
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing)
   yield all([
@@ -801,7 +873,8 @@ function* activitiesPageSaga() {
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
     takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
-    takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST)
+    takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
+    takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);

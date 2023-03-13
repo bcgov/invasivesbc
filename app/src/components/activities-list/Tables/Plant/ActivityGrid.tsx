@@ -33,6 +33,7 @@ import {
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import 'react-data-grid/lib/styles.css';
+import ExcelExporter from '../ExcelExporter';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -762,6 +763,7 @@ const ActivityGrid = (props) => {
                 <SaveIcon />
                 Save & Apply Filters
               </Button>
+              <ExcelExporter setName={props.setName}></ExcelExporter>
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
             <div id={'xDataGrid_' + props.setName}>
