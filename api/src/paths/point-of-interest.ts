@@ -138,6 +138,7 @@ function createPointOfInterest(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(201).json({

@@ -279,17 +279,18 @@ function uploadShape(): RequestHandler {
         try {
           // Perform both get and create operations as a single transaction
           await connection.query('BEGIN');
-
+          const queryStr = `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
+          SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM             
+          (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM 
+          (SELECT json_array_elements($1::json->'features') AS feat) AS f
+          ) AS geogs;`;
+          logData()(namespace,logMetrics.SQL_QUERY_SOURCE,queryStr);
           const response: QueryResult = await connection.query(
-            `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
-            SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM             
-              (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM 
-                (SELECT json_array_elements($1::json->'features') AS feat) AS f
-              ) AS geogs;`,
+            queryStr,
             [data, user_id, title]
           );
-          logData()(namespace,logMetrics.SQL_QUERY_SOURCE,response);
           await connection.query('COMMIT');
+          logData()(namespace,logMetrics.SQL_RESULTS,response);
           logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
           return res.status(201).json({
@@ -355,6 +356,7 @@ function deleteShape(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Deleted administratively defined shape',

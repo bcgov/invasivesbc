@@ -347,6 +347,7 @@ function createActivity(): RequestHandler {
 
       // kick off asynchronous context collection activities
       if (req.body.form_data.activity_data.latitude) commitContext(result, req);
+      logData()(namespace,logMetrics.SQL_RESULTS,result);
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(201).json({

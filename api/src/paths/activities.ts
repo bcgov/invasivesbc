@@ -259,6 +259,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         // save for later;
         cache.put(ETag, responseBody);
       }
+      logData()(namespace,logMetrics.SQL_RESULTS,responseBody);
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);

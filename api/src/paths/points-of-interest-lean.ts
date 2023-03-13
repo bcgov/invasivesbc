@@ -127,6 +127,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
+        logData()(namespace,logMetrics.SQL_RESULTS,`${cacheQueryResult}\n${cachedResult}`);
         logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
