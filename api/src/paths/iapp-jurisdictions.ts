@@ -14,7 +14,7 @@ export const GET: Operation = [getJurisdictions()];
 
 GET.apiDoc = {
   description: 'Fetches all iapp jurisdictions.',
-  tags: ['iapp-jurisdictions'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -57,15 +57,13 @@ GET.apiDoc = {
  */
 function getJurisdictions(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({
-    //   label: 'iapp-jurisdictions',
-    //   message: 'getJurisdictions',
-    //   body: req.body
-    // });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
@@ -76,8 +74,11 @@ function getJurisdictions(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getJurisdictionsSQL();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
@@ -93,12 +94,8 @@ function getJurisdictions(): RequestHandler {
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      // defaultLog.debug({
-      //   label: 'iapp-jurisdictions',
-      //   message: 'getJurisdictions',
-      //   body: rows
-      // });
+      logData()(namespace,logMetrics.SQL_RESULTS,rows);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
         message: 'Got iapp jurisdictions',
@@ -109,7 +106,7 @@ function getJurisdictions(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getJurisdictions', message: 'error', error });
+      logErr()(namespace,`Error getting iapp jurisdictions\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to get iapp jurisdictions',
         request: req.body,
