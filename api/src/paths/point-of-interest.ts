@@ -16,7 +16,7 @@ export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 
 POST.apiDoc = {
   description: 'Create a new point of interest.',
-  tags: [namespace],  // no poi tag.  activity? or add more tags
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -104,7 +104,6 @@ POST.apiDoc = {
  */
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
     logEndpoint()(req,res);
     const startTime = getStartTime(namespace);
    
