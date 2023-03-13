@@ -98,8 +98,13 @@ GET.apiDoc = {
 
 function getAccessRequests(): RequestHandler {
   return async (req, res, next) => {
+
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -110,15 +115,18 @@ function getAccessRequests(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = getAccessRequestsSQL();
       if (!sqlStatement) {
-        return res.status(400).json({
+        logErr()(namespace,`Invalid request: 500\n${req?.body}`);
+        return res.status(500).json({
           message: 'Invalid request',
           request: req.body,
           namespace,
-          code: 400
+          code: 500
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       const result = (response && response.rows) || null;
+      logData()(namespace,logMetrics.SQL_RESULTS,result);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Access requests retrieved',
         request: req.body,
@@ -127,7 +135,7 @@ function getAccessRequests(): RequestHandler {
         code: 200
       }); // TODO: UPDATE THIS
     } catch (error) {
-      // defaultLog.debug({ label: 'getAccessRequests', message: 'error', error });
+      logErr()(namespace,`Error getting Access requests\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Database encountered an error',
         request: req.body,
@@ -143,6 +151,7 @@ function getAccessRequests(): RequestHandler {
 
 function postHandler(): RequestHandler {
   return async (req, res, next) => {
+    logEndpoint()(req,res);
     const approvedAccessRequests = req.body.approvedAccessRequests;
     const declinedAccessRequest = req.body.declinedAccessRequest;
     const newAccessRequest = req.body.newAccessRequest;
@@ -153,8 +162,10 @@ function postHandler(): RequestHandler {
     } else if (newAccessRequest) {
       return await createAccessRequest(req, res, next, newAccessRequest);
     } else {
+      const errMsg = 'Invalid request, no approvedAccessRequests, declinedAccessRequest or newAccessRequest specified';
+      logErr()(namespace,`${errMsg}\n${req?.body}`);
       return res.status(400).json({
-        message: 'Invalid request, no approvedAccessRequests, declinedAccessRequest or newAccessRequest specified',
+        message: errMsg,
         request: req.body,
         namespace,
         code: 400
@@ -167,9 +178,10 @@ function postHandler(): RequestHandler {
  * Create an access request
  */
 async function createAccessRequest(req, res, next, newAccessRequest) {
-  // defaultLog.debug({ label: 'access-request', message: 'create', body: newAccessRequest });
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
@@ -179,7 +191,10 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
   }
   try {
     const sqlStatement: SQLStatement = createAccessRequestSQL(newAccessRequest);
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,`${newAccessRequest}\n${sqlStatement.sql}`);
+
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.body,
@@ -189,6 +204,8 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     const result = { count: (response && response.rowCount) || 0 };
+    logData()(namespace,logMetrics.SQL_RESULTS,result);
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Access request created',
       request: req.body,
@@ -197,7 +214,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'create', message: 'error', error });
+    logErr()(namespace,`Error create\n${req?.body}\n${error}`);
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
@@ -211,8 +228,10 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
 }
 
 async function batchApproveAccessRequests(req, res, next, approvedAccessRequests) {
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
@@ -227,6 +246,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       // Create user record
       const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
       if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
@@ -236,10 +256,12 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       }
       const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
       const result1 = response1.rows;
+      logData()(namespace,logMetrics.SQL_RESULTS,result1);
 
       // Update request status
       const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED');
       if (!sqlStatement2) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           request: req.body,
@@ -250,9 +272,11 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       // query update access request status
       const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
       const result2 = response2.rows;
+      logData()(namespace,logMetrics.SQL_RESULTS,result2);
       for (const requestedRole of request.requested_roles.split(',')) {
         const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
         if (!sqlStatement3) {
+          logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
           return res.status(500).json({
             message: 'Failed to build SQL statement',
             request: req.body,
@@ -264,6 +288,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         await connection.query(sqlStatement3.text, sqlStatement3.values);
         // const result3 = response3.rows;
       }
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(201).json({
         message: 'Access request approved',
         request: req.body,
@@ -273,7 +298,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
       });
     }
   } catch (error) {
-    // defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
+    logErr()(namespace,`Error batch Approve\n${req?.body}\n${error}`);
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
@@ -287,8 +312,10 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
 }
 
 async function declineAccessRequest(req, res, next, declinedAccessRequest) {
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
@@ -300,6 +327,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     const request = declinedAccessRequest;
     const sqlStatement: SQLStatement = declineAccessRequestSQL(request.primary_email);
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         request: req.body,
@@ -309,6 +337,8 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     const result = response.rows;
+    logData()(namespace,logMetrics.SQL_RESULTS,result);
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Access request declined',
       request: req.body,
@@ -317,7 +347,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'declineAccessRequest', message: 'error', error });
+    logErr()(namespace,`Error decline\n${req?.body}\n${error}`);
     return res.status(500).json({
       message: 'Database encountered an error',
       request: req.body,
