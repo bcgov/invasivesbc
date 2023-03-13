@@ -7,13 +7,14 @@ import { getDBConnection } from '../database/db';
 import { SQLStatement } from 'sql-template-strings';
 import { getEmployerCodesSQL } from '../queries/code-queries';
 // import { getEmployers, getFundingAgencies } from '../utils/code-utils';
-const namespace = 'employer_codes';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
+const namespace = 'employer-codes';
 
 export const GET: Operation = [getEmployerCodes()];
 
 GET.apiDoc = {
   description: 'Fetches employer codes',
-  tags: ['agency_codes'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -51,8 +52,12 @@ GET.apiDoc = {
 
 function getEmployerCodes(): RequestHandler {
   return async (req, res) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
@@ -63,8 +68,10 @@ function getEmployerCodes(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getEmployerCodesSQL();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
 
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           error: 'Failed to generate SQL statement',
           request: req.body,
@@ -74,7 +81,8 @@ function getEmployerCodes(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Successfully fetched employer codes',
         request: req.body,
