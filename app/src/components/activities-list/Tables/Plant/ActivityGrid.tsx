@@ -781,9 +781,9 @@ const ActivityGrid = (props) => {
                 rows={rows}
                 defaultColumnOptions={{ sortable: true, resizable: true, minWidth: 150, width: 200 }}
                 //columns={columns}
-                onRowClick={(r) => {
-                  props.setType === 'POI' ? setPoiSelected(r) : setActivitiesSelected(r);
-                }}
+                onCellClick={((c) => {
+                  props.setType === 'POI' ? setPoiSelected(c.row) : setActivitiesSelected(c.row);
+                })}
                 columns={columnsDynamic}
                 sortColumns={recordsState?.layers?.[props.setName]?.filters?.sortColumns}
                 onSortColumnsChange={(sortColumn) => {
