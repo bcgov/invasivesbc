@@ -175,7 +175,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           // save for later;
           //cache.put(ETag, responseBody);
         }
-        return res.status(200).set(responseCacheHeaders).json(responseBody);
+        if (sanitizedSearchCriteria.isCSV) {
+          return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseSurveyExtract as unknown as string);
+        } else {
+          return res.status(200).set(responseCacheHeaders).json(responseBody);
+        }
       } else {
         const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 

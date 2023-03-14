@@ -44,21 +44,34 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.site_id_only) {
     sqlStatement.append(SQL`SELECT i.site_id `);
-  } else {
+  } 
+
+  else if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract')
+  {
+    sqlStatement.append(
+      SQL`SELECT pe.* `
+    );
+  }
+  else {
     sqlStatement.append(
       SQL`SELECT *,
                  ARRAY(select row_to_json(j) from (SELECT image.media_key, image.comments, image.image_date, image.perspective_code, image.reference_no from invasivesbc.iapp_imported_images image where image.site_id=i.site_id) as j) as imported_images,
        public.st_asGeoJSON(s.geog)::jsonb as geo`
     );
   }
+
+
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s
       ON i.site_id = s.site_id`
 
-    // JOIN point_of_interest_incoming_data p
-    //   ON i.site_id = p.point_of_interest_incoming_id WHERE 1=1`
   );
+
+  if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract')
+  {
+    sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id`);
+  }
 
   if (searchCriteria?.grid_filters?.jurisdictions) {
     sqlStatement.append(SQL` INNER JOIN strings j ON i.site_id = j.site_id`);
