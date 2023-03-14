@@ -74,7 +74,7 @@ GET.apiDoc = {
 };
 
 export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
-  return PointOfInterestSearchCriteria.isIAPP;
+  return PointOfInterestSearchCriteria.isIAPP === true;
 };
 
 /**
@@ -170,7 +170,9 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
+      console.log('about to check bool')
       if (isIAPPrelated(sanitizedSearchCriteria)) {
+        console.log('it went our way')
         const responseSurveyExtract: any = await getIAPPsites(sanitizedSearchCriteria);
 
         const responseBody = { message: 'Got IAPP sites', result: responseSurveyExtract, code: 200 };
@@ -182,11 +184,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
         if (sanitizedSearchCriteria.isCSV) {
           console.log('BANANANANANANANA')
-          return res.status(200).set(responseCacheHeaders).contentType('text/csv').download(responseSurveyExtract as unknown as string);
+          return res.status(200).set(responseCacheHeaders).contentType('text/csv').send(responseSurveyExtract as unknown as string);
         } else {
           return res.status(200).set(responseCacheHeaders).json(responseBody);
         }
       } else {
+        console.log('it did not went our way')
         const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 
         if (!sqlStatement) {

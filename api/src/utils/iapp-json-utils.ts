@@ -376,18 +376,13 @@ export const getIAPPsites = async (searchCriteria: any) => {
     }
 
     defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
+    console.log('querying...')
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
     if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract') {
       var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, searchCriteria) : [];
-     // var returnVal1 = response.rowCount > 0 ? response.rows : [];
-
-      //TODO change it to a file
-      return {
-        rows: returnVal1,
-        count: returnVal1.length
-      };
+      return  returnVal1
     } else {
       var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
 

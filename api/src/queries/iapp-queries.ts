@@ -70,7 +70,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract')
   {
-    sqlStatement.append(SQL` INNER JOIN planning_extract pe ON i.site_id = pe.site_id`);
+    sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id`);
   }
 
   if (searchCriteria?.grid_filters?.jurisdictions) {
