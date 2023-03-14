@@ -784,7 +784,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let rows = [];
     let networkReturn;
     if (set.recordSetType === "POI") {
-      const filters = getSearchCriteriaFromFilters(
+      let filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
         authState?.accessRoles,
         userSettings?.recordSets ? userSettings?.recordSets : null,
@@ -795,12 +795,17 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         10000,
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
       );
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters);
+      filters.isCSV = true;
+      filters.CSVType = 'main_extract'
+
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
       // console.log(networkReturn);
+
       
-      rows = networkReturn?.data?.result?.rows?.map((row) => {
+      /*rows = networkReturn?.data?.result?.rows?.map((row) => {
         return [row.point_of_interest_id]
       });
+      */
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,
@@ -827,11 +832,13 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     */
 
     // transform to csv
+    /*
     let csvContent = "data:text/csv;charset=utf-8," 
         + rows.map(elem => elem.join(",")).join("\n");
 
     var encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
+    */
 
     yield put({
       type: RECORD_SET_TO_EXCEL_SUCCESS
