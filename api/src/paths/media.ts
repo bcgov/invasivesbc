@@ -16,17 +16,20 @@ const namespace = 'media';
 export const GET: Operation = [getMedia()];
 
 GET.apiDoc = {
-  tags: ['media'],
+  tags: [namespace],
   description: 'Fetches one or more media items based on their keys.',
   ...retrieveGetDoc('Array of media objects')
 };
 
 function getMedia(): RequestHandler {
   return async (req, res, next) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);  
     const keys = req.query.key as string[];
 
     if (!keys || !keys.length) {
       // No media keys found, skipping get media step
+      logErr()(namespace,'No media keys found, skipping get media step');
       return next();
     }
 
@@ -35,8 +38,12 @@ function getMedia(): RequestHandler {
     keys.forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));
     });
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,s3GetPromises);
+    logData()(namespace,logMetrics.SQL_PARAMS,keys);
 
     const response = await Promise.all(s3GetPromises);
+    logData()(namespace,logMetrics.SQL_RESULTS,response);
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
     return res.status(200).json({
       message: 'Successfully got media',
@@ -59,15 +66,17 @@ function getMedia(): RequestHandler {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res, next) => {
-    // defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
+      logErr()(namespace,'No media objects included, skipping media upload step');
       return next();
     }
 
     const rawMediaArray: IMediaItem[] = req.body.media;
-
+    
     const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
     rawMediaArray.forEach((rawMedia: IMediaItem) => {
@@ -79,7 +88,7 @@ export function uploadMedia(): RequestHandler {
       try {
         media = new MediaBase64(rawMedia);
       } catch (error) {
-        // defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+        logErr()(namespace,`Included media was invalid/encoded incorrectly\n${req?.query}\n${error}`);
         return res.status(400).json({
           message: 'Included media was invalid/encoded incorrectly',
           request: req.query,
@@ -99,11 +108,13 @@ export function uploadMedia(): RequestHandler {
 
       s3UploadPromises.push(uploadFileToS3(media, metadata));
     });
-
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,s3UploadPromises);
+    logData()(namespace,logMetrics.SQL_PARAMS,rawMediaArray);
     const results = await Promise.all(s3UploadPromises);
 
+    logData()(namespace,logMetrics.SQL_RESULTS,results);
     req['media_keys'] = results.map((result) => result.Key);
-
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     next();
   };
 }
