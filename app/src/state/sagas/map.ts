@@ -799,13 +799,17 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.CSVType = 'main_extract'
 
       networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
-      // console.log(networkReturn);
+      const daBlob = new Blob([networkReturn.data])
+
+      const url = window.URL.createObjectURL(daBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
       
-      /*rows = networkReturn?.data?.result?.rows?.map((row) => {
-        return [row.point_of_interest_id]
-      });
-      */
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,

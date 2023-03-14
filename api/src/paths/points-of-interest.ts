@@ -176,7 +176,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           //cache.put(ETag, responseBody);
         }
         if (sanitizedSearchCriteria.isCSV) {
-          console.log('BANANANANANANANA')
           return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseSurveyExtract as unknown as string);
         } else {
           return res.status(200).set(responseCacheHeaders).json(responseBody);

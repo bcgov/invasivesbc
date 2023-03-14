@@ -1,13 +1,8 @@
-
 export const mapSitesRowsToCSV = async (response: any, searchCriteria: any) => {
-    const headers = ''
-    console.log('response properties')
-    console.dir(JSON.stringify(Object.keys(response)))
-    const rows = response.rows.map((row)=> {
-        console.log(typeof row)
-        return Object.values(row).join(',')
-    })
-    console.log(typeof rows)
-    const csv = headers + rows.join('\n')
-    return csv
-}
+  const headers = response.fields.map((fieldObj) => fieldObj.name).join(',');
+  const rows = response.rows.map((row, i) => {
+    return Object.values(row).map((value: any) => typeof value === 'string'? value.replace(/(\r\n|\n|\r)/gm, ""): value).join(',');
+  });
+  const csv = headers + rows.join('\n');
+  return csv;
+};

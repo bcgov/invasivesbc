@@ -763,7 +763,7 @@ const ActivityGrid = (props) => {
                 <SaveIcon />
                 Save & Apply Filters
               </Button>
-              <ExcelExporter setName={props.setName}></ExcelExporter>
+              <>{props.setType === 'POI'? <ExcelExporter setName={props.setName}></ExcelExporter>: <></>}</>
               <FilterToggle style={{ marginLeft: 'auto' }} />
             </Box>
             <div id={'xDataGrid_' + props.setName}>
