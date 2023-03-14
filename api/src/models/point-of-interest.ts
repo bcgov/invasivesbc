@@ -81,6 +81,11 @@ export class PointOfInterestSearchCriteria {
   page: number;
   limit: number;
 
+
+  //for use in csv endpoint
+  isCSV?: boolean
+  CSVType?: string;
+  
   pointOfInterest_type: string;
   pointOfInterest_subtype: string;
   iappType: string;
@@ -113,6 +118,12 @@ export class PointOfInterestSearchCriteria {
    */
   //NOSONAR
   constructor(obj?: any) {
+
+
+    //csv export stuff:
+    this.isCSV = (obj && obj.isCSV) || false;
+    this.CSVType = (obj && obj.CSVType) || null;
+
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
 

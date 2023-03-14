@@ -11,6 +11,7 @@ import {
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
+import { mapSitesRowsToCSV } from './iapp-csv-utils';
 const defaultLog = getLogger('point-of-interest');
 
 const getSurveyObj = (row: any, map_code: any) => {
@@ -378,12 +379,23 @@ export const getIAPPsites = async (searchCriteria: any) => {
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
-    var returnVal = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+    if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract') {
+      //var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, searchCriteria) : [];
+      var returnVal1 = response.rowCount > 0 ? response.rows : [];
 
-    return {
-      rows: returnVal,
-      count: returnVal.length
-    };
+      //TODO change it to a file
+      return {
+        rows: returnVal1,
+        count: returnVal1.length
+      };
+    } else {
+      var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+
+      return {
+        rows: returnVal2,
+        count: returnVal2.length
+      };
+    }
   } catch (error) {
     defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw {
