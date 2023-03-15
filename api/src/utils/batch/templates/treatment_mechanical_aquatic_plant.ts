@@ -1,10 +1,5 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {
-  ActivityPersonsWithApplicatorLicense,
-  BasicInformation,
-  ShorelineInformation,
-  WellInformation
-} from "../shared_columns";
+import {ActivityPersons, BasicInformation, ProjectInformation, ShorelineInformation} from "../shared_columns";
 
 const TreatmentMechanicalAquaticPlant = new Template(
   'treatment_mechanical_aquatic_plant',
@@ -14,15 +9,16 @@ const TreatmentMechanicalAquaticPlant = new Template(
 
 TreatmentMechanicalAquaticPlant.columns = [
   ...BasicInformation,
-  ...ActivityPersonsWithApplicatorLicense,
-  ...WellInformation,
+  ...ProjectInformation,
+  ...ActivityPersons,
   ...ShorelineInformation,
+  new TemplateColumnBuilder('Treatment - Authorization Information', 'text').build(),
   new TemplateColumnBuilder('Treatment - Treated Area', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Disposed Material m3', 'numeric').build(),
-  new TemplateColumnBuilder('Treatment - Disposed Material weight', 'numeric').build(),
-  new TemplateColumnBuilder('Treatment - Invasive Plant Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Mechanical Method Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Disposal Code', 'codeReference').isRequired().build()
+  new TemplateColumnBuilder('Treatment - Disposal Code', 'codeReference').referencesCode('mechanical_disposal_code').isRequired().build(),
+  new TemplateColumnBuilder('Treatment - Disposed Material Format', 'codeReference').build(),
+  new TemplateColumnBuilder('Treatment - Disposed Material Amount', 'numeric').build(),
+  new TemplateColumnBuilder('Treatment - Invasive Plant Code', 'codeReference').referencesCode('invasive_plant_aquatic_code').isRequired().build(),
+  new TemplateColumnBuilder('Treatment - Mechanical Method Code', 'codeReference').referencesCode('mechanical_method_code').isRequired().build(),
 ];
 
 export {TreatmentMechanicalAquaticPlant};

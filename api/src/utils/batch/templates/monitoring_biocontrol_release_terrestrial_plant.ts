@@ -2,9 +2,10 @@ import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
   BasicInformation,
-  MicrositeConditions, PhenologyInformation,
-  WeatherInformation,
-  WellInformation
+  MicrositeConditions,
+  PhenologyInformation,
+  ProjectInformation,
+  WeatherInformation
 } from "../shared_columns";
 
 const MonitoringBiocontrolReleaseTerrestrialPlant = new Template(
@@ -15,27 +16,44 @@ const MonitoringBiocontrolReleaseTerrestrialPlant = new Template(
 
 MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   ...BasicInformation,
+  ...ProjectInformation,
   ...ActivityPersons,
-  ...WellInformation,
   ...WeatherInformation,
   ...MicrositeConditions,
   ...PhenologyInformation,
 
-  new TemplateColumnBuilder('Monitoring - Start', 'date').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - End', 'date').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Start', 'datetime').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - End', 'datetime').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Plant Count', 'numeric').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Sweep Count', 'numeric').isRequired().build(),
 
-  new TemplateColumnBuilder('Monitoring - Invasive Plant', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
 
+  new TemplateColumnBuilder('Monitoring - Linked Treatment ID', 'text').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Legacy IAPP ID', 'text').build(),
+
+  new TemplateColumnBuilder('Monitoring - Agent Code', 'codeReference').referencesCode('biocontrol_agent_code').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Biocontrol Present', 'boolean').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Signs of Presence', 'codeReferenceMulti').build(),
 
-  new TemplateColumnBuilder('Monitoring - Agent Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - Actual Quantity', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - Estimated Quantity', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - Agent Presence Code', 'codeReference').isRequired().build(),
 
-  new TemplateColumnBuilder('Monitoring - Monitoring Method', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Actual - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
+  new TemplateColumnBuilder('Monitoring - Actual - Quantity', 'numeric').build(),
+  new TemplateColumnBuilder('Monitoring - Actual - Plant Position', 'codeReference').referencesCode('plant_position_code').build(),
+  new TemplateColumnBuilder('Monitoring - Actual - Agent Location', 'codeReference').referencesCode('location_agents_found_code').build(),
+
+  new TemplateColumnBuilder('Monitoring - Estimated - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
+  new TemplateColumnBuilder('Monitoring - Estimated - Quantity', 'numeric').build(),
+  new TemplateColumnBuilder('Monitoring - Estimated - Plant Position', 'codeReference').referencesCode('plant_position_code').build(),
+  new TemplateColumnBuilder('Monitoring - Estimated - Agent Location', 'codeReference').referencesCode('location_agents_found_code').build(),
+
+  new TemplateColumnBuilder('Monitoring - Monitoring Method', 'codeReference').referencesCode('biocontrol_monitoring_methods_code').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Monitoring Type', 'codeReference').isRequired().build(),
+
+  new TemplateColumnBuilder('Monitoring - Count Duration', 'numeric').build(),
+
+  new TemplateColumnBuilder('Monitoring - Location Agents Found', 'codeReferenceMulti').referencesCode('location_agents_found_code').build(),
+  new TemplateColumnBuilder('Monitoring - Suitable For Collection', 'tristate').build(),
 
   new TemplateColumnBuilder('Monitoring - Results - Spread - Recorded?', 'boolean').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Results - Spread - Plant Attack', 'numeric').build(),

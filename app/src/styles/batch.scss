@@ -4,6 +4,7 @@ div.template-description {
   margin: 1rem;
   padding: 1rem;
   border-radius: 4px;
+
   h5 {
     display: inline;
     padding-right: 2rem;
@@ -11,6 +12,7 @@ div.template-description {
     vertical-align: middle;
   }
 }
+
 table.template-preview {
   width: 100%;
   border-collapse: collapse;
@@ -39,4 +41,30 @@ table.template-preview {
 
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+
+code {
+  font-family: "Courier New", fixed;
+  display: block;
+}
+
+table.code-reference {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 70%;
+  max-height: 10rem;
+  overflow-y: scroll;
+
+  tbody {
+    td:last-child {
+      font-family: 'Courier New', fixed;
+      text-align: center;
+    }
+  }
+
+  margin: 0;
+  padding: 0;
+
 }

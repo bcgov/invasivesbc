@@ -1,5 +1,5 @@
 import {Template, TemplateColumnBuilder} from '../definitions';
-import {ActivityPersons, BasicInformation} from '../shared_columns';
+import {ActivityPersons, BasicInformation, ProjectInformation, VoucherInformation} from '../shared_columns';
 
 const ObservationTerrestrialPlant = new Template(
   'observation_terrestrial_plant',
@@ -8,20 +8,25 @@ const ObservationTerrestrialPlant = new Template(
 );
 ObservationTerrestrialPlant.columns = [
   ...BasicInformation,
+  ...ProjectInformation,
   ...ActivityPersons,
+  new TemplateColumnBuilder('Observation - Pre-treatment observation?', 'boolean').build(),
 
-  new TemplateColumnBuilder('Observation - Terrestrial - Soil Texture', 'codeReference').build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Specific Use', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Slope', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Aspect', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Soil Texture', 'codeReference').referencesCode('soil_texture_code').build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Specific Use', 'codeReference').referencesCode('specific_use_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Slope', 'codeReference').referencesCode('slope_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Aspect', 'codeReference').referencesCode('aspect_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Research Observation', 'codeReference').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Visible Well', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Suitable For Biocontrol', 'codeReference').isRequired().build(),
 
-  new TemplateColumnBuilder('Observation - Type', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Plant Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Plant Life Stage', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Density', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Distribution Code', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Sample Point ID', 'text').build(),
+  new TemplateColumnBuilder('Observation - Type', 'codeReference').referencesCode('observation_type_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Life Stage', 'codeReference').referencesCode('plant_seed_stage_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Density', 'codeReference').referencesCode('invasive_plant_density_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Distribution', 'codeReference').referencesCode('invasive_plant_distribution_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Suitable for Biocontrol Agent?', 'tristate').build(),
+
+  ...VoucherInformation
 ];
 export {ObservationTerrestrialPlant};

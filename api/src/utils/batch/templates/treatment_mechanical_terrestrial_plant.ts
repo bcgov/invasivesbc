@@ -1,5 +1,5 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersonsWithApplicatorLicense, BasicInformation, WellInformation} from "../shared_columns";
+import {ActivityPersons, BasicInformation, ProjectInformation} from "../shared_columns";
 
 const TreatmentMechanicalTerrestrialPlant = new Template(
   'treatment_mechanical_terrestrial_plant',
@@ -9,14 +9,14 @@ const TreatmentMechanicalTerrestrialPlant = new Template(
 
 TreatmentMechanicalTerrestrialPlant.columns = [
   ...BasicInformation,
-  ...ActivityPersonsWithApplicatorLicense,
-  ...WellInformation,
+  ...ProjectInformation,
+  ...ActivityPersons,
   new TemplateColumnBuilder('Treatment - Treated Area', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Disposed Material m3', 'numeric').build(),
-  new TemplateColumnBuilder('Treatment - Disposed Material weight', 'numeric').build(),
-  new TemplateColumnBuilder('Treatment - Invasive Plant Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Mechanical Method Code', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Treatment - Disposal Code', 'codeReference').isRequired().build()
+  new TemplateColumnBuilder('Treatment - Disposal Code', 'codeReference').referencesCode('mechanical_disposal_code').isRequired().build(),
+  new TemplateColumnBuilder('Treatment - Disposed Material Format', 'codeReference').build(),
+  new TemplateColumnBuilder('Treatment - Disposed Material Amount', 'numeric').build(),
+  new TemplateColumnBuilder('Treatment - Invasive Plant Code', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
+  new TemplateColumnBuilder('Treatment - Mechanical Method Code', 'codeReference').referencesCode('mechanical_method_code').isRequired().build()
 ];
 
 export {TreatmentMechanicalTerrestrialPlant};

@@ -1,22 +1,12 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import Spinner from '../spinner/Spinner';
+import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography} from '@mui/material';
+import React from 'react';
+import {useInvasivesApi} from '../../hooks/useInvasivesApi';
 import TemplatePreview from './TemplatePreview';
-import { Download } from "@mui/icons-material";
+import {Download} from "@mui/icons-material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const TemplateDownloadList = () => {
+const TemplateDownloadList = ({templates}) => {
   const api = useInvasivesApi();
-  const [loading, setLoading] = useState(false);
-  const [templates, setTemplates] = useState([]);
-
-  useEffect(async () => {
-    setLoading(true);
-    const data = await api.getTemplateList();
-    setTemplates(data);
-    setLoading(false);
-  }, []);
 
   const downloadTemplate = async (key: string) => {
     const downloadAPICall = api.downloadTemplate;
@@ -32,10 +22,6 @@ const TemplateDownloadList = () => {
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
-
-  if (loading) {
-    return <Spinner />;
-  }
 
   return (
     <>
