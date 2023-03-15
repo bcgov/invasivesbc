@@ -80,7 +80,7 @@ export const WeatherInformation = [
 
 export const MicrositeConditions = [
   new TemplateColumnBuilder('Microsite Conditions - Mesoslope Position', 'codeReference').referencesCode('mesoslope_position_code').build(),
-  new TemplateColumnBuilder('Microsite Conditions - Surface Shape', 'codeReference').referencesCode('cloud_cover_code').build()
+  new TemplateColumnBuilder('Microsite Conditions - Surface Shape', 'codeReference').build()
 ];
 
 export const ShorelineInformation = [
