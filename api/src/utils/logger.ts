@@ -159,6 +159,7 @@ const getLogger = function (logLabel: string) {
 const getDurationInMilliseconds = (diff:[number,number]):number => (diff[0] * 1e9 + diff[1]) / 1e6;
 
 const padL = (dt) => ('0' + dt).slice(-2);
+const isEmpty = (obj) => obj && Object.keys(obj).length === 0 && Object.getPrototypeOf(obj) === Object.prototype;
 const formatDate = (dt: Date): string => `${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}:${dt.getMilliseconds()} ${padL(dt.getDate())}-${padL(dt.getMonth()+1)}-${dt.getFullYear()}`;
 const formatResTimeMsg = (dt: Date, duration: string, event: string = ''): string => event.length > 0 ?
   `${event}: ${formatDate(dt)} :: ${duration} ms` :
