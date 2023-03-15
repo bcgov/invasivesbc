@@ -187,8 +187,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         if (token && authContext) {
           logger.log({
             level: 'debug',
-            message: 'USR-META:',
-            metadata
+            message: `USR-ID: ${authContext.user?.user_id}`,
           });
         } else {
           logger.log({
