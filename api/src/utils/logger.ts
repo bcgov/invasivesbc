@@ -202,17 +202,22 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
       //query string params
     if(endpointConfigObj?.[logMetrics.QUERY_STRING_PARAMS])
     {
-      if (req.query?.query && req.query.query !== 'undefined') {
-        const query = req.query.query;
+      if (req.query?.query && req.query.query !== undefined) {
         logger.log({
           level: 'debug',
-          message: 'QRY-STR-PRMS:',
-          query: JSON.parse(query)
+          message: 'REQ-QRY-STR-PRMS:',
+          query: JSON.parse(req.query.query)
+        });
+      } else if (!isEmpty(req.params)) {
+        logger.log({
+          level: 'debug',
+          message: 'REQ-PRMS:',
+          params: req.params
         });
       } else {
         logger.log({
           level: 'warn',
-          message: 'QRY-STR-PRMS: There are no query parameters.'
+          message: 'REQ-QRY-STR-PRMS,REQ-PRMS: There are no parameters.'
         });
       }
     }
