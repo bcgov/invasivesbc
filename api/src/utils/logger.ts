@@ -295,8 +295,9 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
  * 
  * @returns void
  */
-const logEndpoint = (isAuthd: boolean = false) => (req: any, res: unknown) =>
-  loggingHandler(req?.authContext?.friendlyUsername ?? isAuthd)(req, res);
+const logEndpoint = (isAuthd: boolean = false) => (req: any, res: unknown) => {
+  loggingHandler((req?.authContext?.friendlyUsername !== undefined) || isAuthd)(req, res);
+}
 
 const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
   endpoint: string = '', 
@@ -369,7 +370,10 @@ const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
 const logErr  = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
   endpoint: string = '',
   value: any
-) => logData(isAuthd, requireAuthd)(endpoint, logMetrics.ERRORS, value);
+) => {
+    if (requireAuthd ? isAuthd : true)
+      logData(true,true)(endpoint, logMetrics.ERRORS, value);
+}
 
 /**
  * get the start time from node to return on end to calculate duration time.
