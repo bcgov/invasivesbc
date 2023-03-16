@@ -822,28 +822,20 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         null,
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns
       );
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters);
+      filters.isCSV = true;
+      filters.CSVType = 'main_extract';
 
-      rows = networkReturn?.data?.result?.map((row) => {
-        return [row.short_id]
-      });
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {'Content-Type': 'text/csv'});
+      const daBlob = new Blob([networkReturn.data])
+
+      const url = window.URL.createObjectURL(daBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     }
-    /*
-    TODO: needs a download box
-    - might prevent the issue of many issues halting and forgetting to download
-      - this might be fixed with another endpoint as well
-    - also allows for naming this way
-    */
-
-    // transform to csv
-    /*
-    let csvContent = "data:text/csv;charset=utf-8," 
-        + rows.map(elem => elem.join(",")).join("\n");
-
-    var encodedUri = encodeURI(csvContent);
-    window.open(encodedUri);
-    */
-
     yield put({
       type: RECORD_SET_TO_EXCEL_SUCCESS
     });

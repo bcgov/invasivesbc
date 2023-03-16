@@ -108,6 +108,10 @@ export class ActivityPostRequestBody {
  * @class ActivitySearchCriteria
  */
 export class ActivitySearchCriteria {
+  //for use in csv endpoint
+  isCSV?: boolean
+  CSVType?: string;
+  
   page: number;
   limit: number;
 
@@ -154,6 +158,10 @@ export class ActivitySearchCriteria {
    */
   //NOSONAR
   constructor(obj?: any) {
+    //csv export stuff:
+    this.isCSV = (obj && obj.isCSV) || false;
+    this.CSVType = (obj && obj.CSVType) || null;
+
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
 
