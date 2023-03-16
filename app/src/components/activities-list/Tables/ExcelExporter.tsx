@@ -17,7 +17,7 @@ const ExcelExporter = (props) => {
   }
   else
   {
-    items =  [<MenuItem value={'terrestrial_plant_observation'}>Terrestiral Plant Observation Extract</MenuItem>,<MenuItem value={'aquatic_plant_observation'}>Aquatic Plant Observation Extract</MenuItem>]
+    items =  [<MenuItem value={'terrestrial_plant_observation'}>Terrestrial Plant Observation Extract</MenuItem>,<MenuItem value={'aquatic_plant_observation'}>Aquatic Plant Observation Extract</MenuItem>]
   }
 
   return (

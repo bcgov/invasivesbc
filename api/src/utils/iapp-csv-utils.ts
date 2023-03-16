@@ -9,6 +9,9 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['jurisdictions'] = (value) => {
         return '"' + value + '"';
       };
+      fieldFormatMap['jurisdiction'] = (value) => {
+        return '"' + value + '"';
+      };
     case 'planning_extract':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
@@ -17,11 +20,15 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
         return value + 'banana';
       };
       break;
-    case 'default_activities_extract':
+    case 'terrestrial_plant_observation':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
       };
-      break;
+    case 'aquatic_plant_observation':
+      fieldFormatMap['fieldOne'] = (value) => {
+        return value;
+      };
+    break;
   }
 
 
