@@ -24,6 +24,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
+import { ExtentListener } from 'components/map/ExtentListener';
 
 const MapContainer = lazy(() => import('components/map/MapContainer'));
 
@@ -367,6 +368,7 @@ const PageContainer = (props) => {
               zoom={5}
               mapId={'mainMap'}
               geometryState={{ geometry, setGeometry }}>
+            <ExtentListener/>
               {mapState.IAPPGeoJSON?.features.length ? <RecordSetLayersRenderer /> : <></>}
             </MapContainer>
           </Suspense>

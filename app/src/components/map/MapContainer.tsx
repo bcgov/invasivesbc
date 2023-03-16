@@ -54,6 +54,8 @@ import { WhatsHereButton } from './Tools/ToolTypes/Data/WhatsHereButton';
 import { WhatsHereDrawComponent } from './Tools/ToolTypes/Data/WhatsHereDrawComp';
 import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './Tools/ToolTypes/Data/WhatsHereMarkerAndPopup';
 import { selectTabs } from 'state/reducers/tabs';
+import { ExtentListener } from './ExtentListener';
+import { selectMap } from 'state/reducers/map';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -208,6 +210,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [userSettingsState?.mapCenter]);
 
   const tabsState = useSelector(selectTabs);
+  const mapState = useSelector(selectMap)
 
   return (
     <ReactLeafletEditable
@@ -254,7 +257,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     >
       <ReactLeafletMapContainer
         editable={true}
-        center={[55, -128]}
+        //center={[55, -128]}
+        center={mapState.center}
         zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
         bounceAtZoomLimits={true}
         maxZoom={mapMaxZoom}

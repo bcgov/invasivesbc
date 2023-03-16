@@ -24,6 +24,8 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
+import { ActivityMapExtentToggle } from 'components/map/Tools/ToolTypes/Nav/ActivityMapExtentToggle';
+import { ExtentListener } from 'components/map/ExtentListener';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -248,6 +250,8 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
             <Grid xs={12} className={props.classes.mapContainer} item>
               <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
                 <RecordSetLayersRenderer />
+                <ActivityMapExtentToggle/>
+                <ExtentListener/>
               </MapContainer>
             </Grid>
           </Grid>

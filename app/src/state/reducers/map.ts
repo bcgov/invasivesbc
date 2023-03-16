@@ -29,7 +29,9 @@ import {
   MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
   WHATS_HERE_PAGE_POI,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
-  WHATS_HERE_PAGE_ACTIVITY
+  WHATS_HERE_PAGE_ACTIVITY,
+  MAIN_MAP_MOVE,
+  ACTIVITY_PAGE_MAP_EXTENT_TOGGLE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -38,7 +40,7 @@ export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
   WHATSHERE = 'WHATSHERE',
   BOUNDARY = 'BOUNDARY',
-  NONE = 'NONE',
+  NONE = 'NONE'
 }
 
 class MapState {
@@ -57,17 +59,21 @@ class MapState {
   error: boolean;
   activitiesGeoJSON: any;
   IAPPGeoJSON: any;
-  LeafletWhosEditing: LeafletWhosEditingEnum
+  LeafletWhosEditing: LeafletWhosEditingEnum;
+  zoom: number;
+  center: L.LatLngExpression;
+  activityPageMapExtentToggle: boolean;
 
   constructor() {
     this.initialized = false;
     this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
+    this.activityPageMapExtentToggle = false;
     this.accuracyToggle = false;
     this.positionTracking = false;
     this.panned = true;
-    this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE
+    this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -90,12 +96,25 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case MAIN_MAP_MOVE: {
+        return {
+          ...state,
+          zoom: action.payload.zoom,
+          center: action.payload.center
+        };
+      }
+      case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
+        return {
+          ...state,
+          activityPageMapExtentToggle: !state.activityPageMapExtentToggle
+        };
+      }
       case LEAFLET_SET_WHOS_EDITING: {
         return {
           ...state,
           LeafletWhosEditing: action.payload.LeafletWhosEditing
-        }
-        }
+        };
+      }
       case MAP_WHATS_HERE_FEATURE: {
         return {
           ...state,
@@ -128,7 +147,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             IAPPIDs: [...action.payload.IDs],
             iappRows: [],
             IAPPPage: 0,
-            IAPPLimit: 5,
+            IAPPLimit: 5
           }
         };
       }
@@ -140,7 +159,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ActivityIDs: [...action.payload.IDs],
             activityRows: [],
             ActivityPage: 0,
-            ActivityLimit: 5,
+            ActivityLimit: 5
           }
         };
       }
@@ -192,8 +211,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             highlightedIAPP: action.payload.id,
             highlightedACTIVITY: null,
-            highlightedGeo: state?.whatsHere?.iappRows.filter((row) => { 
-              return row.site_id === action.payload.id
+            highlightedGeo: state?.whatsHere?.iappRows.filter((row) => {
+              return row.site_id === action.payload.id;
             })[0]
           }
         };
@@ -205,8 +224,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             highlightedIAPP: null,
             highlightedACTIVITY: action.payload.id,
-            highlightedGeo: state?.whatsHere?.activityRows.filter((row) => { 
-              return row.short_id === action.payload.id
+            highlightedGeo: state?.whatsHere?.activityRows.filter((row) => {
+              return row.short_id === action.payload.id;
             })[0]
           }
         };
@@ -403,7 +422,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             iappRows: [...action.payload.data]
           }
-        }
+        };
       }
       case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
         return {
@@ -412,7 +431,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             activityRows: [...action.payload.data]
           }
-        }
+        };
       }
       default:
         return state;
