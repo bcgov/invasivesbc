@@ -16,7 +16,7 @@ export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 
 POST.apiDoc = {
   description: 'Fetches all RISOs based on search criteria.',
-  tags: ['risos'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -86,16 +86,14 @@ POST.apiDoc = {
  */
 function getRISOsBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({
-    //   label: 'riso',
-    //   message: 'getRISOsBySearchFilterCriteria',
-    //   body: req.body
-    // });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const sanitizedSearchCriteria = new RISOSearchCriteria(req.body);
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
@@ -106,8 +104,10 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getRISOsSQL(sanitizedSearchCriteria);
-
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
@@ -117,7 +117,8 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Got RISOs',
         request: req.body,
@@ -127,7 +128,7 @@ function getRISOsBySearchFilterCriteria(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getRISOsBySearchFilterCriteria', message: 'error', error });
+      logErr()(namespace,`Error getting RISOs\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Error fetching RISOs',
         request: req.body,
