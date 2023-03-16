@@ -93,6 +93,7 @@ import L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
+import { autoRestart } from 'state/utilities/errorHandlers';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
@@ -775,32 +776,52 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
 }
 
-function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
-  const authState = yield select(selectAuth);
-  const mapState = yield select(selectMap);
-  const userSettings = yield select(selectUserSettings);
-  const set = userSettings?.recordSets?.[action.payload.id];
-  try {
-    let rows = [];
-    let networkReturn;
-    if (set.recordSetType === "POI") {
-      let filters = getSearchCriteriaFromFilters(
-        set?.advancedFilters ? set?.advancedFilters : null,
-        authState?.accessRoles,
-        userSettings?.recordSets ? userSettings?.recordSets : null,
-        action.payload.id,
-        true,
-        set?.gridFilters ? set?.gridFilters : null,
-        0,
-        200000, // CSV limit
-        mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
-      );
-      filters.isCSV = true;
-      filters.CSVType = action.payload.CSVType
+const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
+  function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
+    const authState = yield select(selectAuth);
+    const mapState = yield select(selectMap);
+    const userSettings = yield select(selectUserSettings);
+    const set = userSettings?.recordSets?.[action.payload.id];
+    try {
+      let rows = [];
+      let networkReturn;
+      if (set.recordSetType === "POI") {
+        let filters = getSearchCriteriaFromFilters(
+          set?.advancedFilters ? set?.advancedFilters : null,
+          authState?.accessRoles,
+          userSettings?.recordSets ? userSettings?.recordSets : null,
+          action.payload.id,
+          true,
+          set?.gridFilters ? set?.gridFilters : null,
+          0,
+          200000, // CSV limit
+          mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
+        );
+        filters.isCSV = true;
+        filters.CSVType = action.payload.CSVType
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
+        networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
+      } else {
+        const filters = getSearchCriteriaFromFilters(
+          set.advancedFilters,
+          authState.accessRoles,
+          userSettings?.recordSets,
+          action.payload.id,
+          false,
+          set?.gridFilters,
+          0,
+          null,
+          mapState?.layers?.[action.payload.id]?.filters?.sortColumns
+        );
+        filters.isCSV = true;
+        filters.CSVType = 'main_extract';
+
+        networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {'Content-Type': 'text/csv'});
+      }
+
+      if (networkReturn.status === 500) throw new Error('Cannot get data for csv');
+
       const daBlob = new Blob([networkReturn.data])
-
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -809,43 +830,20 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       link.click();
       link.remove();
 
-      
-    } else {
-      const filters = getSearchCriteriaFromFilters(
-        set.advancedFilters,
-        authState.accessRoles,
-        userSettings?.recordSets,
-        action.payload.id,
-        false,
-        set?.gridFilters,
-        0,
-        null,
-        mapState?.layers?.[action.payload.id]?.filters?.sortColumns
-      );
-      filters.isCSV = true;
-      filters.CSVType = 'main_extract';
-
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {'Content-Type': 'text/csv'});
-      const daBlob = new Blob([networkReturn.data])
-
-      const url = window.URL.createObjectURL(daBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'export.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      yield put({
+        type: RECORD_SET_TO_EXCEL_SUCCESS
+      });
+    } catch(e) {
+      throw new Error(e);
     }
-    yield put({
-      type: RECORD_SET_TO_EXCEL_SUCCESS
-    });
-  } catch(e) {
+  },
+  function* handleError(e) {
     console.error(e);
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE
-    })
+    });
   }
-}
+);
 
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing)
