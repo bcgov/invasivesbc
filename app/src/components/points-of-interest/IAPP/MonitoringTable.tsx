@@ -1,6 +1,8 @@
 import { TableCell, TableRow, Typography } from '@mui/material';
 import React from 'react';
 
+
+// add ALL monitoring columns here (from each MonitoringColumn[] array)
 interface MonitoringColumn {
   id:
     | 'monitoring_id'
@@ -9,20 +11,32 @@ interface MonitoringColumn {
     | 'project_code'
     | 'primary_surveyor'
     | 'efficacy_rating'
-    | 'general_comment';
+    | 'general_comment'
+    | 'agent_count'
   label: string;
   minWidth?: number;
   align?: 'right';
   format?: (value: number) => string;
 }
 
-export const monitoringColumns: readonly MonitoringColumn[] = [
+export const defaultMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 100 },
   { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
   { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
   { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 }
 ];
+
+// add other ones and rename this if needed
+export const customMonitoringColumns: readonly MonitoringColumn[] = [
+  { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
+  { id: 'agent_count', label: 'agent_count', minWidth: 100 },
+  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
+  { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 }
+];
+
+
 
 export const MonitoringRow = (props) => {
   const { row } = props;
@@ -37,6 +51,26 @@ export const MonitoringRow = (props) => {
   //   return <>{value}</>;
   // };
 
+
+  //update this switch if we have more column sets for monitoring
+  var monitoringColumns;
+    switch (row.type) {
+      case 'Mechanical Treatment':
+        monitoringColumns = defaultMonitoringColumns;
+        break;
+      case 'Chemical Treatment':
+        monitoringColumns = defaultMonitoringColumns;
+        break;
+      case 'Biological Dispersal':
+        monitoringColumns = defaultMonitoringColumns;
+
+        break;
+      case 'Biological Treatment':
+        monitoringColumns = customMonitoringColumns;
+        break;
+      default:
+        monitoringColumns = defaultMonitoringColumns;
+    }
   return (
     <React.Fragment>
       <TableRow tabIndex={-1} key={row.monitoring_id}>

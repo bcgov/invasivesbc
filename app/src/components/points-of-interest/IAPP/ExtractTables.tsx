@@ -16,7 +16,7 @@ import {
 import React from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { monitoringColumns, MonitoringRow } from './MonitoringTable';
+import { defaultMonitoringColumns, customMonitoringColumns, MonitoringRow } from './MonitoringTable';
 
 interface MechTreatmentColumn {
   id:
@@ -182,6 +182,10 @@ const Row = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [shortComment, setShortComment] = React.useState(true);
 
+
+
+
+
   React.useEffect(() => {
     if (row.monitoring?.length > 0) {
       const tempArr = [];
@@ -225,6 +229,7 @@ const Row = (props: any) => {
         break;
       case 'Biological Dispersal':
         columnsObj = bioDispersalColumns;
+
         break;
       case 'Biological Treatment':
         columnsObj = bioTreatmentColumns;
@@ -256,6 +261,12 @@ const Row = (props: any) => {
       );
     });
   };
+
+
+  /// switch here if we have more than 2 options
+  var monitoringColumns = (type === 'Biological Treatment'? customMonitoringColumns: defaultMonitoringColumns)
+
+
 
   return (
     <React.Fragment>
