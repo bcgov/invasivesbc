@@ -9,7 +9,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['jurisdictions'] = (value) => {
         return '"' + value + '"';
       };
-    case 'main_extract':
+    case 'planning_extract':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
       };

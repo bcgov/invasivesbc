@@ -46,7 +46,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     sqlStatement.append(SQL`SELECT i.site_id `);
   } 
 
-  else if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract')
+  else if (searchCriteria.isCSV && searchCriteria.CSVType === 'planning_extract')
   {
     sqlStatement.append(
       SQL`SELECT pe.* `
@@ -68,7 +68,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   );
 
-  if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract')
+  if (searchCriteria.isCSV && searchCriteria.CSVType === 'planning_extract')
   {
     sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id`);
   }

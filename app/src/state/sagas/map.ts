@@ -796,7 +796,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
       );
       filters.isCSV = true;
-      filters.CSVType = 'main_extract'
+      filters.CSVType = action.payload.CSVType
 
       networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
       const daBlob = new Blob([networkReturn.data])
