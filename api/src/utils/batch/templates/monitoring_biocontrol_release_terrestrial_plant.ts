@@ -50,8 +50,6 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Monitoring - Monitoring Method', 'codeReference').referencesCode('biocontrol_monitoring_methods_code').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Monitoring Type', 'codeReference').isRequired().build(),
 
-  new TemplateColumnBuilder('Monitoring - Count Duration', 'numeric').build(),
-
   new TemplateColumnBuilder('Monitoring - Location Agents Found', 'codeReferenceMulti').referencesCode('location_agents_found_code').build(),
   new TemplateColumnBuilder('Monitoring - Suitable For Collection', 'tristate').build(),
 

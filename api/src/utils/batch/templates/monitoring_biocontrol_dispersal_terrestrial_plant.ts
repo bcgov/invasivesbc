@@ -37,6 +37,8 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Monitoring - Biocontrol Present', 'boolean').isRequired().build(),
   new TemplateColumnBuilder('Monitoring - Signs of Presence', 'codeReferenceMulti').referencesCode('biological_agent_presence_code').build(),
 
+  new TemplateColumnBuilder('Monitoring - Location Agents Found', 'codeReference').build(),
+
   new TemplateColumnBuilder('Monitoring - Actual - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
   new TemplateColumnBuilder('Monitoring - Actual - Quantity', 'numeric').build(),
   new TemplateColumnBuilder('Monitoring - Actual - Plant Position', 'codeReference').referencesCode('plant_position_code').build(),

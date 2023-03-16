@@ -19,7 +19,6 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Observation - Terrestrial - Research Observation', 'codeReference').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Visible Well', 'codeReference').isRequired().build(),
 
-  new TemplateColumnBuilder('Observation - Sample Point ID', 'text').build(),
   new TemplateColumnBuilder('Observation - Type', 'codeReference').referencesCode('observation_type_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Life Stage', 'codeReference').referencesCode('plant_seed_stage_code').isRequired().build(),

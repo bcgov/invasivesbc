@@ -27,6 +27,7 @@ BiocontrolRelease.columns = [
   new TemplateColumnBuilder('Release - Collection Date', 'datetime').build(),
   new TemplateColumnBuilder('Release - Plant Collected From', 'codeReference').referencesCode('invasive_plant_code_with_biocontrol').build(),
   new TemplateColumnBuilder('Release - Plant Collected From - Unlisted', 'text').build(),
+  new TemplateColumnBuilder('Release - Agent Source', 'text').isRequired().build(),
   new TemplateColumnBuilder('Release - Actual - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
   new TemplateColumnBuilder('Release - Actual - Quantity', 'numeric').build(),
   new TemplateColumnBuilder('Release - Estimated - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
