@@ -22,7 +22,7 @@ export const GET: Operation = [getUpdateRequests()];
 
 POST.apiDoc = {
   description: 'Create a new update request.',
-  tags: ['update-request'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -96,8 +96,12 @@ GET.apiDoc = {
 
 function getUpdateRequests(): RequestHandler {
   return async (req, res, next) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Failed to establish database connection',
         req: req.body,
@@ -107,7 +111,10 @@ function getUpdateRequests(): RequestHandler {
     }
     try {
       const sqlStatement: SQLStatement = getUpdateRequestsSQL();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
           req: req.body,
@@ -116,6 +123,8 @@ function getUpdateRequests(): RequestHandler {
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Got update requests',
         request: req.body,
@@ -125,7 +134,7 @@ function getUpdateRequests(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getUpdateRequests', message: 'error', error });
+      logErr()(namespace,`Error getting update requests\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to get update requests',
         req: req.body,
@@ -166,40 +175,47 @@ function postHandler(): RequestHandler {
  */
 async function createUpdateRequest(req, res, next, newUpdateRequest) {
   // TODO: Ensure user exists before creating update request
-  // defaultLog.debug({ label: 'update-request', message: 'create', body: newUpdateRequest });
+  logEndpoint()(req,res);
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${newUpdateRequest}`);
     return res.status(503).json({
       message: 'Failed to establish database connection',
-      req: req.body,
+      req: newUpdateRequest,
       namespace,
       code: 503
     });
   }
   try {
     const sqlStatement: SQLStatement = createUpdateRequestSQL(newUpdateRequest);
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+    logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${newUpdateRequest}`);
       return res.status(500).json({
         message: 'Failed to build SQL statement',
-        req: req.body,
+        req: newUpdateRequest,
         namespace,
         code: 500
       });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(201).json({
       message: 'Update request created',
-      request: req.body,
+      request: newUpdateRequest,
       result: response.rows,
       count: response.rowCount,
       namespace,
       code: 201
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'create', message: 'error', error });
+    logErr()(namespace,`Error creating update request\n${newUpdateRequest}\n${error}`);
     return res.status(500).json({
       message: 'Failed to create update request',
-      req: req.body,
+      req: newUpdateRequest,
       error: error,
       namespace,
       code: 500
@@ -210,11 +226,14 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
 }
 
 async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests) {
+  logEndpoint()(req,res);
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Error generating SQL statement: 500\n${approvedUpdateRequests}`);
     return res.status(503).json({
       message: 'Failed to establish database connection',
-      req: req.body,
+      req: approvedUpdateRequests,
       namespace,
       code: 503
     });
@@ -225,10 +244,13 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
     for (const request of requests) {
       // Create user record
       const sqlStatement: SQLStatement = approveUpdateRequestsSQL(request);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${approvedUpdateRequests}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
-          req: req.body,
+          req: approvedUpdateRequests,
           namespace,
           code: 500
         });
@@ -237,10 +259,13 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
 
       // Update request status
       const sqlStatement2: SQLStatement = updateUpdateRequestStatusSQL(request.primary_email, 'APPROVED');
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement2.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement2.values);
       if (!sqlStatement2) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${approvedUpdateRequests}`);
         return res.status(500).json({
           message: 'Failed to build SQL statement',
-          req: req.body,
+          req: approvedUpdateRequests,
           namespace,
           code: 500
         });
@@ -249,10 +274,13 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
 
       for (const requestedRole of request.requested_roles.split(',')) {
         const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
+        logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement3.sql);
+        logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement3.values);
         if (!sqlStatement3) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${approvedUpdateRequests}`);
           return res.status(500).json({
             message: 'Failed to build SQL statement',
-            req: req.body,
+            req: approvedUpdateRequests,
             namespace,
             code: 500
           });
@@ -260,19 +288,21 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
         await connection.query(sqlStatement3.text, sqlStatement3.values);
       }
     }
+    logData()(namespace,logMetrics.SQL_RESULTS,'Approved update requests');
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Approved update requests',
-      request: req.body,
+      request: approvedUpdateRequests,
       result: requests,
       count: requests.length,
       namespace,
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'batchApproveUpdateRequests', message: 'error', error });
+    logErr()(namespace,`Error approving update requests\n${approvedUpdateRequests}\n${error}`);
     return res.status(500).json({
       message: 'Failed to approve update requests',
-      req: req.body,
+      req: approvedUpdateRequests,
       error: error,
       namespace,
       code: 500
@@ -283,11 +313,14 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
 }
 
 async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
+  logEndpoint()(req,res);
+  const startTime = getStartTime(namespace);
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${declinedUpdateRequest}`);
     return res.status(503).json({
       message: 'Failed to establish database connection',
-      req: req.body,
+      req: declinedUpdateRequest,
       namespace,
       code: 503
     });
@@ -295,28 +328,33 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
   try {
     const request = declinedUpdateRequest;
     const sqlStatement: SQLStatement = declineUpdateRequestSQL(request.primary_email);
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+    logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${declinedUpdateRequest}`);
       return res.status(500).json({
         message: 'Failed to build SQL statement',
-        req: req.body,
+        req: declinedUpdateRequest,
         namespace,
         code: 500
       });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Declined update request',
-      request: req.body,
+      request: declinedUpdateRequest,
       result: response.rows,
       count: response.rowCount,
       namespace,
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'declineUpdateRequest', message: 'error', error });
+    logErr()(namespace,`Error declining update request\n${declinedUpdateRequest}\n${error}`);
     return res.status(500).json({
       message: 'Failed to decline update request',
-      req: req.body,
+      req: declinedUpdateRequest,
       error: error,
       namespace,
       code: 500
