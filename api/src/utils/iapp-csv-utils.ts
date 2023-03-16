@@ -22,8 +22,9 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
 
   const rows = response.rows.map((row, i) => {
     return Object.keys(row)
-      .map((fieldName: any) => {
-        const formatter = fieldFormatMap[fieldName];
+      .map((fieldNameRaw: any) => {
+        const fieldName = fieldNameRaw.trim()
+        const formatter = typeof fieldFormatMap[fieldName] === 'function'? fieldFormatMap[fieldName]: (value) => {return value};
         let unformatted =
           typeof row[fieldName] === 'string' ? row[fieldName].replace(/(\r\n|\n|\r)/gm, '') : row[fieldName];
         const formatted = formatter(unformatted);

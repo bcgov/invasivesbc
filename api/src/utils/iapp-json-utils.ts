@@ -381,7 +381,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
     defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
     if (searchCriteria.isCSV && searchCriteria.CSVType === 'main_extract') {
-      var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, searchCriteria) : [];
+      var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, 'main_extract') : [];
       return  returnVal1
     } else {
       var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
