@@ -1,7 +1,35 @@
-export const mapSitesRowsToCSV = async (response: any, searchCriteria: any) => {
-  const headers = response.fields.map((fieldObj) => fieldObj.name).join(',');
+export const mapSitesRowsToCSV = async (response: any, templateName: string) => {
+  const headers = response.fields.map((fieldObj) => fieldObj.name).join(',') + '\n';
+
+  // set up callbacks to format specific fields
+  let fieldFormatMap = {};
+  switch (templateName) {
+    case 'main_extract':
+      fieldFormatMap['fieldOne'] = (value) => {
+        return value;
+      };
+      fieldFormatMap['fieldTwo'] = (value) => {
+        return value + 'banana';
+      };
+      fieldFormatMap['jurisdictions'] = (value) => {
+        return '"' + value + '"';
+      };
+      break;
+    default:
+      break;
+  }
+
+
   const rows = response.rows.map((row, i) => {
-    return Object.values(row).map((value: any) => typeof value === 'string'? value.replace(/(\r\n|\n|\r)/gm, ""): value).join(',');
+    return Object.keys(row)
+      .map((fieldName: any) => {
+        const formatter = fieldFormatMap[fieldName];
+        let unformatted =
+          typeof row[fieldName] === 'string' ? row[fieldName].replace(/(\r\n|\n|\r)/gm, '') : row[fieldName];
+        const formatted = formatter(unformatted);
+        return formatted;
+      })
+      .join(',');
   });
   const csv = headers + rows.join('\n');
   return csv;

@@ -792,7 +792,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         true,
         set?.gridFilters ? set?.gridFilters : null,
         0,
-        10000,
+        10000, // CSV limit
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
       );
       filters.isCSV = true;
