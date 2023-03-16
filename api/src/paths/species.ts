@@ -17,13 +17,15 @@ const namespace = 'species';
 export const GET: Operation = [getSpeciesDetails()];
 
 GET.apiDoc = {
-  tags: ['species'],
+  tags: [namespace],
   description: 'Fetches one or more species based on their keys.',
   ...retrieveGetDoc('Array of species.')
 };
 
 function getSpeciesDetails(): RequestHandler {
   return async (req, res, next) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     const keys = req.query.key as string[];
 
     if (!keys || !keys.length) {
@@ -34,6 +36,7 @@ function getSpeciesDetails(): RequestHandler {
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
@@ -48,8 +51,11 @@ function getSpeciesDetails(): RequestHandler {
       const allCodeEntities: IAllCodeEntities = await cached(CacheKeys.ALL_CODE_CATEGORIES, 3600000, () =>
         getAllCodeEntities()
       )();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,allCodeEntities);
+      logData()(namespace,logMetrics.SQL_PARAMS,keys);
 
       if (!allCodeEntities) {
+        logErr()(namespace,`No Code Entities cached, return request\n${req?.body}`);
         return req;
       }
 
@@ -59,6 +65,8 @@ function getSpeciesDetails(): RequestHandler {
       species = allCodeEntities.codes.filter(
         (item) => (item['code_header_id'] === 28 || item['code_header_id'] === 29) && keys.includes(item['code_name'])
       );
+      logData()(namespace,logMetrics.SQL_RESULTS,species);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
         message: 'Successfully retrieved species.',
@@ -69,7 +77,7 @@ function getSpeciesDetails(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getSpecies', message: 'error', error });
+      logErr()(namespace,`Error getting species\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Unable to fetch species.',
         request: req.body,
