@@ -262,7 +262,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       }
 
       if (sanitizedSearchCriteria.isCSV) {
-        const responseCSV = response.rowCount > 0 ? await mapSitesRowsToCSV(response, sanitizedSearchCriteria) : [];
+        const responseCSV = response.rowCount > 0 ? await mapSitesRowsToCSV(response, 'default_activities_extract') : [];
         return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseCSV as unknown as string);
       } else {
         return res.status(200).set(responseCacheHeaders).json(responseBody);

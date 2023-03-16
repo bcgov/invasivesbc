@@ -3,7 +3,12 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
 
   // set up callbacks to format specific fields
   let fieldFormatMap = {};
+  const defaultFormatter = (value) => {return value}; 
   switch (templateName) {
+    default:
+      fieldFormatMap['jurisdictions'] = (value) => {
+        return '"' + value + '"';
+      };
     case 'main_extract':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
@@ -11,11 +16,11 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['fieldTwo'] = (value) => {
         return value + 'banana';
       };
-      fieldFormatMap['jurisdictions'] = (value) => {
-        return '"' + value + '"';
-      };
       break;
-    default:
+    case 'default_activities_extract':
+      fieldFormatMap['fieldOne'] = (value) => {
+        return value;
+      };
       break;
   }
 
@@ -24,7 +29,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
     return Object.keys(row)
       .map((fieldNameRaw: any) => {
         const fieldName = fieldNameRaw.trim()
-        const formatter = typeof fieldFormatMap[fieldName] === 'function'? fieldFormatMap[fieldName]: (value) => {return value};
+        const formatter = typeof fieldFormatMap[fieldName] === 'function'? fieldFormatMap[fieldName]: defaultFormatter 
         let unformatted =
           typeof row[fieldName] === 'string' ? row[fieldName].replace(/(\r\n|\n|\r)/gm, '') : row[fieldName];
         const formatted = formatter(unformatted);
