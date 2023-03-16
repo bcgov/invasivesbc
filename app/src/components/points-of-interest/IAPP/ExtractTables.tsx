@@ -69,7 +69,7 @@ interface BioDispersalColumn {
     | 'species_common_name'
     | 'inspection_date'
     | 'project_code'
-    | 'duration_of_count'
+    | 'count_duration'
     | 'plant_count'
     | 'agent_count'
     | 'biological_agent_code'
@@ -148,10 +148,10 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 350 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 200 },
-  { id: 'duration_of_count', label: 'Duration of Count (min)', minWidth: 150 },
-  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
-  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 150 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
+  { id: 'count_duration', label: 'Duration of Count (min)', minWidth: 150 },
   { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
   { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
   { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },

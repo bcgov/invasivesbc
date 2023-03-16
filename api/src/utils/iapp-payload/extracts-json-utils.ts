@@ -68,16 +68,16 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     map_code: dispersal.invasive_plant, // convert to map code (XX)
     utm_zone: dispersal.utm_zone,
     monitoring: [],
-    agent_count: null,
     common_name: common_name, // use common name
-    plant_count: dispersal.density,
     utm_easting: dispersal.utm_easting,
     project_code: [{ description: dispersal.dispersal_paper_file_id }],
     utm_northing: dispersal.utm_northing,
     monitoring_id: dispersal.biologicaldispersalid, // What is this??? (used dispersal id)
-    count_duration: null, // Could not find or don't know what it means
     general_comment: dispersal.site_comments,
     monitoring_date: dispersal.inspection_date,
+    agent_count: dispersal.agent_count,
+    plant_count: dispersal.plant_count,
+    count_duration: dispersal.count_duration,
     eggs_present_ind: dispersal.eggs_present,
     pupae_present_ind: dispersal.pupae_present,
     adults_present_ind: dispersal.adults_present,
