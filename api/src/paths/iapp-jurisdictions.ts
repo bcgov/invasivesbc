@@ -94,7 +94,7 @@ function getJurisdictions(): RequestHandler {
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-      logData()(namespace,logMetrics.SQL_RESULTS,rows);
+      logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(rows));
       logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
       return res.status(200).json({
