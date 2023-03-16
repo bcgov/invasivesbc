@@ -3,10 +3,16 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
 
   // set up callbacks to format specific fields
   let fieldFormatMap = {};
-  const defaultFormatter = (value) => {return value}; 
+  const defaultFormatter = (value) => {return typeof value === 'string'? '"' + value + '"': value}; 
   switch (templateName) {
     default:
       fieldFormatMap['jurisdictions'] = (value) => {
+        return '"' + value + '"';
+      };
+      fieldFormatMap['comment'] = (value) => {
+        return '"' + value + '"';
+      };
+      fieldFormatMap['comments'] = (value) => {
         return '"' + value + '"';
       };
       fieldFormatMap['jurisdiction'] = (value) => {

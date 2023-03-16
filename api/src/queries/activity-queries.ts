@@ -343,11 +343,11 @@ export const getActivitiesSQL = (
   if (searchCriteria.isCSV) {
     switch(searchCriteria.CSVType) {
       case 'terrestrial_plant_observation':
-        sqlStatement.append('join current_observation_terrestrial_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id ');
       case 'aquatic_plant_observation':
-        sqlStatement.append('join current_observation_aquatic_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = b.activity_id ');
       default:
-        sqlStatement.append('join current_observation_terrestrial_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id ');
     }
   }
 
