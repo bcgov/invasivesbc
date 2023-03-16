@@ -12,6 +12,7 @@ import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService, { versionedKey } from '../utils/cache-service';
+import { mapSitesRowsToCSV } from '../utils/iapp-csv-utils';
 
 const defaultLog = getLogger('activity');
 
@@ -260,7 +261,12 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         cache.put(ETag, responseBody);
       }
 
-      return res.status(200).set(responseCacheHeaders).json(responseBody);
+      if (sanitizedSearchCriteria.isCSV) {
+        const responseCSV = response.rowCount > 0 ? await mapSitesRowsToCSV(response, sanitizedSearchCriteria.CSVType) : [];
+        return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseCSV as unknown as string);
+      } else {
+        return res.status(200).set(responseCacheHeaders).json(responseBody);
+      }
     } catch (error) {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
