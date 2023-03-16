@@ -14,7 +14,7 @@ export const GET: Operation = [getRoles()];
 
 GET.apiDoc = {
   description: 'Get some information about users and their roles',
-  tags: ['roles'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -55,8 +55,11 @@ GET.apiDoc = {
 //
 function getRoles(): RequestHandler {
   return async (req, res, next) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Database connection unavailable.',
         request: req.body,
@@ -66,8 +69,10 @@ function getRoles(): RequestHandler {
     }
     try {
       const sqlStatement: SQLStatement = getAllRolesSQL();
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
-        return res.status(500).json({
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
           namespace,
@@ -75,6 +80,8 @@ function getRoles(): RequestHandler {
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,response);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Successfully retrieved roles.',
         request: req.body,
@@ -84,7 +91,7 @@ function getRoles(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'getRoles', message: 'error', error });
+      logErr()(namespace,`Error getting roles\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Error fetching roles.',
         request: req.body,
