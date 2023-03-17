@@ -169,7 +169,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
   const endpoint = req.url.split('/')[2];
   const endpointConfigObj = loggingConfig.endpoint_configs[endpoint];
   const logger = getLogger(endpoint);
-    
+
   if(endpointConfigObj) {
     // console.log('endpoint',endpoint);
     // console.log('endpointConfigObj',endpointConfigObj);
@@ -221,7 +221,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         });
       }
     }
-    
+
     // req body
     if(endpointConfigObj?.[logMetrics.REQUEST_BODY])
     {
@@ -239,13 +239,13 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         })
       }
     }
-    
+
     if(endpointConfigObj?.[logMetrics.REQUEST_TIME])
     {
       logger.log({
         level: 'debug',
-        message: `${req.method} REQ-TIME: ${formatDate(new Date())} USER: ${req.authContext.friendlyUsername}`
-      }); 
+        message: `${req.method} REQ-TIME: ${formatDate(new Date())}`
+      });
     }
 
     if(endpointConfigObj?.[logMetrics.RESPONSE_BODY])
@@ -264,7 +264,7 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
         })
       }
     }
-    // 
+    //
     if(endpointConfigObj?.[logMetrics.RESPONSE_TIME])
     {
       const start = hrtime();
@@ -274,20 +274,20 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
           logger.log({
             level: 'debug',
             message: formatResTimeMsg(new Date(), durationInMilliseconds.toLocaleString(),'RES-T-FINISHED')
-          }); 
+          });
 
       })
-    
+
       res.on('close', () => {
           const durationInMilliseconds = getDurationInMilliseconds(hrtime(start));
 
           logger.log({
             level: 'debug',
             message: formatResTimeMsg(new Date(), durationInMilliseconds.toLocaleString(),'RES-T-CLOSE')
-          }); 
+          });
       })
     }
-    console.log(LINES_NEXT+LINES_NEXT);
+    // console.log(LINES_NEXT+LINES_NEXT);
   }
 
 }
@@ -295,17 +295,18 @@ const loggingHandler = (isAuthd: boolean = false) => (req: any, res: any): void 
 /**
  * Log endpoint wrapper function
  * @param isAuthd
- * @param req 
- * @param res  
- * 
+ * @param req
+ * @param res
+ *
  * @returns void
  */
 const logEndpoint = (isAuthd: boolean = false) => (req: any, res: unknown) => {
+    console.log('endpoint',req?.url.split('/')[2]);
   loggingHandler((req?.authContext?.friendlyUsername !== undefined) || isAuthd)(req, res);
 }
 
 const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
-  endpoint: string = '', 
+  endpoint: string = '',
   logMetric: string,
   value: any
 ) => {
@@ -341,7 +342,7 @@ const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
         break;
       case logMetrics.SQL_RESULTS:
         metricLabel = 'SQL-RSLTS';
-        break; 
+        break;
       case logMetrics.SQL_RESPONSE_TIME:
         metricLabel = 'SQL-RES-T';
         value = formatResTimeMsg(new Date(), getDurationInMilliseconds(hrtime(value)).toLocaleString());
@@ -361,15 +362,15 @@ const logData = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
       getLogger(endpoint).log({
         level: 'debug',
         message: `${metricLabel}:${nextLine ? '\n' : ' '}${value}`,
-      }); 
+      });
     }
   }
 }
 
 /**
  * A log errors wrapper function
- * @param requireAuthd 
- * @param isAuthd 
+ * @param requireAuthd
+ * @param isAuthd
  * @returns void
  */
 const logErr  = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
@@ -384,7 +385,7 @@ const logErr  = (requireAuthd: boolean = false, isAuthd: boolean = false) => (
  * get the start time from node to return on end to calculate duration time.
  * @returns [number, number] current time value
  */
-const getStartTime = (namespace:string):[number, number] => { 
+const getStartTime = (namespace:string):[number, number] => {
   logData()(namespace,logMetrics.SQL_QUERY_START_TIME,new Date());
   return hrtime();
 }
