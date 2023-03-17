@@ -41,6 +41,7 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
 };
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
+  const mapState = useSelector(selectMap)
   const workingPolyline = [];
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
@@ -49,9 +50,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
 
 
 
-  useEffect(()=> {
-    console.log(props.geometryState.geometry)
-  },[])
+
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;
@@ -180,7 +179,6 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   if (!props.activityId && !props.isLoading) {
     return <></>;
   }
-  const mapState = useSelector(selectMap)
 
   return (
     <MapRecordsContextProvider>
@@ -251,12 +249,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
-              {mapState?.center?
               <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
                 <RecordSetLayersRenderer />
-                <ActivityMapExtentToggle/>
-                <ExtentListener/>
-              </MapContainer> : <></>}
+              </MapContainer>
             </Grid>
           </Grid>
         </AccordionDetails>
