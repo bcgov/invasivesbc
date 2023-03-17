@@ -1,3 +1,9 @@
+.batchNav {
+  background: #0078A8;
+  padding: 0;
+  margin: 0;
+}
+
 div.template-description {
   text-align: center;
   border: 1px solid #444;
@@ -66,5 +72,84 @@ table.code-reference {
 
   margin: 0;
   padding: 0;
+}
+
+table.batchAlternateLayout {
+  border-collapse: collapse;
+  font-size: 12px;
+
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+        text-align: left;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #e3e3e3;
+      }
+
+      td.informational {
+        background-color: #66afe9;
+      }
+
+      td.warning {
+        background-color: khaki;
+      }
+
+      td.error {
+        background-color: palevioletred;
+      }
+
+      td.unknown {
+        background-color: lime;
+
+      }
+    }
+  }
+}
+
+table.batchValidation {
+
+
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
+  tbody {
+    font-family: "Courier New", fixed;
+
+    tr {
+      border-top: 1px solid darkblue;
+
+      &:hover {
+        background-color: #ccccff;
+      }
+
+      td {
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
 
 }

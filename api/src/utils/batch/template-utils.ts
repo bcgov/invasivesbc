@@ -14,6 +14,7 @@ import {TreatmentChemicalAquaticPlant} from './templates/treatment_chemical_aqua
 import {TreatmentMechanicalAquaticPlant} from './templates/treatment_mechanical_aquatic_plant';
 import {TreatmentMechanicalTerrestrialPlant} from './templates/treatment_mechanical_terrestrial_plant';
 import {getDBConnection} from '../../database/db';
+import {PoolClient} from "pg";
 
 const templateList: Template[] = [
   ObservationAquaticPlant,
@@ -45,8 +46,21 @@ export const TemplateService = {
     return templateList;
   },
 
+  getTemplateWithExistingDBConnection: async (key: string, dbConnection: PoolClient) => {
+    const found = templateList.find((t) => t.key === key);
+
+    if (!found) {
+      throw new Error('No matching template found');
+    }
+
+    await found.hydrateAllCodes(dbConnection);
+
+    return found;
+  },
+
   getTemplate: async (key: string) => {
     const dbConnection = await getDBConnection();
+
     try {
       const found = templateList.find((t) => t.key === key);
 

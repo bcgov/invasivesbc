@@ -6,6 +6,7 @@ import {useDispatch} from "react-redux";
 import {BATCH_LIST_REQUEST} from "../../state/actions";
 import Spinner from "../spinner/Spinner";
 import {Error} from "@mui/icons-material";
+import {Link} from "react-router-dom";
 
 const BatchUploadList = () => {
 
@@ -36,6 +37,7 @@ const BatchUploadList = () => {
             <th>ID</th>
             <th>Status</th>
             <th>Date</th>
+            <th>Link</th>
           </tr>
           </thead>
           <tbody>
@@ -44,6 +46,7 @@ const BatchUploadList = () => {
               <td>{b.id}</td>
               <td>{b.status}</td>
               <td>{b.created_at}</td>
+              <td><Link to={`/home/batch/${b.id}`}>View This Batch</Link></td>
             </tr>
           ))}
           </tbody>

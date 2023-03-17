@@ -19,16 +19,18 @@ const BatchFileComponent = ({setData, ready, disabled}) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
 
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading has failed');
+      reader.onabort = () => setStatusMessage('file reading was aborted');
+      reader.onerror = () => setStatusMessage('file reading has failed');
 
       reader.onload = () => {
         const encodedString = btoa(reader.result as string);
+        console.dir(encodedString);
         setData(encodedString);
       };
 
       setStatusMessage(null);
       setFilename(file.name);
+
       reader.readAsText(file, 'utf-8');
     });
   }, []);
@@ -66,6 +68,7 @@ const BatchFileComponent = ({setData, ready, disabled}) => {
             onClick={() => {
               setFilename(null);
               setStatusMessage(null);
+              setData(null);
             }}>
             Clear
           </Button>

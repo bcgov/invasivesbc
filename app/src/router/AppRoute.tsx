@@ -1,17 +1,17 @@
-import React, { Suspense, useContext, useEffect } from 'react';
-import { Route, RouteProps, useHistory } from 'react-router-dom';
-import { ErrorContext } from 'contexts/ErrorContext';
-import { ErrorBanner } from '../components/error/ErrorBanner';
-import { useSelector } from '../state/utilities/use_selector';
-import { selectAuth } from '../state/reducers/auth';
-import { AccessLevel } from '../AppRouter';
+import React, {Suspense, useContext, useEffect, useState} from 'react';
+import {Route, RouteProps, useHistory} from 'react-router-dom';
+import {ErrorContext} from 'contexts/ErrorContext';
+import {ErrorBanner} from '../components/error/ErrorBanner';
+import {useSelector} from '../state/utilities/use_selector';
+import {selectAuth} from '../state/reducers/auth';
+import {AccessLevel} from '../AppRouter';
 import CheckAccess from './CheckAccess';
 import HomeLayout from 'features/home/HomeLayout';
-import { CircularProgress, Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useDispatch } from 'react-redux';
-import { selectTabs } from 'state/reducers/tabs';
-import { TABS_SET_ACTIVE_TAB_REQUEST } from 'state/actions';
+import {CircularProgress, Theme} from '@mui/material';
+import {makeStyles} from '@mui/styles';
+import {useDispatch} from 'react-redux';
+import {selectTabs} from 'state/reducers/tabs';
+import {TABS_SET_ACTIVE_TAB_REQUEST} from 'state/actions';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -33,14 +33,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
-  let { component: Component, title: pageTitle, accessLevel } = props;
+  let {component: Component, title: pageTitle, accessLevel} = props;
   const classes = useStyles();
   const errorContext = useContext(ErrorContext);
-  const { initialized: authInitialized } = useSelector(selectAuth);
+  const {initialized: authInitialized} = useSelector(selectAuth);
   const [hasErrors, setHasErrors] = React.useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const tabs = useSelector(selectTabs);
+
+  const {computedMatch} = props;
 
   useEffect(() => {
     if (authInitialized) {
@@ -72,6 +74,14 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
     }
   }, [errorContext.hasErrors, errorContext.errorArray]);
 
+  const [routeMatchProps, setRouteMatchProps] = useState({});
+
+  useEffect(() => {
+    setRouteMatchProps({
+      match: computedMatch
+    });
+  }, [computedMatch]);
+
   return (
     <Route
       render={(renderProps) => {
@@ -95,14 +105,14 @@ const AppRoute: React.FC<IPrivateRouteProps> = (props) => {
                       })}
                     <CheckAccess accessLevel={accessLevel}>
                       <Suspense fallback={<>loading</>}>
-                        <Component {...renderProps} classes={classes} />
+                        <Component {...renderProps} {...routeMatchProps} classes={classes}/>
                       </Suspense>
                     </CheckAccess>
                   </HomeLayout>
                 </>
               ) : (
                 <div>
-                  <CircularProgress />
+                  <CircularProgress/>
                 </div>
               )
             }

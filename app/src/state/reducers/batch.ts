@@ -1,4 +1,6 @@
 import {
+  BATCH_CREATE_ERROR, BATCH_CREATE_REQUEST,
+  BATCH_CREATE_SUCCESS,
   BATCH_LIST_ERROR,
   BATCH_LIST_REQUEST,
   BATCH_LIST_SUCCESS, BATCH_RETRIEVE_ERROR,
@@ -64,6 +66,27 @@ function createBatchReducer() {
           ...state,
           working: false,
           error: true,
+          item: null
+        };
+      case BATCH_CREATE_SUCCESS:
+        return {
+          ...state,
+          working: false,
+          error: false,
+          item: action.payload
+        };
+      case BATCH_CREATE_ERROR:
+        return {
+          ...state,
+          working: false,
+          error: true,
+          item: null
+        };
+      case BATCH_CREATE_REQUEST:
+        return {
+          ...state,
+          working: true,
+          error: false,
           item: null
         };
       default:

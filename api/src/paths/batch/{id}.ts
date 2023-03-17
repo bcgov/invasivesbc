@@ -1,11 +1,13 @@
 'use strict';
 
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { InvasivesRequest } from '../../utils/auth-utils';
+import {RequestHandler} from 'express';
+import {Operation} from 'express-openapi';
+import {QueryResult} from 'pg';
+import {ALL_ROLES, SECURITY_ON} from '../../constants/misc';
+import {getDBConnection} from '../../database/db';
+import {InvasivesRequest} from '../../utils/auth-utils';
+import {TemplateService} from '../../utils/batch/template-utils';
+import {BatchValidationResult, BatchValidationService} from '../../utils/batch/validation';
 
 export const GET: Operation = [listBatches()];
 
@@ -63,11 +65,37 @@ function listBatches(): RequestHandler {
         });
       }
 
+      const retrievedBatch = response.rows[0];
+
+      const template = await TemplateService.getTemplateWithExistingDBConnection(retrievedBatch.template, connection);
+      if (!template) {
+        return res.status(500).json({
+          message: `Missing template: ${template}`,
+          request: req.body,
+          error: null,
+          namespace: 'batch',
+          code: 500
+        });
+      }
+
+      const validationResult = BatchValidationService.validateBatchAgainstTemplate(
+        template,
+        retrievedBatch['json_representation']
+      );
+
+      const responseObject = {
+        ...retrievedBatch,
+        template,
+        json_representation: validationResult.validatedBatchData,
+        globalValidationMessages: validationResult.globalValidationMessages,
+        canProceed: validationResult.canProceed,
+      };
+
       return res.status(200).json({
-        message: 'Batches retrieved',
+        message: 'Batch retrieved',
         request: req.body,
-        result: response.rows[0],
-        count: response.rowCount,
+        result: responseObject,
+        count: 1,
         namespace: 'batch',
         code: 200
       });
