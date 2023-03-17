@@ -259,7 +259,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         editable={true}
         //center={[55, -128]}
         center={mapState.center}
-        zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
+        //zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
+        zoom={mapState.zoom}
         bounceAtZoomLimits={true}
         maxZoom={mapMaxZoom}
         minZoom={1}

@@ -26,6 +26,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { RecordSetLayersRenderer } from 'components/map/LayerLoaderHelpers/RecordSetLayersRenderer';
 import { ActivityMapExtentToggle } from 'components/map/Tools/ToolTypes/Nav/ActivityMapExtentToggle';
 import { ExtentListener } from 'components/map/ExtentListener';
+import { useSelector } from 'react-redux';
+import { selectMap } from 'state/reducers/map';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -178,6 +180,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   if (!props.activityId && !props.isLoading) {
     return <></>;
   }
+  const mapState = useSelector(selectMap)
 
   return (
     <MapRecordsContextProvider>
@@ -248,11 +251,12 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
               </Button>
             </Grid> */}
             <Grid xs={12} className={props.classes.mapContainer} item>
+              {mapState?.center?
               <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
                 <RecordSetLayersRenderer />
                 <ActivityMapExtentToggle/>
                 <ExtentListener/>
-              </MapContainer>
+              </MapContainer> : <></>}
             </Grid>
           </Grid>
         </AccordionDetails>

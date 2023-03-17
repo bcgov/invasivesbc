@@ -359,6 +359,7 @@ const PageContainer = (props) => {
         }}>
         <MapRecordsContextProvider>
           <Suspense fallback={<span>Map loading</span>}>
+            {mapState?.center?
             <MapContainer
               classes={classes}
               showDrawControls={showDrawControls}
@@ -370,7 +371,7 @@ const PageContainer = (props) => {
               geometryState={{ geometry, setGeometry }}>
             <ExtentListener/>
               {mapState.IAPPGeoJSON?.features.length ? <RecordSetLayersRenderer /> : <></>}
-            </MapContainer>
+            </MapContainer> : <></>}
           </Suspense>
         </MapRecordsContextProvider>
       </Box>

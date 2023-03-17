@@ -66,6 +66,8 @@ class MapState {
 
   constructor() {
     this.initialized = false;
+    this.center = [53, -127]
+    this.zoom = 5
     this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
