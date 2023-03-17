@@ -72,17 +72,17 @@ const BatchTable = ({jsonRepresentation}) => {
         <thead>
         <tr>
           <th>Field</th>
-          {jsonRepresentation.rows.map((row) => (
+          {jsonRepresentation?.rows?.map((row) => (
             <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
           ))}
         </tr>
         </thead>
         <tbody>
-        {jsonRepresentation.headers.map((h) => {
+        {jsonRepresentation?.headers?.map((h) => {
           return (
             <tr key={h}>
               <td className={'fieldName'}>{h}</td>
-              {jsonRepresentation.rows.map((row) => (
+              {jsonRepresentation?.rows?.map((row) => (
                 <BatchTableCell key={row.rowIndex} field={h} row={row}/>
               ))}
             </tr>
