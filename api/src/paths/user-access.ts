@@ -5,6 +5,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
+import { logEndpoint, logData, logErr, getStartTime, logMetrics } from '../utils/logger';
 import {
   getRolesForUserSQL,
   getUsersForRoleSQL,
@@ -20,7 +21,7 @@ export const GET: Operation = [decideGET()];
 
 GET.apiDoc = {
   description: 'Get some information about users and their roles',
-  tags: ['user-access'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
       {
@@ -69,7 +70,7 @@ GET.apiDoc = {
 
 POST.apiDoc = {
   description: 'Grant a role to a user',
-  tags: ['user-access'],
+  tags: [namespace],
   security: [
     {
       Bearer: ALL_ROLES
@@ -110,7 +111,7 @@ POST.apiDoc = {
 
 DELETE.apiDoc = {
   description: 'Grant a role to a user',
-  tags: ['user-access'],
+  tags: [namespace],
   security: [
     {
       Bearer: ALL_ROLES
@@ -152,7 +153,10 @@ DELETE.apiDoc = {
 // Returns a function that will be used as a middleware for the GET request
 // Returns 400 if both parameters are provided
 function decideGET() {
-  return async (req, res, next) => {
+  return async (req, res) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const roleId = req.query.roleId;
     const userId = req.query.userId;
     if (roleId && userId) {
@@ -164,20 +168,23 @@ function decideGET() {
       });
     }
     if (roleId) {
-      return await getUsersForRole(req, res, next, roleId);
+      return await getUsersForRole(req, res, roleId, startTime);
     }
     if (userId) {
-      return await getRolesForUser(req, res, next, userId);
+      return await getRolesForUser(req, res, userId, startTime);
     }
-    return await getRolesForSelf(req, res, next);
+    return await getRolesForSelf(req, res, startTime);
   };
 }
 
 function batchGrantRoleToUser(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         error: 'Database connection unavailable',
         request: req.body,
@@ -188,7 +195,10 @@ function batchGrantRoleToUser(): RequestHandler {
     try {
       for (const userId of req.body.userIds) {
         const sqlStatement: SQLStatement = grantRoleToUserSQL(userId, req.body.roleId);
+        logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+        logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
         if (!sqlStatement) {
+          logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
           return res.status(500).json({
             error: 'Failed to generate SQL statement',
             request: req.body,
@@ -198,6 +208,8 @@ function batchGrantRoleToUser(): RequestHandler {
         }
         const response = await connection.query(sqlStatement.text, sqlStatement.values);
         const result = response.rows;
+        logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(result));
+        logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
         return res.status(201).json({
           message: 'Successfully granted role to user',
           request: req.body,
@@ -208,7 +220,7 @@ function batchGrantRoleToUser(): RequestHandler {
         });
       }
     } catch (error) {
-      // defaultLog.debug({ label: 'create', message: 'error', error });
+      logErr()(namespace,`Error granting role to user\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to grant role to user',
         request: req.body,
@@ -224,9 +236,13 @@ function batchGrantRoleToUser(): RequestHandler {
 
 function revokeRoleFromUser(): RequestHandler {
   return async (req, res) => {
-    // defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
+
     const connection = await getDBConnection();
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
+
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -236,7 +252,10 @@ function revokeRoleFromUser(): RequestHandler {
     }
     try {
       const sqlStatement: SQLStatement = revokeRoleFromUserSQL(req.body.userId, req.body.roleId);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
       if (!sqlStatement) {
+        logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
         return res.status(500).json({
           message: 'Failed to generate SQL statement',
           request: req.body,
@@ -245,6 +264,8 @@ function revokeRoleFromUser(): RequestHandler {
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
       return res.status(200).json({
         message: 'Successfully revoked role from user',
         request: req.body,
@@ -254,7 +275,7 @@ function revokeRoleFromUser(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      // defaultLog.debug({ label: 'create', message: 'error', error });
+      logErr()(namespace,`Error revoking role from user\n${req?.body}\n${error}`);
       return res.status(500).json({
         message: 'Failed to revoke role from user',
         request: req.body,
@@ -268,10 +289,10 @@ function revokeRoleFromUser(): RequestHandler {
   };
 }
 
-async function getUsersForRole(req, res, next, roleId) {
-  // defaultLog.debug({ label: '{userId}', message: 'getUsersForRole', body: req.query });
+async function getUsersForRole(req, res, roleId, startTime = getStartTime(namespace)) {
   const connection = await getDBConnection();
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
@@ -281,7 +302,10 @@ async function getUsersForRole(req, res, next, roleId) {
   }
   try {
     const sqlStatement: SQLStatement = getUsersForRoleSQL(roleId);
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+    logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to generate SQL statement',
         request: req.body,
@@ -290,6 +314,8 @@ async function getUsersForRole(req, res, next, roleId) {
       });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Successfully retrieved users for role',
       request: req.body,
@@ -299,7 +325,7 @@ async function getUsersForRole(req, res, next, roleId) {
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'getUsersForRole', message: 'error', error });
+    logErr()(namespace,`Error retrieving users for role\n${req?.body}\n${error}`);
     return res.status(500).json({
       message: 'Failed to retrieve users for role',
       request: req.body,
@@ -312,11 +338,10 @@ async function getUsersForRole(req, res, next, roleId) {
   }
 }
 
-async function getRolesForUser(req, res, next, userId) {
-  // defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
+async function getRolesForUser(req, res, userId, startTime = getStartTime(namespace)) {
   const connection = await getDBConnection();
-  console.dir('got db connection');
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
     return res.status(503).json({
       message: 'Database connection unavailable',
       request: req.body,
@@ -326,7 +351,10 @@ async function getRolesForUser(req, res, next, userId) {
   }
   try {
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+    logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
     if (!sqlStatement) {
+      logErr()(namespace,`Error generating SQL statement: 500\n${req?.body}`);
       return res.status(500).json({
         message: 'Failed to generate SQL statement',
         request: req.body,
@@ -335,6 +363,8 @@ async function getRolesForUser(req, res, next, userId) {
       });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(response));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json({
       message: 'Successfully retrieved roles for user',
       request: req.body,
@@ -344,7 +374,7 @@ async function getRolesForUser(req, res, next, userId) {
       code: 200
     });
   } catch (error) {
-    // defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
+    logErr()(namespace,`Error retrieving roles for user\n${req?.body}\n${error}`);
     return res.status(500).json({
       message: 'Failed to retrieve roles for user',
       request: req.body,
@@ -357,9 +387,15 @@ async function getRolesForUser(req, res, next, userId) {
   }
 }
 
-async function getRolesForSelf(req, res, next) {
+async function getRolesForSelf(req, res, startTime = getStartTime(namespace)) {
+  logData()(namespace,logMetrics.SQL_QUERY_SOURCE,'Get roles for self');
+  logData()(namespace,logMetrics.SQL_PARAMS,JSON.stringify(req.authContext.roles));
+
+  const msg = 'Successfully retrieved roles for self';
+  logData()(namespace,logMetrics.SQL_RESULTS,msg);
+  logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
   return res.status(200).json({
-    message: 'Successfully retrieved roles for self',
+    message: msg,
     request: req.body,
     result: {
       roles: req.authContext.roles,
