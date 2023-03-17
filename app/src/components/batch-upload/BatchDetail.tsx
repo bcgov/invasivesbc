@@ -19,7 +19,7 @@ const BatchMetadata = ({batch}) => {
         <dd>{batch['status']}</dd>
 
         <dt>Template</dt>
-        <dd>{batch['template'].name}</dd>
+        <dd>{batch['template']?.name}</dd>
 
       </dl>
     </Paper>
