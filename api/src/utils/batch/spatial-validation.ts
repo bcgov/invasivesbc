@@ -6,7 +6,7 @@ export const validateAsWKT = (input: string) =>
     try
     {
         const parsed = parse(input)
-        return true;
+        return (parsed !== null)? true: false
     }
     catch(e){
         console.log('invalid wkt: ' + input)
