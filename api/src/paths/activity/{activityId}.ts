@@ -17,7 +17,7 @@ export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
-  tags: ['activity'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -66,13 +66,15 @@ GET.apiDoc = {
  */
 function getActivity(): RequestHandler {
   return async (req, res, next) => {
-    // defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const activityId = req.params.activityId;
 
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.params}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: req.body,
@@ -85,8 +87,11 @@ function getActivity(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
+      logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+      logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
 
       if (!sqlStatement) {
+        logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
@@ -102,8 +107,10 @@ function getActivity(): RequestHandler {
       // defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result)});
 
       req['activity'] = result
+      logData()(namespace,logMetrics.SQL_RESULTS,result);
+      logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     } catch (error) {
-      // defaultLog.debug({ label: 'getActivity', message: 'error', error });
+      logErr()(namespace,`Error getting activity.\n${req?.params}\n${error}`);
       return res.status(500).json({
         message: 'Unable to fetch activity.',
         request: req.body,
@@ -121,7 +128,8 @@ function getActivity(): RequestHandler {
 
 function getMedia(): RequestHandler {
   return async (req, res, next) => {
-    // defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
 
     const activity = req['activity'];
 
@@ -135,11 +143,14 @@ function getMedia(): RequestHandler {
     activity['media_keys'].forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));
     });
-
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,'get Media');
+    logData()(namespace,logMetrics.SQL_PARAMS,s3GetPromises);
     const response = await Promise.all(s3GetPromises);
 
     // Add encoded media to activity
     req['activity'].media = getMediaItemsList(response, activity['media_keys']);
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(req['activity'].media));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
 
     return next();
   };
@@ -152,9 +163,12 @@ function getMedia(): RequestHandler {
  */
 function returnActivity(): RequestHandler {
   return async (req, res) => {
-
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     // original blob from client:
     let originalPayload = { ...req['activity'].activity_payload}
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE, 'return Activity');
+    logData()(namespace,logMetrics.SQL_PARAMS,originalPayload);
 
     // other columns in activity_incoming_data:
     let supplementalFields = { ...req['activity']}
@@ -162,7 +176,8 @@ function returnActivity(): RequestHandler {
 
     // merge the two
     const returnVal = { ...originalPayload, ...supplementalFields}
-
+    logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(returnVal));
+    logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
     return res.status(200).json(returnVal);
   };
 }
