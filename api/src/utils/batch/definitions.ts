@@ -1,7 +1,7 @@
 import {SQL} from "sql-template-strings";
 import {PoolClient} from "pg";
 
-type templateDataType = 'text' | 'numeric' | 'date' | 'datetime' | 'codeReference' | 'codeReferenceMulti' | 'boolean' | 'tristate';
+type templateDataType = 'text' | 'numeric' | 'date' | 'datetime' | 'codeReference' | 'codeReferenceMulti' | 'boolean' | 'tristate' | 'WKT';
 
 export class TemplateColumn {
   constructor(readonly name, readonly dataType: templateDataType) {

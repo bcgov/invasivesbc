@@ -11,7 +11,6 @@ ObservationTerrestrialPlant.columns = [
   ...ProjectInformation,
   ...ActivityPersons,
   new TemplateColumnBuilder('Observation - Pre-treatment observation?', 'boolean').build(),
-
   new TemplateColumnBuilder('Observation - Terrestrial - Soil Texture', 'codeReference').referencesCode('soil_texture_code').build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Specific Use', 'codeReference').referencesCode('specific_use_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Slope', 'codeReference').referencesCode('slope_code').isRequired().build(),

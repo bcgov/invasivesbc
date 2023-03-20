@@ -1,4 +1,5 @@
 import {Template, TemplateColumn} from './definitions';
+import { validateAsWKT } from './spatial-validation';
 
 type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -107,6 +108,21 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
     case 'text':
       result.parsedValue = data;
       //@todo validate length
+      break;
+    case 'WKT':
+      if(validateAsWKT(data))
+      {
+        result.parsedValue = data;
+      }
+      else
+      {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Could not be interpreted as a WKT geometry.',
+          messageDetail: data
+        });
+      }
+      //@todo validate geometry
       break;
     case 'tristate':
       switch (data.toLowerCase()) {

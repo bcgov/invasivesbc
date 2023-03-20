@@ -64,6 +64,7 @@
     "uuid": "~8.3.0",
     "validator": "~13.7.0",
     "winston": "~3.3.3",
+    "wkt": "^0.1.1",
     "yamljs": "~0.3.0"
   },
   "devDependencies": {

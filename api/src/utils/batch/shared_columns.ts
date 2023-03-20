@@ -1,6 +1,7 @@
 import {TemplateColumnBuilder} from './definitions';
 
 export const BasicInformation = [
+  new TemplateColumnBuilder('WKT', 'WKT').build(),
   new TemplateColumnBuilder('Basic - Date', 'date').isRequired().build(),
   new TemplateColumnBuilder('Basic - Latitude', 'numeric').isRequired().build(),
   new TemplateColumnBuilder('Basic - Longitude', 'numeric').isRequired().build(),
