@@ -94,6 +94,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
 import { autoRestart } from 'state/utilities/errorHandlers';
+import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
@@ -389,8 +390,10 @@ const handle_MAP_INIT_REQUEST = autoRestart(
     });
   },
   function* handleError(e) {
-    console.error(e);
-    alert(e);
+    copyToClipboard({
+      message: 'Map init request failed: ' + e.toString(),
+      value: e.toString()
+    });
     yield put({
       type: MAP_INIT_FAILURE
     });
@@ -847,8 +850,10 @@ const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
     }
   },
   function* handleError(e) {
-    console.error(e);
-    alert(e);
+    copyToClipboard({
+      message: 'Export to excel request failed: ' + e.toString(),
+      value: e.toString()
+    });
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE
     });

@@ -14,7 +14,7 @@ export const copyToClipboard = async ({ message, value }: any) => {
         throw new Error("Browser don't have support for native clipboard.");
       }
       await navigator.clipboard.writeText(value);
-      alert(message);
+      setTimeout(() => alert(message), 1000);
     } catch (error) {
       console.log(error.toString());
     }
