@@ -123,8 +123,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
   });
 
   let treatments = [];
-  if (networkReturn?.data?.result && networkReturn?.data?.result > 0) {
-    treatments = networkReturn?.data?.result?.map((treatment, i) => {
+  const result = (networkReturn?.data?.data?.result? networkReturn?.data?.data?.result: networkReturn.data.result)
+  if (result && result.length > 0) {
+    treatments = result.map((treatment, i) => {
       const shortActID = getShortActivityID(treatment);
       return {
         label: shortActID,

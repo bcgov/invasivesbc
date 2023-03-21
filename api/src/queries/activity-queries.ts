@@ -196,12 +196,11 @@ export const getActivitiesSQL = (
   }
 
   if (searchCriteria.isCSV === false) {
-
     sqlStatement.append(SQL`SELECT`);
-    
+
     let columnNames =
-    searchCriteria.column_names && searchCriteria.column_names?.length > 0 ? searchCriteria.column_names : [];
-    
+      searchCriteria.column_names && searchCriteria.column_names?.length > 0 ? searchCriteria.column_names : [];
+
     if (!isAuth && columnNames.length > 0) {
       //columns_names were requested for either activities full or lean
       // remove restricted column_names if NOT auth
@@ -254,84 +253,84 @@ export const getActivitiesSQL = (
             'geometry', public.st_asGeoJSON(geog)::jsonb
             ) as "geojson"
             `);
-          }
-        } else {
-          if (searchCriteria.activity_id_only) {
-            // empty column_names just in case they are loaded and will stop append later
-            columnNames = [];
-            sqlStatement.append(SQL` a.activity_id`);
-          } else {
-            if (columnNames?.length == 0) {
-              // console.log('No column_names and not lean');
-              if (isAuth) {
-                // if no column_names specified, select all
-                sqlStatement.append(SQL` *`);
-              } else {
-                // NO columnames and we are also NOT authenticated
-                // set default sanitized column names, public list, allow list
-                columnNames = [
-                  'activity_incoming_data_id',
-                  'activity_id',
-                  '"version"',
-                  'activity_type',
-                  'activity_subtype',
-                  'created_timestamp',
-                  'received_timestamp',
-                  'deleted_timestamp',
-                  'geom',
-                  'geog',
-                  'media_keys',
-                  'activity_payload',
-                  'biogeoclimatic_zones',
-                  'regional_invasive_species_organization_areas',
-                  'invasive_plant_management_areas',
-                  'ownership',
-                  'regional_districts',
-                  'flnro_districts',
-                  'moti_districts',
-                  'elevation',
-                  'well_proximity',
-                  'utm_zone',
-                  'utm_northing',
-                  'utm_easting',
-                  'albers_northing',
-                  'albers_easting',
-                  'form_status',
-                  'sync_status',
-                  'review_status',
-                  'reviewed_at',
-                  'species_positive',
-                  'species_negative',
-                  'jurisdiction',
-                  'species_treated',
-                  'species_positive_full',
-                  'species_negative_full',
-                  'species_treated_full',
-                  'agency',
-                  'jurisdiction_display',
-                  'short_id'
-                ];
-              }
-              // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
-            }
-            if (columnNames.length > 0) {
-              // console.log('columnNames at append', columnNames);
-              sqlStatement.append(getColumnNamesSQL(columnNames));
-            }
-          }
-          
-          // include the total count of results that would be returned if the limit and offset constraints weren't applied
-          sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
-        }
-      } else {
-        sqlStatement.append('SELECT extract.* ');
       }
-        
-        sqlStatement.append(
-          SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id `
-          );
-          
-          if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
+    } else {
+      if (searchCriteria.activity_id_only) {
+        // empty column_names just in case they are loaded and will stop append later
+        columnNames = [];
+        sqlStatement.append(SQL` a.activity_id`);
+      } else {
+        if (columnNames?.length == 0) {
+          // console.log('No column_names and not lean');
+          if (isAuth) {
+            // if no column_names specified, select all
+            sqlStatement.append(SQL` *`);
+          } else {
+            // NO columnames and we are also NOT authenticated
+            // set default sanitized column names, public list, allow list
+            columnNames = [
+              'activity_incoming_data_id',
+              'activity_id',
+              '"version"',
+              'activity_type',
+              'activity_subtype',
+              'created_timestamp',
+              'received_timestamp',
+              'deleted_timestamp',
+              'geom',
+              'geog',
+              'media_keys',
+              'activity_payload',
+              'biogeoclimatic_zones',
+              'regional_invasive_species_organization_areas',
+              'invasive_plant_management_areas',
+              'ownership',
+              'regional_districts',
+              'flnro_districts',
+              'moti_districts',
+              'elevation',
+              'well_proximity',
+              'utm_zone',
+              'utm_northing',
+              'utm_easting',
+              'albers_northing',
+              'albers_easting',
+              'form_status',
+              'sync_status',
+              'review_status',
+              'reviewed_at',
+              'species_positive',
+              'species_negative',
+              'jurisdiction',
+              'species_treated',
+              'species_positive_full',
+              'species_negative_full',
+              'species_treated_full',
+              'agency',
+              'jurisdiction_display',
+              'short_id'
+            ];
+          }
+          // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
+        }
+        if (columnNames.length > 0) {
+          // console.log('columnNames at append', columnNames);
+          sqlStatement.append(getColumnNamesSQL(columnNames));
+        }
+      }
+
+      // include the total count of results that would be returned if the limit and offset constraints weren't applied
+      sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+    }
+  } else {
+    sqlStatement.append('SELECT extract.* ');
+  }
+
+  sqlStatement.append(
+    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id `
+  );
+
+  if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
     sqlStatement.append(SQL`
       join multi_polygon_cte c on public.ST_INTERSECTS2(
         a.geog,
@@ -341,13 +340,17 @@ export const getActivitiesSQL = (
   }
 
   if (searchCriteria.isCSV) {
-    switch(searchCriteria.CSVType) {
+    switch (searchCriteria.CSVType) {
       case 'terrestrial_plant_observation':
-        sqlStatement.append('join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append(
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
       case 'aquatic_plant_observation':
         sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = b.activity_id ');
       default:
-        sqlStatement.append('join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append(
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
     }
   }
 
@@ -367,6 +370,7 @@ export const getActivitiesSQL = (
     sqlStatement.append(SQL`)`);
   }
 
+
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     sqlStatement.append(
@@ -374,8 +378,9 @@ export const getActivitiesSQL = (
     );
   }
 
+  // subtype and subtype full are a bit mismatched in places, this will search both:
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
-    sqlStatement.append(SQL` AND activity_subtype_full IN (`);
+    sqlStatement.append(SQL` AND (activity_subtype_full IN (`);
 
     // add the first activity subtype, which does not get a comma prefix
     sqlStatement.append(SQL`${searchCriteria.activity_subtype[0]}`);
@@ -385,7 +390,15 @@ export const getActivitiesSQL = (
       sqlStatement.append(SQL`, ${searchCriteria.activity_subtype[idx]}`);
     }
 
-    sqlStatement.append(SQL`)`);
+    sqlStatement.append(SQL`) OR (activity_subtype in (`);
+    // add the first activity subtype, which does not get a comma prefix
+    sqlStatement.append(SQL`${searchCriteria.activity_subtype[0]}`);
+
+    for (let idx = 1; idx < searchCriteria.activity_subtype.length; idx++) {
+      // add all subsequent activity subtypes, which do get a comma prefix
+      sqlStatement.append(SQL`, ${searchCriteria.activity_subtype[idx]}`);
+    }
+    sqlStatement.append(SQL`))) `);
   }
 
   if (searchCriteria.grid_filters) {
