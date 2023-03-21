@@ -1,17 +1,22 @@
-import React, { useEffect, lazy, Suspense } from 'react';
-import { Redirect, Switch, useHistory } from 'react-router-dom';
+import React, {useEffect, lazy, Suspense} from 'react';
+import {Redirect, Switch, useHistory} from 'react-router-dom';
 import AccessDenied from './pages/misc/AccessDenied';
-import { NotFoundPage } from './pages/misc/NotFoundPage';
-import { useSelector } from './state/utilities/use_selector';
-import { selectConfiguration } from './state/reducers/configuration';
+import {NotFoundPage} from './pages/misc/NotFoundPage';
+import {useSelector} from './state/utilities/use_selector';
+import {selectConfiguration} from './state/reducers/configuration';
 import AppRoute from './router/AppRoute';
 
-import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
-import { getDesignTokens } from 'utils/CustomThemeProvider';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { CssBaseline } from '@mui/material';
+import {createTheme, ThemeOptions, ThemeProvider} from '@mui/material';
+import {getDesignTokens} from 'utils/CustomThemeProvider';
+import {selectUserSettings} from 'state/reducers/userSettings';
+import {CssBaseline} from '@mui/material';
 import LandingPage from './features/home/landing/LandingPage';
-import BatchUploadPage from "./features/home/batch/BatchUploadPage";
+
+const BatchTemplates = lazy(() => import("./features/home/batch/BatchTemplates"));
+const BatchCreateNew = lazy(() => import("./features/home/batch/BatchCreateNew"));
+const BatchView = lazy(() => import("./features/home/batch/BatchView"));
+const BatchList = lazy(() => import("./features/home/batch/BatchList"));
+
 
 const MapPage = lazy(() => import('features/home/map/MapPage'));
 const AccessRequestPage = lazy(() => import('features/home/accessRequest/AccessRequestPage'));
@@ -36,9 +41,9 @@ export enum AccessLevel {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const { DEBUG } = useSelector(selectConfiguration);
-  const { location } = useHistory();
-  const { darkTheme } = useSelector(selectUserSettings);
+  const {DEBUG} = useSelector(selectConfiguration);
+  const {location} = useHistory();
+  const {darkTheme} = useSelector(selectUserSettings);
 
   const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
   const getTitle = (page: string) => {
@@ -53,9 +58,9 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline/>
       <Switch>
-        <Redirect exact from="/" to="/home/landing" />
+        <Redirect exact from="/" to="/home/landing"/>
         <AppRoute
           accessLevel={AccessLevel.PUBLIC}
           path="/forbidden"
@@ -157,13 +162,35 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           accessLevel={AccessLevel.USER}
           path="/home/batch"
           title={getTitle('Batch Upload')}
-          component={BatchUploadPage}
+          component={BatchList}
         />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/batch/new"
+          title={getTitle('Batch Upload - Create New')}
+          component={BatchCreateNew}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/batch/templates"
+          title={getTitle('Batch Upload - Templates')}
+          component={BatchTemplates}
+        />
+        <AppRoute
+          exact
+          accessLevel={AccessLevel.USER}
+          path="/home/batch/:id"
+          title={getTitle('Batch Upload')}
+          component={BatchView}
+        />
+
         <AppRoute
           accessLevel={AccessLevel.PUBLIC}
           title="*"
           path="*"
-          component={() => <Redirect to="/page-not-found" />}
+          component={() => <Redirect to="/page-not-found"/>}
         />
       </Switch>
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Paper, Typography } from '@mui/material';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import React, {useEffect, useState} from 'react';
+import {Box, Paper, Typography} from '@mui/material';
+import {useInvasivesApi} from '../../hooks/useInvasivesApi';
 
 const CodeTablesDownload: React.FC = () => {
   const api = useInvasivesApi();
@@ -14,8 +14,7 @@ const CodeTablesDownload: React.FC = () => {
   }, [api]);
 
   const downloadCodeTable = async (codeHeaderId, codeTableName) => {
-    const response = await api.fetchCodeTable(codeHeaderId, true);
-    const data = response;
+    const data = await api.fetchCodeTable(codeHeaderId, true);
     const dataUrl = `data:text/csv;base64,${btoa(data)}`;
     const downloadLink = document.createElement('a');
     downloadLink.setAttribute('href', dataUrl);

@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import {templateList} from "../../utils/batch/template-utils";
+import { TemplateService } from '../../utils/batch/template-utils';
 
 export const GET: Operation = [listTemplates()];
 
@@ -25,6 +25,6 @@ GET.apiDoc = {
 
 function listTemplates(): RequestHandler {
   return async (req, res) => {
-    return res.status(200).json(templateList);
+    return res.status(200).json(await TemplateService.listTemplatesShallow());
   };
 }

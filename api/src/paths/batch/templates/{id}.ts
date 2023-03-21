@@ -3,7 +3,7 @@
 import {RequestHandler} from 'express';
 import {Operation} from 'express-openapi';
 import {ALL_ROLES, SECURITY_ON} from '../../../constants/misc';
-import {templateList} from '../../../utils/batch/template-utils';
+import {TemplateService} from '../../../utils/batch/template-utils';
 
 export const GET: Operation = [downloadTemplate()];
 
@@ -25,10 +25,10 @@ GET.apiDoc = {
 
 function downloadTemplate(): RequestHandler {
   return async (req, res) => {
-    const annotatedVersion = req.query['annotated'];
-
-    const template = templateList.find((t) => t.key === req.params['id']);
-    if (!template) {
+    let template;
+    try {
+      template = await TemplateService.getTemplate(req.params['id']);
+    } catch (e) {
       return res.status(404);
     }
 

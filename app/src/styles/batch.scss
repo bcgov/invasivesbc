@@ -1,9 +1,16 @@
+.batchNav {
+  background: #0078A8;
+  padding: 0;
+  margin: 0;
+}
+
 div.template-description {
   text-align: center;
   border: 1px solid #444;
   margin: 1rem;
   padding: 1rem;
   border-radius: 4px;
+
   h5 {
     display: inline;
     padding-right: 2rem;
@@ -11,6 +18,7 @@ div.template-description {
     vertical-align: middle;
   }
 }
+
 table.template-preview {
   width: 100%;
   border-collapse: collapse;
@@ -39,4 +47,109 @@ table.template-preview {
 
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+
+code {
+  font-family: "Courier New", fixed;
+  display: block;
+}
+
+table.code-reference {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 70%;
+  max-height: 10rem;
+  overflow-y: scroll;
+
+  tbody {
+    td:last-child {
+      font-family: 'Courier New', fixed;
+      text-align: center;
+    }
+  }
+
+  margin: 0;
+  padding: 0;
+}
+
+table.batchAlternateLayout {
+  border-collapse: collapse;
+  font-size: 12px;
+
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+        text-align: left;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #e3e3e3;
+      }
+
+      td.informational {
+        background-color: #66afe9;
+      }
+
+      td.warning {
+        background-color: khaki;
+      }
+
+      td.error {
+        background-color: palevioletred;
+      }
+
+      td.unknown {
+        background-color: lime;
+
+      }
+    }
+  }
+}
+
+table.batchValidation {
+
+
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
+  tbody {
+    font-family: "Courier New", fixed;
+
+    tr {
+      border-top: 1px solid darkblue;
+
+      &:hover {
+        background-color: #ccccff;
+      }
+
+      td {
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
 }

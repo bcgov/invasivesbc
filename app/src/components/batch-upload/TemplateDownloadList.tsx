@@ -1,63 +1,35 @@
-import {Box, Button, Paper, Typography} from '@mui/material';
-import React, {useEffect, useState} from 'react';
-import {useInvasivesApi} from '../../hooks/useInvasivesApi';
-import Spinner from '../spinner/Spinner';
+import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 import TemplatePreview from './TemplatePreview';
-import {Download} from "@mui/icons-material";
+import { BATCH_TEMPLATE_LIST_REQUEST } from '../../state/actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectBatch } from '../../state/reducers/batch';
+import Spinner from '../spinner/Spinner';
 
 const TemplateDownloadList = () => {
-  const api = useInvasivesApi();
-  const [loading, setLoading] = useState(false);
-  const [templates, setTemplates] = useState([]);
+  const dispatch = useDispatch();
+  const { templates, working, error } = useSelector(selectBatch);
 
-  useEffect(async () => {
-    setLoading(true);
-    const data = await api.getTemplateList();
-    console.dir(data);
-    setTemplates(data);
-    setLoading(false);
+  useEffect(() => {
+    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
   }, []);
 
-  const downloadTemplate = async (key: string) => {
-    const downloadAPICall = api.downloadTemplate;
+  if (working) {
+    return <Spinner />;
+  }
 
-    const data = await downloadAPICall(key, 'csv', false);
-    const dataUrl = `data:text/csv;base64,${btoa(data)}`;
-
-    const downloadLink = document.createElement('a');
-    downloadLink.setAttribute('href', dataUrl);
-    downloadLink.setAttribute('download', `InvasivesBC ${key} template.csv`);
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  };
-
-  if (loading) {
-    return <Spinner/>;
+  if (error || templates == null) {
+    return <p>Error</p>;
   }
 
   return (
-    <Paper>
-      <Box mx={3} my={3} py={3}>
-        <Typography variant={'h4'}>Available Templates</Typography>
-        {templates.map((t) => (
-          <div className='template-description' key={t.name}>
-            <h5>{t.name}</h5>
-            <Button
-              variant={'contained'}
-              className={'template-download-link'}
-              onClick={() => {
-                downloadTemplate(t.key);
-              }}>
-              Download Template CSV
-              <Download fontSize={"medium"}/>
-            </Button>
-            <TemplatePreview id={t.key}/>
-          </div>
-        ))}
-      </Box>
-    </Paper>
+    <>
+      <Typography variant={'h4'}>Available Templates</Typography>
+      {templates.map((t) => (
+        <TemplatePreview name={t.name} id={t.key} key={t.key} />
+      ))}
+    </>
   );
 };
 
