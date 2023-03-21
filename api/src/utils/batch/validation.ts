@@ -119,7 +119,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
         result.validationMessages.push({
           severity: 'error',
           messageTitle: 'Could not be interpreted as a WKT geometry.',
-          messageDetail: data
+//          messageDetail: data
         });
       }
       //@todo validate geometry

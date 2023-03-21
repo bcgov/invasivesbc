@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/batch.scss';
+import { CopyToClipboardButton } from './ClipboardHelper';
 
 const BatchTableCell = ({ field, row }) => {
   const [hasMessages, setHasMessages] = useState(false);
@@ -27,6 +28,9 @@ const BatchTableCell = ({ field, row }) => {
           setDisplayedValue(row.data[field].inputValue);
         }
         break;
+      case 'WKT':
+        setDisplayedValue(v);
+        break;
       default:
         setDisplayedValue(v);
     }
@@ -50,10 +54,18 @@ const BatchTableCell = ({ field, row }) => {
 
     setDisplaySeverity(LEVELS[highestSeveritySeen]);
   }, [row.data[field].validationMessages]);
+  const WKTDisplay = (props: { displayVal: string }) => {
+    return (
+      <>
+        {props.displayVal.substring(0, 12) + '...'}
+        <CopyToClipboardButton content={row.data[field].parsedValue} />
+      </>
+    );
+  };
 
   return (
     <td className={displaySeverity}>
-      {displayedValue}
+      {row.data[field].templateColumn.dataType === 'WKT' ? <WKTDisplay displayVal={displayedValue} /> : displayedValue}
       <ul className={'messages'}>
         {hasMessages &&
           row.data[field]?.validationMessages.map((m) => (
