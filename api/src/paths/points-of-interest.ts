@@ -20,7 +20,7 @@ export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
 GET.apiDoc = {
   description: 'Fetches all points of interest based on search criteria.',
-  tags: ['point-of-interest'],
+  tags: [namespace],
   security: SECURITY_ON
     ? [
         {
@@ -83,13 +83,9 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
+    logEndpoint()(req,res);
+    const startTime = getStartTime(namespace);
     const criteria = JSON.parse(<string>req.query['query']);
-
-    // defaultLog.debug({
-    //   label: 'point-of-interest',
-    //   message: 'getPointsOfInterestBySearchFilterCriteria',
-    //   body: criteria
-    // });
 
     // get proper names from mapping table
     if (criteria.species_positive) {
@@ -107,10 +103,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
-
+    logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sanitizedSearchCriteria);
+    logData()(namespace,logMetrics.SQL_PARAMS,JSON.stringify(criteria));
     const connection = await getDBConnection();
 
     if (!connection) {
+      logErr()(namespace,`Database connection unavailable: 503\n${req?.body}`);
       return res.status(503).json({
         message: 'Database connection unavailable.',
         request: criteria,
@@ -157,12 +155,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
+        logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(cachedResult));
+        logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      console.log(
-        'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
-      );
+      logErr()(namespace,`Error while checking cache. this is odd but continuing with request as though no cache present.\n${JSON.stringify(criteria)}\n${e}`);
     }
 
     try {
@@ -189,7 +187,8 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         }
 
         const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
-
+        logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+        logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
         // parse the rows from the response
         const rows = { rows: (responseIAPP && responseIAPP.rows) || [] };
 
@@ -209,11 +208,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           // save for later;
           cache.put(ETag, responseBody);
         }
-
+        logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(responseBody));
+        logData()(namespace,logMetrics.SQL_RESPONSE_TIME,startTime);
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      // defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
+      logErr()(namespace,`Error getting points of interest by search filter criteria\n${JSON.stringify(criteria)}\n${error}`);
       return res.status(500).json({
         message: 'Failed to get points of interest by search filter criteria',
         request: criteria,
@@ -229,14 +229,17 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
 async function getMappedFilterRows(codeArray) {
   const sqlStatement: SQLStatement = getSpeciesMapSQL(codeArray);
-
+  logData()(namespace,logMetrics.SQL_QUERY_SOURCE,sqlStatement.sql);
+  logData()(namespace,logMetrics.SQL_PARAMS,sqlStatement.values);
   if (!sqlStatement) {
+    logErr()(namespace,`Error generating SQL statement: 500\n${codeArray}`);
     return [];
   }
 
   const connection = await getDBConnection();
 
   if (!connection) {
+    logErr()(namespace,`Database connection unavailable: 503\n${codeArray}`);
     return [];
   }
 
@@ -245,7 +248,7 @@ async function getMappedFilterRows(codeArray) {
   const speciesNames = speciesNameRows.rows.map((row) => {
     return row.iapp_name;
   });
-
+  logData()(namespace,logMetrics.SQL_RESULTS,JSON.stringify(speciesNames));
   connection.release();
 
   return speciesNames;
