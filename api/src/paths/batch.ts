@@ -1,14 +1,14 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {QueryResult} from 'pg';
-import {ALL_ROLES, SECURITY_ON} from '../constants/misc';
-import {getDBConnection} from '../database/db';
-import {InvasivesRequest} from '../utils/auth-utils';
-import {getLogger} from '../utils/logger';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { QueryResult } from 'pg';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import { InvasivesRequest } from '../utils/auth-utils';
+import { getLogger } from '../utils/logger';
 import csvParser from 'csv-parser';
-import {Readable} from 'stream';
+import { Readable } from 'stream';
 
 export const GET: Operation = [listBatches()];
 export const POST: Operation = [createBatch()];
@@ -17,10 +17,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -33,10 +33,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -134,8 +134,9 @@ function createBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const connection = await getDBConnection();
 
-    const data = {...req.body};
+    const data = { ...req.body };
     const decoded = atob(data['csvData']);
+    const template = data['template'];
 
     if (!connection) {
       return res.status(503).json({
@@ -147,7 +148,7 @@ function createBatch(): RequestHandler {
     }
 
     const parser = csvParser({
-      mapHeaders: ({header}) => header.trim()
+      mapHeaders: ({ header }) => header.trim()
     });
 
     const parsedCSV = {
@@ -183,10 +184,10 @@ function createBatch(): RequestHandler {
       await connection.query('BEGIN');
 
       const response: QueryResult = await connection.query(
-        `insert into batch_uploads (csv_data, json_representation, created_by)
-         values ($1, $2, $3)
+        `insert into batch_uploads (csv_data, json_representation, created_by, template)
+         values ($1, $2, $3, $4)
          returning id`,
-        [decoded, parsedCSV, req.authContext.user.user_id]
+        [decoded, parsedCSV, req.authContext.user.user_id, template]
       );
 
       await connection.query('COMMIT');
@@ -194,7 +195,7 @@ function createBatch(): RequestHandler {
       createdId = response.rows[0]['id'];
     } catch (error) {
       await connection.query('ROLLBACK');
-      defaultLog.error({label: 'batchUpload', message: 'error', error});
+      defaultLog.error({ label: 'batchUpload', message: 'error', error });
       return res.status(500).json({
         message: 'Error creating batch upload',
         request: req.body,

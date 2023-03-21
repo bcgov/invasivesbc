@@ -1,56 +1,33 @@
-import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography} from '@mui/material';
-import React from 'react';
-import {useInvasivesApi} from '../../hooks/useInvasivesApi';
+import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 import TemplatePreview from './TemplatePreview';
-import {Download} from "@mui/icons-material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { BATCH_TEMPLATE_LIST_REQUEST } from '../../state/actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from '../../state/utilities/use_selector';
+import { selectBatch } from '../../state/reducers/batch';
+import Spinner from '../spinner/Spinner';
 
-const TemplateDownloadList = ({templates}) => {
-  const api = useInvasivesApi();
+const TemplateDownloadList = () => {
+  const dispatch = useDispatch();
+  const { templates, working, error } = useSelector(selectBatch);
 
-  const downloadTemplate = async (key: string) => {
-    const downloadAPICall = api.downloadTemplate;
+  useEffect(() => {
+    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
+  }, []);
 
-    const data = await downloadAPICall(key, 'csv', false);
-    const dataUrl = `data:text/csv;base64,${btoa(data)}`;
+  if (working) {
+    return <Spinner />;
+  }
 
-    const downloadLink = document.createElement('a');
-    downloadLink.setAttribute('href', dataUrl);
-    downloadLink.setAttribute('download', `InvasivesBC ${key} template.csv`);
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  };
+  if (error || templates == null) {
+    return <p>Error</p>;
+  }
 
   return (
     <>
       <Typography variant={'h4'}>Available Templates</Typography>
       {templates.map((t) => (
-
-        <Accordion key={t.name} sx={{marginBottom: '0.5rem'}}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Box sx={{ display: 'inline-flex', justifyContent: 'space-between', width: '100%' }}>
-              <Typography>{t.name}</Typography>
-              <Button
-                variant={'contained'}
-                className={'template-download-link'}
-                onClick={() => {
-                  downloadTemplate(t.key);
-                }}>
-                Download Template CSV
-                <Download fontSize={"medium"} />
-              </Button>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="template-description">
-
-              <TemplatePreview id={t.key} />
-            </div>
-          </AccordionDetails>
-        </Accordion>
-
+        <TemplatePreview name={t.name} id={t.key} key={t.key} />
       ))}
     </>
   );

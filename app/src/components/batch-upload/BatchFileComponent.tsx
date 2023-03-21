@@ -1,6 +1,6 @@
-import React, {useCallback, useState} from 'react';
-import {Box, Button, Paper, Typography} from '@mui/material';
-import {useDropzone} from "react-dropzone";
+import React, { useCallback, useState } from 'react';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import { useDropzone } from 'react-dropzone';
 
 const dropzoneStyle = {
   backgroundColor: 'silver',
@@ -11,7 +11,7 @@ const dropzoneStyle = {
   cursor: 'pointer'
 } as React.CSSProperties;
 
-const BatchFileComponent = ({setData, ready, disabled}) => {
+const BatchFileComponent = ({ setData, ready, disabled }) => {
   const [filename, setFilename] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
 
@@ -24,7 +24,6 @@ const BatchFileComponent = ({setData, ready, disabled}) => {
 
       reader.onload = () => {
         const encodedString = btoa(reader.result as string);
-        console.dir(encodedString);
         setData(encodedString);
       };
 
@@ -46,35 +45,31 @@ const BatchFileComponent = ({setData, ready, disabled}) => {
     };
   };
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, maxFiles: 1, validator: fileValidator})
-
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, maxFiles: 1, validator: fileValidator });
 
   return (
-    <Paper>
-      <Box mx={3} my={3} py={3}>
-        <Typography variant={'h4'}>Batch Upload</Typography>
-        {ready && <span>{filename} ready to upload</span>}
-        {!ready && (
-          <div style={dropzoneStyle} {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
-          </div>
-        )}
-        {statusMessage != null && <p>{statusMessage}</p>}
-        <div>
-          <Button
-            variant={'outlined'}
-            disabled={disabled}
-            onClick={() => {
-              setFilename(null);
-              setStatusMessage(null);
-              setData(null);
-            }}>
-            Clear
-          </Button>
+    <Box mx={3} my={3} py={3}>
+      {ready && <span>{filename} ready to upload</span>}
+      {!ready && (
+        <div style={dropzoneStyle} {...getRootProps()}>
+          <input {...getInputProps()} />
+          {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
         </div>
-      </Box>
-    </Paper>
+      )}
+      {statusMessage != null && <p>{statusMessage}</p>}
+      <div>
+        <Button
+          variant={'outlined'}
+          disabled={disabled}
+          onClick={() => {
+            setFilename(null);
+            setStatusMessage(null);
+            setData(null);
+          }}>
+          Clear
+        </Button>
+      </div>
+    </Box>
   );
 };
 

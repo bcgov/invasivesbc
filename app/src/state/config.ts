@@ -47,7 +47,7 @@ switch (CONFIGURATION_SOURCE) {
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
-        BATCH: false
+        BATCH: '{{env "FEATURE_GATE_BATCH_ENABLED"}}'.toLowerCase() === 'true'
       }
     };
     break;

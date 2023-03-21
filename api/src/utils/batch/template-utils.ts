@@ -32,6 +32,14 @@ const templateList: Template[] = [
 ];
 
 export const TemplateService = {
+
+  listTemplatesShallow: async () => {
+    return templateList.map(t => ({
+      name: t.name,
+      key: t.key
+    }));
+  },
+
   listTemplates: async () => {
     const dbConnection = await getDBConnection();
 

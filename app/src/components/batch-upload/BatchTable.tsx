@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/batch.scss';
 
-const BatchTableCell = ({field, row}) => {
+const BatchTableCell = ({ field, row }) => {
   const [hasMessages, setHasMessages] = useState(false);
   const [displaySeverity, setDisplaySeverity] = useState('normal');
   const [displayedValue, setDisplayedValue] = useState('');
@@ -18,7 +18,7 @@ const BatchTableCell = ({field, row}) => {
 
     switch (dt) {
       case 'boolean':
-        setDisplayedValue(v ? 'True':'False');
+        setDisplayedValue(v ? 'True' : 'False');
         break;
       case 'codeReference':
         try {
@@ -30,7 +30,6 @@ const BatchTableCell = ({field, row}) => {
       default:
         setDisplayedValue(v);
     }
-
   }, [row]);
 
   useEffect(() => {
@@ -50,44 +49,47 @@ const BatchTableCell = ({field, row}) => {
     }
 
     setDisplaySeverity(LEVELS[highestSeveritySeen]);
+  }, [row.data[field].validationMessages]);
 
-  }, [row.data[field].validationMessages])
-
-
-  return <td className={displaySeverity}>
-    {displayedValue}
-    <ul className={'messages'}>
-      {hasMessages && row.data[field]?.validationMessages.map(m => (<li key={m.messageTitle}>
-        <strong>{m.messageTitle}</strong>
-        {m.messageDetail}
-      </li>))}
-    </ul>
-  </td>;
+  return (
+    <td className={displaySeverity}>
+      {displayedValue}
+      <ul className={'messages'}>
+        {hasMessages &&
+          row.data[field]?.validationMessages.map((m) => (
+            <li key={m.messageTitle}>
+              <strong>{m.messageTitle}</strong>
+              {m.messageDetail}
+            </li>
+          ))}
+      </ul>
+    </td>
+  );
 };
 
-const BatchTable = ({jsonRepresentation}) => {
+const BatchTable = ({ jsonRepresentation }) => {
   return (
     <>
       <table className={'batchAlternateLayout'}>
         <thead>
-        <tr>
-          <th>Field</th>
-          {jsonRepresentation?.rows?.map((row) => (
-            <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
-          ))}
-        </tr>
+          <tr>
+            <th>Field</th>
+            {jsonRepresentation?.rows?.map((row) => (
+              <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
-        {jsonRepresentation?.headers?.map((h) => {
-          return (
-            <tr key={h}>
-              <td className={'fieldName'}>{h}</td>
-              {jsonRepresentation?.rows?.map((row) => (
-                <BatchTableCell key={row.rowIndex} field={h} row={row}/>
-              ))}
-            </tr>
-          );
-        })}
+          {jsonRepresentation?.headers?.map((h) => {
+            return (
+              <tr key={h}>
+                <td className={'fieldName'}>{h}</td>
+                {jsonRepresentation?.rows?.map((row) => (
+                  <BatchTableCell key={row.rowIndex} field={h} row={row} />
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </>

@@ -1060,31 +1060,6 @@ export const useInvasivesApi = () => {
     return data;
   };
 
-  const getTemplateList = async (): Promise<any> => {
-    const options = await getRequestOptions();
-    const {data} = await Http.request({
-      method: 'GET',
-      headers: {...options.headers},
-      url: options.baseUrl + '/api/batch/templates'
-    });
-    return data;
-  };
-
-  const downloadTemplate = async (key: string, contentType: 'csv' | 'json' = 'csv', annotated: boolean = false): Promise<any> => {
-    const options = await getRequestOptions();
-
-    const contentTypeMap = {
-      'csv': 'text/csv',
-      'json': 'application/json'
-    };
-
-    const {data} = await Http.request({
-      method: 'GET',
-      headers: {...options.headers, Accept: contentTypeMap[contentType]},
-      url: `${options.baseUrl}/api/batch/templates/${key}${annotated ? '?annotated' : ''}`
-    });
-    return data;
-  };
 
   const listCodeTables = async (): Promise<any> => {
     const options = await getRequestOptions();
@@ -1227,8 +1202,6 @@ export const useInvasivesApi = () => {
     createMetabaseQuery,
     getBatchUploads,
     postBatchUpload,
-    downloadTemplate,
-    getTemplateList,
     listCodeTables,
     fetchCodeTable,
     getJurisdictions,
