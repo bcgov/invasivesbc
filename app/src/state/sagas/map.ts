@@ -58,7 +58,8 @@ import {
   WHATS_HERE_PAGE_ACTIVITY,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORD_SET_TO_EXCEL_FAILURE
+  RECORD_SET_TO_EXCEL_FAILURE,
+  MAP_INIT_FAILURE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -78,8 +79,7 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE,
-  handle_MAP_WHATS_HERE_GET_POI_ONLINE
+  handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
 import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
 import { selectAuth } from 'state/reducers/auth';
@@ -243,150 +243,159 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
 
-function* handle_MAP_INIT_REQUEST(action) {
-  const authState = yield select(selectAuth);
-  const sets = {};
-  // sets['2'] = action.payload.recordSets[2];
-  // sets['3'] = action.payload.recordSets[3];
-  const filterCriteria = yield getSearchCriteriaFromFilters(
-    [],
-    //    action.payload.recordSets[2].advancedFilterRows,
-    authState.accessRoles,
-    sets,
-    '2',
-    false,
-    [],
-    //action.payload.recordSets[2].gridFilters,
-    0,
-    999
-  );
+const handle_MAP_INIT_REQUEST = autoRestart(
+  function* handle_MAP_INIT_REQUEST(action) {
+    const authState = yield select(selectAuth);
+    const sets = {};
+    // sets['2'] = action.payload.recordSets[2];
+    // sets['3'] = action.payload.recordSets[3];
+    const filterCriteria = yield getSearchCriteriaFromFilters(
+      [],
+      //    action.payload.recordSets[2].advancedFilterRows,
+      authState.accessRoles,
+      sets,
+      '2',
+      false,
+      [],
+      //action.payload.recordSets[2].gridFilters,
+      0,
+      999
+    );
 
-  const IAPP_filter = yield getSearchCriteriaFromFilters(
-    [],
-    //action.payload.recordSets[3].advancedFilterRows,
-    authState.accessRoles,
-    sets,
-    '3',
-    true,
-    [],
-    //action.payload.recordSets[3].gridFilters,
-    0,
-    100
-  );
+    const IAPP_filter = yield getSearchCriteriaFromFilters(
+      [],
+      //action.payload.recordSets[3].advancedFilterRows,
+      authState.accessRoles,
+      sets,
+      '3',
+      true,
+      [],
+      //action.payload.recordSets[3].gridFilters,
+      0,
+      100
+    );
 
-  yield put({
-    type: ACTIVITIES_GEOJSON_GET_REQUEST,
-    payload: {
-      // recordSetID: '2',
-      activitiesFilterCriteria: filterCriteria
-      // layerState: layerState
+    yield put({
+      type: ACTIVITIES_GEOJSON_GET_REQUEST,
+      payload: {
+        // recordSetID: '2',
+        activitiesFilterCriteria: filterCriteria
+        // layerState: layerState
+      }
+    });
+
+    yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+
+    yield put({
+      type: IAPP_GEOJSON_GET_REQUEST,
+      payload: {
+        //   recordSetID: '3',
+        IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
+        //   layerState: IAPPlayerState
+      }
+    });
+
+    yield take(IAPP_GEOJSON_GET_SUCCESS);
+
+    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
+    const defaultRecordSet = {
+      ['1']: {
+        recordSetType: 'Activity',
+        recordSetName: 'My Drafts',
+        advancedFilters: [
+          {
+            filterField: 'created_by',
+            filterValue: authState.username,
+            filterKey: 'created_by' + authState.username
+          },
+          {
+            filterField: 'record_status',
+            filterValue: ActivityStatus.DRAFT,
+            filterKey: 'record_status' + ActivityStatus.DRAFT
+          }
+        ]
+      },
+      ['2']: {
+        recordSetType: 'Activity',
+        recordSetName: 'All InvasivesBC Activities',
+        drawOrder: 1,
+        advancedFilters: []
+      },
+      ['3']: {
+        recordSetType: 'POI',
+        recordSetName: 'All IAPP Records',
+        color: '#21f34f',
+        drawOrder: 2,
+        advancedFilters: []
+      }
+    };
+    const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
+
+    const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
+    const shapes = serverShapesServerResponse.data.result;
+
+    let newMapState = {};
+    for (const rs in recordSets) {
+      newMapState[rs] = {};
+      let newLayerState = {};
+      newLayerState = {
+        color: recordSets[rs].color,
+        mapToggle: recordSets[rs].mapToggle,
+        labelToggle: recordSets[rs].labelToggle,
+        drawOrder: recordSets[rs].drawOrder
+      };
+      newMapState[rs].layerState = {
+        ...newLayerState
+      };
+
+      //grab shapes from server here
+      // grab shapes from sqlite here
+      let newFilters = {};
+      const serverPatchedSearchBoundary = shapes.filter((s) => {
+        return s.id === recordSets[rs].searchBoundary?.server_id;
+      })[0];
+      const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
+        ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
+        : { ...recordSets[rs].searchBoundary };
+
+      newFilters = {
+        advancedFilters: recordSets[rs].advancedFilters,
+        gridFilters: recordSets[rs].gridFilters,
+        searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
+        serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
+      };
+      newMapState[rs].filters = {
+        ...newFilters
+      };
+
+      const newLayer = {
+        layerState: { ...newLayerState },
+        filters: { ...newFilters },
+        type: recordSets[rs].recordSetType,
+        loaded: false
+      };
+
+      newMapState[rs] = { ...newLayer };
     }
-  });
 
-  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+    yield put({
+      type: LAYER_STATE_UPDATE,
+      payload: { ...newMapState }
+    });
 
-  yield put({
-    type: IAPP_GEOJSON_GET_REQUEST,
-    payload: {
-      //   recordSetID: '3',
-      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
-      //   layerState: IAPPlayerState
-    }
-  });
-
-  yield take(IAPP_GEOJSON_GET_SUCCESS);
-
-  const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-  const defaultRecordSet = {
-    ['1']: {
-      recordSetType: 'Activity',
-      recordSetName: 'My Drafts',
-      advancedFilters: [
-        {
-          filterField: 'created_by',
-          filterValue: authState.username,
-          filterKey: 'created_by' + authState.username
-        },
-        {
-          filterField: 'record_status',
-          filterValue: ActivityStatus.DRAFT,
-          filterKey: 'record_status' + ActivityStatus.DRAFT
-        }
-      ]
-    },
-    ['2']: {
-      recordSetType: 'Activity',
-      recordSetName: 'All InvasivesBC Activities',
-      drawOrder: 1,
-      advancedFilters: []
-    },
-    ['3']: {
-      recordSetType: 'POI',
-      recordSetName: 'All IAPP Records',
-      color: '#21f34f',
-      drawOrder: 2,
-      advancedFilters: []
-    }
-  };
-  const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
-
-  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
-  const shapes = serverShapesServerResponse.data.result;
-
-  let newMapState = {};
-  for (const rs in recordSets) {
-    newMapState[rs] = {};
-    let newLayerState = {};
-    newLayerState = {
-      color: recordSets[rs].color,
-      mapToggle: recordSets[rs].mapToggle,
-      labelToggle: recordSets[rs].labelToggle,
-      drawOrder: recordSets[rs].drawOrder
-    };
-    newMapState[rs].layerState = {
-      ...newLayerState
-    };
-
-    //grab shapes from server here
-    // grab shapes from sqlite here
-    let newFilters = {};
-    const serverPatchedSearchBoundary = shapes.filter((s) => {
-      return s.id === recordSets[rs].searchBoundary?.server_id;
-    })[0];
-    const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
-      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
-      : { ...recordSets[rs].searchBoundary };
-
-    newFilters = {
-      advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters,
-      searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
-      serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
-    };
-    newMapState[rs].filters = {
-      ...newFilters
-    };
-
-    const newLayer = {
-      layerState: { ...newLayerState },
-      filters: { ...newFilters },
-      type: recordSets[rs].recordSetType,
-      loaded: false
-    };
-
-    newMapState[rs] = { ...newLayer };
+    yield put({
+      type: FILTER_STATE_UPDATE,
+      payload: { ...newMapState }
+    });
+  },
+  function* handleError(e) {
+    console.error(e);
+    alert(e);
+    yield put({
+      type: MAP_INIT_FAILURE
+    });
   }
-
-  yield put({
-    type: LAYER_STATE_UPDATE,
-    payload: { ...newMapState }
-  });
-
-  yield put({
-    type: FILTER_STATE_UPDATE,
-    payload: { ...newMapState }
-  });
-}
+);
 
 function* handle_FILTER_STATE_UPDATE(action) {
   const authState = yield select(selectAuth);
@@ -839,6 +848,7 @@ const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
   },
   function* handleError(e) {
     console.error(e);
+    alert(e);
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE
     });
