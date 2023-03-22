@@ -45,13 +45,16 @@ import {
   USER_SETTINGS_DELETE_KML_FAILURE,
   GET_API_DOC_REQUEST,
   GET_API_DOC_SUCCESS,
-  GET_API_DOC_ONLINE
+  GET_API_DOC_ONLINE,
+  GET_API_DOC_FAILURE
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
 import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
+import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
+import { autoRestart } from 'state/utilities/errorHandlers';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -136,21 +139,33 @@ function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
   }
 }
 
-function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
-  try {
-    // needs offline handling
-    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
-      server_id: action.payload.server_id
-    });
-
-    if (networkReturn) {
-      yield put({ type: USER_SETTINGS_DELETE_KML_SUCCESS, payload: action.payload });
+const handle_USER_SETTINGS_DELETE_KML_REQUEST = autoRestart(
+  function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
+    try {
+      // needs offline handling
+      const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
+        server_id: action.payload.server_id
+      });
+  
+      if (networkReturn) {
+        yield put({ type: USER_SETTINGS_DELETE_KML_SUCCESS, payload: action.payload });
+      }
+    } catch (e) {
+      console.error(e);
+      yield put({ type: USER_SETTINGS_DELETE_KML_FAILURE, payload: action.payload });
     }
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_DELETE_KML_FAILURE, payload: action.payload });
+  },
+  function* handleError(e) {
+    const errorMessage = 'Delete KML request failed: ' + e.toString();
+    copyToClipboard({
+      message: errorMessage,
+      value: errorMessage
+    });
+    yield put({
+      type: USER_SETTINGS_DELETE_KML_FAILURE
+    });
   }
-}
+);
 
 function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
   try {
@@ -363,16 +378,28 @@ function* handle_GET_API_DOC_REQUEST(action) {
   yield put({ type: GET_API_DOC_ONLINE });
 }
 
-function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/',{}, {'filterForSelectable': true});
-  const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-  const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
-  const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
-  yield put({
-    type: GET_API_DOC_SUCCESS,
-    payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
-  });
-}
+const handle_GET_API_DOC_ONLINE = autoRestart(
+  function* handle_GET_API_DOC_ONLINE(action) {
+    const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/',{}, {'filterForSelectable': true});
+    const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+    const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+    const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+    yield put({
+      type: GET_API_DOC_SUCCESS,
+      payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
+    });
+  },
+  function* handleError(e) {
+    const errorMessage = 'Get api doc request failed: ' + e.toString();
+    copyToClipboard({
+      message: errorMessage,
+      value: errorMessage
+    });
+    yield put({
+      type: GET_API_DOC_FAILURE
+    });
+  }
+);
 
 function* userSettingsSaga() {
   yield all([
