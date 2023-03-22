@@ -86,20 +86,36 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   const getActivitiesSLD = () => {
     getSldStylesFromLocalFile().then((res) => {
-      const Biocontrol = res?.output.rules.find((o) => o.name === 'Activity_Biocontrol_Release');
-      const Activity_Observation_PlantAquatic = res?.output.rules.find(
-        (o) => o.name === 'Activity_Observation_PlantAquatic'
+      const Biocontrol = res?.output.rules.find((o) =>
+        [
+          'Activity_Biocontrol_Collection',
+          'Activity_Biocontrol_Release',
+          'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
+          'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'
+        ].includes(o.name)
       );
-      const FREP = res?.output.rules.find((o) => o.name === '');
-      const Monitoring = res?.output.rules.find((o) => ['this is a list'].includes(o.name));
-      const Observation = res?.output.rules.find((o) => o.name === 'Activity_Observation_PlantAquatic');
-      const Treatment = res?.output.rules.find((o) => o.name === 'Activity_Treatment_ChemicalPlantAquatic');
+      const FREP = res?.output.rules.find((o) => ['Activity_FREP_FormC'].includes(o.name));
+      const Monitoring = res?.output.rules.find((o) =>
+        [
+          'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+          'Activity_Monitoring_ChemicalTerrestrialAquaticPlant'
+        ].includes(o.name)
+      );
+      const Observation = res?.output.rules.find((o) =>
+        ['Activity_Observation_PlantAquatic', 'Activity_Observation_PlantTerrestrial'].includes(o.name)
+      );
+      const Treatment = res?.output.rules.find((o) =>
+        [
+          'Activity_Treatment_ChemicalPlantAquatic',
+          'Activity_Treatment_ChemicalPlantTerrestrial',
+          'Activity_Treatment_MechanicalPlantAquatic',
+          'Activity_Treatment_MechanicalPlantTerrestrial'
+        ].includes(o.name)
+      );
 
       let sldPalette: any = {}; //palette;
       if (props.layerKey <= 2) {
         sldPalette.Biocontrol = Biocontrol?.symbolizers[0].color ?? sldPalette.Biocontrol;
-        sldPalette.Activity_Observation_PlantAquatic =
-          Activity_Observation_PlantAquatic?.symbolizers[0].color ?? sldPalette.Activity_Observation_PlantAquatic;
         sldPalette.FREP = FREP?.symbolizers[0].color ?? sldPalette.FREP;
         sldPalette.Monitoring = Monitoring?.symbolizers[0].color ?? sldPalette.Monitoring;
         sldPalette.Observation = Observation?.symbolizers[0].color ?? sldPalette.Observation;
@@ -180,14 +196,14 @@ export const ActivitiesLayerV2 = (props: any) => {
           const marker = obj.options.children.props.bufferedGeo.features[0];
           if (data.length === 0) {
             data.push({
-              name: marker?.properties?.subtype,
+              name: marker?.properties?.type,
               count: 1,
-              fillColour: palette[marker?.properties?.subtype]
+              fillColour: palette[marker?.properties?.type]
             });
           } else {
             let flag = 0;
             for (let i of data) {
-              if (marker?.properties?.subtype === i.name) {
+              if (marker?.properties?.type === i.name) {
                 flag = 1;
                 i.count += 1;
                 i.fillColour = palette[i.name];
@@ -196,9 +212,9 @@ export const ActivitiesLayerV2 = (props: any) => {
             }
             if (flag === 0) {
               data.push({
-                name: marker?.properties?.subtype,
+                name: marker?.properties?.type,
                 count: 1,
-                fillColour: palette[marker?.properties?.subtype]
+                fillColour: palette[marker?.properties?.type]
               });
             }
           }
