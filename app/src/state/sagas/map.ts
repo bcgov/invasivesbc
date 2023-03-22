@@ -390,9 +390,10 @@ const handle_MAP_INIT_REQUEST = autoRestart(
     });
   },
   function* handleError(e) {
+    const errorMessage = 'Map init request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Map init request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: MAP_INIT_FAILURE
@@ -850,9 +851,10 @@ const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Export to excel request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Export to excel request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE

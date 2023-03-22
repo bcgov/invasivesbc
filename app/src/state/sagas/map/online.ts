@@ -52,9 +52,10 @@ export const handle_ACTIVITIES_GEOJSON_GET_ONLINE = autoRestart(
     });
   },
   function* handleError(e) {
+    const errorMessage = 'Online activities geojson request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online activities geojson request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: ACTIVITIES_GEOJSON_GET_FAILURE
@@ -106,9 +107,10 @@ export const handle_IAPP_GEOJSON_GET_ONLINE = autoRestart(
     });
   },
   function* handleError(e) {
+    const errorMessage = 'Online IAPP geojson request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online IAPP geojson request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: IAPP_GEOJSON_GET_FAILURE
@@ -139,9 +141,10 @@ export const handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Online activities get table rows request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online activities get table rows request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: ACTIVITIES_TABLE_ROWS_GET_FAILURE
@@ -172,9 +175,10 @@ export const handle_IAPP_TABLE_ROWS_GET_ONLINE = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Online IAPP table rows request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online IAPP table rows request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: IAPP_TABLE_ROWS_GET_FAILURE
@@ -211,9 +215,10 @@ export const handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Online activities getting IDs request failed: ' + e.toString()
     copyToClipboard({
-      message: 'Online activities getting IDs request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_FAILURE
@@ -249,9 +254,10 @@ export const handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Online IAPP getting IDs request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online IAPP getting IDs request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_FAILURE
@@ -287,9 +293,10 @@ export const MAP_WHATS_HERE_GET_POI_ONLINE = autoRestart(
     }
   },
   function* handleError(e) {
+    const errorMessage = 'Online map what\'s here get POI request failed: ' + e.toString();
     copyToClipboard({
-      message: 'Online map what\'s here get POI request failed: ' + e.toString(),
-      value: e.toString()
+      message: errorMessage,
+      value: errorMessage
     });
     // yield put({
     //   type: MAP_WHATS_HERE_GET_POI_FAILURE
