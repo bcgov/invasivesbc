@@ -182,10 +182,6 @@ const Row = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [shortComment, setShortComment] = React.useState(true);
 
-
-
-
-
   React.useEffect(() => {
     if (row.monitoring?.length > 0) {
       const tempArr = [];
@@ -213,6 +209,20 @@ const Row = (props: any) => {
       invasive_species_agency_code: item.invasive_species_agency_code,
       project_code: item.project_code,
       primary_surveyor: item.primary_surveyor,
+      species_common_name: item.species_common_name,
+      biological_agent_code: item.biological_agent_code,
+      agent_count: item.agent_count,
+      plant_count: item.plant_count,
+      count_duration: item.count_duration,
+      legacy_presence: item.legacy_presence,
+      foliar_feeding_damage_ind: item.foliar_feeding_damage_ind,
+      root_feeding_damage_ind: item.root_feeding_damage_ind,
+      seed_feeding_damage_ind: item.seed_feeding_damage_ind,
+      oviposition_marks_ind: item.oviposition_marks_ind,
+      eggs_present_ind: item.eggs_present_ind,
+      pupae_present_ind: item.pupae_present_ind,
+      adults_present_ind: item.adults_present_ind,
+      tunnels_present_ind: item.tunnels_present_ind,
       efficacy_rating: item.efficacy_code
     };
   };
@@ -262,11 +272,8 @@ const Row = (props: any) => {
     });
   };
 
-
   /// switch here if we have more than 2 options
-  var monitoringColumns = (type === 'Biological Treatment'? customMonitoringColumns: defaultMonitoringColumns)
-
-
+  var monitoringColumns = type === 'Biological Treatment' ? customMonitoringColumns : defaultMonitoringColumns;
 
   return (
     <React.Fragment>
@@ -292,7 +299,7 @@ const Row = (props: any) => {
                   </TableHead>
                   <TableBody>
                     {monitoringRows.map((item) => {
-                      return <MonitoringRow row={item} />;
+                      return <MonitoringRow row={item} type={type} />;
                     })}
                   </TableBody>
                 </Table>

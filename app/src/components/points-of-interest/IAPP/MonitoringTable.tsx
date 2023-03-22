@@ -1,7 +1,6 @@
 import { TableCell, TableRow, Typography } from '@mui/material';
 import React from 'react';
 
-
 // add ALL monitoring columns here (from each MonitoringColumn[] array)
 interface MonitoringColumn {
   id:
@@ -12,7 +11,19 @@ interface MonitoringColumn {
     | 'primary_surveyor'
     | 'efficacy_rating'
     | 'general_comment'
+    | 'biological_agent_code'
     | 'agent_count'
+    | 'plant_count'
+    | 'count_duration'
+    | 'legacy_presence'
+    | 'foliar_feeding_damage_ind'
+    | 'root_feeding_damage_ind'
+    | 'seed_feeding_damage_ind'
+    | 'oviposition_marks_ind'
+    | 'eggs_present_ind'
+    | 'pupae_present_ind'
+    | 'adults_present_ind'
+    | 'tunnels_present_ind';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -30,13 +41,23 @@ export const defaultMonitoringColumns: readonly MonitoringColumn[] = [
 // add other ones and rename this if needed
 export const customMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
-  { id: 'agent_count', label: 'agent_count', minWidth: 100 },
+  { id: 'project_code', label: 'Monitoring Paper File ID', minWidth: 100 },
   { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
-  { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
-  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 }
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
+  { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 100 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 100 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 100 },
+  { id: 'count_duration', label: 'Count Duration (min)', minWidth: 100 },
+  { id: 'legacy_presence', label: 'Legacy Presence', minWidth: 100 },
+  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 100 },
+  { id: 'root_feeding_damage_ind', label: 'Root Feeding Damage', minWidth: 100 },
+  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 100 },
+  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 100 },
+  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 100 },
+  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 100 },
+  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 100 },
+  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 100 }
 ];
-
-
 
 export const MonitoringRow = (props) => {
   const { row } = props;
@@ -51,26 +72,25 @@ export const MonitoringRow = (props) => {
   //   return <>{value}</>;
   // };
 
-
   //update this switch if we have more column sets for monitoring
   var monitoringColumns;
-    switch (row.type) {
-      case 'Mechanical Treatment':
-        monitoringColumns = defaultMonitoringColumns;
-        break;
-      case 'Chemical Treatment':
-        monitoringColumns = defaultMonitoringColumns;
-        break;
-      case 'Biological Dispersal':
-        monitoringColumns = defaultMonitoringColumns;
+  switch (props.type) {
+    case 'Mechanical Treatment':
+      monitoringColumns = defaultMonitoringColumns;
+      break;
+    case 'Chemical Treatment':
+      monitoringColumns = defaultMonitoringColumns;
+      break;
+    case 'Biological Dispersal':
+      monitoringColumns = defaultMonitoringColumns;
 
-        break;
-      case 'Biological Treatment':
-        monitoringColumns = customMonitoringColumns;
-        break;
-      default:
-        monitoringColumns = defaultMonitoringColumns;
-    }
+      break;
+    case 'Biological Treatment':
+      monitoringColumns = customMonitoringColumns;
+      break;
+    default:
+      monitoringColumns = defaultMonitoringColumns;
+  }
   return (
     <React.Fragment>
       <TableRow tabIndex={-1} key={row.monitoring_id}>
