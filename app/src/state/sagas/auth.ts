@@ -21,6 +21,8 @@ import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import { selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
+import { autoRestart } from 'state/utilities/errorHandlers';
+import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 
 const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for atleast this long at all times
 const GRACE_PERIOD = 10; // get a new one with this much time to spare
@@ -68,60 +70,72 @@ function* initializeAuthentication() {
   }
 }
 
-function* refreshRoles() {
-  const configuration = yield select(selectConfiguration);
-  const authHeaders = yield select(selectAuthHeaders);
-
-  try {
-    const { data: userData } = yield Http.request({
-      method: 'GET',
-      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
-      //url: 'http://localhost:7080' + `/api/user-access`,
-      url: configuration.API_BASE + `/api/user-access`,
-      headers: {
-        Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json'
-      }
+const refreshRoles = autoRestart(
+  function* refreshRoles() {
+    const configuration = yield select(selectConfiguration);
+    const authHeaders = yield select(selectAuthHeaders);
+  
+    try {
+      const { data: userData } = yield Http.request({
+        method: 'GET',
+        //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
+        //url: 'http://localhost:7080' + `/api/user-access`,
+        url: configuration.API_BASE + `/api/user-access`,
+        headers: {
+          Authorization: authHeaders.authorization,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      const { data: rolesData } = yield Http.request({
+        method: 'GET',
+        //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
+        //url: 'http://localhost:7080' + `/api/roles`,
+        url: configuration.API_BASE + `/api/roles`,
+        headers: {
+          Authorization: authHeaders.authorization,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      yield put({
+        type: AUTH_REFRESH_ROLES_COMPLETE,
+        payload: {
+          all_roles: rolesData.result,
+          roles: userData.result.roles,
+          extendedInfo: userData.result.extendedInfo
+        }
+      });
+  
+      yield put({
+        type: USERINFO_LOAD_COMPLETE,
+        payload: {
+          userInfo: userData.result.extendedInfo
+        }
+      });
+      yield put({
+        type: TABS_GET_INITIAL_STATE_REQUEST,
+        payload: {
+          authenticated: true,
+          activated: userData.result.extendedInfo.activation_status === 1
+        }
+      });
+    } catch (err) {
+      console.dir(err);
+      yield put({ type: AUTH_REFRESH_ROLES_ERROR });
+    }
+  },
+  function* handleError(e) {
+    const errorMessage = 'Refresh roles request failed: ' + e.toString();
+    copyToClipboard({
+      message: errorMessage,
+      value: errorMessage
     });
-
-    const { data: rolesData } = yield Http.request({
-      method: 'GET',
-      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
-      //url: 'http://localhost:7080' + `/api/roles`,
-      url: configuration.API_BASE + `/api/roles`,
-      headers: {
-        Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json'
-      }
-    });
-
     yield put({
-      type: AUTH_REFRESH_ROLES_COMPLETE,
-      payload: {
-        all_roles: rolesData.result,
-        roles: userData.result.roles,
-        extendedInfo: userData.result.extendedInfo
-      }
+      type: AUTH_REFRESH_ROLES_ERROR
     });
-
-    yield put({
-      type: USERINFO_LOAD_COMPLETE,
-      payload: {
-        userInfo: userData.result.extendedInfo
-      }
-    });
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
-        authenticated: true,
-        activated: userData.result.extendedInfo.activation_status === 1
-      }
-    });
-  } catch (err) {
-    console.dir(err);
-    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
   }
-}
+);
 
 function* keepTokenFresh() {
   yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
