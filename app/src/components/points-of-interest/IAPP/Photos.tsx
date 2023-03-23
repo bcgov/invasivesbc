@@ -1,7 +1,7 @@
 import { Accordion, AccordionSummary, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from "../../../hooks/useInvasivesApi";
-import Spinner from "../../spinner/Spinner";
+import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
+import Spinner from '../../spinner/Spinner';
 import '../../../styles/iapp.scss';
 
 export const Photos = ({ media }) => {
@@ -16,21 +16,24 @@ export const Photos = ({ media }) => {
     setLoading(true);
     setError(false);
 
-    const mediaKeysArray = media.map(m => m.media_key);
+    const mediaKeysArray = media.map((m) => m.media_key);
 
-    api.getMedia(mediaKeysArray).then((result) => {
-      setMediaURLs(result);
-      setLoading(false);
-    }).catch(e => {
-      setLoading(false);
-      setError(true);
-      setMediaURLs([]);
-    });
+    api
+      .getMedia(mediaKeysArray)
+      .then((result) => {
+        setMediaURLs(result);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setError(true);
+        setMediaURLs([]);
+      });
   }, [media]);
 
   function renderContent() {
     if (loading) {
-      return (<Spinner />);
+      return <Spinner />;
     }
     if (error) {
       return <span>Error loading images</span>;
@@ -38,8 +41,8 @@ export const Photos = ({ media }) => {
     if (media.length === 0) {
       return <span>This record has no photos associated with it.</span>;
     }
-    return mediaURLs.map((m) => {
-      const mediaData = media.find(x => x.media_key === m.media_key);
+    return mediaURLs?.map((m) => {
+      const mediaData = media.find((x) => x.media_key === m.media_key);
       if (!mediaData) {
         // shouldn't happen
         return null;
@@ -61,7 +64,8 @@ export const Photos = ({ media }) => {
             <dt>Reference Number</dt>
             <dd>{mediaData.reference_no}</dd>
           </dl>
-        </div>);
+        </div>
+      );
     });
   }
 
@@ -74,9 +78,7 @@ export const Photos = ({ media }) => {
       </AccordionSummary>
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <div className={'iapp-photo-container'}>
-          {renderContent()}
-        </div>
+        <div className={'iapp-photo-container'}>{renderContent()}</div>
       </Paper>
     </Accordion>
   );
