@@ -25,6 +25,8 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { ExtentListener } from 'components/map/ExtentListener';
+import { selectTabs } from 'state/reducers/tabs';
+
 
 const MapContainer = lazy(() => import('components/map/MapContainer'));
 
@@ -107,6 +109,7 @@ const PageContainer = (props) => {
   const userSettings = useSelector(selectUserSettings);
   const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
+  const tabsConfigState = useSelector(selectTabs)
 
   const updateWidth = () => {
     setWidth(window.innerWidth);
@@ -214,6 +217,39 @@ const PageContainer = (props) => {
         icon: AddIcon,
         onClick: () => {
           setNewRecordDialog((prev) => ({ ...prev, dialogOpen: true }));
+        }
+      },
+      {
+        name:
+          'Open Activity(' +
+          (userSettings?.activeActivityDescription !== undefined &&
+            userSettings?.activeActivityDescription?.split('-')[1].trim()) +
+          ')',
+        disabled: userSettings?.activeActivityDescription === undefined,
+        hidden: !userSettings?.activeActivity,
+        icon: '',
+        onClick: async () => {
+          try {
+            history.push(tabsConfigState?.tabConfig?.filter((t) => { return t?.label === 'Current Activity'} )?.[0]?.path)
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      },
+      {
+        name:
+          'Open IAPP Site(' +
+          (userSettings?.activeIAPP !== undefined && userSettings?.activeIAPP) +
+          ')',
+          disabled: userSettings?.activeIAPP === undefined,
+          hidden: !userSettings.activeIAPP,
+        icon: '',
+        onClick: async () => {
+          try {
+            history.push(tabsConfigState?.tabConfig?.filter((t) => { return t?.label === 'Current IAPP Site'} )?.[0]?.path)
+          } catch (e) {
+            console.log(e);
+          }
         }
       },
       {
