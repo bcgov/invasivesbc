@@ -56,6 +56,7 @@ import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './Tools/Tool
 import { selectTabs } from 'state/reducers/tabs';
 import { ExtentListener } from './ExtentListener';
 import { selectMap } from 'state/reducers/map';
+import { JumpToRecord } from './Tools/ToolTypes/Nav/JumpToRecord';
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -301,6 +302,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
+            <JumpToRecord/>
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
