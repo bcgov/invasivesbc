@@ -1,4 +1,4 @@
-import {Template, TemplateColumn} from './definitions';
+import { Template, TemplateColumn } from './definitions';
 import { validateAsWKT } from './spatial-validation';
 
 type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
@@ -26,7 +26,8 @@ export class BatchValidationResult {
   validatedBatchData;
 }
 
-function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
+
+  function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
   const result = {
     validationMessages: [],
     parsedValue: null
@@ -96,6 +97,20 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
           messageDetail: e.toString()
         });
       }
+      if (templateColumn.validations.minValue !== null && result.parsedValue < templateColumn.validations.minValue) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Below minimum value`,
+          messageDetail: `Value ${result.parsedValue} below minimum required: ${templateColumn.validations.minValue}`
+        });
+      }
+      if (templateColumn.validations.maxValue !== null && result.parsedValue > templateColumn.validations.maxValue) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Above maximum value`,
+          messageDetail: `Value ${result.parsedValue} above maximum required: ${templateColumn.validations.maxValue}`
+        });
+      }
       break;
     case 'date':
       result.parsedValue = data;
@@ -106,20 +121,40 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
       //@todo
       break;
     case 'text':
-      result.parsedValue = data;
+      result.parsedValue = data?.trim() || '';
+
+      console.dir(result.parsedValue.length);
+      console.dir(templateColumn);
+      if (
+        templateColumn.validations.minLength !== null &&
+        result.parsedValue.length < templateColumn.validations.minLength
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Length below minimum`,
+          messageDetail: `Length ${result.parsedValue.length} below minimum: ${templateColumn.validations.minLength}`
+        });
+      }
+      if (
+        templateColumn.validations.maxLength !== null &&
+        result.parsedValue.length > templateColumn.validations.maxLength
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Length above maximum`,
+          messageDetail: `Length ${result.parsedValue.length} above maximum: ${templateColumn.validations.maxLength}`
+        });
+      }
       //@todo validate length
       break;
     case 'WKT':
-      if(validateAsWKT(data))
-      {
+      if (validateAsWKT(data)) {
         result.parsedValue = data;
-      }
-      else
-      {
+      } else {
         result.validationMessages.push({
           severity: 'error',
-          messageTitle: 'Could not be interpreted as a WKT geometry.',
-//          messageDetail: data
+          messageTitle: 'Could not be interpreted as a WKT geometry.'
+          //          messageDetail: data
         });
       }
       //@todo validate geometry
@@ -157,7 +192,7 @@ export const BatchValidationService = {
   validateBatchAgainstTemplate: (template: Template, batch): BatchValidationResult => {
     const result = new BatchValidationResult();
 
-    const batchDataCopy = {...batch};
+    const batchDataCopy = { ...batch };
 
     for (const row of batchDataCopy.rows) {
       for (const field of batchDataCopy.headers) {

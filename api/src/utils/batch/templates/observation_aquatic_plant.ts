@@ -32,7 +32,6 @@ ObservationAquaticPlant.columns = [
   new TemplateColumnBuilder('Observation - Suitable for Biocontrol Agent?', 'tristate').build(),
 
   ...VoucherInformation
-
 ];
 
 export {ObservationAquaticPlant};

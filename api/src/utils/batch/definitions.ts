@@ -84,6 +84,18 @@ export class TemplateColumnBuilder {
     return this;
   }
 
+  valueRange(min: number | null, max: number | null): this {
+    this.validations.minValue = min;
+    this.validations.maxValue = max;
+    return this;
+  }
+
+  lengthRange(min: number | null, max: number | null): this {
+    this.validations.minLength = min;
+    this.validations.maxLength = max;
+    return this;
+  }
+
   helpText: string | null;
 
   withHelpText(helpText: string): this {
