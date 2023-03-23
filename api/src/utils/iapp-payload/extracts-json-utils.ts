@@ -68,16 +68,16 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     map_code: dispersal.invasive_plant, // convert to map code (XX)
     utm_zone: dispersal.utm_zone,
     monitoring: [],
-    agent_count: null,
     common_name: common_name, // use common name
-    plant_count: dispersal.density,
     utm_easting: dispersal.utm_easting,
     project_code: [{ description: dispersal.dispersal_paper_file_id }],
     utm_northing: dispersal.utm_northing,
     monitoring_id: dispersal.biologicaldispersalid, // What is this??? (used dispersal id)
-    count_duration: null, // Could not find or don't know what it means
     general_comment: dispersal.site_comments,
     monitoring_date: dispersal.inspection_date,
+    agent_count: dispersal.agent_count,
+    plant_count: dispersal.plant_count,
+    count_duration: dispersal.count_duration,
     eggs_present_ind: dispersal.eggs_present,
     pupae_present_ind: dispersal.pupae_present,
     adults_present_ind: dispersal.adults_present,
@@ -123,6 +123,7 @@ export const biologicalTreatmentsJSON = (treatment: any, all_monitoring: any[]) 
     classified_area_code: null, // could not find
     biological_agent_code: treatment.biological_agent,
     biological_agent_stage_code: null,
+    agent_count: treatment.agent_count,
     invasive_species_agency_code: treatment.treatment_agency, // convert to code
     employer: treatment.employer,
     primary_applicator: treatment.primary_applicator
@@ -169,16 +170,27 @@ const monitoringJSON = (props: any) => {
       monitoringID = item.biologicalmonitoringid;
       break;
     default:
-      monitoringID = null;
   }
   return {
     monitoring_id: monitoringID,
     project_code: item.monitoring_paper_file_id,
     efficacy_code: item.efficacy_rating, // not in extract
-    general_comment: null, // not in extract
     monitoring_date: item.inspection_date,
     primary_surveyor: item.primary_surveyor,
-    efficacy_percent: (type as string) !== 'biological' ? item?.efficiency_rate : null,
+    species_common_name: item.invasive_plant,
+    biological_agent_code: item.biological_agent,
+    agent_count: item.agent_count,
+    plant_count: item.plant_count,
+    count_duration: item.count_duration,
+    legacy_presence: item.legacy_presence,
+    foliar_feeding_damage_ind: item.foliar_feeding_damage,
+    root_feeding_damage_ind: item.rootfeeding_damage,
+    seed_feeding_damage_ind: item.seedfeeding_damage,
+    oviposition_marks_ind: item.oviposition_marks,
+    eggs_present_ind: item.eggs_present,
+    pupae_present_ind: item.pupae_present,
+    adults_present_ind: item.adults_present,
+    tunnels_present_ind: item.tunnels_present,
     invasive_species_agency_code: item?.monitoring_agency
   };
 };

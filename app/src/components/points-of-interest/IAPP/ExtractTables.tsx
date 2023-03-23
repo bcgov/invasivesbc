@@ -16,7 +16,7 @@ import {
 import React from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { monitoringColumns, MonitoringRow } from './MonitoringTable';
+import { defaultMonitoringColumns, customMonitoringColumns, MonitoringRow } from './MonitoringTable';
 
 interface MechTreatmentColumn {
   id:
@@ -69,7 +69,7 @@ interface BioDispersalColumn {
     | 'species_common_name'
     | 'inspection_date'
     | 'project_code'
-    | 'duration_of_count'
+    | 'count_duration'
     | 'plant_count'
     | 'agent_count'
     | 'biological_agent_code'
@@ -148,10 +148,10 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 350 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 200 },
-  { id: 'duration_of_count', label: 'Duration of Count (min)', minWidth: 150 },
-  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
-  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 150 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
+  { id: 'count_duration', label: 'Duration of Count (min)', minWidth: 150 },
   { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
   { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
   { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
@@ -209,6 +209,20 @@ const Row = (props: any) => {
       invasive_species_agency_code: item.invasive_species_agency_code,
       project_code: item.project_code,
       primary_surveyor: item.primary_surveyor,
+      species_common_name: item.species_common_name,
+      biological_agent_code: item.biological_agent_code,
+      agent_count: item.agent_count,
+      plant_count: item.plant_count,
+      count_duration: item.count_duration,
+      legacy_presence: item.legacy_presence,
+      foliar_feeding_damage_ind: item.foliar_feeding_damage_ind,
+      root_feeding_damage_ind: item.root_feeding_damage_ind,
+      seed_feeding_damage_ind: item.seed_feeding_damage_ind,
+      oviposition_marks_ind: item.oviposition_marks_ind,
+      eggs_present_ind: item.eggs_present_ind,
+      pupae_present_ind: item.pupae_present_ind,
+      adults_present_ind: item.adults_present_ind,
+      tunnels_present_ind: item.tunnels_present_ind,
       efficacy_rating: item.efficacy_code
     };
   };
@@ -225,6 +239,7 @@ const Row = (props: any) => {
         break;
       case 'Biological Dispersal':
         columnsObj = bioDispersalColumns;
+
         break;
       case 'Biological Treatment':
         columnsObj = bioTreatmentColumns;
@@ -257,6 +272,9 @@ const Row = (props: any) => {
     });
   };
 
+  /// switch here if we have more than 2 options
+  var monitoringColumns = type === 'Biological Treatment' ? customMonitoringColumns : defaultMonitoringColumns;
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -281,7 +299,7 @@ const Row = (props: any) => {
                   </TableHead>
                   <TableBody>
                     {monitoringRows.map((item) => {
-                      return <MonitoringRow row={item} />;
+                      return <MonitoringRow row={item} type={type} />;
                     })}
                   </TableBody>
                 </Table>
