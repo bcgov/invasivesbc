@@ -101,6 +101,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           activeActivity: action.payload.activeActivity,
+          activeActivityDescription: action.payload.activeActivityDescription,
           activeIAPP: action.payload.activeIAPP,
           recordSets: { ...action.payload.recordSets },
           recordsExpanded: action.payload.recordsExpanded

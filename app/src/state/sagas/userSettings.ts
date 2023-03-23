@@ -261,6 +261,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   try {
     const oldID = localStorage.getItem('activeActivity');
+    const oldDesc = localStorage.getItem('activeActivityDescription');
     const IAPPID = localStorage.getItem('activeIAPP');
     // needs mobile later
     const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
@@ -276,6 +277,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
       payload: {
         activeActivity: oldID,
+        activeActivityDescription: oldDesc,
         activeIAPP: IAPPID,
         recordSets: recordSets,
         recordsExpanded: recordsExpanded
