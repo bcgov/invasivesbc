@@ -1,5 +1,4 @@
 import { Http } from '@capacitor-community/http';
-import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 import { ActivityStatus } from 'constants/activities';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
@@ -17,6 +16,7 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_FAILURE,
   ACTIVITY_GET_SUGGESTED_PERSONS_FAILURE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_FAILURE,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { autoRestart } from 'state/utilities/errorHandlers';
@@ -36,9 +36,12 @@ export const handle_ACTIVITY_CREATE_NETWORK = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Online activity request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_CREATE_FAILURE
@@ -67,9 +70,12 @@ export const handle_ACTIVITY_GET_NETWORK_REQUEST = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Online activity get request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_GET_FAILURE
@@ -129,9 +135,12 @@ export const handle_ACTIVITY_SAVE_NETWORK_REQUEST = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Online activity save request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_SAVE_FAILURE
@@ -152,9 +161,12 @@ export const handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE = autoRe
   },
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested jurisdictions request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_FAILURE
@@ -173,9 +185,12 @@ export const handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested persons request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_GET_SUGGESTED_PERSONS_FAILURE
@@ -211,9 +226,12 @@ export const handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE = autoRe
   },
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested treatment IDs request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_FAILURE

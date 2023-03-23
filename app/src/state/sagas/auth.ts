@@ -15,60 +15,75 @@ import {
   AUTH_UPDATE_TOKEN_STATE,
   TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_CLEAR_REQUEST,
-  USERINFO_LOAD_COMPLETE
+  USERINFO_LOAD_COMPLETE,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import { selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
 import { autoRestart } from 'state/utilities/errorHandlers';
-import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 
 const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for atleast this long at all times
 const GRACE_PERIOD = 10; // get a new one with this much time to spare
 
 let keycloakInstance = null;
 
-function* initializeAuthentication() {
-  const config: AppConfig = yield select(selectConfiguration);
+const initializeAuthentication = autoRestart(
+  function* initializeAuthentication() {
+    const config: AppConfig = yield select(selectConfiguration);
 
-  keycloakInstance = Keycloak({
-    clientId: config.KEYCLOAK_CLIENT_ID,
-    realm: config.KEYCLOAK_REALM,
-    url: config.KEYCLOAK_URL
-  });
+    keycloakInstance = Keycloak({
+      clientId: config.KEYCLOAK_CLIENT_ID,
+      realm: config.KEYCLOAK_REALM,
+      url: config.KEYCLOAK_URL
+    });
 
-  yield call(keycloakInstance.init, {
-    checkLoginIframe: false,
-    adapter: config.KEYCLOAK_ADAPTER,
-    redirectUri: config.REDIRECT_URI,
-    onLoad: 'check-sso',
-    pkceMethod: 'S256'
-  });
+    yield call(keycloakInstance.init, {
+      checkLoginIframe: false,
+      adapter: config.KEYCLOAK_ADAPTER,
+      redirectUri: config.REDIRECT_URI,
+      onLoad: 'check-sso',
+      pkceMethod: 'S256'
+    });
 
-  yield put({
-    type: AUTH_INITIALIZE_COMPLETE,
-    payload: {
-      authenticated: keycloakInstance.authenticated
-    }
-  });
-
-  if (keycloakInstance.authenticated) {
-    // we are already logged in
-    // schedule our refresh
-    // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put({ type: AUTH_REFRESH_TOKEN });
-  } else {
-    // we are not logged in
     yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
+      type: AUTH_INITIALIZE_COMPLETE,
       payload: {
-        authenticated: false,
-        activated: false
+        authenticated: keycloakInstance.authenticated
       }
     });
+
+    if (keycloakInstance.authenticated) {
+      // we are already logged in
+      // schedule our refresh
+      // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
+      yield put({ type: AUTH_REFRESH_TOKEN });
+    } else {
+      // we are not logged in
+      yield put({
+        type: TABS_GET_INITIAL_STATE_REQUEST,
+        payload: {
+          authenticated: false,
+          activated: false
+        }
+      });
+    }
+  },
+  function* handleError(e) {
+    const errorMessage = 'Initialize authentication request failed: ' + e.toString();
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
+    });
+    yield put({
+      type: AUTH_REFRESH_ROLES_ERROR
+    });
   }
-}
+);
 
 const refreshRoles = autoRestart(
   function* refreshRoles() {
@@ -127,9 +142,12 @@ const refreshRoles = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Refresh roles request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: AUTH_REFRESH_ROLES_ERROR
@@ -137,20 +155,35 @@ const refreshRoles = autoRestart(
   }
 );
 
-function* keepTokenFresh() {
-  yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
-  yield put({ type: AUTH_UPDATE_TOKEN_STATE });
+const keepTokenFresh = autoRestart(
+  function* keepTokenFresh() {
+    yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
+    yield put({ type: AUTH_UPDATE_TOKEN_STATE });
 
-  // load roles
-  yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+    // load roles
+    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
 
-  const expiresIn =
-    keycloakInstance.tokenParsed['exp'] - Math.ceil(new Date().getTime() / 1000) + keycloakInstance.timeSkew;
+    const expiresIn =
+      keycloakInstance.tokenParsed['exp'] - Math.ceil(new Date().getTime() / 1000) + keycloakInstance.timeSkew;
 
-  // wait until the time is right
-  yield delay((expiresIn - GRACE_PERIOD) * 1000);
-  yield put({ type: AUTH_REFRESH_TOKEN });
-}
+    // wait until the time is right
+    yield delay((expiresIn - GRACE_PERIOD) * 1000);
+    yield put({ type: AUTH_REFRESH_TOKEN });
+  },
+  function* handleError(e) {
+    const errorMessage = 'Keeping token fresh request failed: ' + e.toString();
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
+    });
+    yield put({
+      type: AUTH_REFRESH_ROLES_ERROR
+    });
+  }
+);
 
 function* handleSigninRequest(action) {
   try {

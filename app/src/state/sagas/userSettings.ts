@@ -46,14 +46,14 @@ import {
   GET_API_DOC_REQUEST,
   GET_API_DOC_SUCCESS,
   GET_API_DOC_ONLINE,
-  GET_API_DOC_FAILURE
+  GET_API_DOC_FAILURE,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
 import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
-import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 import { autoRestart } from 'state/utilities/errorHandlers';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
@@ -157,9 +157,12 @@ const handle_USER_SETTINGS_DELETE_KML_REQUEST = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Delete KML request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: USER_SETTINGS_DELETE_KML_FAILURE
@@ -391,9 +394,12 @@ const handle_GET_API_DOC_ONLINE = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Get api doc request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: GET_API_DOC_FAILURE

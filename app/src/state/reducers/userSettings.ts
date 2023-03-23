@@ -19,7 +19,8 @@ import {
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_KML_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
-  GET_API_DOC_SUCCESS
+  GET_API_DOC_SUCCESS,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -33,6 +34,11 @@ class UserSettingsState {
   activeIAPP: string;
   apiDocsWithViewOptions: object;
   apiDocsWithSelectOptions: object;
+
+  errorHandlerDialog: {
+    dialogOpen: boolean,
+    dialogContentText: string
+  }
 
   mapCenter: [number, number];
   newRecordDialogState: INewRecordDialogState;
@@ -69,6 +75,10 @@ class UserSettingsState {
 
   constructor() {
     this.initialized = false;
+    this.errorHandlerDialog = {
+      dialogOpen: false,
+      dialogContentText: "Default error text"
+    }
     this.darkTheme = localStorage.getItem('USER_SETTINGS_DARK_THEME')
       ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
       : false;
@@ -198,6 +208,15 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state,
           mapCenter: action.payload.center
         };
+      }
+      case USER_SETTINGS_SET_ERROR_HANDLER_DIALOG: {
+        return {
+          ...state,
+          errorHandlerDialog: {
+            dialogOpen: action.payload.dialogOpen ? action.payload.dialogOpen : !state.errorHandlerDialog.dialogOpen,
+            dialogContentText: action.payload.dialogContentText
+          }
+        }
       }
       default:
         return state;

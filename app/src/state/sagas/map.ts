@@ -59,7 +59,8 @@ import {
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORD_SET_TO_EXCEL_FAILURE,
-  MAP_INIT_FAILURE
+  MAP_INIT_FAILURE,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -94,7 +95,6 @@ import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
 import { autoRestart } from 'state/utilities/errorHandlers';
-import { copyToClipboard } from 'components/batch-upload/ClipboardHelper';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
@@ -391,9 +391,12 @@ const handle_MAP_INIT_REQUEST = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Map init request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: MAP_INIT_FAILURE
@@ -852,9 +855,12 @@ const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
   },
   function* handleError(e) {
     const errorMessage = 'Export to excel request failed: ' + e.toString();
-    copyToClipboard({
-      message: errorMessage,
-      value: errorMessage
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      payload: {
+        dialogOpen: true,
+        dialogContentText: errorMessage
+      }
     });
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE
