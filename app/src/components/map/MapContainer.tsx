@@ -210,7 +210,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [userSettingsState?.mapCenter]);
 
   const tabsState = useSelector(selectTabs);
-  const mapState = useSelector(selectMap)
+  const mapState = useSelector(selectMap);
 
   return (
     <ReactLeafletEditable
