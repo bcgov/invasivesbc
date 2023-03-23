@@ -85,10 +85,11 @@ export const LeafletCanvasMarker = (props) => {
     if (groupRef.current) layerRef?.current?.clear();
 
     if (props.enabled && groupRef.current) {
+      map.invalidateSize();
       layerRef?.current?.addMarkers(markers);
+        map.fireEvent('resize')
     }
 
-    layerRef?.current?.redraw();
 
     return () => {
       try {
@@ -169,10 +170,12 @@ export const LeafletCanvasLabel = (props) => {
     if (groupRef.current) layerRef?.current?.clear();
 
     if (props.enabled && groupRef.current) {
+      map.invalidateSize();
+      layerRef?.current?.redraw();
       layerRef?.current?.addMarkers(markers);
+        map.fireEvent('resize')
     }
 
-    layerRef?.current?.redraw();
 
     return () => {
       try {
