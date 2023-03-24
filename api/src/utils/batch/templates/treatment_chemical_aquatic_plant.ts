@@ -2,7 +2,7 @@ import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
   ActivityPersonsWithApplicatorLicense,
-  BasicInformation, ChemicalPlantTreatmentInformation, HerbicidesInformation,
+  BasicInformation, BasicInformationRowValidators, ChemicalPlantTreatmentInformation, HerbicidesInformation,
   ProjectInformation, WellInformation
 } from "../shared_columns";
 
@@ -24,5 +24,5 @@ TreatmentChemicalAquaticPlant.columns = [
   new TemplateColumnBuilder('Chemical Treatment - Invasive Species 3', 'codeReference').referencesCode('invasive_plant_aquatic_code').build(),
 
 ];
-
+TreatmentChemicalAquaticPlant.rowValidators = [...BasicInformationRowValidators];
 export {TreatmentChemicalAquaticPlant};

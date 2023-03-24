@@ -11,7 +11,7 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS
+  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS
 } from '../actions';
 import { Http } from '@capacitor-community/http';
 
@@ -85,6 +85,26 @@ function* createBatchWithCallback(action) {
   yield call(resolve, data.batchId);
 }
 
+function* updateBatch(action) {
+  const configuration = yield select(selectConfiguration);
+  const { requestHeaders } = yield select(selectAuth);
+  const { id } = action.payload;
+
+  const { resolve, reject } = action.payload;
+
+  const { data } = yield Http.request({
+    method: 'PUT',
+    url: configuration.API_BASE + `/api/batch/${id}`,
+    headers: {
+      Authorization: requestHeaders.authorization,
+      'Content-Type': 'application/json'
+    },
+    data: action.payload
+  });
+
+  yield put({ type: BATCH_UPDATE_SUCCESS, payload: data });
+}
+
 function* listTemplates(action) {
   const configuration = yield select(selectConfiguration);
   const { requestHeaders } = yield select(selectAuth);
@@ -146,6 +166,7 @@ function* batchSaga() {
     takeEvery(BATCH_LIST_REQUEST, listBatches),
     takeLatest(BATCH_RETRIEVE_REQUEST, getBatch),
     takeEvery(BATCH_CREATE_REQUEST, createBatch),
+    takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
     takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),

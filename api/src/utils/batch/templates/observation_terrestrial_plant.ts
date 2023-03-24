@@ -1,5 +1,11 @@
 import {Template, TemplateColumnBuilder} from '../definitions';
-import {ActivityPersons, BasicInformation, ProjectInformation, VoucherInformation} from '../shared_columns';
+import {
+  ActivityPersons,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ProjectInformation,
+  VoucherInformation
+} from '../shared_columns';
 
 const ObservationTerrestrialPlant = new Template(
   'observation_terrestrial_plant',
@@ -15,8 +21,8 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Observation - Terrestrial - Specific Use', 'codeReference').referencesCode('specific_use_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Slope', 'codeReference').referencesCode('slope_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Terrestrial - Aspect', 'codeReference').referencesCode('aspect_code').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Research Observation', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Terrestrial - Visible Well', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Research Observation', 'tristate').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Terrestrial - Visible Well', 'tristate').isRequired().build(),
 
   new TemplateColumnBuilder('Observation - Type', 'codeReference').referencesCode('observation_type_code').isRequired().build(),
   new TemplateColumnBuilder('Observation - Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
@@ -27,4 +33,7 @@ ObservationTerrestrialPlant.columns = [
 
   ...VoucherInformation
 ];
+
+ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
+
 export {ObservationTerrestrialPlant};

@@ -1,5 +1,6 @@
 import {SQL} from "sql-template-strings";
 import {PoolClient} from "pg";
+import {RowValidationResult} from "./validation";
 
 type templateDataType = 'text' | 'numeric' | 'date' | 'datetime' | 'codeReference' | 'codeReferenceMulti' | 'boolean' | 'tristate' | 'WKT';
 
@@ -112,8 +113,11 @@ export class TemplateColumnBuilder {
   };
 }
 
+type RowValidator = (rowData) => RowValidationResult;
+
 export class Template {
   constructor(readonly key: string, readonly name: string, readonly helpText: string) {
+    this.rowValidators = [];
   }
 
   async hydrateAllCodes(dbConnection: PoolClient) {
@@ -123,4 +127,5 @@ export class Template {
   }
 
   columns: TemplateColumn[];
+  rowValidators: RowValidator[];
 }

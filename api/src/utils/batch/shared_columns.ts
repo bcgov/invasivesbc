@@ -1,15 +1,16 @@
-import { TemplateColumnBuilder } from './definitions';
+import {TemplateColumnBuilder} from './definitions';
+import {RowValidationResult} from './validation';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT').build(),
   new TemplateColumnBuilder('Basic - Date', 'date').isRequired().build(),
-  new TemplateColumnBuilder('Basic - Latitude', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Basic - Longitude', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Basic - UTM Easting', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Basic - UTM Northing', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Basic - UTM Zone', 'text').isRequired().build(),
+  new TemplateColumnBuilder('Basic - Latitude', 'numeric').build(),
+  new TemplateColumnBuilder('Basic - Longitude', 'numeric').build(),
+  new TemplateColumnBuilder('Basic - UTM Easting', 'numeric').build(),
+  new TemplateColumnBuilder('Basic - UTM Northing', 'numeric').build(),
+  new TemplateColumnBuilder('Basic - UTM Zone', 'text').build(),
   new TemplateColumnBuilder('Basic - Employer', 'codeReference').isRequired().referencesCode('employer_code').build(),
-  new TemplateColumnBuilder('Basic - Funding Agency', 'codeReference').isRequired().build(),
+  new TemplateColumnBuilder('Basic - Funding Agency', 'codeReference').referencesCode('invasive_species_agency_code').isRequired().build(),
   new TemplateColumnBuilder('Basic - Access Description', 'text').isRequired().lengthRange(5, 300).build(),
   new TemplateColumnBuilder('Basic - Location Description', 'text').isRequired().lengthRange(5, 2000).build(),
 
@@ -26,6 +27,125 @@ export const BasicInformation = [
   new TemplateColumnBuilder('Basic - Jurisdiction 3 % Covered', 'numeric').valueRange(0, 100).build()
 ];
 
+const _JurisdictionSumValidator = (rowData): RowValidationResult => {
+  const summedFields = [
+    'Basic - Jurisdiction 1 % Covered',
+    'Basic - Jurisdiction 2 % Covered',
+    'Basic - Jurisdiction 3 % Covered'
+  ];
+
+  let sum = 0;
+  let valid = true;
+  const validationMessages = [];
+
+  for (const f of summedFields) {
+    if (rowData[f].parsedValue !== null && !isNaN(rowData[f].parsedValue)) {
+      sum += rowData[f].parsedValue;
+    }
+  }
+
+  if (sum !== 100) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Jurisdiction coverages must sum to 100%',
+      messageDetail: `'Actual sum: ${sum} != 100`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: summedFields
+  };
+};
+
+const LinkedRecordsValidator = (linkedRecords) => {
+  return (rowData): RowValidationResult => {
+    let valid = true;
+    const validationMessages = [];
+    const impactedFields = [];
+
+    let atleastOneSet = false;
+    let allSet = true;
+    for (const f of linkedRecords) {
+      if (rowData[f].parsedValue) {
+        atleastOneSet = true;
+      } else {
+        allSet = false;
+      }
+    }
+    if (atleastOneSet && !allSet) {
+      valid = false;
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'This column is linked to another, and at least one required value is missing',
+        messageDetail: `Linked columns: [${linkedRecords.join(', ')}]`
+      });
+      impactedFields.push(...linkedRecords);
+    }
+
+    return {
+      valid,
+      validationMessages,
+      appliesToFields: impactedFields
+    };
+  };
+};
+
+const _UTMorLatLongValidator = (rowData): RowValidationResult => {
+  const latLongCols = ['Basic - Latitude', 'Basic - Longitude'];
+  const UTMcols = ['Basic - UTM Easting', 'Basic - UTM Northing', 'Basic - UTM Zone'];
+  let valid = false;
+  const validationMessages = [];
+
+  let latLongPresent = false;
+
+  latLongCols.forEach((c) => {
+    if (rowData[c].parsedValue) {
+      latLongPresent = true;
+    }
+  });
+
+  let UTMpresent = false;
+  UTMcols.forEach((c) => {
+    if (rowData[c].parsedValue) {
+      UTMpresent = true;
+    }
+  });
+
+  if (!UTMpresent && !latLongPresent) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Exactly one of UTM Coords or Lat/Lon must be provided',
+      messageDetail: `Neither found`
+    });
+  }
+
+  if (UTMpresent && latLongPresent) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Exactly one of UTM Coords or Lat/Lon must be provided',
+      messageDetail: `Both found. Remove one of them.`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...latLongCols, ...UTMcols]
+  };
+};
+
+
+export const BasicInformationRowValidators = [
+  _JurisdictionSumValidator,
+  _UTMorLatLongValidator,
+  LinkedRecordsValidator(['Basic - Jurisdiction 2', 'Basic - Jurisdiction 2 % Covered']),
+  LinkedRecordsValidator(['Basic - Jurisdiction 3', 'Basic - Jurisdiction 3 % Covered'])
+];
 
 export const ActivityPersons = [
   new TemplateColumnBuilder('Activity - Person 1', 'text').isRequired().build(),

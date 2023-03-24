@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../styles/batch.scss';
-import { CopyToClipboardButton } from './ClipboardHelper';
+import {CopyToClipboardButton} from './ClipboardHelper';
 
-const BatchTableCell = ({ field, row }) => {
+const BatchTableCell = ({field, row}) => {
   const [hasMessages, setHasMessages] = useState(false);
   const [displaySeverity, setDisplaySeverity] = useState('normal');
   const [displayedValue, setDisplayedValue] = useState('');
@@ -54,54 +54,100 @@ const BatchTableCell = ({ field, row }) => {
 
     setDisplaySeverity(LEVELS[highestSeveritySeen]);
   }, [row.data[field].validationMessages]);
+
+  const DataTypeDisplay = (templateColumn) => {
+
+    let prefix = '';
+    let suffix = '';
+    let dt = `${templateColumn.dataType}`;
+
+    if (templateColumn.dataType === 'numeric') {
+      if (templateColumn.validations.minValue !== null) {
+        prefix = `${templateColumn.validations.minValue} <=`;
+      }
+      if (templateColumn.validations.maxValue !== null) {
+        suffix = `<= ${templateColumn.validations.maxValue}`;
+      }
+    }
+    if (templateColumn.dataType === 'text') {
+      if (templateColumn.validations.minLength != null && templateColumn.validations.maxLength == null) {
+        suffix = `min ${templateColumn.validations.minLength} chars`;
+      }
+      if (templateColumn.validations.minLength == null && templateColumn.validations.maxLength != null) {
+        suffix = `max ${templateColumn.validations.maxLength} chars`;
+      }
+      if (templateColumn.validations.minLength != null && templateColumn.validations.maxLength != null) {
+        suffix = `${templateColumn.validations.minLength} - ${templateColumn.validations.maxLength} chars`;
+      }
+    }
+    return `${prefix} ${dt} ${suffix}`;
+
+  }
+
   const WKTDisplay = (props: { displayVal: string }) => {
     return (
       <>
         {props.displayVal.substring(0, 12) + '...'}
-        <CopyToClipboardButton content={row.data[field].parsedValue} />
+        <CopyToClipboardButton content={row.data[field].parsedValue}/>
       </>
     );
   };
 
   return (
     <td className={displaySeverity}>
-      {row.data[field].templateColumn.dataType === 'WKT' ? <WKTDisplay displayVal={displayedValue} /> : displayedValue}
+      <span
+        className={`value ${(displayedValue === null || (typeof displayedValue === 'string' && displayedValue?.trim().length === 0)) ? 'empty' : ''}`}>
+        {row.data[field].templateColumn.dataType === 'WKT' ? (
+          <WKTDisplay displayVal={displayedValue}/>
+        ) : (
+          displayedValue
+        )}
+      </span>
       <ul className={'messages'}>
         {hasMessages &&
           row.data[field]?.validationMessages.map((m) => (
             <li key={m.messageTitle}>
               <strong>{m.messageTitle}</strong>
-              {m.messageDetail}
+              {m.messageDetail && (
+                <>
+                  <br/>
+                  {m.messageDetail}
+                </>
+              )}
             </li>
           ))}
+        <div className={'metadata'}>
+          <span className={'spreadsheetColumn'}>{row.data[field].spreadsheetCellAddress}</span>
+          <span className={'dataType'}>{DataTypeDisplay(row.data[field].templateColumn)}</span>
+        </div>
       </ul>
     </td>
   );
 };
 
-const BatchTable = ({ jsonRepresentation }) => {
+const BatchTable = ({jsonRepresentation}) => {
   return (
     <>
       <table className={'batchAlternateLayout'}>
         <thead>
-          <tr>
-            <th>Field</th>
-            {jsonRepresentation?.rows?.map((row) => (
-              <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
-            ))}
-          </tr>
+        <tr>
+          <th>Field</th>
+          {jsonRepresentation?.rows?.map((row) => (
+            <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
+          ))}
+        </tr>
         </thead>
         <tbody>
-          {jsonRepresentation?.headers?.map((h) => {
-            return (
-              <tr key={h}>
-                <td className={'fieldName'}>{h}</td>
-                {jsonRepresentation?.rows?.map((row) => (
-                  <BatchTableCell key={row.rowIndex} field={h} row={row} />
-                ))}
-              </tr>
-            );
-          })}
+        {jsonRepresentation?.headers?.map((h) => {
+          return (
+            <tr key={h}>
+              <td className={'fieldName'}>{h}</td>
+              {jsonRepresentation?.rows?.map((row) => (
+                <BatchTableCell key={row.rowIndex} field={h} row={row}/>
+              ))}
+            </tr>
+          );
+        })}
         </tbody>
       </table>
     </>
