@@ -31,7 +31,8 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   WHATS_HERE_PAGE_ACTIVITY,
-  WHATS_HERE_PAGE_POI
+  WHATS_HERE_PAGE_POI,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -415,15 +416,20 @@ export const RenderTablePOI = (props: any) => {
                 });
   }
 
+  // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
     let columns = [
       {
         field: 'id',
         headerName: 'IAPP ID',
-        hide: true
+        hide: true,
+        sortable: false,
+        
       },
       {
         field: 'site_id',
         headerName: 'IAPP ID',
+        sortable: false,
+        
         width: 70,
         renderCell: (params) => {
           return (
@@ -439,21 +445,25 @@ export const RenderTablePOI = (props: any) => {
       {
         field: 'reported_area',
         headerName: 'Reported Area',
+        sortable: false,
         minWidth: 115
       },
       {
         field: 'jurisdiction_code',
         headerName: 'Jurisdictions',
+        sortable: false,
         width: 200
       },
       {
         field: 'species_code',
         headerName: 'Species',
+        sortable: false,
         width: 120
       },
       {
         field: 'geometry',
         headerName: 'Geometry',
+        sortable: false,
         hide: true
       }
     ];
@@ -469,6 +479,9 @@ export const RenderTablePOI = (props: any) => {
             hideFooter
             getRowHeight={() => 'auto'}
             headerHeight={30}
+            onColumnHeaderClick={((c) => {
+              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'IAPP', field: c.field}})
+            })}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               dispatch({
                 type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,

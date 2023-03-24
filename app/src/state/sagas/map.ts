@@ -58,7 +58,8 @@ import {
   WHATS_HERE_PAGE_ACTIVITY,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORD_SET_TO_EXCEL_FAILURE
+  RECORD_SET_TO_EXCEL_FAILURE,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -97,7 +98,6 @@ function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
   const sets = {};
@@ -616,31 +616,28 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   Geolocation.clearWatch(watchID);
 }
 
-function* handleTabChange(action)
-{
-  const tabState = yield select(selectTabs)
-  const tab = tabState.tabConfig[tabState.activeTab]
+function* handleTabChange(action) {
+  const tabState = yield select(selectTabs);
+  const tab = tabState.tabConfig[tabState.activeTab];
 
-  switch(tab.label)
-  {
+  switch (tab.label) {
     case 'Current Activity':
-      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY }})
+      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY } });
       break;
     case 'Recorded Activities':
-      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY }})
+      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY } });
       break;
     default:
-      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.NONE }})
+      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.NONE } });
       break;
   }
 }
 
 function* leafletWhosEditing() {
-
   yield all([
     takeEvery(TABS_SET_ACTIVE_TAB_SUCCESS, handleTabChange),
-    takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange),
-  ])
+    takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange)
+  ]);
 }
 
 function* handle_WHATS_HERE_FEATURE(action) {
@@ -659,17 +656,31 @@ function* whatsHereSaga() {
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   try {
     const mapState = yield select(selectMap);
-    const startRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
+    const startRecord =
+      mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
     const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const slice = mapState?.whatsHere?.IAPPIDs.slice(startRecord, endRecord);
+    const sorted = mapState?.IAPPGeoJSON?.features
+      ?.filter((row) => {
+        return mapState?.whatsHere?.IAPPIDs?.includes(row?.properties.site_id);
+      })
+      .sort((a, b) => {
+        if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
+          return (
+            a?.properties[mapState?.whatsHere?.IAPPSortField] >
+            b?.properties[mapState?.whatsHere?.IAPPSortField]
+          );
+        } else {
+          return (
+            a?.properties[mapState?.whatsHere?.IAPPSortField] <
+            b?.properties[mapState?.whatsHere?.IAPPSortField]
+          );
+        }
+      });
+    /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
+    */
+    const sliceWithData = sorted.slice(startRecord, endRecord)
 
-
-    const sliceWithData = mapState?.IAPPGeoJSON?.features?.filter((row) => {
-      return slice.includes(row?.properties?.site_id)
-    })
-
-    const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => 
-    {
+    const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
       return {
         id: iappRecord?.properties.site_id,
         site_id: iappRecord?.properties.site_id,
@@ -678,32 +689,48 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         geometry: iappRecord?.geometry,
         reported_area: iappRecord?.properties.reported_area
       };
-    })
-
-    yield put({ 
-      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns}
     });
-  } catch(e) {
+
+    yield put({
+      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+      payload: { data: mappedToWhatsHereColumns }
+    });
+  } catch (e) {
     console.error(e);
   }
 }
 
 function* handle_WHATS_HERE_PAGE_POI(action) {
- // WHATS_HERE_IAPP_ROWS_REQUEST
- yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST})
+  // WHATS_HERE_IAPP_ROWS_REQUEST
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
   try {
     const mapState = yield select(selectMap);
-    const startRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
+    const startRecord =
+      mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
     const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-    const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-    const sliceWithData = mapState?.activitiesGeoJSON?.features?.filter((row) => {
-      return slice.includes(row?.properties?.id);
-    })
-
+    const sorted = mapState?.activitiesGeoJSON?.features
+      ?.filter((row) => {
+        return mapState?.whatsHere?.ActivityIDs?.includes(row?.properties.id);
+      })
+      .sort((a, b) => {
+        if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
+          return (
+            a?.properties[mapState?.whatsHere?.ActivitySortField] >
+            b?.properties[mapState?.whatsHere?.AcvititySortField]
+          );
+        } else {
+          return (
+            a?.properties[mapState?.whatsHere?.ActivitySortField] <
+            b?.properties[mapState?.whatsHere?.AcvititySortField]
+          );
+        }
+      });
+    /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
+    */
+    const sliceWithData = sorted.slice(startRecord, endRecord)
     const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
       const jurisdiction_code = [];
       activityRecord?.properties?.jurisdiction?.forEach((item) => {
@@ -753,26 +780,26 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 
       return {
         id: activityRecord?.properties?.id,
-            short_id: activityRecord?.properties?.short_id,
-            activity_type: activityRecord?.properties?.type,
-            reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
-            jurisdiction_code: jurisdiction_code,
-            species_code: species_code,
-            geometry: activityRecord?.geometry
-      }
+        short_id: activityRecord?.properties?.short_id,
+        activity_type: activityRecord?.properties?.type,
+        reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
+        jurisdiction_code: jurisdiction_code,
+        species_code: species_code,
+        geometry: activityRecord?.geometry
+      };
     });
 
-    yield put({ 
+    yield put({
       type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns}
+      payload: { data: mappedToWhatsHereColumns }
     });
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
@@ -783,7 +810,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   try {
     let rows = [];
     let networkReturn;
-    if (set.recordSetType === "POI") {
+    if (set.recordSetType === 'POI') {
       let filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
         authState?.accessRoles,
@@ -793,13 +820,17 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         set?.gridFilters ? set?.gridFilters : null,
         0,
         200000, // CSV limit
-        mapState?.layers?.[action.payload.id]?.filters?.sortColumns ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns : null
+        mapState?.layers?.[action.payload.id]?.filters?.sortColumns
+          ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns
+          : null
       );
       filters.isCSV = true;
-      filters.CSVType = action.payload.CSVType
+      filters.CSVType = action.payload.CSVType;
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {'Content-Type': 'text/csv'});
-      const daBlob = new Blob([networkReturn.data])
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {
+        'Content-Type': 'text/csv'
+      });
+      const daBlob = new Blob([networkReturn.data]);
 
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
@@ -808,8 +839,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
-      
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,
@@ -825,8 +854,8 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.isCSV = true;
       filters.CSVType = 'main_extract';
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {'Content-Type': 'text/csv'});
-      const daBlob = new Blob([networkReturn.data])
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, { 'Content-Type': 'text/csv' });
+      const daBlob = new Blob([networkReturn.data]);
 
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
@@ -839,16 +868,27 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     yield put({
       type: RECORD_SET_TO_EXCEL_SUCCESS
     });
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     yield put({
       type: RECORD_SET_TO_EXCEL_FAILURE
-    })
+    });
+  }
+}
+
+function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
+  switch(action.payload.recordType){
+    case 'IAPP':
+      yield put({type: WHATS_HERE_IAPP_ROWS_REQUEST})
+      break;
+    default:
+      yield put({type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
+      break;
   }
 }
 
 function* activitiesPageSaga() {
-  yield fork(leafletWhosEditing)
+  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
@@ -875,6 +915,7 @@ function* activitiesPageSaga() {
     takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
+    takeEvery(WHATS_HERE_SORT_FILTER_UPDATE, handle_WHATS_HERE_SORT_FILTER_UPDATE),
     takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST)
@@ -882,6 +923,5 @@ function* activitiesPageSaga() {
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
 }
-
 
 export default activitiesPageSaga;
