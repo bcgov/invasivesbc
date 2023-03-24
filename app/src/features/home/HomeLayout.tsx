@@ -5,7 +5,7 @@ import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { USER_SETTINGS_SET_ERROR_HANDLER_DIALOG } from 'state/actions';
+import { USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 export interface IHomeLayoutProps {
@@ -33,7 +33,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
         actionName: 'Close',
         actionOnClick: async () => {
           dispatch({
-            type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+            type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
             payload: {
               dialogOpen: false,
               dialogContent: ""

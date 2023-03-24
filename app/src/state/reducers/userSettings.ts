@@ -20,7 +20,7 @@ import {
   USER_SETTINGS_DELETE_KML_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
   GET_API_DOC_SUCCESS,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -209,7 +209,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           mapCenter: action.payload.center
         };
       }
-      case USER_SETTINGS_SET_ERROR_HANDLER_DIALOG: {
+      case USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_SUCCESS: {
         return {
           ...state,
           errorHandlerDialog: {

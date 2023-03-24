@@ -60,7 +60,7 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORD_SET_TO_EXCEL_FAILURE,
   MAP_INIT_FAILURE,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -392,7 +392,7 @@ const handle_MAP_INIT_REQUEST = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Map init request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -856,7 +856,7 @@ const handle_RECORD_SET_TO_EXCEL_REQUEST = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Export to excel request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage

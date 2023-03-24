@@ -16,7 +16,7 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
   IAPP_TABLE_ROWS_GET_SUCCESS,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
@@ -54,7 +54,7 @@ export const handle_ACTIVITIES_GEOJSON_GET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activities geojson request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -112,7 +112,7 @@ export const handle_IAPP_GEOJSON_GET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online IAPP geojson request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -149,7 +149,7 @@ export const handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activities get table rows request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -186,7 +186,7 @@ export const handle_IAPP_TABLE_ROWS_GET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online IAPP table rows request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -229,7 +229,7 @@ export const handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activities getting IDs request failed: ' + e.toString()
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -271,7 +271,7 @@ export const handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online IAPP getting IDs request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -313,7 +313,7 @@ export const MAP_WHATS_HERE_GET_POI_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online map what\'s here get POI request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage

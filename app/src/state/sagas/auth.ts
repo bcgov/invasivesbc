@@ -16,7 +16,7 @@ import {
   TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -73,7 +73,7 @@ const initializeAuthentication = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Initialize authentication request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -143,7 +143,7 @@ const refreshRoles = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Refresh roles request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -173,7 +173,7 @@ const keepTokenFresh = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Keeping token fresh request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage

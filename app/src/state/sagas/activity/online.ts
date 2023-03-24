@@ -16,7 +16,7 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_FAILURE,
   ACTIVITY_GET_SUGGESTED_PERSONS_FAILURE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_FAILURE,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { autoRestart } from 'state/utilities/errorHandlers';
@@ -37,7 +37,7 @@ export const handle_ACTIVITY_CREATE_NETWORK = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activity request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -71,7 +71,7 @@ export const handle_ACTIVITY_GET_NETWORK_REQUEST = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activity get request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -136,7 +136,7 @@ export const handle_ACTIVITY_SAVE_NETWORK_REQUEST = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activity save request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -162,7 +162,7 @@ export const handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE = autoRe
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested jurisdictions request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -186,7 +186,7 @@ export const handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested persons request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -227,7 +227,7 @@ export const handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE = autoRe
   function* handleError(e) {
     const errorMessage = 'Online activity get suggested treatment IDs request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage

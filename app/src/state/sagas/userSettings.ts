@@ -47,7 +47,8 @@ import {
   GET_API_DOC_SUCCESS,
   GET_API_DOC_ONLINE,
   GET_API_DOC_FAILURE,
-  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
+  USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_SUCCESS
 } from '../actions';
 import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
@@ -158,7 +159,7 @@ const handle_USER_SETTINGS_DELETE_KML_REQUEST = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Delete KML request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -395,7 +396,7 @@ const handle_GET_API_DOC_ONLINE = autoRestart(
   function* handleError(e) {
     const errorMessage = 'Get api doc request failed: ' + e.toString();
     yield put({
-      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG,
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST,
       payload: {
         dialogOpen: true,
         dialogContentText: errorMessage
@@ -407,12 +408,23 @@ const handle_GET_API_DOC_ONLINE = autoRestart(
   }
 );
 
+function* handle_USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST(action) {
+  const authState = yield select(selectAuth);
+  if (authState.authenticated) {
+    yield put({
+      type: USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_SUCCESS,
+      payload: action.payload
+    });
+  }
+}
+
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
     takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
+    takeEvery(USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST, handle_USER_SETTINGS_SET_ERROR_HANDLER_DIALOG_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
     takeEvery(
