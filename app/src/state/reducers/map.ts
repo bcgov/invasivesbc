@@ -31,7 +31,8 @@ import {
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
   WHATS_HERE_PAGE_ACTIVITY,
   MAIN_MAP_MOVE,
-  ACTIVITY_PAGE_MAP_EXTENT_TOGGLE
+  ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -66,8 +67,8 @@ class MapState {
 
   constructor() {
     this.initialized = false;
-    this.center = [53, -127]
-    this.zoom = 5
+    this.center = [53, -127];
+    this.zoom = 5;
     this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
@@ -86,6 +87,10 @@ class MapState {
       IAPPLimit: 5,
       ActivityPage: 0,
       ActivityLimit: 5,
+      IAPPSortField: 'earliest_survey',
+      IAPPSortDirection: 'desc',
+      ActivitySortField: 'created',
+      ActivitySortDirection: 'desc',
       IAPPIDs: [],
       ActivityIDs: [],
       limit: 5,
@@ -162,6 +167,31 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             activityRows: [],
             ActivityPage: 0,
             ActivityLimit: 5
+          }
+        };
+      }
+      case WHATS_HERE_SORT_FILTER_UPDATE: {
+        return {
+          ...state,
+          whatsHere: {
+            ...state.whatsHere,
+            IAPPPage: action.payload.recordType === 'IAPP' ? 0 : state.whatsHere.IAPPPage,
+            ActivityPage: action.payload.recordType === 'Activity' ? 0 : state.whatsHere.ActivityPage,
+            IAPPSortField: action.payload.recordType === 'IAPP' ? action.payload.field : state.whatsHere.IAPPSortField,
+            IAPPSortDirection:
+              action.payload.recordType === 'IAPP'
+                ? state.whatsHere.IAPPSortDirection === 'desc'
+                  ? 'asc'
+                  : 'desc'
+                : state.whatsHere.IAPPSortDirection,
+            ActivitySortField:
+              action.payload.recordType === 'Activity' ? action.payload.field : state.whatsHere.ActivitySortField,
+            ActivitySortDirection:
+              action.payload.recordType === 'Activity'
+                ? state.whatsHere.ActivitySortDirection === 'desc'
+                  ? 'asc'
+                  : 'desc'
+                : state.whatsHere.ActivitySortDirection
           }
         };
       }

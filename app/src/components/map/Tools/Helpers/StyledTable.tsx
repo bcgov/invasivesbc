@@ -31,7 +31,8 @@ import {
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   WHATS_HERE_PAGE_ACTIVITY,
-  WHATS_HERE_PAGE_POI
+  WHATS_HERE_PAGE_POI,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from 'state/actions';
 import { useDispatch } from 'react-redux';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -256,12 +257,14 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'id',
       headerName: 'Activity ID',
-      hide: true
+      hide: true,
+      sortable: false,
     },
     {
       field: 'short_id',
       headerName: 'Activity ID',
       minWidth: 80,
+      sortable: false,
       renderCell: (params) => {
         return (
           <div
@@ -276,27 +279,38 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'activity_type',
       headerName: 'Activity Type',
+      sortable: false,
       minWidth: 110
     },
     {
       field: 'reported_area',
       headerName: 'Reported Area',
       minWidth: 130,
+      sortable: false,
       renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
+    },
+    {
+      field: 'created',
+      headerName: 'Created',
+      width: 200,
+      sortable: false,
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
-      width: 200
+      width: 200,
+      sortable: false,
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
+      sortable: false,
       width: 200
     },
     {
       field: 'geometry',
       headerName: 'Geometry',
+      sortable: false,
       hide: true
     }
   ];
@@ -323,6 +337,12 @@ export const RenderTableActivity = (props: any) => {
             rows={mapState?.whatsHere?.activityRows}
             hideFooterPagination
             hideFooter
+            disableColumnMenu
+            disableColumnFilter
+            
+            onColumnHeaderClick={((c) => {
+              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'Activity', field: c.field}})
+            })}
             getRowHeight={() => 'auto'}
             headerHeight={30}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
@@ -415,15 +435,20 @@ export const RenderTablePOI = (props: any) => {
                 });
   }
 
+  // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
     let columns = [
       {
         field: 'id',
         headerName: 'IAPP ID',
-        hide: true
+        hide: true,
+        sortable: false,
+        
       },
       {
         field: 'site_id',
         headerName: 'IAPP ID',
+        sortable: false,
+        
         width: 70,
         renderCell: (params) => {
           return (
@@ -439,21 +464,31 @@ export const RenderTablePOI = (props: any) => {
       {
         field: 'reported_area',
         headerName: 'Reported Area',
+        sortable: false,
+        minWidth: 115
+      },
+      {
+        field: 'earliest_survey',
+        headerName: 'Earliest Survey',
+        sortable: false,
         minWidth: 115
       },
       {
         field: 'jurisdiction_code',
         headerName: 'Jurisdictions',
+        sortable: false,
         width: 200
       },
       {
         field: 'species_code',
         headerName: 'Species',
+        sortable: false,
         width: 120
       },
       {
         field: 'geometry',
         headerName: 'Geometry',
+        sortable: false,
         hide: true
       }
     ];
@@ -467,8 +502,12 @@ export const RenderTablePOI = (props: any) => {
             rows={mapState?.whatsHere?.iappRows}
             hideFooterPagination
             hideFooter
+            disableColumnMenu
             getRowHeight={() => 'auto'}
             headerHeight={30}
+            onColumnHeaderClick={((c) => {
+              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'IAPP', field: c.field}})
+            })}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               dispatch({
                 type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
