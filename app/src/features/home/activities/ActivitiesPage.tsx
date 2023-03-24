@@ -223,7 +223,7 @@ const PageContainer = (props) => {
         name:
           'Open Activity(' +
           (userSettings?.activeActivityDescription !== undefined &&
-            userSettings?.activeActivityDescription?.split('-')[1].trim()) +
+            userSettings?.activeActivityDescription?.split('-')?.[1]?.trim()) +
           ')',
         disabled: userSettings?.activeActivityDescription === undefined,
         hidden: !userSettings?.activeActivity,
@@ -256,14 +256,14 @@ const PageContainer = (props) => {
         name:
           'Copy Activity ID to Clipboard (' +
           (userSettings?.activeActivityDescription !== undefined &&
-            userSettings.activeActivityDescription?.split('-')[1].trim()) +
+            userSettings.activeActivityDescription?.split('-')?.[1]?.trim()) +
           ')',
         disabled: userSettings.activeActivityDescription === undefined,
         hidden: !userSettings.activeActivity,
         icon: ContentCopy,
         onClick: async () => {
           try {
-            navigator.clipboard.writeText(userSettings.activeActivityDescription.split('-')[1].trim());
+            navigator.clipboard.writeText(userSettings?.activeActivityDescription?.split('-')?.[1]?.trim());
             setCopyAlertOpen(true);
           } catch (e) {
             console.log('Unable to copy ID.');
