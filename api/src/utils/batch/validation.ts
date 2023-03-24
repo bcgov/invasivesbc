@@ -1,7 +1,7 @@
 import { Template, TemplateColumn } from './definitions';
 import { validateAsWKT } from './spatial-validation';
 
-type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
+export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
 export interface BatchGlobalValidationMessage {
   severity: ValidationMessageSeverity;
@@ -20,14 +20,38 @@ export interface CellValidationResult {
   parsedValue: unknown;
 }
 
+export interface RowValidationResult {
+  validationMessages: BatchCellValidationMessage[];
+  appliesToFields: string[];
+  valid: boolean;
+}
+
 export class BatchValidationResult {
   canProceed: boolean;
   globalValidationMessages: BatchGlobalValidationMessage[] = [];
   validatedBatchData;
 }
 
+function _divmod(x: number, y: number) {
+  return [Math.floor(x / y), x % y];
+}
 
-  function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
+function _excelColumnName(n: number) {
+  let d = n;
+  const c = [];
+  while (d > 0) {
+    let r;
+    [d, r] = _divmod(d, 26);
+    c.unshift('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[r - 1]);
+  }
+  return c.join('');
+}
+
+function _cellAddress(row: number, column: number): string {
+  return `${_excelColumnName(column)}${row + 1}`;
+}
+
+function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
   const result = {
     validationMessages: [],
     parsedValue: null
@@ -74,13 +98,15 @@ export class BatchValidationResult {
       }
       break;
     case 'codeReference':
-      result.parsedValue = templateColumn.codes.find((c) => c.code === data);
-      if (result.parsedValue === null) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: 'Code value not found',
-          messageDetail: `${data} is not in the list of valid values for this code reference`
-        });
+      if (data.trim().length > 0) {
+        result.parsedValue = templateColumn.codes.find((c) => c.code === data);
+        if (result.parsedValue === undefined) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Code value not found',
+            messageDetail: `${data} is not in the list of valid values for this code reference`
+          });
+        }
       }
       break;
     case 'codeReferenceMulti':
@@ -123,8 +149,6 @@ export class BatchValidationResult {
     case 'text':
       result.parsedValue = data?.trim() || '';
 
-      console.dir(result.parsedValue.length);
-      console.dir(templateColumn);
       if (
         templateColumn.validations.minLength !== null &&
         result.parsedValue.length < templateColumn.validations.minLength
@@ -191,23 +215,43 @@ export class BatchValidationResult {
 export const BatchValidationService = {
   validateBatchAgainstTemplate: (template: Template, batch): BatchValidationResult => {
     const result = new BatchValidationResult();
+    let totalErrorCount = 0;
 
     const batchDataCopy = { ...batch };
 
-    for (const row of batchDataCopy.rows) {
-      for (const field of batchDataCopy.headers) {
+    batchDataCopy.rows.forEach((row, rowIndex) => {
+      batchDataCopy.headers.forEach((header, colIndex) => {
+        const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
         row.data[field] = {
           inputValue: row.data[field],
           templateColumn,
+          spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
           ..._validateCell(templateColumn, row.data[field])
         };
+
+        // @todo filter out non-error messages for the count
+        totalErrorCount += row.data[field].validationMessages.length;
+      });
+
+      const rowValidationResults = template.rowValidators.map((rv) => rv(row.data));
+
+      for (const f of rowValidationResults) {
+        if (!f.valid) {
+          totalErrorCount++;
+          // map row-level errors back to cell-level for presentation
+          f.appliesToFields.forEach((columnWithError) => {
+            row.data[columnWithError].validationMessages.push(...f.validationMessages);
+          });
+        }
       }
-    }
+
+      row.rowValidationResult = rowValidationResults;
+    });
 
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = [];
-    result.canProceed = true;
+    result.canProceed = totalErrorCount == 0;
     return result;
   }
 };

@@ -1,5 +1,11 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersons, BasicInformation, ProjectInformation, WellInformation} from "../shared_columns";
+import {
+  ActivityPersons,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ProjectInformation,
+  WellInformation
+} from "../shared_columns";
 
 const MonitoringChemical = new Template(
   'monitoring_chemical',
@@ -27,5 +33,7 @@ MonitoringChemical.columns = [
 
   new TemplateColumnBuilder('Monitoring - Comments', 'text').isRequired().build()
 ];
+
+MonitoringChemical.rowValidators = [...BasicInformationRowValidators];
 
 export {MonitoringChemical};

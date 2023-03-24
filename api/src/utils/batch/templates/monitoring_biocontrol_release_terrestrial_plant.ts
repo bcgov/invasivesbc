@@ -1,7 +1,7 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
-  BasicInformation,
+  BasicInformation, BasicInformationRowValidators,
   MicrositeConditions,
   PhenologyInformation,
   ProjectInformation,
@@ -60,5 +60,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Monitoring - Results - Spread - Max Spread Distance', 'numeric').build(),
 
 ];
+
+MonitoringBiocontrolReleaseTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
 
 export {MonitoringBiocontrolReleaseTerrestrialPlant};

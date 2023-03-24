@@ -1,7 +1,7 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
-  BasicInformation, MicrositeConditions,
+  BasicInformation, BasicInformationRowValidators, MicrositeConditions,
   PhenologyInformation,
   ProjectInformation,
   WeatherInformation
@@ -45,5 +45,7 @@ BiocontrolCollection.columns = [
   ...PhenologyInformation,
 
 ]
+
+BiocontrolCollection.rowValidators = [...BasicInformationRowValidators];
 
 export {BiocontrolCollection};

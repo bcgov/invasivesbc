@@ -1,5 +1,11 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersons, BasicInformation, ProjectInformation, ShorelineInformation} from "../shared_columns";
+import {
+  ActivityPersons,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ProjectInformation,
+  ShorelineInformation
+} from "../shared_columns";
 
 const TreatmentMechanicalAquaticPlant = new Template(
   'treatment_mechanical_aquatic_plant',
@@ -21,4 +27,7 @@ TreatmentMechanicalAquaticPlant.columns = [
   new TemplateColumnBuilder('Treatment - Mechanical Method Code', 'codeReference').referencesCode('mechanical_method_code').isRequired().build(),
 ];
 
+TreatmentMechanicalAquaticPlant.rowValidators = [...BasicInformationRowValidators];
+
 export {TreatmentMechanicalAquaticPlant};
+

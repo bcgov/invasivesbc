@@ -1,7 +1,7 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
-  BasicInformation,
+  BasicInformation, BasicInformationRowValidators,
   MicrositeConditions, PhenologyInformation, ProjectInformation,
   WeatherInformation,
   WellInformation
@@ -55,5 +55,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Monitoring - Suitable Collection Site?', 'tristate').isRequired().build(),
 
 ];
+
+MonitoringBiocontrolDispersalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
 
 export { MonitoringBiocontrolDispersalTerrestrialPlant };

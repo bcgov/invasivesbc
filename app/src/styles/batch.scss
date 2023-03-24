@@ -51,7 +51,7 @@ table.template-preview {
 
 
 code {
-  font-family: "Courier New", fixed;
+  font-family: "Courier New", monospace;
   display: block;
 }
 
@@ -65,7 +65,7 @@ table.code-reference {
 
   tbody {
     td:last-child {
-      font-family: 'Courier New', fixed;
+      font-family: 'Courier New', monospace;
       text-align: center;
     }
   }
@@ -97,6 +97,34 @@ table.batchAlternateLayout {
     tr {
       &:nth-child(even) {
         background: #e3e3e3;
+      }
+
+      td:not(:first-child) {
+        span.value {
+          font-weight: bold;
+
+          &.empty:after {
+            font-weight: normal;
+            font-style: italic;
+            content: "~";
+          }
+        }
+
+        div.metadata {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+
+          span.dataType {
+            color: #555555;
+            font-size: 80%;
+          }
+
+          span.spreadsheetColumn {
+            color: #333333;
+            font-size: 80%;
+          }
+        }
       }
 
       td.informational {
@@ -135,7 +163,7 @@ table.batchValidation {
   }
 
   tbody {
-    font-family: "Courier New", fixed;
+    font-family: "Courier New", monospace;
 
     tr {
       border-top: 1px solid darkblue;

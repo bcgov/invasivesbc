@@ -1,7 +1,7 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersons,
-  BasicInformation,
+  BasicInformation, BasicInformationRowValidators,
   ProjectInformation,
   ShorelineInformation,
   VoucherInformation,
@@ -33,5 +33,7 @@ ObservationAquaticPlant.columns = [
 
   ...VoucherInformation
 ];
+
+ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators];
 
 export {ObservationAquaticPlant};

@@ -13,7 +13,7 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_ERROR,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS
+  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_ERROR, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS
 } from '../actions';
 
 interface DeepBatch {
@@ -134,6 +134,27 @@ function createBatchReducer() {
           error: false,
           item: null,
           createdBatchId: null
+        };
+      case BATCH_UPDATE_SUCCESS:
+        return {
+          ...state,
+          working: false,
+          error: false,
+          item: action.payload.result
+        };
+      case BATCH_UPDATE_ERROR:
+        return {
+          ...state,
+          working: false,
+          error: true,
+          item: null
+        };
+      case BATCH_UPDATE_REQUEST:
+        return {
+          ...state,
+          working: true,
+          error: false,
+          item: null
         };
       case BATCH_TEMPLATE_LIST_REQUEST:
         return {

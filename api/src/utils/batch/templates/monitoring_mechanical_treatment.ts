@@ -1,5 +1,5 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersons, BasicInformation, ProjectInformation} from "../shared_columns";
+import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from "../shared_columns";
 
 const MonitoringMechanical = new Template(
   'monitoring_mechanical',
@@ -26,5 +26,7 @@ MonitoringMechanical.columns = [
 
   new TemplateColumnBuilder('Monitoring - Comments', 'text').isRequired().build()
 ];
+
+MonitoringMechanical.rowValidators = [...BasicInformationRowValidators];
 
 export {MonitoringMechanical};

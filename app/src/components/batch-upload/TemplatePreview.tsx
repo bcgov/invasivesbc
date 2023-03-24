@@ -51,8 +51,6 @@ const TemplatePreview = ({ name, id }) => {
         }
       });
     }).then((data) => {
-      console.log('resolving');
-      console.dir(data);
       const dataUrl = `data:text/csv;base64,${btoa(data as string)}`;
       const downloadLink = document.createElement('a');
       downloadLink.setAttribute('href', dataUrl);
@@ -89,7 +87,7 @@ const TemplatePreview = ({ name, id }) => {
               False values: <code>F, FALSE, N, or NO</code>
             </p>
             <p>
-              Unkown values: <code>U, or UNKNOWN</code>
+              Unknown values: <code>U, or UNKNOWN</code>
             </p>
           </>
         );
