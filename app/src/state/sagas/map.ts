@@ -665,20 +665,14 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
       })
       .sort((a, b) => {
         if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
-          return (
-            a?.properties[mapState?.whatsHere?.IAPPSortField] >
-            b?.properties[mapState?.whatsHere?.IAPPSortField]
-          );
+          return (a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField])? 1: -1
         } else {
-          return (
-            a?.properties[mapState?.whatsHere?.IAPPSortField] <
-            b?.properties[mapState?.whatsHere?.IAPPSortField]
-          );
+          return (a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField])? 1: -1
         }
       });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-    */
-    const sliceWithData = sorted.slice(startRecord, endRecord)
+     */
+    const sliceWithData = sorted.slice(startRecord, endRecord);
 
     const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
       return {
@@ -719,18 +713,18 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
         if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
           return (
             a?.properties[mapState?.whatsHere?.ActivitySortField] >
-            b?.properties[mapState?.whatsHere?.AcvititySortField]
-          );
+            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          )? 1: -1
         } else {
           return (
             a?.properties[mapState?.whatsHere?.ActivitySortField] <
-            b?.properties[mapState?.whatsHere?.AcvititySortField]
-          );
+            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          )? 1: -1
         }
       });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-    */
-    const sliceWithData = sorted.slice(startRecord, endRecord)
+     */
+    const sliceWithData = sorted.slice(startRecord, endRecord);
     const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
       const jurisdiction_code = [];
       activityRecord?.properties?.jurisdiction?.forEach((item) => {
@@ -877,12 +871,12 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
-  switch(action.payload.recordType){
+  switch (action.payload.recordType) {
     case 'IAPP':
-      yield put({type: WHATS_HERE_IAPP_ROWS_REQUEST})
+      yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
       break;
     default:
-      yield put({type: WHATS_HERE_ACTIVITY_ROWS_REQUEST})
+      yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
       break;
   }
 }

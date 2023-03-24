@@ -257,12 +257,14 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'id',
       headerName: 'Activity ID',
-      hide: true
+      hide: true,
+      sortable: false,
     },
     {
       field: 'short_id',
       headerName: 'Activity ID',
       minWidth: 80,
+      sortable: false,
       renderCell: (params) => {
         return (
           <div
@@ -277,27 +279,32 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'activity_type',
       headerName: 'Activity Type',
+      sortable: false,
       minWidth: 110
     },
     {
       field: 'reported_area',
       headerName: 'Reported Area',
       minWidth: 130,
+      sortable: false,
       renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
-      width: 200
+      width: 200,
+      sortable: false,
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
+      sortable: false,
       width: 200
     },
     {
       field: 'geometry',
       headerName: 'Geometry',
+      sortable: false,
       hide: true
     }
   ];
@@ -324,6 +331,9 @@ export const RenderTableActivity = (props: any) => {
             rows={mapState?.whatsHere?.activityRows}
             hideFooterPagination
             hideFooter
+            onColumnHeaderClick={((c) => {
+              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'Activity', field: c.field}})
+            })}
             getRowHeight={() => 'auto'}
             headerHeight={30}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
