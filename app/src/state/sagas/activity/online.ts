@@ -32,7 +32,7 @@ export const handle_ACTIVITY_CREATE_NETWORK = autoRestart(
   function* handle_ACTIVITY_CREATE_NETWORK(action) {
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
   
-    yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
+    yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id, short_id: action.payload.activity.short_id } });
   },
   function* handleError(e) {
     const errorMessage = 'Online activity request failed: ' + e.toString();
