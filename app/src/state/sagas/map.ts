@@ -680,6 +680,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         site_id: iappRecord?.properties.site_id,
         jurisdiction_code: iappRecord?.properties.jurisdictions,
         species_code: iappRecord?.properties.species_on_site,
+        earliest_survey: iappRecord?.properties.earliest_survey,
         geometry: iappRecord?.geometry,
         reported_area: iappRecord?.properties.reported_area
       };
@@ -777,6 +778,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
         short_id: activityRecord?.properties?.short_id,
         activity_type: activityRecord?.properties?.type,
         reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
+        created: activityRecord?.properties?.created,
         jurisdiction_code: jurisdiction_code,
         species_code: species_code,
         geometry: activityRecord?.geometry

@@ -290,6 +290,12 @@ export const RenderTableActivity = (props: any) => {
       renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
     },
     {
+      field: 'created',
+      headerName: 'Created',
+      width: 200,
+      sortable: false,
+    },
+    {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
       width: 200,
@@ -331,6 +337,9 @@ export const RenderTableActivity = (props: any) => {
             rows={mapState?.whatsHere?.activityRows}
             hideFooterPagination
             hideFooter
+            disableColumnMenu
+            disableColumnFilter
+            
             onColumnHeaderClick={((c) => {
               dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'Activity', field: c.field}})
             })}
@@ -459,6 +468,12 @@ export const RenderTablePOI = (props: any) => {
         minWidth: 115
       },
       {
+        field: 'earliest_survey',
+        headerName: 'Earliest Survey',
+        sortable: false,
+        minWidth: 115
+      },
+      {
         field: 'jurisdiction_code',
         headerName: 'Jurisdictions',
         sortable: false,
@@ -487,6 +502,7 @@ export const RenderTablePOI = (props: any) => {
             rows={mapState?.whatsHere?.iappRows}
             hideFooterPagination
             hideFooter
+            disableColumnMenu
             getRowHeight={() => 'auto'}
             headerHeight={30}
             onColumnHeaderClick={((c) => {
