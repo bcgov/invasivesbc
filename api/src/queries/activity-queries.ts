@@ -440,6 +440,12 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`LOWER(${gridFilters.species_positive})`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.project_code) {
+        // console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
+        sqlStatement.append(SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.project_code})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
       if (gridFilters.species_negative) {
         // console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
         sqlStatement.append(SQL` AND LOWER(a.species_negative_full) LIKE '%'||`);
