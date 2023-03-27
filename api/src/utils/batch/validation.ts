@@ -70,7 +70,7 @@ function _mapRowToDBObject(row, template: Template): RowMappingResult {
       messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
     }
 
-    let setValue = row.data[col.name].parsedValue;
+    let setValue = row?.data?.[col?.name]?.parsedValue;
     if (col.dataType === 'codeReference') {
       setValue = setValue?.code;
     }
@@ -277,7 +277,7 @@ export const BatchValidationService = {
           totalErrorCount++;
           // map row-level errors back to cell-level for presentation
           f.appliesToFields.forEach((columnWithError) => {
-            row.data[columnWithError].validationMessages.push(...f.validationMessages);
+            row?.data?.[columnWithError]?.validationMessages?.push(...f?.validationMessages);
           });
         }
       }

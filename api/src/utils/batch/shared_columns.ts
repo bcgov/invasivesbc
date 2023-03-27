@@ -90,8 +90,8 @@ const _JurisdictionSumValidator = (rowData): RowValidationResult => {
   const validationMessages = [];
 
   for (const f of summedFields) {
-    if (rowData[f].parsedValue !== null && !isNaN(rowData[f].parsedValue)) {
-      sum += rowData[f].parsedValue;
+    if (rowData?.[f]?.parsedValue !== null && !isNaN(rowData?.[f]?.parsedValue)) {
+      sum += rowData?.[f]?.parsedValue;
     }
   }
 
@@ -120,7 +120,7 @@ const LinkedRecordsValidator = (linkedRecords) => {
     let atleastOneSet = false;
     let allSet = true;
     for (const f of linkedRecords) {
-      if (rowData[f].parsedValue) {
+      if (rowData?.[f]?.parsedValue) {
         atleastOneSet = true;
       } else {
         allSet = false;
@@ -153,14 +153,14 @@ const _UTMorLatLongValidator = (rowData): RowValidationResult => {
   let latLongPresent = false;
 
   latLongCols.forEach((c) => {
-    if (rowData[c].parsedValue) {
+    if (rowData?.[c]?.parsedValue) {
       latLongPresent = true;
     }
   });
 
   let UTMpresent = false;
   UTMcols.forEach((c) => {
-    if (rowData[c].parsedValue) {
+    if (rowData?.[c]?.parsedValue) {
       UTMpresent = true;
     }
   });
