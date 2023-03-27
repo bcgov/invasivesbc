@@ -1,8 +1,8 @@
 import { Http } from '@capacitor-community/http';
-import { ActivityStatus } from 'constants/activities';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
+import { ActivityStatus, getShortActivityID } from 'sharedLibWithAPI/activityCreate';
 import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_SUCCESS,
@@ -12,7 +12,6 @@ import {
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
-import { getShortActivityID } from 'utils/addActivity';
 
 const checkForErrors = (response: any, status?: any, url?: any) => {
   if (response.code > 201) {

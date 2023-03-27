@@ -1,5 +1,5 @@
 import { FormValidation } from '@rjsf/utils';
-import { ActivitySubtype } from 'constants/activities';
+import { ActivitySubtype } from 'sharedLibWithAPI/activityCreate';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 

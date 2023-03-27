@@ -1,5 +1,4 @@
 import { Http } from '@capacitor-community/http';
-import { ActivityStatus } from 'constants/activities';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';

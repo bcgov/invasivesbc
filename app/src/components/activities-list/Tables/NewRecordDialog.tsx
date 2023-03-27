@@ -4,7 +4,6 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useHistory } from 'react-router-dom';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState, useContext } from 'react';
-import { ActivitySubtypeShortLabels, ActivityCategory, ActivitySubtypeRelations } from 'constants/activities';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
 import { UserRolesAccess } from 'constants/roles';
@@ -18,6 +17,7 @@ import {
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedLibWithAPI/activityCreate';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {

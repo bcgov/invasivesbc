@@ -47,11 +47,11 @@ import {
   GET_API_DOC_SUCCESS,
   GET_API_DOC_ONLINE
 } from '../actions';
-import { ActivityStatus } from 'constants/activities';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
 import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
+import { ActivityStatus } from 'sharedLibWithAPI/activityCreate';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {

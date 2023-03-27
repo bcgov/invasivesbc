@@ -1,6 +1,5 @@
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
 import { call, put, select } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import center from '@turf/center';
@@ -46,15 +45,13 @@ import {
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import {
-  generateDBActivityPayload,
-  populateSpeciesArrays,
   isLinkedTreatmentSubtype,
   populateJurisdictionArray
 } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { MAX_AREA } from 'rjsf/business-rules/customValidation';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
-import { activity_create_function } from 'sharedLibWithAPI/activityCreate';
+import { ActivityStatus, ActivitySubtype, ActivityType, activity_create_function, populateSpeciesArrays } from 'sharedLibWithAPI/activityCreate';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {

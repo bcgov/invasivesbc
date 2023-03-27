@@ -1,7 +1,6 @@
 import { Accordion, AccordionDetails, Box, Button, CircularProgress, Container } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import FormContainer from 'components/form/FormContainer';
-import { ActivityStatus, ActivitySubtype, ActivityType, FormValidationStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useQuery } from 'hooks/useQuery';
 import { IActivity } from 'interfaces/activity-interfaces';
@@ -10,6 +9,7 @@ import { getCustomValidator, getJurisdictionPercentValidator } from 'rjsf/busine
 import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { generateActivityPayload } from 'utils/addActivity';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
+import { ActivityType, ActivitySubtype, ActivityStatus, FormValidationStatus } from 'sharedLibWithAPI/activityCreate';
 
 interface IBulkEditActivitiesPage {
   isAlreadySubmitted?: boolean;

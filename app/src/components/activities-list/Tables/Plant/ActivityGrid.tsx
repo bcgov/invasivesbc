@@ -17,7 +17,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import { ActivityStatus } from 'constants/activities';
 import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -34,6 +33,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import 'react-data-grid/lib/styles.css';
 import ExcelExporter from '../ExcelExporter';
+import { ActivityStatus } from 'sharedLibWithAPI/activityCreate';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {

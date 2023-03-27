@@ -3,6 +3,7 @@ import {getLogger} from '../logger';
 import {PoolClient} from 'pg';
 import {randomUUID} from 'crypto';
 import moment from 'moment';
+import { activity_create_function }  from '../../../../app/src/sharedLibWithAPI/activityCreate'
 
 const defaultLog = getLogger('batch');
 
@@ -68,6 +69,10 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
+
+
+  const mapped2 = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123')
+
   const mapped = {
     _id: uuidToCreate,
     geog: null,
@@ -127,7 +132,7 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
   return {
     id: uuidToCreate,
     shortId: shortId,
-    payload: mapped
+    payload: mapped2
   };
 }
 

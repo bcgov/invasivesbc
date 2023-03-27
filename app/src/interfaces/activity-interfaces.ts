@@ -1,5 +1,5 @@
-import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { Feature } from 'geojson';
+import { ActivityType, ActivitySubtype } from 'sharedLibWithAPI/activityCreate';
 
 export interface IActivity {
   _id: string;
