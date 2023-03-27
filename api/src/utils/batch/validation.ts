@@ -1,5 +1,7 @@
 import { Template, TemplateColumn } from './definitions';
 import { validateAsWKT } from './spatial-validation';
+import _ from 'lodash';
+import slugify from 'slugify';
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -32,6 +34,11 @@ export class BatchValidationResult {
   validatedBatchData;
 }
 
+interface RowMappingResult {
+  mappedObject: object;
+  messages: string[];
+}
+
 function _divmod(x: number, y: number) {
   return [Math.floor(x / y), x % y];
 }
@@ -49,6 +56,36 @@ function _excelColumnName(n: number) {
 
 function _cellAddress(row: number, column: number): string {
   return `${_excelColumnName(column)}${row + 1}`;
+}
+
+function _mapRowToDBObject(row, template: Template): RowMappingResult {
+  const result = {};
+  const messages = [];
+
+  template.columns.forEach((col) => {
+    let mappedPath = col.mappedPath;
+
+    if (mappedPath === null) {
+      mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
+      messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
+    }
+
+    let setValue = row.data[col.name].parsedValue;
+    if (col.dataType === 'codeReference') {
+      setValue = setValue?.code;
+    }
+
+    // @todo handle codereferencemulti
+
+    if (!(setValue == null || (col.dataType === 'numeric' && isNaN(setValue)))) {
+      _.set(result, mappedPath, setValue);
+    }
+  });
+
+  return {
+    mappedObject: result,
+    messages
+  };
 }
 
 function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
@@ -230,8 +267,7 @@ export const BatchValidationService = {
           ..._validateCell(templateColumn, row.data[field])
         };
 
-        // @todo filter out non-error messages for the count
-        totalErrorCount += row.data[field].validationMessages.length;
+        totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
       });
 
       const rowValidationResults = template.rowValidators.map((rv) => rv(row.data));
@@ -247,6 +283,11 @@ export const BatchValidationService = {
       }
 
       row.rowValidationResult = rowValidationResults;
+
+      // put the row into the json structure used in `activity_incoming_data`
+      const { mappedObject, messages } = _mapRowToDBObject(row, template);
+      row.mappedObject = mappedObject;
+      row.mappedObjectMessages = messages;
     });
 
     result.validatedBatchData = batchDataCopy;

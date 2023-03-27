@@ -56,7 +56,6 @@ const BatchTableCell = ({field, row}) => {
   }, [row.data[field].validationMessages]);
 
   const DataTypeDisplay = (templateColumn) => {
-
     let prefix = '';
     let suffix = '';
     let dt = `${templateColumn.dataType}`;
@@ -81,8 +80,7 @@ const BatchTableCell = ({field, row}) => {
       }
     }
     return `${prefix} ${dt} ${suffix}`;
-
-  }
+  };
 
   const WKTDisplay = (props: { displayVal: string }) => {
     return (
@@ -96,7 +94,11 @@ const BatchTableCell = ({field, row}) => {
   return (
     <td className={displaySeverity}>
       <span
-        className={`value ${(displayedValue === null || (typeof displayedValue === 'string' && displayedValue?.trim().length === 0)) ? 'empty' : ''}`}>
+        className={`value ${
+          displayedValue === null || (typeof displayedValue === 'string' && displayedValue?.trim().length === 0)
+            ? 'empty'
+            : ''
+        }`}>
         {row.data[field].templateColumn.dataType === 'WKT' ? (
           <WKTDisplay displayVal={displayedValue}/>
         ) : (
@@ -148,6 +150,25 @@ const BatchTable = ({jsonRepresentation}) => {
             </tr>
           );
         })}
+        <tr>
+          <td>Mapped Object</td>
+          {jsonRepresentation?.rows?.map((row) => (
+            <td key={row.rowIndex}>
+              <pre>{JSON.stringify(row.mappedObject, null, 2)}</pre>
+            </td>
+          ))}
+        </tr>
+        <tr>
+          <td>Object Mapper Warnings</td>
+          {jsonRepresentation?.rows?.map((row) => (
+            <td key={row.rowIndex}>
+              <ul>
+                {row.mappedObjectMessages.map((message) => (<li key={message}>{message}</li>))}
+              </ul>
+            </td>
+          ))}
+
+        </tr>
         </tbody>
       </table>
     </>
