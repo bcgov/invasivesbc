@@ -120,7 +120,7 @@ const BatchMetadata = ({batch}) => {
           </>
         )}
 
-        {(batch['created_activities'].length > 0) && <>
+        {(batch?.['created_activities']?.length > 0) && <>
           <dt>Created Activities</dt>
           <dd>
             {batch['created_activities'].join(', ')}
