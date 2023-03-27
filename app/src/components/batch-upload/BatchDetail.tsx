@@ -1,16 +1,21 @@
-import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from '../../state/utilities/use_selector';
-import { selectBatch } from '../../state/reducers/batch';
-import { useDispatch } from 'react-redux';
-import { BATCH_CREATE_REQUEST_WITH_CALLBACK, BATCH_RETRIEVE_REQUEST, BATCH_UPDATE_REQUEST } from '../../state/actions';
+import {Box, Button, Grid, Paper, Typography} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {useSelector} from '../../state/utilities/use_selector';
+import {selectBatch} from '../../state/reducers/batch';
+import {useDispatch} from 'react-redux';
+import {
+  BATCH_CREATE_REQUEST_WITH_CALLBACK,
+  BATCH_EXECUTE_REQUEST,
+  BATCH_RETRIEVE_REQUEST,
+  BATCH_UPDATE_REQUEST
+} from '../../state/actions';
 import Spinner from '../spinner/Spinner';
-import { Error } from '@mui/icons-material';
+import {Error} from '@mui/icons-material';
 import BatchTable from './BatchTable';
 import BatchFileComponent from './BatchFileComponent';
-import { file } from '@babel/types';
+import {file} from '@babel/types';
 
-const BatchMetadata = ({ batch }) => {
+const BatchMetadata = ({batch}) => {
   const dispatch = useDispatch();
 
   function downloadCSV() {
@@ -34,8 +39,22 @@ const BatchMetadata = ({ batch }) => {
     });
   }
 
+  function doBatchExec() {
+    dispatch({
+      type: BATCH_EXECUTE_REQUEST,
+      payload: {
+        id: batch.id,
+        desiredActivityState: execFinalState,
+        treatmentOfErrorRows: execErrorRowsTreatment
+      }
+    });
+  }
+
   const [fileData, setFileData] = useState(null);
   const [uploadReady, setUploadReady] = useState(false);
+
+  const [execFinalState, setExecFinalState] = useState('Draft');
+  const [execErrorRowsTreatment, setExecErrorRowsTreatment] = useState('Draft');
 
   useEffect(() => {
     setUploadReady(fileData !== null);
@@ -68,31 +87,63 @@ const BatchMetadata = ({ batch }) => {
           <>
             <dt>Upload revised CSV Data</dt>
             <dd>
-              <BatchFileComponent setData={acceptFileData} ready={uploadReady} disabled={false} />
+              <BatchFileComponent setData={acceptFileData} ready={uploadReady} disabled={false}/>
               <Button disabled={!uploadReady} variant={'contained'} onClick={() => uploadRevisedData()}>
                 Upload
               </Button>
             </dd>
+
+            <dt>
+              Execute Batch
+            </dt>
+            <dd>
+              State for created activities:
+              <select value={execFinalState} onChange={(e) => {
+                setExecFinalState(e.target.value)
+              }}>
+                <option value={'Draft'}>Draft</option>
+                <option value={'Submitted'}>Submitted</option>
+              </select>
+              <br/>
+              Treatment of rows with errors:
+              <select value={execErrorRowsTreatment} onChange={(e) => {
+                setExecErrorRowsTreatment(e.target.value)
+              }}>
+                <option value={'Draft'}>Put in Draft</option>
+                <option value={'Skip'}>Skip</option>
+              </select>
+              <br/>
+              <Button variant={'contained'} onClick={() => doBatchExec()}>
+                Execute
+              </Button>
+            </dd>
           </>
         )}
+
+        {(batch['created_activities'].length > 0) && <>
+          <dt>Created Activities</dt>
+          <dd>
+            {batch['created_activities'].join(', ')}
+          </dd>
+        </>}
       </dl>
     </Paper>
   );
 };
-const BatchDetail = ({ id }) => {
-  const { working, error, item: batch } = useSelector(selectBatch);
+const BatchDetail = ({id}) => {
+  const {working, error, item: batch} = useSelector(selectBatch);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    dispatch({type: BATCH_RETRIEVE_REQUEST, payload: {id}});
   }, [id]);
 
   function renderContent() {
     if (working) {
-      return <Spinner />;
+      return <Spinner/>;
     }
     if (error) {
-      return <Error />;
+      return <Error/>;
     }
     if (batch == null) {
       return <span>No batch found</span>;
@@ -100,7 +151,7 @@ const BatchDetail = ({ id }) => {
     return (
       <>
         <BatchMetadata batch={batch}></BatchMetadata>
-        <BatchTable jsonRepresentation={batch['json_representation']} />
+        <BatchTable jsonRepresentation={batch['json_representation']}/>
       </>
     );
   }

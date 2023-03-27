@@ -20,27 +20,27 @@ BiocontrolCollection.columns = [
   ...WeatherInformation,
   ...MicrositeConditions,
 
-  new TemplateColumnBuilder('Collection - Start', 'datetime').isRequired().build(),
-  new TemplateColumnBuilder('Collection - End', 'datetime').isRequired().build(),
+  new TemplateColumnBuilder('Collection - Start', 'datetime', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.start_time').isRequired().build(),
+  new TemplateColumnBuilder('Collection - End', 'datetime', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.stop_time').isRequired().build(),
 
   new TemplateColumnBuilder('Collection - Historical IAPP Site ID', 'text').build(),
 
-  new TemplateColumnBuilder('Collection - Type', 'codeReference').referencesCode('biocontrol_collection_code').isRequired().build(),
-  new TemplateColumnBuilder('Collection - Method', 'codeReference').referencesCode('biocontrol_monitoring_methods_code').isRequired().build(),
-  new TemplateColumnBuilder('Collection - Plant Count', 'numeric').build(),
+  new TemplateColumnBuilder('Collection - Type', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.collection_type').referencesCode('biocontrol_collection_code').isRequired().build(),
+  new TemplateColumnBuilder('Collection - Method', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.collection_method').referencesCode('biocontrol_monitoring_methods_code').isRequired().build(),
+  new TemplateColumnBuilder('Collection - Plant Count', 'numeric', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.plant_count').valueRange(0,null).build(),
 
-  new TemplateColumnBuilder('Collection - Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').isRequired().build(),
-  new TemplateColumnBuilder('Collection - Biological Agent', 'codeReference').referencesCode('biocontrol_agent_code').isRequired().build(),
+  new TemplateColumnBuilder('Collection - Invasive Plant', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.invasive_plant_code').referencesCode('invasive_plant_code').isRequired().build(),
+  new TemplateColumnBuilder('Collection - Biological Agent', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.biological_agent_code').referencesCode('biocontrol_agent_code').isRequired().build(),
 
   new TemplateColumnBuilder('Collection - Sweep Count', 'numeric').build(),
 
-  new TemplateColumnBuilder('Collection - Actual - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
-  new TemplateColumnBuilder('Collection - Actual - Quantity', 'numeric').build(),
+  new TemplateColumnBuilder('Collection - Actual - Agent Stage', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.actual_biological_agents[0].biological_agent_stage_code').referencesCode('biocontrol_agent_stage_code').build(),
+  new TemplateColumnBuilder('Collection - Actual - Quantity', 'numeric', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.actual_biological_agents[0].release_quantity').valueRange(0, null).build(),
 
-  new TemplateColumnBuilder('Collection - Estimated - Agent Stage', 'codeReference').referencesCode('biocontrol_agent_stage_code').build(),
-  new TemplateColumnBuilder('Collection - Estimated - Quantity', 'numeric').build(),
+  new TemplateColumnBuilder('Collection - Estimated - Agent Stage', 'codeReference', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.estimated_biological_agents[0].biological_agent_stage_code').referencesCode('biocontrol_agent_stage_code').build(),
+  new TemplateColumnBuilder('Collection - Estimated - Quantity', 'numeric', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.estimated_biological_agents[0].release_quantity').valueRange(0, null).build(),
 
-  new TemplateColumnBuilder('Collection - Comment', 'text').build(),
+  new TemplateColumnBuilder('Collection - Comment', 'text', 'form_data.activity_subtype_data.Biocontrol_Collection_Information.comment').build(),
 
   ...PhenologyInformation,
 

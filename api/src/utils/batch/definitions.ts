@@ -1,12 +1,20 @@
-import {SQL} from "sql-template-strings";
-import {PoolClient} from "pg";
-import {RowValidationResult} from "./validation";
+import { SQL } from 'sql-template-strings';
+import { PoolClient } from 'pg';
+import { RowValidationResult } from './validation';
 
-type templateDataType = 'text' | 'numeric' | 'date' | 'datetime' | 'codeReference' | 'codeReferenceMulti' | 'boolean' | 'tristate' | 'WKT';
+type templateDataType =
+  | 'text'
+  | 'numeric'
+  | 'date'
+  | 'datetime'
+  | 'codeReference'
+  | 'codeReferenceMulti'
+  | 'boolean'
+  | 'tristate'
+  | 'WKT';
 
 export class TemplateColumn {
-  constructor(readonly name, readonly dataType: templateDataType) {
-  }
+  constructor(readonly name, readonly dataType: templateDataType, readonly mappedPath: string | null) {}
 
   helpText: string | null;
   required = false;
@@ -48,12 +56,11 @@ export class TemplateColumn {
 }
 
 export class CodeEntry {
-  constructor(readonly header: string, readonly code: string, readonly description: string) {
-  }
+  constructor(readonly header: string, readonly code: string, readonly description: string) {}
 }
 
 export class TemplateColumnBuilder {
-  constructor(readonly name, readonly dataType: templateDataType) {
+  constructor(readonly name, readonly dataType: templateDataType, readonly mappedPath = null) {
     this.validations = {
       minLength: null,
       maxLength: null,
@@ -64,7 +71,7 @@ export class TemplateColumnBuilder {
   }
 
   build(): TemplateColumn {
-    const tc = new TemplateColumn(this.name, this.dataType);
+    const tc = new TemplateColumn(this.name, this.dataType, this.mappedPath);
     tc.required = this.required;
     tc.helpText = this.helpText;
     tc.validations = {
@@ -118,6 +125,7 @@ type RowValidator = (rowData) => RowValidationResult;
 export class Template {
   constructor(readonly key: string, readonly name: string, readonly helpText: string) {
     this.rowValidators = [];
+    this.subtype = name;
   }
 
   async hydrateAllCodes(dbConnection: PoolClient) {
@@ -126,6 +134,8 @@ export class Template {
     }
   }
 
+  type: string = 'Observation';
+  subtype: string;
   columns: TemplateColumn[];
   rowValidators: RowValidator[];
 }
