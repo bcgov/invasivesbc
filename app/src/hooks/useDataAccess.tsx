@@ -1,6 +1,5 @@
 import { Capacitor } from '@capacitor/core';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
-import { ActivitySyncStatus } from 'constants/activities';
 import { useContext } from 'react';
 import { DocType } from '../constants/database';
 import { DatabaseContext, DBRequest, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
@@ -15,6 +14,7 @@ import { useInvasivesApi } from './useInvasivesApi';
 import { useSelector } from '../state/utilities/use_selector';
 import { selectConfiguration } from '../state/reducers/configuration';
 import { selectNetworkConnected } from '../state/reducers/network';
+import { ActivitySyncStatus } from 'sharedLibWithAPI/activityCreate';
 
 /**
  * Returns a set of supported api methods.

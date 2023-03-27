@@ -86,7 +86,6 @@ import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/
 import { selectAuth } from 'state/reducers/auth';
 import { LeafletWhosEditingEnum, selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ActivityStatus } from 'constants/activities';
 import userSettingsSaga from './userSettings';
 import userSettings from './userSettings';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -94,6 +93,7 @@ import L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
+import { ActivityStatus } from 'sharedLibWithAPI/activityCreate';
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }

@@ -14,17 +14,16 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { Autocomplete } from '@mui/material';
-import { ActivitySubtype, ActivitySubtypeShortLabels, ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext, MAP_RECORD_TYPE, MODES } from 'contexts/MapRecordsContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { generateDBActivityPayload } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
+import { ActivityType, ActivitySubtype, generateDBActivityPayload } from 'sharedLibWithAPI/activityCreate';
 
 export const NewRecordRecordPagae = (props) => {
   const dataAccess = useDataAccess();

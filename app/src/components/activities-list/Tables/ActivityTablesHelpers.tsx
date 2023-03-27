@@ -1,8 +1,8 @@
-import { ActivitySubtypeShortLabels } from 'constants/activities';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
 import React, { useEffect, useMemo } from 'react';
+import { ActivitySubtypeShortLabels } from 'sharedLibWithAPI/activityCreate';
 export interface ActivityRow {
   activity_id: string; // activity_incoming_data.activity_id
   short_id: string; // activity_incoming_data.activity_payload.short_id
@@ -42,6 +42,10 @@ export const ActivitiesDefaultHeaders = () => {
     {
       key: 'received_timestamp',
       name: 'Received Timestamp'
+    },
+    {
+      key: 'project_code',
+      name: 'Project Code'
     },
     {
       key: 'jurisdiction',
@@ -122,6 +126,7 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       received_timestamp: new Date(activity?.received_timestamp).toString(),
+      project_code: activity?.activity_payload?.form_data?.activity_data?.project_code?.[0]?.description,
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,

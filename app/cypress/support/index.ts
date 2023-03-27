@@ -18,7 +18,6 @@ import { addBoard } from './commands/addBoard';
 import { changeTheme, themeTextCheck } from './commands/themeTestCmds';
 import { clickChildCheckbox, dragAccordion, toggleParentAccordion } from './commands/layerPickerTestCmds';
 import moment from 'moment';
-import { ActivityLetter } from 'constants/activities';
 const { faker } = require('@faker-js/faker');
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

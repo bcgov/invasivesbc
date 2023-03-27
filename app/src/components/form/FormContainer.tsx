@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';

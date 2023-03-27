@@ -2,11 +2,11 @@ import { Box, Button, Container, FormControl, InputLabel, Theme, MenuItem, Selec
 import { makeStyles } from '@mui/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StepperComponent from 'components/activity/StepperComponent';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { ActivitySubtype, ActivityType } from 'sharedLibWithAPI/activityCreate';
 import { createLinkedActivity } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({

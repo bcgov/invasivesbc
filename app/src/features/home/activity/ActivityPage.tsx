@@ -1,7 +1,6 @@
 import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
-import { ActivityStatus, ActivitySubtype } from 'constants/activities';
 import { Feature } from 'geojson';
 import React, { useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
@@ -51,6 +50,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { ActivityStatus, ActivitySubtype } from 'sharedLibWithAPI/activityCreate';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
