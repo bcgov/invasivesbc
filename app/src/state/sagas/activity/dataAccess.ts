@@ -1,7 +1,7 @@
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, ActivitySubtype, ActivityType } from 'constants/activities';
-import { put, select } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import center from '@turf/center';
 
@@ -54,6 +54,7 @@ import {
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { MAX_AREA } from 'rjsf/business-rules/customValidation';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { activity_create_function } from 'sharedLibWithAPI/activityCreate';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -67,20 +68,23 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
 
 export function* handle_ACTIVITY_COPY_REQUEST(action) {
   try {
-  const activityState = yield select(selectActivity)
-  const activityData = { ...activityState.activity.form_data.activity_data };
-  const activitySubtypeData = { ...activityState.activity.form_data.activity_subtype_data };
+    const activityState = yield select(selectActivity);
+    const activityData = { ...activityState.activity.form_data.activity_data };
+    const activitySubtypeData = { ...activityState.activity.form_data.activity_subtype_data };
 
-  // call business rule function to exclude certain fields of the activity_data of the form data
-  const activityDataToCopy = getFieldsToCopy(activityData, activitySubtypeData).activityData;
+    // call business rule function to exclude certain fields of the activity_data of the form data
+    const activityDataToCopy = getFieldsToCopy(activityData, activitySubtypeData).activityData;
 
-  const formDataToCopy = {
-    ...activityState.activity.form_data,
-    activity_data: activityDataToCopy
-  };
-    yield put({ type: ACTIVITY_COPY_SUCCESS, payload: {
-      form_data: formDataToCopy
-    } });
+    const formDataToCopy = {
+      ...activityState.activity.form_data,
+      activity_data: activityDataToCopy
+    };
+    yield put({
+      type: ACTIVITY_COPY_SUCCESS,
+      payload: {
+        form_data: formDataToCopy
+      }
+    });
   } catch (e) {
     yield put({ type: ACTIVITY_COPY_FAILURE, payload: {} });
   }
@@ -101,7 +105,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
 
-      let wellInformationArr = [];
+    let wellInformationArr = [];
     if (reported_area < MAX_AREA) {
       let nearestWells = null;
       if (latitude && longitude) {
@@ -157,27 +161,24 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   }
 }
 
+
+
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
   try {
     const authState = yield select(selectAuth);
     //    const { extendedInfo, displayName, roles } = useSelector(selectAuth);
 
-    let activityV1 = generateDBActivityPayload({}, null, action.payload.type, action.payload.subType);
-    let activityV2 = populateSpeciesArrays(activityV1);
-    activityV2.created_by = authState.username;
-    activityV2.user_role = authState.accessRoles.map((role) => role.role_id);
+    const newActivity = yield call(
+      activity_create_function,
+      action.payload.type,
+      action.payload.subType,
+      authState.username,
+      authState.accessRoles,
+      authState.displayName,
+      authState.extendedInfo.pac_number
+    );
 
-    //    if ([ActivityType.Observation, ActivityType.Treatment].includes(activityV2.activity_type))
-    {
-      activityV2.form_data.activity_type_data.activity_persons = [{ person_name: authState.displayName }];
-    }
-
-    if ([ActivityType.Treatment].includes(activityV2.activity_type)) {
-      activityV2.form_data.activity_type_data.activity_persons[0].applicator_license =
-        authState.extendedInfo.pac_number;
-    }
-
-    yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: activityV2 } });
+    yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_CREATE_FAILURE });

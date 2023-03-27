@@ -2,6 +2,16 @@ import React, {useEffect, useState} from 'react';
 import '../../styles/batch.scss';
 import {CopyToClipboardButton} from './ClipboardHelper';
 
+
+export const AbbreviatedDisplayWithCopy = (props: { displayVal: string, content?: string, length?: number,  }) => {
+  return (
+    <>
+      {props.displayVal.substring(0, props.length? props.length: 12) + '...'}
+      <CopyToClipboardButton content={props.content? props.content: props.displayVal} /> 
+    </>
+  );
+};
+
 const BatchTableCell = ({field, row}) => {
   const [hasMessages, setHasMessages] = useState(false);
   const [displaySeverity, setDisplaySeverity] = useState('normal');
@@ -58,9 +68,9 @@ const BatchTableCell = ({field, row}) => {
   const DataTypeDisplay = (templateColumn) => {
     let prefix = '';
     let suffix = '';
-    let dt = `${templateColumn.dataType}`;
+    let dt = `${templateColumn?.dataType}`;
 
-    if (templateColumn.dataType === 'numeric') {
+    if (templateColumn?.dataType === 'numeric') {
       if (templateColumn.validations.minValue !== null) {
         prefix = `${templateColumn.validations.minValue} <=`;
       }
@@ -68,7 +78,7 @@ const BatchTableCell = ({field, row}) => {
         suffix = `<= ${templateColumn.validations.maxValue}`;
       }
     }
-    if (templateColumn.dataType === 'text') {
+    if (templateColumn?.dataType === 'text') {
       if (templateColumn.validations.minLength != null && templateColumn.validations.maxLength == null) {
         suffix = `min ${templateColumn.validations.minLength} chars`;
       }
@@ -82,14 +92,7 @@ const BatchTableCell = ({field, row}) => {
     return `${prefix} ${dt} ${suffix}`;
   };
 
-  const WKTDisplay = (props: { displayVal: string }) => {
-    return (
-      <>
-        {props.displayVal.substring(0, 12) + '...'}
-        <CopyToClipboardButton content={row.data[field].parsedValue}/>
-      </>
-    );
-  };
+
 
   return (
     <td className={displaySeverity}>
@@ -99,8 +102,8 @@ const BatchTableCell = ({field, row}) => {
             ? 'empty'
             : ''
         }`}>
-        {row.data[field].templateColumn.dataType === 'WKT' ? (
-          <WKTDisplay displayVal={displayedValue}/>
+        {row.data[field].templateColumn?.dataType === 'WKT' ? (
+          <AbbreviatedDisplayWithCopy displayVal={displayedValue} content={row.data[field].parsedValue}/>
         ) : (
           displayedValue
         )}
@@ -154,7 +157,7 @@ const BatchTable = ({jsonRepresentation}) => {
           <td>Mapped Object</td>
           {jsonRepresentation?.rows?.map((row) => (
             <td key={row.rowIndex}>
-              <pre>{JSON.stringify(row.mappedObject, null, 2)}</pre>
+              <pre><AbbreviatedDisplayWithCopy displayVal={JSON.stringify(row.mappedObject, null, 2)} /></pre>
             </td>
           ))}
         </tr>
