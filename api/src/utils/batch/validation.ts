@@ -102,8 +102,8 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
     return result;
   }
 
-  if (templateColumn.required) {
-    if (data === null || data.trim().length === 0) {
+  if (templateColumn?.required) {
+    if (data === null || data?.trim()?.length === 0) {
       result.validationMessages.push({
         severity: 'error',
         messageTitle: 'This value is required'
@@ -112,7 +112,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
     }
   }
 
-  switch (templateColumn.dataType) {
+  switch (templateColumn?.dataType) {
     case 'boolean':
       switch (data.toLowerCase()) {
         case 'n':
@@ -135,7 +135,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
       }
       break;
     case 'codeReference':
-      if (data.trim().length > 0) {
+      if (data?.trim()?.length > 0) {
         result.parsedValue = templateColumn.codes.find((c) => c.code === data);
         if (result.parsedValue === undefined) {
           result.validationMessages.push({
@@ -221,7 +221,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
       //@todo validate geometry
       break;
     case 'tristate':
-      switch (data.toLowerCase()) {
+      switch (data?.toLowerCase()) {
         case 'n':
         case 'no':
         case 'f':
