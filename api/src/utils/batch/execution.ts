@@ -119,7 +119,10 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
     short_id: shortId,
     ...row.mappedObject
   };
-  mapped['form_data']['form_status'] = status;
+  if(mapped?.['form_data']?.['form_status'])
+  {
+    mapped['form_data']['form_status'] = status;
+  }
 
   return {
     id: uuidToCreate,
