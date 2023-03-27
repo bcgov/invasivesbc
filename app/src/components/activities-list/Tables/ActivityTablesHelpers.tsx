@@ -119,6 +119,21 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
   }
 
   return activities?.map((activity, index) => {
+    const getArrayString = (inputArray: [], subProp?) =>
+    {
+      let output = ''
+      if(subProp)
+      {
+
+        inputArray.map((item) => {output += ', ' + item?.[subProp]})
+      }
+      else
+      {
+        inputArray.map((item) => {output += ', ' + item})
+      }
+      return output
+    }
+
     let columns: any = {
       // id: index,
       activity_id: activity?.activity_id,
@@ -126,7 +141,7 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       received_timestamp: new Date(activity?.received_timestamp).toString(),
-      project_code: activity?.activity_payload?.form_data?.activity_data?.project_code?.[0]?.description,
+      project_code: getArrayString(activity?.activity_payload?.form_data?.activity_data?.project_code,'description'),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,

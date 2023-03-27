@@ -73,6 +73,18 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 
   const mapped2 = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123')
 
+  console.log('the row')
+  console.log(JSON.stringify(row),null,2)
+
+
+  console.log('the blob before')
+  console.log(JSON.stringify(mapped2), null, 2)
+
+  //todo: 
+  //mapped2.fieldname = row.fieldname
+
+
+
   const mapped = {
     _id: uuidToCreate,
     geog: null,
