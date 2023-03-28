@@ -1,57 +1,55 @@
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { call, put, select } from 'redux-saga/effects';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import center from '@turf/center';
-
 import {
-  autofillBiocontrolCollectionTotalQuantity,
+  activity_create_function,
+  ActivityStatus,
+  ActivitySubtype,
+  ActivityType,
+  populateSpeciesArrays
+} from 'sharedAPI';
+import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  ACTIVITY_SAVE_NETWORK_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_SUCCESS,
-  ACTIVITY_GET_NETWORK_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_CREATE_NETWORK,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  ACTIVITY_ADD_PHOTO_FAILURE,
+  ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_COPY_FAILURE,
+  ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_FAILURE,
+  ACTIVITY_CREATE_NETWORK,
+  ACTIVITY_DELETE_PHOTO_FAILURE,
+  ACTIVITY_DELETE_PHOTO_SUCCESS,
+  ACTIVITY_EDIT_PHOTO_FAILURE,
+  ACTIVITY_EDIT_PHOTO_SUCCESS,
+  ACTIVITY_GET_INITIAL_STATE_FAILURE,
+  ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
+  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_DEBUG,
-  ACTIVITY_DELETE_PHOTO_REQUEST,
-  ACTIVITY_DELETE_PHOTO_SUCCESS,
-  ACTIVITY_DELETE_PHOTO_FAILURE,
-  ACTIVITY_ADD_PHOTO_SUCCESS,
-  ACTIVITY_ADD_PHOTO_FAILURE,
-  ACTIVITY_EDIT_PHOTO_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_FAILURE,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-  ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_COPY_FAILURE,
+  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
+  ACTIVITY_PASTE_FAILURE,
   ACTIVITY_PASTE_SUCCESS,
-  ACTIVITY_PASTE_FAILURE
+  ACTIVITY_SAVE_NETWORK_REQUEST,
+  ACTIVITY_UPDATE_GEO_SUCCESS,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
-import {
-  isLinkedTreatmentSubtype,
-  populateJurisdictionArray
-} from 'utils/addActivity';
+import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { MAX_AREA } from 'rjsf/business-rules/customValidation';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
-import { ActivityStatus, ActivitySubtype, ActivityType, activity_create_function, populateSpeciesArrays } from 'sharedLibWithAPI/activityCreate';
+
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -94,6 +92,7 @@ export function* handle_ACTIVITY_PASTE_REQUEST(action) {
     yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
   }
 }
+
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
@@ -157,7 +156,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
-
 
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
@@ -329,9 +327,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-          type: 'FeatureCollection',
-          features: payloadActivity.geometry
-        }
+        type: 'FeatureCollection',
+        features: payloadActivity.geometry
+      }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {

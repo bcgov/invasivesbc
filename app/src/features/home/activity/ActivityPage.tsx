@@ -50,7 +50,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ActivityStatus, ActivitySubtype } from 'sharedLibWithAPI/activityCreate';
+import { ActivityStatus, ActivitySubtype } from 'sharedAPI';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {

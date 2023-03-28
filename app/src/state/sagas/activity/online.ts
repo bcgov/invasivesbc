@@ -1,15 +1,14 @@
-import { Http } from '@capacitor-community/http';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { put, select } from 'redux-saga/effects';
-import { ActivityStatus, getShortActivityID } from 'sharedLibWithAPI/activityCreate';
+import { ActivityStatus, getShortActivityID } from 'sharedAPI';
+
 import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
+  ACTIVITY_SAVE_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 
@@ -122,7 +121,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
   });
 
   let treatments = [];
-  const result = (networkReturn?.data?.data?.result? networkReturn?.data?.data?.result: networkReturn.data.result)
+  const result = (networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result);
   if (result && result.length > 0) {
     treatments = result.map((treatment, i) => {
       const shortActID = getShortActivityID(treatment);
@@ -137,6 +136,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
 
   yield put({
     type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
-    payload: { suggestedTreatmentIDs: treatments, }
+    payload: { suggestedTreatmentIDs: treatments }
   });
 }

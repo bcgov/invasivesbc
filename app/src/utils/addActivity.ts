@@ -1,13 +1,17 @@
-
 import { DocType } from '../constants/database';
 import { Feature } from 'geojson';
 import { IActivity } from '../interfaces/activity-interfaces';
 import moment from 'moment';
 import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType, getShortActivityID, ReviewStatus } from 'sharedLibWithAPI/activityCreate';
-
-
+import {
+  ActivityStatus,
+  ActivitySubtype,
+  ActivitySyncStatus,
+  ActivityType,
+  getShortActivityID,
+  ReviewStatus
+} from 'sharedAPI';
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,

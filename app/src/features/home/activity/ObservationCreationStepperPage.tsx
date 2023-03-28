@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, InputLabel, Theme, MenuItem, Select } from '@mui/material';
+import { Box, Button, Container, FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StepperComponent from 'components/activity/StepperComponent';
@@ -6,8 +6,8 @@ import ActivityPage from 'features/home/activity/ActivityPage';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ActivitySubtype, ActivityType } from 'sharedLibWithAPI/activityCreate';
 import { createLinkedActivity } from 'utils/addActivity';
+import { ActivitySubtype, ActivityType } from 'sharedAPI';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -45,7 +45,6 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   const classes = useStyles();
   const history = useHistory();
   const dataAccess = useDataAccess();
-
   /*
     This is temporarily defaulted to a plant treatment type because animal forms are not yet complete
   */

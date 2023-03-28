@@ -51,7 +51,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectConfiguration } from '../reducers/configuration';
 import { InvasivesAPI_Call, useInvasivesApi } from 'hooks/useInvasivesApi';
-import { ActivityStatus } from 'sharedLibWithAPI/activityCreate';
+import { ActivityStatus } from 'sharedAPI';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -366,7 +366,7 @@ function* handle_GET_API_DOC_REQUEST(action) {
 }
 
 function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/',{}, {'filterForSelectable': true});
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/', {}, { 'filterForSelectable': true });
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
   const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
   const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;

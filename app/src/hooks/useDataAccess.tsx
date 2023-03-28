@@ -14,7 +14,7 @@ import { useInvasivesApi } from './useInvasivesApi';
 import { useSelector } from '../state/utilities/use_selector';
 import { selectConfiguration } from '../state/reducers/configuration';
 import { selectNetworkConnected } from '../state/reducers/network';
-import { ActivitySyncStatus } from 'sharedLibWithAPI/activityCreate';
+import { ActivitySyncStatus } from 'sharedAPI';
 
 /**
  * Returns a set of supported api methods.

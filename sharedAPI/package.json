@@ -1,0 +1,29 @@
+{
+  "name": "@bcgov/invasivesbci-shared",
+  "version": "0.0.1",
+  "description": "Invasives BC - Code common to API and APP",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/invasivesbc.git"
+  },
+  "engines": {
+    "node": ">= 16.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "main": "./src/index.ts",
+  "dependencies": {
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "typescript": "5.0.2",
+    "@types/geojson": "^7946.0.3",
+    "@types/node": "^16.11.7",
+    "@types/uuid": "^8.3.0",
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "moment": "^2.29.4",
+    "prettier": "^2.6.2"
+  }
+}

@@ -1,23 +1,27 @@
 import makeStyles from '@mui/styles/makeStyles';
-import { Button, FormControl, InputLabel, MenuItem, Select} from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Theme
+} from '@mui/material';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useHistory } from 'react-router-dom';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Box, Dialog, DialogActions, DialogTitle, Theme } from '@mui/material';
-import { UserRolesAccess } from 'constants/roles';
 import { useSelector } from '../../../state/utilities/use_selector';
 import { selectAuth } from '../../../state/reducers/auth';
 import { useDispatch } from 'react-redux';
-import {
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  ACTIVITY_CREATE_REQUEST,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
-} from 'state/actions';
-import { selectActivity } from 'state/reducers/activity';
+import { ACTIVITY_CREATE_REQUEST, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedLibWithAPI/activityCreate';
+import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {

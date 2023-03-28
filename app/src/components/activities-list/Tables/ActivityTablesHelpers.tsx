@@ -1,8 +1,8 @@
-import { useDataAccess } from 'hooks/useDataAccess';
 import { useSelector } from 'react-redux';
 import { selectConfiguration } from 'state/reducers/configuration';
-import React, { useEffect, useMemo } from 'react';
-import { ActivitySubtypeShortLabels } from 'sharedLibWithAPI/activityCreate';
+import React from 'react';
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
+
 export interface ActivityRow {
   activity_id: string; // activity_incoming_data.activity_id
   short_id: string; // activity_incoming_data.activity_payload.short_id

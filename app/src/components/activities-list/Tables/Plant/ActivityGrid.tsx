@@ -1,11 +1,10 @@
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { IconButton, Typography, Button, Box, Chip, List } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, IconButton, List, Typography } from '@mui/material';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import DataGrid, { HeaderRendererProps, Row, SortColumn } from 'react-data-grid';
 import { useFocusRef } from 'components/react-data-grid-stuff/hooks/useFocusRef';
-import { CircularProgress } from '@mui/material';
 import { ActivitiesDefaultHeaders, ActivityRow, MapActivitiesToDataGridRows } from '../ActivityTablesHelpers';
 import { mapPOI_IAPP_ToDataGridRows, POI_IAPP_Row, point_of_interest_iapp_default_headers } from '../POITablesHelpers';
 import makeStyles from '@mui/styles/makeStyles';
@@ -33,7 +32,8 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import 'react-data-grid/lib/styles.css';
 import ExcelExporter from '../ExcelExporter';
-import { ActivityStatus } from 'sharedLibWithAPI/activityCreate';
+
+import { ActivityStatus } from 'sharedAPI';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -729,18 +729,18 @@ const ActivityGrid = (props) => {
                     JSON.stringify(advancedFilterRows)
                     ? true
                     : false;
-        
+
                 const thereAreOldAdvancedFilters = userSettings.recordSets?.[props.setName]?.advancedFilters?.length
                   ? true
                   : false;
-        
+
 
                   const updatedAdvancedFilters = thereAreNewAdvancedFilters
                     ? [...advancedFilterRows]
                     : thereAreOldAdvancedFilters
                     ? [...userSettings.recordSets?.[props.setName]?.advancedFilters]
                     : [];
-        
+
                   dispatch({
                     type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
                     payload: {

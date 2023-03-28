@@ -9,7 +9,7 @@ import { getCustomValidator, getJurisdictionPercentValidator } from 'rjsf/busine
 import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { generateActivityPayload } from 'utils/addActivity';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
-import { ActivityType, ActivitySubtype, ActivityStatus, FormValidationStatus } from 'sharedLibWithAPI/activityCreate';
+import { ActivityStatus, ActivitySubtype, ActivityType, FormValidationStatus } from 'sharedAPI';
 
 interface IBulkEditActivitiesPage {
   isAlreadySubmitted?: boolean;

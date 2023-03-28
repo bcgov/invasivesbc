@@ -1,56 +1,11 @@
-import {Template} from './definitions';
-import {getLogger} from '../logger';
-import {PoolClient} from 'pg';
-import {randomUUID} from 'crypto';
+import { Template } from './definitions';
+import { getLogger } from '../logger';
+import { PoolClient } from 'pg';
+import { randomUUID } from 'crypto';
 import moment from 'moment';
-import { activity_create_function }  from '../../../../app/src/sharedLibWithAPI/activityCreate'
+import { activity_create_function, ActivityLetter } from 'sharedAPI';
 
 const defaultLog = getLogger('batch');
-
-// copied from frontend -- for computing short ids
-enum ActivityLetter {
-  // Observations:
-  Activity_Observation_PlantTerrestrial = 'PTO',
-  Activity_Observation_PlantTerrestrial_BulkEdit = 'PTO',
-  Activity_Observation_PlantAquatic = 'PAO',
-  Activity_AnimalActivity_AnimalTerrestrial = 'ATO',
-  Activity_AnimalActivity_AnimalAquatic = 'AAO',
-
-  // Treatments:
-  Activity_Treatment_ChemicalPlantTerrestrial = 'PTC',
-  Activity_Treatment_ChemicalPlant_BulkEdit = 'PTC',
-  Activity_Treatment_ChemicalPlantAquatic = 'PAC',
-  Activity_Treatment_MechanicalPlantTerrestrial = 'PTM',
-  Activity_Treatment_MechanicalPlant_BulkEdit = 'PTM',
-  Activity_Treatment_MechanicalPlantAquatic = 'PAM',
-  Activity_Biocontrol_Release = 'PBR',
-  Activity_Treatment_BiologicalPlant_BulkEdit = 'PBR',
-  Activity_Treatment_ChemicalAnimalTerrestrial = 'ATC',
-  Activity_Treatment_MechanicalAnimalTerrestrial = 'ATM',
-  Activity_Treatment_MechanicalAnimalAquatic = 'AAM',
-  Activity_Treatment_ChemicalAnimalAquatic = 'AAC',
-
-  // Monitoring:
-  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'PMC',
-  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'PMM',
-  Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'PBM',
-  Activity_Monitoring_ChemicalAnimalTerrestrial = 'AMC',
-  Activity_Monitoring_MechanicalAnimalTerrestrial = 'AMM',
-
-  // Transects:
-  Activity_Transect_FireMonitoring = 'PXW',
-  Activity_Transect_Vegetation = 'PXV',
-  Activity_Transect_BiocontrolEfficacy = 'PXB',
-
-  // Biocontrol:
-  Activity_Biocontrol_Collection = 'PBC',
-  Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = 'PBD',
-
-  // FREP
-  Activity_FREP_FormA = 'PFA',
-  Activity_FREP_FormB = 'PFB',
-  Activity_FREP_FormC = 'PFC'
-}
 
 interface BatchExecutionResult {
   createdActivityIDs: string[];
@@ -69,21 +24,16 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
+  const mapped2 = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123');
 
+  defaultLog.debug('the row');
+  defaultLog.debug(JSON.stringify(row), null, 2);
 
-  const mapped2 = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123')
+  defaultLog.debug('the blob before');
+  defaultLog.debug(JSON.stringify(mapped2), null, 2);
 
-  console.log('the row')
-  console.log(JSON.stringify(row),null,2)
-
-
-  console.log('the blob before')
-  console.log(JSON.stringify(mapped2), null, 2)
-
-  //todo: 
+  //todo:
   //mapped2.fieldname = row.fieldname
-
-
 
   const mapped = {
     _id: uuidToCreate,
@@ -136,8 +86,7 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
     short_id: shortId,
     ...row.mappedObject
   };
-  if(mapped?.['form_data']?.['form_status'])
-  {
+  if (mapped?.['form_data']?.['form_status']) {
     mapped['form_data']['form_status'] = status;
   }
 
@@ -161,14 +110,14 @@ export const BatchExecutionService = {
     const createdIds = [];
 
     validatedBatchData.rows.forEach((row) => {
-
       //@todo skip errored rows
 
-      const {
-        id: activityId,
-        shortId,
-        payload
-      } = _mapToDBObject(row, desiredFinalStatus, template.type, template.subtype);
+      const { id: activityId, shortId, payload } = _mapToDBObject(
+        row,
+        desiredFinalStatus,
+        template.type,
+        template.subtype
+      );
 
       dbConnection.query({
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id)

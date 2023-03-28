@@ -52,8 +52,8 @@ services:
     image: ${PROJECT_NAME}-${TAG}-api-dep-img
     container_name: ${PROJECT_NAME}-${TAG}-api-dep
     build:
-      context: ./api
-      dockerfile: ./.docker/api/Dockerfile.npm
+      context: ./
+      dockerfile: ./api/.docker/api/Dockerfile.npm
     volumes:
       - npmcache_api:/opt/app-root/src/node_modules
 
@@ -62,8 +62,8 @@ services:
     image: ${PROJECT_NAME}-${TAG}-api-img
     container_name: ${PROJECT_NAME}-${TAG}-api
     build:
-      context: ./api
-      dockerfile: ./.docker/api/Dockerfile
+      context: ./
+      dockerfile: ./api/.docker/api/Dockerfile
     ports:
       - ${API_PORT}:${API_PORT}
     environment:
