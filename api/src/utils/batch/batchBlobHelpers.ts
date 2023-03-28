@@ -1,3 +1,6 @@
+import objectPath from 'object-path'
+
+
 export const mapObservationTerrestrialPlant = (inputToMapTo: Object, csvRowData: Object) => {
     let output = {...inputToMapTo}
 
@@ -6,10 +9,27 @@ export const mapObservationTerrestrialPlant = (inputToMapTo: Object, csvRowData:
 }
 
 
-export const mapDefaultFields = (inputToMapTo: Object, csvRowData: Object) => {
+export const mapDefaultFields = (inputToMapTo: Object, csvRowData: any) => {
     let output = {...inputToMapTo}
-    console.log('object we are pulling from')
-    console.log(JSON.stringify(csvRowData, null, 2))
-    output['form_data']['activity_data']['project_code'] = [{'description': 'hardcoded code'}]
+
+    let fields = Object.keys(csvRowData.data)
+    console.log('fields')
+    console.log(JSON.stringify(fields))
+
+    fields.map((field) => {
+        console.log('field')
+        console.log(JSON.stringify(field))
+        try
+        {
+
+        objectPath.set(output, csvRowData.data[field]['templateColumn']['mappedPath'], csvRowData.data[field]['parsedValue'])
+        }
+        catch(e)
+        {
+            console.log('unable to map field')
+            console.log(e)
+        }
+    })
+    //output['form_data']['activity_data']['project_code'] = [{'description': csvRowData['data']['Project - Code']['parsedValue']}]
     return  output
 }

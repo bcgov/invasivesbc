@@ -53,6 +53,7 @@
     "memory-cache": "~0.2.0",
     "moment": "~2.29.4",
     "node-fetch": "^2.6.7",
+    "object-path": "^0.11.8",
     "pg": "~8.7.0",
     "pg-format": "^1.0.4",
     "proj4": "^2.6.3",
