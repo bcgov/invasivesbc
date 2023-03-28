@@ -13,10 +13,10 @@
   },
   "main": "./src/index.ts",
   "dependencies": {
+    "geojson": "^0.5.0",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "typescript": "5.0.2",
     "@types/geojson": "^7946.0.3",
     "@types/node": "^16.11.7",
     "@types/uuid": "^8.3.0",
@@ -24,6 +24,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "moment": "^2.29.4",
-    "prettier": "^2.6.2"
+    "prettier": "^2.6.2",
+    "typescript": "5.0.2"
   }
 }
