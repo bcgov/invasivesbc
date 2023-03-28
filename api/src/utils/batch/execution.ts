@@ -38,14 +38,7 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 
 
 
-  switch(subtype)
-  {
-    default:
-      mapped = mapDefaultFields(mapped, row)
-    case '':
-      mapped = mapObservationTerrestrialPlant(mapped, row)
-      break;
-  }
+ mapped = mapDefaultFields(mapped, row)
 
   /*
   const mapped = {
