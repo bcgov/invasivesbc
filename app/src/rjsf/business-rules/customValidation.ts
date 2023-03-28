@@ -398,8 +398,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     }
 
     // validate reported area limit
-    if(errors.activity_data['reported_area'])
-    {
+    if (errors.activity_data['reported_area']) {
       errors.activity_data['reported_area'].__errors = [];
       if (formData.activity_data['reported_area'] > areaLimit) {
         errors.activity_data['reported_area'].addError(`Area cannot exceed ${areaLimit} m\u00B2`);
@@ -559,19 +558,30 @@ export function getWindValidatorBiocontrol(activitySubtype: string): rjsfValidat
 
   Ex: cannot create a treatment for a plant that was not observed in linked observation
 
-  THIS HAS TO BE MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  THIS HAS TO BE MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  THIS HAS TO BE MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  THIS IS MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  THIS IS MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  THIS IS MODIFIED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
 export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    const linkedActivityInvasivePlants = linkedActivity?.formData?.activity_subtype_data?.invasive_plants;
-    const { invasive_plant_code } = formData?.activity_subtype_data;
+    const linkedActivityInvasivePlants = linkedActivity?.properties?.species_treated;
+
+    const monitoringTypes = [
+      'Monitoring_ChemicalTerrestrialAquaticPlant_Information',
+      'Monitoring_MechanicalTerrestrialAquaticPlant_Information',
+      'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
+    ];
+    const subtypeKeys = Object.keys(formData?.activity_subtype_data);
+    const monitoringType = monitoringTypes.filter((type) => {
+      return subtypeKeys.includes(type);
+    })[0];
+    const invasive_plant_code = formData?.activity_subtype_data?.[monitoringType]?.invasive_plant_code;
+
     if (!linkedActivityInvasivePlants || !invasive_plant_code) return errors;
 
-    errors.activity_subtype_data['invasive_plant_code'].__errors = [];
-    if (!linkedActivityInvasivePlants.some((lip: any) => lip.invasive_plant_code === invasive_plant_code)) {
-      errors.activity_subtype_data['invasive_plant_code'].addError(
+    errors.activity_subtype_data.__errors = [];
+    if (!linkedActivityInvasivePlants.some((lipc: any) => lipc.toString() === invasive_plant_code.toString())) {
+      errors.activity_subtype_data.addError(
         'You must select a species that was previously observed in the linked activity'
       );
     }
