@@ -57,6 +57,9 @@ import { selectTabs } from 'state/reducers/tabs';
 import { ExtentListener } from './ExtentListener';
 import { selectMap } from 'state/reducers/map';
 import { JumpToRecord } from './Tools/ToolTypes/Nav/JumpToRecord';
+import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
+import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
+
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
   : ReactLeafletEditableFix;
@@ -256,6 +259,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       onMiddleMarkerMouseDown={mapRecordsContext.leafletEditableHandlers.onMiddleMarkerMouseDown}
       //mapRecordsContext.editRef?.current?.clearAll();
     >
+      <LegendsPopup />
       <ReactLeafletMapContainer
         editable={true}
         //center={[55, -128]}
@@ -303,6 +307,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <FindMeToggle />
             <PanToMe />
             <JumpToRecord/>
+            <LegendsButton />
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
