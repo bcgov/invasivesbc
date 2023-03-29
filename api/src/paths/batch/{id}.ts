@@ -1,16 +1,16 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {QueryResult} from 'pg';
-import {ALL_ROLES, SECURITY_ON} from '../../constants/misc';
-import {getDBConnection} from '../../database/db';
-import {InvasivesRequest} from '../../utils/auth-utils';
-import {TemplateService} from '../../utils/batch/template-utils';
-import {BatchValidationService} from '../../utils/batch/validation';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { QueryResult } from 'pg';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
+import { getDBConnection } from '../../database/db';
+import { InvasivesRequest } from '../../utils/auth-utils';
+import { TemplateService } from '../../utils/batch/template-utils';
+import { BatchValidationService } from '../../utils/batch/validation';
 import csvParser from 'csv-parser';
-import {Readable} from 'stream';
-import {getLogger} from '../../utils/logger';
+import { Readable } from 'stream';
+import { getLogger } from '../../utils/logger';
 
 export const GET: Operation = [getBatch()];
 export const PUT: Operation = [updateBatch()];
@@ -19,10 +19,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -35,10 +35,10 @@ const PUT_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -136,12 +136,10 @@ function getBatch(): RequestHandler {
         });
       }
 
-      console.log('validation result')
       const validationResult = BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation']
       );
-      console.log('response object')
 
       const responseObject = {
         ...retrievedBatch,
@@ -160,8 +158,7 @@ function getBatch(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      console.log(JSON.stringify(error))
-      console.log(error)
+      defaultLog.error(JSON.stringify(error));
       return res.status(500).json({
         message: `Error retrieving batch ${id}`,
         request: req.body,
@@ -179,7 +176,7 @@ function updateBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const connection = await getDBConnection();
 
-    const data = {...req.body};
+    const data = { ...req.body };
     const id = req.params.id;
 
     const decoded = atob(data['csvData']);
@@ -194,7 +191,7 @@ function updateBatch(): RequestHandler {
     }
 
     const parser = csvParser({
-      mapHeaders: ({header}) => header.trim()
+      mapHeaders: ({ header }) => header.trim()
     });
 
     const parsedCSV = {
@@ -291,7 +288,7 @@ function updateBatch(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.error({label: 'batchUpload', message: 'error', error});
+      defaultLog.error({ label: 'batchUpload', message: 'error', error });
       return res.status(500).json({
         message: 'Error updating batch upload',
         request: req.body,

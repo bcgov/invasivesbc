@@ -125,36 +125,38 @@ function execBatch(): RequestHandler {
         retrievedBatch['json_representation']
       );
 
-      const batchExecResult = BatchExecutionService.executeBatch(
-        connection,
-        id,
-        template,
-        validationResult.validatedBatchData,
-        desiredActivityState,
-        treatmentOfErrorRows
-      );
+      try {
+        const batchExecResult = await BatchExecutionService.executeBatch(
+          connection,
+          id,
+          template,
+          validationResult.validatedBatchData,
+          desiredActivityState,
+          treatmentOfErrorRows
+        );
 
-      const responseObject = {
-        ...retrievedBatch,
-        template,
-        json_representation: validationResult.validatedBatchData,
-        globalValidationMessages: validationResult.globalValidationMessages,
-        canProceed: validationResult.canProceed,
-        executionResult: batchExecResult
-      };
-
-      return res.status(200).json({
-        message: 'Batch retrieved',
-        request: req.body,
-        result: responseObject,
-        count: 1,
-        namespace: 'batch',
-        code: 200
-      });
+        return res.status(200).json({
+          message: 'Batch update executed successfully',
+          request: req.body,
+          result: batchExecResult,
+          count: 1,
+          namespace: 'batch',
+          code: 200
+        });
+      } catch (error) {
+        defaultLog.error(error);
+        return res.status(400).json({
+          message: 'Batch update exec failed',
+          request: req.body,
+          count: 1,
+          namespace: 'batch',
+          code: 400
+        });
+      }
     } catch (error) {
-      console.log(error)
+      defaultLog.error(error);
       return res.status(500).json({
-        message: `Error retrieving batch ${id}`,
+        message: `Error executing batch ${id}`,
         request: req.body,
         error: error,
         namespace: 'batch',
