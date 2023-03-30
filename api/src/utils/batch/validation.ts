@@ -3,6 +3,8 @@ import { validateAsWKT } from './spatial-validation';
 import _ from 'lodash';
 import slugify from 'slugify';
 import moment from 'moment';
+import turfflatten from  '@turf/flatten'
+const { parse } = require('wkt');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -323,6 +325,11 @@ export const BatchValidationService = {
         } else {
           return 'Unknown';
         }
+      },
+      WKT: (val) => { const geojson: any =  parse(val) 
+      
+        const flattenedMulti = turfflatten(geojson)
+        return [flattenedMulti?.features?.[0]]
       },
       default: (val) => val
     };
