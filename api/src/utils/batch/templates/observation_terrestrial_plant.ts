@@ -74,7 +74,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Invasive Plant',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0..invasive_plant_code'
+    'form_data.activity_subtype_data.TerrestrialPlants.0.invasive_plant_code'
   )
     .referencesCode('invasive_plant_code')
     .isRequired()
@@ -82,7 +82,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Life Stage',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0..plant_life_stage_code'
+    'form_data.activity_subtype_data.TerrestrialPlants.0.plant_life_stage_code'
   )
     .referencesCode('plant_seed_stage_code')
     .isRequired()

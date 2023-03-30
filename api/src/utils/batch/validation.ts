@@ -313,12 +313,30 @@ export const BatchValidationService = {
       ...extraColumns.map((c) => `The extraneous column [${c}] in your submission will be ignored`)
     );
 
+    const typeMapper = {
+      numeric: (val) => Number.parseFloat(val),
+      tristate: (val) => {
+        if (val.toLowerCase() === 'true') {
+          return 'Yes';
+        } else if (val.toLowerCase() === 'false') {
+          return 'No';
+        } else {
+          return 'Unknown';
+        }
+      },
+      default: (val) => val
+    };
+
     batchDataCopy.rows.forEach((row, rowIndex) => {
       batchDataCopy.headers.forEach((header, colIndex) => {
         const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
+
+        const updatedVal = Object.keys(typeMapper).includes(templateColumn['dataType'])
+          ? typeMapper[templateColumn['dataType']](row.data[field])
+          : row.data[field];
         row.data[field] = {
-          inputValue: row.data[field],
+          inputValue: updatedVal,
           templateColumn,
           spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
           ..._validateCell(templateColumn, row.data[field])
