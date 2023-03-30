@@ -2,7 +2,7 @@ import {TemplateColumnBuilder} from './definitions';
 import {RowValidationResult} from './validation';
 
 export const BasicInformation = [
-  new TemplateColumnBuilder('WKT', 'WKT', 'geog').build(),
+  new TemplateColumnBuilder('WKT', 'WKT', 'geometry').isRequired().build(),
   new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time').isRequired().build(),
   new TemplateColumnBuilder('Basic - Latitude', 'numeric', 'form_data.activity_data.latitude').build(),
   new TemplateColumnBuilder('Basic - Longitude', 'numeric', 'form_data.activity_data.longitude').build(),

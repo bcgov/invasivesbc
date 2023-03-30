@@ -317,7 +317,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
             {props.children}
 
-            {activityState?.activity?.geometry ? (
+            {activityState?.activity?.geometry && activityState.activity.geometry[0]? (
               <Marker
                 key={Math.random()}
                 icon={ActivityIcon}
