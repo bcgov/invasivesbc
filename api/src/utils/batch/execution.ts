@@ -4,6 +4,7 @@ import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
 import { activity_create_function, ActivityLetter } from 'sharedAPI';
+import { mapDefaultFields, mapObservationTerrestrialPlant } from './batchBlobHelpers';
 
 const defaultLog = getLogger('batch');
 
@@ -24,17 +25,22 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
-  const mapped2 = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123');
+  let mapped = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123');
 
   defaultLog.debug('the row');
-  defaultLog.debug(JSON.stringify(row), null, 2);
+  defaultLog.debug(JSON.stringify(row, null, 2))
 
   defaultLog.debug('the blob before');
-  defaultLog.debug(JSON.stringify(mapped2), null, 2);
+  defaultLog.debug(JSON.stringify(mapped, null, 2))
 
   //todo:
   //mapped2.fieldname = row.fieldname
 
+
+
+ mapped = mapDefaultFields(mapped, row)
+
+  /*
   const mapped = {
     _id: uuidToCreate,
     geog: null,
@@ -89,11 +95,14 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
   if (mapped?.['form_data']?.['form_status']) {
     mapped['form_data']['form_status'] = status;
   }
+  */
+
+  mapped['form_data']['form_status'] = 'Submitted'
 
   return {
     id: uuidToCreate,
     shortId: shortId,
-    payload: mapped2
+    payload: mapped
   };
 }
 
@@ -130,10 +139,10 @@ export const BatchExecutionService = {
         template.subtype
       );
 
-      await dbConnection.query({
-        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id)
-               values ($1, $2, $3, $4)`,
-        values: [activityId, shortId, payload, id]
+      dbConnection.query({
+        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status)
+               values ($1, $2, $3, $4, $5, $6, $7)`,
+        values: [activityId, shortId, payload, id, template.type, template.subtype, desiredFinalStatus]
       });
     }
 
