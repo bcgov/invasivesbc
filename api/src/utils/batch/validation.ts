@@ -3,7 +3,7 @@ import { validateAsWKT } from './spatial-validation';
 import _ from 'lodash';
 import slugify from 'slugify';
 import moment from 'moment';
-import turfflatten from  '@turf/flatten'
+import turfflatten from '@turf/flatten';
 const { parse } = require('wkt');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
@@ -326,10 +326,11 @@ export const BatchValidationService = {
           return 'Unknown';
         }
       },
-      WKT: (val) => { const geojson: any =  parse(val) 
-      
-        const flattenedMulti = turfflatten(geojson)
-        return [flattenedMulti?.features?.[0]]
+      WKT: (val) => {
+        const geojson: any = parse(val);
+
+        const flattenedMulti = turfflatten(geojson);
+        return [flattenedMulti?.features?.[0]];
       },
       default: (val) => val
     };
@@ -339,15 +340,22 @@ export const BatchValidationService = {
         const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
 
-        const updatedVal = Object.keys(typeMapper).includes(templateColumn['dataType'])
-          ? typeMapper[templateColumn['dataType']](row.data[field])
-          : row.data[field];
-        row.data[field] = {
-          inputValue: updatedVal,
-          templateColumn,
-          spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
-          ..._validateCell(templateColumn, row.data[field])
-        };
+        try {
+          const updatedVal =
+            templateColumn && templateColumn['dataType'] && Object.keys(typeMapper).includes(templateColumn['dataType'])
+              ? typeMapper[templateColumn['dataType']](row.data[field])
+              : row.data[field];
+          row.data[field] = {
+            inputValue: updatedVal,
+            templateColumn,
+            spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
+            ..._validateCell(templateColumn, row.data[field])
+          };
+        } catch (e) {
+          console.log(JSON.stringify(templateColumn));
+          console.log(e);
+          throw e;
+        }
 
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
       });

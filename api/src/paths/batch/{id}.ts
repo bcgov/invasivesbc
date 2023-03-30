@@ -158,7 +158,7 @@ function getBatch(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.error(JSON.stringify(error));
+      defaultLog.error(error)
       return res.status(500).json({
         message: `Error retrieving batch ${id}`,
         request: req.body,
