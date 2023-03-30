@@ -161,7 +161,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     layer.setStyle({
       color: 'yellow'
     });
-  }
+  };
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(
@@ -191,15 +191,21 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     ),
     className: 'whatsHereHighlighedMarker',
     iconSize: [50, 50],
-    iconAnchor: [50 / 2, 50 / 2]
+    iconAnchor: [18, 35]
   });
 
   return (
     <>
-      {highlightedMarkerLtLng  && mapState?.whatsHere?.toggle ? <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} /> : <></>}
-      {highlightedGeo  && mapState?.whatsHere?.toggle ? 
-      <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
-      : <></>}
+      {highlightedMarkerLtLng && mapState?.whatsHere?.toggle ? (
+        <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} />
+      ) : (
+        <></>
+      )}
+      {highlightedGeo && mapState?.whatsHere?.toggle ? (
+        <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
@@ -223,7 +229,7 @@ export const WhatsHereMarker = (props) => {
       lat = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[1]));
       //lng = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[0]));
       const coord = mapState?.whatsHere?.feature?.geometry?.coordinates[0];
-      lng = coord[2][0]
+      lng = coord[2][0];
       const coord2 = coord[1];
       setPosition({ lat: coord2[1], lng: lng });
     }
