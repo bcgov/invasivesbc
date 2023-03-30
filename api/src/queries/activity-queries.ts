@@ -371,14 +371,12 @@ export const getActivitiesSQL = (
   }
 
 
-  /*
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     sqlStatement.append(
       SQL` AND ${roles} && ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
     );
   }
-  */
 
   // subtype and subtype full are a bit mismatched in places, this will search both:
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {
