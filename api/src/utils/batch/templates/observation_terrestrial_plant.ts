@@ -84,7 +84,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants.0.plant_life_stage_code'
   )
-    .referencesCode('plant_seed_stage_code')
+    .referencesCode('plant_life_stage_code')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
