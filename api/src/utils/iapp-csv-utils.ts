@@ -18,7 +18,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['jurisdiction'] = (value) => {
         return '"' + value + '"';
       };
-    case 'planning_extract':
+    case 'site_selection_extract':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
       };

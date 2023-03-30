@@ -9,11 +9,11 @@ const ExcelExporter = (props) => {
   const dispatch = useDispatch();
   const userSettingsState = useSelector(selectUserSettings);
   const setType = userSettingsState?.recordSets[props.setName]?.recordSetType;
-  const [selection, setSelection] = useState(setType === 'POI'? 'planning_extract': 'terrestrial_plant_observation')
+  const [selection, setSelection] = useState(setType === 'POI'? 'site_selection_extract': 'terrestrial_plant_observation')
 
   let items;
   if (setType === 'POI') {
-    items =  [<MenuItem value={'planning_extract'}>Planning Extract</MenuItem>]
+    items =  [<MenuItem value={'site_selection_extract'}>Site Selection Extract</MenuItem>]
   }
   else
   {
