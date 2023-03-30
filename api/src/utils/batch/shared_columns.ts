@@ -222,7 +222,7 @@ export const ActivityPersonsWithApplicatorLicense = [
     .build(),
   new TemplateColumnBuilder(
     'Activity - Person 1 Applicator License',
-    'text',
+    'numeric',
     'form_data.activity_type_data.activity_persons.0.applicator_license'
   )
     .isRequired()
@@ -234,7 +234,7 @@ export const ActivityPersonsWithApplicatorLicense = [
   ).build(),
   new TemplateColumnBuilder(
     'Activity - Person 2 Applicator License',
-    'text',
+    'numeric',
     'form_data.activity_type_data.activity_persons.1.applicator_license'
   ).build()
 ];
@@ -247,11 +247,11 @@ export const ProjectInformation = [
 
 export const WellInformation = [
   new TemplateColumnBuilder('Wells - Well 1 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.0.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 1 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.0.well_proximity').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Wells - Well 2 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.1.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 2 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.1.well_proximity').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Wells - Well 3 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.2.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 3 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.2.well_proximity').valueRange(0, null).build()
+  new TemplateColumnBuilder('Wells - Well 1 proximity', 'text', 'form_data.activity_subtype_data.Well_Information.0.well_proximity').build(),
+  new TemplateColumnBuilder('Wells - Well 2 ID', 'text', 'form_data.activity_subtype_data.Well_Information.1.well_id').build(),
+  new TemplateColumnBuilder('Wells - Well 2 proximity', 'text', 'form_data.activity_subtype_data.Well_Information.1.well_proximity').build(),
+  new TemplateColumnBuilder('Wells - Well 3 ID', 'text', 'form_data.activity_subtype_data.Well_Information.2.well_id').build(),
+  new TemplateColumnBuilder('Wells - Well 3 proximity', 'text', 'form_data.activity_subtype_data.Well_Information.2.well_proximity').build()
 ];
 
 export const WeatherInformation = [
