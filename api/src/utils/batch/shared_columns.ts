@@ -1,5 +1,5 @@
-import {TemplateColumnBuilder} from './definitions';
-import {RowValidationResult} from './validation';
+import { TemplateColumnBuilder } from './definitions';
+import { RowValidationResult } from './validation';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', 'geometry').isRequired().build(),
@@ -222,7 +222,7 @@ export const ActivityPersonsWithApplicatorLicense = [
     .build(),
   new TemplateColumnBuilder(
     'Activity - Person 1 Applicator License',
-    'text',
+    'numeric',
     'form_data.activity_type_data.activity_persons.0.applicator_license'
   )
     .isRequired()
@@ -234,7 +234,7 @@ export const ActivityPersonsWithApplicatorLicense = [
   ).build(),
   new TemplateColumnBuilder(
     'Activity - Person 2 Applicator License',
-    'text',
+    'numeric',
     'form_data.activity_type_data.activity_persons.1.applicator_license'
   ).build()
 ];
@@ -244,143 +244,471 @@ export const ProjectInformation = [
   new TemplateColumnBuilder('Project - Comment', 'text', 'form_data.activity_data.general_comment').build()
 ];
 
-
 export const WellInformation = [
-  new TemplateColumnBuilder('Wells - Well 1 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.0.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 1 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.0.well_proximity').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Wells - Well 2 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.1.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 2 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.1.well_proximity').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Wells - Well 3 ID', 'numeric', 'form_data.activity_subtype_data.Well_Information.2.well_id').build(),
-  new TemplateColumnBuilder('Wells - Well 3 proximity', 'numeric', 'form_data.activity_subtype_data.Well_Information.2.well_proximity').valueRange(0, null).build()
+  new TemplateColumnBuilder(
+    'Wells - Well 1 ID',
+    'numeric',
+    'form_data.activity_subtype_data.Well_Information.0.well_id'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Wells - Well 1 proximity',
+    'text',
+    'form_data.activity_subtype_data.Well_Information.0.well_proximity'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Wells - Well 2 ID',
+    'text',
+    'form_data.activity_subtype_data.Well_Information.1.well_id'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Wells - Well 2 proximity',
+    'text',
+    'form_data.activity_subtype_data.Well_Information.1.well_proximity'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Wells - Well 3 ID',
+    'text',
+    'form_data.activity_subtype_data.Well_Information.2.well_id'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Wells - Well 3 proximity',
+    'text',
+    'form_data.activity_subtype_data.Well_Information.2.well_proximity'
+  ).build()
 ];
 
 export const WeatherInformation = [
-  new TemplateColumnBuilder('Weather - Temperature', 'numeric', 'form_data.activity_subtype_data.Weather_Conditions.temperature').build(),
-  new TemplateColumnBuilder('Weather - Wind Speed', 'numeric', 'form_data.activity_subtype_data.Weather_Conditions.wind_speed').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Weather - Wind Aspect', 'numeric', 'form_data.activity_subtype_data.Weather_Conditions.wind_aspect').valueRange(0, 359).build(),
-  new TemplateColumnBuilder('Weather - Cloud Cover', 'codeReference', 'form_data.activity_subtype_data.Weather_Conditions.cloud_cover_code').referencesCode('cloud_cover_code').build(),
-  new TemplateColumnBuilder('Weather - Precipitation', 'codeReference', 'form_data.activity_subtype_data.Weather_Conditions.precipitation_code').referencesCode('precipitation_code').build(),
-  new TemplateColumnBuilder('Weather - Comments', 'text', 'form_data.activity_subtype_data.Weather_Conditions.weather_comments').build()
+  new TemplateColumnBuilder(
+    'Weather - Temperature',
+    'numeric',
+    'form_data.activity_subtype_data.Weather_Conditions.temperature'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Weather - Wind Speed',
+    'numeric',
+    'form_data.activity_subtype_data.Weather_Conditions.wind_speed'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Weather - Wind Aspect',
+    'numeric',
+    'form_data.activity_subtype_data.Weather_Conditions.wind_aspect'
+  )
+    .valueRange(0, 359)
+    .build(),
+  new TemplateColumnBuilder(
+    'Weather - Cloud Cover',
+    'codeReference',
+    'form_data.activity_subtype_data.Weather_Conditions.cloud_cover_code'
+  )
+    .referencesCode('cloud_cover_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Weather - Precipitation',
+    'codeReference',
+    'form_data.activity_subtype_data.Weather_Conditions.precipitation_code'
+  )
+    .referencesCode('precipitation_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Weather - Comments',
+    'text',
+    'form_data.activity_subtype_data.Weather_Conditions.weather_comments'
+  ).build()
 ];
 
 export const MicrositeConditions = [
-  new TemplateColumnBuilder('Microsite Conditions - Mesoslope Position', 'codeReference', 'form_data.activity_subtype_data.Microsite_Conditions.mesoslope_position_code')
+  new TemplateColumnBuilder(
+    'Microsite Conditions - Mesoslope Position',
+    'codeReference',
+    'form_data.activity_subtype_data.Microsite_Conditions.mesoslope_position_code'
+  )
     .referencesCode('mesoslope_position_code')
     .build(),
-  new TemplateColumnBuilder('Microsite Conditions - Surface Shape', 'codeReference', 'form_data.activity_subtype_data.Microsite_Conditions.site_surface_shape_code').build()
+  new TemplateColumnBuilder(
+    'Microsite Conditions - Surface Shape',
+    'codeReference',
+    'form_data.activity_subtype_data.Microsite_Conditions.site_surface_shape_code'
+  ).build()
 ];
 
 export const ShorelineInformation = [
-  new TemplateColumnBuilder('Shoreline - Shoreline 1 Type', 'codeReference', 'form_data.activity_subtype_data.ShorelineTypes.0.shoreline_type')
+  new TemplateColumnBuilder(
+    'Shoreline - Shoreline 1 Type',
+    'codeReference',
+    'form_data.activity_subtype_data.ShorelineTypes.0.shoreline_type'
+  )
     .referencesCode('shoreline_type_code')
     .build(),
-  new TemplateColumnBuilder('Shoreline - Shoreline 1 Percentage', 'numeric', 'form_data.activity_subtype_data.ShorelineTypes.0.percent_covered').valueRange(0, 100).build(),
-  new TemplateColumnBuilder('Shoreline - Shoreline 2 Type', 'codeReference', 'form_data.activity_subtype_data.ShorelineTypes.1.shoreline_type')
+  new TemplateColumnBuilder(
+    'Shoreline - Shoreline 1 Percentage',
+    'numeric',
+    'form_data.activity_subtype_data.ShorelineTypes.0.percent_covered'
+  )
+    .valueRange(0, 100)
+    .build(),
+  new TemplateColumnBuilder(
+    'Shoreline - Shoreline 2 Type',
+    'codeReference',
+    'form_data.activity_subtype_data.ShorelineTypes.1.shoreline_type'
+  )
     .referencesCode('shoreline_type_code')
     .build(),
-  new TemplateColumnBuilder('Shoreline - Shoreline 2 Percentage', 'numeric', 'form_data.activity_subtype_data.ShorelineTypes.1.percent_covered').valueRange(0, 100).build()
+  new TemplateColumnBuilder(
+    'Shoreline - Shoreline 2 Percentage',
+    'numeric',
+    'form_data.activity_subtype_data.ShorelineTypes.1.percent_covered'
+  )
+    .valueRange(0, 100)
+    .build()
 ];
 
 export const WaterbodyInformation = [
-  new TemplateColumnBuilder('Waterbody - Type', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.waterbody_type')
+  new TemplateColumnBuilder(
+    'Waterbody - Type',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.waterbody_type'
+  )
     .isRequired()
     .referencesCode('shoreline_type_code')
     .build(),
-  new TemplateColumnBuilder('Waterbody - Tidal?', 'tristate', 'form_data.activity_subtype_data.WaterbodyData.tidal_influence').build(),
-  new TemplateColumnBuilder('Waterbody - Name', 'text', 'form_data.activity_subtype_data.WaterbodyData.waterbody_name_local').build(),
-  new TemplateColumnBuilder('Waterbody - Name Gazetted', 'text', 'form_data.activity_subtype_data.WaterbodyData.waterbody_name_gazetted').build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Tidal?',
+    'tristate',
+    'form_data.activity_subtype_data.WaterbodyData.tidal_influence'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Name',
+    'text',
+    'form_data.activity_subtype_data.WaterbodyData.waterbody_name_local'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Name Gazetted',
+    'text',
+    'form_data.activity_subtype_data.WaterbodyData.waterbody_name_gazetted'
+  ).build(),
 
-  new TemplateColumnBuilder('Waterbody - Water Level Management', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.water_level_management').build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Water Level Management',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.water_level_management'
+  ).build(),
 
-  new TemplateColumnBuilder('Waterbody - Use', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.waterbody_use').referencesCode('waterbody_use_code').build(),
-  new TemplateColumnBuilder('Waterbody - Adjacent Land Usage', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.adjacent_land_use')
+  new TemplateColumnBuilder(
+    'Waterbody - Use',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.waterbody_use'
+  )
+    .referencesCode('waterbody_use_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Adjacent Land Usage',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.adjacent_land_use'
+  )
     .referencesCode('adjacent_land_use_code')
     .build(),
-  new TemplateColumnBuilder('Waterbody - Substrate', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.substrate_type').referencesCode('surface_substrate_code').build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Substrate',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.substrate_type'
+  )
+    .referencesCode('surface_substrate_code')
+    .build(),
 
-  new TemplateColumnBuilder('Waterbody - Inflow - Permanent', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.inflow_permanent')
+  new TemplateColumnBuilder(
+    'Waterbody - Inflow - Permanent',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.inflow_permanent'
+  )
     .referencesCode('inflow_permanent_code')
     .build(),
-  new TemplateColumnBuilder('Waterbody - Inflow - Other', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.inflow_other')
+  new TemplateColumnBuilder(
+    'Waterbody - Inflow - Other',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.inflow_other'
+  )
     .referencesCode('inflow_temporary_code')
     .build(),
 
-  new TemplateColumnBuilder('Waterbody - Outflow - Permanent', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.outflow').referencesCode('outflow_code').build(),
-  new TemplateColumnBuilder('Waterbody - Outflow - Seasonal', 'codeReference', 'form_data.activity_subtype_data.WaterbodyData.outflow_other').referencesCode('outflow_code').build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Outflow - Permanent',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.outflow'
+  )
+    .referencesCode('outflow_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Outflow - Seasonal',
+    'codeReference',
+    'form_data.activity_subtype_data.WaterbodyData.outflow_other'
+  )
+    .referencesCode('outflow_code')
+    .build(),
 
-  new TemplateColumnBuilder('Waterbody - Access', 'text', 'form_data.activity_subtype_data.WaterbodyData.waterbody_access').build(),
-  new TemplateColumnBuilder('Waterbody - Comment', 'text', 'form_data.activity_subtype_data.WaterbodyData.comment').build()
+  new TemplateColumnBuilder(
+    'Waterbody - Access',
+    'text',
+    'form_data.activity_subtype_data.WaterbodyData.waterbody_access'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Waterbody - Comment',
+    'text',
+    'form_data.activity_subtype_data.WaterbodyData.comment'
+  ).build()
 ];
 
 export const WaterQualityInformation = [
-  new TemplateColumnBuilder('Water - Max Depth', 'numeric', 'form_data.activity_subtype_data.WaterQuality.water_sample_depth').valueRange(0, null).isRequired().build(),
-  new TemplateColumnBuilder('Water - Secchi Depth', 'numeric', 'form_data.activity_subtype_data.WaterQuality.secchi_depth').valueRange(0, null).isRequired().build(),
-  new TemplateColumnBuilder('Water - Colour', 'text', 'form_data.activity_subtype_data.water_colour').isRequired().build()
+  new TemplateColumnBuilder(
+    'Water - Max Depth',
+    'numeric',
+    'form_data.activity_subtype_data.WaterQuality.water_sample_depth'
+  )
+    .valueRange(0, null)
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Water - Secchi Depth',
+    'numeric',
+    'form_data.activity_subtype_data.WaterQuality.secchi_depth'
+  )
+    .valueRange(0, null)
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Water - Colour', 'text', 'form_data.activity_subtype_data.water_colour')
+    .isRequired()
+    .build()
 ];
 
 export const PhenologyInformation = [
-  new TemplateColumnBuilder('Phenology - Details Recorded?', 'boolean', 'form_data.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded').build(),
-  new TemplateColumnBuilder('Phenology - Target Height', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.target_plant_heights.0').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Bolts', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.bolts').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Rosettes', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.rosettes').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Flowering', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.flowering').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Seedlings', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.seedlings').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Senescent', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.senescent').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Seeds Forming', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.seeds_forming').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Phenology - Winter Dormant', 'numeric', 'form_data.activity_subtype_data.Target_Plant_Phenology.winter_dormant').valueRange(0, null).build()
+  new TemplateColumnBuilder(
+    'Phenology - Details Recorded?',
+    'boolean',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Phenology - Target Height',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.target_plant_heights.0'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Bolts',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.bolts'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Rosettes',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.rosettes'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Flowering',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.flowering'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Seedlings',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.seedlings'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Senescent',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.senescent'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Seeds Forming',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.seeds_forming'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Phenology - Winter Dormant',
+    'numeric',
+    'form_data.activity_subtype_data.Target_Plant_Phenology.winter_dormant'
+  )
+    .valueRange(0, null)
+    .build()
 ];
 
 export const ChemicalPlantTreatmentInformation = [
-  new TemplateColumnBuilder('Chemical Treatment - Service License', 'codeReference')
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Service License',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.pesticide_employer_code'
+  )
     .isRequired()
     .referencesCode('service_license_code')
     .build(),
-  new TemplateColumnBuilder('Chemical Treatment - PUP', 'text').build(),
-  new TemplateColumnBuilder('Chemical Treatment - PMP', 'codeReference').referencesCode('pest_management_plan').build(),
-  new TemplateColumnBuilder('Chemical Treatment - PMP Unlisted', 'text').build(),
-  new TemplateColumnBuilder('Chemical Treatment - Temperature', 'numeric').isRequired().build(),
-  new TemplateColumnBuilder('Chemical Treatment - Wind Speed', 'numeric').valueRange(0, null).isRequired().build(),
-  new TemplateColumnBuilder('Chemical Treatment - Wind Direction', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Chemical Treatment - Humidity', 'numeric').build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - PUP',
+    'text',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.pesticide_use_permit_PUP'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - PMP',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.pest_management_plan'
+  )
+    .referencesCode('pest_management_plan')
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - PMP Unlisted',
+    'text',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.pmp_not_in_dropdown'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Temperature',
+    'numeric',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.temperature'
+  )
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Wind Speed',
+    'numeric',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.wind_speed'
+  )
+    .valueRange(0, null)
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Wind Direction',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.wind_direction_code'
+  )
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Humidity',
+    'numeric',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.humidity'
+  ).build(),
 
-  new TemplateColumnBuilder('Chemical Treatment - Treatment Notice Signs', 'codeReference').isRequired().build(),
-  new TemplateColumnBuilder('Chemical Treatment - Precautionary Statement', 'codeReference')
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Treatment Notice Signs',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.signage_on_site'
+  )
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Precautionary Statement',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.signage_on_site'
+  )
     .referencesCode('precautionary_statement_code')
     .build(),
 
-  new TemplateColumnBuilder('Chemical Treatment - NTZ Reduction', 'boolean').isRequired().build(),
-  new TemplateColumnBuilder('Chemical Treatment - NTZ Reduction Rationale', 'text').build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - NTZ Reduction',
+    'boolean',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction'
+  )
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - NTZ Reduction Rationale',
+    'text',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.rationale_for_ntz_reduction'
+  ).build(),
 
-  new TemplateColumnBuilder('Chemical Treatment - Start Time', 'datetime').isRequired().build(),
-
-  new TemplateColumnBuilder('Chemical Treatment - Unmapped Wells?', 'boolean').isRequired().build(),
-
-  new TemplateColumnBuilder('Chemical Treatment - Pest Injury Threshold Determination Done?', 'boolean')
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Start Time',
+    'datetime',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.application_start_time'
+  )
     .isRequired()
     .build(),
 
-  new TemplateColumnBuilder('Chemical Treatment - Application Method', 'codeReference')
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Unmapped Wells?',
+    'boolean',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.unmapped_wells'
+  )
+    .isRequired()
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Pest Injury Threshold Determination Done?',
+    'boolean',
+    'form_data.activity_subtype_data.Pest_Injury_Threshold_Determination'
+  )
+    .isRequired()
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Application Method',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
+  )
     .referencesCode('chemical_method_code')
     .build()
 ];
 
 export const HerbicidesInformation = [
-  new TemplateColumnBuilder('Herbicide - Tank Mix?', 'boolean').isRequired().build(),
+  new TemplateColumnBuilder(
+    'Herbicide - Tank Mix?',
+    'boolean',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix'
+  )
+    .isRequired()
+    .build(),
 
-  new TemplateColumnBuilder('Herbicide - 1 - Type', 'codeReference')
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_type_code'
+  )
     .referencesCode('herbicide_type_code')
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Herbicide - 1 - Herbicide', 'codeReference')
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Herbicide',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_code'
+  )
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Herbicide - 1 - Calculation Type', 'codeReference')
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Calculation Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
+  )
     .referencesCode('calculation_type_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Dilution - Dilution %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].dilution'
+  )
+    .valueRange(0, 100)
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Area Treated',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm'
+  )
+    .valueRange(0, null)
+    .isRequired()
     .build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Herbicide - 1 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
   new TemplateColumnBuilder('Herbicide - 2 - Type', 'codeReference').referencesCode('herbicide_type_code').build(),
   new TemplateColumnBuilder('Herbicide - 2 - Herbicide', 'codeReference')
@@ -393,6 +721,12 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
-  new TemplateColumnBuilder('Herbicide - Area Treated', 'numeric').valueRange(0, null).isRequired().build(),
-  new TemplateColumnBuilder('Herbicide - Amount of Mix Used', 'numeric').valueRange(0, null).build()
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated', 'numeric').valueRange(0, null).isRequired().build(),
+  new TemplateColumnBuilder(
+    'Herbicide - Amount of Mix Used',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.amount_of_mix'
+  )
+    .valueRange(0, null)
+    .build()
 ];

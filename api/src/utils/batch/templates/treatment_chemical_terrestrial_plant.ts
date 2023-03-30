@@ -11,6 +11,8 @@ const TreatmentChemicalTerrestrialPlant = new Template(
   'Treatment - Chemical - Terrestrial Plant',
   null
 );
+TreatmentChemicalTerrestrialPlant.subtype = 'Activity_Treatment_ChemicalPlantTerrestrial';
+
 TreatmentChemicalTerrestrialPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
