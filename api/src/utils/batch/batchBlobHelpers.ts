@@ -19,11 +19,11 @@ export const mapDefaultFields = (inputToMapTo: Object, csvRowData: any) => {
         csvRowData.data[field]['parsedValue'] !== 'null' &&
         !Number.isNaN(csvRowData.data[field]['parsedValue'])
       ) {
-        objectPath.set(
-          output,
-          csvRowData.data[field]['templateColumn']['mappedPath'],
-          csvRowData.data[field]['parsedValue']
-        );
+            objectPath.set(
+            output,
+            csvRowData.data[field]['templateColumn']['mappedPath'],
+            csvRowData.data[field]['inputValue']
+            );
       }
     } catch (e) {
       console.log('unable to map field');

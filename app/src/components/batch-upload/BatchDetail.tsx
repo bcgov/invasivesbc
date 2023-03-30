@@ -132,7 +132,7 @@ const BatchMetadata = ({batch}) => {
 };
 
 const BatchGlobalValidationErrors = ({batch}) => {
-  if (batch.globalValidationMessages.length === 0) {
+  if (batch?.globalValidationMessages?.length === 0) {
     return null;
   }
 
@@ -140,7 +140,7 @@ const BatchGlobalValidationErrors = ({batch}) => {
     <div className={'batch-errors'}>
       <h3>Batch Validation Errors</h3>
       <ul>
-        {batch.globalValidationMessages.map(m => (<li key={m}>{m}</li>))}
+        {batch?.globalValidationMessages?.map(m => (<li key={m}>{m}</li>))}
       </ul>
     </div>
   );
