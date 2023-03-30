@@ -165,7 +165,7 @@ function createBatchReducer() {
           ...state,
           working: false,
           error: false,
-          item: action.payload.result
+          item: null
         };
       case BATCH_UPDATE_ERROR:
         return {

@@ -98,18 +98,29 @@ function _mapToDBObject(row, status, type, subtype): _MappedForDB {
 }
 
 export const BatchExecutionService = {
-  executeBatch: (
+  executeBatch: async (
     dbConnection: PoolClient,
     id: number | string,
     template: Template,
     validatedBatchData,
     desiredFinalStatus: 'Draft' | 'Submitted',
     errorRowsBehaviour: 'Draft' | 'Skip'
-  ): BatchExecutionResult => {
+  ): Promise<BatchExecutionResult> => {
     defaultLog.info(`Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}`);
     const createdIds = [];
 
-    validatedBatchData.rows.forEach((row) => {
+    const statusQueryResult = await dbConnection.query({
+      text: `SELECT status
+             from batch_uploads
+             where id = $1
+               and status = 'NEW'`,
+      values: [id]
+    });
+    if (statusQueryResult.rowCount !== 1) {
+      throw new Error('Batch not in executable status');
+    }
+
+    for (const row of validatedBatchData.rows) {
       //@todo skip errored rows
 
       const { id: activityId, shortId, payload } = _mapToDBObject(
@@ -119,17 +130,18 @@ export const BatchExecutionService = {
         template.subtype
       );
 
-      dbConnection.query({
+      await dbConnection.query({
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id)
                values ($1, $2, $3, $4)`,
         values: [activityId, shortId, payload, id]
       });
-    });
+    }
 
-    dbConnection.query({
+    await dbConnection.query({
       text: `UPDATE batch_uploads
              set status='SUCCESS'
-             where id = $1`,
+             where id = $1
+               and status = 'NEW'`,
       values: [id]
     });
 

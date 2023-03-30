@@ -130,6 +130,22 @@ const BatchMetadata = ({batch}) => {
     </Paper>
   );
 };
+
+const BatchGlobalValidationErrors = ({batch}) => {
+  if (batch.globalValidationMessages.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={'batch-errors'}>
+      <h3>Batch Validation Errors</h3>
+      <ul>
+        {batch.globalValidationMessages.map(m => (<li key={m}>{m}</li>))}
+      </ul>
+    </div>
+  );
+};
+
 const BatchDetail = ({id}) => {
   const {working, error, item: batch} = useSelector(selectBatch);
   const dispatch = useDispatch();
@@ -151,6 +167,7 @@ const BatchDetail = ({id}) => {
     return (
       <>
         <BatchMetadata batch={batch}></BatchMetadata>
+        <BatchGlobalValidationErrors batch={batch}/>
         <BatchTable jsonRepresentation={batch['json_representation']}/>
       </>
     );
