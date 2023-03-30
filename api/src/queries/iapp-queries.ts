@@ -44,15 +44,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.site_id_only) {
     sqlStatement.append(SQL`SELECT i.site_id `);
-  } 
-
-  else if (searchCriteria.isCSV && searchCriteria.CSVType === 'planning_extract')
-  {
-    sqlStatement.append(
-      SQL`SELECT pe.* `
-    );
-  }
-  else {
+  } else if (searchCriteria.isCSV && searchCriteria.CSVType === 'site_selection_extract') {
+    sqlStatement.append(SQL`SELECT pe.* `);
+  } else {
     sqlStatement.append(
       SQL`SELECT *,
                  ARRAY(select row_to_json(j) from (SELECT image.media_key, image.comments, image.image_date, image.perspective_code, image.reference_no from invasivesbc.iapp_imported_images image where image.site_id=i.site_id) as j) as imported_images,
@@ -60,16 +54,13 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     );
   }
 
-
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s
       ON i.site_id = s.site_id`
-
   );
 
-  if (searchCriteria.isCSV && searchCriteria.CSVType === 'planning_extract')
-  {
+  if (searchCriteria.isCSV && searchCriteria.CSVType === 'site_selection_extract') {
     sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id`);
   }
 
