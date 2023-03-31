@@ -1,4 +1,5 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
+import { ChemTreatmentValidators } from "../chemTreatmentValidation";
+import {Template, TemplateColumnBuilder} from "../definitions";
 import {
   ActivityPersonsWithApplicatorLicense,
   BasicInformation,
@@ -29,5 +30,5 @@ TreatmentChemicalTerrestrialPlant.columns = [
   new TemplateColumnBuilder('Chemical Treatment - Invasive Species 3', 'codeReference', 'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[2].invasive_plant_code').referencesCode('invasive_plant_code').build(),
 
 ];
-TreatmentChemicalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
+TreatmentChemicalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
 export {TreatmentChemicalTerrestrialPlant};
