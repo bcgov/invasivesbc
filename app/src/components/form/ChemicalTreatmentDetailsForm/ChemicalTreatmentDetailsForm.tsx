@@ -23,8 +23,8 @@ import HerbicidesAccordion from './Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
 import {useFormStyles} from './formStyles';
-import {runValidation} from './Validation';
-import {performCalculation} from 'utils/herbicideCalculator';
+import {runValidation} from 'sharedAPI';
+import {performCalculation} from 'sharedAPI';
 import {GeneralDialog, IGeneralDialog} from 'components/dialog/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
