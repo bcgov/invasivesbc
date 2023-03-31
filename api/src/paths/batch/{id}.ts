@@ -106,10 +106,10 @@ function getBatch(): RequestHandler {
                 json_representation,
                 validation_messages,
                 template,
-                array(select short_id from activity_incoming_data where batch_id = id) as created_activities,
+                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
                 created_at,
                 created_by
-         from batch_uploads
+         from batch_uploads b
          where created_by = $1
            and id = $2`,
         [req.authContext.user.user_id, id]
