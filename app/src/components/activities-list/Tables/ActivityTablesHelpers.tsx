@@ -1,7 +1,7 @@
-import { useSelector } from 'react-redux';
-import { selectConfiguration } from 'state/reducers/configuration';
+import {useSelector} from 'react-redux';
+import {selectConfiguration} from 'state/reducers/configuration';
 import React from 'react';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import {ActivitySubtypeShortLabels} from 'sharedAPI';
 
 export interface ActivityRow {
   activity_id: string; // activity_incoming_data.activity_id
@@ -24,7 +24,7 @@ export interface ActivityRow {
 }
 
 export const ActivitiesDefaultHeaders = () => {
-  const { MOBILE } = useSelector(selectConfiguration);
+  const {MOBILE} = useSelector(selectConfiguration);
 
   const headers = [
     {
@@ -63,8 +63,8 @@ export const ActivitiesDefaultHeaders = () => {
       key: 'species_treated',
       name: 'Species Treated'
     },
-    { key: 'created_by', name: 'Created By' },
-    { key: 'updated_by', name: 'Updated By' },
+    {key: 'created_by', name: 'Created By'},
+    {key: 'updated_by', name: 'Updated By'},
     {
       key: 'agency',
       name: 'Agency'
@@ -114,22 +114,22 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
 
   //console.log('Activities: ', activities);
 
-  if (!activities || !activities.length){
+  if (!activities || !activities.length) {
     return [];
   }
 
   return activities?.map((activity, index) => {
-    const getArrayString = (inputArray: [], subProp?) =>
-    {
+    const getArrayString = (inputArray: [], subProp?) => {
       let output = ''
-      if(subProp)
-      {
+      if (subProp) {
 
-        inputArray.map((item) => {output += ', ' + item?.[subProp]})
-      }
-      else
-      {
-        inputArray.map((item) => {output += ', ' + item})
+        inputArray.map((item) => {
+          output += ', ' + item?.[subProp]
+        })
+      } else {
+        inputArray.map((item) => {
+          output += ', ' + item
+        })
       }
       return output
     }
@@ -141,7 +141,7 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       received_timestamp: new Date(activity?.received_timestamp).toString(),
-      project_code: getArrayString(activity?.activity_payload?.form_data?.activity_data?.project_code,'description'),
+      project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,
