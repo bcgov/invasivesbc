@@ -25,7 +25,14 @@ function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
-  let mapped = activity_create_function(type, subtype, userInfo?.preferred_username, [], 'Brennan', '123');
+  let mapped = activity_create_function(
+    type,
+    subtype,
+    userInfo?.preferred_username,
+    [],
+    'Brennan',
+    userInfo?.pac_number
+  );
 
   defaultLog.debug('the row');
   defaultLog.debug(JSON.stringify(row, null, 2));
@@ -139,9 +146,16 @@ export const BatchExecutionService = {
         userInfo
       );
 
+      let guid = null;
+      if (userInfo?.idir_userid !== null) {
+        guid = userInfo?.idir_userid;
+      } else if (userInfo?.bceid_userid !== null) {
+        guid = userInfo?.bceid_userid;
+      }
+
       dbConnection.query({
-        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status, created_by)
-               values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status, created_by, updated_by, created_by_with_guid, updated_by_with_guid)
+               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
         values: [
           activityId,
           shortId,
@@ -150,7 +164,10 @@ export const BatchExecutionService = {
           template.type,
           template.subtype,
           desiredFinalStatus,
-          userInfo.preferred_username
+          userInfo?.preferred_username,
+          userInfo?.preferred_username,
+          guid,
+          guid
         ]
       });
     }
