@@ -18,27 +18,32 @@ interface _MappedForDB {
   payload: object;
 }
 
-function _mapToDBObject(row, status, type, subtype): _MappedForDB {
+function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
   const uuidToCreate = randomUUID();
 
   const shortYear = moment().format().substr(2, 2);
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
-  let mapped = activity_create_function(type, subtype, 'brewebst@idir', [], 'Brennan', '123');
+  let mapped = activity_create_function(
+    type,
+    subtype,
+    userInfo?.preferred_username,
+    [],
+    'Brennan',
+    userInfo?.pac_number
+  );
 
   defaultLog.debug('the row');
-  defaultLog.debug(JSON.stringify(row, null, 2))
+  defaultLog.debug(JSON.stringify(row, null, 2));
 
   defaultLog.debug('the blob before');
-  defaultLog.debug(JSON.stringify(mapped, null, 2))
+  defaultLog.debug(JSON.stringify(mapped, null, 2));
 
   //todo:
   //mapped2.fieldname = row.fieldname
 
-
-
- mapped = mapDefaultFields(mapped, row)
+  mapped = mapDefaultFields(mapped, row);
 
   /*
   const mapped = {
@@ -113,7 +118,8 @@ export const BatchExecutionService = {
     template: Template,
     validatedBatchData,
     desiredFinalStatus: 'Draft' | 'Submitted',
-    errorRowsBehaviour: 'Draft' | 'Skip'
+    errorRowsBehaviour: 'Draft' | 'Skip',
+    userInfo: any
   ): Promise<BatchExecutionResult> => {
     defaultLog.info(`Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}`);
     const createdIds = [];
@@ -136,13 +142,33 @@ export const BatchExecutionService = {
         row,
         desiredFinalStatus,
         template.type,
-        template.subtype
+        template.subtype,
+        userInfo
       );
 
+      let guid = null;
+      if (userInfo?.idir_userid !== null) {
+        guid = userInfo?.idir_userid;
+      } else if (userInfo?.bceid_userid !== null) {
+        guid = userInfo?.bceid_userid;
+      }
+
       dbConnection.query({
-        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status)
-               values ($1, $2, $3, $4, $5, $6, $7)`,
-        values: [activityId, shortId, payload, id, template.type, template.subtype, desiredFinalStatus]
+        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status, created_by, updated_by, created_by_with_guid, updated_by_with_guid)
+               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        values: [
+          activityId,
+          shortId,
+          payload,
+          id,
+          template.type,
+          template.subtype,
+          desiredFinalStatus,
+          userInfo?.preferred_username,
+          userInfo?.preferred_username,
+          guid,
+          guid
+        ]
       });
     }
 

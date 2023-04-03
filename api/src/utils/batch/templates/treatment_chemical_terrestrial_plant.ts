@@ -1,16 +1,20 @@
-import {Template, TemplateColumnBuilder} from "../definitions";
+import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersonsWithApplicatorLicense,
-  BasicInformation, BasicInformationRowValidators, ChemicalPlantTreatmentInformation, HerbicidesInformation,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ChemicalPlantTreatmentInformation,
+  HerbicidesInformation,
   ProjectInformation,
   WellInformation
-} from "../shared_columns";
+} from '../shared_columns';
 
 const TreatmentChemicalTerrestrialPlant = new Template(
   'treatment_chemical_terrestrial_plant',
   'Treatment - Chemical - Terrestrial Plant',
   null
 );
+TreatmentChemicalTerrestrialPlant.type = 'Treatment';
 TreatmentChemicalTerrestrialPlant.subtype = 'Activity_Treatment_ChemicalPlantTerrestrial';
 
 TreatmentChemicalTerrestrialPlant.columns = [
