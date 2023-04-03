@@ -132,7 +132,8 @@ function execBatch(): RequestHandler {
           template,
           validationResult.validatedBatchData,
           desiredActivityState,
-          treatmentOfErrorRows
+          treatmentOfErrorRows,
+          req.authContext.user
         );
 
         return res.status(200).json({
