@@ -78,12 +78,13 @@ export const BasicInformation = [
     .build()
 ];
 
-const _JurisdictionSumValidator = (rowData): RowValidationResult => {
+const _JurisdictionSumValidator = (row): RowValidationResult => {
   const summedFields = [
     'Basic - Jurisdiction 1 % Covered',
     'Basic - Jurisdiction 2 % Covered',
     'Basic - Jurisdiction 3 % Covered'
   ];
+  const rowData = row.data
 
   let sum = 0;
   let valid = true;
@@ -112,7 +113,8 @@ const _JurisdictionSumValidator = (rowData): RowValidationResult => {
 };
 
 const LinkedRecordsValidator = (linkedRecords) => {
-  return (rowData): RowValidationResult => {
+  return (row): RowValidationResult => {
+    const rowData = row.data;
     let valid = true;
     const validationMessages = [];
     const impactedFields = [];
@@ -144,7 +146,8 @@ const LinkedRecordsValidator = (linkedRecords) => {
   };
 };
 
-const _UTMorLatLongValidator = (rowData): RowValidationResult => {
+const _UTMorLatLongValidator = (row): RowValidationResult => {
+  const rowData = row.data;
   const latLongCols = ['Basic - Latitude', 'Basic - Longitude'];
   const UTMcols = ['Basic - UTM Easting', 'Basic - UTM Northing', 'Basic - UTM Zone'];
   let valid = false;

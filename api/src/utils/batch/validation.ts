@@ -88,7 +88,6 @@ function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckRes
 function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingResult {
   const messages = [];
 
-  console.log('about to verify column presence and mapped path ')
   template.columns.forEach((col) => {
     try
     {
@@ -106,8 +105,8 @@ function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingRe
     }
   });
 
-  //todo fix missing userinfo
-  const mappedObject = _mapToDBObject(row, template.type, template.subtype, template, userInfo);
+
+  const mappedObject = _mapToDBObject(row, 'Submitted', template.type, template.subtype, userInfo);
 
   return {
     mappedObject: mappedObject,
@@ -336,12 +335,9 @@ export const BatchValidationService = {
       default: (val) => val
     };
 
-    batchDataCopy.rows.forEach((row, rowIndex) => {
-      // put the row into the json structure used in `activity_incoming_data`
-      const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);
-      row.mappedObject = mappedObject;
-      row.mappedObjectMessages = messages;
 
+
+    batchDataCopy.rows.forEach((row, rowIndex) => {
       batchDataCopy.headers.forEach((header, colIndex) => {
         const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
@@ -366,7 +362,11 @@ export const BatchValidationService = {
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
       });
 
-      const rowValidationResults = template.rowValidators.map((rv) => rv(row.data));
+      const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);
+      row.mappedObject = mappedObject;
+      row.mappedObjectMessages = messages;
+
+      const rowValidationResults = template.rowValidators.map((rv) => rv(row));
 
       for (const f of rowValidationResults) {
         if (!f.valid) {
@@ -380,6 +380,8 @@ export const BatchValidationService = {
 
       row.rowValidationResult = rowValidationResults;
     });
+
+
 
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;

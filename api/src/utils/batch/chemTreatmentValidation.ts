@@ -9,9 +9,10 @@ import {
   validate_tank_mix_fields,
   validate_tank_mix_herbicides
 } from 'sharedAPI';
+import objectPath from 'object-path';
 import { BatchCellValidationMessage, RowValidationResult } from './validation';
 
-export const ValidateHerbicides = (rowData) => {
+export const ValidateHerbicides = (row) => {
   const appliesToFields = [
     'Herbicide - 1 - PAR - Production Application Rate',
     'Herbicide - 2 - PAR - Production Application Rate',
@@ -26,14 +27,14 @@ export const ValidateHerbicides = (rowData) => {
     'Herbicide - 2 - Dilution - Dilution %'
   ];
 
-  const area = rowData?.mappededObject?.form_data?.activity_subtype_data?.chemical_treatment_details?.area;
-  const formData = mapFormDataToLegacy(rowData?.mappededObject?.form_data)
+  const area = row?.mappedObject?.form_data?.activity_subtype_data?.chemical_treatment_details?.area;
+  const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data)
   const validationFunctionArgs = [area, formData, []];
 
   return runLegacyValidation(validate_herbicide_fields, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateGeneralFields = (rowData) => {
+export const ValidateGeneralFields = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Herbicide 1',
     'Chemical Treatment - Herbicide 2',
@@ -44,13 +45,13 @@ export const ValidateGeneralFields = (rowData) => {
     'Chemical Treatment - Tank Mix'
   ];
 
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, []];
 
   return runLegacyValidation(validate_general_fields, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateTankMixHerbicides = (rowData) => {
+export const ValidateTankMixHerbicides = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Tank Mix',
     'Chemical Treatment - Herbicide 1',
@@ -58,9 +59,9 @@ export const ValidateTankMixHerbicides = (rowData) => {
     'Chemical Treatment - Herbicide 3'
   ];
 
-  const formData = rowData?.mappededObject?.form_data;
-  const businessCodes = rowData?.mappededObject?.business_codes;
-  const herbicideDictionary = rowData?.mappededObject?.herbicide_dictionary;
+  const formData = row?.mappededObject?.form_data;
+  const businessCodes = row?.mappededObject?.business_codes;
+  const herbicideDictionary = row?.mappededObject?.herbicide_dictionary;
   const skipAppRateValidation = false;
 
   const validationFunctionArgs = [formData, [], businessCodes, herbicideDictionary, skipAppRateValidation];
@@ -68,56 +69,56 @@ export const ValidateTankMixHerbicides = (rowData) => {
   return runLegacyValidation(validate_tank_mix_herbicides, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateTankMixFields = (rowData) => {
+export const ValidateTankMixFields = (row) => {
   const appliesToFields = ['Chemical Treatment - Tank Mix'];
   const area = 2;
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [area, formData, []];
 
   return runLegacyValidation(validate_tank_mix_fields, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateChemAppMethod = (rowData) => {
+export const ValidateChemAppMethod = (row) => {
   const appliesToFields = ['Chemical Treatment - Application Method'];
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, [], {}];
 
   return runLegacyValidation(validate_chem_app_method_value, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateHerbicidesArray = (rowData) => {
+export const ValidateHerbicidesArray = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Herbicide 1',
     'Chemical Treatment - Herbicide 2',
     'Chemical Treatment - Herbicide 3'
   ];
 
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, []];
 
   return runLegacyValidation(validate_herbicides_arr_length, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateInvasivePlantsFields = (rowData) => {
+export const ValidateInvasivePlantsFields = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Invasive Species 1',
     'Chemical Treatment - Invasive Species 2',
     'Chemical Treatment - Invasive Species 3'
   ];
 
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, []];
 
   return runLegacyValidation(validate_inv_plants_fields, validationFunctionArgs, appliesToFields);
 };
 
-export const ValidateInvasivePlantsArray = (rowData) => {
+export const ValidateInvasivePlantsArray = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Invasive Species 1',
     'Chemical Treatment - Invasive Species 2',
     'Chemical Treatment - Invasive Species 3'
   ];
-  const formData = rowData?.mappededObject?.form_data;
+  const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, []];
 
   return runLegacyValidation(validate_inv_plants_arr_length, validationFunctionArgs, appliesToFields);
@@ -182,6 +183,7 @@ const mapFormDataToLegacy = (formData) => {
       skipAppRateValidation: formData.activity_subtype_data.chemical_treatment_details.skipAppRateValidation
     };
   } catch (e) {
+    console.log('i am the problem')
     console.log(e);
     console.log(JSON.stringify(e));
   }

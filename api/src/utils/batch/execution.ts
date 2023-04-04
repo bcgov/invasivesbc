@@ -4,7 +4,7 @@ import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
 import { activity_create_function, ActivityLetter } from 'sharedAPI';
-import { mapDefaultFields, mapObservationTerrestrialPlant } from './batchBlobHelpers';
+import { mapDefaultFields } from './batchBlobHelpers';
 
 const defaultLog = getLogger('batch');
 
@@ -25,6 +25,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
+
   let mapped = activity_create_function(
     type,
     subtype,
@@ -37,6 +38,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
  mapped = mapDefaultFields(mapped, row)
 
   mapped['form_data']['form_status'] = 'Submitted'
+
 
   return {
     id: uuidToCreate,
