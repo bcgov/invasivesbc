@@ -24,7 +24,7 @@ const BatchUploadList = () => {
     if (error) {
       return <Error />;
     }
-    if (list !== null && list.length === 0) {
+    if (list !== null && list?.length === 0) {
       return <span>No batches found</span>;
     }
     return (
@@ -40,7 +40,7 @@ const BatchUploadList = () => {
             </tr>
           </thead>
           <tbody>
-            {list.map((b) => (
+            {list?.map((b) => (
               <tr key={b.id}>
                 <td>{b.id}</td>
                 <td>{b.status}</td>

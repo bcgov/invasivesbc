@@ -64,8 +64,8 @@ const Activity = {
     'employer_code',
     'invasive_species_agency_code',
     'jurisdictions',
-    'access_description',
     'location_description',
+    'access_description',
     'project_code',
     'general_comment'
   ]

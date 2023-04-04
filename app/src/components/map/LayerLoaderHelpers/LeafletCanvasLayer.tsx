@@ -54,7 +54,7 @@ export const LeafletCanvasMarker = (props) => {
       iconUrl:
         'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + colour + '.png',
       iconSize: [12.5, 20.5],
-      iconAnchor: [0, 10]
+      iconAnchor: [6, 20]
     });
 
     var markers = [];
@@ -87,9 +87,8 @@ export const LeafletCanvasMarker = (props) => {
     if (props.enabled && groupRef.current) {
       map.invalidateSize();
       layerRef?.current?.addMarkers(markers);
-        map.fireEvent('resize')
+      map.fireEvent('resize');
     }
-
 
     return () => {
       try {
@@ -148,7 +147,9 @@ export const LeafletCanvasLabel = (props) => {
         } else {
           labelImage =
             'data:image/svg+xml,' +
-            encodeURIComponent(svgText(point.properties.short_id, point.properties.species_positive || point.properties.species_treated));
+            encodeURIComponent(
+              svgText(point.properties.short_id, point.properties.species_positive || point.properties.species_treated)
+            );
         }
         var labelIcon = L.icon({
           iconUrl: labelImage,
@@ -173,9 +174,8 @@ export const LeafletCanvasLabel = (props) => {
       map.invalidateSize();
       layerRef?.current?.redraw();
       layerRef?.current?.addMarkers(markers);
-        map.fireEvent('resize')
+      map.fireEvent('resize');
     }
-
 
     return () => {
       try {

@@ -1803,27 +1803,27 @@ employer_code,WFP,Western Forest Products Inc.,281
 employer_code,WSP,Whitestar Property Services Ltd.,282
 employer_code,WFS,Woodlot Forestry Services Ltd.,283
 employer_code,WSPG,WSP Global Inc.,284
-waterbody_use_code,R,Recreation,1
-waterbody_use_code,F,Fishing,2
-waterbody_use_code,B,Boating,3
-waterbody_use_code,S,Swimming,4
-waterbody_use_code,AI,Agricultural Intake,5
-waterbody_use_code,IU,Industrial Discharge,6
-waterbody_use_code,SW,Spawning Channel,7
-waterbody_use_code,CWI,Community Water Intake,8
-waterbody_use_code,O,Other,9
+waterbody_use_code,AI,Agricultural Intake,1
+waterbody_use_code,B,Boating,2
+waterbody_use_code,CWI,Community Water Intake,3
+waterbody_use_code,F,Fishing,4
+waterbody_use_code,IU,Industrial Discharge,5
+waterbody_use_code,O,Other,6
+waterbody_use_code,R,Recreation,7
+waterbody_use_code,SW,Spawning Channel,8
+waterbody_use_code,S,Swimming,9
 adjacent_land_use_code,AO,Agricultural Operation,1
-adjacent_land_use_code,RP,Recreational Property,2
-adjacent_land_use_code,PL,Private Land,3
-adjacent_land_use_code,IS,Industrial Site,4
-adjacent_land_use_code,SF,Small Farms,5
-adjacent_land_use_code,L,Livestock,6
-adjacent_land_use_code,P,Parkland,7
-adjacent_land_use_code,RES,Residential,8
-adjacent_land_use_code,PPL,Provincial Public Lands,9
-adjacent_land_use_code,RW,Railway,10
-adjacent_land_use_code,H,Highway,11
-adjacent_land_use_code,O,Other,12
+adjacent_land_use_code,H,Highway,2
+adjacent_land_use_code,IS,Industrial Site,3
+adjacent_land_use_code,L,Livestock,4
+adjacent_land_use_code,O,Other,5
+adjacent_land_use_code,P,Parkland,6
+adjacent_land_use_code,PL,Private Land,7
+adjacent_land_use_code,PPL,Provincial Public Lands,8
+adjacent_land_use_code,RW,Railway,9
+adjacent_land_use_code,RP,Recreational Property,10
+adjacent_land_use_code,RES,Residential,11
+adjacent_land_use_code,SF,Small Farms,12
 shoreline_type_code,RR,Riprap,1
 shoreline_type_code,RPL,Road/Parking Lot,2
 shoreline_type_code,BLoDI,Boat Launch or Dock Infrastructure,3
@@ -1832,25 +1832,25 @@ shoreline_type_code,T,Turf,5
 shoreline_type_code,F,Fence,6
 shoreline_type_code,LGA,Livestock Grazing Access,7
 shoreline_type_code,O,Other,8
-outflow_code,N,None,0
-outflow_code,CUL,Culvert,1
-outflow_code,CRE,Creek,2
-outflow_code,WET,Wetland,3
+outflow_code,CRE,Creek,1
+outflow_code,CUL,Culvert,2
+outflow_code,N,None,3
 outflow_code,RIV,River,4
 outflow_code,TID,Tidal,5
 outflow_code,U,Unknown,6
-inflow_permanent_code,N,None,0
-inflow_permanent_code,CUL,Culvert,1
-inflow_permanent_code,CRE,Creek,2
-inflow_permanent_code,WET,Wetland,3
+outflow_code,WET,Wetland,7
+inflow_permanent_code,CRE,Creek,1
+inflow_permanent_code,CUL,Culvert,2
+inflow_permanent_code,N,None,3
 inflow_permanent_code,RIV,River,4
 inflow_permanent_code,U,Unknown,5
-inflow_temporary_code,N,None,0
-inflow_temporary_code,SEAC,Seasonal creek,1
-inflow_temporary_code,OFL,Overland Flow,2
-inflow_temporary_code,WET,Wetland,3
-inflow_temporary_code,DISP,Discharge pipes,4
+inflow_permanent_code,WET,Wetland,6
+inflow_temporary_code,DISP,Discharge pipes,1
+inflow_temporary_code,N,None,2
+inflow_temporary_code,OFL,Overland Flow,3
+inflow_temporary_code,SEAC,Seasonal creek,4
 inflow_temporary_code,U,Unknown,5
+inflow_temporary_code,WET,Wetland,6
 district_code,DCC,Cariboo-Chilcotin Natural Resource District,1
 district_code,DCK,Chilliwack Natural Resource District,2
 district_code,DCR,Campbell River Natural Resource District,3

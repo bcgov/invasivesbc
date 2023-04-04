@@ -2,6 +2,9 @@ import { Template, TemplateColumn } from './definitions';
 import { validateAsWKT } from './spatial-validation';
 import _ from 'lodash';
 import slugify from 'slugify';
+import moment from 'moment';
+import turfflatten from '@turf/flatten';
+const { parse } = require('wkt');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -39,6 +42,14 @@ interface RowMappingResult {
   messages: string[];
 }
 
+interface ColumnPrescenceCheckResult {
+  missingColumns: string[];
+  extraColumns: string[];
+}
+
+const DATE_ONLY_FORMAT = 'YYYY-MM-DD';
+const DATE_TIME_FORMAT = 'YYYY-MM-DDThh:mm';
+
 function _divmod(x: number, y: number) {
   return [Math.floor(x / y), x % y];
 }
@@ -56,6 +67,21 @@ function _excelColumnName(n: number) {
 
 function _cellAddress(row: number, column: number): string {
   return `${_excelColumnName(column)}${row + 1}`;
+}
+
+function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckResult {
+  const headers = batch.headers;
+
+  const result = {
+    missingColumns: [],
+    extraColumns: []
+  };
+
+  result.missingColumns = template.columns.map((col) => col.name).filter((c) => !headers.includes(c));
+
+  result.extraColumns = headers.filter((c) => !template.columns.map((col) => col.name).includes(c));
+
+  return result;
 }
 
 function _mapRowToDBObject(row, template: Template): RowMappingResult {
@@ -176,12 +202,34 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
       }
       break;
     case 'date':
-      result.parsedValue = data;
-      //@todo
+      {
+        const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
+        if (!parsedDate.isValid()) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Date not parseable`,
+            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_ONLY_FORMAT}`
+          });
+        } else {
+          // convert to storage format (which happens to be the same, in this case)
+          result.parsedValue = parsedDate.format('YYYY-MM-DD');
+        }
+      }
       break;
     case 'datetime':
-      result.parsedValue = data;
-      //@todo
+      {
+        const parsedDate = moment(data as string, DATE_TIME_FORMAT);
+        if (!parsedDate.isValid()) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Datetime not parseable`,
+            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_TIME_FORMAT}`
+          });
+        } else {
+          // convert to storage format -- ISO 8601
+          result.parsedValue = parsedDate.format();
+        }
+      }
       break;
     case 'text':
       result.parsedValue = data?.trim() || '';
@@ -253,19 +301,61 @@ export const BatchValidationService = {
   validateBatchAgainstTemplate: (template: Template, batch): BatchValidationResult => {
     const result = new BatchValidationResult();
     let totalErrorCount = 0;
+    const globalValidationMessages = [];
 
     const batchDataCopy = { ...batch };
+
+    const { missingColumns, extraColumns } = columnPresenceCheck(template, batchDataCopy);
+    globalValidationMessages.push(
+      ...missingColumns.map((c) => `The required column [${c}] is missing in your submission`)
+    );
+    totalErrorCount += missingColumns.length;
+
+    globalValidationMessages.push(
+      ...extraColumns.map((c) => `The extraneous column [${c}] in your submission will be ignored`)
+    );
+
+    const typeMapper = {
+      numeric: (val) => Number.parseFloat(val),
+      tristate: (val) => {
+        if (val.toLowerCase() === 'true') {
+          return 'Yes';
+        } else if (val.toLowerCase() === 'false') {
+          return 'No';
+        } else {
+          return 'Unknown';
+        }
+      },
+      WKT: (val) => {
+        const geojson: any = parse(val);
+
+        const flattenedMulti = turfflatten(geojson);
+        return [flattenedMulti?.features?.[0]];
+      },
+      default: (val) => val
+    };
 
     batchDataCopy.rows.forEach((row, rowIndex) => {
       batchDataCopy.headers.forEach((header, colIndex) => {
         const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
-        row.data[field] = {
-          inputValue: row.data[field],
-          templateColumn,
-          spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
-          ..._validateCell(templateColumn, row.data[field])
-        };
+
+        try {
+          const updatedVal =
+            templateColumn && templateColumn['dataType'] && Object.keys(typeMapper).includes(templateColumn['dataType'])
+              ? typeMapper[templateColumn['dataType']](row.data[field])
+              : row.data[field];
+          row.data[field] = {
+            inputValue: updatedVal,
+            templateColumn,
+            spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
+            ..._validateCell(templateColumn, row.data[field])
+          };
+        } catch (e) {
+          console.log(JSON.stringify(templateColumn));
+          console.log(e);
+          throw e;
+        }
 
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
       });
@@ -291,7 +381,7 @@ export const BatchValidationService = {
     });
 
     result.validatedBatchData = batchDataCopy;
-    result.globalValidationMessages = [];
+    result.globalValidationMessages = globalValidationMessages;
     result.canProceed = totalErrorCount == 0;
     return result;
   }

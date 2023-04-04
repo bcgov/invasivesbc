@@ -178,6 +178,8 @@ function* executeBatch(action) {
   });
 
   yield put({type: BATCH_EXECUTE_SUCCESS, payload: data});
+  yield put({type: BATCH_RETRIEVE_REQUEST, payload: { id }});
+
 };
 
 function* batchSaga() {

@@ -32,16 +32,16 @@ export const WaterbodyData = {
       type: 'string',
       title: 'Waterbody Type',
       enum: [
-        'Intertidal',
-        'Wetland',
         'Bog',
-        'Lake',
         'Confined Pond',
         'Discharging Pond',
         'Ditch',
-        'Slough',
+        'Intertidal',
+        'Lake',
         'River',
-        'Stream'
+        'Slough',
+        'Stream',
+        'Wetland'
       ],
       'x-tooltip-text': 'Select best description of waterbody type'
     },
@@ -80,14 +80,14 @@ export const WaterbodyData_AdditionalFields = {
     water_level_management: {
       type: 'string',
       title: 'Water Level Management',
-      enum: ['None', 'Weir', 'Pump Station', 'Dam', 'Other'],
+      enum: ['Dam', 'None', 'Other', 'Pump Station', 'Weir'],
       'x-tooltip-text':
         'Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field'
     },
     substrate_type: {
       type: 'string',
       title: 'Substrate Type',
-      enum: ['Silt/Organic', 'Clay', 'Sand', 'Gravel', 'Cobble', 'Rip-rap'],
+      enum: ['Clay', 'Cobble', 'Gravel', 'Rip-rap', 'Sand', 'Silt/Organic'],
       'x-tooltip-text': 'Select the most prevalent substrate composition'
     },
     tidal_influence: {

@@ -51,6 +51,7 @@ import {
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityStatus, ActivitySubtype } from 'sharedAPI';
+import { selectMap } from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -86,6 +87,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const dispatch = useDispatch();
   const activityInStore = useSelector(selectActivity);
   const userSettingsState = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
 
@@ -300,6 +302,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
       payload: { eventFormData: event.formData, lastField: lastField }
     });
+
+    if (event.formData?.activity_type_data?.linked_id) {
+      const act = mapState.activitiesGeoJSON?.features?.find((activity) => activity?.properties?.id == event.formData?.activity_type_data?.linked_id);
+      setLinkedActivity(act);
+    }
 
     if (callbackFun) {
       // callbackFun(updatedFormData);
