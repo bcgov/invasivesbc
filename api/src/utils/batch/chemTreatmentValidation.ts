@@ -8,7 +8,7 @@ import {
   validate_tank_mix_fields,
   validate_tank_mix_herbicides
 } from 'sharedAPI';
-import { RowValidationResult } from './validation';
+import { BatchCellValidationMessage, RowValidationResult } from './validation';
 
 export const ValidateHerbicides = (rowData) => {
   const appliesToFields = [
@@ -21,7 +21,7 @@ export const ValidateHerbicides = (rowData) => {
   const formData = rowData?.mappededObject?.form_data;
   const validationFunctionArgs = [area, formData, []];
 
-  return runLegacyValidation(validate_herbicide_fields, validationFunctionArgs, appliesToFields);
+  return runLegacyValidation(validate_herbicide_fields, validationFunctionArgs, appliesToFields) 
 };
 
 export const ValidateGeneralFields = (rowData) => {
@@ -134,8 +134,8 @@ const mapErrorsToValidationMessages = (errors, appliesToFields) => {
   return validationMessages;
 };
 
-const runLegacyValidation = (validationFunction, validationFunctionArgs, appliesToFields) => {
-  let validationMessages = [];
+const runLegacyValidation = (validationFunction, validationFunctionArgs, appliesToFields: string[]) => {
+  let validationMessages: BatchCellValidationMessage[] = [];
   let valid = true;
 
   try {
@@ -150,5 +150,5 @@ const runLegacyValidation = (validationFunction, validationFunctionArgs, applies
     valid = newValidationMessages.length > 0 ? false : true;
   }
 
-  return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
+  return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid } as RowValidationResult;
 };
