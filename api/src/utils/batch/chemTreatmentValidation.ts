@@ -1,136 +1,117 @@
-import { validate_herbicide_fields } from 'sharedAPI';
+import {
+  validate_chem_app_method_value,
+  validate_general_fields,
+  validate_herbicide_fields,
+  validate_herbicides_arr_length,
+  validate_inv_plants_arr_length,
+  validate_inv_plants_fields,
+  validate_tank_mix_fields,
+  validate_tank_mix_herbicides
+} from 'sharedAPI';
 import { RowValidationResult } from './validation';
 
-
-//temp param cheat cheat 
-/*
-newErrors = validate_inv_plants_arr_length(formData, errors);
-newErrors = validate_inv_plants_fields(formData, errors);
-newErrors = validate_herbicides_arr_length(formData, errors);
-newErrors = validate_general_fields(formData, errors);
-newErrors = validate_chem_app_method_value(formData, errors, businessCodes);
-newErrors = validate_herbicide_fields(
-newErrors = validate_tank_mix_fields(area, formData, errors);
-newErrors = validate_tank_mix_herbicides(formData, errors, businessCodes, herbicideDictionary, skipAppRateValidation);
-*/
-
 export const ValidateHerbicides = (rowData) => {
-  const appliesToFields = [];
-  let validationMessages = [];
-  let valid = true;
+  const appliesToFields = [
+    'Chemical Treatment - Herbicide 1',
+    'Chemical Treatment - Herbicide 2',
+    'Chemical Treatment - Herbicide 3'
+  ];
 
-  try {
-    //area: number, formData: IGeneralFields, errors: any, businessCodes: any, herbicideDictionary: any, skipAppRateValidation: boolean
-    //const result = validate_herbicide_fields()
-  } catch (e) {
-    console.log(e);
-    valid = false;
-  }
+  const area = rowData?.mappededObject?.form_data?.activity_subtype_data?.chemical_treatment_details?.area;
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [area, formData, []];
 
-  return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
+  return runLegacyValidation(validate_herbicide_fields, validationFunctionArgs, appliesToFields);
+};
 
-  // validate_herbicides
+export const ValidateGeneralFields = (rowData) => {
+  const appliesToFields = [
+    'Chemical Treatment - Herbicide 1',
+    'Chemical Treatment - Herbicide 2',
+    'Chemical Treatment - Herbicide 3',
+    'Chemical Treatment - Invasive Species 1',
+    'Chemical Treatment - Invasive Species 2',
+    'Chemical Treatment - Invasive Species 3',
+    'Chemical Treatment - Tank Mix'
+  ];
+
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [formData, []];
+
+  return runLegacyValidation(validate_general_fields, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateTankMixHerbicides = (rowData) => {
-  const appliesToFields = [];
-  let validationMessages = [];
-  let valid = true;
+  const appliesToFields = [
+    'Chemical Treatment - Tank Mix',
+    'Chemical Treatment - Herbicide 1',
+    'Chemical Treatment - Herbicide 2',
+    'Chemical Treatment - Herbicide 3'
+  ];
 
-  try {
-    //const result = validate_tank_mix_herbicides()
-  } catch (e) {
-    console.log(e);
-    valid = false;
-  }
+  const formData = rowData?.mappededObject?.form_data;
+  const businessCodes  = rowData?.mappededObject?.business_codes
+  const herbicideDictionary = rowData?.mappededObject?.herbicide_dictionary;
+  const skipAppRateValidation = false;
 
-  return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
+  const validationFunctionArgs = [formData, [], businessCodes, herbicideDictionary, skipAppRateValidation];
 
+  return runLegacyValidation(validate_tank_mix_herbicides, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateTankMixFields = (rowData) => {
-    const appliesToFields = [];
-    let validationMessages = [];
-    let valid = true;
-  
-    try {
-      //const result = validate_tank_mix_fields()
-    } catch (e) {
-      console.log(e);
-      valid = false;
-    }
-  
-    return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
-  
-  // 
+  const appliesToFields = ['Chemical Treatment - Tank Mix'];
+  const area = 2;
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [area, formData, []];
+
+  return runLegacyValidation(validate_tank_mix_fields, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateChemAppMethod = (rowData) => {
-    const appliesToFields = [];
-    let validationMessages = [];
-    let valid = true;
-  
-    try {
-      //const result = validate_chem_app_method()
-    } catch (e) {
-      console.log(e);
-      valid = false;
-    }
-  
-    return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
-  
-  //
+  const appliesToFields = ['Chemical Treatment - Application Method'];
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [formData, [], {}];
+
+  return runLegacyValidation(validate_chem_app_method_value, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateHerbicidesArray = (rowData) => {
-    const appliesToFields = [];
-    let validationMessages = [];
-    let valid = true;
-  
-    try {
-      //const result = validate_herbicides_arr_length()
-    } catch (e) {
-      console.log(e);
-      valid = false;
-    }
-  
-    return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
-  
-  //
+  const appliesToFields = [
+    'Chemical Treatment - Herbicide 1',
+    'Chemical Treatment - Herbicide 2',
+    'Chemical Treatment - Herbicide 3'
+  ];
+
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [formData, []];
+
+  return runLegacyValidation(validate_herbicides_arr_length, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateInvasivePlantsFields = (rowData) => {
-    const appliesToFields = [];
-    let validationMessages = [];
-    let valid = true;
-  
-    try {
-      //const result = validate_inv_plants_fields()
-    } catch (e) {
-      console.log(e);
-      valid = false;
-    }
-  
-    return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
-  
-  //
+  const appliesToFields = [
+    'Chemical Treatment - Invasive Species 1',
+    'Chemical Treatment - Invasive Species 2',
+    'Chemical Treatment - Invasive Species 3'
+  ];
+
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [formData, []];
+
+  return runLegacyValidation(validate_inv_plants_fields, validationFunctionArgs, appliesToFields);
 };
 
 export const ValidateInvasivePlantsArray = (rowData) => {
-    const appliesToFields = [];
-    let validationMessages = [];
-    let valid = true;
-  
-    try {
-      //const result = validate_inv_plants_arr_length()
-    } catch (e) {
-      console.log(e);
-      valid = false;
-    }
-  
-    return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
-  
-  //
+  const appliesToFields = [
+    'Chemical Treatment - Invasive Species 1',
+    'Chemical Treatment - Invasive Species 2',
+    'Chemical Treatment - Invasive Species 3'
+  ];
+  const formData = rowData?.mappededObject?.form_data;
+  const validationFunctionArgs = [formData, []];
+
+  return runLegacyValidation(validate_inv_plants_arr_length, validationFunctionArgs, appliesToFields);
 };
 
 export const ChemTreatmentValidators = [
@@ -142,3 +123,32 @@ export const ChemTreatmentValidators = [
   ValidateInvasivePlantsFields,
   ValidateInvasivePlantsArray
 ];
+
+const mapErrorsToValidationMessages = (errors, appliesToFields) => {
+  let validationMessages = [];
+  errors.map((e) => {
+    appliesToFields.map((field) => {
+      validationMessages.push({ message: e, appliesToField: field });
+    });
+  });
+  return validationMessages;
+};
+
+const runLegacyValidation = (validationFunction, validationFunctionArgs, appliesToFields) => {
+  let validationMessages = [];
+  let valid = true;
+
+  try {
+    const errors = validationFunction(...validationFunctionArgs);
+    const newValidationMessages = mapErrorsToValidationMessages(errors, appliesToFields);
+    validationMessages.push(...newValidationMessages);
+    valid = newValidationMessages.length > 0 ? false : true;
+  } catch (e) {
+    console.log(e);
+    const newValidationMessages = mapErrorsToValidationMessages([e], appliesToFields);
+    validationMessages.push(...newValidationMessages);
+    valid = newValidationMessages.length > 0 ? false : true;
+  }
+
+  return { validationMessages: validationMessages, appliesToFields: appliesToFields, valid: valid };
+};

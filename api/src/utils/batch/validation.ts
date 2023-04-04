@@ -4,6 +4,7 @@ import _ from 'lodash';
 import slugify from 'slugify';
 import moment from 'moment';
 import turfflatten from '@turf/flatten';
+import { _mapToDBObject } from './execution';
 const { parse } = require('wkt');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
@@ -85,7 +86,6 @@ function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckRes
 }
 
 function _mapRowToDBObject(row, template: Template): RowMappingResult {
-  const result = {};
   const messages = [];
 
   template.columns.forEach((col) => {
@@ -95,21 +95,12 @@ function _mapRowToDBObject(row, template: Template): RowMappingResult {
       mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
       messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
     }
-
-    let setValue = row?.data?.[col?.name]?.parsedValue;
-    if (col.dataType === 'codeReference') {
-      setValue = setValue?.code;
-    }
-
-    // @todo handle codereferencemulti
-
-    if (!(setValue == null || (col.dataType === 'numeric' && isNaN(setValue)))) {
-      _.set(result, mappedPath, setValue);
-    }
   });
 
+  const mappedObject = _mapToDBObject(row, 'Treatment', 'Chemical Treatment', template )
+
   return {
-    mappedObject: result,
+    mappedObject: mappedObject,
     messages
   };
 }
@@ -336,6 +327,11 @@ export const BatchValidationService = {
     };
 
     batchDataCopy.rows.forEach((row, rowIndex) => {
+      // put the row into the json structure used in `activity_incoming_data`
+      const { mappedObject, messages } = _mapRowToDBObject(row, template);
+      row.mappedObject = mappedObject;
+      row.mappedObjectMessages = messages;
+
       batchDataCopy.headers.forEach((header, colIndex) => {
         const field = header;
         const templateColumn = template.columns.find((t) => t.name === field);
@@ -374,10 +370,6 @@ export const BatchValidationService = {
 
       row.rowValidationResult = rowValidationResults;
 
-      // put the row into the json structure used in `activity_incoming_data`
-      const { mappedObject, messages } = _mapRowToDBObject(row, template);
-      row.mappedObject = mappedObject;
-      row.mappedObjectMessages = messages;
     });
 
     result.validatedBatchData = batchDataCopy;

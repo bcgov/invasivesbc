@@ -22,7 +22,7 @@ TreatmentMechanicalAquaticPlant.columns = [
   new TemplateColumnBuilder(
     'Treatment - Treated Area',
     'numeric',
-    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].treated_area'
+    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information.0.treated_area'
   )
     .valueRange(0, null)
     .isRequired()

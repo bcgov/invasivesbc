@@ -40,67 +40,8 @@ function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
   defaultLog.debug('the blob before');
   defaultLog.debug(JSON.stringify(mapped, null, 2));
 
-  //todo:
-  //mapped2.fieldname = row.fieldname
 
-  mapped = mapDefaultFields(mapped, row);
-
-  /*
-  const mapped = {
-    _id: uuidToCreate,
-    geog: null,
-    geom: null,
-    media: [],
-    agency: null,
-    version: null,
-    geometry: null,
-    utm_zone: null,
-    elevation: null,
-    ownership: null,
-    user_role: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19],
-    created_by: 'brewebst@idir',
-    updated_by: 'brewebst@idir',
-    activity_id: uuidToCreate,
-    form_status: status,
-    reviewed_at: null,
-    reviewed_by: null,
-    sync_status: 'Not Saved',
-    utm_easting: null,
-    date_created: new Date().toUTCString(),
-    date_updated: null,
-    jurisdiction: null,
-    utm_northing: null,
-    activity_type: type,
-    review_status: 'Not Reviewed',
-    albers_easting: null,
-    moti_districts: null,
-    well_proximity: null,
-    albers_northing: null,
-    flnro_districts: null,
-    species_treated: [],
-    activity_subtype: subtype,
-    species_negative: [],
-    species_positive: [],
-    created_timestamp: new Date().toUTCString(),
-    deleted_timestamp: null,
-    media_delete_keys: [],
-    received_timestamp: new Date().toUTCString(),
-    regional_districts: null,
-    biogeoclimatic_zones: null,
-    jurisdiction_display: null,
-    species_treated_full: null,
-    initial_autofill_done: false,
-    species_negative_full: null,
-    species_positive_full: null,
-    invasive_plant_management_areas: null,
-    regional_invasive_species_organization_areas: null,
-    short_id: shortId,
-    ...row.mappedObject
-  };
-  if (mapped?.['form_data']?.['form_status']) {
-    mapped['form_data']['form_status'] = status;
-  }
-  */
+ mapped = mapDefaultFields(mapped, row)
 
   mapped['form_data']['form_status'] = 'Submitted'
 
