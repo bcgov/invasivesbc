@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     width: '100%',
     display: 'flex',
-    oberflow: 'hidden',
+    overflow: 'hidden',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -405,7 +405,7 @@ const PageContainer = (props) => {
               mapId={'mainMap'}
               geometryState={{ geometry, setGeometry }}>
               {mapState.IAPPGeoJSON?.features.length ? <RecordSetLayersRenderer /> : <></>}
-            </MapContainer> 
+            </MapContainer>
           </Suspense>
         </MapRecordsContextProvider>
       </Box>

@@ -32,7 +32,8 @@ import {
   WHATS_HERE_PAGE_ACTIVITY,
   MAIN_MAP_MOVE,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  WHATS_HERE_SORT_FILTER_UPDATE,
+  MAP_TOGGLE_LEGENDS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -61,6 +62,7 @@ class MapState {
   activitiesGeoJSON: any;
   IAPPGeoJSON: any;
   LeafletWhosEditing: LeafletWhosEditingEnum;
+  legendsPopup: any;
   zoom: number;
   center: L.LatLngExpression;
   activityPageMapExtentToggle: boolean;
@@ -77,6 +79,7 @@ class MapState {
     this.positionTracking = false;
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
+    this.legendsPopup = false;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -339,6 +342,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           HDToggle: !state.HDToggle
+        };
+      }
+      case MAP_TOGGLE_LEGENDS: {
+        return {
+          ...state,
+          legendsPopup: !state.legendsPopup
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {
