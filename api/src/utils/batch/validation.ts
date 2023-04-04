@@ -4,6 +4,7 @@ import _ from 'lodash';
 import slugify from 'slugify';
 import moment from 'moment';
 import turfflatten from '@turf/flatten';
+import { _mapToDBObject } from './execution';
 const { parse } = require('wkt');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
@@ -84,32 +85,31 @@ function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckRes
   return result;
 }
 
-function _mapRowToDBObject(row, template: Template): RowMappingResult {
-  const result = {};
+function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingResult {
   const messages = [];
 
   template.columns.forEach((col) => {
-    let mappedPath = col.mappedPath;
+    try
+    {
+
+    let mappedPath = col?.mappedPath;
 
     if (mappedPath === null) {
       mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
       messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
     }
-
-    let setValue = row?.data?.[col?.name]?.parsedValue;
-    if (col.dataType === 'codeReference') {
-      setValue = setValue?.code;
     }
-
-    // @todo handle codereferencemulti
-
-    if (!(setValue == null || (col.dataType === 'numeric' && isNaN(setValue)))) {
-      _.set(result, mappedPath, setValue);
+    catch(e)
+    {
+      messages.push(`error mapping field ${col.name} .  ${e}`);
     }
   });
 
+
+  const mappedObject = _mapToDBObject(row, 'Submitted', template.type, template.subtype, userInfo);
+
   return {
-    mappedObject: result,
+    mappedObject: mappedObject,
     messages
   };
 }
@@ -298,7 +298,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
 }
 
 export const BatchValidationService = {
-  validateBatchAgainstTemplate: (template: Template, batch): BatchValidationResult => {
+  validateBatchAgainstTemplate: (template: Template, batch, reqUser: any): BatchValidationResult => {
     const result = new BatchValidationResult();
     let totalErrorCount = 0;
     const globalValidationMessages = [];
@@ -335,6 +335,8 @@ export const BatchValidationService = {
       default: (val) => val
     };
 
+
+
     batchDataCopy.rows.forEach((row, rowIndex) => {
       batchDataCopy.headers.forEach((header, colIndex) => {
         const field = header;
@@ -360,7 +362,11 @@ export const BatchValidationService = {
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
       });
 
-      const rowValidationResults = template.rowValidators.map((rv) => rv(row.data));
+      const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);
+      row.mappedObject = mappedObject;
+      row.mappedObjectMessages = messages;
+
+      const rowValidationResults = template.rowValidators.map((rv) => rv(row));
 
       for (const f of rowValidationResults) {
         if (!f.valid) {
@@ -373,12 +379,9 @@ export const BatchValidationService = {
       }
 
       row.rowValidationResult = rowValidationResults;
-
-      // put the row into the json structure used in `activity_incoming_data`
-      const { mappedObject, messages } = _mapRowToDBObject(row, template);
-      row.mappedObject = mappedObject;
-      row.mappedObjectMessages = messages;
     });
+
+
 
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;

@@ -78,12 +78,13 @@ export const BasicInformation = [
     .build()
 ];
 
-const _JurisdictionSumValidator = (rowData): RowValidationResult => {
+const _JurisdictionSumValidator = (row): RowValidationResult => {
   const summedFields = [
     'Basic - Jurisdiction 1 % Covered',
     'Basic - Jurisdiction 2 % Covered',
     'Basic - Jurisdiction 3 % Covered'
   ];
+  const rowData = row.data
 
   let sum = 0;
   let valid = true;
@@ -112,7 +113,8 @@ const _JurisdictionSumValidator = (rowData): RowValidationResult => {
 };
 
 const LinkedRecordsValidator = (linkedRecords) => {
-  return (rowData): RowValidationResult => {
+  return (row): RowValidationResult => {
+    const rowData = row.data;
     let valid = true;
     const validationMessages = [];
     const impactedFields = [];
@@ -144,7 +146,8 @@ const LinkedRecordsValidator = (linkedRecords) => {
   };
 };
 
-const _UTMorLatLongValidator = (rowData): RowValidationResult => {
+const _UTMorLatLongValidator = (row): RowValidationResult => {
+  const rowData = row.data;
   const latLongCols = ['Basic - Latitude', 'Basic - Longitude'];
   const UTMcols = ['Basic - UTM Easting', 'Basic - UTM Northing', 'Basic - UTM Zone'];
   let valid = false;
@@ -699,7 +702,7 @@ export const HerbicidesInformation = [
   )
     .valueRange(0, 100)
     .build(),
-//  new TemplateColumnBuilder( 'Herbicide - 1 - Area Treated', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
+  new TemplateColumnBuilder('Herbicide - 1 - Area Treated (Dilution)', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
 
@@ -714,7 +717,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
- // new TemplateColumnBuilder('Herbicide - 2 - Area Treated', 'numeric').valueRange(0, null).isRequired().build(),
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).isRequired().build(),
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',

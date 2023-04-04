@@ -1,5 +1,5 @@
-import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbicideApplicationRates';
-import { IGeneralFields } from './Models';
+import { HerbicideApplicationRates } from './herbicideApplicationRates';
+import { IGeneralFields } from '../src/herbicideCalculator';
 
 export const runValidation = (
   area: number,

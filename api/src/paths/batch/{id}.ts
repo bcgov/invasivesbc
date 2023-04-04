@@ -138,7 +138,8 @@ function getBatch(): RequestHandler {
 
       const validationResult = BatchValidationService.validateBatchAgainstTemplate(
         template,
-        retrievedBatch['json_representation']
+        retrievedBatch['json_representation'],
+        req.authContext.user
       );
 
       const responseObject = {
@@ -159,6 +160,7 @@ function getBatch(): RequestHandler {
       });
     } catch (error) {
       defaultLog.error(error)
+      defaultLog.error(JSON.stringify(error))
       return res.status(500).json({
         message: `Error retrieving batch ${id}`,
         request: req.body,
@@ -269,7 +271,8 @@ function updateBatch(): RequestHandler {
 
       const validationResult = BatchValidationService.validateBatchAgainstTemplate(
         template,
-        retrievedBatch['json_representation']
+        retrievedBatch['json_representation'],
+        req.authContext.user
       );
 
       const responseObject = {
