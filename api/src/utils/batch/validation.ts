@@ -85,7 +85,7 @@ function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckRes
   return result;
 }
 
-function _mapRowToDBObject(row, template: Template): RowMappingResult {
+function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingResult {
   const messages = [];
 
   template.columns.forEach((col) => {
@@ -97,7 +97,8 @@ function _mapRowToDBObject(row, template: Template): RowMappingResult {
     }
   });
 
-  const mappedObject = _mapToDBObject(row, 'Treatment', 'Chemical Treatment', template )
+  //todo fix missing userinfo
+  const mappedObject = _mapToDBObject(row, template.type, template.subtype, template, userInfo);
 
   return {
     mappedObject: mappedObject,
@@ -289,7 +290,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
 }
 
 export const BatchValidationService = {
-  validateBatchAgainstTemplate: (template: Template, batch): BatchValidationResult => {
+  validateBatchAgainstTemplate: (template: Template, batch, reqUser: any): BatchValidationResult => {
     const result = new BatchValidationResult();
     let totalErrorCount = 0;
     const globalValidationMessages = [];
@@ -328,7 +329,7 @@ export const BatchValidationService = {
 
     batchDataCopy.rows.forEach((row, rowIndex) => {
       // put the row into the json structure used in `activity_incoming_data`
-      const { mappedObject, messages } = _mapRowToDBObject(row, template);
+      const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);
       row.mappedObject = mappedObject;
       row.mappedObjectMessages = messages;
 
@@ -369,7 +370,6 @@ export const BatchValidationService = {
       }
 
       row.rowValidationResult = rowValidationResults;
-
     });
 
     result.validatedBatchData = batchDataCopy;

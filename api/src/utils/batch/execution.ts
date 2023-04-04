@@ -18,7 +18,7 @@ interface _MappedForDB {
   payload: object;
 }
 
-function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
+export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
   const uuidToCreate = randomUUID();
 
   const shortYear = moment().format().substr(2, 2);
@@ -33,13 +33,6 @@ function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
     'Brennan',
     userInfo?.pac_number
   );
-
-  defaultLog.debug('the row');
-  defaultLog.debug(JSON.stringify(row, null, 2));
-
-  defaultLog.debug('the blob before');
-  defaultLog.debug(JSON.stringify(mapped, null, 2));
-
 
  mapped = mapDefaultFields(mapped, row)
 

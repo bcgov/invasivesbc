@@ -138,7 +138,8 @@ function getBatch(): RequestHandler {
 
       const validationResult = BatchValidationService.validateBatchAgainstTemplate(
         template,
-        retrievedBatch['json_representation']
+        retrievedBatch['json_representation'],
+        req.authContext.user
       );
 
       const responseObject = {
@@ -269,7 +270,8 @@ function updateBatch(): RequestHandler {
 
       const validationResult = BatchValidationService.validateBatchAgainstTemplate(
         template,
-        retrievedBatch['json_representation']
+        retrievedBatch['json_representation'],
+        req.authContext.user
       );
 
       const responseObject = {
