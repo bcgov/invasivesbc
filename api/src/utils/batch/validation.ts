@@ -88,12 +88,21 @@ function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckRes
 function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingResult {
   const messages = [];
 
+  console.log('about to verify column presence and mapped path ')
   template.columns.forEach((col) => {
-    let mappedPath = col.mappedPath;
+    try
+    {
+
+    let mappedPath = col?.mappedPath;
 
     if (mappedPath === null) {
       mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
       messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
+    }
+    }
+    catch(e)
+    {
+      messages.push(`error mapping field ${col.name} .  ${e}`);
     }
   });
 
