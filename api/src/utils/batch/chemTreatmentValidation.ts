@@ -53,10 +53,15 @@ export const ValidateGeneralFields = (row) => {
 
 export const ValidateTankMixHerbicides = (row) => {
   const appliesToFields = [
-    'Chemical Treatment - Tank Mix',
-    'Chemical Treatment - Herbicide 1',
-    'Chemical Treatment - Herbicide 2',
-    'Chemical Treatment - Herbicide 3'
+    'Herbicide - Tank Mix?',
+    'Herbicide - 1 - Type',
+    'Herbicide - 2 - Type',
+    'Herbicide - 1 - Herbicide',
+    'Herbicide - 2 - Herbicide',
+    'Herbicide - 1 - Calculation Type',
+    'Herbicide - 2 - Calculation Type',
+    'Herbicide - 1 - PAR - Production Application Rate',
+    'Herbicide - 2 - PAR - Production Application Rate'
   ];
 
   const formData = row?.mappededObject?.form_data;
@@ -70,7 +75,18 @@ export const ValidateTankMixHerbicides = (row) => {
 };
 
 export const ValidateTankMixFields = (row) => {
-  const appliesToFields = ['Chemical Treatment - Tank Mix'];
+  const appliesToFields = [
+    'Herbicide - Tank Mix?',
+    'Herbicide - 1 - Calculation Type',
+    'Herbicide - 2 - Calculation Type',
+    'Herbicide - Amount of Mix Used',
+    'Herbicide - 1 - Area Treated (Dilution)',
+    'Herbicide - 1 - PAR - Delivery Rate of Mix',
+    'Herbicide - 1 - Herbicide',
+    'Herbicide - 2 - Herbicide',
+    'Herbicide - 1 - Type',
+    'Herbicide - 2 - Type'
+];
   const area = 2;
   const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [area, formData, []];
@@ -79,7 +95,10 @@ export const ValidateTankMixFields = (row) => {
 };
 
 export const ValidateChemAppMethod = (row) => {
-  const appliesToFields = ['Chemical Treatment - Application Method'];
+  const appliesToFields = [
+    'Chemical Treatment - Application Method',
+    'Herbicide - Tank Mix?'
+];
   const formData = row?.mappededObject?.form_data;
   const validationFunctionArgs = [formData, [], {}];
 
@@ -90,7 +109,11 @@ export const ValidateHerbicidesArray = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Herbicide 1',
     'Chemical Treatment - Herbicide 2',
-    'Chemical Treatment - Herbicide 3'
+    'Herbicide - 1 - Herbicide',
+    'Herbicide - 2 - Herbicide',
+    'Herbicide - 1 - Type',
+    'Herbicide - 2 - Type',
+    'Herbicide - Tank Mix?'
   ];
 
   const formData = row?.mappededObject?.form_data;
@@ -103,7 +126,10 @@ export const ValidateInvasivePlantsFields = (row) => {
   const appliesToFields = [
     'Chemical Treatment - Invasive Species 1',
     'Chemical Treatment - Invasive Species 2',
-    'Chemical Treatment - Invasive Species 3'
+    'Chemical Treatment - Invasive Species 3',
+    'Chemical Treatment - Invasive Species 1 %',
+    'Chemical Treatment - Invasive Species 2 %',
+    'Chemical Treatment - Invasive Species 3 %'
   ];
 
   const formData = row?.mappededObject?.form_data;
