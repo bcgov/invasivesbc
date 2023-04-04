@@ -675,7 +675,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Type',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_type_code'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.herbicide_type_code'
   )
     .referencesCode('herbicide_type_code')
     .isRequired()
@@ -683,7 +683,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Herbicide',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_code'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.herbicide_code'
   )
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .isRequired()
@@ -691,18 +691,18 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Calculation Type',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.calculation_type'
   )
     .referencesCode('calculation_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Herbicide - 1 - Dilution - Dilution %',
     'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].dilution'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.dilution'
   )
     .valueRange(0, 100)
     .build(),
-  new TemplateColumnBuilder('Herbicide - 1 - Area Treated (Dilution)', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
+  new TemplateColumnBuilder('Herbicide - 1 - Area Treated (Dilution)', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
 
