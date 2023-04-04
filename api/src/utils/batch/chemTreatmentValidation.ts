@@ -12,9 +12,17 @@ import { BatchCellValidationMessage, RowValidationResult } from './validation';
 
 export const ValidateHerbicides = (rowData) => {
   const appliesToFields = [
-    'Chemical Treatment - Herbicide 1',
-    'Chemical Treatment - Herbicide 2',
-    'Chemical Treatment - Herbicide 3'
+    'Herbicide - 1 - PAR - Production Application Rate',
+    'Herbicide - 2 - PAR - Production Application Rate',
+    'Herbicide - 1 - PAR - Delivery Rate of Mix',
+    'Herbicide - 2 - PAR - Delivery Rate of Mix',
+    'Herbicide - Amount of Mix Used',
+    'Herbicide - 1 - Calculation Type',
+    'Herbicide - 2 - Calculation Type',
+    'Herbicide - 1 - Area Treated (Dilution)',
+    'Herbicide - 2 - Area Treated (Dilution)',
+    'Herbicide - 1 - Dilution - Dilution %',
+    'Herbicide - 2 - Dilution - Dilution %'
   ];
 
   const area = rowData?.mappededObject?.form_data?.activity_subtype_data?.chemical_treatment_details?.area;
