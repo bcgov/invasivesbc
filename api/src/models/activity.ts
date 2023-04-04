@@ -45,6 +45,8 @@ export class ActivityPostRequestBody {
 
   jurisdiction: string[];
 
+  roles: string[];
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
@@ -98,6 +100,8 @@ export class ActivityPostRequestBody {
     this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
+
+    this.roles = obj?.roles || [];
   }
 }
 

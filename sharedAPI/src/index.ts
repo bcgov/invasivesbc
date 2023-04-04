@@ -1,23 +1,20 @@
-import { Feature } from "geojson";
-import moment from "moment";
+import { Feature } from 'geojson';
+import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 export * from './herbicideCalculator'
 export * from './chemTreatmentValidation'
 export * from './herbicideApplicationRates'
 
-
 export const activity_create_function = (
   type: string,
   subType: string,
   username: string,
-  accessRoles: Array<any>,
   displayName: string,
   pac_number?: string
 ) => {
   let activityV1 = generateDBActivityPayload({}, null, type, subType);
   let activityV2 = populateSpeciesArrays(activityV1);
   activityV2.created_by = username;
-  activityV2.user_role = accessRoles.map((role) => role.role_id);
 
   //    if ([ActivityType.Observation, ActivityType.Treatment].includes(activityV2.activity_type))
   {
@@ -67,7 +64,6 @@ export function generateDBActivityPayload(
     },
     media: undefined,
     created_by: undefined,
-    user_role: undefined,
     sync_status: ActivitySyncStatus.NOT_SAVED,
     form_status: ActivityStatus.DRAFT,
     review_status: 'Not Reviewed',
