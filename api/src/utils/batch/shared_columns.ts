@@ -699,7 +699,7 @@ export const HerbicidesInformation = [
   )
     .valueRange(0, 100)
     .build(),
-//  new TemplateColumnBuilder( 'Herbicide - 1 - Area Treated', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
+  new TemplateColumnBuilder('Herbicide - 1 - Area Treated (Dilution)', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
 
@@ -714,7 +714,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
- // new TemplateColumnBuilder('Herbicide - 2 - Area Treated', 'numeric').valueRange(0, null).isRequired().build(),
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).isRequired().build(),
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',
