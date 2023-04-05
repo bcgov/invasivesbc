@@ -91,7 +91,7 @@ export const Activity = {
     access_description: {
       type: 'string',
       title: 'Access Description',
-      maxLength: 300,
+      maxLength: 2000,
       minLength: 5,
       default: '',
       'x-tooltip-text': 'Text entry to provide access directions.'

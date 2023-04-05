@@ -15,7 +15,7 @@ const ReferenceIAPPSitePage: React.FC = (props) => {
             <Typography variant="h4">Current IAPP Site </Typography>
           </Box>
           <Typography m={3}>
-            There is no current IAPP Site selected. When you select and IAPP record, it will become your current IAPP
+            There is no current IAPP Site selected. When you select an IAPP record, it will become your current IAPP
             site and show up in this tab.
           </Typography>
         </>
