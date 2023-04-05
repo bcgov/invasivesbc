@@ -120,7 +120,7 @@ function execBatch(): RequestHandler {
         });
       }
 
-      const validationResult = BatchValidationService.validateBatchAgainstTemplate(
+      const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
         req.authContext.user
