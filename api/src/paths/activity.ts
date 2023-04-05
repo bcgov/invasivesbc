@@ -271,14 +271,13 @@ function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
-    const data = { ...req.body, media_keys: req['media_keys'] };
+    const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
     sanitizedActivityData.created_by = req.authContext?.friendlyUsername;
     sanitizedActivityData.created_by_with_guid = req.authContext?.preferredUsername;
     sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
     sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
-    sanitizedActivityData.roles = req.authContext.roles;
 
     const connection = await getDBConnection();
 

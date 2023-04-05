@@ -98,7 +98,6 @@ const filterContainerClassname = `
 
 export const getSearchCriteriaFromFilters = (
   advancedFilterRows: any,
-  rolesUserHasAccessTo: any,
   recordSets: any,
   setName: string,
   isIAPP: boolean,
@@ -111,9 +110,7 @@ export const getSearchCriteriaFromFilters = (
   const form_status_filter = advancedFilterRows?.filter((x) => x.filterField === 'record_status');
   const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
   const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
-  let filter: any = {
-    user_roles: rolesUserHasAccessTo
-  };
+  let filter: any = {};
   if (created_by) {
     filter.created_by = [created_by];
   }

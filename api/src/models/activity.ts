@@ -45,8 +45,6 @@ export class ActivityPostRequestBody {
 
   jurisdiction: string[];
 
-  roles: string[];
-
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
@@ -68,7 +66,8 @@ export class ActivityPostRequestBody {
             delete item.encoded_file;
             return item;
           })) ||
-        []
+        [],
+      user_role: obj?.user_role?.role_id || null
     };
 
     this.activity_id = (obj && obj.activity_id) || null;
@@ -100,8 +99,6 @@ export class ActivityPostRequestBody {
     this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
-
-    this.roles = obj?.roles || [];
   }
 }
 
@@ -131,7 +128,7 @@ export class ActivitySearchCriteria {
   search_feature: GeoJSON.FeatureCollection;
   search_feature_server_id: number;
 
-  user_roles: string[];
+  user_role?: string[];
 
   column_names: string[];
 
@@ -180,8 +177,8 @@ export class ActivitySearchCriteria {
 
     this.search_feature = (obj && obj.search_feature) || null;
     this.search_feature_server_id = (obj && obj.search_feature_server_id) || null;
-    
-    this.user_roles = (obj && obj.user_roles) || [];
+
+    this.user_role = (obj && obj?.user_role) || [];
 
     this.column_names = (obj && obj.column_names) || [];
 
