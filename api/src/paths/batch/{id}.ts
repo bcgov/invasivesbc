@@ -136,7 +136,7 @@ function getBatch(): RequestHandler {
         });
       }
 
-      const validationResult = BatchValidationService.validateBatchAgainstTemplate(
+      const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
         req.authContext.user
@@ -269,7 +269,7 @@ function updateBatch(): RequestHandler {
         });
       }
 
-      const validationResult = BatchValidationService.validateBatchAgainstTemplate(
+      const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
         req.authContext.user

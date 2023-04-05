@@ -1,11 +1,11 @@
 import { Template, TemplateColumn } from './definitions';
-import { validateAsWKT } from './spatial-validation';
-import _ from 'lodash';
+import { checkWKTInBounds, validateAsWKT } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import turfflatten from '@turf/flatten';
 import { _mapToDBObject } from './execution';
-const { parse } = require('wkt');
+
+import { parse } from 'wkt';
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -89,22 +89,17 @@ function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingRe
   const messages = [];
 
   template.columns.forEach((col) => {
-    try
-    {
+    try {
+      let mappedPath = col?.mappedPath;
 
-    let mappedPath = col?.mappedPath;
-
-    if (mappedPath === null) {
-      mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
-      messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
-    }
-    }
-    catch(e)
-    {
+      if (mappedPath === null) {
+        mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
+        messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
+      }
+    } catch (e) {
       messages.push(`error mapping field ${col.name} .  ${e}`);
     }
   });
-
 
   const mappedObject = _mapToDBObject(row, 'Submitted', template.type, template.subtype, userInfo);
 
@@ -114,7 +109,7 @@ function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingRe
   };
 }
 
-function _validateCell(templateColumn: TemplateColumn, data: string): CellValidationResult {
+async function _validateCell(templateColumn: TemplateColumn, data: string): Promise<CellValidationResult> {
   const result = {
     validationMessages: [],
     parsedValue: null
@@ -201,35 +196,33 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
         });
       }
       break;
-    case 'date':
-      {
-        const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
-        if (!parsedDate.isValid()) {
-          result.validationMessages.push({
-            severity: 'error',
-            messageTitle: `Date not parseable`,
-            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_ONLY_FORMAT}`
-          });
-        } else {
-          // convert to storage format (which happens to be the same, in this case)
-          result.parsedValue = parsedDate.format('YYYY-MM-DD');
-        }
+    case 'date': {
+      const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
+      if (!parsedDate.isValid()) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Date not parseable`,
+          messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_ONLY_FORMAT}`
+        });
+      } else {
+        // convert to storage format (which happens to be the same, in this case)
+        result.parsedValue = parsedDate.format('YYYY-MM-DD');
       }
+    }
       break;
-    case 'datetime':
-      {
-        const parsedDate = moment(data as string, DATE_TIME_FORMAT);
-        if (!parsedDate.isValid()) {
-          result.validationMessages.push({
-            severity: 'error',
-            messageTitle: `Datetime not parseable`,
-            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_TIME_FORMAT}`
-          });
-        } else {
-          // convert to storage format -- ISO 8601
-          result.parsedValue = parsedDate.format();
-        }
+    case 'datetime': {
+      const parsedDate = moment(data as string, DATE_TIME_FORMAT);
+      if (!parsedDate.isValid()) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Datetime not parseable`,
+          messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_TIME_FORMAT}`
+        });
+      } else {
+        // convert to storage format -- ISO 8601
+        result.parsedValue = parsedDate.format();
       }
+    }
       break;
     case 'text':
       result.parsedValue = data?.trim() || '';
@@ -266,6 +259,22 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
           //          messageDetail: data
         });
       }
+      try {
+        const inBounds = await checkWKTInBounds(data);
+        if (!inBounds) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Is not wholly within the bounds of the Province of British Columbia'
+            //          messageDetail: data
+          });
+        }
+      } catch (e) {
+        result.validationMessages.push({
+          severity: 'informational',
+          messageTitle: 'A problem occurred when checking bounds, geometry validity is uncertain',
+          messageDetail: e
+        });
+      }
       //@todo validate geometry
       break;
     case 'tristate':
@@ -298,7 +307,7 @@ function _validateCell(templateColumn: TemplateColumn, data: string): CellValida
 }
 
 export const BatchValidationService = {
-  validateBatchAgainstTemplate: (template: Template, batch, reqUser: any): BatchValidationResult => {
+  validateBatchAgainstTemplate: async (template: Template, batch, reqUser: any): Promise<BatchValidationResult> => {
     const result = new BatchValidationResult();
     let totalErrorCount = 0;
     const globalValidationMessages = [];
@@ -335,11 +344,10 @@ export const BatchValidationService = {
       default: (val) => val
     };
 
-
-
-    batchDataCopy.rows.forEach((row, rowIndex) => {
-      batchDataCopy.headers.forEach((header, colIndex) => {
-        const field = header;
+    for (let rowIndex = 0; rowIndex < batchDataCopy.rows.length; rowIndex++) {
+      const row = batchDataCopy.rows[rowIndex];
+      for (let colIndex = 0; colIndex < batchDataCopy.headers.length; colIndex++) {
+        const field = batchDataCopy.headers[colIndex];
         const templateColumn = template.columns.find((t) => t.name === field);
 
         try {
@@ -351,7 +359,7 @@ export const BatchValidationService = {
             inputValue: updatedVal,
             templateColumn,
             spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
-            ..._validateCell(templateColumn, row.data[field])
+            ...(await _validateCell(templateColumn, row.data[field]))
           };
         } catch (e) {
           console.log(JSON.stringify(templateColumn));
@@ -360,7 +368,7 @@ export const BatchValidationService = {
         }
 
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
-      });
+      }
 
       const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);
       row.mappedObject = mappedObject;
@@ -379,9 +387,7 @@ export const BatchValidationService = {
       }
 
       row.rowValidationResult = rowValidationResults;
-    });
-
-
+    }
 
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;
