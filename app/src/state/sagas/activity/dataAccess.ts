@@ -168,7 +168,6 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
       action.payload.type,
       action.payload.subType,
       authState.username,
-      authState.accessRoles,
       authState.displayName,
       authState.extendedInfo.pac_number
     );

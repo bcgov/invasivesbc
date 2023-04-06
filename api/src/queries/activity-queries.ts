@@ -370,15 +370,27 @@ export const getActivitiesSQL = (
     sqlStatement.append(SQL`)`);
   }
 
-
-  /*
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
-    const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
+    // const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
+    // sqlStatement.append(
+    //   SQL` AND ${searchCriteria.user_roles} && ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
+    // );
     sqlStatement.append(
-      SQL` AND ${roles} && ARRAY(select jsonb_array_elements_text(activity_payload->'user_role'))::int[]`
+      SQL` AND
+      (
+        SELECT max(x) AS max_role_id FROM (
+          SELECT UNNEST (
+            ARRAY (
+              SELECT jsonb_array_elements_text(activity_payload->'user_role'))::int[]) AS x, 
+                activity_incoming_data_id 
+              FROM activity_incoming_data
+          ) AS max_role 
+          WHERE a.activity_incoming_data_id = max_role.activity_incoming_data_id 
+          GROUP BY activity_incoming_data_id
+        ) = ANY( ${searchCriteria.user_roles} )
+      `
     );
   }
-  */
 
   // subtype and subtype full are a bit mismatched in places, this will search both:
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {

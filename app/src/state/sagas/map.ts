@@ -83,7 +83,6 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   sets[action.payload.updatedSetName] = { ...action.payload.updatedSet };
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.updatedSet.advancedFilterRows,
-    authState.accessRoles,
     sets,
     action.payload.updatedSetName,
     action.payload.updatedSet.recordSetType === 'POI' ? true : false,
@@ -229,7 +228,6 @@ function* handle_MAP_INIT_REQUEST(action) {
   const filterCriteria = yield getSearchCriteriaFromFilters(
     [],
     //    action.payload.recordSets[2].advancedFilterRows,
-    authState.accessRoles,
     sets,
     '2',
     false,
@@ -242,7 +240,6 @@ function* handle_MAP_INIT_REQUEST(action) {
   const IAPP_filter = yield getSearchCriteriaFromFilters(
     [],
     //action.payload.recordSets[3].advancedFilterRows,
-    authState.accessRoles,
     sets,
     '3',
     true,
@@ -374,7 +371,6 @@ function* handle_FILTER_STATE_UPDATE(action) {
     if (action.payload[x].type === 'POI') {
       const IAPP_filter = getSearchCriteriaFromFilters(
         action.payload?.[x]?.filters?.advancedFilters,
-        authState.accessRoles,
         recordSets,
         x,
         true,
@@ -392,7 +388,6 @@ function* handle_FILTER_STATE_UPDATE(action) {
     } else {
       const activityFilter = getSearchCriteriaFromFilters(
         action.payload?.[x]?.filters?.advancedFilters,
-        authState.accessRoles,
         recordSets,
         x,
         false,
@@ -425,7 +420,6 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
 
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
-    authState.accessRoles,
     recordSetsState.recordSets,
     recordSetID,
     false,
@@ -456,7 +450,6 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
 
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
-    authState.accessRoles,
     recordSetsState.recordSets,
     recordSetID,
     true,
@@ -480,7 +473,6 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
 
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
-    authState.accessRoles,
     recordSetsState.recordSets,
     recordSetID,
     type === 'POI' ? true : false,
@@ -788,7 +780,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     if (set.recordSetType === 'POI') {
       let filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
-        authState?.accessRoles,
         userSettings?.recordSets ? userSettings?.recordSets : null,
         action.payload.id,
         true,
@@ -817,7 +808,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,
-        authState.accessRoles,
         userSettings?.recordSets,
         action.payload.id,
         false,

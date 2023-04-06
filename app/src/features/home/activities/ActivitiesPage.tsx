@@ -301,7 +301,6 @@ const PageContainer = (props) => {
             for (const selectedSet of selectedRecordSets) {
               const filter = await getSearchCriteriaFromFilters(
                 selectedSet.advancedFilters,
-                accessRoles,
                 userSettings.recordSets,
                 selectedSet.recordSetName,
                 false,

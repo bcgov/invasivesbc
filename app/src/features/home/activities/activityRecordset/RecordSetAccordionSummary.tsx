@@ -98,7 +98,6 @@ const RecordSetAccordionSummary = (props) => {
     const recordSets = [];
     const filter = await getSearchCriteriaFromFilters(
       userSettings.recordSets[props.setName].advancedFilters,
-      accessRoles,
       userSettings.recordSets,
       props.recordSetName,
       false,
