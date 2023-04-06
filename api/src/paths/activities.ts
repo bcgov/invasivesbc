@@ -149,10 +149,12 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-    const isAuth = req.authContext?.user !== null ? true:  false;
-
-
-
+    const isAuth = req.authContext?.user !== null ? true : false;
+    const user_role = (req as any).authContext?.roles?.[0]?.role_id;
+    if (user_role) {
+      const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
+      sanitizedSearchCriteria.user_roles = user_roles;
+    }
 
     if (!isAuth || !roleName || roleName.includes('animal')) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
