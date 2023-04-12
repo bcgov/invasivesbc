@@ -25,6 +25,10 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['fieldTwo'] = (value) => {
         return value + 'banana';
       };
+      fieldFormatMap['site_created_date'] = (value) => {
+        const date = format(value, 'yyyy-MM-dd HH:mm:ss');
+        return date;
+      };
       break;
     case 'terrestrial_plant_observation':
       fieldFormatMap['fieldOne'] = (value) => {
