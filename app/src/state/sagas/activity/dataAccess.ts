@@ -6,7 +6,7 @@ import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
-  ActivityType,
+  ActivityType, MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
 import {
@@ -47,7 +47,6 @@ import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
-import { MAX_AREA } from 'rjsf/business-rules/customValidation';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 
 

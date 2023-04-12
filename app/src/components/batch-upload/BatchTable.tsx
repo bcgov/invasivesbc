@@ -3,13 +3,16 @@ import '../../styles/batch.scss';
 import {CopyToClipboardButton} from './ClipboardHelper';
 
 
-export const AbbreviatedDisplayWithCopy = (props: { displayVal: string, content?: string, length?: number,  }) => {
-  return (
-    <>
-      {props.displayVal.substring(0, props.length? props.length: 12) + '...'}
-      <CopyToClipboardButton content={props.content? props.content: props.displayVal} /> 
-    </>
-  );
+export const AbbreviatedDisplayWithCopy = (props: { displayVal: string, content?: string, length?: number, }) => {
+  if (typeof props.displayVal == 'string') {
+    return (
+      <>
+        {props.displayVal.substring(0, props.length ? props.length : 12) + '...'}
+        <CopyToClipboardButton content={props.content ? props.content : props.displayVal}/>
+      </>
+    )
+  }
+  return null;
 };
 
 const BatchTableCell = ({field, row}) => {
@@ -39,7 +42,7 @@ const BatchTableCell = ({field, row}) => {
         }
         break;
       case 'WKT':
-        setDisplayedValue(v);
+        setDisplayedValue(`Geometry, ${v.area?.toPrecision(4).toLocaleString()}m²`);
         break;
       default:
         setDisplayedValue(v);
@@ -93,7 +96,6 @@ const BatchTableCell = ({field, row}) => {
   };
 
 
-
   return (
     <td className={displaySeverity}>
       <span
@@ -103,7 +105,7 @@ const BatchTableCell = ({field, row}) => {
             : ''
         }`}>
         {row.data[field].templateColumn?.dataType === 'WKT' ? (
-          <AbbreviatedDisplayWithCopy displayVal={displayedValue} content={row.data[field].parsedValue}/>
+          <AbbreviatedDisplayWithCopy length={25} displayVal={displayedValue} content={row.data[field].parsedValue?.data || ''}/>
         ) : (
           displayedValue
         )}
@@ -157,7 +159,7 @@ const BatchTable = ({jsonRepresentation}) => {
           <td>Mapped Object</td>
           {jsonRepresentation?.rows?.map((row) => (
             <td key={row.rowIndex}>
-              <pre><AbbreviatedDisplayWithCopy displayVal={JSON.stringify(row.mappedObject, null, 2)} /></pre>
+              <pre><AbbreviatedDisplayWithCopy displayVal={JSON.stringify(row.mappedObject, null, 2)}/></pre>
             </td>
           ))}
         </tr>

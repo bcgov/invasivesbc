@@ -1,10 +1,10 @@
 import { Template, TemplateColumn } from './definitions';
-import { checkWKTInBounds, validateAsWKT } from './spatial-validation';
+import { checkWKTInBounds, computeWKTArea, validateAsWKT } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import turfflatten from '@turf/flatten';
 import { _mapToDBObject } from './execution';
-
+import { lookupAreaLimit } from 'sharedAPI';
 import { parse } from 'wkt';
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
@@ -109,7 +109,11 @@ function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingRe
   };
 }
 
-async function _validateCell(templateColumn: TemplateColumn, data: string): Promise<CellValidationResult> {
+async function _validateCell(
+  template: Template,
+  templateColumn: TemplateColumn,
+  data: string
+): Promise<CellValidationResult> {
   const result = {
     validationMessages: [],
     parsedValue: null
@@ -196,33 +200,35 @@ async function _validateCell(templateColumn: TemplateColumn, data: string): Prom
         });
       }
       break;
-    case 'date': {
-      const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
-      if (!parsedDate.isValid()) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: `Date not parseable`,
-          messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_ONLY_FORMAT}`
-        });
-      } else {
-        // convert to storage format (which happens to be the same, in this case)
-        result.parsedValue = parsedDate.format('YYYY-MM-DD');
+    case 'date':
+      {
+        const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
+        if (!parsedDate.isValid()) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Date not parseable`,
+            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_ONLY_FORMAT}`
+          });
+        } else {
+          // convert to storage format (which happens to be the same, in this case)
+          result.parsedValue = parsedDate.format('YYYY-MM-DD');
+        }
       }
-    }
       break;
-    case 'datetime': {
-      const parsedDate = moment(data as string, DATE_TIME_FORMAT);
-      if (!parsedDate.isValid()) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: `Datetime not parseable`,
-          messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_TIME_FORMAT}`
-        });
-      } else {
-        // convert to storage format -- ISO 8601
-        result.parsedValue = parsedDate.format();
+    case 'datetime':
+      {
+        const parsedDate = moment(data as string, DATE_TIME_FORMAT);
+        if (!parsedDate.isValid()) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Datetime not parseable`,
+            messageDetail: `Value could not be parsed as an ISO 8601 Date ${DATE_TIME_FORMAT}`
+          });
+        } else {
+          // convert to storage format -- ISO 8601
+          result.parsedValue = parsedDate.format();
+        }
       }
-    }
       break;
     case 'text':
       result.parsedValue = data?.trim() || '';
@@ -251,7 +257,18 @@ async function _validateCell(templateColumn: TemplateColumn, data: string): Prom
       break;
     case 'WKT':
       if (validateAsWKT(data)) {
-        result.parsedValue = data;
+        try {
+          result.parsedValue = {
+            data,
+            area: await computeWKTArea(data)
+          };
+        } catch (e) {
+          result.validationMessages.push({
+            severity: 'informational',
+            messageTitle: 'A problem occurred when checking area, geometry validity is uncertain',
+            messageDetail: e
+          });
+        }
       } else {
         result.validationMessages.push({
           severity: 'error',
@@ -265,7 +282,6 @@ async function _validateCell(templateColumn: TemplateColumn, data: string): Prom
           result.validationMessages.push({
             severity: 'error',
             messageTitle: 'Is not wholly within the bounds of the Province of British Columbia'
-            //          messageDetail: data
           });
         }
       } catch (e) {
@@ -275,6 +291,14 @@ async function _validateCell(templateColumn: TemplateColumn, data: string): Prom
           messageDetail: e
         });
       }
+
+      if (result.parsedValue.area > lookupAreaLimit(template.subtype)) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Area cannot be larger than ${lookupAreaLimit(template.subtype)}`
+        });
+      }
+
       //@todo validate geometry
       break;
     case 'tristate':
@@ -324,26 +348,6 @@ export const BatchValidationService = {
       ...extraColumns.map((c) => `The extraneous column [${c}] in your submission will be ignored`)
     );
 
-    const typeMapper = {
-      numeric: (val) => Number.parseFloat(val),
-      tristate: (val) => {
-        if (val.toLowerCase() === 'true') {
-          return 'Yes';
-        } else if (val.toLowerCase() === 'false') {
-          return 'No';
-        } else {
-          return 'Unknown';
-        }
-      },
-      WKT: (val) => {
-        const geojson: any = parse(val);
-
-        const flattenedMulti = turfflatten(geojson);
-        return [flattenedMulti?.features?.[0]];
-      },
-      default: (val) => val
-    };
-
     for (let rowIndex = 0; rowIndex < batchDataCopy.rows.length; rowIndex++) {
       const row = batchDataCopy.rows[rowIndex];
       for (let colIndex = 0; colIndex < batchDataCopy.headers.length; colIndex++) {
@@ -351,15 +355,11 @@ export const BatchValidationService = {
         const templateColumn = template.columns.find((t) => t.name === field);
 
         try {
-          const updatedVal =
-            templateColumn && templateColumn['dataType'] && Object.keys(typeMapper).includes(templateColumn['dataType'])
-              ? typeMapper[templateColumn['dataType']](row.data[field])
-              : row.data[field];
           row.data[field] = {
-            inputValue: updatedVal,
+            inputValue: row.data[field],
             templateColumn,
             spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
-            ...(await _validateCell(templateColumn, row.data[field]))
+            ...(await _validateCell(template, templateColumn, row.data[field]))
           };
         } catch (e) {
           console.log(JSON.stringify(templateColumn));
