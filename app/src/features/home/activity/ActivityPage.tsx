@@ -1,57 +1,34 @@
-import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import {Alert, Box, Container, Snackbar, Theme, Typography} from '@mui/material';
+import {makeStyles} from '@mui/styles';
 import booleanWithin from '@turf/boolean-within';
-import { Feature } from 'geojson';
-import React, { useEffect, useMemo, useState } from 'react';
+import {Feature} from 'geojson';
+import React, {useEffect, useMemo, useState} from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
-import { GeneralDialog, IGeneralDialog } from '../../../components/dialog/GeneralDialog';
+import {GeneralDialog, IGeneralDialog} from '../../../components/dialog/GeneralDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
-import { IPhoto } from '../../../components/photo/PhotoContainer';
-import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
-import {
-  getAreaValidator,
-  getCustomValidator,
-  getDateAndTimeValidator,
-  getDateAndTimeValidatorOther,
-  getInvasivePlantsValidator,
-  getJurisdictionPercentValidator,
-  getPestManagementPlanValidator,
-  getPlotIdentificatiomTreesValidator,
-  getPosAndNegObservationValidator,
-  getShorelineTypesPercentValidator,
-  getSlopeAspectBothFlatValidator,
-  getTargetPhenologySumValidator,
-  getTerrestrialAquaticPlantsValidator,
-  getTransectOffsetDistanceValidator,
-  getTreatedAreaValidator,
-  getVegTransectPointsPercentCoverValidator,
-  getWindValidator,
-  getWindValidatorBiocontrol,
-  MAX_AREA,
-  transferErrorsFromChemDetails
-} from '../../../rjsf/business-rules/customValidation';
-import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
+import {IPhoto} from '../../../components/photo/PhotoContainer';
+import {getCustomErrorTransformer} from '../../../rjsf/business-rules/customErrorTransformer';
+import {validatorForActivity} from '../../../rjsf/business-rules/customValidation';
 import './scrollbar.css';
-import { useHistory } from 'react-router';
+import {useHistory} from 'react-router';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
-import { useSelector } from '../../../state/utilities/use_selector';
-import { selectAuth } from '../../../state/reducers/auth';
-import { selectActivity } from '../../../state/reducers/activity';
-import { selectNetworkConnected } from '../../../state/reducers/network';
-import { selectConfiguration } from '../../../state/reducers/configuration';
-import { useDispatch } from 'react-redux';
+import {useSelector} from '../../../state/utilities/use_selector';
+import {selectAuth} from '../../../state/reducers/auth';
+import {selectActivity} from '../../../state/reducers/activity';
+import {selectNetworkConnected} from '../../../state/reducers/network';
+import {selectConfiguration} from '../../../state/reducers/configuration';
+import {useDispatch} from 'react-redux';
 import {
   ACTIVITY_COPY_REQUEST,
-  ACTIVITY_COPY_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST
 } from 'state/actions';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { ActivityStatus, ActivitySubtype } from 'sharedAPI';
-import { selectMap } from 'state/reducers/map';
+import {selectUserSettings} from 'state/reducers/userSettings';
+import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
+import {selectMap} from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -518,28 +495,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       {activityInStore.activity && (
         <>
           <ActivityComponent
-            customValidation={getCustomValidator([
-              getAreaValidator(activityInStore.activity.activity_subtype),
-              getDateAndTimeValidator(activityInStore.activity.activity_subtype),
-              getDateAndTimeValidatorOther(activityInStore.activity.activity_subtype),
-              getWindValidator(activityInStore.activity.activity_subtype),
-              getWindValidatorBiocontrol(activityInStore.activity.activity_subtype),
-              getSlopeAspectBothFlatValidator(),
-              //getTemperatureValidator(activityInStore.activity.activity_subtype),
-              getPosAndNegObservationValidator(),
-              getTreatedAreaValidator(),
-              getTargetPhenologySumValidator(),
-              getTerrestrialAquaticPlantsValidator(),
-              getShorelineTypesPercentValidator(),
-              getPestManagementPlanValidator(),
-              //getWeatherCondTemperatureValidator(),
-              transferErrorsFromChemDetails(),
-              getTransectOffsetDistanceValidator(),
-              getVegTransectPointsPercentCoverValidator(),
-              getJurisdictionPercentValidator(),
-              getInvasivePlantsValidator(linkedActivity),
-              getPlotIdentificatiomTreesValidator(activityInStore.activity.activity_subtype)
-            ])}
+            customValidation={validatorForActivity(activityInStore.activity, linkedActivity)}
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
             activity={activityInStore.activity}

@@ -1,5 +1,5 @@
 import { HerbicideApplicationRates } from './herbicideApplicationRates';
-import { IGeneralFields } from '../src/herbicideCalculator';
+import { IGeneralFields } from './herbicideCalculator';
 
 export const runValidation = (
   area: number,

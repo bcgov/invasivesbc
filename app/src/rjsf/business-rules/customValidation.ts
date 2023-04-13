@@ -1,10 +1,10 @@
-import { FormValidation } from '@rjsf/utils';
-import { ActivitySubtype } from 'sharedAPI';
+import {FormValidation} from '@rjsf/utils';
+import {ActivitySubtype, lookupAreaLimit, MAX_TEMP, MIN_TEMP} from 'sharedAPI';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
 // keep track of all business rules for custom form validation logic
-export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
+function combineValidators(validators: rjsfValidator[]): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     for (const validator of validators) {
       errors = validator(formData, errors);
@@ -13,6 +13,32 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
     return errors;
   };
 }
+
+export function validatorForActivity(activity, linkedActivity): rjsfValidator {
+  return combineValidators([
+    getAreaValidator(activity.activity_subtype),
+    getDateAndTimeValidator(activity.activity_subtype),
+    getDateAndTimeValidatorOther(activity.activity_subtype),
+    getWindValidator(activity.activity_subtype),
+    getWindValidatorBiocontrol(activity.activity_subtype),
+    getSlopeAspectBothFlatValidator(),
+    getPosAndNegObservationValidator(),
+    getTreatedAreaValidator(),
+    getTargetPhenologySumValidator(),
+    getTerrestrialAquaticPlantsValidator(),
+    getShorelineTypesPercentValidator(),
+    getPestManagementPlanValidator(),
+    transferErrorsFromChemDetails(),
+    getTransectOffsetDistanceValidator(),
+    getVegTransectPointsPercentCoverValidator(),
+    getJurisdictionPercentValidator(),
+    getInvasivePlantsValidator(linkedActivity),
+    getPlotIdentificationTreesValidator(activity.activity_subtype)
+  ]);
+}
+
+
+
 /*
   Function to validate that:
   users should not be able to create both a positive and negative observation of the same species
@@ -43,6 +69,7 @@ export function getPosAndNegObservationValidator(): rjsfValidator {
     return errors;
   };
 }
+
 /*
   Function to validate that in case 'slope' field has 'flat' option
   selected, 'aspect' field option has to be 'flat' as well (and vice versa)
@@ -58,7 +85,7 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
     ) {
       return errors;
     }
-    const { slope_code, aspect_code } = formData.activity_subtype_data.Observation_PlantTerrestrial_Information;
+    const {slope_code, aspect_code} = formData.activity_subtype_data.Observation_PlantTerrestrial_Information;
     if (
       (slope_code.includes('FL') && !aspect_code.includes('FL')) ||
       (!slope_code.includes('FL') && aspect_code.includes('FL'))
@@ -73,6 +100,7 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
     return errors;
   };
 }
+
 /*
   Function to validate total percent value of vegetation transect points percent cover
 */
@@ -81,7 +109,7 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
     if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.VegetationTransectLines) {
       return errors;
     }
-    const { VegetationTransectLines } = formData.activity_subtype_data;
+    const {VegetationTransectLines} = formData.activity_subtype_data;
     let vegTransectLineIndex = 0;
     VegetationTransectLines.forEach((vegTransectLine: any) => {
       let vegTransectPointIndex = 0;
@@ -115,7 +143,7 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
           if (totalPercent !== 100) {
             errors.activity_subtype_data['VegetationTransectLines'][vegTransectLineIndex][
               'vegetation_transect_points_percent_cover'
-            ][vegTransectPointIndex].addError('The total percentage must be equal to 100');
+              ][vegTransectPointIndex].addError('The total percentage must be equal to 100');
           }
           vegTransectPointIndex++;
         });
@@ -140,7 +168,7 @@ export function getShorelineTypesPercentValidator(): rjsfValidator {
       return errors;
     }
 
-    const { ShorelineTypes } = formData.activity_subtype_data;
+    const {ShorelineTypes} = formData.activity_subtype_data;
 
     let totalPercent = 0;
 
@@ -167,7 +195,7 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
     if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
       return errors;
     }
-    const { jurisdictions } = formData.activity_data;
+    const {jurisdictions} = formData.activity_data;
     let totalPercent = 0;
 
     jurisdictions.forEach((jurisdiction: any) => {
@@ -316,7 +344,7 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         ) {
           errors['activity_subtype_data']['TerrestrialPlants'][0]['voucher_specimen_collection_information'][
             'date_voucher_collected'
-          ].addError(`Date and time cannot be later than your current date and time`);
+            ].addError(`Date and time cannot be later than your current date and time`);
         }
 
         if (
@@ -327,7 +355,7 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         ) {
           errors['activity_subtype_data']['TerrestrialPlants'][0]['voucher_specimen_collection_information'][
             'date_voucher_verified'
-          ].addError(`Date and time cannot be later than your current date and time`);
+            ].addError(`Date and time cannot be later than your current date and time`);
         }
         break;
       case ActivitySubtype.Observation_PlantAquatic:
@@ -345,7 +373,7 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         ) {
           errors['activity_subtype_data']['AquaticPlants'][0]['voucher_specimen_collection_information'][
             'date_voucher_collected'
-          ].addError(`Date and time cannot be later than your current date and time`);
+            ].addError(`Date and time cannot be later than your current date and time`);
         }
 
         if (
@@ -354,7 +382,7 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         ) {
           errors['activity_subtype_data']['AquaticPlants'][0]['voucher_specimen_collection_information'][
             'date_voucher_verified'
-          ].addError(`Date and time cannot be later than your current date and time`);
+            ].addError(`Date and time cannot be later than your current date and time`);
         }
         break;
       default:
@@ -364,38 +392,13 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
   };
 }
 
-export const MAX_AREA = 500000;
-
 /*
   Function to validate that the net geo area selected does not exceed the limits
   specified by business area for various activity types
 */
 export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    let areaLimit = Number.POSITIVE_INFINITY;
-    const tenThousandAreaLimitSubtypes = [
-      'Activity_Treatment_MechanicalPlantTerrestrial',
-      'Activity_Treatment_MechanicalPlantAquatic',
-      'Activity_Observation_PlantTerrestrial',
-      'Activity_Treatment_ChemicalPlantTerrestrial',
-      'Activity_Treatment_ChemicalPlantAquatic',
-      'Activity_Observation_PlantAquatic',
-      'Activity_Biocontrol_Release',
-      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
-      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-      'Activity_AnimalActivity_AnimalTerrestrial',
-      'Activity_AnimalActivity_AnimalAquatic',
-      'Activity_Transect_FireMonitoring',
-      'Activity_Transect_Vegetation',
-      'Activity_Transect_BiocontrolEfficacy',
-      'Activity_Biocontrol_Collection'
-    ];
-
-    if (tenThousandAreaLimitSubtypes.includes(activitySubtype)) {
-      areaLimit = MAX_AREA;
-    }
+    const areaLimit = lookupAreaLimit(activitySubtype);
 
     // validate reported area limit
     if (errors.activity_data['reported_area']) {
@@ -420,51 +423,17 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     // validate temperature
 
     errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['temperature'].__errors = [];
-    const { temperature } = formData.activity_subtype_data['Treatment_ChemicalPlant_Information'];
+    const {temperature} = formData.activity_subtype_data['Treatment_ChemicalPlant_Information'];
 
-    //if themperature is out of normal range, display an error
-    if (temperature < 10 || temperature > 28) {
+    //if temperature is out of normal range, display an error
+    if (temperature < MIN_TEMP || temperature > MAX_TEMP) {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['temperature'].addError(
-        'Temperature should ideally be between 10 and 28 degrees'
+        `Temperature should ideally be between ${MIN_TEMP} and ${MAX_TEMP} degrees`
       );
     }
-    //if user clicked proceed in the warning dialog, remove the erro
+    //if user clicked proceed in the warning dialog, remove the error
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['temperature'].__errors.pop();
-      return errors;
-    }
-    return errors;
-  };
-}
-
-/*
-  Function to validate temperature in weather conditions object
-*/
-export function getWeatherCondTemperatureValidator(): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.Weather_Conditions ||
-      !formData.activity_subtype_data.Weather_Conditions.temperature
-    ) {
-      return errors;
-    }
-
-    // validate temperature
-
-    errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors = [];
-    const { temperature } = formData.activity_subtype_data['Weather_Conditions'];
-
-    //if themperature is out of normal range, display an error
-    if (temperature < 10 || temperature > 28) {
-      errors.activity_subtype_data['Weather_Conditions']['temperature'].addError(
-        'Temperature should ideally be between 10 and 28 degrees'
-      );
-    }
-    //if user clicked proceed in the warning dialog, remove the erro
-    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
-      errors.activity_subtype_data['Weather_Conditions']['temperature'].__errors.pop();
       return errors;
     }
     return errors;
@@ -489,7 +458,7 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
 
     // validate wind speed with wind direction
     errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['wind_direction_code'].__errors = [];
-    const { wind_speed, wind_direction_code } = formData.activity_subtype_data['Treatment_ChemicalPlant_Information'];
+    const {wind_speed, wind_direction_code} = formData.activity_subtype_data['Treatment_ChemicalPlant_Information'];
 
     if (wind_speed > 0 && wind_direction_code === 'No Wind') {
       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['wind_direction_code'].addError(
@@ -528,7 +497,7 @@ export function getWindValidatorBiocontrol(activitySubtype: string): rjsfValidat
 
     // validate wind speed with wind direction
     errors.activity_subtype_data['Weather_Conditions']['wind_direction_code'].__errors = [];
-    const { wind_speed, wind_direction_code } = formData.activity_subtype_data['Weather_Conditions'];
+    const {wind_speed, wind_direction_code} = formData.activity_subtype_data['Weather_Conditions'];
 
     if (wind_speed > 0 && wind_direction_code === 'No Wind') {
       errors.activity_subtype_data['Weather_Conditions']['wind_direction_code'].addError(
@@ -586,131 +555,6 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
       );
     }
 
-    return errors;
-  };
-}
-
-/*
-  Function to validate that the total percent value of all jurisdictions combined = 100
-*/
-export function getPersonNameNoNumbersValidator(users): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_data ||
-      !formData.activity_data.activity_persons ||
-      formData.activity_data.activity_persons.length < 1
-    ) {
-      return errors;
-    } else {
-      errors.activity_data['activity_persons'].__errors = [];
-      const persons = formData.activity_data.activity_persons;
-      for (let ind = 0; ind < formData.activity_data.activity_persons.length; ind++) {
-        if (persons[ind]?.person_name) {
-          let user = users.find(
-            (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
-          );
-          if (user === undefined) {
-            errors.activity_data['activity_persons'][ind]['person_name'].addError('User not found');
-          }
-          if (persons[ind].person_name.match(/\d+/g) != null) {
-            errors.activity_data['activity_persons'][ind]['person_name'].addError('User name cannot contain numbers');
-          }
-        }
-      }
-      if (formData.activity_subtype_data) {
-        if (formData.activity_subtype_data.applicator1_name) {
-          const persons = formData.activity_subtype_data.applicator1_name;
-          for (let ind = 0; ind < formData.activity_subtype_data.applicator1_name.length; ind++) {
-            if (persons[ind]?.person_name) {
-              let user = users.find(
-                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
-              );
-              if (user === undefined) {
-                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError('User not found');
-              }
-              if (persons[ind].person_name.match(/\d+/g) != null) {
-                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError(
-                  'User name cannot contain numbers'
-                );
-              }
-            }
-          }
-        }
-        if (formData.activity_subtype_data.applicator2_name) {
-          const persons = formData.activity_subtype_data.applicator2_name;
-          for (let ind = 0; ind < formData.activity_subtype_data.applicator2_name.length; ind++) {
-            if (persons[ind]?.person_name) {
-              let user = users.find(
-                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
-              );
-              if (user === undefined) {
-                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError('User not found');
-              }
-              if (persons[ind].person_name.match(/\d+/g) != null) {
-                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError(
-                  'User name cannot contain numbers'
-                );
-              }
-            }
-          }
-        }
-        if (
-          formData.activity_subtype_data.treatment_chemicalplant_information &&
-          formData.activity_subtype_data.treatment_chemicalplant_information.applicator1_name
-        ) {
-          const persons = formData.activity_subtype_data.treatment_chemicalplant_information.applicator1_name;
-          for (
-            let ind = 0;
-            ind < formData.activity_subtype_data.treatment_chemicalplant_information.applicator1_name.length;
-            ind++
-          ) {
-            if (persons[ind]?.person_name) {
-              let user = users.find(
-                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
-              );
-              if (user === undefined) {
-                errors.activity_subtype_data['treatment_chemicalplant_information']['applicator1_name'][ind][
-                  'person_name'
-                ].addError('User not found');
-              }
-              if (persons[ind].person_name.match(/\d+/g) != null) {
-                errors.activity_subtype_data['treatment_chemicalplant_information']['applicator1_name'][ind][
-                  'person_name'
-                ].addError('User name cannot contain numbers');
-              }
-            }
-          }
-        }
-        if (
-          formData.activity_subtype_data.treatment_chemicalplant_information &&
-          formData.activity_subtype_data.treatment_chemicalplant_information.applicator2_name
-        ) {
-          const persons = formData.activity_subtype_data.treatment_chemicalplant_information.applicator2_name;
-          for (
-            let ind = 0;
-            ind < formData.activity_subtype_data.treatment_chemicalplant_information.applicator2_name.length;
-            ind++
-          ) {
-            if (persons[ind]?.person_name) {
-              let user = users.find(
-                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
-              );
-              if (user === undefined) {
-                errors.activity_subtype_data['treatment_chemicalpl ant_information']['applicator2_name'][ind][
-                  'person_name'
-                ].addError('User not found');
-              }
-              if (persons[ind].person_name.match(/\d+/g) != null) {
-                errors.activity_subtype_data['treatment_chemicalplant_information']['applicator2_name'][ind][
-                  'person_name'
-                ].addError('User name cannot contain numbers');
-              }
-            }
-          }
-        }
-      }
-    }
     return errors;
   };
 }
@@ -798,7 +642,7 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
         let errorState =
           errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
             pointIndex
-          ];
+            ];
 
         errorState = determineErrorStateOnTransectPoint(
           isVegetationTransect,
@@ -820,7 +664,7 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
 /*
   function to validate frep form a BAF, fixed_area and full_count_area fields
  */
-export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rjsfValidator {
+export function getPlotIdentificationTreesValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_subtype_data) {
       return errors;
@@ -838,11 +682,11 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
               let form = formA.plot_identification_trees;
               errors.activity_subtype_data['form_b'][form_b_index].form_a[
                 form_a_index
-              ].plot_identification_trees.__errors = [];
+                ].plot_identification_trees.__errors = [];
               if (form.trees_exist === 'Yes' && !form.baf && !form.fixed_area && !form.full_count_area) {
                 errors.activity_subtype_data['form_b'][form_b_index].form_a[
                   form_a_index
-                ].plot_identification_trees.addError(
+                  ].plot_identification_trees.addError(
                   'Please fill out at least one of BAF, Fixed Area Radius (m) or Full Count Area (ha).'
                 );
               }
@@ -931,7 +775,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
         isChemical
           ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
           : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-      ].addError('Either Aquatic or Terrestrial plant has to be specified.');
+        ].addError('Either Aquatic or Terrestrial plant has to be specified.');
     }
 
     if (informationObject.invasive_plant_aquatic_code && informationObject.invasive_plant_code) {
@@ -939,7 +783,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
         isChemical
           ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
           : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-      ].addError("You can't specify both aquatic and terrestrial plants.");
+        ].addError("You can't specify both aquatic and terrestrial plants.");
     }
 
     return errors;
@@ -956,7 +800,7 @@ export function getPestManagementPlanValidator(): rjsfValidator {
       return errors;
     }
 
-    const { pest_management_plan, pmp_not_in_dropdown } =
+    const {pest_management_plan, pmp_not_in_dropdown} =
       formData.activity_subtype_data.Treatment_ChemicalPlant_Information;
 
     if (!pest_management_plan && !pmp_not_in_dropdown) {
@@ -999,7 +843,7 @@ export function transferErrorsFromChemDetails(): rjsfValidator {
 }
 
 /*
-  Function to validate that treated_area field is is not larger than the area field that autofills after you draw geometry
+  Function to validate that treated_area field is not larger than the area field that autofills after you draw geometry
 */
 export function getTreatedAreaValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
@@ -1017,7 +861,7 @@ export function getTreatedAreaValidator(): rjsfValidator {
     formData.activity_subtype_data.Treatment_MechanicalPlant_Information.forEach((invPlant, index) => {
       if (invPlant.treated_area && invPlant.treated_area > reported_area) {
         errors.activity_subtype_data['Treatment_MechanicalPlant_Information'][index]['treated_area'].addError(
-          "Can 't be bigger than reported area"
+          "Can't be bigger than reported area"
         );
       }
     });
@@ -1025,33 +869,3 @@ export function getTreatedAreaValidator(): rjsfValidator {
     return errors;
   };
 }
-
-/*
-  Function to validate NTZ reduction
-*/
-// export function getNtzReductionValidator(): rjsfValidator {
-//   return (formData: any, errors: FormValidation): FormValidation => {
-//     if (
-//       !formData.activity_subtype_data ||
-//       !formData.activity_subtype_data.Treatment_ChemicalPlant_Information ||
-//       formData.activity_subtype_data.Treatment_ChemicalPlant_Information.ntz_reduction === undefined
-//     ) {
-//       return errors;
-//     }
-
-//     const { ntz_reduction } = formData.activity_subtype_data.Treatment_ChemicalPlant_Information;
-
-//     if (ntz_reduction === true) {
-//       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['ntz_reduction'].addError(
-//         'Are you sure? Only the PMP or permit holder may approve an NTZ reduction on public lands'
-//       );
-//     }
-//     //if user clicked proceed in the warning dialog, remove the erro
-//     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('ntz_reduction')) {
-//       errors.activity_subtype_data['Treatment_ChemicalPlant_Information']['ntz_reduction'].__errors.pop();
-//       return errors;
-//     }
-
-//     return errors;
-//   };
-// }
