@@ -314,6 +314,10 @@ export const getActivitiesSQL = (
         }
       }
 
+      // include current species
+      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_positive, 
+      (SELECT string_agg(invasive_plant, ', ') FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS current_positive_species`);
+
       // include the total count of results that would be returned if the limit and offset constraints weren't applied
       sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
     }
