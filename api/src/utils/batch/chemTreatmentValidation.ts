@@ -65,10 +65,14 @@ export const ValidateTankMixHerbicides = (row) => {
   ];
 
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
-  const businessCodes = row?.mappededObject?.business_codes;
-  const herbicideDictionary = row?.mappededObject?.herbicide_dictionary;
-  const skipAppRateValidation = false;
 
+  //doesn't actually use it, but it's required
+  const businessCodes = {}
+
+  let herbicideDictionary = {}
+  row.data['Herbicide - 1 - Herbicide'].templateColumn.codes.map((codeObj) => herbicideDictionary[codeObj.code]= codeObj.description)
+
+  const skipAppRateValidation = false;
   const validationFunctionArgs = [formData, [], businessCodes, herbicideDictionary, skipAppRateValidation];
 
   return runLegacyValidation(validate_tank_mix_herbicides, validationFunctionArgs, appliesToFields, 'Tank Mix Herbicides Validation');
@@ -87,7 +91,7 @@ export const ValidateTankMixFields = (row) => {
     'Herbicide - 1 - Type',
     'Herbicide - 2 - Type'
   ];
-  const area = 2;
+  const area = row.mappedObject.form_data.activity_data.reported_area;
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [area, formData, []];
 
