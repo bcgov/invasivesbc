@@ -1,9 +1,13 @@
+import { format } from 'date-fns';
+
 export const mapSitesRowsToCSV = async (response: any, templateName: string) => {
   const headers = response.fields.map((fieldObj) => fieldObj.name).join(',') + '\n';
 
   // set up callbacks to format specific fields
   let fieldFormatMap = {};
-  const defaultFormatter = (value) => {return typeof value === 'string'? '"' + value + '"': value}; 
+  const defaultFormatter = (value) => {
+    return typeof value === 'string' ? '"' + value + '"' : value;
+  };
   switch (templateName) {
     default:
       fieldFormatMap['jurisdictions'] = (value) => {
@@ -24,6 +28,10 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       };
       fieldFormatMap['fieldTwo'] = (value) => {
         return value + 'banana';
+      };
+      fieldFormatMap['site_created_date'] = (value) => {
+        const date = format(value, 'yyyy-MM-dd HH:mm:ss');
+        return date;
       };
       break;
     case 'terrestrial_plant_observation':
