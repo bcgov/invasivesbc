@@ -1,9 +1,13 @@
+import { format } from 'date-fns';
+
 export const mapSitesRowsToCSV = async (response: any, templateName: string) => {
   const headers = response.fields.map((fieldObj) => fieldObj.name).join(',') + '\n';
 
   // set up callbacks to format specific fields
   let fieldFormatMap = {};
-  const defaultFormatter = (value) => {return typeof value === 'string'? '"' + value + '"': value}; 
+  const defaultFormatter = (value) => {
+    return typeof value === 'string' ? '"' + value + '"' : value;
+  };
   switch (templateName) {
     default:
       fieldFormatMap['jurisdictions'] = (value) => {
