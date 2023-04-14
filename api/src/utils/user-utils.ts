@@ -14,11 +14,16 @@ export enum KeycloakAccountType {
 }
 
 export async function createUser(keycloakToken: any, accountType, id): Promise<any> {
-  console.log('Keycloak token in user-utils: ', keycloakToken);
+  defaultLog.debug({
+    message: 'Keycloak token in user-utils',
+    params: {
+      keycloakToken
+    }
+  });
 
   const connection = await getDBConnection();
   if (!connection) {
-    console.log('No connection!');
+    defaultLog.error('No connection!');
     throw {
       code: 503,
       message: 'Failed to establish database connection',
@@ -32,7 +37,10 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
       keycloakToken.preferred_username,
       keycloakToken.email
     );
-    console.log('SQL statement to create user: ', sqlStatement);
+    defaultLog.debug({
+      message: 'SQL statement to create user',
+      sqlStatement
+    });
     if (!sqlStatement) {
       throw {
         code: 500,

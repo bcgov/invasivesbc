@@ -1,5 +1,5 @@
 import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from "../shared_columns";
+import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from "../shared-columns";
 
 const MonitoringMechanical = new Template(
   'monitoring_mechanical',

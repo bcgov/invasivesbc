@@ -4,7 +4,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
   const headers = response.fields.map((fieldObj) => fieldObj.name).join(',') + '\n';
 
   // set up callbacks to format specific fields
-  let fieldFormatMap = {};
+  const fieldFormatMap = {};
   const defaultFormatter = (value) => {
     return typeof value === 'string' ? '"' + value + '"' : value;
   };
@@ -22,6 +22,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['jurisdiction'] = (value) => {
         return '"' + value + '"';
       };
+      break;
     case 'site_selection_extract':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
@@ -38,20 +39,21 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
       };
+      break;
     case 'aquatic_plant_observation':
       fieldFormatMap['fieldOne'] = (value) => {
         return value;
       };
-    break;
+      break;
   }
-
 
   const rows = response.rows.map((row, i) => {
     return Object.keys(row)
       .map((fieldNameRaw: any) => {
-        const fieldName = fieldNameRaw.trim()
-        const formatter = typeof fieldFormatMap[fieldName] === 'function'? fieldFormatMap[fieldName]: defaultFormatter 
-        let unformatted =
+        const fieldName = fieldNameRaw.trim();
+        const formatter =
+          typeof fieldFormatMap[fieldName] === 'function' ? fieldFormatMap[fieldName] : defaultFormatter;
+        const unformatted =
           typeof row[fieldName] === 'string' ? row[fieldName].replace(/(\r\n|\n|\r)/gm, '') : row[fieldName];
         const formatted = formatter(unformatted);
         return formatted;

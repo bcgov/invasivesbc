@@ -5,10 +5,14 @@ import { GetObjectOutput, ManagedUpload, Metadata, DeleteObjectOutput } from 'aw
 import { v4 as uuidv4 } from 'uuid';
 import { S3ACLRole } from '../constants/misc';
 import { MediaBase64 } from '../models/media';
+import { getLogger } from './logger';
+
+const defaultLog = getLogger('file-utils');
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
+
 const S3 = new AWS.S3({
   endpoint: AWS_ENDPOINT.href,
   accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
@@ -64,13 +68,20 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
  *
  * @export
  * @param {string} key of object to delete from s3 bucket
- * @returns {Promise<DeleteObjectOutput>} 
+ * @returns {Promise<DeleteObjectOutput>}
  */
- export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput> {
+export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput> {
   if (!key) {
     return null;
   }
-  console.log("delete file from s3: ", OBJECT_STORE_BUCKET_NAME);
+
+  defaultLog.debug({
+    message: 'deleting file from s3',
+    params: {
+      OBJECT_STORE_BUCKET_NAME,
+      key
+    }
+  });
 
   return S3.deleteObject({
     Bucket: OBJECT_STORE_BUCKET_NAME,

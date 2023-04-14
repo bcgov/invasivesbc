@@ -7,7 +7,7 @@ import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
 import { getDBConnection } from '../../../database/db';
 import { InvasivesRequest } from '../../../utils/auth-utils';
 import { TemplateService } from '../../../utils/batch/template-utils';
-import { BatchValidationService } from '../../../utils/batch/validation';
+import { BatchValidationService } from '../../../utils/batch/validation/validation';
 import { getLogger } from '../../../utils/logger';
 import { BatchExecutionService } from '../../../utils/batch/execution';
 
@@ -156,7 +156,7 @@ function execBatch(): RequestHandler {
         });
       }
     } catch (error) {
-      defaultLog.error(error);
+      defaultLog.error({ message: 'error executing batch', error, id });
       return res.status(500).json({
         message: `Error executing batch ${id}`,
         request: req.body,

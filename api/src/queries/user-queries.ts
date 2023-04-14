@@ -1,4 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import {getLogger} from "../utils/logger";
+
+const defaultLog = getLogger('user-queries');
 
 /**
  * SQL query to fetch users.
@@ -44,7 +47,15 @@ export enum userTypeEnum {
  * @returns {SQLStatement} sql query object
  */
 export const createUserSQL = (userType: string, id: string, username: string, email: string): SQLStatement => {
-  console.log('UserType: ' + userType + ' ID: ' + id + ' Username: ' + username + ' Email: ' + email);
+  defaultLog.debug({
+    message: 'create user SQL params',
+    params: {
+      userType,
+      id,
+      username,
+      email
+    }
+  });
   switch (userType) {
     case 'idir':
       try {
@@ -53,7 +64,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
       `;
         return returnVal;
       } catch (e) {
-        console.log(JSON.stringify(e));
+        defaultLog.error({error: e});
       }
       break;
     case 'bceid':
@@ -63,7 +74,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
       `;
         return returnVal;
       } catch (e) {
-        console.log(JSON.stringify(e));
+        defaultLog.error({error: e});
       }
       break;
     default:

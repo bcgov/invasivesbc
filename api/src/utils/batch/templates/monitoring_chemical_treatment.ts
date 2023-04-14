@@ -5,7 +5,7 @@ import {
   BasicInformationRowValidators,
   ProjectInformation,
   WellInformation
-} from "../shared_columns";
+} from "../shared-columns";
 
 const MonitoringChemical = new Template(
   'monitoring_chemical',

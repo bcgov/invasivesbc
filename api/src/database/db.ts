@@ -1,8 +1,9 @@
 'use strict';
 
-import { Pool, PoolConfig, PoolClient } from 'pg';
+import {Pool, PoolConfig, PoolClient, QueryConfig} from 'pg';
 
 import { getLogger } from '../utils/logger';
+import {exitOnError} from "winston";
 const defaultLog = getLogger('db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';

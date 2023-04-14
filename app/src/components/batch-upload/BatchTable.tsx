@@ -1,21 +1,39 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/batch.scss';
-import {CopyToClipboardButton} from './ClipboardHelper';
+import { CopyToClipboardButton } from './ClipboardHelper';
+import { Button } from '@mui/material';
+import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
 
+export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
+  const [truncate, setTruncate] = useState(true);
 
-export const AbbreviatedDisplayWithCopy = (props: { displayVal: string, content?: string, length?: number, }) => {
+  const [renderedValue, setRenderedValue] = useState('');
+
+  useEffect(() => {
+    if (truncate) {
+      setRenderedValue(props.displayVal.substring(0, props.length ? props.length : 12));
+    } else {
+      setRenderedValue(props.displayVal);
+    }
+  }, [truncate, props.displayVal]);
+
   if (typeof props.displayVal == 'string') {
     return (
       <>
-        {props.displayVal.substring(0, props.length ? props.length : 12) + '...'}
-        <CopyToClipboardButton content={props.content ? props.content : props.displayVal}/>
+        <Button onClick={() => setTruncate(!truncate)}>
+          {truncate && <UnfoldMore />}
+          {truncate || <UnfoldLess />}
+        </Button>
+        <CopyToClipboardButton content={props.content ? props.content : props.displayVal} />
+        {renderedValue}
+        {truncate ? '…' : ''}
       </>
-    )
+    );
   }
   return null;
 };
 
-const BatchTableCell = ({field, row}) => {
+const BatchTableCell = ({ field, row }) => {
   const [hasMessages, setHasMessages] = useState(false);
   const [displaySeverity, setDisplaySeverity] = useState('normal');
   const [displayedValue, setDisplayedValue] = useState('');
@@ -95,7 +113,6 @@ const BatchTableCell = ({field, row}) => {
     return `${prefix} ${dt} ${suffix}`;
   };
 
-
   return (
     <td className={displaySeverity}>
       <span
@@ -105,7 +122,11 @@ const BatchTableCell = ({field, row}) => {
             : ''
         }`}>
         {row.data[field].templateColumn?.dataType === 'WKT' ? (
-          <AbbreviatedDisplayWithCopy length={25} displayVal={displayedValue} content={row.data[field].parsedValue?.data || ''}/>
+          <AbbreviatedDisplayWithCopy
+            length={25}
+            displayVal={displayedValue}
+            content={row.data[field].parsedValue?.data || ''}
+          />
         ) : (
           displayedValue
         )}
@@ -117,7 +138,7 @@ const BatchTableCell = ({field, row}) => {
               <strong>{m.messageTitle}</strong>
               {m.messageDetail && (
                 <>
-                  <br/>
+                  <br />
                   {m.messageDetail}
                 </>
               )}
@@ -132,48 +153,51 @@ const BatchTableCell = ({field, row}) => {
   );
 };
 
-const BatchTable = ({jsonRepresentation}) => {
+const BatchTable = ({ jsonRepresentation }) => {
   return (
     <>
       <table className={'batchAlternateLayout'}>
         <thead>
-        <tr>
-          <th>Field</th>
-          {jsonRepresentation?.rows?.map((row) => (
-            <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
-          ))}
-        </tr>
+          <tr>
+            <th>Field</th>
+            {jsonRepresentation?.rows?.map((row) => (
+              <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
-        {jsonRepresentation?.headers?.map((h) => {
-          return (
-            <tr key={h}>
-              <td className={'fieldName'}>{h}</td>
-              {jsonRepresentation?.rows?.map((row) => (
-                <BatchTableCell key={row.rowIndex} field={h} row={row}/>
-              ))}
-            </tr>
-          );
-        })}
-        <tr>
-          <td>Mapped Object</td>
-          {jsonRepresentation?.rows?.map((row) => (
-            <td key={row.rowIndex}>
-              <pre><AbbreviatedDisplayWithCopy displayVal={JSON.stringify(row.mappedObject, null, 2)}/></pre>
-            </td>
-          ))}
-        </tr>
-        <tr>
-          <td>Object Mapper Warnings</td>
-          {jsonRepresentation?.rows?.map((row) => (
-            <td key={row.rowIndex}>
-              <ul>
-                {row.mappedObjectMessages.map((message) => (<li key={message}>{message}</li>))}
-              </ul>
-            </td>
-          ))}
-
-        </tr>
+          {jsonRepresentation?.headers?.map((h) => {
+            return (
+              <tr key={h}>
+                <td className={'fieldName'}>{h}</td>
+                {jsonRepresentation?.rows?.map((row) => (
+                  <BatchTableCell key={row.rowIndex} field={h} row={row} />
+                ))}
+              </tr>
+            );
+          })}
+          <tr>
+            <td>Mapped Object</td>
+            {jsonRepresentation?.rows?.map((row) => (
+              <td key={row.rowIndex}>
+                <pre>
+                  <AbbreviatedDisplayWithCopy displayVal={JSON.stringify(row.mappedObject, null, 2)} />
+                </pre>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td>Object Mapper Warnings</td>
+            {jsonRepresentation?.rows?.map((row) => (
+              <td key={row.rowIndex}>
+                <ul>
+                  {row.mappedObjectMessages.map((message) => (
+                    <li key={message}>{message}</li>
+                  ))}
+                </ul>
+              </td>
+            ))}
+          </tr>
         </tbody>
       </table>
     </>

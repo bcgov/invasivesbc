@@ -1,4 +1,6 @@
 import winston from 'winston';
+import _ from 'lodash';
+import YAML from 'js-yaml';
 
 /**
  * Logger input.
@@ -7,115 +9,86 @@ import winston from 'winston';
  * @interface ILoggerMessage
  * @extends {winston.Logform.TransformableInfo}
  */
-export interface ILoggerMessage extends winston.Logform.TransformableInfo {
+interface ILoggerMessage extends winston.Logform.TransformableInfo {
   timestamp?: string; // Optionally overwrite the default timestamp
   label?: string; // Add a label to this message (generally the name of the parent function)
   error?: Error; // An optional error to display
 }
 
-/**
- * Checks if the value provided is an object.
- *
- * @param {*} obj
- * @returns {boolean} True if the value is an object, false otherwise.
- */
-const isObject = (item: any): boolean => {
-  return item && typeof item === 'object' && item.constructor.name === 'Object';
-};
+class LoggerWithContext {
+  _instance: winston.Logger;
 
-/**
- * Checks if the value provided is an object with enumerable keys (ignores symbols).
- *
- * @param {*} obj
- * @returns {boolean} True if the value is an object with enumerable keys, false otherwise.
- */
-const isObjectWithkeys = (item: any): boolean => {
-  return isObject(item) && !!Object.keys(item).length;
-};
+  constructor(outputLabel = 'default') {
+    this._instance = winston.loggers.get(outputLabel, {
+      transports: [
+        new winston.transports.Console({
+          level: process.env.LOG_LEVEL || 'debug',
+          format: winston.format.combine(
+            winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+            winston.format.errors({stack: true}),
+            winston.format.colorize(),
+            winston.format.printf(({level, timestamp, label, message, ...meta}) => {
+              const optionalLabel = label ? ` ${label} - ` : '';
+              const preamble = `[${timestamp}] (${level}) (${outputLabel}):${optionalLabel}`;
+              //
+              let formattedMessage = '';
+              switch (typeof message) {
+                case 'object':
+                  formattedMessage = JSON.stringify(message, null, 2);
+                  break;
+                default:
+                  formattedMessage = message;
+                  break;
+              }
+              const additionalContext = {
+                ...meta
+              };
+              _.forOwn(additionalContext, (prop) => {
+                if (prop == null || prop == [] || prop == {}) {
+                  delete additionalContext[prop];
+                }
+              });
 
-/**
- * Pretty stringify.
- *
- * @param {any} item
- * @return {*}  {string}
- */
-const prettyPrint = (item: any): string => {
-  return JSON.stringify(item, undefined, 2);
-};
+              let formattedAdditionalContext = null;
 
-/**
- * Get or create a logger for the given logLabel.
- *
- * Centralized logger that uses Winston 3.x.
- *
- * Initializing the logger:
- *
- * import { getLogger } from './logger';
- * const defaultLog = getLogger('class-or-file-name');
- *
- * Usage:
- *
- * log.info({ message: 'A basic log message!' })
- *
- * log.info({ label: 'functionName', message: 'A message with a label!' })
- *
- * log.error({ label: 'functionName', message: 'An error message!:', error })
- *
- * log.debug({ label: 'functionName', message: 'A debug message!:', debugInfo1, debugInfo2 })
- *
- * ...etc
- *
- * Example Output:
- *
- * [15-09-2019 14:44:30] [info] (class-or-file-name): A basic log message!
- *
- * [15-09-2019 14:44:30] [info] (class-or-file-name): functionName - A message with a label!
- *
- * [02-12-2019 14:45:02] [error] (class-or-file-name): functionName - An error message!
- * {
- *   error: 404 Not Found
- * }
- *
- * [02-12-2019 14:46:15] [error] (class-or-file-name): functionName - A debug message!
- * {
- *   debugInfo1: 'someDebugInfo1'
- * }
- * {
- *   debugInfo2: 'someDebugInfo2'
- * }
- *
- * ...etc
- *
- * Valid `LOG_LEVEL` values (from least logging to most logging) (default: info):
- * error, warn, info, debug
- *
- * @param {string} logLabel common label for the instance of the logger.
- * @returns
- */
-export const getLogger = function (logLabel: string) {
-  return winston.loggers.get(logLabel || 'default', {
-    transports: [
-      new winston.transports.Console({
-        level: process.env.LOG_LEVEL || 'debug',
-        format: winston.format.combine(
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.errors({ stack: true }),
-          winston.format.colorize(),
-          winston.format.printf(({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
-            const optionalLabel = (label && ` ${label} -`) || '';
+              if (_.keys(additionalContext).length > 0) {
+                formattedAdditionalContext = YAML.dump(additionalContext);
+              }
 
-            const logMessage = (message && ((isObject(message) && `${prettyPrint(message)}`) || message)) || '';
+              if (formattedAdditionalContext) {
+                const spacer = '-'.repeat(40);
+                const shortSpacer = '-'.repeat(10);
+                return `${spacer}\n${preamble}\nMessage: ${formattedMessage}\n${shortSpacer}\nAdditional Context:\n${shortSpacer}\n${formattedAdditionalContext}\n${spacer}`;
+              } else {
+                return `${preamble}${formattedMessage}`;
+              }
+            })
+          )
+        })
+      ]
+    });
+  }
 
-            const optionalError =
-              (error && ((isObjectWithkeys(error) && `\n${prettyPrint(error)}`) || `\n${error}`)) || '';
+  info(params) {
+    this._instance.info(params);
+  }
 
-            const optionalOther =
-              (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
+  debug(params) {
+    this._instance.debug(params);
+  }
 
-            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
-          })
-        )
-      })
-    ]
-  });
+  warn(params) {
+    this._instance.warn(params);
+  }
+
+  error(params) {
+    const stack = new Error().stack;
+    this._instance.error(params, {
+      callingContext: stack
+    });
+  }
+}
+
+export const getLogger = function (logLabel: string): LoggerWithContext {
+  return new LoggerWithContext(logLabel);
 };

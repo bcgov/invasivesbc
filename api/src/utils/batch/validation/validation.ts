@@ -1,11 +1,12 @@
-import { Template, TemplateColumn } from './definitions';
-import { checkWKTInBounds, computeWKTArea, validateAsWKT } from './spatial-validation';
+import { Template, TemplateColumn } from '../definitions';
+import {checkWKTInBounds, computeWKTArea, getWKTAsGeoJSON, validateAsWKT} from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
-import turfflatten from '@turf/flatten';
-import { _mapToDBObject } from './execution';
+import { _mapToDBObject } from '../execution';
 import { lookupAreaLimit } from 'sharedAPI';
-import { parse } from 'wkt';
+import { getLogger } from '../../logger';
+
+const defaultLog = getLogger('batch');
 
 export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
@@ -259,7 +260,7 @@ async function _validateCell(
       if (validateAsWKT(data)) {
         try {
           result.parsedValue = {
-            data,
+            data: await getWKTAsGeoJSON(data),
             area: await computeWKTArea(data)
           };
         } catch (e) {
@@ -362,8 +363,7 @@ export const BatchValidationService = {
             ...(await _validateCell(template, templateColumn, row.data[field]))
           };
         } catch (e) {
-          console.log(JSON.stringify(templateColumn));
-          console.log(e);
+          defaultLog.debug({ message: 'Error mapping', templateColumn, error: e });
           throw e;
         }
 
@@ -374,7 +374,13 @@ export const BatchValidationService = {
       row.mappedObject = mappedObject;
       row.mappedObjectMessages = messages;
 
-      const rowValidationResults = template.rowValidators.map((rv) => rv(row));
+      const rowValidationResults = template.rowValidators.map((rv) => {
+        try {
+          return rv(row);
+        } catch (e) {
+          defaultLog.error({ message: 'Caught an error while running a row-level validator', error: e, validator: rv.name });
+        }
+      });
 
       for (const f of rowValidationResults) {
         if (!f.valid) {
@@ -392,6 +398,8 @@ export const BatchValidationService = {
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;
     result.canProceed = totalErrorCount == 0;
+    defaultLog.debug({ message: 'object validation complete', result });
+
     return result;
   }
 };

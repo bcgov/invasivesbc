@@ -1,10 +1,10 @@
-import { Template } from './definitions';
-import { getLogger } from '../logger';
-import { PoolClient } from 'pg';
-import { randomUUID } from 'crypto';
+import {Template} from './definitions';
+import {getLogger} from '../logger';
+import {PoolClient} from 'pg';
+import {randomUUID} from 'crypto';
 import moment from 'moment';
-import { activity_create_function, ActivityLetter } from 'sharedAPI';
-import { mapDefaultFields } from './batchBlobHelpers';
+import {activity_create_function, ActivityLetter} from 'sharedAPI';
+import {mapTemplateFields} from './blob-utils';
 
 const defaultLog = getLogger('batch');
 
@@ -27,7 +27,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   let mapped = activity_create_function(type, subtype, userInfo?.preferred_username, 'Brennan', userInfo?.pac_number);
 
-  mapped = mapDefaultFields(mapped, row);
+  mapped = mapTemplateFields(mapped, row);
 
   mapped['form_data']['form_status'] = 'Submitted';
 
@@ -65,7 +65,7 @@ export const BatchExecutionService = {
     for (const row of validatedBatchData.rows) {
       //@todo skip errored rows
 
-      const { id: activityId, shortId, payload } = _mapToDBObject(
+      const {id: activityId, shortId, payload} = _mapToDBObject(
         row,
         desiredFinalStatus,
         template.type,
@@ -79,9 +79,10 @@ export const BatchExecutionService = {
       } else if (userInfo?.bceid_userid !== null) {
         guid = userInfo?.bceid_userid;
       }
-
-      dbConnection.query({
-        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type, activity_subtype, form_status, created_by, updated_by, created_by_with_guid, updated_by_with_guid)
+      const qc = {
+        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
+                                                   activity_subtype, form_status, created_by, updated_by,
+                                                   created_by_with_guid, updated_by_with_guid)
                values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
         values: [
           activityId,
@@ -96,7 +97,16 @@ export const BatchExecutionService = {
           guid,
           guid
         ]
+      };
+
+      defaultLog.debug({
+        message: 'executing insert for batch',
+        params: {
+          qc
+        }
       });
+
+      await dbConnection.query(qc);
     }
 
     await dbConnection.query({
@@ -107,7 +117,11 @@ export const BatchExecutionService = {
       values: [id]
     });
 
-    defaultLog.info('Finishing batch exec run');
+    defaultLog.info({
+      message: 'finishing batch exec run',
+      id
+    })
+;
 
     return {
       createdActivityIDs: createdIds

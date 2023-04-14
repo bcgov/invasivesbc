@@ -439,11 +439,10 @@ function updateActivity(): RequestHandler {
 
       // make sure monitoring a subset
       species_treated.forEach((species) => {
-        console.log('species check')
-        console.log(species)
+        defaultLog.info({message: 'species check', species});
 
         if (linked_species_treated.includes(species) === false) {
-          console.log(JSON.stringify(linked_species_treated))
+          defaultLog.debug({message: 'linked_species_treated', linked_species_treated});
           // otherwise throw 400
           return res.status(400).json({
             message: 'Invalid request, species in monitoring not included in linked treatment',
