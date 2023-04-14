@@ -9,7 +9,7 @@ import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
 
-const defaultLog = getLogger('activity/{activityId}');
+const defaultLog = getLogger('activity');
 
 export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 

@@ -8,7 +8,7 @@ import { getDBConnection } from '../../database/db';
 import { getOverlappingBCGridCellsSQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('bc-grid/bcGrid');
+const defaultLog = getLogger('bc-grid');
 
 export const POST: Operation = [getOverlapingBCGridCells()];
 

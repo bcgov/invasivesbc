@@ -156,6 +156,8 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
   return { createSQL: createSQLStatement };
 };
 
+const defaultLog = getLogger('activity-queries');
+
 /**
  * column names SQL SELECT string formatted and joined.
  *
@@ -164,8 +166,7 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  */
 const getColumnNamesSQL = (columnNames: string[]): string => {
   const newColumnNames = columnNames.map((name) => 'a.' + name);
-  console.log('columnNames POST Sanitize', columnNames);
-  console.log('columnNames sanitized and not lean, newColumnNames', newColumnNames);
+  defaultLog.info({message: 'columnNames POST Sanitize', columnNames, newColumnNames} );
   return ` ${newColumnNames.join(', ')}`;
 };
 
@@ -204,14 +205,10 @@ export const getActivitiesSQL = (
     if (!isAuth && columnNames.length > 0) {
       //columns_names were requested for either activities full or lean
       // remove restricted column_names if NOT auth
-      // console.log('columnNames', columnNames);
       const blockedColumns = ['created_by', 'updated_by', 'reviewed_by'];
       let indexOf;
-      // console.log('define: indexOf', indexOf);
       for (const column of blockedColumns) {
-        // console.log('blockedColumns column', column);
         indexOf = columnNames?.indexOf(column);
-        // console.log('indexOf', indexOf);
         if (indexOf !== undefined) {
           columnNames.splice(indexOf, 1);
         }
@@ -261,7 +258,6 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL` a.activity_id`);
       } else {
         if (columnNames?.length == 0) {
-          // console.log('No column_names and not lean');
           if (isAuth) {
             // if no column_names specified, select all
             sqlStatement.append(SQL` *`);
@@ -314,7 +310,6 @@ export const getActivitiesSQL = (
           // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
         }
         if (columnNames.length > 0) {
-          // console.log('columnNames at append', columnNames);
           sqlStatement.append(getColumnNamesSQL(columnNames));
         }
       }
@@ -381,11 +376,11 @@ export const getActivitiesSQL = (
         SELECT max(x) AS max_role_id FROM (
           SELECT UNNEST (
             ARRAY (
-              SELECT jsonb_array_elements_text(activity_payload->'user_role'))::int[]) AS x, 
-                activity_incoming_data_id 
+              SELECT jsonb_array_elements_text(activity_payload->'user_role'))::int[]) AS x,
+                activity_incoming_data_id
               FROM activity_incoming_data
-          ) AS max_role 
-          WHERE a.activity_incoming_data_id = max_role.activity_incoming_data_id 
+          ) AS max_role
+          WHERE a.activity_incoming_data_id = max_role.activity_incoming_data_id
           GROUP BY activity_incoming_data_id
         ) = ANY( ${searchCriteria.user_roles} )
       `
@@ -436,7 +431,6 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.received_timestamp) {
-        //console.log('\n[RECEIVED TIMESTAMP]: ', gridFilters.received_timestamp, '\n');
         sqlStatement.append(
           SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy, Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
         );
@@ -449,25 +443,21 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.species_positive) {
-        // console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
         sqlStatement.append(SQL` AND LOWER(a.species_positive_full) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.species_positive})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.project_code) {
-        // console.log('\n[SPECIES POSITIVE]: ', gridFilters.species_positive, '\n');
         sqlStatement.append(SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.project_code})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.species_negative) {
-        // console.log('\n[SPECIES NEGATIVE]: ', gridFilters.species_negative, '\n');
         sqlStatement.append(SQL` AND LOWER(a.species_negative_full) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.species_negative})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.species_treated) {
-        // console.log('\n[SPECIES TREATED]: ', gridFilters.species_treated, '\n');
         sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
         sqlStatement.append(SQL`||'%'`);
@@ -483,29 +473,21 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.agency) {
-        // console.log('\n[INVASIVE SPECIES AGENCY CODE]: ', gridFilters.agency, '\n');
         sqlStatement.append(SQL` AND LOWER(a.agency) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.regional_invasive_species_organization_areas) {
-        // console.log(
-        //   '\n[REGIONAL INVASIVE SPECIES ORGANIZATION AREAS]: ',
-        //   gridFilters.regional_invasive_species_organization_areas,
-        //   '\n'
-        // );
         sqlStatement.append(SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization_areas})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.regional_districts) {
-        // console.log('\n[REGIONAL DISTRICTS]: ', gridFilters.regional_districts, '\n');
         sqlStatement.append(SQL` AND LOWER(a.regional_districts) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.regional_districts})`);
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.biogeoclimatic_zones) {
-        // console.log('\n[BIOGEOCLIMATIC ZONES]: ', gridFilters.biogeoclimatic_zones, '\n');
         sqlStatement.append(SQL` AND LOWER(a.biogeoclimatic_zones) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.biogeoclimatic_zones})`);
         sqlStatement.append(SQL`||'%'`);

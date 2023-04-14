@@ -1,6 +1,6 @@
 import { SQL } from 'sql-template-strings';
 import { PoolClient } from 'pg';
-import { RowValidationResult } from './validation';
+import { RowValidationResult } from './validation/validation';
 
 type templateDataType =
   | 'text'
@@ -14,7 +14,11 @@ type templateDataType =
   | 'WKT';
 
 export class TemplateColumn {
-  constructor(readonly name, readonly dataType: templateDataType, readonly mappedPath: string | null) {}
+  constructor(
+    readonly name,
+    readonly dataType: templateDataType,
+    readonly mappedPath: string | Record<string, string> | null
+  ) {}
 
   helpText: string | null;
   required = false;
@@ -134,7 +138,7 @@ export class Template {
     }
   }
 
-  type: string = 'Observation';
+  type = 'Observation';
   subtype: string;
   columns: TemplateColumn[];
   rowValidators: RowValidator[];

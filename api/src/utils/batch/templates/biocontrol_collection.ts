@@ -5,7 +5,7 @@ import {
   PhenologyInformation,
   ProjectInformation,
   WeatherInformation
-} from "../shared_columns";
+} from "../shared-columns";
 
 const BiocontrolCollection = new Template(
   'biocontrol_collection',

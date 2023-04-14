@@ -107,7 +107,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
-    console.log('sanitizedSearchCriteria',sanitizedSearchCriteria);
+    defaultLog.info({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -160,9 +160,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      console.log(
-        'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
-      );
+      defaultLog.warn({
+        message:
+          'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+        error: e
+      });
     }
 
     try {
@@ -176,7 +178,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           //cache.put(ETag, responseBody);
         }
         if (sanitizedSearchCriteria.isCSV) {
-          return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseSurveyExtract as unknown as string);
+          return res
+            .status(200)
+            .set(responseCacheHeaders)
+            .contentType('text/csv')
+            .set('Content-Disposition', 'attachment; filename="export.csv"')
+            .send((responseSurveyExtract as unknown) as string);
         } else {
           return res.status(200).set(responseCacheHeaders).json(responseBody);
         }

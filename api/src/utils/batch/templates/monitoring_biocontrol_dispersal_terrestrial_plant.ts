@@ -5,7 +5,7 @@ import {
   MicrositeConditions, PhenologyInformation, ProjectInformation,
   WeatherInformation,
   WellInformation
-} from "../shared_columns";
+} from "../shared-columns";
 
 const MonitoringBiocontrolDispersalTerrestrialPlant = new Template(
   'monitoring_biocontrol_dispersal_terrestrial_plant',

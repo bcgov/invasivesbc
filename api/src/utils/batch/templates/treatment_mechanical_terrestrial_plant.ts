@@ -4,7 +4,7 @@ import {
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation
-} from '../shared_columns';
+} from '../shared-columns';
 
 const TreatmentMechanicalTerrestrialPlant = new Template(
   'treatment_mechanical_terrestrial_plant',

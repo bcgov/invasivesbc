@@ -1,8 +1,13 @@
 import { TemplateColumnBuilder } from './definitions';
-import { RowValidationResult } from './validation';
+import { RowValidationResult } from './validation/validation';
 
 export const BasicInformation = [
-  new TemplateColumnBuilder('WKT', 'WKT', 'geometry').isRequired().build(),
+  new TemplateColumnBuilder('WKT', 'WKT', {
+    geometry: 'geometry',
+    area: 'form_data.activity_data.reported_area'
+  })
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time').isRequired().build(),
   new TemplateColumnBuilder('Basic - Latitude', 'numeric', 'form_data.activity_data.latitude').build(),
   new TemplateColumnBuilder('Basic - Longitude', 'numeric', 'form_data.activity_data.longitude').build(),
@@ -33,7 +38,7 @@ export const BasicInformation = [
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 1',
     'codeReference',
-    'form_data.activity_data.jurisdictions.0.jurisdiction_code'
+    'form_data.activity_data.jurisdictions[0].jurisdiction_code'
   )
     .isRequired()
     .referencesCode('jurisdiction_code')
@@ -42,7 +47,7 @@ export const BasicInformation = [
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 1 % Covered',
     'numeric',
-    'form_data.activity_data.jurisdictions.0.percent_covered'
+    'form_data.activity_data.jurisdictions[0].percent_covered'
   )
     .valueRange(0, 100)
     .isRequired()
@@ -50,7 +55,7 @@ export const BasicInformation = [
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 2',
     'codeReference',
-    'form_data.activity_data.jurisdictions.1.jurisdiction_code'
+    'form_data.activity_data.jurisdictions[1].jurisdiction_code'
   )
     .referencesCode('jurisdiction_code')
     .build(),
@@ -58,21 +63,21 @@ export const BasicInformation = [
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 2 % Covered',
     'numeric',
-    'form_data.activity_data.jurisdictions.1.percent_covered'
+    'form_data.activity_data.jurisdictions[1].percent_covered'
   )
     .valueRange(0, 100)
     .build(),
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 3',
     'codeReference',
-    'form_data.activity_data.jurisdictions.2.jurisdiction_code'
+    'form_data.activity_data.jurisdictions[2].jurisdiction_code'
   )
     .referencesCode('jurisdiction_code')
     .build(),
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 3 % Covered',
     'numeric',
-    'form_data.activity_data.jurisdictions.2.percent_covered'
+    'form_data.activity_data.jurisdictions[2].percent_covered'
   )
     .valueRange(0, 100)
     .build()
@@ -84,7 +89,7 @@ const _JurisdictionSumValidator = (row): RowValidationResult => {
     'Basic - Jurisdiction 2 % Covered',
     'Basic - Jurisdiction 3 % Covered'
   ];
-  const rowData = row.data
+  const rowData = row.data;
 
   let sum = 0;
   let valid = true;
@@ -204,14 +209,14 @@ export const ActivityPersons = [
   new TemplateColumnBuilder(
     'Activity - Person 1',
     'text',
-    'form_data.activity_type_data.activity_persons.0.person_name'
+    'form_data.activity_type_data.activity_persons[0].person_name'
   )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Activity - Person 2',
     'text',
-    'form_data.activity_type_data.activity_persons.1.person_name'
+    'form_data.activity_type_data.activity_persons[1].person_name'
   ).build()
 ];
 
@@ -219,31 +224,31 @@ export const ActivityPersonsWithApplicatorLicense = [
   new TemplateColumnBuilder(
     'Activity - Person 1',
     'text',
-    'form_data.activity_type_data.activity_persons.0.person_name'
+    'form_data.activity_type_data.activity_persons[0].person_name'
   )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Activity - Person 1 Applicator License',
     'numeric',
-    'form_data.activity_type_data.activity_persons.0.applicator_license'
+    'form_data.activity_type_data.activity_persons[0].applicator_license'
   )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Activity - Person 2',
     'text',
-    'form_data.activity_type_data.activity_persons.1.person_name'
+    'form_data.activity_type_data.activity_persons[1].person_name'
   ).build(),
   new TemplateColumnBuilder(
     'Activity - Person 2 Applicator License',
     'numeric',
-    'form_data.activity_type_data.activity_persons.1.applicator_license'
+    'form_data.activity_type_data.activity_persons[1].applicator_license'
   ).build()
 ];
 
 export const ProjectInformation = [
-  new TemplateColumnBuilder('Project - Code', 'text', 'form_data.activity_data.project_code.0.description').build(),
+  new TemplateColumnBuilder('Project - Code', 'text', 'form_data.activity_data.project_code[0].description').build(),
   new TemplateColumnBuilder('Project - Comment', 'text', 'form_data.activity_data.general_comment').build()
 ];
 
@@ -251,32 +256,32 @@ export const WellInformation = [
   new TemplateColumnBuilder(
     'Wells - Well 1 ID',
     'numeric',
-    'form_data.activity_subtype_data.Well_Information.0.well_id'
+    'form_data.activity_subtype_data.Well_Information[0].well_id'
   ).build(),
   new TemplateColumnBuilder(
     'Wells - Well 1 proximity',
     'text',
-    'form_data.activity_subtype_data.Well_Information.0.well_proximity'
+    'form_data.activity_subtype_data.Well_Information[0].well_proximity'
   ).build(),
   new TemplateColumnBuilder(
     'Wells - Well 2 ID',
     'text',
-    'form_data.activity_subtype_data.Well_Information.1.well_id'
+    'form_data.activity_subtype_data.Well_Information[1].well_id'
   ).build(),
   new TemplateColumnBuilder(
     'Wells - Well 2 proximity',
     'text',
-    'form_data.activity_subtype_data.Well_Information.1.well_proximity'
+    'form_data.activity_subtype_data.Well_Information[1].well_proximity'
   ).build(),
   new TemplateColumnBuilder(
     'Wells - Well 3 ID',
     'text',
-    'form_data.activity_subtype_data.Well_Information.2.well_id'
+    'form_data.activity_subtype_data.Well_Information[2].well_id'
   ).build(),
   new TemplateColumnBuilder(
     'Wells - Well 3 proximity',
     'text',
-    'form_data.activity_subtype_data.Well_Information.2.well_proximity'
+    'form_data.activity_subtype_data.Well_Information[2].well_proximity'
   ).build()
 ];
 
@@ -340,28 +345,28 @@ export const ShorelineInformation = [
   new TemplateColumnBuilder(
     'Shoreline - Shoreline 1 Type',
     'codeReference',
-    'form_data.activity_subtype_data.ShorelineTypes.0.shoreline_type'
+    'form_data.activity_subtype_data.ShorelineTypes[0].shoreline_type'
   )
     .referencesCode('shoreline_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Shoreline - Shoreline 1 Percentage',
     'numeric',
-    'form_data.activity_subtype_data.ShorelineTypes.0.percent_covered'
+    'form_data.activity_subtype_data.ShorelineTypes[0].percent_covered'
   )
     .valueRange(0, 100)
     .build(),
   new TemplateColumnBuilder(
     'Shoreline - Shoreline 2 Type',
     'codeReference',
-    'form_data.activity_subtype_data.ShorelineTypes.1.shoreline_type'
+    'form_data.activity_subtype_data.ShorelineTypes[1].shoreline_type'
   )
     .referencesCode('shoreline_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Shoreline - Shoreline 2 Percentage',
     'numeric',
-    'form_data.activity_subtype_data.ShorelineTypes.1.percent_covered'
+    'form_data.activity_subtype_data.ShorelineTypes[1].percent_covered'
   )
     .valueRange(0, 100)
     .build()
@@ -493,7 +498,7 @@ export const PhenologyInformation = [
   new TemplateColumnBuilder(
     'Phenology - Target Height',
     'numeric',
-    'form_data.activity_subtype_data.Target_Plant_Phenology.target_plant_heights.0'
+    'form_data.activity_subtype_data.Target_Plant_Phenology.target_plant_heights[0]'
   )
     .valueRange(0, null)
     .build(),
@@ -675,7 +680,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Type',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.herbicide_type_code'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_type_code'
   )
     .referencesCode('herbicide_type_code')
     .isRequired()
@@ -683,7 +688,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Herbicide',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.herbicide_code'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].herbicide_code'
   )
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .isRequired()
@@ -691,18 +696,25 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder(
     'Herbicide - 1 - Calculation Type',
     'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.calculation_type'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
   )
     .referencesCode('calculation_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Herbicide - 1 - Dilution - Dilution %',
     'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.dilution'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].dilution'
   )
     .valueRange(0, 100)
     .build(),
-  new TemplateColumnBuilder('Herbicide - 1 - Area Treated (Dilution)', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.herbicides.0.area_treated_sqm') .valueRange(0, null) .isRequired() .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Area Treated (Dilution)',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm'
+  )
+    .valueRange(0, null)
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
 
@@ -717,7 +729,10 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
-  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).isRequired().build(),
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric')
+    .valueRange(0, null)
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',

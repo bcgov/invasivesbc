@@ -231,7 +231,7 @@ function uploadShape(): RequestHandler {
           const KML = KMZToKML(buffer);
           const dirtyGeoJSON = GeoJSONFromKML(KML);
           geoJSON = sanitizeGeoJSON(dirtyGeoJSON);
-          console.log("sanitized geojson: ", JSON.stringify(geoJSON));
+          defaultLog.info({message: "sanitized geojson: ", geoJSON});
           break;
         case 'kml':
           geoJSON = sanitizeGeoJSON(GeoJSONFromKML(Buffer.from(data['data'], 'base64')));
@@ -274,8 +274,8 @@ function uploadShape(): RequestHandler {
 
           const response: QueryResult = await connection.query(
             `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
-            SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM             
-              (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM 
+            SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM
+              (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM
                 (SELECT json_array_elements($1::json->'features') AS feat) AS f
               ) AS geogs;`,
             [data, user_id, title]

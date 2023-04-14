@@ -8,7 +8,7 @@ import { sign } from 'jsonwebtoken';
 import { getDBConnection } from '../../database/db';
 import { getEmbeddedReport } from '../../queries/embedded-report-queries';
 
-const defaultLog = getLogger('metabase-query/{reportId}');
+const defaultLog = getLogger('metabase-query');
 
 const METABASE_URL: string = process.env.METABASE_URL || 'http://localhost:2000';
 const EMBEDDING_KEY: string = process.env.METABASE_EMBEDDING_KEY || null;

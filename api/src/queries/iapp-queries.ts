@@ -285,9 +285,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 export const iapp_extract_sql = (site_id: number[], extractName: string): SQLStatement => {
   const defaultLog = getLogger('point-of-interest');
 
-  defaultLog.debug({ label: 'help', message: JSON.stringify(site_id[0]) });
+  defaultLog.debug({ message: 'site id', site_id: site_id[0] });
   //stupid lib doesn't let you dynamically pass table name
-  console.log(JSON.stringify(site_id[0]));
+  defaultLog.debug(JSON.stringify(site_id[0]));
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   switch (extractName) {
@@ -376,7 +376,7 @@ export const getIappExtractFromDB = async (site_ids: number[], extractName: stri
     if (responseIAPP.rows) return responseIAPP.rows;
     else return [];
   } catch (e) {
-    console.log(e);
+    defaultLog.debug(e);
     throw 'Unable to get iapp extract ' + extractName + ' for sites ' + site_ids;
   } finally {
     connection.release();

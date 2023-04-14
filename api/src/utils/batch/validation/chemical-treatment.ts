@@ -1,5 +1,4 @@
 import {
-  IGeneralFields,
   validate_chem_app_method_value,
   validate_general_fields,
   validate_herbicide_fields,
@@ -10,6 +9,9 @@ import {
   validate_tank_mix_herbicides
 } from 'sharedAPI';
 import { BatchCellValidationMessage, RowValidationResult } from './validation';
+import { getLogger } from '../../logger';
+
+const defaultLog = getLogger('batch');
 
 export const ValidateHerbicides = (row) => {
   const appliesToFields = [
@@ -26,12 +28,16 @@ export const ValidateHerbicides = (row) => {
     'Herbicide - 2 - Dilution - Dilution %'
   ];
 
-
   const area = row?.mappedObject?.form_data?.activity_data.reported_area;
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [area, formData, []];
 
-  return runLegacyValidation(validate_herbicide_fields, validationFunctionArgs, appliesToFields, 'Herbicides Validation');
+  return runLegacyValidation(
+    validate_herbicide_fields,
+    validationFunctionArgs,
+    appliesToFields,
+    'Herbicides Validation'
+  );
 };
 
 export const ValidateGeneralFields = (row) => {
@@ -48,7 +54,12 @@ export const ValidateGeneralFields = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [formData, []];
 
-  return runLegacyValidation(validate_general_fields, validationFunctionArgs, appliesToFields, 'General Fields Validation');
+  return runLegacyValidation(
+    validate_general_fields,
+    validationFunctionArgs,
+    appliesToFields,
+    'General Fields Validation'
+  );
 };
 
 export const ValidateTankMixHerbicides = (row) => {
@@ -67,15 +78,22 @@ export const ValidateTankMixHerbicides = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
 
   //doesn't actually use it, but it's required
-  const businessCodes = {}
+  const businessCodes = {};
 
-  let herbicideDictionary = {}
-  row.data['Herbicide - 1 - Herbicide'].templateColumn.codes.map((codeObj) => herbicideDictionary[codeObj.code]= codeObj.description)
+  const herbicideDictionary = {};
+  row.data['Herbicide - 1 - Herbicide'].templateColumn.codes.map(
+    (codeObj) => (herbicideDictionary[codeObj.code] = codeObj.description)
+  );
 
   const skipAppRateValidation = false;
   const validationFunctionArgs = [formData, [], businessCodes, herbicideDictionary, skipAppRateValidation];
 
-  return runLegacyValidation(validate_tank_mix_herbicides, validationFunctionArgs, appliesToFields, 'Tank Mix Herbicides Validation');
+  return runLegacyValidation(
+    validate_tank_mix_herbicides,
+    validationFunctionArgs,
+    appliesToFields,
+    'Tank Mix Herbicides Validation'
+  );
 };
 
 export const ValidateTankMixFields = (row) => {
@@ -91,11 +109,16 @@ export const ValidateTankMixFields = (row) => {
     'Herbicide - 1 - Type',
     'Herbicide - 2 - Type'
   ];
-  const area = row.mappedObject.form_data.activity_data.reported_area;
+  const area = row?.mappedObject?.form_data?.activity_data?.reported_area || NaN;
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [area, formData, []];
 
-  return runLegacyValidation(validate_tank_mix_fields, validationFunctionArgs, appliesToFields, 'Tank Mix Fields Validation');
+  return runLegacyValidation(
+    validate_tank_mix_fields,
+    validationFunctionArgs,
+    appliesToFields,
+    'Tank Mix Fields Validation'
+  );
 };
 
 export const ValidateChemAppMethod = (row) => {
@@ -103,7 +126,12 @@ export const ValidateChemAppMethod = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [formData, [], {}];
 
-  return runLegacyValidation(validate_chem_app_method_value, validationFunctionArgs, appliesToFields, 'Chem App Method Validation');
+  return runLegacyValidation(
+    validate_chem_app_method_value,
+    validationFunctionArgs,
+    appliesToFields,
+    'Chem App Method Validation'
+  );
 };
 
 export const ValidateHerbicidesArray = (row) => {
@@ -120,7 +148,12 @@ export const ValidateHerbicidesArray = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [formData, []];
 
-  return runLegacyValidation(validate_herbicides_arr_length, validationFunctionArgs, appliesToFields, 'Herbicides Array Validation');
+  return runLegacyValidation(
+    validate_herbicides_arr_length,
+    validationFunctionArgs,
+    appliesToFields,
+    'Herbicides Array Validation'
+  );
 };
 
 export const ValidateInvasivePlantsFields = (row) => {
@@ -136,7 +169,12 @@ export const ValidateInvasivePlantsFields = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [formData, []];
 
-  return runLegacyValidation(validate_inv_plants_fields, validationFunctionArgs, appliesToFields, 'Invasive Plants Fields Validation');
+  return runLegacyValidation(
+    validate_inv_plants_fields,
+    validationFunctionArgs,
+    appliesToFields,
+    'Invasive Plants Fields Validation'
+  );
 };
 
 export const ValidateInvasivePlantsArray = (row) => {
@@ -149,7 +187,12 @@ export const ValidateInvasivePlantsArray = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [formData, []];
 
-  return runLegacyValidation(validate_inv_plants_arr_length, validationFunctionArgs, appliesToFields, 'Invasive Plants Array Validation');
+  return runLegacyValidation(
+    validate_inv_plants_arr_length,
+    validationFunctionArgs,
+    appliesToFields,
+    'Invasive Plants Array Validation'
+  );
 };
 
 export const ChemTreatmentValidators = [
@@ -163,32 +206,48 @@ export const ChemTreatmentValidators = [
 ];
 
 const mapErrorsToValidationMessages = (errors, appliesToFields, messageTitle) => {
-  let validationMessages = [];
+  const validationMessages = [];
   errors.map((e) => {
-      validationMessages.push({
-        severity: 'error',
-        messageTitle: messageTitle,
-        messageDetail: typeof e === 'object'? JSON.stringify(e) : e
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: messageTitle,
+      messageDetail: typeof e === 'object' ? JSON.stringify(e) : e
     });
   });
   return validationMessages;
 };
 
-const runLegacyValidation = (validationFunction, validationFunctionArgs, appliesToFields: string[], errorMessageTitle: string) => {
-  let validationMessages: BatchCellValidationMessage[] = [];
+const runLegacyValidation = (
+  validationFunction,
+  validationFunctionArgs,
+  appliesToFields: string[],
+  errorMessageTitle: string
+) => {
+  const validationMessages: BatchCellValidationMessage[] = [];
   let valid = true;
+
+  defaultLog.debug({ message: 'running legacy validation' });
 
   try {
     const errors = validationFunction(...validationFunctionArgs);
     const newValidationMessages = mapErrorsToValidationMessages(errors, appliesToFields, errorMessageTitle);
     validationMessages.push(...newValidationMessages);
-    valid = newValidationMessages.length > 0 ? false : true;
+    valid = newValidationMessages.length == 0;
   } catch (e) {
-    console.log(e);
+    defaultLog.error({ message: 'caught an error while running legacy validation', error: e });
     const newValidationMessages = mapErrorsToValidationMessages([e], appliesToFields, errorMessageTitle);
     validationMessages.push(...newValidationMessages);
-    valid = newValidationMessages.length > 0 ? false : true;
+    valid = newValidationMessages.length == 0;
   }
+
+  defaultLog.debug({
+    message: 'legacy validation result',
+    result: {
+      validationMessages,
+      appliesToFields,
+      valid
+    }
+  });
 
   return {
     validationMessages: validationMessages,
@@ -196,7 +255,6 @@ const runLegacyValidation = (validationFunction, validationFunctionArgs, applies
     valid: valid
   } as RowValidationResult;
 };
-
 const mapFormDataToLegacy = (formData) => {
   let mappedData = {};
   try {
@@ -213,9 +271,7 @@ const mapFormDataToLegacy = (formData) => {
       skipAppRateValidation: formData.activity_subtype_data.chemical_treatment_details.skipAppRateValidation
     };
   } catch (e) {
-    console.log('i am the problem');
-    console.log(e);
-    console.log(JSON.stringify(e));
+    defaultLog.error({ message: 'I am the problem', error: e });
   }
   return mappedData;
 };

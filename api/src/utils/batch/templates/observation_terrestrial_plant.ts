@@ -1,5 +1,5 @@
 import {Template, TemplateColumnBuilder} from '../definitions';
-import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from '../shared_columns';
+import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from '../shared-columns';
 
 const ObservationTerrestrialPlant = new Template(
   'observation_terrestrial_plant',
@@ -66,7 +66,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Type',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.occurrence'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].occurrence'
   )
     .referencesCode('observation_type_code')
     .isRequired()
@@ -74,7 +74,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Invasive Plant',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.invasive_plant_code'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_code'
   )
     .referencesCode('invasive_plant_code')
     .isRequired()
@@ -82,7 +82,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Life Stage',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.plant_life_stage_code'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].plant_life_stage_code'
   )
     .referencesCode('plant_life_stage_code')
     .isRequired()
@@ -90,7 +90,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Density',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.invasive_plant_density_code'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_density_code'
   )
     .referencesCode('invasive_plant_density_code')
     .isRequired()
@@ -98,7 +98,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Distribution',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.invasive_plant_distribution_code'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_distribution_code'
   )
     .referencesCode('invasive_plant_distribution_code')
     .isRequired()
@@ -112,60 +112,60 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Voucher - Sample Collected?',
     'tristate',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collected'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collected'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Accession Number',
     'text',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.accession_number'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.accession_number'
   ).build(),
 
   // utm zone is a number here and a string elsewhere. ?!?
   new TemplateColumnBuilder(
     'Voucher - UTM Zone',
     'numeric',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.exact_utm_coords.utm_zone'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_zone'
   ).build(),
 
   new TemplateColumnBuilder(
     'Voucher - UTM Easting',
     'numeric',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.exact_utm_coords.utm_easting'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_easting'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - UTM Northing',
     'numeric',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.exact_utm_coords.utm_northing'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_northing'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Name of Herbarium',
     'text',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.name_of_herbarium'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.name_of_herbarium'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Sample ID',
     'text',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.voucher_sample_id'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_sample_id'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Date Verified',
     'date',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.date_voucher_verified'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_verified'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Date Collected',
     'date',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.date_voucher_collected'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_collected'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Verifying Person',
     'text',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.voucher_verification_completed_by.person_name'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.person_name'
   ).build(),
   new TemplateColumnBuilder(
     'Voucher - Verifying Organization',
     'text',
-    'form_data.activity_subtype_data.TerrestrialPlants.0.voucher_specimen_collection_information.voucher_verification_completed_by.organization'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.organization'
   ).build()
 ];
 

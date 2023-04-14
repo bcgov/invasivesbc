@@ -12,6 +12,7 @@ interface IMetabaseToInvasivesGroupMapping {
   invasivesGroup: string;
   metabaseGroupId: number;
 }
+
 interface IMatchedUser {
   email: string;
   metabaseUserId: number;
@@ -20,9 +21,11 @@ interface IMatchedUser {
   groupsToAdd: number[];
   groupsToRemove: number[];
 }
+
 interface IUnmatchedUser {
   email: string;
 }
+
 interface IActionTaken {
   action: 'ADDED' | 'DELETED';
   email: string;
@@ -82,7 +85,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       group.metabaseGroupId = matchedGroup.id;
     }
 
-    defaultLog.debug('resolved metabase groups as: ', GROUP_MAPPING);
+    defaultLog.debug(`resolved metabase groups as:  ${GROUP_MAPPING}`);
 
     // get all active metabase users for comparison to our own user data
     const users = await axios({
@@ -216,7 +219,9 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.info(`Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`);
+    defaultLog.info(
+      `Synchronization run completed successfully. ${actionsTaken.length} of ${totalActionsRequired} updates executed`
+    );
 
     // return some useful info for logging in the calling cron job
     return res.status(200).json({
@@ -226,7 +231,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       actionsTaken
     });
   } catch (error) {
-    defaultLog.error('Error in metabase permission synchronization run', error);
+    defaultLog.error({ message: 'Error in metabase permission synchronization run', error });
     return res.status(500).json({ error });
   } finally {
     await closeMetabaseSession();

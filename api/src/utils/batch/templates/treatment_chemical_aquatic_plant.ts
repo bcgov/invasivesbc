@@ -4,7 +4,7 @@ import {
   ActivityPersonsWithApplicatorLicense,
   BasicInformation, BasicInformationRowValidators, ChemicalPlantTreatmentInformation, HerbicidesInformation,
   ProjectInformation, WellInformation
-} from "../shared_columns";
+} from "../shared-columns";
 
 const TreatmentChemicalAquaticPlant = new Template(
   'treatment_chemical_aquatic_plant',

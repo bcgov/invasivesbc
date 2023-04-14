@@ -1,16 +1,16 @@
 'use strict';
 
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { InvasivesRequest } from '../../utils/auth-utils';
-import { TemplateService } from '../../utils/batch/template-utils';
-import { BatchValidationService } from '../../utils/batch/validation';
+import {RequestHandler} from 'express';
+import {Operation} from 'express-openapi';
+import {QueryResult} from 'pg';
+import {ALL_ROLES, SECURITY_ON} from '../../constants/misc';
+import {getDBConnection} from '../../database/db';
+import {InvasivesRequest} from '../../utils/auth-utils';
+import {TemplateService} from '../../utils/batch/template-utils';
+import {BatchValidationService} from '../../utils/batch/validation/validation';
 import csvParser from 'csv-parser';
-import { Readable } from 'stream';
-import { getLogger } from '../../utils/logger';
+import {Readable} from 'stream';
+import {getLogger} from '../../utils/logger';
 
 export const GET: Operation = [getBatch()];
 export const PUT: Operation = [updateBatch()];
@@ -159,8 +159,7 @@ function getBatch(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.error(error)
-      defaultLog.error(JSON.stringify(error))
+      defaultLog.error({ message: 'Could not retrieve batch', error, id });
       return res.status(500).json({
         message: `Error retrieving batch ${id}`,
         request: req.body,

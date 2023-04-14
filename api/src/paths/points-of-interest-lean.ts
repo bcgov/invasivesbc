@@ -132,8 +132,8 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      console.log(
-        'caught an error while checking cache. this is odd but continuing with request as though no cache present.'
+      defaultLog.warn(
+        {message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.', error: e}
       );
     }
 

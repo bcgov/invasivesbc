@@ -1,17 +1,18 @@
-import { speciesRefSql } from '../queries/species_ref';
-import { SQL, SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../database/db';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
-import { getLogger } from './logger';
-import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
+import {speciesRefSql} from '../queries/species_ref';
+import {SQL, SQLStatement} from 'sql-template-strings';
+import {getDBConnection} from '../database/db';
+import {PointOfInterestSearchCriteria} from '../models/point-of-interest';
+import {getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL} from '../queries/iapp-queries';
+import {getLogger} from './logger';
+import {densityMap, distributionMap, mapAspect, mapSlope} from './iapp-payload/iapp-function-utils';
 import {
   biologicalTreatmentsJSON,
   biologicalDispersalJSON,
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
-import { mapSitesRowsToCSV } from './iapp-csv-utils';
+import {mapSitesRowsToCSV} from './iapp-csv-utils';
+
 const defaultLog = getLogger('point-of-interest');
 
 const getSurveyObj = (row: any, map_code: any) => {
@@ -104,7 +105,7 @@ export const getSpeciesRef = async () => {
 
     return response.rows;
   } catch (error) {
-    defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
+    defaultLog.debug({label: 'iapp_species_ref', message: 'error', error});
     throw {
       code: 500,
       message: 'Failed to get species ref',
@@ -130,11 +131,11 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
 
 const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   const species_ref: any[] = await getSpeciesRef();
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
+  defaultLog.debug({label: 'getIAPPjson', message: 'about to map over sites to grab site_id'});
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
-  defaultLog.debug({ label: 'getIAPPjson', message: 'site ids: ' + JSON.stringify(site_ids) });
+  defaultLog.debug({label: 'getIAPPjson', message: 'site ids', site_ids});
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
   let all_site_selection_extracts = [];
@@ -160,7 +161,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
     all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
   }
 
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
+  defaultLog.debug({label: 'getIAPPjson', message: 'about to map over sites'});
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
@@ -375,10 +376,9 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
-    defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
-    console.log('querying...');
+    defaultLog.debug({label: 'getIAPPjson', message: 'about to query for sites'});
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
+    defaultLog.debug({label: 'getIAPPjson', message: 'queried for sites' + response.rowCount});
 
     if (searchCriteria.isCSV && searchCriteria.CSVType === 'site_selection_extract') {
       var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, 'site_selection_extract') : [];
@@ -392,7 +392,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
   } catch (error) {
-    defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
+    defaultLog.debug({label: 'getIAPPjson', message: 'error', error});
     throw {
       code: 500,
       message: 'Failed to get IAPP sites',

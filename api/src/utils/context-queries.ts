@@ -85,10 +85,10 @@ const saveBCGW = async (id: any, req: any) => {
   await connection
     .query(sqlStatement.sql)
     .then(() => {
-      console.log('Successfully entered BCGW data.');
+      defaultLog.info('Successfully entered BCGW data.');
     })
     .catch((err) => {
-      console.error('Error inserting BCGW data into the database', err);
+      defaultLog.error({message: 'Error inserting BCGW data into the database', error: err });
     });
 
   connection.release();
@@ -148,10 +148,10 @@ const saveInternal = (id: any, req: any) => {
         await connection
           .query(sql)
           .then(() => {
-            console.log(`Successfully entered ${attribute} into column ${column}`);
+            defaultLog.info(`Successfully entered ${attribute} into column ${column}`);
           })
           .catch((err) => {
-            console.error('Error inserting into the database', err);
+            defaultLog.error({message: 'Error inserting into the database', error: err});
           });
 
         connection.release();
@@ -198,10 +198,10 @@ const saveElevation = (id: any, req: any) => {
       await connection
         .query(sql)
         .then(() => {
-          console.log('Successfully entered elevation');
+          defaultLog.info('Successfully entered elevation');
         })
         .catch((err) => {
-          console.error('Error inserting into the database', err);
+          defaultLog.error({message: 'Error inserting into the database', error: err});
         });
 
       connection.release();
@@ -245,10 +245,10 @@ const saveWell = (id: any, req: any) => {
     await connection
       .query(sql.text, sql.values)
       .then(() => {
-        console.log('Successfully entered well proximity');
+        defaultLog.info('Successfully entered well proximity');
       })
       .catch((err) => {
-        console.error('Error inserting into the database', err);
+        defaultLog.error({message: 'Error inserting into the database', error: err});
       });
 
     connection.release();

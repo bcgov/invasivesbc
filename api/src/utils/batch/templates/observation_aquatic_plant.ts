@@ -7,7 +7,7 @@ import {
   ShorelineInformation,
   WaterbodyInformation,
   WaterQualityInformation
-} from "../shared_columns";
+} from "../shared-columns";
 
 const ObservationAquaticPlant = new Template(
   'observation_aquatic_plant',

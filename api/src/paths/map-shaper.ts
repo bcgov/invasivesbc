@@ -7,6 +7,7 @@ import { applyCommands } from 'mapshaper';
 import decode from 'urldecode';
 import proj4 from 'proj4';
 import reproject from 'reproject';
+import {getLogger} from "../utils/logger";
 
 /**
  * GET api/species?key=123;key=456;key=789
@@ -22,15 +23,14 @@ proj4.defs(
   'EPSG:3005',
   '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
 );
+const defaultLog = getLogger('map-shaper');
 
 const albersToGeog = (featureCollection) => {
   try {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
     return reprojected;
   } catch (e) {
-    console.log('error converting back to geog from albers:');
-    console.log(JSON.stringify(e));
-    console.log(e);
+    defaultLog.error({message: 'error converting back to geog from albers:', error: e});
   }
 };
 
@@ -82,7 +82,7 @@ function getSimplifiedGeoJSON(): RequestHandler {
           }
         );
       } catch (e) {
-        console.log(e);
+        defaultLog.error({message: 'Failed to get simplified GeoJSON', error: e});
         return res.status(500).json({
           message: 'Failed to get simplified GeoJSON',
           request: req.query,
