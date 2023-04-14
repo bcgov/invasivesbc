@@ -218,8 +218,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
+      const message = (e === undefined)? 'undefined' : e.message
       defaultLog.warn(
-        {message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.', error: e}
+        {message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.', error: message}
       );
     }
 
