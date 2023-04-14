@@ -5,7 +5,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useQuery } from 'hooks/useQuery';
 import { IActivity } from 'interfaces/activity-interfaces';
 import React, { useEffect, useState } from 'react';
-import { getCustomValidator, getJurisdictionPercentValidator } from 'rjsf/business-rules/customValidation';
+import { getJurisdictionPercentValidator } from 'rjsf/business-rules/customValidation';
 import { populateTransectLineAndPointData } from 'rjsf/business-rules/populateCalculatedFields';
 import { generateActivityPayload } from 'utils/addActivity';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
