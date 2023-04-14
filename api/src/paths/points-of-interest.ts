@@ -160,10 +160,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
+      const message = e.message || e
       defaultLog.warn({
         message:
           'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
-        error: e
+        error: message
       });
     }
 
@@ -224,7 +225,8 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
+      const message = error.message || error
+      defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error: message });
       return res.status(500).json({
         message: 'Failed to get points of interest by search filter criteria',
         request: criteria,
