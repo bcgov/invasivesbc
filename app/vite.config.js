@@ -10,6 +10,11 @@ import inject from 'rollup-plugin-inject';
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
   const defines = {};
+  const commitHash = require('child_process')
+    .execSync('git rev-parse --short HEAD')
+    .toString();
+
+  defines.COMMIT_HASH = JSON.stringify(commitHash);
 
   const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
 
