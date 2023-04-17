@@ -50,6 +50,7 @@ const Footer: React.FC<IFooterProps> = () => {
             <Tab label={tab.label} sx={{ fontSize: '0.6rem' }} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}
         </Tabs>
+        {COMMIT_HASH}
       </Toolbar>
     </AppBar>
   );

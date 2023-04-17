@@ -51,7 +51,9 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
+
   try {
+
     // if mobile or web
     yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
   } catch (e) {
