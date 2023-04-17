@@ -44,7 +44,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
-    defines.COMMIT_HASH = JSON.stringify(proccess.env['SOURCE_GIT_COMMIT']);
+    defines.COMMIT_HASH = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }
