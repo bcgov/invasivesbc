@@ -29,12 +29,14 @@ declare global {
   const CONFIGURATION_KEYCLOAK_ADAPTER: string | null;
   const CONFIGURATION_REDIRECT_URI: string | null;
   const CONFIGURATION_IS_MOBILE: string | null;
+  let COMMIT_HASH: string | null
 }
 
 let CONFIG: AppConfig;
 
 switch (CONFIGURATION_SOURCE) {
   case 'Caddy':
+    COMMIT_HASH = '{{env "SOURCE_GIT_COMMIT"}}';
     CONFIG = {
       DEBUG: false,
       MOBILE: false,

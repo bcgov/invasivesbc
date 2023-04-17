@@ -22,7 +22,6 @@ declare global {
   }
   // injected. only for ionic builds.
   const ENABLE_JEEPSQLITE: boolean;
-  const COMMIT_HASH: string;
 }
 
 
