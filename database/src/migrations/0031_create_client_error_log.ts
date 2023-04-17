@@ -13,9 +13,9 @@ set
     id SERIAL PRIMARY KEY,
     error jsonb NOT NULL,
     client_state JSONB NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-    created_by varchar NULL;
-    created_by_with_guid varchar NULL;
+    created_at TIMESTAMP DEFAULT NOW(),
+    created_by varchar NULL,
+    created_by_with_guid varchar NULL
 );
 
       `;
