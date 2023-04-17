@@ -10,11 +10,6 @@ import inject from 'rollup-plugin-inject';
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
   const defines = {};
-  const commitHash = require('child_process')
-    .execSync('git rev-parse --short HEAD')
-    .toString();
-
-  defines.COMMIT_HASH = JSON.stringify(commitHash);
 
   const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
 
@@ -22,9 +17,19 @@ function buildSpecificDefines() {
   defines.CONFIGURATION_IS_MOBILE = JSON.stringify(isMobile);
 
   if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
+    const commitHash = require('child_process')
+      .execSync('git rev-parse --short HEAD')
+      .toString();
+
+    defines.COMMIT_HASH = JSON.stringify(commitHash);
     defines.CONFIGURATION_SOURCE = JSON.stringify('Hardcoded');
   } else if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Provided');
+    const commitHash = require('child_process')
+      .execSync('git rev-parse --short HEAD')
+      .toString();
+
+    defines.COMMIT_HASH = JSON.stringify(commitHash);
 
     if (process.env['REDIRECT_URI'] === undefined) {
       throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
@@ -39,6 +44,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
+    defines.COMMIT_HASH = JSON.stringify(proccess.env['SOURCE_GIT_COMMIT']);
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }
