@@ -167,6 +167,8 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       species_negative: activity?.species_negative_full,
       has_current_positive: activity?.has_current_positive ? 'Yes' : 'No',
       current_positive: activity?.current_positive_species,
+      has_current_negative: activity?.has_current_negative ? 'Yes' : 'No',
+      current_negative: activity?.current_negative_species,
       species_treated: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
