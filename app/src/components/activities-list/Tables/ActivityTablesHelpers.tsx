@@ -12,6 +12,10 @@ export interface ActivityRow {
   jurisdiction: string[]; // activity_incoming_data.jurisdiction
   species_positive: string[]; // activity_incoming_data.species_positive ***
   species_negative: string[]; // activity_incoming_data.species_negative ***
+  has_current_positive: boolean;
+  current_positive: string;
+  has_current_negative: boolean;
+  current_negative: string;
   species_treated: string[];
   created_by: string; // activity_incoming_data.created_by
   updated_by: string;
@@ -53,11 +57,27 @@ export const ActivitiesDefaultHeaders = () => {
     },
     {
       key: 'species_positive',
-      name: 'Species Positive'
+      name: 'All Positive'
     },
     {
       key: 'species_negative',
-      name: 'Species Negative'
+      name: 'All Negative'
+    },
+    {
+      key: 'has_current_positive',
+      name: 'Has Current Positive'
+    },
+    {
+      key: 'current_positive',
+      name: 'Current Positive Species'
+    },
+    {
+      key: 'has_current_negative',
+      name: 'Has Current Negative'
+    },
+    {
+      key: 'current_negative',
+      name: 'Current Negative Species'
     },
     {
       key: 'species_treated',
@@ -145,6 +165,10 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,
+      has_current_positive: activity?.has_current_positive ? 'Yes' : 'No',
+      current_positive: activity?.current_positive_species,
+      has_current_negative: activity?.has_current_negative ? 'Yes' : 'No',
+      current_negative: activity?.current_negative_species,
       species_treated: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
