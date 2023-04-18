@@ -273,7 +273,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         zoomControl={false}
         whenCreated={setMap}
         preferCanvas={true}
-        wheelPxPerZoomLevel={8}
+        wheelPxPerZoomLevel={60}
         tap={true}>
         <FlyToAndFadeContextProvider>
           <MapRequestContextProvider>

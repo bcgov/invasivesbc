@@ -1,4 +1,5 @@
 import {
+  mapFormDataToLegacy,
   validate_chem_app_method_value,
   validate_general_fields,
   validate_herbicide_fields,
@@ -14,6 +15,7 @@ import { getLogger } from '../../logger';
 const defaultLog = getLogger('batch');
 
 export const ValidateHerbicides = (row) => {
+  
   const appliesToFields = [
     'Herbicide - 1 - PAR - Production Application Rate',
     'Herbicide - 2 - PAR - Production Application Rate',
@@ -97,6 +99,10 @@ export const ValidateTankMixHerbicides = (row) => {
 };
 
 export const ValidateTankMixFields = (row) => {
+  let result;
+  try
+  {
+
   const appliesToFields = [
     'Herbicide - Tank Mix?',
     'Herbicide - 1 - Calculation Type',
@@ -113,12 +119,21 @@ export const ValidateTankMixFields = (row) => {
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
   const validationFunctionArgs = [area, formData, []];
 
-  return runLegacyValidation(
+
+  result = runLegacyValidation(
     validate_tank_mix_fields,
     validationFunctionArgs,
     appliesToFields,
     'Tank Mix Fields Validation'
   );
+  }
+  catch(e)
+  {
+    console.log(e);
+    throw e
+  }
+
+  return result
 };
 
 export const ValidateChemAppMethod = (row) => {
@@ -254,24 +269,4 @@ const runLegacyValidation = (
     appliesToFields: appliesToFields,
     valid: valid
   } as RowValidationResult;
-};
-const mapFormDataToLegacy = (formData) => {
-  let mappedData = {};
-  try {
-    mappedData = {
-      application_start_time: formData.activity_subtype_data.Treatment_ChemicalPlant_Information.application_start_time,
-      invasive_plants: formData.activity_subtype_data.chemical_treatment_details.invasive_plants,
-      tank_mix: formData.activity_subtype_data.chemical_treatment_details.tank_mix,
-      chemical_application_method:
-        formData.activity_subtype_data.chemical_treatment_details.chemical_application_method,
-      chemical_application_method_type:
-        formData.activity_subtype_data.chemical_treatment_details.chemical_application_method_type,
-      herbicides: formData.activity_subtype_data.chemical_treatment_details.herbicides,
-      tank_mix_object: formData.activity_subtype_data.chemical_treatment_details.tank_mix_object,
-      skipAppRateValidation: formData.activity_subtype_data.chemical_treatment_details.skipAppRateValidation
-    };
-  } catch (e) {
-    defaultLog.error({ message: 'I am the problem', error: e });
-  }
-  return mappedData;
 };

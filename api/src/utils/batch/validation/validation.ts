@@ -356,15 +356,16 @@ export const BatchValidationService = {
         const templateColumn = template.columns.find((t) => t.name === field);
 
         try {
+          const validatedCellData = await _validateCell(template, templateColumn, row.data[field]);
           row.data[field] = {
             inputValue: row.data[field],
             templateColumn,
             spreadsheetCellAddress: _cellAddress(rowIndex + 1 /* skip header */, colIndex + 1 /* 1-based count */),
-            ...(await _validateCell(template, templateColumn, row.data[field]))
+            ...validatedCellData
           };
         } catch (e) {
-          defaultLog.debug({ message: 'Error mapping', templateColumn, error: e });
-          throw e;
+          const message = e?.message || e;
+          defaultLog.debug({ message: 'Error mapping', templateColumn, error: message });
         }
 
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
@@ -378,6 +379,7 @@ export const BatchValidationService = {
         try {
           return rv(row);
         } catch (e) {
+          
           defaultLog.error({ message: 'Caught an error while running a row-level validator', error: e, validator: rv.name });
         }
       });
@@ -398,7 +400,7 @@ export const BatchValidationService = {
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;
     result.canProceed = totalErrorCount == 0;
-    defaultLog.debug({ message: 'object validation complete', result });
+    defaultLog.debug({ message: 'object validation complete'});
 
     return result;
   }

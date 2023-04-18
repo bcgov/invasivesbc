@@ -1,6 +1,30 @@
 import { HerbicideApplicationRates } from './herbicideApplicationRates';
 import { IGeneralFields } from './herbicideCalculator';
 
+export const mapFormDataToLegacy = (formData) => {
+  let mappedData = {};
+
+  try {
+    mappedData = {
+      application_start_time:
+        formData?.activity_subtype_data?.Treatment_ChemicalPlant_Information?.application_start_time,
+      invasive_plants: formData?.activity_subtype_data?.chemical_treatment_details?.invasive_plants,
+      tank_mix: formData?.activity_subtype_data?.chemical_treatment_details?.tank_mix,
+      chemical_application_method:
+        formData?.activity_subtype_data?.chemical_treatment_details?.chemical_application_method,
+      chemical_application_method_type:
+        formData?.activity_subtype_data?.chemical_treatment_details?.chemical_application_method_type,
+      herbicides: formData?.activity_subtype_data?.chemical_treatment_details?.herbicides,
+      tank_mix_object: formData?.activity_subtype_data?.chemical_treatment_details?.tank_mix_object,
+      skipAppRateValidation: formData?.activity_subtype_data?.chemical_treatment_details?.skipAppRateValidation
+    };
+  } catch (e) {
+    console.log('error mapping fields');
+    throw e;
+  }
+  return mappedData;
+};
+
 export const runValidation = (
   area: number,
   formData: IGeneralFields,

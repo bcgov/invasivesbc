@@ -1,7 +1,9 @@
-import {Feature} from 'geojson';
+import { Feature } from 'geojson';
 import moment from 'moment';
-import {v4 as uuidv4} from 'uuid';
-import {ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType} from "./constants";
+import { v4 as uuidv4 } from 'uuid';
+import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType } from './constants';
+import { performCalculation } from './validation/herbicideCalculator';
+import { mapFormDataToLegacy } from './validation/chemTreatmentValidation';
 
 export * from './validation/constants';
 export * from './validation/herbicideCalculator';
@@ -9,6 +11,19 @@ export * from './validation/chemTreatmentValidation';
 export * from './validation/herbicideApplicationRates';
 export * from './validation/areaLimitValidation';
 export * from './constants';
+
+export const autofillChemFields = (activity) => {
+  let newActivity = JSON.parse(JSON.stringify(activity));
+
+  const area = newActivity.form_data.activity_type_data.area;
+  const formData = mapFormDataToLegacy(newActivity.form_data.activity_type_data);
+  const businessCodes = {};
+
+  const calculationResults = performCalculation(area, mapFormDataToLegacy(formData), businessCodes);
+  newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
+
+  return newActivity;
+};
 
 export const activity_create_function = (
   type: string,
@@ -23,7 +38,7 @@ export const activity_create_function = (
 
   //    if ([ActivityType.Observation, ActivityType.Treatment].includes(activityV2.activity_type))
   {
-    activityV2.form_data.activity_type_data.activity_persons = [{person_name: displayName}];
+    activityV2.form_data.activity_type_data.activity_persons = [{ person_name: displayName }];
   }
 
   if ([ActivityType.Treatment].includes(activityV2.activity_type)) {
@@ -32,7 +47,6 @@ export const activity_create_function = (
 
   return activityV2;
 };
-
 
 export function generateDBActivityPayload(
   formData: any,
@@ -122,7 +136,6 @@ export function generateDBActivityPayload(
   return returnVal;
 }
 
-
 export const getShortActivityID = (activity) => {
   if (!activity?.activity_subtype || !activity?.activity_id || !(activity?.date_created || activity.created_timestamp))
     return;
@@ -131,7 +144,6 @@ export const getShortActivityID = (activity) => {
     .substr(2, 2);
   return shortYear + ActivityLetter[activity.activity_subtype] + activity.activity_id.substr(0, 4).toUpperCase();
 };
-
 
 export function populateSpeciesArrays(record) {
   let species_positive: any = [];

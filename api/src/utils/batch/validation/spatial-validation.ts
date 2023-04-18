@@ -27,7 +27,12 @@ export const checkWKTInBounds = async (input: string) => {
       values: [input]
     });
     return res.rows[0]['valid'];
-  } finally {
+  }
+  catch(e)
+  {
+    throw e
+  }
+   finally {
     connection.release();
   }
 };

@@ -17,12 +17,14 @@ export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?
     }
   }, [truncate, props.displayVal]);
 
+          //{truncate && <UnfoldMore /> || <UnfoldLess/>}
   if (typeof props.displayVal == 'string') {
     return (
       <>
         <Button onClick={() => setTruncate(!truncate)}>
-          {truncate && <UnfoldMore />}
-          {truncate || <UnfoldLess />}
+          <>
+          {truncate && <UnfoldMore /> || <UnfoldLess/>}
+          </>
         </Button>
         <CopyToClipboardButton content={props.content ? props.content : props.displayVal} />
         {renderedValue}
@@ -139,7 +141,7 @@ const BatchTableCell = ({ field, row }) => {
               {m.messageDetail && (
                 <>
                   <br />
-                  {m.messageDetail}
+                  {JSON.stringify(m.messageDetail)}
                 </>
               )}
             </li>
@@ -170,9 +172,9 @@ const BatchTable = ({ jsonRepresentation }) => {
             return (
               <tr key={h}>
                 <td className={'fieldName'}>{h}</td>
-                {jsonRepresentation?.rows?.map((row) => (
+                <>{jsonRepresentation?.rows?.map((row) => (
                   <BatchTableCell key={row.rowIndex} field={h} row={row} />
-                ))}
+                ))}</>
               </tr>
             );
           })}
@@ -196,7 +198,7 @@ const BatchTable = ({ jsonRepresentation }) => {
                   ))}
                 </ul>
               </td>
-            ))}
+                  ))}
           </tr>
         </tbody>
       </table>
