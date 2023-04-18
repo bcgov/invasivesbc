@@ -45,17 +45,7 @@ services:
       # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
       # started before the setup runs. Possible better solutions:
       # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-      - api_dependency
 
-  ## Build the api npm dependencies docker image
-  api_dependency:
-    image: ${PROJECT_NAME}-${TAG}-api-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-dep
-    build:
-      context: ./
-      dockerfile: ./api/.docker/api/Dockerfile.npm
-    volumes:
-      - npmcache_api:/opt/app-root/src/node_modules
 
   ## Build the api docker image
   api:
@@ -92,7 +82,6 @@ services:
     depends_on:
       - db
       - db_setup
-      - api_dependency
 
   # Build the nginx web-server docker image
   nginx:
