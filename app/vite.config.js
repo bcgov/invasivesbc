@@ -44,13 +44,19 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
-    if (process.env.OPENSHIFT_BUILD_COMMIT !== undefined) {
+
+    console.dir(process.env);
+
+    if (process.env['OPENSHIFT_BUILD_COMMIT'] !== undefined) {
+      console.log('Building in Openshift');
       defines.INJECTED_COMMIT_HASH = JSON.stringify(process.env['OPENSHIFT_BUILD_COMMIT']);
-    } else if (process.env.SOURCE_GIT_COMMIT !== undefined) {
+    } else if (process.env['SOURCE_GIT_COMMIT'] !== undefined) {
       defines.INJECTED_COMMIT_HASH = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
     } else {
+      console.log('Using fallback commit hash');
       defines.INJECTED_COMMIT_HASH = JSON.stringify('local');
     }
+
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }
