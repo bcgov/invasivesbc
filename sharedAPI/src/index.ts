@@ -15,11 +15,11 @@ export * from './constants';
 export const autofillChemFields = (activity) => {
   let newActivity = JSON.parse(JSON.stringify(activity));
 
-  const area = newActivity.form_data.activity_type_data.area;
-  const formData = mapFormDataToLegacy(newActivity.form_data.activity_type_data);
+  const area = newActivity?.form_data?.activity_data?.reported_area || 0;
+  const formData = mapFormDataToLegacy(newActivity.form_data);
   const businessCodes = {};
 
-  const calculationResults = performCalculation(area, mapFormDataToLegacy(formData), businessCodes);
+  const calculationResults = performCalculation(area, formData, businessCodes);
   newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
   return newActivity;

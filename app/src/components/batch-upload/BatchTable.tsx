@@ -139,7 +139,7 @@ const BatchTableCell = ({ field, row }) => {
               {m.messageDetail && (
                 <>
                   <br />
-                  {JSON.stringify(m.messageDetail)}
+                  {JSON.stringify(m.messageDetail, null, 2)}
                 </>
               )}
             </li>

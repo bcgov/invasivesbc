@@ -45,7 +45,7 @@ export const mapTemplateFields = (
         break;
       default:
         try {
-          _.set(output, cell.templateColumn.mappedPath, cell.parsedValue);
+          _.set(output, cell.templateColumn.mappedPath, cell.inputValue);
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });
         }
