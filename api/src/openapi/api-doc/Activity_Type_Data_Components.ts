@@ -52,13 +52,6 @@ export const Monitoring_Biocontrol = {
   type: 'object',
   required: ['activity_persons'],
   properties: {
-    legacy_iapp_id: {
-      type: 'number',
-      maximum: 999999,
-      minimum: 10000,
-      title: 'Legacy IAPP Release ID',
-      'x-tooltip-text': 'IAPP site ID'
-    },
     activity_persons: {
       type: 'array',
       default: [{}],
