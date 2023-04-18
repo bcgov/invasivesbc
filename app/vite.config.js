@@ -21,7 +21,7 @@ function buildSpecificDefines() {
       .execSync('git rev-parse --short HEAD')
       .toString();
 
-    defines.COMMIT_HASH = JSON.stringify(commitHash);
+    defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
     defines.CONFIGURATION_SOURCE = JSON.stringify('Hardcoded');
   } else if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Provided');
@@ -29,7 +29,7 @@ function buildSpecificDefines() {
       .execSync('git rev-parse --short HEAD')
       .toString();
 
-    defines.COMMIT_HASH = JSON.stringify(commitHash);
+    defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
 
     if (process.env['REDIRECT_URI'] === undefined) {
       throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
@@ -44,7 +44,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
-    defines.COMMIT_HASH = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
+    defines.INJECTED_COMMIT_HASH = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }

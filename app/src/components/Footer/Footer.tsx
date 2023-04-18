@@ -14,6 +14,7 @@ const Footer: React.FC<IFooterProps> = () => {
   const history = useHistory();
   const connected = useSelector(selectNetworkConnected);
   const [networkStatusString, setNetworkStatusString] = useState(connected ? 'Online' : 'Offline');
+  const CONFIG = useSelector(selectConfiguration);
 
   useEffect(() => {
     setNetworkStatusString(connected ? 'Online' : 'Offline');
@@ -50,7 +51,7 @@ const Footer: React.FC<IFooterProps> = () => {
             <Tab label={tab.label} sx={{ fontSize: '0.6rem' }} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}
         </Tabs>
-        {COMMIT_HASH}
+        {CONFIG.COMMIT_HASH}
       </Toolbar>
     </AppBar>
   );

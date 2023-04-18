@@ -12,11 +12,7 @@ import tabsSaga from './sagas/tabs';
 import activitiesPageSaga from './sagas/map';
 import iappPageSaga from './sagas/iappsite';
 import batchSaga from './sagas/batch';
-import { selectAuth } from './reducers/auth';
-import { call, select } from 'redux-saga/effects';
-import { InvasivesAPI_Call, getRequestOptions } from 'hooks/useInvasivesApi';
-import  co from 'co';
-import { InvasivesAPI_Callback } from 'hooks/useInvasivesApi';
+import { getRequestOptions, InvasivesAPI_Callback } from 'hooks/useInvasivesApi';
 
 const setupStore = (configuration: AppConfig) => {
   const logger = createLogger({
@@ -32,7 +28,7 @@ const setupStore = (configuration: AppConfig) => {
         let loggingState = JSON.parse(JSON.stringify(state));
         loggingState.Map.activitiesGeoJSON = state.Map.activitiesGeoJSON?.features?.length;
         loggingState.Map.IAPPGeoJSON = state.Map.IAPPGeoJSON?.features?.length;
-        const postObj = { error: { message: e.message + '' + e.stack}, clientState: loggingState, commitHash: COMMIT_HASH };
+        const postObj = { error: { message: e.message + '' + e.stack}, clientState: loggingState, commitHash: configuration.COMMIT_HASH };
         const requestOptions = state.Auth.requestHeaders;
         const config = state.Configuration.current;
         const options = getRequestOptions(config, requestOptions);

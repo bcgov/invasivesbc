@@ -4,6 +4,8 @@ export interface AppConfig {
 
   API_BASE: string;
 
+  COMMIT_HASH: string;
+
   KEYCLOAK_CLIENT_ID: string;
   KEYCLOAK_REALM: string;
   KEYCLOAK_URL: string;
@@ -29,15 +31,15 @@ declare global {
   const CONFIGURATION_KEYCLOAK_ADAPTER: string | null;
   const CONFIGURATION_REDIRECT_URI: string | null;
   const CONFIGURATION_IS_MOBILE: string | null;
-  let COMMIT_HASH: string | null
+  const INJECTED_COMMIT_HASH: string | null;
 }
 
 let CONFIG: AppConfig;
 
 switch (CONFIGURATION_SOURCE) {
   case 'Caddy':
-    COMMIT_HASH = '{{env "SOURCE_GIT_COMMIT"}}';
     CONFIG = {
+      COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       DEBUG: false,
       MOBILE: false,
       API_BASE: '{{env "API_BASE"}}',
@@ -56,6 +58,7 @@ switch (CONFIGURATION_SOURCE) {
   case 'Provided':
     CONFIG = {
       DEBUG: true,
+      COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       MOBILE: JSON.parse(CONFIGURATION_IS_MOBILE) === true,
       API_BASE: CONFIGURATION_API_BASE,
       KEYCLOAK_CLIENT_ID: CONFIGURATION_KEYCLOAK_CLIENT_ID,
@@ -75,6 +78,7 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       DEBUG: true,
       MOBILE: false,
+      COMMIT_HASH: 'local',
       API_BASE: 'http://localhost:3002',
       KEYCLOAK_CLIENT_ID: 'invasives-bc-1849',
       KEYCLOAK_REALM: 'onestopauth-business',
