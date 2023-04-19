@@ -372,7 +372,10 @@ export const BatchValidationService = {
           defaultLog.warn({ message: 'Error mapping', templateColumn, error: message });
         }
 
-        totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
+        if(row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length > 0)
+        {
+          totalErrorCount += row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length
+        }
       }
 
       const { mappedObject, messages } = _mapRowToDBObject(row, template, reqUser);

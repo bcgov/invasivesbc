@@ -1,10 +1,10 @@
-import {Template} from './definitions';
-import {getLogger} from '../logger';
-import {PoolClient} from 'pg';
-import {randomUUID} from 'crypto';
+import { Template } from './definitions';
+import { getLogger } from '../logger';
+import { PoolClient } from 'pg';
+import { randomUUID } from 'crypto';
 import moment from 'moment';
-import {activity_create_function, ActivityLetter, autofillChemFields} from 'sharedAPI';
-import {mapTemplateFields} from './blob-utils';
+import { activity_create_function, ActivityLetter, autofillChemFields } from 'sharedAPI';
+import { mapTemplateFields } from './blob-utils';
 
 const defaultLog = getLogger('batch');
 
@@ -29,8 +29,23 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   mapped = mapTemplateFields(mapped, row);
 
-  if(['Activity_Treatment_ChemicalPlantTerrestrial'].includes(subtype)) {
-    mapped = autofillChemFields(mapped);
+  if (['Activity_Treatment_ChemicalPlantTerrestrial'].includes(subtype)) {
+
+
+    const chemicalMethodSprayCodes = row.data[
+      'Chemical Treatment (If Tank Mix) - Application Method'
+    ]?.templateColumn.codes.map((codeObj) => {
+      return codeObj.code
+    });
+
+    const chemicalMethodCodes = row.data[
+      'Chemical Treatment (No Tank Mix) - Application Method'
+    ]?.templateColumn.codes.map((codeObj) => {
+      return codeObj.code
+    });
+
+
+    mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
 
   mapped['form_data']['form_status'] = 'Submitted';
@@ -69,7 +84,7 @@ export const BatchExecutionService = {
     for (const row of validatedBatchData.rows) {
       //@todo skip errored rows
 
-      const {id: activityId, shortId, payload} = _mapToDBObject(
+      const { id: activityId, shortId, payload } = _mapToDBObject(
         row,
         desiredFinalStatus,
         template.type,
@@ -124,8 +139,7 @@ export const BatchExecutionService = {
     defaultLog.info({
       message: 'finishing batch exec run',
       id
-    })
-;
+    });
 
     return {
       createdActivityIDs: createdIds

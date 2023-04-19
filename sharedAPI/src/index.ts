@@ -12,15 +12,42 @@ export * from './validation/herbicideApplicationRates';
 export * from './validation/areaLimitValidation';
 export * from './constants';
 
-export const autofillChemFields = (activity) => {
+//export const autofillChemFields = (activity, codesForFiled) => {
+export const autofillChemFields = (activity,  chemicalMethodSprayCodes, chemicalMethodCodes) => {
   let newActivity = JSON.parse(JSON.stringify(activity));
 
-  const area = newActivity.form_data.activity_type_data.area;
-  const formData = mapFormDataToLegacy(newActivity.form_data.activity_type_data);
+  const area = newActivity?.form_data?.activity_data?.reported_area || 0;
+  const formData = mapFormDataToLegacy(newActivity.form_data);
   const businessCodes = {};
 
-  const calculationResults = performCalculation(area, mapFormDataToLegacy(formData), businessCodes);
+  const calculationResults = performCalculation(area, formData, businessCodes);
   newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
+
+  const chemicalApplicationMethod = activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method
+  newActivity.chemical_application_method_type = chemicalMethodSprayCodes?.includes(chemicalApplicationMethod)
+          ? 'spray'
+          : 'direct'
+
+  const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix
+
+  if(tank_mix)
+  {
+    newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides = activity.form_data.activity_subtype_data.chemical_treatment_details.herbicides
+    delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides
+
+  }
+
+  
+
+
+    // TODO:  copy blob autofill stuff from tankmix accordion
+
+
+
+
+
+    // TODO:  copy blob autofill stuff from herbicides accordion
+
 
   return newActivity;
 };
@@ -41,7 +68,7 @@ export const activity_create_function = (
     activityV2.form_data.activity_type_data.activity_persons = [{ person_name: displayName }];
   }
 
-  if ([ActivityType.Treatment].includes(activityV2.activity_type)) {
+  if ([ActivityType.Treatment]?.includes(activityV2.activity_type)) {
     activityV2.form_data.activity_type_data.activity_persons[0].applicator_license = pac_number;
   }
 
