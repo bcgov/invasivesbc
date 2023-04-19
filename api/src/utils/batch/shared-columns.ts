@@ -1,19 +1,20 @@
-import { TemplateColumnBuilder } from './definitions';
-import { RowValidationResult } from './validation/validation';
+import {TemplateColumnBuilder} from './definitions';
+import {RowValidationResult} from './validation/validation';
+import {WIND_DIRECTION_CODES} from "./hard-coded-codes";
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
-    geometry: 'geometry',
-    area: 'form_data.activity_data.reported_area'
+    geojson: 'geometry',
+    area: 'form_data.activity_data.reported_area',
+    latitude: 'form_data.activity_data.latitude',
+    longitude: 'form_data.activity_data.longitude',
+    utm_zone: 'form_data.activity_data.utm_zone',
+    utm_northing: 'form_data.activity_data.utm_northing',
+    utm_easting: 'form_data.activity_data.utm_easting'
   })
     .isRequired()
     .build(),
   new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time').isRequired().build(),
-  new TemplateColumnBuilder('Basic - Latitude', 'numeric', 'form_data.activity_data.latitude').build(),
-  new TemplateColumnBuilder('Basic - Longitude', 'numeric', 'form_data.activity_data.longitude').build(),
-  new TemplateColumnBuilder('Basic - UTM Easting', 'numeric', 'form_data.activity_data.utm_easting').build(),
-  new TemplateColumnBuilder('Basic - UTM Northing', 'numeric', 'form_data.activity_data.utm_northing').build(),
-  new TemplateColumnBuilder('Basic - UTM Zone', 'text', 'form_data.activity_data.utm_zone').build(),
   new TemplateColumnBuilder('Basic - Employer', 'codeReference', 'form_data.activity_data.employer_code')
     .isRequired()
     .referencesCode('employer_code')
@@ -151,56 +152,8 @@ const LinkedRecordsValidator = (linkedRecords) => {
   };
 };
 
-const _UTMorLatLongValidator = (row): RowValidationResult => {
-  const rowData = row.data;
-  const latLongCols = ['Basic - Latitude', 'Basic - Longitude'];
-  const UTMcols = ['Basic - UTM Easting', 'Basic - UTM Northing', 'Basic - UTM Zone'];
-  let valid = false;
-  const validationMessages = [];
-
-  let latLongPresent = false;
-
-  latLongCols.forEach((c) => {
-    if (rowData?.[c]?.parsedValue) {
-      latLongPresent = true;
-    }
-  });
-
-  let UTMpresent = false;
-  UTMcols.forEach((c) => {
-    if (rowData?.[c]?.parsedValue) {
-      UTMpresent = true;
-    }
-  });
-
-  if (!UTMpresent && !latLongPresent) {
-    valid = false;
-    validationMessages.push({
-      severity: 'error',
-      messageTitle: 'Exactly one of UTM Coords or Lat/Lon must be provided',
-      messageDetail: `Neither found`
-    });
-  }
-
-  if (UTMpresent && latLongPresent) {
-    valid = false;
-    validationMessages.push({
-      severity: 'error',
-      messageTitle: 'Exactly one of UTM Coords or Lat/Lon must be provided',
-      messageDetail: `Both found. Remove one of them.`
-    });
-  }
-
-  return {
-    valid,
-    validationMessages,
-    appliesToFields: [...latLongCols, ...UTMcols]
-  };
-};
-
 export const BasicInformationRowValidators = [
   _JurisdictionSumValidator,
-  _UTMorLatLongValidator,
   LinkedRecordsValidator(['Basic - Jurisdiction 2', 'Basic - Jurisdiction 2 % Covered']),
   LinkedRecordsValidator(['Basic - Jurisdiction 3', 'Basic - Jurisdiction 3 % Covered'])
 ];
@@ -255,7 +208,7 @@ export const ProjectInformation = [
 export const WellInformation = [
   new TemplateColumnBuilder(
     'Wells - Well 1 ID',
-    'numeric',
+    'text',
     'form_data.activity_subtype_data.Well_Information[0].well_id'
   ).build(),
   new TemplateColumnBuilder(
@@ -599,6 +552,7 @@ export const ChemicalPlantTreatmentInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.wind_direction_code'
   )
+    .hardcodedCodes(WIND_DIRECTION_CODES)
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

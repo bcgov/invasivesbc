@@ -24,10 +24,10 @@ class LoggerWithContext {
         new winston.transports.Console({
           level: process.env.LOG_LEVEL || 'debug',
           format: winston.format.combine(
-            winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
-            winston.format.errors({stack: true}),
+            winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+            winston.format.errors({ stack: true }),
             winston.format.colorize(),
-            winston.format.printf(({level, timestamp, label, message, ...meta}) => {
+            winston.format.printf(({ level, timestamp, label, message, ...meta }) => {
               const optionalLabel = label ? ` ${label} - ` : '';
               const preamble = `[${timestamp}] (${level}) (${outputLabel}):${optionalLabel}`;
               //
@@ -52,7 +52,15 @@ class LoggerWithContext {
               let formattedAdditionalContext = null;
 
               if (_.keys(additionalContext).length > 0) {
-                formattedAdditionalContext = YAML.dump(additionalContext);
+                try {
+                  formattedAdditionalContext = YAML.dump(additionalContext);
+                } catch (e) {
+                  try {
+                    formattedAdditionalContext = JSON.stringify(additionalContext, null, 2);
+                  } catch (f) {
+                    formattedAdditionalContext = 'Error in logger while dumping additional context object.';
+                  }
+                }
               }
 
               if (formattedAdditionalContext) {

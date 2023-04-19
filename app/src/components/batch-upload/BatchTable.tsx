@@ -17,14 +17,12 @@ export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?
     }
   }, [truncate, props.displayVal]);
 
-          //{truncate && <UnfoldMore /> || <UnfoldLess/>}
+  //{truncate && <UnfoldMore /> || <UnfoldLess/>}
   if (typeof props.displayVal == 'string') {
     return (
       <>
         <Button onClick={() => setTruncate(!truncate)}>
-          <>
-          {truncate && <UnfoldMore /> || <UnfoldLess/>}
-          </>
+          <>{(truncate && <UnfoldMore />) || <UnfoldLess />}</>
         </Button>
         <CopyToClipboardButton content={props.content ? props.content : props.displayVal} />
         {renderedValue}
@@ -55,14 +53,14 @@ const BatchTableCell = ({ field, row }) => {
         setDisplayedValue(v ? 'True' : 'False');
         break;
       case 'codeReference':
-        try {
-          setDisplayedValue(v.description);
-        } catch (e) {
+        if (row.data[field]['friendlyValue'] !== undefined && row.data[field]['friendlyValue'] !== null) {
+          setDisplayedValue(row.data[field]['friendlyValue']);
+        } else {
           setDisplayedValue(row.data[field].inputValue);
         }
         break;
       case 'WKT':
-        setDisplayedValue(`Geometry, ${v.area?.toPrecision(4).toLocaleString()}m²`);
+        setDisplayedValue(`Geometry, ${v.area?.toLocaleString()}m²`);
         break;
       default:
         setDisplayedValue(v);
@@ -127,7 +125,7 @@ const BatchTableCell = ({ field, row }) => {
           <AbbreviatedDisplayWithCopy
             length={25}
             displayVal={displayedValue}
-            content={row.data[field].parsedValue?.data || ''}
+            content={JSON.stringify(row.data[field].parsedValue?.geojson) || ''}
           />
         ) : (
           displayedValue
@@ -172,9 +170,11 @@ const BatchTable = ({ jsonRepresentation }) => {
             return (
               <tr key={h}>
                 <td className={'fieldName'}>{h}</td>
-                <>{jsonRepresentation?.rows?.map((row) => (
-                  <BatchTableCell key={row.rowIndex} field={h} row={row} />
-                ))}</>
+                <>
+                  {jsonRepresentation?.rows?.map((row) => (
+                    <BatchTableCell key={row.rowIndex} field={h} row={row} />
+                  ))}
+                </>
               </tr>
             );
           })}
@@ -198,7 +198,7 @@ const BatchTable = ({ jsonRepresentation }) => {
                   ))}
                 </ul>
               </td>
-                  ))}
+            ))}
           </tr>
         </tbody>
       </table>
