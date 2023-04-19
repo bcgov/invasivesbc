@@ -29,8 +29,12 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   mapped = mapTemplateFields(mapped, row);
 
+
+
+  const codesForField = row['filedName'].templateSomething
+
   if(['Activity_Treatment_ChemicalPlantTerrestrial'].includes(subtype)) {
-    mapped = autofillChemFields(mapped);
+    mapped = autofillChemFields(mapped, codesForField, codesForField2);
   }
 
   mapped['form_data']['form_status'] = 'Submitted';
