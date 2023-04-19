@@ -12,7 +12,8 @@ export * from './validation/herbicideApplicationRates';
 export * from './validation/areaLimitValidation';
 export * from './constants';
 
-export const autofillChemFields = (activity, codesForFiled) => {
+//export const autofillChemFields = (activity, codesForFiled) => {
+export const autofillChemFields = (activity,  chemicalMethodSprayCodes, chemicalMethodCodes) => {
   let newActivity = JSON.parse(JSON.stringify(activity));
 
   const area = newActivity?.form_data?.activity_data?.reported_area || 0;
@@ -22,17 +23,10 @@ export const autofillChemFields = (activity, codesForFiled) => {
   const calculationResults = performCalculation(area, formData, businessCodes);
   newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
-  //TODO:
-  // autofill chemical application method 203 ChemicalTreatmentDetailsForm
-
-  //  
-  const tankMix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix
-  const chemicalApplicationMethodChoices = tankMix? ['Chem method spray codes list here'] : ['chem method spray and chem method direct codes']
-
-  newActivity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method = 'whatever'
-  newActivity.chemical_application_method_type: chemical_method_direct_code_values.includes(chemicalApplicationMethod)
-          ? 'direct'
-          : 'spray'
+  const chemicalApplicationMethod = activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method
+  newActivity.chemical_application_method_type = chemicalMethodSprayCodes.includes(chemicalApplicationMethod)
+          ? 'spray'
+          : 'direct'
 
 
 

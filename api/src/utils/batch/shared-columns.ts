@@ -614,13 +614,22 @@ export const ChemicalPlantTreatmentInformation = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Chemical Treatment - Application Method',
+    'Chemical Treatment (If Tank Mix) - Application Method',
     'codeReference',
     'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
   )
-    .referencesCode('chemical_method_code')
+    .referencesCode('chemical_method_spray')
     .build()
 ];
+new TemplateColumnBuilder(
+  'Chemical Treatment (No Tank Mix) - Application Method',
+  'codeReference',
+  'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
+)
+  .referencesCode('chemical_method_code')
+  .build()
+];
+
 
 export const HerbicidesInformation = [
   new TemplateColumnBuilder(
