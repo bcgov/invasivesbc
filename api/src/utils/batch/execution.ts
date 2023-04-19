@@ -29,22 +29,18 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   mapped = mapTemplateFields(mapped, row);
 
-  //  const codesForField = row['filedName'].templateSomething
-
-  const chemicalMethodSprayCodes = 'Chemical Treatment (If Tank Mix) - Application Method';
-
   if (['Activity_Treatment_ChemicalPlantTerrestrial'].includes(subtype)) {
 
 
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
-    ].templateColumn.codes.map((codeObj) => {
+    ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code
     });
 
     const chemicalMethodCodes = row.data[
       'Chemical Treatment (No Tank Mix) - Application Method'
-    ].templateColumn.codes.map((codeObj) => {
+    ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code
     });
 

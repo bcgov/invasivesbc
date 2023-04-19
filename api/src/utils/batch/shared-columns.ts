@@ -619,8 +619,7 @@ export const ChemicalPlantTreatmentInformation = [
     'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
   )
     .referencesCode('chemical_method_spray')
-    .build()
-];
+    .build(),
 new TemplateColumnBuilder(
   'Chemical Treatment (No Tank Mix) - Application Method',
   'codeReference',

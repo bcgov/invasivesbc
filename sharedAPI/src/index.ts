@@ -24,11 +24,20 @@ export const autofillChemFields = (activity,  chemicalMethodSprayCodes, chemical
   newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
   const chemicalApplicationMethod = activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method
-  newActivity.chemical_application_method_type = chemicalMethodSprayCodes.includes(chemicalApplicationMethod)
+  newActivity.chemical_application_method_type = chemicalMethodSprayCodes?.includes(chemicalApplicationMethod)
           ? 'spray'
           : 'direct'
 
+  const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix
 
+  if(tank_mix)
+  {
+    newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides = activity.form_data.activity_subtype_data.chemical_treatment_details.herbicides
+    delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides
+
+  }
+
+  
 
 
     // TODO:  copy blob autofill stuff from tankmix accordion
@@ -59,7 +68,7 @@ export const activity_create_function = (
     activityV2.form_data.activity_type_data.activity_persons = [{ person_name: displayName }];
   }
 
-  if ([ActivityType.Treatment].includes(activityV2.activity_type)) {
+  if ([ActivityType.Treatment]?.includes(activityV2.activity_type)) {
     activityV2.form_data.activity_type_data.activity_persons[0].applicator_license = pac_number;
   }
 
