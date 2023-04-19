@@ -15,7 +15,6 @@ import { getLogger } from '../../logger';
 const defaultLog = getLogger('batch');
 
 export const ValidateHerbicides = (row) => {
-  
   const appliesToFields = [
     'Herbicide - 1 - PAR - Production Application Rate',
     'Herbicide - 2 - PAR - Production Application Rate',
@@ -100,40 +99,35 @@ export const ValidateTankMixHerbicides = (row) => {
 
 export const ValidateTankMixFields = (row) => {
   let result;
-  try
-  {
+  try {
+    const appliesToFields = [
+      'Herbicide - Tank Mix?',
+      'Herbicide - 1 - Calculation Type',
+      'Herbicide - 2 - Calculation Type',
+      'Herbicide - Amount of Mix Used',
+      'Herbicide - 1 - Area Treated (Dilution)',
+      'Herbicide - 1 - PAR - Delivery Rate of Mix',
+      'Herbicide - 1 - Herbicide',
+      'Herbicide - 2 - Herbicide',
+      'Herbicide - 1 - Type',
+      'Herbicide - 2 - Type'
+    ];
+    const area = row?.mappedObject?.form_data?.activity_data?.reported_area || NaN;
+    const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
+    const validationFunctionArgs = [area, formData, []];
 
-  const appliesToFields = [
-    'Herbicide - Tank Mix?',
-    'Herbicide - 1 - Calculation Type',
-    'Herbicide - 2 - Calculation Type',
-    'Herbicide - Amount of Mix Used',
-    'Herbicide - 1 - Area Treated (Dilution)',
-    'Herbicide - 1 - PAR - Delivery Rate of Mix',
-    'Herbicide - 1 - Herbicide',
-    'Herbicide - 2 - Herbicide',
-    'Herbicide - 1 - Type',
-    'Herbicide - 2 - Type'
-  ];
-  const area = row?.mappedObject?.form_data?.activity_data?.reported_area || NaN;
-  const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
-  const validationFunctionArgs = [area, formData, []];
-
-
-  result = runLegacyValidation(
-    validate_tank_mix_fields,
-    validationFunctionArgs,
-    appliesToFields,
-    'Tank Mix Fields Validation'
-  );
-  }
-  catch(e)
-  {
-    console.log(e);
-    throw e
+    result = runLegacyValidation(
+      validate_tank_mix_fields,
+      validationFunctionArgs,
+      appliesToFields,
+      'Tank Mix Fields Validation'
+    );
+  } catch (e) {
+    defaultLog.error({ error: e });
+    throw e;
   }
 
-  return result
+  return result;
 };
 
 export const ValidateChemAppMethod = (row) => {

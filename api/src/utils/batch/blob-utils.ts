@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { getLogger } from '../logger';
 import { TemplateColumn } from './definitions';
+import {parsedGeoType} from "./validation/spatial-validation";
 
 const defaultLog = getLogger('batch');
 
@@ -30,8 +31,13 @@ export const mapTemplateFields = (
     switch (cell.templateColumn.dataType) {
       case 'WKT':
         try {
-          _.set(output, cell.templateColumn.mappedPath['geometry'], cell.parsedValue['data']);
-          _.set(output, cell.templateColumn.mappedPath['area'], cell.parsedValue['area']);
+          _.set(output, cell.templateColumn.mappedPath['geojson'], (cell.parsedValue as parsedGeoType).geojson);
+          _.set(output, cell.templateColumn.mappedPath['area'], (cell.parsedValue as parsedGeoType).area);
+          _.set(output, cell.templateColumn.mappedPath['latitude'], (cell.parsedValue as parsedGeoType).latitude);
+          _.set(output, cell.templateColumn.mappedPath['longitude'], (cell.parsedValue as parsedGeoType).longitude);
+          _.set(output, cell.templateColumn.mappedPath['utm_zone'], (cell.parsedValue as parsedGeoType).utm_zone);
+          _.set(output, cell.templateColumn.mappedPath['utm_northing'], (cell.parsedValue as parsedGeoType).utm_northing);
+          _.set(output, cell.templateColumn.mappedPath['utm_easting'], (cell.parsedValue as parsedGeoType).utm_easting);
 
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });

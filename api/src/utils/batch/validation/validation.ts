@@ -1,5 +1,5 @@
 import { Template, TemplateColumn } from '../definitions';
-import {checkWKTInBounds, computeWKTArea, getWKTAsGeoJSON, validateAsWKT} from './spatial-validation';
+import {autofillFromPostGIS, parsedGeoType, validateAsWKT} from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution';
@@ -19,12 +19,13 @@ export interface BatchGlobalValidationMessage {
 export interface BatchCellValidationMessage {
   severity: ValidationMessageSeverity;
   messageTitle: string;
-  messageDetail: string | null;
+  messageDetail?: string | null;
 }
 
 export interface CellValidationResult {
   validationMessages: BatchCellValidationMessage[];
-  parsedValue: unknown;
+  parsedValue: string | number | parsedGeoType | boolean | null;
+  friendlyValue?: string | null;
 }
 
 export interface RowValidationResult {
@@ -74,14 +75,16 @@ function _cellAddress(row: number, column: number): string {
 function columnPresenceCheck(template: Template, batch): ColumnPrescenceCheckResult {
   const headers = batch.headers;
 
-  const result = {
+  const result: ColumnPrescenceCheckResult = {
     missingColumns: [],
     extraColumns: []
   };
 
   result.missingColumns = template.columns.map((col) => col.name).filter((c) => !headers.includes(c));
 
-  result.extraColumns = headers.filter((c) => !template.columns.map((col) => col.name).includes(c));
+  result.extraColumns = headers.filter((c) => {
+    return !template.columns.map((col) => col.name).includes(c);
+  });
 
   return result;
 }
@@ -115,7 +118,7 @@ async function _validateCell(
   templateColumn: TemplateColumn,
   data: string
 ): Promise<CellValidationResult> {
-  const result = {
+  const result: CellValidationResult = {
     validationMessages: [],
     parsedValue: null
   };
@@ -161,9 +164,13 @@ async function _validateCell(
       }
       break;
     case 'codeReference':
-      if (data?.trim()?.length > 0) {
-        result.parsedValue = templateColumn.codes.find((c) => c.code === data);
-        if (result.parsedValue === undefined) {
+      {
+        const foundCode = templateColumn.codes.find((c) => c.code === data);
+        result.parsedValue = foundCode?.code;
+        result.friendlyValue = foundCode?.description;
+        defaultLog.info({ message: `parsed ${data}`, foundCode, templateColumn });
+
+        if (!result.parsedValue) {
           result.validationMessages.push({
             severity: 'error',
             messageTitle: 'Code value not found',
@@ -259,10 +266,7 @@ async function _validateCell(
     case 'WKT':
       if (validateAsWKT(data)) {
         try {
-          result.parsedValue = {
-            data: await getWKTAsGeoJSON(data),
-            area: await computeWKTArea(data)
-          };
+          result.parsedValue = await autofillFromPostGIS(data);
         } catch (e) {
           result.validationMessages.push({
             severity: 'informational',
@@ -278,7 +282,7 @@ async function _validateCell(
         });
       }
       try {
-        const inBounds = await checkWKTInBounds(data);
+        const inBounds = (result.parsedValue as parsedGeoType).within_bc;
         if (!inBounds) {
           result.validationMessages.push({
             severity: 'error',
@@ -293,7 +297,7 @@ async function _validateCell(
         });
       }
 
-      if (result.parsedValue.area > lookupAreaLimit(template.subtype)) {
+      if ((result.parsedValue as parsedGeoType).area > lookupAreaLimit(template.subtype)) {
         result.validationMessages.push({
           severity: 'error',
           messageTitle: `Area cannot be larger than ${lookupAreaLimit(template.subtype)}`
@@ -365,7 +369,7 @@ export const BatchValidationService = {
           };
         } catch (e) {
           const message = e?.message || e;
-          defaultLog.debug({ message: 'Error mapping', templateColumn, error: message });
+          defaultLog.warn({ message: 'Error mapping', templateColumn, error: message });
         }
 
         totalErrorCount += row.data[field].validationMessages.filter((r) => r.severity !== 'informational').length;
@@ -379,8 +383,11 @@ export const BatchValidationService = {
         try {
           return rv(row);
         } catch (e) {
-          
-          defaultLog.error({ message: 'Caught an error while running a row-level validator', error: e, validator: rv.name });
+          defaultLog.error({
+            message: 'Caught an error while running a row-level validator',
+            error: e,
+            validator: rv.name
+          });
         }
       });
 
@@ -400,7 +407,7 @@ export const BatchValidationService = {
     result.validatedBatchData = batchDataCopy;
     result.globalValidationMessages = globalValidationMessages;
     result.canProceed = totalErrorCount == 0;
-    defaultLog.debug({ message: 'object validation complete'});
+    defaultLog.debug({ message: 'object validation complete' });
 
     return result;
   }

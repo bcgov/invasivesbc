@@ -29,12 +29,15 @@ export class TemplateColumn {
     minValue: number | null;
     maxValue: number | null;
     containedInCodeTable: string | string[] | null;
+    hardcodedCodes: CodeEntry[] | null;
   };
 
   codes: CodeEntry[] = [];
 
   async hydrateCodes(dbConnection: PoolClient) {
-    if (
+    if (this.dataType === 'codeReference' && this.validations.hardcodedCodes) {
+      this.codes = [...this.validations.hardcodedCodes];
+    } else if (
       (this.dataType === 'codeReference' || this.dataType === 'codeReferenceMulti') &&
       this.validations.containedInCodeTable !== null
     ) {
@@ -70,7 +73,8 @@ export class TemplateColumnBuilder {
       maxLength: null,
       minValue: null,
       maxValue: null,
-      containedInCodeTable: null
+      containedInCodeTable: null,
+      hardcodedCodes: null
     };
   }
 
@@ -93,6 +97,11 @@ export class TemplateColumnBuilder {
 
   referencesCode(codeTable: string | string[]): this {
     this.validations.containedInCodeTable = codeTable;
+    return this;
+  }
+
+  hardcodedCodes(codes: CodeEntry[]): this {
+    this.validations.hardcodedCodes = [...codes];
     return this;
   }
 
@@ -121,6 +130,7 @@ export class TemplateColumnBuilder {
     minValue: number | null;
     maxValue: number | null;
     containedInCodeTable: string | string[] | null;
+    hardcodedCodes: CodeEntry[] | null;
   };
 }
 
