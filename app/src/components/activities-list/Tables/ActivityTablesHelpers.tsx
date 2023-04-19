@@ -142,9 +142,11 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
     const getArrayString = (inputArray: [], subProp?) => {
       let output = ''
       if (subProp) {
-
-        inputArray.map((item) => {
-          output += ', ' + item?.[subProp]
+        inputArray.map((item, index) => {
+          if (item?.[subProp]) {
+            output += item?.[subProp];
+            if (index < inputArray.length - 1) output += ', ';
+          }
         })
       } else {
         inputArray.map((item) => {
