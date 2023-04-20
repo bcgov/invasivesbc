@@ -17,16 +17,16 @@ export const autofillChemFields = (activity,  chemicalMethodSprayCodes, chemical
   let newActivity = JSON.parse(JSON.stringify(activity));
 
   const area = newActivity?.form_data?.activity_data?.reported_area || 0;
+  const chemicalApplicationMethod = activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method
+  newActivity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method_type = chemicalMethodSprayCodes?.includes(chemicalApplicationMethod)
+          ? 'spray'
+          : 'direct'
   const formData = mapFormDataToLegacy(newActivity.form_data);
   const businessCodes = {};
 
   const calculationResults = performCalculation(area, formData, businessCodes);
   newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
-  const chemicalApplicationMethod = activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method
-  newActivity.chemical_application_method_type = chemicalMethodSprayCodes?.includes(chemicalApplicationMethod)
-          ? 'spray'
-          : 'direct'
 
   const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix
 
