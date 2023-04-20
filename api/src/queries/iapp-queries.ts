@@ -32,7 +32,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     );
   } else if (searchCriteria?.grid_filters?.jurisdictions && searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL` strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
+      SQL`, strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
     );
   }
 
