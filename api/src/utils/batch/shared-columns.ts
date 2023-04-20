@@ -677,8 +677,8 @@ export const HerbicidesInformation = [
     .valueRange(0, null)
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Herbicide - 1 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
+  new TemplateColumnBuilder('Herbicide - Delivery Rate of Mix', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.delivery_rate_of_mix').valueRange(0, null).build(),
+  new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].product_application_rate').valueRange(0, null).build(),
 
   new TemplateColumnBuilder('Herbicide - 2 - Type', 'codeReference').referencesCode('herbicide_type_code').build(),
   new TemplateColumnBuilder('Herbicide - 2 - Herbicide', 'codeReference')
@@ -687,8 +687,7 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - Calculation Type', 'codeReference')
     .referencesCode('calculation_type_code')
     .build(),
-  new TemplateColumnBuilder('Herbicide - 2 - PAR - Delivery Rate of Mix', 'numeric').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric').valueRange(0, null).build(),
+  new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].product_application_rate').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
   new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric')
