@@ -16,33 +16,33 @@ export * from './constants';
 export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalMethodCodes) => {
   try {
     let newActivity = JSON.parse(JSON.stringify(activity));
-
-    const area = newActivity?.form_data?.activity_data?.reported_area || 0;
+    const area = newActivity?.form_data?.activity_data?.reported_area ?? 0;
     const chemicalApplicationMethod =
       activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method;
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method_type =
       chemicalMethodSprayCodes?.includes(chemicalApplicationMethod) ? 'spray' : 'direct';
     const businessCodes = {};
-
+  
     const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix;
-
+  
     if (tank_mix) {
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides =
         activity.form_data.activity_subtype_data.chemical_treatment_details.herbicides;
       delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides;
     }
-
+  
     if (!tank_mix && newActivity.form_data?.activity_subtype_data?.chemical_treatment_details?.herbicides?.length > 0) {
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].amount_of_mix = newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.amount_of_mix
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].delivery_rate_of_mix = newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.delivery_rate_of_mix
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate = newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides?.[0].product_application_rate
-
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].amount_of_mix = newActivity.form_data.activity_subtype_data?.chemical_treatment_details?.tank_mix_object?.amount_of_mix
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].delivery_rate_of_mix = newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.delivery_rate_of_mix
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate = newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate
+  
       delete  newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object
     }
-
-    const formData = mapFormDataToLegacy(newActivity.form_data);
+  
+    const formData = mapFormDataToLegacy(newActivity?.form_data ?? {});
     const calculationResults = performCalculation(area, formData, businessCodes);
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
+  
 
     // TODO:  copy blob autofill stuff from tankmix accordion
 

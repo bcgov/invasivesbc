@@ -31,7 +31,7 @@ export const mapTemplateFields = (
     switch (cell?.templateColumn.dataType) {
       case 'WKT':
         try {
-          _.set(output, cell?.templateColumn.mappedPath['geojson'], (cell.parsedValue as parsedGeoType).geojson);
+          _.set(output, cell?.templateColumn.mappedPath['geojson'], [{ 'geometry' : (cell.parsedValue as parsedGeoType).geojson, 'type' : 'Feature' }]);
           _.set(output, cell?.templateColumn.mappedPath['area'], (cell.parsedValue as parsedGeoType).area);
           _.set(output, cell?.templateColumn.mappedPath['latitude'], (cell.parsedValue as parsedGeoType).latitude);
           _.set(output, cell?.templateColumn.mappedPath['longitude'], (cell.parsedValue as parsedGeoType).longitude);
@@ -45,7 +45,7 @@ export const mapTemplateFields = (
         break;
       default:
         try {
-          if(!_.get(output, cell?.templateColumn.mappedPath))
+          if(!_.get(output, cell?.templateColumn.mappedPath) && cell.parsedValue)
           {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
           }

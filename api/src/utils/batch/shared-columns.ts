@@ -563,7 +563,7 @@ export const ChemicalPlantTreatmentInformation = [
 
   new TemplateColumnBuilder(
     'Chemical Treatment - Treatment Notice Signs',
-    'codeReference',
+    'tristate',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.signage_on_site'
   )
     .isRequired()
@@ -608,7 +608,7 @@ export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Pest Injury Threshold Determination Done?',
     'boolean',
-    'form_data.activity_subtype_data.Pest_Injury_Threshold_Determination'
+    'form_data.activity_subtype_data.Pest_Injury_Threshold_Determination.completed_radio'
   )
     .isRequired()
     .build(),
@@ -675,7 +675,6 @@ export const HerbicidesInformation = [
     'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm'
   )
     .valueRange(0, null)
-    .isRequired()
     .build(),
   new TemplateColumnBuilder('Herbicide - Delivery Rate of Mix', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.delivery_rate_of_mix').valueRange(0, null).build(),
   new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].product_application_rate').valueRange(0, null).build(),
@@ -692,7 +691,6 @@ export const HerbicidesInformation = [
 
   new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric')
     .valueRange(0, null)
-    .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',

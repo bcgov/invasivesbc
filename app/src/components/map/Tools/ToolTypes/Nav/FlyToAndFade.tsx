@@ -63,7 +63,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
         case FlyToAndFadeItemTransitionType.zoomToGeometries:
           try {
             var reprocessedForCircles = item.geometries.map((geo) => {
-              if (geo.properties.radius) {
+              if (geo?.properties?.radius) {
                 return createPolygonFromBounds2(getBoundsOfCircle(geo));
               } else {
                 return geo;
@@ -87,7 +87,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
 
             //@#$%'n circles again:
             const withCircles = item.geometries.map((geo) => {
-              if (geo.properties.radius) {
+              if (geo?.properties?.radius) {
                 try {
                   return circle(
                     [geo.geometry.coordinates[0], geo.geometry.coordinates[1]],
@@ -103,13 +103,13 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
 
             //add colour to props to make it easy to pass to react-leaflet
             const coloured = withCircles.map((geo) => {
-              return { ...geo, properties: { ...geo.properties, colour: item.colour } };
+              return { ...geo, properties: { ...geo?.properties, colour: item.colour } };
             });
             map.flyToBounds(bboxToLtlngExpression(aBbox));
             setDisplayPolygons([...coloured]);
           } catch (e) {
             console.log('unable to zoom to geometries');
-            console.log(JSON.stringify(e));
+            console.log(JSON.stringify(e.message), JSON.stringify(e.stack));
           }
           break;
         case FlyToAndFadeItemTransitionType.zoomToBoundsAndShowGeometries:

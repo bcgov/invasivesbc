@@ -170,7 +170,9 @@ async function _validateCell(
         result.friendlyValue = foundCode?.description;
         defaultLog.info({ message: `parsed ${data}`, foundCode, templateColumn });
 
-        if (!result.parsedValue) {
+
+        const isOptionalAndBlank = !templateColumn?.required && data === '';
+        if (!result.parsedValue && !(isOptionalAndBlank)) {
           result.validationMessages.push({
             severity: 'error',
             messageTitle: 'Code value not found',
