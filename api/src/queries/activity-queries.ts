@@ -479,6 +479,28 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`LOWER(${gridFilters.current_negative})`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.has_current_positive) {
+        if ('yes'.includes(gridFilters.has_current_positive.toLowerCase())) {
+          sqlStatement.append(
+            SQL` AND EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
+          );
+        } else if ('no'.includes(gridFilters.has_current_positive.toLowerCase())) {
+          sqlStatement.append(
+            SQL` AND NOT EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
+          );
+        }
+      }
+      if (gridFilters.has_current_negative) {
+        if ('yes'.includes(gridFilters.has_current_negative.toLowerCase())) {
+          sqlStatement.append(
+            SQL` AND EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
+          );
+        } else if ('no'.includes(gridFilters.has_current_negative.toLowerCase())) {
+          sqlStatement.append(
+            SQL` AND NOT EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
+          );
+        }
+      }
       if (gridFilters.species_treated) {
         sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
