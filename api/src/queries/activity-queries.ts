@@ -465,6 +465,20 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`LOWER(${gridFilters.species_negative})`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.current_positive) {
+        sqlStatement.append(
+          SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+        );
+        sqlStatement.append(SQL`LOWER(${gridFilters.current_positive})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.current_negative) {
+        sqlStatement.append(
+          SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+        );
+        sqlStatement.append(SQL`LOWER(${gridFilters.current_negative})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
       if (gridFilters.species_treated) {
         sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
