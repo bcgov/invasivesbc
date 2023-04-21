@@ -720,11 +720,25 @@ export const HerbicidesInformation = [
     .valueRange(0, null)
     .build(),
 
-  new TemplateColumnBuilder('Herbicide - 2 - Type', 'codeReference').referencesCode('herbicide_type_code').build(),
-  new TemplateColumnBuilder('Herbicide - 2 - Herbicide', 'codeReference')
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].herbicide_type_code'
+  )
+    .referencesCode('herbicide_type_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - Herbicide',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].herbicide_code'
+  )
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .build(),
-  new TemplateColumnBuilder('Herbicide - 2 - Calculation Type', 'codeReference')
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - Calculation Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.calculation_type'
+  )
     .referencesCode('calculation_type_code')
     .build(),
   new TemplateColumnBuilder(
