@@ -1,6 +1,6 @@
-import {TemplateColumnBuilder} from './definitions';
-import {RowValidationResult} from './validation/validation';
-import {WIND_DIRECTION_CODES} from "./hard-coded-codes";
+import { TemplateColumnBuilder } from './definitions';
+import { RowValidationResult } from './validation/validation';
+import { WIND_DIRECTION_CODES } from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -14,7 +14,10 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time').isRequired().build(),
+  new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time')
+    .isRequired()
+    .mustNotBeFuture()
+    .build(),
   new TemplateColumnBuilder('Basic - Employer', 'codeReference', 'form_data.activity_data.employer_code')
     .isRequired()
     .referencesCode('employer_code')
@@ -84,39 +87,41 @@ export const BasicInformation = [
     .build()
 ];
 
-const _JurisdictionSumValidator = (row): RowValidationResult => {
-  const summedFields = [
-    'Basic - Jurisdiction 1 % Covered',
-    'Basic - Jurisdiction 2 % Covered',
-    'Basic - Jurisdiction 3 % Covered'
-  ];
-  const rowData = row.data;
+export const SummingValidator = (fields: string[], mustSumTo: number, messageOnInvalid: string) => {
+  return (row): RowValidationResult => {
+    const rowData = row.data;
 
-  let sum = 0;
-  let valid = true;
-  const validationMessages = [];
+    let sum = 0;
+    let valid = true;
+    const validationMessages = [];
 
-  for (const f of summedFields) {
-    if (rowData?.[f]?.parsedValue !== null && !isNaN(rowData?.[f]?.parsedValue)) {
-      sum += rowData?.[f]?.parsedValue;
+    for (const f of fields) {
+      if (rowData?.[f]?.parsedValue !== null && !isNaN(rowData?.[f]?.parsedValue)) {
+        sum += rowData?.[f]?.parsedValue;
+      }
     }
-  }
 
-  if (sum !== 100) {
-    valid = false;
-    validationMessages.push({
-      severity: 'error',
-      messageTitle: 'Jurisdiction coverages must sum to 100%',
-      messageDetail: `'Actual sum: ${sum} != 100`
-    });
-  }
+    if (sum !== 100) {
+      valid = false;
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: messageOnInvalid,
+        messageDetail: `'Actual sum: ${sum} != 100`
+      });
+    }
 
-  return {
-    valid,
-    validationMessages,
-    appliesToFields: summedFields
+    return {
+      valid,
+      validationMessages,
+      appliesToFields: fields
+    };
   };
 };
+const _JurisdictionSumValidator = SummingValidator(
+  ['Basic - Jurisdiction 1 % Covered', 'Basic - Jurisdiction 2 % Covered', 'Basic - Jurisdiction 3 % Covered'],
+  100,
+  'Jurisdiction coverages must sum to 100%'
+);
 
 const LinkedRecordsValidator = (linkedRecords) => {
   return (row): RowValidationResult => {
@@ -325,6 +330,12 @@ export const ShorelineInformation = [
     .build()
 ];
 
+export const ShorelineSumValidator = SummingValidator(
+  ['Shoreline - Shoreline 1 Percentage', 'Shoreline - Shoreline 2 Percentage'],
+  100,
+  'Shoreline % must sum to 100'
+);
+
 export const WaterbodyInformation = [
   new TemplateColumnBuilder(
     'Waterbody - Type',
@@ -506,6 +517,24 @@ export const PhenologyInformation = [
     .build()
 ];
 
+export const PhenologySumValidator = (row) => {
+  const rowData = row.data;
+  if (rowData?.['Phenology - Details Recorded?']?.parsedValue) {
+    return SummingValidator(
+      [
+        'Phenology - Rosettes',
+        'Phenology - Flowering',
+        'Phenology - Seedlings',
+        'Phenology - Senescent',
+        'Phenology - Seeds Forming',
+        'Phenology - Winter Dormant'
+      ],
+      100,
+      'When phenology details are recorded, % values must sum to 100'
+    )(row);
+  }
+};
+
 export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Service License',
@@ -594,6 +623,7 @@ export const ChemicalPlantTreatmentInformation = [
     'datetime',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.application_start_time'
   )
+    .mustNotBeFuture()
     .isRequired()
     .build(),
 
@@ -620,15 +650,14 @@ export const ChemicalPlantTreatmentInformation = [
   )
     .referencesCode('chemical_method_spray')
     .build(),
-new TemplateColumnBuilder(
-  'Chemical Treatment (No Tank Mix) - Application Method',
-  'codeReference',
-  'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
-)
-  .referencesCode('chemical_method_code')
-  .build()
+  new TemplateColumnBuilder(
+    'Chemical Treatment (No Tank Mix) - Application Method',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
+  )
+    .referencesCode('chemical_method_code')
+    .build()
 ];
-
 
 export const HerbicidesInformation = [
   new TemplateColumnBuilder(
@@ -676,8 +705,20 @@ export const HerbicidesInformation = [
   )
     .valueRange(0, null)
     .build(),
-  new TemplateColumnBuilder('Herbicide - Delivery Rate of Mix', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.delivery_rate_of_mix').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Herbicide - 1 - PAR - Production Application Rate', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].product_application_rate').valueRange(0, null).build(),
+  new TemplateColumnBuilder(
+    'Herbicide - Delivery Rate of Mix',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.delivery_rate_of_mix'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - PAR - Production Application Rate',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].product_application_rate'
+  )
+    .valueRange(0, null)
+    .build(),
 
   new TemplateColumnBuilder('Herbicide - 2 - Type', 'codeReference').referencesCode('herbicide_type_code').build(),
   new TemplateColumnBuilder('Herbicide - 2 - Herbicide', 'codeReference')
@@ -686,12 +727,16 @@ export const HerbicidesInformation = [
   new TemplateColumnBuilder('Herbicide - 2 - Calculation Type', 'codeReference')
     .referencesCode('calculation_type_code')
     .build(),
-  new TemplateColumnBuilder('Herbicide - 2 - PAR - Production Application Rate', 'numeric', 'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].product_application_rate').valueRange(0, null).build(),
-  new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
-
-  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric')
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - PAR - Production Application Rate',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].product_application_rate'
+  )
     .valueRange(0, null)
     .build(),
+  new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
+
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).build(),
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',

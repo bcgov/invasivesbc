@@ -1,11 +1,12 @@
-import {Template, TemplateColumnBuilder} from "../definitions";
-import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from "../shared-columns";
+import { Template, TemplateColumnBuilder } from '../definitions';
+import {
+  ActivityPersons,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ProjectInformation
+} from '../shared-columns';
 
-const MonitoringMechanical = new Template(
-  'monitoring_mechanical',
-  'Monitoring - Mechanical',
-  null
-);
+const MonitoringMechanical = new Template('monitoring_mechanical', 'Monitoring - Mechanical', null);
 
 MonitoringMechanical.columns = [
   ...BasicInformation,
@@ -18,15 +19,25 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder('Monitoring - Invasive Plants on Site', 'boolean').isRequired().build(),
 
   new TemplateColumnBuilder('Monitoring - Linked Treatment ID', 'text').build(),
-  new TemplateColumnBuilder('Monitoring - Terrestrial Invasive Plant', 'codeReference').referencesCode('invasive_plant_code').build(),
-  new TemplateColumnBuilder('Monitoring - Aquatic Invasive Plant', 'codeReference').referencesCode('invasive_plant_aquatic_code').build(),
+  new TemplateColumnBuilder('Monitoring - Terrestrial Invasive Plant', 'codeReference')
+    .referencesCode('invasive_plant_code')
+    .build(),
+  new TemplateColumnBuilder('Monitoring - Aquatic Invasive Plant', 'codeReference')
+    .referencesCode('invasive_plant_aquatic_code')
+    .build(),
 
-  new TemplateColumnBuilder('Monitoring - Efficacy Code', 'codeReference').referencesCode('efficacy_code').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - Management Efficacy Rating', 'codeReference').referencesCode('management_efficacy_code').isRequired().build(),
+  new TemplateColumnBuilder('Monitoring - Efficacy Code', 'codeReference')
+    .referencesCode('efficacy_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Monitoring - Management Efficacy Rating', 'codeReference')
+    .referencesCode('management_efficacy_code')
+    .isRequired()
+    .build(),
 
   new TemplateColumnBuilder('Monitoring - Comments', 'text').isRequired().build()
 ];
 
 MonitoringMechanical.rowValidators = [...BasicInformationRowValidators];
 
-export {MonitoringMechanical};
+export { MonitoringMechanical };

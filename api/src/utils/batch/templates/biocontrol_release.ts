@@ -5,6 +5,7 @@ import {
   BasicInformationRowValidators,
   MicrositeConditions,
   PhenologyInformation,
+  PhenologySumValidator,
   ProjectInformation,
   WeatherInformation
 } from '../shared-columns';
@@ -50,7 +51,9 @@ BiocontrolRelease.columns = [
     'Release - Collection Date',
     'datetime',
     'form_data.activity_subtype_data.Biocontrol_Release_Information.collection_date'
-  ).build(),
+  )
+    .mustNotBeFuture()
+    .build(),
   new TemplateColumnBuilder(
     'Release - Plant Collected From',
     'codeReference',
@@ -102,6 +105,6 @@ BiocontrolRelease.columns = [
   ...PhenologyInformation
 ];
 
-BiocontrolRelease.rowValidators = [...BasicInformationRowValidators];
+BiocontrolRelease.rowValidators = [...BasicInformationRowValidators, PhenologySumValidator];
 
 export { BiocontrolRelease };

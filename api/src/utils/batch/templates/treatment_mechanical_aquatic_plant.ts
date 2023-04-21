@@ -1,11 +1,12 @@
-import {Template, TemplateColumnBuilder} from "../definitions";
+import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation,
-  ShorelineInformation
-} from "../shared-columns";
+  ShorelineInformation,
+  ShorelineSumValidator
+} from '../shared-columns';
 
 const TreatmentMechanicalAquaticPlant = new Template(
   'treatment_mechanical_aquatic_plant',
@@ -65,7 +66,6 @@ TreatmentMechanicalAquaticPlant.columns = [
     .build()
 ];
 
-TreatmentMechanicalAquaticPlant.rowValidators = [...BasicInformationRowValidators];
+TreatmentMechanicalAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
 
-export {TreatmentMechanicalAquaticPlant};
-
+export { TreatmentMechanicalAquaticPlant };

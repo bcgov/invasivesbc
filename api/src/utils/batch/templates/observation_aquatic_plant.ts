@@ -1,19 +1,16 @@
-import {Template, TemplateColumnBuilder} from "../definitions";
+import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation,
   ShorelineInformation,
+  ShorelineSumValidator,
   WaterbodyInformation,
   WaterQualityInformation
-} from "../shared-columns";
+} from '../shared-columns';
 
-const ObservationAquaticPlant = new Template(
-  'observation_aquatic_plant',
-  'Observation - Aquatic Plant',
-  null
-);
+const ObservationAquaticPlant = new Template('observation_aquatic_plant', 'Observation - Aquatic Plant', null);
 ObservationAquaticPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
@@ -24,11 +21,26 @@ ObservationAquaticPlant.columns = [
   new TemplateColumnBuilder('Observation - Pre-treatment observation?', 'codeReference').build(),
 
   new TemplateColumnBuilder('Observation - Sample Point ID', 'text').build(),
-  new TemplateColumnBuilder('Observation - Type', 'codeReference').referencesCode('observation_type_code').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Invasive Plant', 'codeReference').referencesCode('invasive_plant_aquatic_code').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Life Stage', 'codeReference').referencesCode('plant_seed_stage_code').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Density', 'codeReference').referencesCode('invasive_plant_density_code').isRequired().build(),
-  new TemplateColumnBuilder('Observation - Distribution', 'codeReference').referencesCode('invasive_plant_distribution_code').isRequired().build(),
+  new TemplateColumnBuilder('Observation - Type', 'codeReference')
+    .referencesCode('observation_type_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Observation - Invasive Plant', 'codeReference')
+    .referencesCode('invasive_plant_aquatic_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Observation - Life Stage', 'codeReference')
+    .referencesCode('plant_seed_stage_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Observation - Density', 'codeReference')
+    .referencesCode('invasive_plant_density_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Observation - Distribution', 'codeReference')
+    .referencesCode('invasive_plant_distribution_code')
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder('Observation - Suitable for Biocontrol Agent?', 'tristate').build(),
 
   new TemplateColumnBuilder(
@@ -73,12 +85,12 @@ ObservationAquaticPlant.columns = [
     'Voucher - Date Verified',
     'date',
     'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.date_voucher_verified'
-  ).build(),
+  ).mustNotBeFuture().build(),
   new TemplateColumnBuilder(
     'Voucher - Date Collected',
     'date',
     'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.date_voucher_collected'
-  ).build(),
+  ).mustNotBeFuture().build(),
   new TemplateColumnBuilder(
     'Voucher - Verifying Person',
     'text',
@@ -91,6 +103,6 @@ ObservationAquaticPlant.columns = [
   ).build()
 ];
 
-ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators];
+ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
 
-export {ObservationAquaticPlant};
+export { ObservationAquaticPlant };
