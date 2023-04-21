@@ -1,5 +1,5 @@
 import { Template, TemplateColumn } from '../definitions';
-import {autofillFromPostGIS, parsedGeoType, validateAsWKT} from './spatial-validation';
+import { autofillFromPostGIS, parsedGeoType, validateAsWKT } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution';
@@ -170,9 +170,8 @@ async function _validateCell(
         result.friendlyValue = foundCode?.description;
         defaultLog.info({ message: `parsed ${data}`, foundCode, templateColumn });
 
-
         const isOptionalAndBlank = !templateColumn?.required && data === '';
-        if (!result.parsedValue && !(isOptionalAndBlank)) {
+        if (!result.parsedValue && !isOptionalAndBlank) {
           result.validationMessages.push({
             severity: 'error',
             messageTitle: 'Code value not found',
@@ -222,6 +221,19 @@ async function _validateCell(
         } else {
           // convert to storage format (which happens to be the same, in this case)
           result.parsedValue = parsedDate.format('YYYY-MM-DD');
+          if (
+            templateColumn.validations.dateMustNotBeFuture !== null &&
+            templateColumn.validations.dateMustNotBeFuture
+          ) {
+            const now = moment();
+            if (now.isBefore(parsedDate, 'day')) {
+              result.validationMessages.push({
+                severity: 'error',
+                messageTitle: `Date in future`,
+                messageDetail: `The date cannot be in the future.`
+              });
+            }
+          }
         }
       }
       break;
@@ -237,6 +249,19 @@ async function _validateCell(
         } else {
           // convert to storage format -- ISO 8601
           result.parsedValue = parsedDate.format();
+          if (
+            templateColumn.validations.dateMustNotBeFuture !== null &&
+            templateColumn.validations.dateMustNotBeFuture
+          ) {
+            const now = moment();
+            if (now.isBefore(parsedDate, 'day')) {
+              result.validationMessages.push({
+                severity: 'error',
+                messageTitle: `Datetime in future`,
+                messageDetail: `The datetime cannot be in the future.`
+              });
+            }
+          }
         }
       }
       break;
@@ -374,9 +399,8 @@ export const BatchValidationService = {
           defaultLog.warn({ message: 'Error mapping', templateColumn, error: message });
         }
 
-        if(row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length > 0)
-        {
-          totalErrorCount += row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length
+        if (row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length > 0) {
+          totalErrorCount += row.data[field]?.validationMessages?.filter((r) => r.severity !== 'informational').length;
         }
       }
 

@@ -18,7 +18,8 @@ export class TemplateColumn {
     readonly name,
     readonly dataType: templateDataType,
     readonly mappedPath: string | Record<string, string> | null
-  ) {}
+  ) {
+  }
 
   helpText: string | null;
   required = false;
@@ -30,6 +31,7 @@ export class TemplateColumn {
     maxValue: number | null;
     containedInCodeTable: string | string[] | null;
     hardcodedCodes: CodeEntry[] | null;
+    dateMustNotBeFuture: boolean | null;
   };
 
   codes: CodeEntry[] = [];
@@ -63,7 +65,8 @@ export class TemplateColumn {
 }
 
 export class CodeEntry {
-  constructor(readonly header: string, readonly code: string, readonly description: string) {}
+  constructor(readonly header: string, readonly code: string, readonly description: string) {
+  }
 }
 
 export class TemplateColumnBuilder {
@@ -74,7 +77,8 @@ export class TemplateColumnBuilder {
       minValue: null,
       maxValue: null,
       containedInCodeTable: null,
-      hardcodedCodes: null
+      hardcodedCodes: null,
+      dateMustNotBeFuture: null
     };
   }
 
@@ -117,6 +121,11 @@ export class TemplateColumnBuilder {
     return this;
   }
 
+  mustNotBeFuture(): this {
+    this.validations.dateMustNotBeFuture = true;
+    return this;
+  }
+
   helpText: string | null;
 
   withHelpText(helpText: string): this {
@@ -131,6 +140,7 @@ export class TemplateColumnBuilder {
     maxValue: number | null;
     containedInCodeTable: string | string[] | null;
     hardcodedCodes: CodeEntry[] | null;
+    dateMustNotBeFuture: boolean | null;
   };
 }
 

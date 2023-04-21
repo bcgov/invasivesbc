@@ -1,5 +1,10 @@
-import {Template, TemplateColumnBuilder} from '../definitions';
-import {ActivityPersons, BasicInformation, BasicInformationRowValidators, ProjectInformation} from '../shared-columns';
+import { Template, TemplateColumnBuilder } from '../definitions';
+import {
+  ActivityPersons,
+  BasicInformation,
+  BasicInformationRowValidators,
+  ProjectInformation
+} from '../shared-columns';
 
 const ObservationTerrestrialPlant = new Template(
   'observation_terrestrial_plant',
@@ -151,12 +156,12 @@ ObservationTerrestrialPlant.columns = [
     'Voucher - Date Verified',
     'date',
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_verified'
-  ).build(),
+  ).mustNotBeFuture().build(),
   new TemplateColumnBuilder(
     'Voucher - Date Collected',
     'date',
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_collected'
-  ).build(),
+  ).mustNotBeFuture().build(),
   new TemplateColumnBuilder(
     'Voucher - Verifying Person',
     'text',
@@ -171,4 +176,4 @@ ObservationTerrestrialPlant.columns = [
 
 ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
 
-export {ObservationTerrestrialPlant};
+export { ObservationTerrestrialPlant };
