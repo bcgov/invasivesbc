@@ -6,8 +6,7 @@ import {
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
   HerbicidesInformation,
-  ProjectInformation,
-  WellInformation
+  ProjectInformation
 } from '../shared-columns';
 
 const TreatmentChemicalTerrestrialPlant = new Template(
@@ -21,10 +20,8 @@ TreatmentChemicalTerrestrialPlant.subtype = 'Activity_Treatment_ChemicalPlantTer
 TreatmentChemicalTerrestrialPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
-  ...WellInformation,
   ...ActivityPersonsWithApplicatorLicense,
   ...ChemicalPlantTreatmentInformation,
-  ...HerbicidesInformation,
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 1',
     'codeReference',
@@ -63,7 +60,8 @@ TreatmentChemicalTerrestrialPlant.columns = [
     'Chemical Treatment - Invasive Species 3 %',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[2].percent_area_covered'
-  ).build()
+  ).build(),
+  ...HerbicidesInformation
 ];
 TreatmentChemicalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
 export { TreatmentChemicalTerrestrialPlant };
