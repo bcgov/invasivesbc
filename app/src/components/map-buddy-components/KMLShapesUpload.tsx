@@ -36,6 +36,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const { setUploadLayersFlag } = mapRequestContext;
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
+  const [uploadClicked, setUploadClicked] = useState(false);
 
   const doUpload = async () => {
     let response;
@@ -56,6 +57,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         });
       }
       setResultMessage('Files uploaded successfully');
+      setUploadClicked(false);
       setUploadLayersFlag(Math.random());
       setTimeout(() => {
         setResultMessage('');
@@ -64,6 +66,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     } catch (err) {
       setUploadRequests([]);
       setResultMessage('There was an error: ' + err);
+      setUploadClicked(false);
       setTimeout(() => {
         setResultMessage('');
       }, 2000);
@@ -151,8 +154,11 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         <Button
           className={classes.button}
           variant={'contained'}
-          disabled={uploadRequests.length < 1}
-          onClick={() => doUpload()}>
+          disabled={uploadRequests.length < 1 || uploadClicked}
+          onClick={() => {
+            setUploadClicked(true);
+            doUpload()
+          }}>
           Upload
         </Button>
       </Box>
