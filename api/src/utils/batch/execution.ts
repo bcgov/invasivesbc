@@ -16,6 +16,8 @@ interface _MappedForDB {
   id: string;
   shortId: string;
   payload: object;
+  geog: any;
+
 }
 
 export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
@@ -50,10 +52,15 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   mapped['form_data']['form_status'] = 'Submitted';
 
+
+  const geog = mapped.geog
+  delete mapped.geog
+
   return {
     id: uuidToCreate,
     shortId: shortId,
-    payload: mapped
+    payload: mapped,
+    geog: geog
   };
 }
 
@@ -84,7 +91,7 @@ export const BatchExecutionService = {
     for (const row of validatedBatchData.rows) {
       //@todo skip errored rows
 
-      const { id: activityId, shortId, payload } = _mapToDBObject(
+      const { id: activityId, shortId, payload, geog } = _mapToDBObject(
         row,
         desiredFinalStatus,
         template.type,
@@ -101,8 +108,8 @@ export const BatchExecutionService = {
       const qc = {
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
                                                    activity_subtype, form_status, created_by, updated_by,
-                                                   created_by_with_guid, updated_by_with_guid)
-               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                                                   created_by_with_guid, updated_by_with_guid, geog)
+               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
         values: [
           activityId,
           shortId,
@@ -114,7 +121,8 @@ export const BatchExecutionService = {
           userInfo?.preferred_username,
           userInfo?.preferred_username,
           guid,
-          guid
+          guid, 
+          geog
         ]
       };
 

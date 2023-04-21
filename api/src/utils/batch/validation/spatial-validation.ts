@@ -14,6 +14,7 @@ export type parsedGeoType = {
   utm_easting: number;
   area: number;
   within_bc: boolean;
+  geog: any;
 };
 
 export const validateAsWKT = (input: string) => {
@@ -41,7 +42,8 @@ export const autofillFromPostGIS = async (input: string): Promise<parsedGeoType>
                     utm_zone,
                     utm_easting,
                     utm_northing,
-                    area
+                    area, 
+                    geog
              from compute_geo_autofill($1)`,
       values: [input]
     });
@@ -53,7 +55,8 @@ export const autofillFromPostGIS = async (input: string): Promise<parsedGeoType>
       utm_zone: `${res.rows[0]['utm_zone']}`, // it's represented as a string in rjsf for some reason
       utm_northing: res.rows[0]['utm_northing'],
       utm_easting: res.rows[0]['utm_easting'],
-      area: res.rows[0]['area']
+      area: res.rows[0]['area'],
+      geog: res.rows[0]['geog']
     };
   } finally {
     connection.release();

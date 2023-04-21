@@ -5,6 +5,7 @@ import { WIND_DIRECTION_CODES } from './hard-coded-codes';
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
     geojson: 'geometry',
+    geog: 'geog',
     area: 'form_data.activity_data.reported_area',
     latitude: 'form_data.activity_data.latitude',
     longitude: 'form_data.activity_data.longitude',
