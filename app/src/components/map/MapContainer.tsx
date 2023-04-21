@@ -59,6 +59,7 @@ import { selectMap } from 'state/reducers/map';
 import { JumpToRecord } from './Tools/ToolTypes/Nav/JumpToRecord';
 import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
+import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
@@ -308,6 +309,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <PanToMe />
             <JumpToRecord/>
             <LegendsButton />
+            <BoundaryLayerDisplayForRecordSetToggle/>
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
