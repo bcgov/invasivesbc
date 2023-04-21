@@ -31,15 +31,6 @@ export const BasicInformation = [
     .referencesCode('invasive_species_agency_code')
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Basic - Access Description', 'text', 'form_data.activity_data.access_description')
-    .isRequired()
-    .lengthRange(5, 300)
-    .build(),
-  new TemplateColumnBuilder('Basic - Location Description', 'text', 'form_data.activity_data.location_description')
-    .isRequired()
-    .lengthRange(5, 2000)
-    .build(),
-
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 1',
     'codeReference',
@@ -85,6 +76,14 @@ export const BasicInformation = [
     'form_data.activity_data.jurisdictions[2].percent_covered'
   )
     .valueRange(0, 100)
+    .build(),
+  new TemplateColumnBuilder('Basic - Location Description', 'text', 'form_data.activity_data.location_description')
+    .isRequired()
+    .lengthRange(5, 2000)
+    .build(),
+  new TemplateColumnBuilder('Basic - Access Description', 'text', 'form_data.activity_data.access_description')
+    .isRequired()
+    .lengthRange(5, 300)
     .build()
 ];
 
@@ -208,7 +207,7 @@ export const ActivityPersonsWithApplicatorLicense = [
 
 export const ProjectInformation = [
   new TemplateColumnBuilder('Project - Code', 'text', 'form_data.activity_data.project_code[0].description').build(),
-  new TemplateColumnBuilder('Project - Comment', 'text', 'form_data.activity_data.general_comment').build()
+  new TemplateColumnBuilder('General Comment', 'text', 'form_data.activity_data.general_comment').build()
 ];
 
 export const WellInformation = [
@@ -618,7 +617,13 @@ export const ChemicalPlantTreatmentInformation = [
     'text',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.rationale_for_ntz_reduction'
   ).build(),
-
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Unmapped Wells?',
+    'boolean',
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.unmapped_wells'
+  )
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Chemical Treatment - Start Time',
     'datetime',
@@ -629,17 +634,19 @@ export const ChemicalPlantTreatmentInformation = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Chemical Treatment - Unmapped Wells?',
-    'boolean',
-    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.unmapped_wells'
-  )
-    .isRequired()
-    .build(),
-
-  new TemplateColumnBuilder(
     'Chemical Treatment - Pest Injury Threshold Determination Done?',
     'boolean',
     'form_data.activity_subtype_data.Pest_Injury_Threshold_Determination.completed_radio'
+  )
+    .isRequired()
+    .build()
+];
+
+export const HerbicidesInformation = [
+  new TemplateColumnBuilder(
+    'Herbicide - Tank Mix?',
+    'boolean',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix'
   )
     .isRequired()
     .build(),
@@ -657,16 +664,6 @@ export const ChemicalPlantTreatmentInformation = [
     'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
   )
     .referencesCode('chemical_method_code')
-    .build()
-];
-
-export const HerbicidesInformation = [
-  new TemplateColumnBuilder(
-    'Herbicide - Tank Mix?',
-    'boolean',
-    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix'
-  )
-    .isRequired()
     .build(),
 
   new TemplateColumnBuilder(
@@ -693,16 +690,9 @@ export const HerbicidesInformation = [
     .referencesCode('calculation_type_code')
     .build(),
   new TemplateColumnBuilder(
-    'Herbicide - 1 - Dilution - Dilution %',
+    'Herbicide - Amount of Mix Used',
     'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].dilution'
-  )
-    .valueRange(0, 100)
-    .build(),
-  new TemplateColumnBuilder(
-    'Herbicide - 1 - Area Treated (Dilution)',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm'
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.amount_of_mix'
   )
     .valueRange(0, null)
     .build(),
@@ -717,6 +707,20 @@ export const HerbicidesInformation = [
     'Herbicide - 1 - PAR - Production Application Rate',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].product_application_rate'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Dilution - Dilution %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].dilution'
+  )
+    .valueRange(0, 100)
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 1 - Area Treated (Dilution)',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].area_treated_sqm'
   )
     .valueRange(0, null)
     .build(),
@@ -736,13 +740,6 @@ export const HerbicidesInformation = [
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .build(),
   new TemplateColumnBuilder(
-    'Herbicide - 2 - Calculation Type',
-    'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.calculation_type'
-  )
-    .referencesCode('calculation_type_code')
-    .build(),
-  new TemplateColumnBuilder(
     'Herbicide - 2 - PAR - Production Application Rate',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].product_application_rate'
@@ -751,12 +748,5 @@ export const HerbicidesInformation = [
     .build(),
   new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
 
-  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).build(),
-  new TemplateColumnBuilder(
-    'Herbicide - Amount of Mix Used',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.amount_of_mix'
-  )
-    .valueRange(0, null)
-    .build()
+  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).build()
 ];
