@@ -131,9 +131,17 @@ export const ValidateTankMixFields = (row) => {
 };
 
 export const ValidateChemAppMethod = (row) => {
-  const appliesToFields = ['Chemical Treatment - Application Method', 'Herbicide - Tank Mix?'];
+  const appliesToFields = ['Chemical Treatment (If Tank Mix) - Application Method', 'Herbicide - Tank Mix?'];
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
-  const validationFunctionArgs = [formData, [], {}];
+
+  const businessCodes = {};
+  businessCodes['chemical_method_spray'] = row.data[
+    'Chemical Treatment (If Tank Mix) - Application Method'
+  ].templateColumn.codes.map((codeObj) => {
+    return { value: codeObj.code };
+  });
+
+  const validationFunctionArgs = [formData, [], businessCodes];
 
   return runLegacyValidation(
     validate_chem_app_method_value,

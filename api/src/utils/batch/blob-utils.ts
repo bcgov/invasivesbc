@@ -38,6 +38,7 @@ export const mapTemplateFields = (
           _.set(output, cell?.templateColumn.mappedPath['utm_zone'], (cell.parsedValue as parsedGeoType).utm_zone);
           _.set(output, cell?.templateColumn.mappedPath['utm_northing'], (cell.parsedValue as parsedGeoType).utm_northing);
           _.set(output, cell?.templateColumn.mappedPath['utm_easting'], (cell.parsedValue as parsedGeoType).utm_easting);
+          _.set(output, cell?.templateColumn.mappedPath['geog'], (cell.parsedValue as parsedGeoType).geog);
 
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });
