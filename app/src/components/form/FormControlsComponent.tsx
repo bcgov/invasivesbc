@@ -7,7 +7,7 @@ import { selectAuth } from '../../state/reducers/auth';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useDispatch } from 'react-redux';
-import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { ACTIVITY_DELETE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -36,6 +36,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const activityInState = useSelector(selectActivity);
 
   const deleteRecord = () => {
+    //TODO refactor this all to happen in a side effect triggered by a request action
     // On record deletion, clear selected record
     if (userSettings.activeActivity === activityInState.activity.activity_id) {
       dispatch({
@@ -46,8 +47,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
       });
     }
     const activityIds = [activityInState.activity.activity_id];
-    dataAccess.deleteActivities(activityIds);
-    history.push('/home/activities');
+    dataAccess.deleteActivities(activityIds).then(() => {
+      localStorage.removeItem('activeActivity')
+      history.push('/home/activities');
+      dispatch({ type: ACTIVITY_DELETE_SUCCESS})
+    })
   };
 
   const checkIfNotAuthorized = () => {

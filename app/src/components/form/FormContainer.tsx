@@ -168,7 +168,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
       const notAdmin =
         authState?.accessRoles?.filter((role) => {
-          return role.role_id === 18;
+          return [1,18].includes(role.role_id)
         }).length === 0;
       if (notAdmin && notMine) {
         components = (userSettingsState.apiDocsWithViewOptions as any).components;

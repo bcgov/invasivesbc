@@ -373,6 +373,7 @@ export const getActivitiesSQL = (
     sqlStatement.append(SQL`)`);
   }
 
+  /*
   if (searchCriteria.user_roles && searchCriteria.user_roles.length > 0) {
     // const roles = searchCriteria.user_roles.map((role: any) => parseInt(role.role_id));
     // sqlStatement.append(
@@ -394,6 +395,7 @@ export const getActivitiesSQL = (
       `
     );
   }
+  */
 
   // subtype and subtype full are a bit mismatched in places, this will search both:
   if (searchCriteria.activity_subtype && searchCriteria.activity_subtype.length) {

@@ -51,7 +51,8 @@ import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_EDIT_PHOTO_REQUEST,
   ACTIVITY_COPY_REQUEST,
-  ACTIVITY_PASTE_REQUEST
+  ACTIVITY_PASTE_REQUEST,
+  MAP_INIT_REQUEST
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -95,6 +96,10 @@ function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
 
+function* handle_ACTIVITY_DELETE_SUCESS(action) {
+  yield put({type: MAP_INIT_REQUEST})
+}
+
 function* activityPageSaga() {
   yield all([
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
@@ -125,6 +130,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_DELETE_PHOTO_REQUEST, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
     takeEvery(ACTIVITY_ADD_PHOTO_REQUEST, handle_ACTIVITY_ADD_PHOTO_REQUEST),
     takeEvery(ACTIVITY_EDIT_PHOTO_REQUEST, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
+    takeEvery(ACTIVITY_DELETE_SUCCESS, handle_ACTIVITY_DELETE_SUCESS),
     throttle(1000, ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     throttle(
       1000,

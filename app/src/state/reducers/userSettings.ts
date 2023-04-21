@@ -1,5 +1,6 @@
 import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
 import {
+  ACTIVITY_DELETE_SUCCESS,
   GET_API_DOC_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
@@ -85,6 +86,13 @@ const initialState = new UserSettingsState();
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case ACTIVITY_DELETE_SUCCESS: {
+        return {
+          ...state,
+          activeActivity: '',
+          activeActivityDescription: ''
+        }
+      }
       case GET_API_DOC_SUCCESS: {
         return {
           ...state,

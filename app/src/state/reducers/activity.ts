@@ -58,6 +58,11 @@ const initialState = new ActivityState();
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case ACTIVITY_DELETE_SUCCESS: {
+        return { 
+          ...new ActivityState()
+        }
+      }
       case ACTIVITY_GET_SUCCESS: {
         return {
           ...state,
