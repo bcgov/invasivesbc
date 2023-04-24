@@ -63,6 +63,12 @@ export const Photos = ({ media }) => {
 
             <dt>Reference Number</dt>
             <dd>{mediaData.reference_no}</dd>
+
+            {mediaData.treatment_id !== null && <>
+              <dt>Treatment ID</dt>
+              <dd>{mediaData.treatment_id}</dd>
+            </>
+            }
           </dl>
         </div>
       );
