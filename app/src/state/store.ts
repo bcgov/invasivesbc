@@ -32,8 +32,9 @@ const setupStore = (configuration: AppConfig) => {
         const requestOptions = state.Auth.requestHeaders;
         const config = state.Configuration.current;
         const options = getRequestOptions(config, requestOptions);
-
         await InvasivesAPI_Callback('POST', '/api/error', postObj, options)
+        alert(`An error has occurred. Please click here to refresh the page and try again. If the problem persists, please contact the system administrator.  This information will be logged for admins, but in case someone asks here is the error (take a screenshot), \n \n ${JSON.stringify(e.message, null, 2)}, ${JSON.stringify(e.stack)}`) // eslint-disable-line no-alert)
+        window.location.reload()
       }
     }
   });
