@@ -145,10 +145,14 @@ export const LeafletCanvasLabel = (props) => {
             'data:image/svg+xml,' +
             encodeURIComponent(svgText(point.properties.site_id, point.properties.species_on_site));
         } else {
+
+          const species_treated = point?.properties?.species_treated?.length > 0 && point.properties.species_treated[0] !== null? point.properties.species_treated : []
+          const species_positive = point?.properties?.species_positive?.length > 0 && point.properties.species_positive[0] !== null? point.properties.species_positive : []
+          const array_to_show = species_treated.length > 0 ? species_treated : species_positive
           labelImage =
             'data:image/svg+xml,' +
             encodeURIComponent(
-              svgText(point.properties.short_id, point.properties.species_positive || point.properties.species_treated)
+              svgText(point.properties.short_id, array_to_show)
             );
         }
         var labelIcon = L.icon({
