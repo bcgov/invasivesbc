@@ -29,7 +29,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const history = useHistory();
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
-  const { accessRoles, displayName } = useSelector(selectAuth);
+  const { accessRoles, displayName, username } = useSelector(selectAuth);
   const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
@@ -60,7 +60,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         return false;
       }
     }
-    if (displayName !== props.activity.createdBy) {
+
+    if (username !== props.activity.created_by) {
       return true;
     }
     return false;
