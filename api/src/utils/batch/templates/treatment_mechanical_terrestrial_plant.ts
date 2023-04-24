@@ -12,6 +12,8 @@ const TreatmentMechanicalTerrestrialPlant = new Template(
   'Treatment - Mechanical - Terrestrial Plant',
   null
 );
+TreatmentMechanicalTerrestrialPlant.type = 'Treatment';
+TreatmentMechanicalTerrestrialPlant.subtype = 'Activity_Treatment_MechanicalPlantTerrestrial';
 
 TreatmentMechanicalTerrestrialPlant.columns = [
   ...BasicInformation,
