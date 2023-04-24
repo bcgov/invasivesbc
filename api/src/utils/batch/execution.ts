@@ -3,7 +3,7 @@ import { getLogger } from '../logger';
 import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
-import { activity_create_function, ActivityLetter, autofillChemFields } from 'sharedAPI';
+import { activity_create_function, ActivityLetter, autofillChemFields, populateSpeciesArrays } from 'sharedAPI';
 import { mapTemplateFields } from './blob-utils';
 
 const defaultLog = getLogger('batch');
@@ -49,6 +49,8 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
     mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
+
+  mapped = populateSpeciesArrays(mapped)
 
   mapped['form_data']['form_status'] = 'Submitted';
 
