@@ -291,6 +291,16 @@ async function _validateCell(
       //@todo validate length
       break;
     case 'WKT':
+      // validate if not polygon first to avoid WKT autofill and subsequent crashes
+      const shape = data.split(' (')[0];
+      if (shape !== 'POLYGON') {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Geometry shape must be a Polygon, value read as ${shape}`
+        });
+        break;
+      }
+
       if (validateAsWKT(data)) {
         try {
           result.parsedValue = await autofillFromPostGIS(data);
@@ -331,7 +341,6 @@ async function _validateCell(
         });
       }
 
-      //@todo validate geometry
       break;
     case 'tristate':
       switch (data?.toLowerCase()) {
