@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import {all, call, delay, put, select, takeLatest} from 'redux-saga/effects';
 import Keycloak from 'keycloak-js';
 import {
   AUTH_INITIALIZE_COMPLETE,
@@ -17,13 +17,13 @@ import {
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';
-import { AppConfig } from '../config';
-import { selectConfiguration } from '../reducers/configuration';
-import { selectAuthHeaders } from '../reducers/auth';
-import { Http } from '@capacitor-community/http';
+import {AppConfig} from '../config';
+import {selectConfiguration} from '../reducers/configuration';
+import {selectAuthHeaders} from '../reducers/auth';
+import {Http} from '@capacitor-community/http';
 
-const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for atleast this long at all times
-const GRACE_PERIOD = 10; // get a new one with this much time to spare
+const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for at least this long at all times
+const TOKEN_REFRESH_INTERVAL = 7 * 1000;
 
 let keycloakInstance = null;
 
@@ -55,7 +55,8 @@ function* initializeAuthentication() {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put({ type: AUTH_REFRESH_TOKEN });
+    yield put({type: AUTH_REFRESH_TOKEN});
+    yield put ({type: AUTH_REFRESH_ROLES_REQUEST} );
   } else {
     // we are not logged in
     yield put({
@@ -70,10 +71,22 @@ function* initializeAuthentication() {
 
 function* refreshRoles() {
   const configuration = yield select(selectConfiguration);
-  const authHeaders = yield select(selectAuthHeaders);
+  let authHeaders = yield select(selectAuthHeaders);
+  let authState = yield select(state => state.Auth);
+
+
+  for (let i = 0; i < 3; i++) {
+    if (authHeaders.authorization !== null && authHeaders.authorization.length > 0) {
+      // we've got a valid header
+      break;
+    }
+    // wait for it...
+    yield delay(500);
+    authHeaders = yield select(selectAuthHeaders);
+  }
 
   try {
-    const { data: userData } = yield Http.request({
+    const {data: userData} = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
       //url: 'http://localhost:7080' + `/api/user-access`,
@@ -84,7 +97,7 @@ function* refreshRoles() {
       }
     });
 
-    const { data: rolesData } = yield Http.request({
+    const {data: rolesData} = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
       //url: 'http://localhost:7080' + `/api/roles`,
@@ -119,45 +132,41 @@ function* refreshRoles() {
     });
   } catch (err) {
     console.dir(err);
-    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
+    yield put({type: AUTH_REFRESH_ROLES_ERROR});
   }
 }
 
 function* keepTokenFresh() {
-  yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
-  yield put({ type: AUTH_UPDATE_TOKEN_STATE });
+  const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
+  if (refreshed) {
+    yield put({type: AUTH_UPDATE_TOKEN_STATE});
+  }
 
-  // load roles
-  yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
-
-  const expiresIn =
-    keycloakInstance.tokenParsed['exp'] - Math.ceil(new Date().getTime() / 1000) + keycloakInstance.timeSkew;
-
-  // wait until the time is right
-  yield delay((expiresIn - GRACE_PERIOD) * 1000);
-  yield put({ type: AUTH_REFRESH_TOKEN });
+  yield delay(TOKEN_REFRESH_INTERVAL);
+  yield put({type: AUTH_REFRESH_TOKEN});
 }
 
 function* handleSigninRequest(action) {
   try {
     yield call(keycloakInstance.login);
 
-    yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
-    yield put({ type: AUTH_REFRESH_TOKEN });
+    yield put({type: AUTH_REQUEST_COMPLETE, payload: {}});
+    yield put({type: AUTH_REFRESH_ROLES_REQUEST});
+    yield put({type: AUTH_REFRESH_TOKEN});
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put({type: AUTH_REQUEST_ERROR});
   }
 }
 
 function* handleSignoutRequest(action) {
   try {
     yield keycloakInstance.logout();
-    yield put({ type: AUTH_SIGNOUT_COMPLETE });
-    yield put({ type: USERINFO_CLEAR_REQUEST });
+    yield put({type: AUTH_SIGNOUT_COMPLETE});
+    yield put({type: USERINFO_CLEAR_REQUEST});
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put({type: AUTH_REQUEST_ERROR});
   }
 }
 
@@ -172,4 +181,4 @@ function* authenticationSaga() {
 }
 
 export default authenticationSaga;
-export { keycloakInstance };
+export {keycloakInstance};
