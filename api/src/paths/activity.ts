@@ -426,20 +426,12 @@ function updateActivity(): RequestHandler {
     }
 
     if (response.rows[0].activity_type === 'Monitoring') {
-      // get its species
-      const species_treated = response.rows[0].species_treated? response.rows[0].species_treated: []
-
-      // query for the linked activity
-      const linked_id = response.rows[0].activity_payload.form_data?.activity_type_data?.linked_id;
-
-      // get linked species
-      const sanitizedSearchCriteria: string = linked_id;
-      const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
-      const response2 = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-      const linked_species_treated = response2.rows[0].species_treated;
+      const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
+      const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+      const linked_species_treated = response.rows[0].species_treated;
 
       // make sure monitoring a subset
-      species_treated.forEach((species) => {
+      sanitizedActivityData.species_treated.forEach((species) => {
         defaultLog.info({message: 'species check', species});
 
         if (linked_species_treated.includes(species) === false) {

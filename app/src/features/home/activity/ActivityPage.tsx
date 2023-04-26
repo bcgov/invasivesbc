@@ -28,7 +28,6 @@ import {
 } from 'state/actions';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
-import {selectMap} from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -64,8 +63,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const dispatch = useDispatch();
   const activityInStore = useSelector(selectActivity);
   const userSettingsState = useSelector(selectUserSettings);
-  const mapState = useSelector(selectMap);
-
   const [geometry, setGeometry] = useState<Feature[]>([]);
 
   useEffect(() => {
@@ -79,7 +76,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const { MOBILE } = useSelector(selectConfiguration);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [linkedActivity, setLinkedActivity] = useState(null);
+  const [linkedActivity] = useState(null);
   const [extent, setExtent] = useState(null);
   const [alertErrorsOpen, setAlertErrorsOpen] = useState(false);
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
@@ -279,15 +276,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
       payload: { eventFormData: event.formData, lastField: lastField }
     });
-
-    if (event.formData?.activity_type_data?.linked_id) {
-      const act = mapState.activitiesGeoJSON?.features?.find((activity) => activity?.properties?.id == event.formData?.activity_type_data?.linked_id);
-      setLinkedActivity(act);
-    }
-
-    if (callbackFun) {
-      // callbackFun(updatedFormData);
-    }
   };
 
   /**
@@ -344,11 +332,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     */
   };
-
-  //TODO REDUX - needs more criteria though
-  useEffect(() => {
-    if (linkedActivity) setGeometry(linkedActivity?.geometry);
-  }, [linkedActivity]);
 
   // TODO REDUX
   //sets well id and proximity if there are any

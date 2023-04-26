@@ -33,7 +33,15 @@ export const Monitoring = {
     linked_id: {
       type: 'string',
       title: 'Linked Treatment ID',
+      default: '',
       'x-tooltip-text': 'Identifier of linked treatment record'
+    },
+    copy_geometry: {
+      type: 'string',
+      title: 'Copy Geometry',
+      enum: ['Yes', 'No'],
+      default: 'No',
+      'x-tooltip-text': 'This will copy geometry from the linked treatment record'
     },
     activity_persons: {
       type: 'array',
@@ -85,8 +93,16 @@ export const Monitoring_Biocontrol_Release = {
     },
     linked_id: {
       type: 'string',
+    default: '',
       title: 'Linked Treatment ID',
       'x-tooltip-text': 'Identifier of linked treatment record'
+    },
+    copy_geometry: {
+      type: 'string',
+      title: 'Copy Geometry',
+      enum: ['Yes', 'No'],
+      default: 'No',
+      'x-tooltip-text': 'This will copy geometry from the linked treatment record'
     },
     activity_persons: {
       type: 'array',
