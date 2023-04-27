@@ -414,7 +414,8 @@ function updateActivity(): RequestHandler {
     const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
 
     if (!isAdmin) {
-      if (sanitizedActivityData.updated_by_with_guid !== response.rows[0].created_by_with_guid) {
+      if (sanitizedActivityData.updated_by_with_guid !== response.rows[0].created_by_with_guid && 
+        (response.rows[0].created_by_with_guid !== null)) { // some old records are null
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',
           request: req.body,
