@@ -33,7 +33,8 @@ import {
   MAIN_MAP_MOVE,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   WHATS_HERE_SORT_FILTER_UPDATE,
-  MAP_TOGGLE_LEGENDS
+  MAP_TOGGLE_LEGENDS,
+  MAP_LABEL_EXTENT_FILTER_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -472,6 +473,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.whatsHere,
             activityRows: [...action.payload.data]
           }
+        };
+      }
+      case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
+        const newLayers = state.layers;
+
+        action.payload.labels.forEach((labelLayer) => {
+          newLayers[labelLayer.id].labelList = labelLayer.features;
+        });
+        return {
+          ...state,
+          layers: newLayers
         };
       }
       default:

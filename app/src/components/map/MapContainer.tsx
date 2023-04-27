@@ -58,6 +58,7 @@ import { ExtentListener } from './ExtentListener';
 import { selectMap } from 'state/reducers/map';
 import { JumpToRecord } from './Tools/ToolTypes/Nav/JumpToRecord';
 import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
+import { LabelButton } from './Tools/ToolTypes/Data/LabelButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
 
@@ -309,6 +310,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <PanToMe />
             <JumpToRecord/>
             <LegendsButton />
+            <LabelButton />
             <BoundaryLayerDisplayForRecordSetToggle/>
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
