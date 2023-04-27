@@ -20,6 +20,7 @@ import {useLeafletContext} from '@react-leaflet/core';
 import {selectMap} from 'state/reducers/map';
 import {AnyKindOfDictionary} from 'lodash';
 import {LeafletCanvasLabel, LeafletCanvasMarker} from './LeafletCanvasLayer';
+import { pointsWithinPolygon } from '@turf/turf';
 
 const IAPPCanvasLayerMemo = (props) => {
   const {accessRoles} = useSelector(selectAuth);
@@ -99,7 +100,7 @@ const ActivityCanvasLabelMemo = (props) => {
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.boundsPolygon) {
       returnVal = mapState?.activitiesGeoJSON?.features
         .filter((row) => {
           return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
@@ -120,7 +121,8 @@ const ActivityCanvasLabelMemo = (props) => {
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = {type: 'FeatureCollection', features: returnVal};
+    return pointsWithinPolygon(points as any, mapState?.boundsPolygon);
   };
 
   return useMemo(() => {
@@ -139,7 +141,8 @@ const ActivityCanvasLabelMemo = (props) => {
     } else return <div key={Math.random()}></div>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
+    JSON.stringify(mapState?.boundsPolygon)
   ]);
 };
 

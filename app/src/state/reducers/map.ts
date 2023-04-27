@@ -67,6 +67,7 @@ class MapState {
   zoom: number;
   center: L.LatLngExpression;
   activityPageMapExtentToggle: boolean;
+  boundsPolygon: any;
 
   constructor() {
     this.initialized = false;
@@ -81,6 +82,7 @@ class MapState {
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
     this.legendsPopup = false;
+    this.boundsPolygon = null;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -476,14 +478,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
-        const newLayers = state.layers;
-
-        action.payload.labels.forEach((labelLayer) => {
-          newLayers[labelLayer.id].labelList = labelLayer.features;
-        });
         return {
           ...state,
-          layers: newLayers
+          boundsPolygon: action.payload.bounds
         };
       }
       default:

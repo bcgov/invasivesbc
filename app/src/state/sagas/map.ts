@@ -856,52 +856,52 @@ function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
 }
 
 function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
-  const mapState = yield select(selectMap);
-  const layers = mapState.layers;
+  // const mapState = yield select(selectMap);
+  // const layers = mapState.layers;
 
   const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
   const bounds = turf.bboxPolygon(bbox as any);
 
-  let labels = [];
-
-  // filter
-  Object.keys(layers).forEach((key) => {
-    const layer = layers[key];
-    if (layer.layerState.labelToggle) {
-      let points;
-      if (layer.type === 'Activity') {
-        const pointsInLayer = mapState?.activitiesGeoJSON?.features
-          .filter((row) => {
-            return layer?.IDList?.includes(row.properties.id) && row.geometry;
-          })
-          .map((row) => {
-            let computedCenter = null;
-            try {
-              if (row?.geometry != null) {
-                computedCenter = turf.center(row.geometry).geometry;
-              }
-            } catch (e) {
-              console.dir(row.geometry);
-              console.error(e);
-            }
-            return { ...row, geometry: computedCenter };
-          });
-
-        points = { type: 'FeatureCollection', features: pointsInLayer };
-      } else {
-      }
-      const ptsWithin = turf.pointsWithinPolygon(points, bounds);
-      console.log(ptsWithin);
-      labels.push({ id: key, features: ptsWithin });
-    }
-  });
-
   yield put({
     type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
     payload: {
-      labels: labels
+      bounds: bounds
     }
   });
+
+  // let labels = [];
+
+  // // filter
+  // Object.keys(layers).forEach((key) => {
+  //   const layer = layers[key];
+  //   if (layer.layerState.labelToggle) {
+  //     let points;
+  //     if (layer.type === 'Activity') {
+  //       const pointsInLayer = mapState?.activitiesGeoJSON?.features
+  //         .filter((row) => {
+  //           return layer?.IDList?.includes(row.properties.id) && row.geometry;
+  //         })
+  //         .map((row) => {
+  //           let computedCenter = null;
+  //           try {
+  //             if (row?.geometry != null) {
+  //               computedCenter = turf.center(row.geometry).geometry;
+  //             }
+  //           } catch (e) {
+  //             console.dir(row.geometry);
+  //             console.error(e);
+  //           }
+  //           return { ...row, geometry: computedCenter };
+  //         });
+
+  //       points = { type: 'FeatureCollection', features: pointsInLayer };
+  //     } else {
+  //     }
+  //     const ptsWithin = turf.pointsWithinPolygon(points, bounds);
+  //     console.log(ptsWithin);
+  //     labels.push({ id: key, features: ptsWithin });
+  //   }
+  // });
 }
 
 function* activitiesPageSaga() {
