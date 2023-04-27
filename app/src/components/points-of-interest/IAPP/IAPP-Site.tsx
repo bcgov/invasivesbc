@@ -205,7 +205,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               <Typography className={classes.subHeading}>Date Updated:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.updated_by)}
+              {ifApplicable(site?.date_updated)}
             </Grid>
           </Grid>
         </AccordionDetails>

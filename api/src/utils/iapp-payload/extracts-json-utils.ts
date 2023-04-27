@@ -102,6 +102,7 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     dispersal_utm_easting: dispersal.dispersal_utm_easting,
     dispersal_utm_northing: dispersal.dispersal_utm_northing,
     dispersal_agency: dispersal.dispersal_agency,
+    monitoring_comments: dispersal.monitoring_comments,
     entered_by: dispersal.entered_by,
     date_entered: dispersal.date_entered,
     updated_by: dispersal.updated_by,
@@ -219,6 +220,11 @@ const monitoringJSON = (props: any) => {
     pupae_present_ind: item.pupae_present,
     adults_present_ind: item.adults_present,
     tunnels_present_ind: item.tunnels_present,
-    invasive_species_agency_code: item?.monitoring_agency
+    invasive_species_agency_code: item?.monitoring_agency,
+    monitoring_comments: item.monitoring_comments,
+    entered_by: item.entered_by,
+    date_entered: item.date_entered,
+    updated_by: item.updated_by,
+    date_updated: item.date_updated
   };
 };

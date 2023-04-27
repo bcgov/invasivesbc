@@ -104,6 +104,7 @@ interface BioDispersalColumn {
     | 'pupae_present_ind'
     | 'adults_present_ind'
     | 'tunnels_present_ind'
+    | 'monitoring_comments'
     | 'entered_by'
     | 'date_entered'
     | 'updated_by'
@@ -219,6 +220,7 @@ const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'dispersal_utm_zone', label: 'UTM Zone', minWidth: 100 },
   { id: 'dispersal_utm_easting', label: 'UTM Easting', minWidth: 100 },
   { id: 'dispersal_utm_northing', label: 'UTM Northing', minWidth: 100 },
+  { id: 'monitoring_comments', label: 'Dispersal Comments', minWidth: 350 },
   { id: 'entered_by', label: 'Entered By', minWidth: 100 },
   { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
   { id: 'updated_by', label: 'Updated By', minWidth: 100 },
@@ -239,7 +241,7 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'application_time', label: 'Release Time', minWidth: 150 },
   { id: 'agent_source', label: 'Agent Source', minWidth: 150 },
   { id: 'release_quantity', label: 'Release Quantity', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 350 },
+  { id: 'general_comment', label: 'Treatment Comments', minWidth: 350 },
   { id: 'release_utm_zone', label: 'UTM Zone', minWidth: 100 },
   { id: 'release_utm_easting', label: 'UTM Easting', minWidth: 100 },
   { id: 'release_utm_northing', label: 'UTM Northing', minWidth: 100 },
@@ -296,7 +298,12 @@ const Row = (props: any) => {
       pupae_present_ind: item.pupae_present_ind,
       adults_present_ind: item.adults_present_ind,
       tunnels_present_ind: item.tunnels_present_ind,
-      efficacy_rating: item.efficacy_code
+      efficacy_rating: item.efficacy_code,
+      monitoring_comments: item.monitoring_comments,
+      entered_by: item.entered_by,
+      date_entered: item.date_entered,
+      updated_by: item.updated_by,
+      date_updated: item.date_updated
     };
   };
 
@@ -502,6 +509,7 @@ export const TreatmentsTable = (props) => {
           dispersal_utm_zone: treatment.dispersal_utm_zone,
           dispersal_utm_easting: treatment.dispersal_utm_easting,
           dispersal_utm_northing: treatment.dispersal_utm_northing,
+          monitoring_comments: treatment.monitoring_comments,
           entered_by: treatment.entered_by,
           date_entered: treatment.date_entered,
           updated_by: treatment.updated_by,
