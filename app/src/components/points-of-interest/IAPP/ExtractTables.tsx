@@ -20,16 +20,21 @@ import { defaultMonitoringColumns, customMonitoringColumns, MonitoringRow } from
 
 interface MechTreatmentColumn {
   id:
-    | 'treatment_id'
+    | 'mechanical_id'
     | 'species_common_name'
     | 'treatment_date'
     | 'invasive_species_agency_code'
     | 'employer'
     | 'primary_applicator'
+    | 'other_applicators'
     | 'reported_area'
     | 'mechanical_method'
     | 'project_code'
-    | 'general_comment';
+    | 'general_comment'
+    | 'entered_by'
+    | 'date_entered'
+    | 'updated_by'
+    | 'date_updated';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -52,11 +57,20 @@ interface ChemTreatmentColumn {
     | 'pmp_confirmation_number'
     | 'treatment_date'
     | 'primary_applicator'
+    | 'other_applicators'
     | 'invasive_species_agency_code'
     | 'reported_area'
     | 'chemical_method'
     | 'project_code'
-    | 'general_comment';
+    | 'wind_speed'
+    | 'wind_direction'
+    | 'temperature'
+    | 'humidity'
+    | 'general_comment'
+    | 'entered_by'
+    | 'date_entered'
+    | 'updated_by'
+    | 'date_updated';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -66,13 +80,22 @@ interface ChemTreatmentColumn {
 interface BioDispersalColumn {
   id:
     | 'dispersal_id'
-    | 'species_common_name'
-    | 'inspection_date'
+    | 'dispersal_paper_file_id'
+    | 'dispersal_utm_zone'
+    | 'dispersal_utm_easting'
+    | 'dispersal_utm_northing'
+    | 'monitoring_date'
+    | 'dispersal_agency'
     | 'project_code'
-    | 'count_duration'
-    | 'plant_count'
-    | 'agent_count'
+    | 'primary_surveyor'
+    | 'other_surveyors'
+    | 'efficacy_rating'
+    | 'general_comment'
     | 'biological_agent_code'
+    | 'agent_count'
+    | 'plant_count'
+    | 'count_duration'
+    | 'legacy_presence'
     | 'foliar_feeding_damage_ind'
     | 'root_feeding_damage_ind'
     | 'seed_feeding_damage_ind'
@@ -81,7 +104,10 @@ interface BioDispersalColumn {
     | 'pupae_present_ind'
     | 'adults_present_ind'
     | 'tunnels_present_ind'
-    | 'general_comment';
+    | 'entered_by'
+    | 'date_entered'
+    | 'updated_by'
+    | 'date_updated';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -97,14 +123,24 @@ interface BioTreatmentColumn {
     | 'invasive_species_agency_code'
     | 'employer'
     | 'primary_applicator'
+    | 'other_applicators'
     | 'classified_area_code'
     | 'biological_agent_code'
     | 'bioagent_source'
     | 'biological_agent_stage_code'
+    | 'collection_date'
     | 'agent_source'
+    | 'application_time'
     | 'release_quantity'
     | 'project_code'
-    | 'general_comment';
+    | 'general_comment'
+    | 'release_utm_zone'
+    | 'release_utm_easting'
+    | 'release_utm_northing'
+    | 'entered_by'
+    | 'date_entered'
+    | 'updated_by'
+    | 'date_updated';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -112,18 +148,25 @@ interface BioTreatmentColumn {
 }
 
 const mechTreatmentColumns: readonly MechTreatmentColumn[] = [
+  { id: 'mechanical_id', label: 'Treatment ID', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 150 },
   { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
-  { id: 'reported_area', label: 'Treated Area', minWidth: 150 },
+  { id: 'other_applicators', label: 'Other Applicators', minWidth: 250 },
+  { id: 'reported_area', label: 'Treated Area (ha)', minWidth: 150 },
   { id: 'mechanical_method', label: 'Method', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
+  { id: 'general_comment', label: 'Treatment Comments', minWidth: 350 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
+  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
@@ -131,49 +174,79 @@ const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
   { id: 'service_licence_number', label: 'Service Licence Number', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 150 },
-  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 350 },
+  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
+  { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'chemical_method', label: 'Method', minWidth: 150 },
   { id: 'herbicide', label: 'Herbicide', minWidth: 150 },
   { id: 'reported_area', label: 'Treated Area (ha)', minWidth: 150 },
-  { id: 'application_rate', label: 'Product Application Rate', minWidth: 150 },
+  { id: 'application_rate', label: 'Product Application Rate (L/ha)', minWidth: 150 },
   { id: 'amount_of_mix', label: 'Amount of Mix Used (L)', minWidth: 150 },
   { id: 'dilution', label: 'Dilution (%)', minWidth: 150 },
-  { id: 'mix_delivery_rate', label: 'Delivery Rate of Mix', minWidth: 150 },
+  { id: 'mix_delivery_rate', label: 'Delivery Rate (L/ha)', minWidth: 150 },
   { id: 'herbicide_amount', label: 'Amount of Undiluted Herbicide Used (L)', minWidth: 150 },
   { id: 'tank_mix', label: 'Tank Mix', minWidth: 150 },
-  { id: 'general_comment', label: 'Treatment Comment', minWidth: 350 }
+  { id: 'wind_speed', label: 'Wind Speed (km/h)', minWidth: 150 },
+  { id: 'wind_direction', label: 'Wind Direction (degrees)', minWidth: 150 },
+  { id: 'temperature', label: 'Temperature (c)', minWidth: 150 },
+  { id: 'humidity', label: 'Humidity (%)', minWidth: 150 },
+  { id: 'general_comment', label: 'Treatment Comment', minWidth: 350 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 const bioDispersalColumns: readonly BioDispersalColumn[] = [
-  { id: 'inspection_date', label: 'Inspection Date', minWidth: 150 },
-  { id: 'project_code', label: 'Paper File ID', minWidth: 350 },
-  { id: 'species_common_name', label: 'Invasive Plant', minWidth: 200 },
-  { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 150 },
-  { id: 'agent_count', label: 'Agent Count', minWidth: 150 },
-  { id: 'plant_count', label: 'Plant Count', minWidth: 150 },
-  { id: 'count_duration', label: 'Duration of Count (min)', minWidth: 150 },
-  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 150 },
-  { id: 'root_feeding_damage_ind', label: 'Root Feeding damage', minWidth: 150 },
-  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 150 },
-  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 150 },
-  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 150 },
-  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 150 },
-  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 150 },
-  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 150 },
-  { id: 'general_comment', label: 'Comments', minWidth: 350 }
+  { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
+  { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
+  { id: 'project_code', label: 'Monitoring Paper File ID', minWidth: 100 },
+  { id: 'dispersal_agency', label: 'Dispersal Agency', minWidth: 350 },
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
+  { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 200 },
+  { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 100 },
+  { id: 'agent_count', label: 'Agent Count', minWidth: 100 },
+  { id: 'plant_count', label: 'Plant Count', minWidth: 100 },
+  { id: 'count_duration', label: 'Count Duration (min)', minWidth: 100 },
+  { id: 'legacy_presence', label: 'Legacy Presence', minWidth: 100 },
+  { id: 'foliar_feeding_damage_ind', label: 'Foliar Feeding Damage', minWidth: 100 },
+  { id: 'root_feeding_damage_ind', label: 'Root Feeding Damage', minWidth: 100 },
+  { id: 'seed_feeding_damage_ind', label: 'Seed Feeding Damage', minWidth: 100 },
+  { id: 'oviposition_marks_ind', label: 'Oviposition Marks', minWidth: 100 },
+  { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 100 },
+  { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 100 },
+  { id: 'adults_present_ind', label: 'Adults Present', minWidth: 100 },
+  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 100 },
+  { id: 'dispersal_utm_zone', label: 'UTM Zone', minWidth: 100 },
+  { id: 'dispersal_utm_easting', label: 'UTM Easting', minWidth: 100 },
+  { id: 'dispersal_utm_northing', label: 'UTM Northing', minWidth: 100 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
+  { id: 'treatment_id', label: 'Treatment ID', minWidth: 150 },
   { id: 'treatment_date', label: 'Treatment Date', minWidth: 150 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 150 },
   { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
+  { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 150 },
+  { id: 'biological_agent_stage_code', label: 'Bioagent Stage', minWidth: 150 },
+  { id: 'application_time', label: 'Release Time', minWidth: 150 },
   { id: 'agent_source', label: 'Agent Source', minWidth: 150 },
   { id: 'release_quantity', label: 'Release Quantity', minWidth: 150 },
-  { id: 'general_comment', label: 'General Comment', minWidth: 350 }
+  { id: 'general_comment', label: 'General Comment', minWidth: 350 },
+  { id: 'release_utm_zone', label: 'UTM Zone', minWidth: 100 },
+  { id: 'release_utm_easting', label: 'UTM Easting', minWidth: 100 },
+  { id: 'release_utm_northing', label: 'UTM Northing', minWidth: 100 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 const Row = (props: any) => {
@@ -282,7 +355,7 @@ const Row = (props: any) => {
       </TableRow>
       {monitoringRows && (
         <TableRow>
-          <TableCell padding="none" colSpan={18}>
+          <TableCell padding="none" colSpan={30}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box margin={1} marginLeft={5}>
                 <Typography fontSize={'0.925rem'}>Monitoring Table</Typography>
@@ -354,14 +427,21 @@ export const TreatmentsTable = (props) => {
     switch (type) {
       case 'Mechanical Treatment':
         returnObj = {
-          treatment_id: treatment.treatment_id,
+          mechanical_id: treatment.mechanical_id,
           species_common_name: treatment.common_name,
           treatment_date: treatment.treatment_date.substring(0, treatment.treatment_date.indexOf('T')),
           invasive_species_agency_code: treatment.invasive_species_agency_code,
+          employer: treatment.employer,
+          primary_applicator: treatment.primary_applicator,
+          other_applicators: treatment.other_applicators,
           reported_area: treatment.reported_area,
-          method_code: method_code,
+          mechanical_method: treatment.mechanical_method,
           project_code: treatment?.project_code[0]?.description,
           general_comment: treatment.general_comment,
+          entered_by: treatment.entered_by,
+          date_entered: treatment.date_entered,
+          updated_by: treatment.updated_by,
+          date_updated: treatment.date_updated,
           monitoring: treatment.monitoring
         };
         break;
@@ -376,6 +456,8 @@ export const TreatmentsTable = (props) => {
           invasive_species_agency_code: treatment.invasive_species_agency_code,
           employer: treatment.employer,
           primary_applicator: treatment.primary_applicator,
+          other_applicators: treatment.other_applicators,
+          application_time: treatment.application_time,
           chemical_method: treatment.chemical_method,
           herbicide: treatment.herbicide,
           reported_area: treatment.reported_area,
@@ -385,7 +467,15 @@ export const TreatmentsTable = (props) => {
           mix_delivery_rate: treatment.mix_delivery_rate,
           herbicide_amount: treatment.herbicide_amount,
           tank_mix: treatment.tank_mix,
+          wind_speed: treatment.wind_speed,
+          wind_direction: treatment.wind_direction,
+          temperature: treatment.temperature,
+          humidity: treatment.humidity,
           general_comment: treatment.general_comment,
+          entered_by: treatment.entered_by,
+          date_entered: treatment.date_entered,
+          updated_by: treatment.updated_by,
+          date_updated: treatment.date_updated,
           monitoring: treatment.monitoring
         };
         break;
@@ -393,8 +483,11 @@ export const TreatmentsTable = (props) => {
         returnObj = {
           dispersal_id: treatment.biological_dispersal_id,
           species_common_name: treatment.common_name,
-          inspection_date: treatment.monitoring_date.substring(0, treatment.monitoring_date.indexOf('T')),
+          monitoring_date: treatment.monitoring_date.substring(0, treatment.monitoring_date.indexOf('T')),
           project_code: treatment?.project_code[0]?.description,
+          primary_surveyor: treatment.primary_surveyor,
+          other_surveyors: treatment.other_surveyors,
+          dispersal_agency: treatment.dispersal_agency,
           plant_count: treatment.plant_count,
           agent_count: treatment.agent_count,
           biological_agent_code: treatment.biological_agent_code,
@@ -406,6 +499,13 @@ export const TreatmentsTable = (props) => {
           pupae_present_ind: treatment.pupae_present_ind,
           adults_present_ind: treatment.adults_present_ind,
           tunnels_present_ind: treatment.tunnels_present_ind,
+          dispersal_utm_zone: treatment.dispersal_utm_zone,
+          dispersal_utm_easting: treatment.dispersal_utm_easting,
+          dispersal_utm_northing: treatment.dispersal_utm_northing,
+          entered_by: treatment.entered_by,
+          date_entered: treatment.date_entered,
+          updated_by: treatment.updated_by,
+          date_updated: treatment.date_updated,
           general_comment: treatment.general_comment
         };
         break;
@@ -417,14 +517,23 @@ export const TreatmentsTable = (props) => {
           invasive_species_agency_code: treatment.invasive_species_agency_code,
           employer: treatment.employer,
           primary_applicator: treatment.primary_applicator,
+          other_applicators: treatment.other_applicators,
           collection_date: treatment.collection_date,
+          application_time: treatment.application_time,
           classified_area_code: treatment.classified_area_code,
           biological_agent_code: treatment.biological_agent_code,
           agent_source: treatment.agent_source,
           biological_agent_stage_code: treatment.biological_agent_stage_code,
           release_quantity: treatment.release_quantity,
           project_code: treatment?.project_code[0]?.description,
+          release_utm_zone: treatment.release_utm_zone,
+          release_utm_easting: treatment.release_utm_easting,
+          release_utm_northing: treatment.release_utm_northing,
           general_comment: treatment.general_comment,
+          entered_by: treatment.entered_by,
+          date_entered: treatment.date_entered,
+          updated_by: treatment.updated_by,
+          date_updated: treatment.date_updated,
           monitoring: treatment.monitoring
         };
         break;

@@ -82,7 +82,7 @@ export const MonitoringRow = (props) => {
       monitoringColumns = defaultMonitoringColumns;
       break;
     case 'Biological Dispersal':
-      monitoringColumns = defaultMonitoringColumns;
+      monitoringColumns = customMonitoringColumns;
 
       break;
     case 'Biological Treatment':

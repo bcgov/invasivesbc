@@ -5,8 +5,8 @@ import React from 'react';
 import { TreatmentsTable } from './ExtractTables';
 import { getJurisdictions } from './IAPP-Functions';
 import { SurveysTable } from './SurveyTable';
-import { Photos } from "./Photos";
-import { RequiresNetwork } from "../../common/RequiresNetwork";
+import { Photos } from './Photos';
+import { RequiresNetwork } from '../../common/RequiresNetwork';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heading: {
@@ -178,6 +178,34 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             </Grid>
             <Grid item xs={9} sm={10}>
               {ifApplicable(site?.general_comment)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Entered By:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.entered_by)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Date Entered:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.date_entered)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Updated By:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.updated_by)}
+            </Grid>
+
+            <Grid item xs={3} sm={2}>
+              <Typography className={classes.subHeading}>Date Updated:</Typography>
+            </Grid>
+            <Grid item xs={9} sm={4}>
+              {ifApplicable(site?.updated_by)}
             </Grid>
           </Grid>
         </AccordionDetails>
