@@ -85,10 +85,10 @@ const saveBCGW = async (id: any, req: any) => {
   await connection
     .query(sqlStatement.sql)
     .then(() => {
-      defaultLog.info('Successfully entered BCGW data.');
+      defaultLog.info({ message: 'Successfully entered BCGW data.' });
     })
     .catch((err) => {
-      defaultLog.error({message: 'Error inserting BCGW data into the database', error: err });
+      defaultLog.error({ message: 'Error inserting BCGW data into the database', error: err });
     });
 
   connection.release();
@@ -148,10 +148,10 @@ const saveInternal = (id: any, req: any) => {
         await connection
           .query(sql)
           .then(() => {
-            defaultLog.info(`Successfully entered ${attribute} into column ${column}`);
+            defaultLog.info({ message: `Successfully entered ${attribute} into column ${column}` });
           })
           .catch((err) => {
-            defaultLog.error({message: 'Error inserting into the database', error: err});
+            defaultLog.error({ message: 'Error inserting into the database', error: err });
           });
 
         connection.release();
@@ -191,17 +191,17 @@ const saveElevation = (id: any, req: any) => {
       const connection = await getDBConnection();
       const sql = `
         update activity_incoming_data
-        set elevation = round(${elevation},0)
+        set elevation = round(${elevation}, 0)
         where activity_id = '${id}'
       `;
 
       await connection
         .query(sql)
         .then(() => {
-          defaultLog.info('Successfully entered elevation');
+          defaultLog.info({ message: 'Successfully entered elevation' });
         })
         .catch((err) => {
-          defaultLog.error({message: 'Error inserting into the database', error: err});
+          defaultLog.error({ message: 'Error inserting into the database', error: err });
         });
 
       connection.release();
@@ -245,10 +245,10 @@ const saveWell = (id: any, req: any) => {
     await connection
       .query(sql.text, sql.values)
       .then(() => {
-        defaultLog.info('Successfully entered well proximity');
+        defaultLog.info({ message: 'Successfully entered well proximity' });
       })
       .catch((err) => {
-        defaultLog.error({message: 'Error inserting into the database', error: err});
+        defaultLog.error({ message: 'Error inserting into the database', error: err });
       });
 
     connection.release();

@@ -25,13 +25,12 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest, res) {
       if (roles.length > 0) {
         user = { ...user, roles };
       }
-      const isApiDocCall = req.originalUrl.includes('api-docs')
+      const isApiDocCall = req.originalUrl.includes('api-docs');
       let shouldFilter = true;
-      if(isApiDocCall && !req.authContext.filterForSelectable)
-      {
-        shouldFilter = false
+      if (isApiDocCall && !req.authContext.filterForSelectable) {
+        shouldFilter = false;
       }
-      allCodeEntities = await getAllCodeEntities(user,shouldFilter);
+      allCodeEntities = await getAllCodeEntities(user, shouldFilter);
     } else {
       allCodeEntities = await getAllCodeEntities();
     }
@@ -74,7 +73,7 @@ export async function applyApiDocSecurityFilters(req: InvasivesRequest, res) {
     throw error;
   }
 
-  return res.status(200).json(req['apiDoc']);;
+  return res.status(200).json(req['apiDoc']);
 }
 
 /**

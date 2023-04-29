@@ -1,6 +1,7 @@
-import winston from 'winston';
+import winston, { Logform } from 'winston';
 import _ from 'lodash';
 import YAML from 'js-yaml';
+import { MDCAsyncLocal } from '../mdc';
 
 /**
  * Logger input.
@@ -34,7 +35,12 @@ class LoggerWithContext {
               let formattedMessage = '';
               switch (typeof message) {
                 case 'object':
-                  formattedMessage = JSON.stringify(message, null, 2);
+                  try {
+                    formattedMessage = YAML.dump(message);
+                  } catch (e) {
+                    formattedMessage = JSON.stringify(message, null, 2);
+                  }
+
                   break;
                 default:
                   formattedMessage = message;
@@ -49,7 +55,12 @@ class LoggerWithContext {
                 }
               });
 
+              if (additionalContext['MDC'] !== undefined && additionalContext['MDC'] === null) {
+                delete additionalContext['MDC'];
+              }
+
               let formattedAdditionalContext = null;
+
 
               if (_.keys(additionalContext).length > 0) {
                 try {
@@ -77,16 +88,27 @@ class LoggerWithContext {
     });
   }
 
+  static _loadMDC() {
+    const MDC = MDCAsyncLocal.getStore();
+    if (MDC !== undefined) {
+      let timeDelta: null | number = null;
+      timeDelta = new Date().getTime() - MDC.request.startTime;
+      MDC.request.execTime = timeDelta;
+      return MDC;
+    }
+    return null;
+  }
+
   info(params) {
-    this._instance.info(params);
+    this._instance.info({ ...params, MDC: LoggerWithContext._loadMDC() });
   }
 
   debug(params) {
-    this._instance.debug(params);
+    this._instance.debug({ ...params, MDC: LoggerWithContext._loadMDC() });
   }
 
   warn(params) {
-    this._instance.warn(params);
+    this._instance.warn({ ...params, MDC: LoggerWithContext._loadMDC() });
   }
 
   error(params) {

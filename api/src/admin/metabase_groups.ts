@@ -85,7 +85,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       group.metabaseGroupId = matchedGroup.id;
     }
 
-    defaultLog.debug(`resolved metabase groups as:  ${GROUP_MAPPING}`);
+    defaultLog.debug({message: `resolved metabase groups as:  ${GROUP_MAPPING}`});
 
     // get all active metabase users for comparison to our own user data
     const users = await axios({
@@ -131,7 +131,7 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.debug(`Total actions required to align metabase permissions with ours: ${totalActionsRequired}`);
+    defaultLog.debug({message: `Total actions required to align metabase permissions with ours: ${totalActionsRequired}`});
 
     // we now know what needs to be done. make it so.
     const actionsTaken: IActionTaken[] = [];

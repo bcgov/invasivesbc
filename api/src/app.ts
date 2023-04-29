@@ -10,6 +10,7 @@ import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
 import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
+import { MDC, MDCAsyncLocal } from './mdc';
 
 const defaultLog = getLogger('app');
 
@@ -32,12 +33,14 @@ function shouldCompress(req, res) {
   // fallback to standard filter function
   return compression.filter(req, res);
 }
+
 // Enable CORS
 app.use(function (req: any, res: any, next: any) {
-  if (req.url !== '/api/misc/version') {
-    // filter out health check for log brevity
-    defaultLog.info(`${req.method} ${req.url}`);
-  }
+  //
+  // if (req.url !== '/api/misc/version') {
+  //   // filter out health check for log brevity
+  //   MDC
+  // }
 
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader(
@@ -47,7 +50,15 @@ app.use(function (req: any, res: any, next: any) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  next();
+  // create a context if there isn't one
+  let mdc = MDCAsyncLocal.getStore();
+  if (!mdc) {
+    mdc = new MDC();
+    MDCAsyncLocal.run(mdc, next);
+  } else {
+    next();
+  }
+
 });
 
 // Initialize express-openapi framework
@@ -65,12 +76,23 @@ initialize({
   },
   securityHandlers: {
     Bearer: async function (req) {
-      await authenticate(<InvasivesRequest>req);
-    //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+      try {
+        let mdc = MDCAsyncLocal.getStore();
+        if (!mdc) {
+          mdc = new MDC();
+          await MDCAsyncLocal.run(mdc, authenticate, <InvasivesRequest>req);
+        } else {
+          await authenticate(<InvasivesRequest>req);
+        }
+      } catch (e) {
+        defaultLog.error({ error: e });
+        return false;
+      }
+      //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
       return true;
     }
   },
-  
+
   securityFilter: applyApiDocSecurityFilters,
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
@@ -80,11 +102,7 @@ initialize({
   // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
-    if (!error.status) {
-      // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
-      // log any unintentionally thrown errors (where no status has been set)
-      defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
-    }
+    defaultLog.error({ label: 'errorHandler', message: 'unexpected error', error });
 
     res.status(error.status || error.code || 500).json(error);
   }

@@ -64,7 +64,7 @@ export function versionedKey(key: string) {
     computedKey = `${process.pid}-${key}`;
   }
 
-  defaultLog.debug(`computed cache key: ${computedKey}`);
+  defaultLog.debug({ message: `computed cache key: ${computedKey}` });
 
   return computedKey;
 }

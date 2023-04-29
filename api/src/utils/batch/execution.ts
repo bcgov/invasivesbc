@@ -36,27 +36,27 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
-      return codeObj.code
+      ]?.templateColumn.codes.map((codeObj) => {
+      return codeObj.code;
     });
 
     const chemicalMethodCodes = row.data[
       'Chemical Treatment (No Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
-      return codeObj.code
+      ]?.templateColumn.codes.map((codeObj) => {
+      return codeObj.code;
     });
 
 
     mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
 
-  mapped = populateSpeciesArrays(mapped)
+  mapped = populateSpeciesArrays(mapped);
 
   mapped['form_data']['form_status'] = 'Submitted';
 
 
-  const geog = mapped.geog
-  delete mapped.geog
+  const geog = mapped.geog;
+  delete mapped.geog;
 
   return {
     id: uuidToCreate,
@@ -76,7 +76,7 @@ export const BatchExecutionService = {
     errorRowsBehaviour: 'Draft' | 'Skip',
     userInfo: any
   ): Promise<BatchExecutionResult> => {
-    defaultLog.info(`Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}`);
+    defaultLog.info({message:`Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}`});
     const createdIds = [];
 
     const statusQueryResult = await dbConnection.query({
@@ -123,7 +123,7 @@ export const BatchExecutionService = {
           userInfo?.preferred_username,
           userInfo?.preferred_username,
           guid,
-          guid, 
+          guid,
           geog
         ]
       };
