@@ -93,10 +93,10 @@ const Monitoring = {
 };
 
 const Monitoring_Biocontrol = {
-  linked_id: { 'ui:widget': 'single-select-autocomplete' },
+  //linked_id: { 'ui:widget': 'single-select-autocomplete' },
   // legacy_iapp_id: {},
   activity_persons: {},
-  'ui:order': ['linked_id', 'legacy_iapp_id', 'activity_persons']
+  'ui:order': ['activity_persons']
 };
 
 const Treatment = {
