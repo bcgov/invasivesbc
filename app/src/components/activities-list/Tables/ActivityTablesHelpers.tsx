@@ -25,6 +25,7 @@ export interface ActivityRow {
   biogeoclimatic_zones: string;
   elevation: string;
   status: string;
+  batch_id: string;
 }
 
 export const ActivitiesDefaultHeaders = () => {
@@ -104,6 +105,10 @@ export const ActivitiesDefaultHeaders = () => {
     {
       key: 'elevation',
       name: 'Elevation'
+    },
+    {
+      key: 'batch_id',
+      name: 'Batch ID'
     }
   ];
   if (MOBILE) {
@@ -178,7 +183,8 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       regional_invasive_species_organization_areas: activity?.regional_invasive_species_organization_areas,
       regional_districts: activity?.regional_districts,
       biogeoclimatic_zones: activity?.biogeoclimatic_zones,
-      elevation: activity?.elevation
+      elevation: activity?.elevation,
+      batch_id: activity?.batch_id
       // date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
       // reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
       // latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
