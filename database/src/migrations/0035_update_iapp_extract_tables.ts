@@ -265,7 +265,7 @@ drop table if exists planning_extract;
       application_rate_litres_per_hectare numeric(6, 2) NULL,
       delivery_rate_litres_per_hectare int4 NULL,
       dilution_percent numeric(8, 4) NULL,
-      amount_of_undiluted_herbicide_used_liters_litres numeric(8, 4) NULL,
+      amount_of_undiluted_herbicide_used_litres numeric(8, 4) NULL,
       tank_mix varchar(3) NULL,
       application_time time null,
       temperature int4 null,
