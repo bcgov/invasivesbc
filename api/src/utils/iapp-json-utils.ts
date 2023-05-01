@@ -1,17 +1,17 @@
-import {speciesRefSql} from '../queries/species_ref';
-import {SQL, SQLStatement} from 'sql-template-strings';
-import {getDBConnection} from '../database/db';
-import {PointOfInterestSearchCriteria} from '../models/point-of-interest';
-import {getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL} from '../queries/iapp-queries';
-import {getLogger} from './logger';
-import {densityMap, distributionMap, mapAspect, mapSlope} from './iapp-payload/iapp-function-utils';
+import { speciesRefSql } from '../queries/species_ref';
+import { SQL, SQLStatement } from 'sql-template-strings';
+import { getDBConnection } from '../database/db';
+import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
+import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
+import { getLogger } from './logger';
+import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
   biologicalTreatmentsJSON,
   biologicalDispersalJSON,
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
-import {mapSitesRowsToCSV} from './iapp-csv-utils';
+import { mapSitesRowsToCSV } from './iapp-csv-utils';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -48,6 +48,7 @@ const getSurveyObj = (row: any, map_code: any) => {
     survey_id: row.surveyid,
     common_name: common_name,
     surveyor_name: row.primary_surveyor,
+    other_surveyors: row.other_surveyors,
     survey_paper_file_id: row.survey_paper_file_id,
     survey_date: row.survey_date,
     weeds_found: row.estimated_area > 0 ? true : false,
@@ -66,7 +67,13 @@ const getSurveyObj = (row: any, map_code: any) => {
     observation_type_code: null, // Could not see (COME BACK TO LATER)
     invasive_plant_density_code: densityMap[row.density],
     invasive_species_agency_code: row.survey_agency, // Come back later
-    invasive_plant_distribution_code: distributionMap[row.distribution]
+    employer: row.employer,
+    survey_type: row.survey_type,
+    invasive_plant_distribution_code: distributionMap[row.distribution],
+    entered_by: row.entered_by,
+    date_entered: row.date_entered,
+    updated_by: row.updated_by,
+    date_updated: row.date_updated
   };
 };
 
@@ -105,7 +112,7 @@ export const getSpeciesRef = async () => {
 
     return response.rows;
   } catch (error) {
-    defaultLog.debug({label: 'iapp_species_ref', message: 'error', error});
+    defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get species ref',
@@ -131,11 +138,11 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
 
 const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   const species_ref: any[] = await getSpeciesRef();
-  defaultLog.debug({label: 'getIAPPjson', message: 'about to map over sites to grab site_id'});
+  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
-  defaultLog.debug({label: 'getIAPPjson', message: 'site ids', site_ids});
+  defaultLog.debug({ label: 'getIAPPjson', message: 'site ids', site_ids });
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
   let all_site_selection_extracts = [];
@@ -161,7 +168,7 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
     all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
   }
 
-  defaultLog.debug({label: 'getIAPPjson', message: 'about to map over sites'});
+  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
@@ -313,12 +320,16 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
             aspect: extract.aspect,
             site_id: row['site_id'],
             slope_code: mapSlope(extract.slope),
-            aspect_code: mapAspect(extract.aspect),
+            aspect_code: extract.aspect,
             site_elevation: extract.elevation,
             original_bec_id: null, // Could not find
             soil_texture_code: extract.soil_texture,
             specific_use_code: extract.site_specific_use,
-            access_description: extract.site_location
+            access_description: extract.site_location,
+            entered_by: extract.entered_by,
+            date_entered: extract.date_entered,
+            updated_by: extract.updated_by,
+            date_updated: extract.date_updated
           },
           species_negative: [], // COME BACK LATER
           species_positive: [], // COME BACK LATER
@@ -376,9 +387,9 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
-    defaultLog.debug({label: 'getIAPPjson', message: 'about to query for sites'});
+    defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    defaultLog.debug({label: 'getIAPPjson', message: 'queried for sites' + response.rowCount});
+    defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
     if (searchCriteria.isCSV && searchCriteria.CSVType === 'site_selection_extract') {
       var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, 'site_selection_extract') : [];
@@ -392,7 +403,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
   } catch (error) {
-    defaultLog.debug({label: 'getIAPPjson', message: 'error', error});
+    defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
     throw {
       code: 500,
       message: 'Failed to get IAPP sites',

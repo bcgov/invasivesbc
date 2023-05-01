@@ -23,7 +23,12 @@ interface MonitoringColumn {
     | 'eggs_present_ind'
     | 'pupae_present_ind'
     | 'adults_present_ind'
-    | 'tunnels_present_ind';
+    | 'tunnels_present_ind'
+    | 'monitoring_comments'
+    | 'entered_by'
+    | 'date_entered'
+    | 'updated_by'
+    | 'date_updated';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -35,7 +40,12 @@ export const defaultMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'project_code', label: 'Paper File ID', minWidth: 100 },
   { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
   { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
-  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 }
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
+  { id: 'monitoring_comments', label: 'Monitoring Comments', minWidth: 350 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 // add other ones and rename this if needed
@@ -56,7 +66,12 @@ export const customMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'eggs_present_ind', label: 'Eggs Present', minWidth: 100 },
   { id: 'pupae_present_ind', label: 'Pupae Present', minWidth: 100 },
   { id: 'adults_present_ind', label: 'Adults Present', minWidth: 100 },
-  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 100 }
+  { id: 'tunnels_present_ind', label: 'Tunnels Present', minWidth: 100 },
+  { id: 'monitoring_comments', label: 'Monitoring Comments', minWidth: 350 },
+  { id: 'entered_by', label: 'Entered By', minWidth: 100 },
+  { id: 'date_entered', label: 'Date Entered', minWidth: 150 },
+  { id: 'updated_by', label: 'Updated By', minWidth: 100 },
+  { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
 export const MonitoringRow = (props) => {
@@ -82,7 +97,7 @@ export const MonitoringRow = (props) => {
       monitoringColumns = defaultMonitoringColumns;
       break;
     case 'Biological Dispersal':
-      monitoringColumns = defaultMonitoringColumns;
+      monitoringColumns = customMonitoringColumns;
 
       break;
     case 'Biological Treatment':

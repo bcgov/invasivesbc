@@ -25,25 +25,22 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
   return {
     dilution: treatment.dilution_percent, // find dilution amount???
     employer: treatment.employer,
-    humidity: null, // Could not find
     map_code: treatment.invasive_plant, // convert to code
     monitoring: monitoring.length > 0 ? monitoring : [], // Could not find
     pup_number: treatment.pup_number,
-    wind_speed: null, // Could not find
     common_name: common_name, // use common name
     tank_mix_id: null, // Could not find tank mix id
-    temperature: null, // Could not find tempurature
     project_code: [
       { description: treatment.treatment_paper_file_id } // What is the difference between site_paper_file_id
     ], //  and treatment_paper_file_id????
     treatment_id: treatment.chemicaltreatmentid,
     reported_area: treatment.area_treated_hectares, // area of POI or treated area??????
     treatment_date: treatment.treatment_date,
-    treatment_time: null, // Could not find: no treatment time; just the date
-    wind_direction: null, // Could not find: no wind direction
+    application_time: treatment.application_time,
     chemical_method: treatment.method,
     general_comment: treatment.treatment_comments,
     primary_applicator: treatment.primary_applicator,
+    other_applicators: treatment.other_applicators,
     pmra_reg_number: null, // Could not find: Primary Aplicator??????
     application_rate: treatment.application_rate_litres_per_hectare,
     amount_of_mix: treatment.amount_of_mix_used_litres,
@@ -55,8 +52,16 @@ export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => 
     herbicide: treatment.herbicide,
     service_licence_number: treatment.service_licence_number,
     tank_mix: mapTankMix(treatment.tank_mix),
+    wind_speed: treatment.wind_speed,
+    wind_direction: treatment.wind_direction,
+    temperature: treatment.temperature,
+    humidity: treatment.humidity,
     pmp_confirmation_number: treatment.pmp_number,
-    invasive_species_agency_code: treatment.treatment_agency
+    invasive_species_agency_code: treatment.treatment_agency,
+    entered_by: treatment.entered_by,
+    date_entered: treatment.date_entered,
+    updated_by: treatment.updated_by,
+    date_updated: treatment.date_updated
   };
 };
 
@@ -75,6 +80,8 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     monitoring_id: dispersal.biologicaldispersalid, // What is this??? (used dispersal id)
     general_comment: dispersal.site_comments,
     monitoring_date: dispersal.inspection_date,
+    primary_surveyor: dispersal.primary_surveyor,
+    other_surveyors: dispersal.other_surveyors,
     agent_count: dispersal.agent_count,
     plant_count: dispersal.plant_count,
     count_duration: dispersal.count_duration,
@@ -90,7 +97,16 @@ export const biologicalDispersalJSON = (dispersal: any) => {
     root_feeding_damage_ind: dispersal.rootfeeding_damage,
     seed_feeding_damage_ind: dispersal.seedfeeding_damage,
     foliar_feeding_damage_ind: dispersal.foliar_feeding_damage,
-    invasive_species_agency_code: dispersal.dispersal_agency // convert to code
+    invasive_species_agency_code: dispersal.dispersal_agency, // convert to code
+    dispersal_utm_zone: dispersal.dispersal_utm_zone,
+    dispersal_utm_easting: dispersal.dispersal_utm_easting,
+    dispersal_utm_northing: dispersal.dispersal_utm_northing,
+    dispersal_agency: dispersal.dispersal_agency,
+    monitoring_comments: dispersal.monitoring_comments,
+    entered_by: dispersal.entered_by,
+    date_entered: dispersal.date_entered,
+    updated_by: dispersal.updated_by,
+    date_updated: dispersal.date_updated
   };
 };
 
@@ -122,11 +138,20 @@ export const biologicalTreatmentsJSON = (treatment: any, all_monitoring: any[]) 
     release_quantity: treatment.release_quantity,
     classified_area_code: null, // could not find
     biological_agent_code: treatment.biological_agent,
-    biological_agent_stage_code: null,
+    biological_agent_stage_code: treatment.agent_life_stage,
+    application_time: treatment.release_time,
     agent_count: treatment.agent_count,
     invasive_species_agency_code: treatment.treatment_agency, // convert to code
     employer: treatment.employer,
-    primary_applicator: treatment.primary_applicator
+    primary_applicator: treatment.primary_applicator,
+    other_applicators: treatment.other_applicators,
+    release_utm_zone: treatment.release_utm_zone,
+    release_utm_easting: treatment.release_utm_easting,
+    release_utm_northing: treatment.release_utm_northing,
+    entered_by: treatment.entered_by,
+    date_entered: treatment.date_entered,
+    updated_by: treatment.updated_by,
+    date_updated: treatment.date_updated
   };
 };
 
@@ -145,14 +170,17 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
     common_name: common_name, // use common name
     project_code: [{ description: treatment.treatment_paper_file_id }],
     primary_applicator: treatment.primary_applicator,
-    treatment_id: treatment.treatment_id,
+    other_applicators: treatment.other_applicators,
     mechanical_id: treatment.mechanicaltreatmentid, // what is this supposed to be???? different id??
     reported_area: treatment.estimated_area_hectares,
     treatment_date: treatment.treatment_date,
     general_comment: treatment.treatment_comments,
-    mechanical_method: treatment.method,
-    mechanical_method_code: treatment.treatment_method, // convert to code
-    invasive_species_agency_code: treatment.treatment_agency
+    mechanical_method: treatment.treatment_method,
+    invasive_species_agency_code: treatment.treatment_agency,
+    entered_by: treatment.entered_by,
+    date_entered: treatment.date_entered,
+    updated_by: treatment.updated_by,
+    date_updated: treatment.date_updated
   };
 };
 
@@ -177,6 +205,7 @@ const monitoringJSON = (props: any) => {
     efficacy_code: item.efficacy_rating, // not in extract
     monitoring_date: item.inspection_date,
     primary_surveyor: item.primary_surveyor,
+    other_surveyors: item.other_surveyors,
     species_common_name: item.invasive_plant,
     biological_agent_code: item.biological_agent,
     agent_count: item.agent_count,
@@ -191,6 +220,11 @@ const monitoringJSON = (props: any) => {
     pupae_present_ind: item.pupae_present,
     adults_present_ind: item.adults_present,
     tunnels_present_ind: item.tunnels_present,
-    invasive_species_agency_code: item?.monitoring_agency
+    invasive_species_agency_code: item?.monitoring_agency,
+    monitoring_comments: item.monitoring_comments,
+    entered_by: item.entered_by,
+    date_entered: item.date_entered,
+    updated_by: item.updated_by,
+    date_updated: item.date_updated
   };
 };
