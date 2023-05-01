@@ -279,8 +279,8 @@ const RecordSetAccordionSummary = (props) => {
             <MessageIcon />
             <Checkbox
               style={{ height: 15 }}
-              disabled={mapState?.layers?.[props.setName]?.IDList?.length > 5000}
-              checked={mapState?.layers?.[props.setName]?.IDList?.length < 5000 ? props.labelToggle : false}
+              // disabled={mapState?.layers?.[props.setName]?.IDList?.length > 5000}
+              checked={props.labelToggle}
               onChange={(e) => {
                 e.stopPropagation();
                 props?.setLabelToggle((prev) => !prev);

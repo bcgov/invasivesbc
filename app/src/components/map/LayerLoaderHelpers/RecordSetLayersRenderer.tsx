@@ -4,7 +4,6 @@ import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} fr
 import {ActivitiesLayerV2} from './ActivitiesLayerV2';
 import {useSelector} from '../../../state/utilities/use_selector';
 import {selectAuth} from '../../../state/reducers/auth';
-import {selectActivities} from 'state/reducers/activities';
 import {useMap} from 'react-leaflet';
 import center from '@turf/center';
 
@@ -20,9 +19,12 @@ import {useLeafletContext} from '@react-leaflet/core';
 import {selectMap} from 'state/reducers/map';
 import {AnyKindOfDictionary} from 'lodash';
 import {LeafletCanvasLabel, LeafletCanvasMarker} from './LeafletCanvasLayer';
+import { pointsWithinPolygon } from '@turf/turf';
+import { GeneralDialog } from 'components/dialog/GeneralDialog';
+import { useDispatch } from 'react-redux';
+import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
 
 const IAPPCanvasLayerMemo = (props) => {
-  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
@@ -57,20 +59,56 @@ const IAPPCanvasLayerMemo = (props) => {
 };
 
 const IAPPCanvasLabelMemo = (props) => {
-  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
+  const dispatch = useDispatch();
 
   //CAP LABEL COUNT HERE
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.boundsPolygon && mapState?.layers?.[props.layerKey]?.IDList) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
         return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = {type: 'FeatureCollection', features: returnVal};
+    const pointsToLabel = pointsWithinPolygon(points as any, mapState?.boundsPolygon);
+    // only allow max labels
+    if (pointsToLabel?.features?.length > 5000) {
+      dispatch({
+        type: SET_TOO_MANY_LABELS_DIALOG,
+        payload: {
+          dialog: {
+            dialogOpen: true,
+            dialogTitle: 'Too many labels',
+            dialogContentText: 'There are too many labels returned.\n Please zoom in more or filter down the record set more.',
+            dialogActions: [
+              {
+                actionName: 'OK',
+                actionOnClick: async () => {
+                  dispatch({
+                    type: SET_TOO_MANY_LABELS_DIALOG,
+                    payload: {
+                      dialog: {
+                        dialogOpen: false,
+                        dialogTitle: '',
+                        dialogContentText: '',
+                        dialogActions: []
+                      }
+                    }
+                  })
+                },
+                autoFocus: true
+              }
+            ]
+          }
+        }
+      });
+      return [];
+    }
+    
+    return pointsToLabel;
   };
 
   return useMemo(() => {
@@ -89,17 +127,17 @@ const IAPPCanvasLabelMemo = (props) => {
     } else return <></>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
+    JSON.stringify(mapState?.boundsPolygon)
   ]);
 };
 
 const ActivityCanvasLabelMemo = (props) => {
-  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.boundsPolygon) {
       returnVal = mapState?.activitiesGeoJSON?.features
         .filter((row) => {
           return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
@@ -120,7 +158,8 @@ const ActivityCanvasLabelMemo = (props) => {
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = {type: 'FeatureCollection', features: returnVal};
+    return pointsWithinPolygon(points as any, mapState?.boundsPolygon);
   };
 
   return useMemo(() => {
@@ -139,12 +178,12 @@ const ActivityCanvasLabelMemo = (props) => {
     } else return <div key={Math.random()}></div>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
+    JSON.stringify(mapState?.boundsPolygon)
   ]);
 };
 
 const ActivityLayerMemo = (props) => {
-  const {accessRoles} = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
 
   const filteredFeatures = () => {
@@ -269,6 +308,12 @@ export const RecordSetLayersRenderer = (props: any) => {
       ) : (
         <div key={Math.random()}></div>
       )}
+      <GeneralDialog
+        dialogOpen={mapState?.tooManyLabelsDialog?.dialogOpen}
+        dialogTitle={mapState?.tooManyLabelsDialog?.dialogTitle}
+        dialogActions={mapState?.tooManyLabelsDialog?.dialogActions}
+        dialogContentText={mapState?.tooManyLabelsDialog?.dialogContentText}>
+      </GeneralDialog>
     </>
   );
 };

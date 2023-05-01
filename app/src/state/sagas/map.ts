@@ -21,6 +21,8 @@ import {
   LEAFLET_SET_WHOS_EDITING,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_INIT_REQUEST,
+  MAP_LABEL_EXTENT_FILTER_REQUEST,
+  MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
@@ -72,6 +74,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
 import { ActivityStatus } from 'sharedAPI';
+import * as turf from '@turf/turf';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -852,6 +855,55 @@ function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
   }
 }
 
+function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
+  // const mapState = yield select(selectMap);
+  // const layers = mapState.layers;
+
+  const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
+  const bounds = turf.bboxPolygon(bbox as any);
+
+  yield put({
+    type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
+    payload: {
+      bounds: bounds
+    }
+  });
+
+  // let labels = [];
+
+  // // filter
+  // Object.keys(layers).forEach((key) => {
+  //   const layer = layers[key];
+  //   if (layer.layerState.labelToggle) {
+  //     let points;
+  //     if (layer.type === 'Activity') {
+  //       const pointsInLayer = mapState?.activitiesGeoJSON?.features
+  //         .filter((row) => {
+  //           return layer?.IDList?.includes(row.properties.id) && row.geometry;
+  //         })
+  //         .map((row) => {
+  //           let computedCenter = null;
+  //           try {
+  //             if (row?.geometry != null) {
+  //               computedCenter = turf.center(row.geometry).geometry;
+  //             }
+  //           } catch (e) {
+  //             console.dir(row.geometry);
+  //             console.error(e);
+  //           }
+  //           return { ...row, geometry: computedCenter };
+  //         });
+
+  //       points = { type: 'FeatureCollection', features: pointsInLayer };
+  //     } else {
+  //     }
+  //     const ptsWithin = turf.pointsWithinPolygon(points, bounds);
+  //     console.log(ptsWithin);
+  //     labels.push({ id: key, features: ptsWithin });
+  //   }
+  // });
+}
+
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing);
   yield all([
@@ -883,7 +935,8 @@ function* activitiesPageSaga() {
     takeEvery(WHATS_HERE_SORT_FILTER_UPDATE, handle_WHATS_HERE_SORT_FILTER_UPDATE),
     takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
-    takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST)
+    takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
+    takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
