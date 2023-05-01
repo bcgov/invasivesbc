@@ -1,3 +1,4 @@
+import { IGeneralDialog } from 'components/dialog/GeneralDialog';
 import { calculateGeometryArea } from 'utils/geometryHelpers';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -34,7 +35,8 @@ import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   WHATS_HERE_SORT_FILTER_UPDATE,
   MAP_TOGGLE_LEGENDS,
-  MAP_LABEL_EXTENT_FILTER_SUCCESS
+  MAP_LABEL_EXTENT_FILTER_SUCCESS,
+  SET_TOO_MANY_LABELS_DIALOG
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -68,6 +70,7 @@ class MapState {
   center: L.LatLngExpression;
   activityPageMapExtentToggle: boolean;
   boundsPolygon: any;
+  tooManyLabelsDialog: IGeneralDialog;
 
   constructor() {
     this.initialized = false;
@@ -83,6 +86,12 @@ class MapState {
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
     this.legendsPopup = false;
     this.boundsPolygon = null;
+    this.tooManyLabelsDialog = {
+      dialogActions: [],
+      dialogOpen: false,
+      dialogTitle: '',
+      dialogContentText: null
+    };
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -481,6 +490,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           boundsPolygon: action.payload.bounds
+        };
+      }
+      case SET_TOO_MANY_LABELS_DIALOG: {
+        return {
+          ...state,
+          tooManyLabelsDialog: action.payload.dialog
         };
       }
       default:
