@@ -1,10 +1,8 @@
 import { getRolesForUserSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
-import { getUserByBCEIDSQL, getUserByIDIRSQL, createUserSQL } from '../queries/user-queries';
+import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from './logger';
-import { RequestHandler } from 'express';
-import { InvasivesRequest } from './auth-utils';
 
 const defaultLog = getLogger('user-utils');
 
@@ -23,7 +21,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
 
   const connection = await getDBConnection();
   if (!connection) {
-    defaultLog.error('No connection!');
+    defaultLog.error({ message: 'No connection!' });
     throw {
       code: 503,
       message: 'Failed to establish database connection',

@@ -9,11 +9,11 @@ function KMZToKML(data: Buffer): Buffer {
 
   const zipFile = new AdmZip(data);
 
-  log.info('parsing zip data');
+  log.info({ message: 'parsing zip data' });
 
   try {
     if (!zipFile.test()) {
-      log.info('Bad compressed data');
+      log.info({ message: 'Bad compressed data' });
     }
   } catch (err) {
     log.error(err);
@@ -25,11 +25,11 @@ function KMZToKML(data: Buffer): Buffer {
   });
 
   if (mainDocumentFile) {
-    log.info('found doc.kml in the KMZ');
+    log.info({ message: 'found doc.kml in the KMZ' });
     return Buffer.from(zipFile.readAsText(mainDocumentFile));
   }
 
-  log.error('no doc.kml in this KMZ!');
+  log.error({ message: 'no doc.kml in this KMZ!' });
 
   throw new Error('No doc.xml in this KMZ file');
 }
@@ -37,7 +37,7 @@ function KMZToKML(data: Buffer): Buffer {
 function GeoJSONFromKML(data: Buffer) {
   const log = getLogger('KML');
 
-  log.info(`parsing: ${data.length} bytes`);
+  log.info({ message: `parsing: ${data.length} bytes` });
 
   let kmlDoc: any;
 
@@ -59,7 +59,7 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
   if (data.type !== 'FeatureCollection') {
     throw new Error(`Invalid GeoJSON Type: ${data.type}`);
   }
-  
+
   // filter out non-polygon features (V1)
   const newFeatures = data.features.map((feature) => {
     if (feature.geometry.type === 'Polygon') {
@@ -67,7 +67,7 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
         type: feature.type,
         geometry: feature.geometry,
         properties: {}
-      }
+      };
     }
   });
 

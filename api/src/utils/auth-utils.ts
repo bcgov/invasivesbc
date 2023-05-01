@@ -5,6 +5,7 @@ import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
 import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
 import { Request } from 'express';
+import { MDCAsyncLocal } from '../mdc';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -53,6 +54,8 @@ function retrieveKey(header, callback) {
 }
 
 export const authenticate = async (req: InvasivesRequest) => {
+  const MDC = MDCAsyncLocal.getStore();
+
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const filterForSelectable = req.header('filterforselectable') === 'true' ? true : false;
@@ -71,6 +74,8 @@ export const authenticate = async (req: InvasivesRequest) => {
     // '/api/code_tables/jurisdiction_code/',
   ].includes(req.originalUrl.split('?')?.[0]);
 
+  MDC.additionalContext.isPublicURL = isPublicURL;
+
   const token = authHeader.split(/\s/)[1];
 
   if (isPublicURL && (req.method === 'GET' || req.method === 'POST') && !token) {
@@ -86,7 +91,6 @@ export const authenticate = async (req: InvasivesRequest) => {
       resolve();
     });
   }
-
 
   if (!token) {
     defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
@@ -195,9 +199,13 @@ export const authenticate = async (req: InvasivesRequest) => {
 
           req.authContext.filterForSelectable = filterForSelectable;
           req.authContext.user = user;
+
+          MDC.request.user = req.authContext.preferredUsername || 'unresolved';
+
           getRolesForUser(user.user_id)
             .then((roles) => {
               req.authContext.roles = roles;
+              MDC.additionalContext.authContext = req.authContext;
               defaultLog.debug({ label: 'authenticate', message: 'auth pass complete, context set!' });
               resolve();
             })
