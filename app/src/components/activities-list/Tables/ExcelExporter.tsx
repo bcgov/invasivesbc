@@ -44,7 +44,7 @@ const ExcelExporter = (props) => {
           <DownloadIcon />
         </Button>
       </Tooltip>
-      <Tooltip title="Choose the applicable CSV type to export">
+      <Tooltip title="Choose the applicable CSV type to export" placement='top'>
       <Select
         value={selection}
         onChange={(e) => {
