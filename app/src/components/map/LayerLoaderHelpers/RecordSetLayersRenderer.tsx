@@ -64,14 +64,15 @@ const IAPPCanvasLabelMemo = (props) => {
   //CAP LABEL COUNT HERE
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.boundsPolygon && mapState?.layers?.[props.layerKey]?.IDList) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
         return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = {type: 'FeatureCollection', features: returnVal};
+    return pointsWithinPolygon(points as any, mapState?.boundsPolygon);
   };
 
   return useMemo(() => {
@@ -90,7 +91,8 @@ const IAPPCanvasLabelMemo = (props) => {
     } else return <></>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
+    JSON.stringify(mapState?.boundsPolygon)
   ]);
 };
 
