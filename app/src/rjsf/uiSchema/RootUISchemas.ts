@@ -249,7 +249,7 @@ const Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = {
   },
   activity_type_data: {
     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
-    ...BaseUISchemaComponents.activity_type_data_objects.Monitoring_Biocontrol
+    ...BaseUISchemaComponents.activity_type_data_objects.Monitoring_Biocontrol_Release
   },
   activity_subtype_data: {
     Weather_Conditions: BaseUISchemaComponents.general_objects.Weather_Conditions,
