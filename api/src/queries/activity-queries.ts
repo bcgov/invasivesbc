@@ -543,6 +543,11 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`${gridFilters.elevation}`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.batch_id) {
+        sqlStatement.append(SQL` AND a.batch_id::text LIKE '%'||`);
+        sqlStatement.append(SQL`${gridFilters.batch_id}`);
+        sqlStatement.append(SQL`||'%'`);
+      }
     }
   }
 
@@ -634,7 +639,8 @@ export const getActivitiesSQL = (
       regional_invasive_species_organization_areas: 'regional_invasive_species_organization_areas',
       regional_districts: 'regional_districts',
       biogeoclimatic_zones: 'biogeoclimatic_zones',
-      elevation: 'elevation'
+      elevation: 'elevation',
+      batch_id: 'batch_id'
     };
     const order = searchCriteria.order.map((column) => {
       return `${columnMap[column['columnKey']]} ${column['direction']}`;
