@@ -257,8 +257,11 @@ const RecordSetAccordionSummary = (props) => {
               e.stopPropagation();
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: true });
             }}
-            variant="outlined">
-            Boundary Filter
+            color={!userSettings?.recordSets?.[props.setName]?.searchBoundary ? 'primary' : 'secondary'}
+            variant="outlined"
+            disabled={userSettings?.boundaries?.length <= 0}
+            >
+            {userSettings?.boundaries?.length > 0 ? `Boundary Filter` : `No Boundaries`}
             <ArrowDropDownIcon />
           </Button>
           {props.canRemove && (
