@@ -30,8 +30,9 @@ export interface InvasivesRequest extends Request {
 
 const jwks = jwksRsa({
   jwksUri: APP_CERTIFICATE_URL,
-  cacheMaxAge: 3600,
-  cache: true
+  cacheMaxAge: 3600000,
+  cache: true,
+  timeout: 60000,
 });
 
 function retrieveKey(header, callback) {
@@ -60,7 +61,6 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   const filterForSelectable = req.header('filterforselectable') === 'true' ? true : false;
   const urlSplit = req.originalUrl.split('?');
-  const rawPath = urlSplit?.[0] ?? req.originalUrl;
   const authHeader = req.header('Authorization');
 
   const isPublicURL = [
@@ -68,10 +68,6 @@ export const authenticate = async (req: InvasivesRequest) => {
     '/api/points-of-interest-lean/',
     '/api/points-of-interest/',
     '/api/activities/'
-    // '/api/activity/',
-    // '/api/iapp-jurisdictions/',
-    // '/api/code_tables/invasive_plant_code/',
-    // '/api/code_tables/jurisdiction_code/',
   ].includes(req.originalUrl.split('?')?.[0]);
 
   MDC.additionalContext.isPublicURL = isPublicURL;
