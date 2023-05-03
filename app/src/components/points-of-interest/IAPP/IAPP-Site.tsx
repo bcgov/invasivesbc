@@ -48,6 +48,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const latitude = parseFloat(coordinates[1]).toFixed(6);
   const jurisdictions: any = getJurisdictions(surveys);
   const date_created = site.date_created.substring(0, site.date_created.indexOf('T'));
+  const date_entered = site.date_entered.substring(0, site.date_entered.indexOf('T'));
+  const date_updated = site.date_updated.substring(0, site.date_updated.indexOf('T'));
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -191,7 +193,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               <Typography className={classes.subHeading}>Date Entered:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.date_entered)}
+              {ifApplicable(date_entered)}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -205,7 +207,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               <Typography className={classes.subHeading}>Date Updated:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.date_updated)}
+              {ifApplicable(date_updated)}
             </Grid>
           </Grid>
         </AccordionDetails>

@@ -175,7 +175,7 @@ const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
   { id: 'service_licence_number', label: 'Service Licence Number', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 150 },
-  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
+  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 250 },
   { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'chemical_method', label: 'Method', minWidth: 150 },
   { id: 'herbicide', label: 'Herbicide', minWidth: 150 },
@@ -301,9 +301,9 @@ const Row = (props: any) => {
       efficacy_rating: item.efficacy_code,
       monitoring_comments: item.monitoring_comments,
       entered_by: item.entered_by,
-      date_entered: item.date_entered,
+      date_entered: item.date_entered.substring(0, item.date_entered.indexOf('T')),
       updated_by: item.updated_by,
-      date_updated: item.date_updated
+      date_updated: item.date_updated.substring(0, item.date_updated.indexOf('T'))
     };
   };
 
@@ -446,9 +446,9 @@ export const TreatmentsTable = (props) => {
           project_code: treatment?.project_code[0]?.description,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered,
+          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated,
+          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
           monitoring: treatment.monitoring
         };
         break;
@@ -480,9 +480,9 @@ export const TreatmentsTable = (props) => {
           humidity: treatment.humidity,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered,
+          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated,
+          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
           monitoring: treatment.monitoring
         };
         break;
@@ -511,9 +511,9 @@ export const TreatmentsTable = (props) => {
           dispersal_utm_northing: treatment.dispersal_utm_northing,
           monitoring_comments: treatment.monitoring_comments,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered,
+          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated,
+          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
           general_comment: treatment.general_comment
         };
         break;
@@ -539,9 +539,9 @@ export const TreatmentsTable = (props) => {
           release_utm_northing: treatment.release_utm_northing,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered,
+          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated,
+          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
           monitoring: treatment.monitoring
         };
         break;

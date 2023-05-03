@@ -176,9 +176,9 @@ export const SurveysTable = (props: any) => {
       distribution: survey.distribution,
       general_comment: survey.general_comment,
       entered_by: survey.entered_by,
-      date_entered: survey.date_entered,
+      date_entered: survey.date_entered.substring(0, survey.date_entered.indexOf('T')),
       updated_by: survey.updated_by,
-      date_updated: survey.date_updated
+      date_updated: survey.date_updated.substring(0, survey.date_updated.indexOf('T'))
     };
   };
 
