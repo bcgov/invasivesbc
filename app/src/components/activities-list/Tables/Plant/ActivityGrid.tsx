@@ -23,6 +23,7 @@ import { useDispatch } from 'react-redux';
 import {
   PAGE_OR_LIMIT_UPDATE,
   SORT_COLUMN_STATE_UPDATE,
+  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
@@ -716,6 +717,18 @@ const ActivityGrid = (props) => {
               }}>
               <Button onClick={() => newFilter(undefined)} sx={{ mr: 1 }} size={'small'} variant="contained">
                 <AddBoxIcon></AddBoxIcon>Advanced Filter
+              </Button>
+              <Button onClick={() => {
+                setAdvancedFilterRows([]);
+                setFilters({ enabled: false });
+                dispatch({
+                  type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST,
+                  payload: {
+                    id: props.setName
+                  }
+                });
+              }} sx={{ mr: 1 }} size={'small'} variant="contained">
+                Clear Filters
               </Button>
               <Button
                 onClick={() => {
