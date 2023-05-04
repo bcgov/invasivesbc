@@ -1,5 +1,5 @@
 import { Template, TemplateColumnBuilder } from '../definitions';
-import { OBSERVATION_TYPE_CODES } from '../hard-coded-codes';
+import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -84,7 +84,7 @@ ObservationTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Observation - Type',
     'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[0].occurrence'
+    'form_data.activity_subtype_data.TerrestrialPlants[0].observation_type'
   )
     .hardcodedCodes(OBSERVATION_TYPE_CODES)
     .isRequired()
@@ -116,9 +116,12 @@ ObservationTerrestrialPlant.columns = [
 
   new TemplateColumnBuilder(
     'Voucher - Sample Collected?',
-    'tristate',
+    'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collected'
-  ).build(),
+  )
+    .hardcodedCodes(YES_NO_CODES)
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Voucher - Sample ID',
     'text',

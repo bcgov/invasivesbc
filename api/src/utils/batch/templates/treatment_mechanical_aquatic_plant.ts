@@ -1,4 +1,5 @@
 import { Template, TemplateColumnBuilder } from '../definitions';
+import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -40,7 +41,9 @@ TreatmentMechanicalAquaticPlant.columns = [
     'Treatment - Disposed Material Format',
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].disposed_material.disposed_material_input_format'
-  ).build(),
+  )
+    .hardcodedCodes(DISPOSED_MATERIAL_FORMAT_CODES)
+    .build(),
   new TemplateColumnBuilder(
     'Treatment - Disposed Material Amount',
     'numeric',
@@ -53,7 +56,7 @@ TreatmentMechanicalAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].invasive_plant_code'
   )
-    .referencesCode('invasive_plant_code')
+    .referencesCode('invasive_plant_aquatic_code')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

@@ -24,15 +24,15 @@ BiocontrolRelease.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Biocontrol_Release_Information.invasive_plant_code'
   )
-    .referencesCode('invasive_plant_code')
+    .referencesCode('invasive_plant_code_withbiocontrol')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Release - Biological Agent',
     'codeReference',
-    'form_data.activity_subtype_data.Biocontrol_Release_Information.biocontrol_agent_code'
+    'form_data.activity_subtype_data.Biocontrol_Release_Information.biological_agent_code'
   )
-    .referencesCode('biocontrol_agent_code')
+    .referencesCode('biological_agent_code')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -59,7 +59,7 @@ BiocontrolRelease.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Biocontrol_Release_Information.plant_collected_from'
   )
-    .referencesCode('invasive_plant_code_with_biocontrol')
+    .referencesCode('invasive_plant_code_withbiocontrol')
     .build(),
   new TemplateColumnBuilder(
     'Release - Plant Collected From - Unlisted',
@@ -78,7 +78,7 @@ BiocontrolRelease.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Biocontrol_Release_Information.actual_biological_agents[0].biological_agent_stage_code'
   )
-    .referencesCode('biocontrol_agent_stage_code')
+    .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Release - Actual - Quantity',
@@ -92,7 +92,7 @@ BiocontrolRelease.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Biocontrol_Release_Information.estimated_biological_agents[0].biological_agent_stage_code'
   )
-    .referencesCode('biocontrol_agent_stage_code')
+    .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Release - Estimated - Quantity',
