@@ -45,13 +45,13 @@ interface SurveyColumn {
 const surveyColumns: readonly SurveyColumn[] = [
   { id: 'survey_id', label: 'Survey ID', minWidth: 150 },
   { id: 'survey_date', label: 'Survey Date', minWidth: 150 },
-  { id: 'survey_paper_file_id', label: 'Survey Paper File ID', minWidth: 150 },
+  { id: 'survey_paper_file_id', label: 'Survey Paper File ID', minWidth: 250 },
   { id: 'survey_type', label: 'Survey Type', minWidth: 150 },
-  { id: 'surveyor_name', label: 'Primary Surveyor', minWidth: 150 },
+  { id: 'surveyor_name', label: 'Primary Surveyor', minWidth: 250 },
   { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 250 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 350 },
-  { id: 'employer', label: 'Employer', minWidth: 150 },
+  { id: 'employer', label: 'Employer', minWidth: 250 },
   { id: 'reported_area', label: 'Estimated Area (ha)', minWidth: 150 },
   { id: 'density', label: 'Density', minWidth: 150 },
   { id: 'distribution', label: 'Distribution', minWidth: 350 },
@@ -105,7 +105,7 @@ const Row = (props: any) => {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
+      <TableRow>
         {surveyColumns.map((column) => {
           const value = row[column.id];
           return (
@@ -191,7 +191,7 @@ export const SurveysTable = (props: any) => {
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer>
-          <Table size="small" aria-lable="surveys table">
+          <Table size="small" aria-label="surveys table">
             <TableHead>
               <TableRow>
                 <SurveyTableHead />

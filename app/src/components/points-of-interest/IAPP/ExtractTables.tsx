@@ -154,9 +154,9 @@ const mechTreatmentColumns: readonly MechTreatmentColumn[] = [
   { id: 'project_code', label: 'Paper File ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
-  { id: 'employer', label: 'Employer', minWidth: 150 },
-  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
-  { id: 'other_applicators', label: 'Other Applicators', minWidth: 250 },
+  { id: 'employer', label: 'Employer', minWidth: 250 },
+  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 250 },
+  { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'reported_area', label: 'Treated Area (ha)', minWidth: 150 },
   { id: 'mechanical_method', label: 'Method', minWidth: 150 },
   { id: 'general_comment', label: 'Treatment Comments', minWidth: 350 },
@@ -174,7 +174,7 @@ const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
   { id: 'pmp_confirmation_number', label: 'PMP Confirmation', minWidth: 150 },
   { id: 'service_licence_number', label: 'Service Licence Number', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
-  { id: 'employer', label: 'Employer', minWidth: 150 },
+  { id: 'employer', label: 'Employer', minWidth: 250 },
   { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 250 },
   { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'chemical_method', label: 'Method', minWidth: 150 },
@@ -184,7 +184,7 @@ const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
   { id: 'amount_of_mix', label: 'Amount of Mix Used (L)', minWidth: 150 },
   { id: 'dilution', label: 'Dilution (%)', minWidth: 150 },
   { id: 'mix_delivery_rate', label: 'Delivery Rate (L/ha)', minWidth: 150 },
-  { id: 'herbicide_amount', label: 'Amount of Undiluted Herbicide Used (L)', minWidth: 150 },
+  { id: 'herbicide_amount', label: 'Amount of Undiluted Herbicide Used (L)', minWidth: 250 },
   { id: 'tank_mix', label: 'Tank Mix', minWidth: 150 },
   { id: 'wind_speed', label: 'Wind Speed (km/h)', minWidth: 150 },
   { id: 'wind_direction', label: 'Wind Direction (degrees)', minWidth: 150 },
@@ -200,10 +200,10 @@ const chemTreatmentColumns: readonly ChemTreatmentColumn[] = [
 const bioDispersalColumns: readonly BioDispersalColumn[] = [
   { id: 'dispersal_id', label: 'Dispersal ID', minWidth: 150 },
   { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
-  { id: 'project_code', label: 'Monitoring Paper File ID', minWidth: 100 },
+  { id: 'project_code', label: 'Monitoring Paper File ID', minWidth: 150 },
   { id: 'dispersal_agency', label: 'Dispersal Agency', minWidth: 350 },
-  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
-  { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 200 },
+  { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 250 },
+  { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 350 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 100 },
   { id: 'agent_count', label: 'Agent Count', minWidth: 100 },
   { id: 'plant_count', label: 'Plant Count', minWidth: 100 },
@@ -233,8 +233,8 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'project_code', label: 'Paper File ID', minWidth: 150 },
   { id: 'species_common_name', label: 'Common Name', minWidth: 200 },
   { id: 'invasive_species_agency_code', label: 'Treatment Agency', minWidth: 350 },
-  { id: 'employer', label: 'Employer', minWidth: 150 },
-  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 150 },
+  { id: 'employer', label: 'Employer', minWidth: 250 },
+  { id: 'primary_applicator', label: 'Primary Applicator', minWidth: 250 },
   { id: 'other_applicators', label: 'Other Applicators', minWidth: 350 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 150 },
   { id: 'biological_agent_stage_code', label: 'Bioagent Stage', minWidth: 150 },
@@ -339,11 +339,11 @@ const Row = (props: any) => {
             if (column.id === 'general_comment') {
               setShortComment(!shortComment);
             }
-            if (column.id === 'treatment_date') {
+            if (column.id === 'treatment_id') {
               setOpen(!open);
             }
           }}>
-          {monitoringRows.length > 0 && column.id === 'treatment_date' && (
+          {monitoringRows.length > 0 && column.id === 'treatment_id' && (
             <>{open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}</>
           )}
           {column.id !== 'general_comment' ? <>{value}</> : shortValOutput(value)}
@@ -365,7 +365,7 @@ const Row = (props: any) => {
           <TableCell padding="none" colSpan={30}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box margin={1} marginLeft={5}>
-                <Typography fontSize={'0.925rem'}>Monitoring Table</Typography>
+                <Typography fontSize={'0.925rem'}>Monitoring</Typography>
                 <Table size="small" aria-label="monitoring">
                   <TableHead>
                     <TableRow
