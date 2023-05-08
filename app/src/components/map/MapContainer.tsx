@@ -62,6 +62,7 @@ import { LabelButton } from './Tools/ToolTypes/Data/LabelButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
 import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
+import { PMTileLayer } from './Layers/PMTileLayer';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
@@ -314,6 +315,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LabelButton />
             <IAPPExtentButton />
             <BoundaryLayerDisplayForRecordSetToggle/>
+            <PMTileLayer url='https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles'/>
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
