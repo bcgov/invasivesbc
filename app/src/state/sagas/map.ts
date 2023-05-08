@@ -9,6 +9,8 @@ import {
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   FILTER_STATE_UPDATE,
+  IAPP_EXTENT_FILTER_REQUEST,
+  IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_REQUEST,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -904,6 +906,18 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
   // });
 }
 
+function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
+  const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
+  const bounds = turf.bboxPolygon(bbox as any);
+
+  yield put({
+    type: IAPP_EXTENT_FILTER_SUCCESS,
+    payload: {
+      bounds: bounds
+    }
+  });
+}
+
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing);
   yield all([
@@ -936,7 +950,8 @@ function* activitiesPageSaga() {
     takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
-    takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST)
+    takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
+    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);

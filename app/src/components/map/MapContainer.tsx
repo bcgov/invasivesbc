@@ -61,6 +61,7 @@ import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
 import { LabelButton } from './Tools/ToolTypes/Data/LabelButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
+import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
@@ -311,6 +312,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <JumpToRecord/>
             <LegendsButton />
             <LabelButton />
+            <IAPPExtentButton />
             <BoundaryLayerDisplayForRecordSetToggle/>
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (

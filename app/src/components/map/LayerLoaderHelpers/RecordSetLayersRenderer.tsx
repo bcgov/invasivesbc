@@ -29,14 +29,15 @@ const IAPPCanvasLayerMemo = (props) => {
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.layers?.[props.layerKey].layerState?.mapToggle) {
+    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.layers?.[props.layerKey].layerState?.mapToggle && mapState?.IAPPBoundsPolygon) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
         return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = {type: 'FeatureCollection', features: returnVal};
+    return pointsWithinPolygon(points as any, mapState?.IAPPBoundsPolygon);
   };
 
   return useMemo(() => {
@@ -54,7 +55,8 @@ const IAPPCanvasLayerMemo = (props) => {
     } else return <></>;
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList, mapState?.layers?.[props.layerKey].layerState?.mapToggle)
+    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList, mapState?.layers?.[props.layerKey].layerState?.mapToggle),
+    JSON.stringify(mapState?.IAPPBoundsPolygon)
   ]);
 };
 
@@ -65,7 +67,7 @@ const IAPPCanvasLabelMemo = (props) => {
   //CAP LABEL COUNT HERE
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.boundsPolygon && mapState?.layers?.[props.layerKey]?.IDList) {
+    if (mapState?.labelBoundsPolygon && mapState?.layers?.[props.layerKey]?.IDList && mapState?.IAPPBoundsPolygon) {
       returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
         return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
@@ -73,7 +75,8 @@ const IAPPCanvasLabelMemo = (props) => {
       returnVal = [];
     }
     const points = {type: 'FeatureCollection', features: returnVal};
-    const pointsToLabel = pointsWithinPolygon(points as any, mapState?.boundsPolygon);
+    const pointsInBounds = pointsWithinPolygon(points as any, mapState?.IAPPBoundsPolygon);
+    const pointsToLabel = pointsWithinPolygon(pointsInBounds as any, mapState?.labelBoundsPolygon);
     // only allow max labels
     if (pointsToLabel?.features?.length > 5000) {
       dispatch({
@@ -128,7 +131,7 @@ const IAPPCanvasLabelMemo = (props) => {
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
     JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
-    JSON.stringify(mapState?.boundsPolygon)
+    JSON.stringify(mapState?.labelBoundsPolygon)
   ]);
 };
 
@@ -137,7 +140,7 @@ const ActivityCanvasLabelMemo = (props) => {
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.boundsPolygon) {
+    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.labelBoundsPolygon) {
       returnVal = mapState?.activitiesGeoJSON?.features
         .filter((row) => {
           return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
@@ -159,7 +162,7 @@ const ActivityCanvasLabelMemo = (props) => {
       returnVal = [];
     }
     const points = {type: 'FeatureCollection', features: returnVal};
-    return pointsWithinPolygon(points as any, mapState?.boundsPolygon);
+    return pointsWithinPolygon(points as any, mapState?.labelBoundsPolygon);
   };
 
   return useMemo(() => {
@@ -179,7 +182,7 @@ const ActivityCanvasLabelMemo = (props) => {
   }, [
     JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
     JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
-    JSON.stringify(mapState?.boundsPolygon)
+    JSON.stringify(mapState?.labelBoundsPolygon)
   ]);
 };
 
