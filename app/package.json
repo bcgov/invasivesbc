@@ -151,6 +151,7 @@
     "sharedAPI": "file:../sharedAPI",
     "stream-to-string": "^1.2.0",
     "styled-components": "^5.3.6",
+    "turf-polygon": "^1.0.3",
     "typescript": "3.8.3",
     "unzipper": "^0.10.11",
     "urlencode": "^1.1.0",
