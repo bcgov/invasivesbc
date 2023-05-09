@@ -17,6 +17,7 @@ import {
   USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
+  USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
@@ -40,6 +41,7 @@ class UserSettingsState {
     {
       advancedFilters: [];
       gridFilters: [];
+      filtersApplied: boolean;
       color: string;
       drawOrder: number;
       expanded: boolean;
@@ -92,7 +94,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state,
           activeActivity: '',
           activeActivityDescription: ''
-        }
+        };
       }
       case GET_API_DOC_SUCCESS: {
         return {
@@ -208,6 +210,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         };
       }
       case USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS: {
+        return {
+          ...state,
+          recordSets: { ...action.payload.recordSets }
+        };
+      }
+      case USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_SUCCESS: {
         return {
           ...state,
           recordSets: { ...action.payload.recordSets }

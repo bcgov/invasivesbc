@@ -27,7 +27,8 @@ import {
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-  USER_SETTINGS_SET_RECORD_SET_REQUEST
+  USER_SETTINGS_SET_RECORD_SET_REQUEST,
+  USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
@@ -530,6 +531,13 @@ const ActivityGrid = (props) => {
               return [...prev];
             }
           });
+          dispatch({
+            type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+            payload: {
+              id: props.setName,
+              filtersApplied: false
+            }
+          });
         }}
       />
     );
@@ -684,6 +692,7 @@ const ActivityGrid = (props) => {
                         filterKey={r.filterKey}
                         key={i}
                         id={i}
+                        setName={props.setName}
                       />
                     );
                   }
@@ -764,11 +773,18 @@ const ActivityGrid = (props) => {
                       setName: props.setName
                     }
                   });
+                  dispatch({
+                    type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+                    payload: {
+                      id: props.setName,
+                      filtersApplied: true
+                    }
+                  });
                   setSave(Math.random());
                 }}
                 sx={{ mr: 1, float: 'right' }}
                 size={'large'}
-                variant="contained">
+                variant={userSettings?.recordSets?.[props.setName]?.filtersApplied ? "outlined" : "contained"}>
                 <FilterAltIcon />
                 <SaveIcon />
                 Save & Apply Filters
@@ -825,6 +841,7 @@ const ActivityGrid = (props) => {
           dialogOpen={filterDialog.dialogOpen}
           closeActionDialog={filterDialog.closeActionDialog}
           setType={props.setType}
+          setName={props.setName}
         />
       </Box>
     ),

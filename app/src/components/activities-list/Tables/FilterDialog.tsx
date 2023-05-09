@@ -12,6 +12,7 @@ import {
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 export interface IFilterDialog {
   dialogOpen: boolean;
@@ -20,9 +21,11 @@ export interface IFilterDialog {
   setAllFilters?: React.Dispatch<React.SetStateAction<any[]>>;
   closeActionDialog?: () => void;
   setType?: string;
+  setName?: string;
 }
 
 export const FilterDialog = (props: IFilterDialog) => {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -185,7 +188,13 @@ export const FilterDialog = (props: IFilterDialog) => {
                   filterKey: choice + subChoice
                 }
               ]);
-
+              dispatch({
+                type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+                payload: {
+                  id: props.setName,
+                  filtersApplied: false
+                }
+              });
             props.closeActionDialog();
           }}>
           Save
