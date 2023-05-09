@@ -16,7 +16,9 @@ import {
   Popup,
   ScaleControl,
   useMap,
-  ZoomControl as ZoomButtons
+  ZoomControl as ZoomButtons,
+  LayersControl,
+  LayerGroup
 } from 'react-leaflet';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
@@ -61,7 +63,8 @@ import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
 import { LabelButton } from './Tools/ToolTypes/Data/LabelButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
-import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
+//import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
+import { PMTileLayer } from './Layers/PMTileLayer';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
@@ -309,11 +312,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
-            <JumpToRecord/>
+            <JumpToRecord />
             <LegendsButton />
             <LabelButton />
-            <IAPPExtentButton />
-            <BoundaryLayerDisplayForRecordSetToggle/>
+            {/*<IAPPExtentButton />*/}
+            <PMTileLayer url='https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles'/>
+            <BoundaryLayerDisplayForRecordSetToggle />
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
@@ -328,7 +332,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
             {props.children}
 
-            {activityState?.activity?.geometry && activityState.activity.geometry[0]? (
+            {activityState?.activity?.geometry && activityState.activity.geometry[0] ? (
               <Marker
                 key={Math.random()}
                 icon={ActivityIcon}
@@ -357,7 +361,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <LayerSniffer />
-            <LayerPickerBasic></LayerPickerBasic>
+            <LayerPickerBasic>
+              <LayersControl.Overlay
+                checked={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']}
+                name="Regional Invasive Species Organizations">
+                <LayerGroup>
+                  <PMTileLayer enabled={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']} url="https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles" />
+                </LayerGroup>
+              </LayersControl.Overlay>
+            </LayerPickerBasic>
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>
       </ReactLeafletMapContainer>
