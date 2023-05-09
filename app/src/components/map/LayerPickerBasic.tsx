@@ -172,6 +172,7 @@ export const LayerPickerBasic = (props) => {
           />
         </LayerGroup>
       </LayersControl.Overlay>
+      {props.children}
     </LayersControl>
   );
 };

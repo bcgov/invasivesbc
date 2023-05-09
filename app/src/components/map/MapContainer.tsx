@@ -16,7 +16,9 @@ import {
   Popup,
   ScaleControl,
   useMap,
-  ZoomControl as ZoomButtons
+  ZoomControl as ZoomButtons,
+  LayersControl,
+  LayerGroup
 } from 'react-leaflet';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
@@ -310,12 +312,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
-            <JumpToRecord/>
+            <JumpToRecord />
             <LegendsButton />
             <LabelButton />
             <IAPPExtentButton />
-            <BoundaryLayerDisplayForRecordSetToggle/>
             <PMTileLayer url='https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles'/>
+            <BoundaryLayerDisplayForRecordSetToggle />
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
               <>
@@ -330,7 +332,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
             {props.children}
 
-            {activityState?.activity?.geometry && activityState.activity.geometry[0]? (
+            {activityState?.activity?.geometry && activityState.activity.geometry[0] ? (
               <Marker
                 key={Math.random()}
                 icon={ActivityIcon}
@@ -359,7 +361,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <LayerSniffer />
-            <LayerPickerBasic></LayerPickerBasic>
+            <LayerPickerBasic>
+              <LayersControl.Overlay
+                checked={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']}
+                name="Regional Invasive Species Organizations">
+                <LayerGroup>
+                  <PMTileLayer enabled={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']} url="https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles" />
+                </LayerGroup>
+              </LayersControl.Overlay>
+            </LayerPickerBasic>
           </MapRequestContextProvider>
         </FlyToAndFadeContextProvider>
       </ReactLeafletMapContainer>
