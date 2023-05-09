@@ -45,7 +45,11 @@ import {
   USER_SETTINGS_DELETE_KML_FAILURE,
   GET_API_DOC_REQUEST,
   GET_API_DOC_SUCCESS,
-  GET_API_DOC_ONLINE
+  GET_API_DOC_ONLINE,
+  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_FAILURE,
+  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST,
+  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
+  FILTER_STATE_UPDATE
 } from '../actions';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -360,6 +364,40 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   }
 }
 
+function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
+  try {
+    const userSettings = yield select(selectUserSettings);
+    let sets = userSettings?.recordSets;
+    const current = sets[action.payload.id];
+
+    current.advancedFilters = [];
+    current.gridFilters = {
+      enabled: false
+    };
+    current.searchBoundary = null;
+
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
+
+    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS, payload: { recordSets: sets } });
+
+    // sort column update
+    const layer_filter = {
+      filters: {
+        advancedFilters: [],
+        gridFilters: {
+          enabled: false
+        },
+        searchBoundary: {},
+        sortColumns: []
+      }
+    };
+    yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.id]: layer_filter } });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_FAILURE });
+  }
+}
+
 function* handle_GET_API_DOC_REQUEST(action) {
   // TODO decide online or not
   yield put({ type: GET_API_DOC_ONLINE });
@@ -398,7 +436,8 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_SET_RECORD_SET_REQUEST, handle_USER_SETTINGS_SET_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
     takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME),
-    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
+    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST),
+    takeEvery(USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST, handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST)
   ]);
 }
 

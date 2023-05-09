@@ -36,7 +36,8 @@ import {
   WHATS_HERE_SORT_FILTER_UPDATE,
   MAP_TOGGLE_LEGENDS,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
-  SET_TOO_MANY_LABELS_DIALOG
+  SET_TOO_MANY_LABELS_DIALOG,
+  IAPP_EXTENT_FILTER_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -69,7 +70,8 @@ class MapState {
   zoom: number;
   center: L.LatLngExpression;
   activityPageMapExtentToggle: boolean;
-  boundsPolygon: any;
+  labelBoundsPolygon: any;
+  IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
 
   constructor() {
@@ -85,7 +87,8 @@ class MapState {
     this.panned = true;
     this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
     this.legendsPopup = false;
-    this.boundsPolygon = null;
+    this.labelBoundsPolygon = null;
+    this.IAPPBoundsPolygon = null;
     this.tooManyLabelsDialog = {
       dialogActions: [],
       dialogOpen: false,
@@ -489,7 +492,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
         return {
           ...state,
-          boundsPolygon: action.payload.bounds
+          labelBoundsPolygon: action.payload.bounds
+        };
+      }
+      case IAPP_EXTENT_FILTER_SUCCESS: {
+        return {
+          ...state,
+          IAPPBoundsPolygon: action.payload.bounds
         };
       }
       case SET_TOO_MANY_LABELS_DIALOG: {

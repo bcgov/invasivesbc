@@ -45,7 +45,7 @@ export const BoundaryLayerDisplayForRecordSetToggle: React.FC<any> = (props) => 
           };
         })
       };
-      if (geometries.length > 0) {
+      if (geometries.length > 0 && recordSet?.mapToggle) {
         return featureCollection as FeatureCollection;
       }
     });

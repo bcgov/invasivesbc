@@ -3,6 +3,7 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 // Offline dependencies
 import LabelIcon from '@mui/icons-material/Label';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { IconButton, Tooltip } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
@@ -34,7 +35,7 @@ export const LabelButton = (props) => {
         ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '70px',
+          bottom: '335px',
           width: '50px',
           height: '50px'
         }}>
@@ -63,7 +64,8 @@ export const LabelButton = (props) => {
                 ' ' + toolClass.notSelected
               }
               sx={{ color: '#000' }}>
-              <LabelIcon />
+              <RefreshIcon fontSize='small'/>
+              <LabelIcon fontSize='small'/>
             </IconButton>
           </span>
         </Tooltip>

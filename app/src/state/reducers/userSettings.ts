@@ -5,6 +5,7 @@ import {
   MAP_TOGGLE_WHATS_HERE,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
+  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_KML_SUCCESS,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
@@ -204,6 +205,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           mapCenter: action.payload.center
+        };
+      }
+      case USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS: {
+        return {
+          ...state,
+          recordSets: { ...action.payload.recordSets }
         };
       }
       default:
