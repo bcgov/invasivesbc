@@ -1,6 +1,7 @@
 import { getClosestWells } from 'components/activity/closestWellsHelpers';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { call, put, select } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
+import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
 import {
   activity_create_function,
@@ -39,6 +40,7 @@ import {
   ACTIVITY_PASTE_FAILURE,
   ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_SAVE_NETWORK_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
@@ -194,9 +196,10 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   try {
-    const beforeState = yield select(selectActivity);
-    const beforeActivity = beforeState.activity;
+    let beforeState = yield select(selectActivity);
+    let beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
+    const mapState = yield select(selectMap);
 
     let updatedFormData = action.payload.eventFormData;
 
@@ -228,6 +231,16 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
       payload: { activity: updatedActivity, lastField: action.payload.lastField }
     });
+
+    const linked_id = updatedFormData.activity_type_data.linked_id;
+    if(updatedFormData.activity_type_data.copy_geometry === 'Yes' && linked_id){
+      const linked_geo = mapState.activitiesGeoJSON?.features?.find((activity) => activity?.properties?.id === linked_id)
+      yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: [linked_geo]}})
+      yield take(ACTIVITY_UPDATE_GEO_SUCCESS)
+    } else if (beforeActivity.form_data.activity_type_data.copy_geometry === 'Yes' && updatedFormData.activity_type_data.copy_geometry === 'No') {
+      yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: []}})
+      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+    }
 
     //call autofill events
   } catch (e) {

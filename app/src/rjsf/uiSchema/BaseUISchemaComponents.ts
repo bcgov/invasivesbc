@@ -83,18 +83,16 @@ const Observation = {
 
 const Monitoring = {
   linked_id: { 'ui:widget': 'single-select-autocomplete' },
-  // legacy_iapp_id: {},
+  copy_geometry: { 'ui:widget': 'single-select-autocomplete' },
   activity_persons: {},
   'ui:order': [
     'linked_id',
-    // 'legacy_iapp_id',
+    'copy_geometry',
     'activity_persons'
   ]
 };
 
 const Monitoring_Biocontrol = {
-  //linked_id: { 'ui:widget': 'single-select-autocomplete' },
-  // legacy_iapp_id: {},
   activity_persons: {},
   'ui:order': ['activity_persons']
 };

@@ -117,7 +117,8 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
   const search_feature = action.payload.search_feature;
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, {
     activity_subtype: action.payload.activity_subtype,
-    search_feature
+    search_feature,
+    form_status: ["Submitted"]
   });
 
   let treatments = [];
