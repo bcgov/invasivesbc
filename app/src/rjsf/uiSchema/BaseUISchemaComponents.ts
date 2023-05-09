@@ -92,6 +92,13 @@ const Monitoring = {
   ]
 };
 
+const Monitoring_Biocontrol_Release = {
+  linked_id: { 'ui:widget': 'single-select-autocomplete' },
+  legacy_iapp_id: {},
+  activity_persons: {},
+  'ui:order': ['linked_id', 'legacy_iapp_id', 'activity_persons']
+};
+
 const Monitoring_Biocontrol = {
   activity_persons: {},
   'ui:order': ['activity_persons']
@@ -1085,7 +1092,6 @@ const Monitoring_BiocontrolDispersal_Information = {
     'biocontrol_monitoring_methods_code',
     'num_of_sweeps',
     'linear_segment',
-    'legacy_iapp_id',
     'biological_agent_stages',
     'start_time',
     'stop_time',
@@ -1184,6 +1190,7 @@ const BaseUISchemaComponents = {
   activity_type_data_objects: {
     Observation,
     Monitoring,
+    Monitoring_Biocontrol_Release,
     Monitoring_Biocontrol,
     Treatment,
     Treatment_Chemical,
