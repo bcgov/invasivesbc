@@ -24,3 +24,18 @@ export const DISPOSED_MATERIAL_FORMAT_CODES: CodeEntry[] = [
   new CodeEntry('disposed_material_format', 'weight', 'weight'),
   new CodeEntry('disposed_material_format', 'volume (m3)', 'volume (m3)')
 ];
+
+export const YES_NO_CODES: CodeEntry[] = [new CodeEntry('yes_no', 'Yes', 'Yes'), new CodeEntry('yes_no', 'No', 'No')];
+
+export const BIOCONTROL_MONITORING_TYPE_CODES: CodeEntry[] = [
+  new CodeEntry('monitoring_type', 'Count', 'Count'),
+  new CodeEntry('monitoring_type', 'Timed', 'Timed')
+];
+
+export const WATER_LEVEL_MANAGEMENT_CODES: CodeEntry[] = [
+  new CodeEntry('water_level_management', 'Dam', 'Dam'),
+  new CodeEntry('water_level_management', 'None', 'None'),
+  new CodeEntry('water_level_management', 'Other', 'Other'),
+  new CodeEntry('water_level_management', 'Station', 'Station'),
+  new CodeEntry('water_level_management', 'Weir', 'Weir')
+];

@@ -5,8 +5,7 @@ import {
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
   HerbicidesInformation,
-  ProjectInformation,
-  WellInformation
+  ProjectInformation
 } from '../shared-columns';
 
 const TreatmentChemicalAquaticPlant = new Template(
@@ -18,16 +17,21 @@ const TreatmentChemicalAquaticPlant = new Template(
 TreatmentChemicalAquaticPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
-  ...WellInformation,
   ...ActivityPersonsWithApplicatorLicense,
   ...ChemicalPlantTreatmentInformation,
-  ...HerbicidesInformation,
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 1',
     'codeReference',
     'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[0].invasive_plant_code'
   )
     .referencesCode('invasive_plant_aquatic_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Invasive Species 1 %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[0].percent_area_covered'
+  )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -38,12 +42,27 @@ TreatmentChemicalAquaticPlant.columns = [
     .referencesCode('invasive_plant_aquatic_code')
     .build(),
   new TemplateColumnBuilder(
+    'Chemical Treatment - Invasive Species 2 %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[1].percent_area_covered'
+  )
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 3',
     'codeReference',
     'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[2].invasive_plant_code'
   )
     .referencesCode('invasive_plant_aquatic_code')
-    .build()
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment - Invasive Species 3 %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[2].percent_area_covered'
+  )
+    .isRequired()
+    .build(),
+  ...HerbicidesInformation
 ];
 TreatmentChemicalAquaticPlant.rowValidators = [...BasicInformationRowValidators];
 export { TreatmentChemicalAquaticPlant };

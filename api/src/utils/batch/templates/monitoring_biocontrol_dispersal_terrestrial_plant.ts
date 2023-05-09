@@ -1,4 +1,5 @@
 import { Template, TemplateColumnBuilder } from '../definitions';
+import { BIOCONTROL_MONITORING_TYPE_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -7,8 +8,7 @@ import {
   PhenologyInformation,
   PhenologySumValidator,
   ProjectInformation,
-  WeatherInformation,
-  WellInformation
+  WeatherInformation
 } from '../shared-columns';
 
 const MonitoringBiocontrolDispersalTerrestrialPlant = new Template(
@@ -23,7 +23,6 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   ...ActivityPersons,
   ...WeatherInformation,
   ...MicrositeConditions,
-  ...PhenologyInformation,
 
   new TemplateColumnBuilder(
     'Monitoring - Start',
@@ -52,7 +51,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Sweep Count',
     'numeric',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.sweep_count'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.num_of_sweeps'
   )
     .valueRange(0, null)
     .isRequired()
@@ -69,19 +68,16 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.invasive_plant_code'
   )
-    .referencesCode('invasive_plant_code')
+    .referencesCode('invasive_plant_code_withbiocontrol')
     .isRequired()
     .build(),
-
-  new TemplateColumnBuilder('Monitoring - Linked Treatment ID', 'text').isRequired().build(),
-  new TemplateColumnBuilder('Monitoring - Legacy IAPP ID', 'text').build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Agent Code',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_code'
   )
-    .referencesCode('biocontrol_agent_code')
+    .referencesCode('biological_agent_code')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -91,7 +87,11 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   )
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Monitoring - Signs of Presence', 'codeReferenceMulti')
+  new TemplateColumnBuilder(
+    'Monitoring - Signs of Presence',
+    'codeReferenceMulti',
+    'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.biological_agent_presence_code'
+  )
     .referencesCode('biological_agent_presence_code')
     .build(),
 
@@ -99,14 +99,16 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'Monitoring - Location Agents Found',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.bio_agent_location_code'
-  ).build(),
+  )
+    .referencesCode('location_agents_found_code')
+    .build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Actual - Agent Stage',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.actual_biological_agents[0].biological_agent_stage_code'
   )
-    .referencesCode('biocontrol_agent_stage_code')
+    .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Actual - Quantity',
@@ -127,7 +129,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.actual_biological_agents[0].agent_location'
   )
-    .referencesCode('location_agents_found_code')
+    .referencesCode('agent_location_code')
     .build(),
 
   new TemplateColumnBuilder(
@@ -135,7 +137,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.estimated_biological_agents[0].biological_agent_stage_code'
   )
-    .referencesCode('biocontrol_agent_stage_code')
+    .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Estimated - Quantity',
@@ -156,7 +158,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.estimated_biological_agents[0].agent_location'
   )
-    .referencesCode('location_agents_found_code')
+    .referencesCode('agent_location_code')
     .build(),
 
   new TemplateColumnBuilder('Monitoring - Monitoring Method', 'codeReference', 'biocontrol_monitoring_methods_code')
@@ -168,6 +170,7 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.monitoring_type'
   )
+    .hardcodedCodes(BIOCONTROL_MONITORING_TYPE_CODES)
     .isRequired()
     .build(),
 
@@ -177,7 +180,8 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information.suitable_collection_site'
   )
     .isRequired()
-    .build()
+    .build(),
+  ...PhenologyInformation
 ];
 
 MonitoringBiocontrolDispersalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, PhenologySumValidator];

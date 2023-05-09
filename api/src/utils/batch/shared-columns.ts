@@ -1,6 +1,6 @@
 import { TemplateColumnBuilder } from './definitions';
 import { RowValidationResult } from './validation/validation';
-import { WIND_DIRECTION_CODES } from './hard-coded-codes';
+import { WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES } from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -15,7 +15,7 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_data_time')
+  new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_date_time')
     .isRequired()
     .mustNotBeFuture()
     .build(),
@@ -257,11 +257,11 @@ export const WeatherInformation = [
     .valueRange(0, null)
     .build(),
   new TemplateColumnBuilder(
-    'Weather - Wind Aspect',
+    'Weather - Wind Direction',
     'numeric',
-    'form_data.activity_subtype_data.Weather_Conditions.wind_aspect'
+    'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
-    .valueRange(0, 359)
+    .hardcodedCodes(WIND_DIRECTION_CODES)
     .build(),
   new TemplateColumnBuilder(
     'Weather - Cloud Cover',
@@ -296,7 +296,9 @@ export const MicrositeConditions = [
     'Microsite Conditions - Surface Shape',
     'codeReference',
     'form_data.activity_subtype_data.Microsite_Conditions.site_surface_shape_code'
-  ).build()
+  )
+    .referencesCode('site_surface_shape_code')
+    .build()
 ];
 
 export const ShorelineInformation = [
@@ -365,7 +367,9 @@ export const WaterbodyInformation = [
     'Waterbody - Water Level Management',
     'codeReference',
     'form_data.activity_subtype_data.WaterbodyData.water_level_management'
-  ).build(),
+  )
+    .hardcodedCodes(WATER_LEVEL_MANAGEMENT_CODES)
+    .build(),
 
   new TemplateColumnBuilder(
     'Waterbody - Use',
@@ -600,7 +604,7 @@ export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Precautionary Statement',
     'codeReference',
-    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.signage_on_site'
+    'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.precautionary_statement'
   )
     .referencesCode('precautionary_statement_code')
     .build(),
@@ -746,7 +750,19 @@ export const HerbicidesInformation = [
   )
     .valueRange(0, null)
     .build(),
-  new TemplateColumnBuilder('Herbicide - 2 - Dilution - Dilution %', 'numeric').valueRange(0, 100).build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - Dilution - Dilution %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].dilution'
+  )
+    .valueRange(0, 100)
+    .build(),
 
-  new TemplateColumnBuilder('Herbicide - 2 - Area Treated (Dilution)', 'numeric').valueRange(0, null).build()
+  new TemplateColumnBuilder(
+    'Herbicide - 2 - Area Treated (Dilution)',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].area_treated_sqm'
+  )
+    .valueRange(0, null)
+    .build()
 ];
