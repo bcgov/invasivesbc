@@ -63,7 +63,7 @@ import { LegendsButton } from './Tools/ToolTypes/Data/LegendsButton';
 import { LabelButton } from './Tools/ToolTypes/Data/LabelButton';
 import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
-//import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
+import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
 import { PMTileLayer } from './Layers/PMTileLayer';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
@@ -315,7 +315,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <JumpToRecord />
             <LegendsButton />
             <LabelButton />
-            {/*<IAPPExtentButton />*/}
+            <IAPPExtentButton />
             <PMTileLayer url='https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles'/>
             <BoundaryLayerDisplayForRecordSetToggle />
 
