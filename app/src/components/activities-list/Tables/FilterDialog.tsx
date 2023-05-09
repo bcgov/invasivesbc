@@ -12,6 +12,7 @@ import {
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import React, { useEffect, useState } from 'react';
+import { USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST } from 'state/actions';
 import { useDispatch } from 'react-redux';
 
 export interface IFilterDialog {
