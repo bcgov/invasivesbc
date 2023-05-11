@@ -77,6 +77,7 @@ import { channel } from 'redux-saga';
 import { selectTabs } from 'state/reducers/tabs';
 import { ActivityStatus } from 'sharedAPI';
 import * as turf from '@turf/turf';
+import { format } from 'date-fns';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -93,7 +94,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     action.payload.updatedSet.recordSetType === 'POI' ? true : false,
     action.payload.updatedSet.gridFilters,
     0,
-    200000
+    999999
   );
 
   const layerState = {
@@ -269,7 +270,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     type: IAPP_GEOJSON_GET_REQUEST,
     payload: {
       //   recordSetID: '3',
-      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
+      IAPPFilterCriteria: { ...IAPP_filter, limit: 999999 }
       //   layerState: IAPPlayerState
     }
   });
@@ -398,7 +399,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
         false,
         action.payload?.[x]?.filters?.gridFilters,
         0,
-        200000
+        999999
       );
       yield put({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -641,9 +642,13 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
       })
       .sort((a, b) => {
         if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
-          return (a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField])? 1: -1
+          return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
+            ? 1
+            : -1;
         } else {
-          return (a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField])? 1: -1
+          return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
+            ? 1
+            : -1;
         }
       });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
@@ -688,15 +693,15 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       })
       .sort((a, b) => {
         if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
-          return (
-            a?.properties[mapState?.whatsHere?.ActivitySortField] >
+          return a?.properties[mapState?.whatsHere?.ActivitySortField] >
             b?.properties[mapState?.whatsHere?.ActivitySortField]
-          )? 1: -1
+            ? 1
+            : -1;
         } else {
-          return (
-            a?.properties[mapState?.whatsHere?.ActivitySortField] <
+          return a?.properties[mapState?.whatsHere?.ActivitySortField] <
             b?.properties[mapState?.whatsHere?.ActivitySortField]
-          )? 1: -1
+            ? 1
+            : -1;
         }
       });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
@@ -783,14 +788,14 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let rows = [];
     let networkReturn;
     if (set.recordSetType === 'POI') {
-      let filters = getSearchCriteriaFromFilters(
+      const filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
         userSettings?.recordSets ? userSettings?.recordSets : null,
         action.payload.id,
         true,
         set?.gridFilters ? set?.gridFilters : null,
         0,
-        200000, // CSV limit
+        null, // CSV limit
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns
           ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns
           : null
@@ -802,11 +807,13 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         'Content-Type': 'text/csv'
       });
       const daBlob = new Blob([networkReturn.data]);
-
+      console.log(daBlob, 'banana');
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'export.csv');
+      const time = new Date().getTime();
+      const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
+      link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -822,7 +829,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         mapState?.layers?.[action.payload.id]?.filters?.sortColumns
       );
       filters.isCSV = true;
-      filters.CSVType = 'main_extract';
+      filters.CSVType = action.payload.CSVType;
 
       networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, { 'Content-Type': 'text/csv' });
       const daBlob = new Blob([networkReturn.data]);
@@ -830,7 +837,9 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'export.csv');
+      const time = new Date().getTime();
+      const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
+      link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
