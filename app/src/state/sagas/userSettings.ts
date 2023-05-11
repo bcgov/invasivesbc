@@ -401,13 +401,35 @@ function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
   }
 }
 
+function* handle_USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST(action) {
+  try {
+    const userSettings = yield select(selectUserSettings);
+    let sets = userSettings?.recordSets;
+    const current = sets[action.payload.id];
+
+    current['filtersApplied'] = action.payload.filtersApplied;
+
+    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
+
+    yield put({ type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_SUCCESS, payload: { recordSets: sets } });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_FAILURE });
+  }
+}
+
 function* handle_GET_API_DOC_REQUEST(action) {
   // TODO decide online or not
   yield put({ type: GET_API_DOC_ONLINE });
 }
 
 function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/', {}, { 'filterForSelectable': true });
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
+    'GET',
+    '/api/api-docs/',
+    {},
+    { filterForSelectable: true }
+  );
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
   const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
   const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;

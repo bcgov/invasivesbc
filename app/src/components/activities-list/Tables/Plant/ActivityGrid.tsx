@@ -36,6 +36,7 @@ import 'react-data-grid/lib/styles.css';
 import ExcelExporter from '../ExcelExporter';
 
 import { ActivityStatus } from 'sharedAPI';
+import { useDebouncedEffect } from 'components/map/Tools/Helpers/DebounceHelper';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accordionHeader: {
@@ -555,6 +556,22 @@ const ActivityGrid = (props) => {
       setType: props.setType
     });
   };
+
+  // Fires on typing of grid filters
+  useDebouncedEffect(() => {
+    let applied = false;
+    // Enabled check makes sure that the button doesn't go active when the grid filters cause a get request
+    if (!filters.enabled) {
+      applied = true;
+    }
+    dispatch({
+      type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+      payload: {
+        id: props.setName,
+        filtersApplied: applied
+      }
+    });
+  }, 500, [filters]);
 
   function Pagination() {
     const recordSetsState = useSelector(selectUserSettings);
