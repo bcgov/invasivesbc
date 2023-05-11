@@ -728,6 +728,13 @@ const ActivityGrid = (props) => {
                       type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
                       payload: { setName: props.setName }
                     });
+                    dispatch({
+                      type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+                      payload: {
+                        id: props.setName,
+                        filtersApplied: false
+                      }
+                    });
                   }}
                 />
               )}

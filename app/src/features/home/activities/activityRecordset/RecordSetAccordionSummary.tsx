@@ -32,7 +32,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST } from 'state/actions';
+import { USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, USER_SETTINGS_REMOVE_RECORD_SET_REQUEST, USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 
@@ -356,6 +356,13 @@ const RecordSetAccordionSummary = (props) => {
               dispatch({
                 type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
                 payload: { boundary: e.target?.value, setName: props?.setName }
+              });
+              dispatch({
+                type: USER_SETTINGS_SET_RECORD_SET_SAVE_APPLIED_REQUEST,
+                payload: {
+                  id: props.setName,
+                  filtersApplied: false
+                }
               });
               setBoundaryFilterDialog({ ...boundaryFilterDialog, dialogOpen: false });
             }}
