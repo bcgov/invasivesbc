@@ -4,10 +4,13 @@ import React, { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import centroid from '@turf/centroid';
 import polygon from 'turf-polygon';
+import { useLeafletContext } from '@react-leaflet/core';
 
 export const PMTileLayer = (props) => {
   const map = useMap();
   const [layer, setLayer] = React.useState(null);
+  const context = useLeafletContext();
+  const container = context.layerContainer || context.map;
 
   const onFirstRender = useEffect(() => {
     let PAINT_RULES = [
@@ -49,18 +52,15 @@ export const PMTileLayer = (props) => {
     });
 
     layer.options.zIndex = 3005;
-    setLayer(layer);
-  }, []);
 
-  useEffect(() => {
-    if (!props.enabled && layer !== null) {
-        layer.remove(map)
+    if (!map.hasLayer(layer)) {
+      container.addLayer(layer);
     }
 
-    if (layer !== null && props.enabled) {
-        layer.addTo(map)
-    }
-  }, [layer, props.enabled]);
+    return () => {
+      container.removeLayer(layer);
+    };
+  });
 
-  return <></>;
+  return null;
 };

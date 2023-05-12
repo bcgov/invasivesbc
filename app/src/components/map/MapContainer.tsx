@@ -316,7 +316,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <LegendsButton />
             <LabelButton />
             <IAPPExtentButton />
-            <PMTileLayer url='https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles'/>
             <BoundaryLayerDisplayForRecordSetToggle />
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
