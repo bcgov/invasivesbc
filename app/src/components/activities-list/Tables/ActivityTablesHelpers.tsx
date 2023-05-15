@@ -45,8 +45,8 @@ export const ActivitiesDefaultHeaders = () => {
       name: 'Activity Sub Type'
     },
     {
-      key: 'received_timestamp',
-      name: 'Received Timestamp'
+      key: 'activity_date',
+      name: 'Activity Date'
     },
     {
       key: 'project_code',
@@ -167,7 +167,7 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       short_id: activity?.activity_payload?.short_id,
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-      received_timestamp: new Date(activity?.received_timestamp).toString(),
+      activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
       project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,

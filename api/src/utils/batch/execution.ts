@@ -27,7 +27,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
 
-  let mapped = activity_create_function(type, subtype, userInfo?.preferred_username, 'Brennan', userInfo?.pac_number);
+  let mapped = activity_create_function(type, subtype, userInfo?.preferred_username, userInfo?.friendlyUsername, userInfo?.pac_number);
 
   mapped = mapTemplateFields(mapped, row);
 
