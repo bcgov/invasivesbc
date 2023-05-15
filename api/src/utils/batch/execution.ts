@@ -50,9 +50,10 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
 
+  
   mapped = populateSpeciesArrays(mapped);
 
-  mapped['form_data']['form_status'] = 'Submitted';
+mapped['form_data']['form_status'] = status
 
 
   const geog = mapped.geog;
@@ -110,8 +111,11 @@ export const BatchExecutionService = {
       const qc = {
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
                                                    activity_subtype, form_status, created_by, updated_by,
-                                                   created_by_with_guid, updated_by_with_guid, geog)
-               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+                                                   created_by_with_guid, updated_by_with_guid, geog,       
+                                                   species_positive,
+                                                   species_negative,
+                                                   species_treated)
+               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
         values: [
           activityId,
           shortId,
@@ -124,7 +128,10 @@ export const BatchExecutionService = {
           userInfo?.preferred_username,
           guid,
           guid,
-          geog
+          geog,
+          payload['species_positive'],
+          payload['species_negative'],
+          payload['species_treated']
         ]
       };
 

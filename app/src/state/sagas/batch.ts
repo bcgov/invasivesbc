@@ -173,7 +173,7 @@ function* executeBatch(action) {
     },
     data: {
       desiredActivityState: action.payload.desiredActivityState,
-      treatmentOfErrorRows: action.payload.desiredActivityState
+      treatmentOfErrorRows: action.payload.treatmentOfErrorRows
     }
   });
 

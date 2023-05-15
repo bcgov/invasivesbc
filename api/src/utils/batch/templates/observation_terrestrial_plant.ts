@@ -120,7 +120,6 @@ ObservationTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collected'
   )
     .hardcodedCodes(YES_NO_CODES)
-    .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Voucher - Sample ID',
