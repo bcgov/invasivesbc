@@ -211,6 +211,9 @@ async function _validateCell(
       break;
     case 'date':
       {
+        if(!templateColumn.required && (data === null || data === undefined || data === '')) {
+          break;
+        }
         const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
         if (!parsedDate.isValid()) {
           result.validationMessages.push({
