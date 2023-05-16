@@ -88,6 +88,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         break;
       case 'biological_dispersal_extract':
         sqlStatement.append(SQL` INNER JOIN biological_dispersal_extract pe ON i.site_id = pe.site_id`);
+        break;
       default:
         sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id `);
         break;

@@ -35,6 +35,11 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
         const date = format(value, 'yyyy-MM-dd');
         return date;
       };
+      fieldFormatMap['inspection_date'] = (value) => {
+        if (value === null) return '';
+        const date = format(value, 'yyyy-MM-dd');
+        return date;
+      };
       fieldFormatMap['last_surveyed_date'] = (value) => {
         const date = format(value, 'yyyy-MM-dd');
         return date;
@@ -68,12 +73,36 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
         return '"' + value + '"';
       };
       fieldFormatMap['comment'] = (value) => {
-        return '"' + value + '"';
+        return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['comments'] = (value) => {
-        return '"' + value + '"';
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['site_comments'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['site_location'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['bioagent_source'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['survey_comments'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['treatment_comments'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['monitoring_comments'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['jurisdiction'] = (value) => {
+        return '"' + value + '"';
+      };
+      fieldFormatMap['other_surveyors'] = (value) => {
+        return '"' + value + '"';
+      };
+      fieldFormatMap['other_applicators'] = (value) => {
         return '"' + value + '"';
       };
       break;

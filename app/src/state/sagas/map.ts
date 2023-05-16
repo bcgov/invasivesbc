@@ -94,7 +94,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     action.payload.updatedSet.recordSetType === 'POI' ? true : false,
     action.payload.updatedSet.gridFilters,
     0,
-    999999
+    200000
   );
 
   const layerState = {
@@ -270,7 +270,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     type: IAPP_GEOJSON_GET_REQUEST,
     payload: {
       //   recordSetID: '3',
-      IAPPFilterCriteria: { ...IAPP_filter, limit: 999999 }
+      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
       //   layerState: IAPPlayerState
     }
   });
@@ -399,7 +399,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
         false,
         action.payload?.[x]?.filters?.gridFilters,
         0,
-        999999
+        200000
       );
       yield put({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
