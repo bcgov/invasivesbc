@@ -166,7 +166,7 @@ const defaultLog = getLogger('activity-queries');
  */
 const getColumnNamesSQL = (columnNames: string[]): string => {
   const newColumnNames = columnNames.map((name) => 'a.' + name);
-  defaultLog.info({message: 'columnNames POST Sanitize', columnNames, newColumnNames} );
+  defaultLog.info({ message: 'columnNames POST Sanitize', columnNames, newColumnNames });
   return ` ${newColumnNames.join(', ')}`;
 };
 
@@ -348,12 +348,62 @@ export const getActivitiesSQL = (
         sqlStatement.append(
           'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
         );
+        break;
       case 'aquatic_plant_observation':
         sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'terrestrial_chemical_treatment':
+        sqlStatement.append(
+          'join treatment_chemical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'aquatic_chemical_treatment':
+        sqlStatement.append(
+          'join treatment_chemical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'terrestrial_mechanical_treatment':
+        sqlStatement.append(
+          'join treatment_mechanical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'aquatic_mechanical_treatment':
+        sqlStatement.append(
+          'join treatment_mechanical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'biocontrol_release':
+        sqlStatement.append('join biocontrol_release_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'biocontrol_collection':
+        sqlStatement.append('join biocontrol_collection_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'biocontrol_dispersal':
+        sqlStatement.append(
+          'join biocontrol_dispersal_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'chemical_treatment_monitoring':
+        sqlStatement.append(
+          'join chemical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'mechanical_treatment_monitoring':
+        sqlStatement.append(
+          'join mechanical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'biocontrol_release_monitoring':
+        sqlStatement.append(
+          'join biocontrol_release_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+
       default:
         sqlStatement.append(
           'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
         );
+        break;
     }
   }
 
@@ -458,7 +508,9 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`||'%'`);
       }
       if (gridFilters.project_code) {
-        sqlStatement.append(SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`);
+        sqlStatement.append(
+          SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`
+        );
         sqlStatement.append(SQL`LOWER(${gridFilters.project_code})`);
         sqlStatement.append(SQL`||'%'`);
       }
