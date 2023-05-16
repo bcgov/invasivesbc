@@ -193,7 +193,11 @@ function createBatchReducer() {
           ...state,
           working: false,
           error: false,
-          templates: action.payload
+          templates: action.payload.filter(template => [
+            'observation_terrestrial_plant',
+            'treatment_mechanical_terrestrial_plant',
+            'treatment_chemical_terrestrial_plant'
+          ].includes(template.key))
         };
       case BATCH_TEMPLATE_LIST_ERROR:
         return {
