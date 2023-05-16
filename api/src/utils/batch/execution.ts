@@ -129,9 +129,9 @@ export const BatchExecutionService = {
           guid,
           guid,
           geog,
-          payload['species_positive'],
-          payload['species_negative'],
-          payload['species_treated']
+          JSON.stringify(payload['species_positive']),
+          JSON.stringify(payload['species_negative']),
+          JSON.stringify(payload['species_treated'])
         ]
       };
 
@@ -142,7 +142,19 @@ export const BatchExecutionService = {
         }
       });
 
+      try
+      {
+
       await dbConnection.query(qc);
+      }
+      catch(e)
+      {
+        defaultLog.debug({
+          message: 'error executing insert for batch error->' +  JSON.stringify(e),
+        })
+        throw e
+      }
+
     }
 
     await dbConnection.query({
