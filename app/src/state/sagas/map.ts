@@ -788,7 +788,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let rows = [];
     let networkReturn;
     if (set.recordSetType === 'POI') {
-      const filters = getSearchCriteriaFromFilters(
+      let filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
         userSettings?.recordSets ? userSettings?.recordSets : null,
         action.payload.id,
@@ -807,7 +807,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
         'Content-Type': 'text/csv'
       });
       const daBlob = new Blob([networkReturn.data]);
-      console.log(daBlob, 'banana');
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
       link.href = url;
