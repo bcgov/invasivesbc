@@ -20,8 +20,6 @@ export const PMTileLayer = (props) => {
           per_feature: true,
           fill: (z: number, p: any) => {
             switch (p.props.code_name) {
-              case 'NORD':
-                return '#FF0000';
               default:
                 return 'hsl(100,50%,50%)';
             }
