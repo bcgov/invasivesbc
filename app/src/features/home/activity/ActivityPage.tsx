@@ -24,7 +24,8 @@ import {
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST
+  ACTIVITY_UPDATE_GEO_REQUEST,
+  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
 } from 'state/actions';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
@@ -210,6 +211,22 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  const handleAPIErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    dispatch({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+      payload: {
+        notification: {
+          visible: false,
+          message: '',
+          severity: 'success'
+        }
+      }
+    });
+  };
+
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -259,7 +276,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         updatedFormData: { ...formData, form_status: ActivityStatus.SUBMITTED }
       }
     });
-    setAlertSavedOpen(true);
   };
 
   /**
@@ -509,6 +525,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dialogContentText={warningDialog.dialogContentText}
       />
 
+      <Snackbar open={activityInStore.notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
+        <Alert onClose={handleAPIErrorClose} severity={ activityInStore.notification?.severity } sx={{ width: '100%' }}>
+          { activityInStore.notification?.message }
+        </Alert>
+      </Snackbar>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
         <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
           The form was saved with errors.

@@ -8,7 +8,8 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
-  ACTIVITY_SAVE_SUCCESS
+  ACTIVITY_SAVE_SUCCESS,
+  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 
@@ -82,15 +83,26 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //const validatedReturn = yield checkForErrors(networkReturn)
 
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
-
-  yield put({
-    type: ACTIVITY_SAVE_SUCCESS, payload: {
-      activity: {
-        ...newActivity,
-        media_delete_keys: filtered_media_delete_keys
+  if (networkReturn.status < 200 || networkReturn.status > 299) {
+    yield put({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS, payload: {
+        notification: {
+          visible: true,
+          message: networkReturn.data.message,
+          severity: "error"
+        }
       }
-    }
-  });
+    });
+  } else {
+    yield put({
+        type: ACTIVITY_SAVE_SUCCESS, payload: {
+          activity: {
+            ...newActivity,
+            media_delete_keys: filtered_media_delete_keys,
+          },
+        }
+      });
+  }
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {

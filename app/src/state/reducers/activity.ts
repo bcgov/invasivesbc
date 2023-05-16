@@ -17,7 +17,6 @@ import {
   ACTIVITY_PERSIST_FAILURE,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SAVE_SUCCESS,
-  ACTIVITY_SAVE_FAILURE,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_SUBMIT_SUCCESS,
   ACTIVITY_SUBMIT_FAILURE,
@@ -37,7 +36,8 @@ import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_PASTE_SUCCESS
+  ACTIVITY_PASTE_SUCCESS,
+  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -52,6 +52,7 @@ class ActivityState {
   constructor() {
     this.initialized = false;
   }
+  notification: any;
 }
 const initialState = new ActivityState();
 
@@ -59,7 +60,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
   return (state = initialState, action) => {
     switch (action.type) {
       case ACTIVITY_DELETE_SUCCESS: {
-        return { 
+        return {
           ...new ActivityState()
         }
       }
@@ -141,6 +142,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         return {
           ...state,
           activity: { ...action.payload.activity }
+        };
+      }
+      case ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS: {
+        return {
+          ...state,
+          notification: action.payload.notification
         };
       }
       case ACTIVITY_COPY_SUCCESS: {

@@ -40,6 +40,7 @@ import {
   ACTIVITY_PASTE_FAILURE,
   ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_SAVE_NETWORK_REQUEST,
+  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
@@ -148,6 +149,23 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   }
 }
 
+
+export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
+  try {
+    yield put({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS, payload: {
+        notification: {
+          visible: true,
+          message: "Activity saved successfully",
+          severity: "success"
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   try {
     yield put({
@@ -160,6 +178,20 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   }
 }
 
+export function* handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST(action) {
+  try {
+    yield put({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      payload: {
+        notification: {
+          ...action.payload.notification
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
   try {
