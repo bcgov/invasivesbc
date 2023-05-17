@@ -77,6 +77,8 @@ table.code-reference {
 table.batchAlternateLayout {
   border-collapse: collapse;
   font-size: 12px;
+  overflow-x: auto;
+  display: block;
 
   thead {
     tr {
