@@ -30,12 +30,17 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[0]?.herbicide_code;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].herbicide_code =
         activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[1]?.herbicide_code;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].herbicide_code =
+        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[2]?.herbicide_code;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].herbicide_type_code =
         activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[0]?.herbicide_type_code;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].herbicide_type_code =
         activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[1]?.herbicide_type_code;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].herbicide_type_code =
+        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[2]?.herbicide_type_code;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].index = 0;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].index = 1;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].index = 2;
       delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides;
     }
 
