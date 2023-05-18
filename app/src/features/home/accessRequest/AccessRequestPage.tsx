@@ -45,7 +45,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
   const classes = useStyles();
-  const [transferAccess, setTransferAccess] = useState('');
+  const [transferAccess, setTransferAccess] = useState('yes');
   const [accountType, setAccountType] = useState('');
 
   const authState = useSelector(selectAuth);
@@ -282,7 +282,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     },
   };
 
-  const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name).code_description;
+  const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name)?.code_description;
 
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
@@ -310,7 +310,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
           <Card elevation={8}>
             {!submitted && (
               <CardContent>
-                {!isUpdating && (
+                {/* {!isUpdating && (
                   <FormControl component="fieldset">
                     <FormLabel component="legend">
                       Do you wish to transfer your IAPP access to InvasivesBC when it replaces IAPP?
@@ -331,7 +331,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     You will be removed from the InvasivesBC lists moving forward. You may, of course, rejoin us at any
                     time.
                   </Typography>
-                )}
+                )} */}
                 {(transferAccess === 'yes' || isUpdating) && (
                   <Grid container direction="column" spacing={3}>
                     {!isUpdating && (
@@ -470,6 +470,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                               id="employer"
                               variant="outlined"
                               label="Employer"
+                              InputLabelProps={{ shrink: true }}
                               error={!!employerErrorText}
                               SelectProps={{
                                 multiple: false,
