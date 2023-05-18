@@ -116,7 +116,8 @@ function _mapRowToDBObject(row, template: Template, userInfo: any): RowMappingRe
 async function _validateCell(
   template: Template,
   templateColumn: TemplateColumn,
-  data: string
+  data: string,
+  row?: any
 ): Promise<CellValidationResult> {
   const result: CellValidationResult = {
     validationMessages: [],
@@ -211,7 +212,7 @@ async function _validateCell(
       break;
     case 'date':
       {
-        if(!templateColumn.required && (data === null || data === undefined || data === '')) {
+        if (!templateColumn.required && (data === null || data === undefined || data === '')) {
           break;
         }
         const parsedDate = moment(data as string, DATE_ONLY_FORMAT);
@@ -296,17 +297,27 @@ async function _validateCell(
     case 'WKT':
       // validate if not polygon first to avoid WKT autofill and subsequent crashes
       const shape = data.split(' (')[0];
-      if (shape !== 'POLYGON') {
+      if (shape !== 'POLYGON' && !template.key.includes('temp')) {
         result.validationMessages.push({
           severity: 'error',
           messageTitle: `Geometry shape must be a Polygon, value read as ${shape}`
+        });
+        break;
+      } else if (shape !== 'POINT' && template.key.includes('temp')) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Geometry shape must be a Point, value read as ${shape}`
         });
         break;
       }
 
       if (validateAsWKT(data)) {
         try {
-          result.parsedValue = await autofillFromPostGIS(data);
+          if (template.key.includes('temp')) {
+            result.parsedValue = await autofillFromPostGIS(data, row.area.value);
+          } else {
+            result.parsedValue = await autofillFromPostGIS(data);
+          }
         } catch (e) {
           result.validationMessages.push({
             severity: 'informational',
@@ -399,7 +410,7 @@ export const BatchValidationService = {
         const templateColumn = template.columns.find((t) => t.name === field);
 
         try {
-          const validatedCellData = await _validateCell(template, templateColumn, row.data[field]);
+          const validatedCellData = await _validateCell(template, templateColumn, row.data[field], row);
           row.data[field] = {
             inputValue: row.data[field],
             templateColumn,

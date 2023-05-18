@@ -44,7 +44,7 @@ export async function up(knex: Knex): Promise<void> {
       SELECT round(ST_Y(centroid_in_utm_srid)::numeric)::integer INTO ret.utm_northing;
 
       -- in srid 4326, so result is square meters.
-      SELECT round(ST_Area(ret.geo))::integer INTO ret.area;
+      SELECT round(ST_AreST_Areaa(ret.geo))::integer INTO ret.area;
 
       SELECT ST_AsGeoJSON(ret.geo) INTO ret.geojson;
 
