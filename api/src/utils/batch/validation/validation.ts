@@ -1,10 +1,11 @@
 import { Template, TemplateColumn } from '../definitions';
-import { autofillFromPostGIS, parsedGeoType, validateAsWKT } from './spatial-validation';
+import { autofillFromPostGIS, parseGeoJSONasWKT, parseWKTasGeoJSON, parsedGeoType, validateAsWKT } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution';
 import { lookupAreaLimit } from 'sharedAPI';
 import { getLogger } from '../../logger';
+import circle from '@turf/circle';
 
 const defaultLog = getLogger('batch');
 
@@ -311,13 +312,21 @@ async function _validateCell(
         break;
       }
 
+      // hack for year one garbage import data
+      if(shape === 'POINT')
+      {
+        const geojson = parseWKTasGeoJSON(data);
+        if (!(geojson === null)) {
+          {
+            const newPoly = circle(geojson, row['Area']?.value || 0, { units: 'kilometers' })
+            const newWKT = parseGeoJSONasWKT(newPoly)
+            data = newWKT
+          }
+      }
+
       if (validateAsWKT(data)) {
         try {
-          if (template.key.includes('temp')) {
-            result.parsedValue = await autofillFromPostGIS(data, row.area.value);
-          } else {
             result.parsedValue = await autofillFromPostGIS(data);
-          }
         } catch (e) {
           result.validationMessages.push({
             severity: 'informational',

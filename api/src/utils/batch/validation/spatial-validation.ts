@@ -1,6 +1,7 @@
 import { getDBConnection } from '../../../database/db';
 
 import { parse } from 'wkt';
+import { stringify} from 'wkt';
 import { getLogger } from '../../logger';
 
 const defaultLog = getLogger('batch');
@@ -27,7 +28,33 @@ export const validateAsWKT = (input: string) => {
   return false;
 };
 
-export const autofillFromPostGIS = async (input: string): Promise<parsedGeoType> => {
+export const parseWKTasGeoJSON = (input: string) => {
+  let parsed;
+  try {
+    parsed = parse(input);
+    return parsed !== null;
+  } catch (e) {
+    defaultLog.error({ message: 'invalid wkt', input, error: e });
+  }
+  return parsed;
+
+  }
+
+
+export const parseGeoJSONasWKT = (input: any) => {
+  let parsed;
+  try {
+    parsed = stringify(input);
+    return parsed !== null;
+  } catch (e) {
+    defaultLog.error({ message: 'invalid wkt', input, error: e });
+  }
+  return parsed;
+
+  }
+
+
+export const autofillFromPostGIS = async (input: string, inputArea?: number): Promise<parsedGeoType> => {
   const connection = await getDBConnection();
 
   if (!connection) {
