@@ -126,7 +126,7 @@ function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
         unsaved_notification: {
           visible: false,
           message: '',
-          severity: 'error'
+          severity: 'warning'
         }
       }
     });
@@ -169,7 +169,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
         unsaved_notification: {
           visible: visible,
           message: visible ? 'There are unsaved changes on this form' : '',
-          severity: 'error'
+          severity: 'warning'
         }
       }
     });

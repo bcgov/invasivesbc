@@ -143,7 +143,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       case ACTIVITY_CREATE_SUCCESS: {
         return {
           ...state,
-          activeActivity: action.payload.activity_id
+          activeActivity: action.payload.activity_id,
+          current_activity_hash: null,
+          saved_activity_hash: null
         };
       }
       case ACTIVITY_SAVE_SUCCESS: {
