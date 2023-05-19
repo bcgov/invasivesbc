@@ -21,7 +21,6 @@ import {
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SAVE_NETWORK_REQUEST,
   ACTIVITY_SAVE_SUCCESS,
-  ACTIVITY_SAVE_FAILURE,
   ACTIVITY_CREATE_REQUEST,
   ACTIVITY_CREATE_NETWORK,
   ACTIVITY_CREATE_SUCCESS,
@@ -54,6 +53,13 @@ import {
   ACTIVITY_PASTE_REQUEST,
   MAP_INIT_REQUEST,
   ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
+  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
+  ACTIVITY_SET_CURRENT_HASH_FAILURE,
+  ACTIVITY_SET_SAVED_HASH_SUCCESS,
+  ACTIVITY_SET_SAVED_HASH_FAILURE,
+  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
+  ACTIVITY_SET_UNSAVED_NOTIFICATION
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
@@ -78,7 +84,7 @@ import {
   handle_ACTIVITY_COPY_REQUEST,
   handle_ACTIVITY_PASTE_REQUEST,
   handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  handle_ACTIVITY_SAVE_SUCCESS,
+  handle_ACTIVITY_SAVE_SUCCESS
 } from './activity/dataAccess';
 import {
   handle_ACTIVITY_CREATE_NETWORK,
@@ -86,8 +92,9 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST,
   handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
 } from './activity/online';
+import { selectActivity } from 'state/reducers/activity';
 
 function* handle_USER_SETTINGS_READY(action) {
   if (action.payload.activeActivity) {
@@ -100,7 +107,78 @@ function* handle_ACTIVITY_DEBUG(action) {
 }
 
 function* handle_ACTIVITY_DELETE_SUCESS(action) {
-  yield put({type: MAP_INIT_REQUEST})
+  yield put({ type: MAP_INIT_REQUEST });
+}
+
+function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
+  try {
+    const activityState = yield select(selectActivity);
+    yield put({
+      type: ACTIVITY_SET_SAVED_HASH_SUCCESS,
+      payload: {
+        saved: activityState?.current_activity_hash
+      }
+    });
+
+    yield put({
+      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
+      payload: {
+        unsaved_notification: {
+          visible: false,
+          message: '',
+          severity: 'error'
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: ACTIVITY_SET_SAVED_HASH_FAILURE
+    });
+  }
+}
+
+function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
+  try {
+    if (action.type === 'ACTIVITY_ON_FORM_CHANGE_SUCCESS' && !action.payload.unsavedDelay) return;
+
+    const activityState = yield select(selectActivity);
+    const activitySerialized = JSON.stringify(activityState?.activity);
+    let currentHash = 5381;
+
+    for (let i = 0; i < activitySerialized.length; i++) {
+      currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
+    }
+
+    // check if different than saved
+    let visible = false;
+    if (currentHash !== activityState?.saved_activity_hash) {
+      visible = true;
+    }
+
+    yield put({
+      type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
+      payload: {
+        current: currentHash
+      }
+    });
+
+    yield put({
+      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
+      payload: {
+        unsaved_notification: {
+          visible: visible,
+          message: visible ? 'There are unsaved changes on this form' : '',
+          severity: 'error'
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: ACTIVITY_SET_CURRENT_HASH_FAILURE
+    });
+  }
 }
 
 function* activityPageSaga() {
@@ -118,10 +196,16 @@ function* activityPageSaga() {
       ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
       handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE
     ),
+    takeEvery(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
+    takeEvery(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
+    takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
-    takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE),
+    takeEvery(
+      ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+      handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
+    ),
     takeEvery(ACTIVITY_SAVE_REQUEST, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),

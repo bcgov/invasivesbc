@@ -38,6 +38,9 @@ import {
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
+  ACTIVITY_SET_SAVED_HASH_SUCCESS,
+  ACTIVITY_SET_UNSAVED_NOTIFICATION
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -49,8 +52,13 @@ class ActivityState {
   suggestedJurisdictions: [];
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
+  current_activity_hash: string;
+  saved_activity_hash: string;
+  unsaved_notification: any;
   constructor() {
     this.initialized = false;
+    this.current_activity_hash = null;
+    this.saved_activity_hash = null;
   }
   notification: any;
 }
@@ -193,10 +201,26 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...state,
           activity: {
             ...state.activity,
-            media: [
-              ...action.payload.media
-            ]
+            media: [...action.payload.media]
           }
+        };
+      }
+      case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {
+        return {
+          ...state,
+          current_activity_hash: action.payload.current
+        };
+      }
+      case ACTIVITY_SET_SAVED_HASH_SUCCESS: {
+        return {
+          ...state,
+          saved_activity_hash: action.payload.saved
+        };
+      }
+      case ACTIVITY_SET_UNSAVED_NOTIFICATION: {
+        return {
+          ...state,
+          unsaved_notification: action.payload.unsaved_notification
         };
       }
       default:
