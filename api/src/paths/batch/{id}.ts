@@ -14,6 +14,7 @@ import {getLogger} from '../../utils/logger';
 
 export const GET: Operation = [getBatch()];
 export const PUT: Operation = [updateBatch()];
+export const DELETE: Operation = [deleteBatch()];
 
 const GET_API_DOC = {
   tags: ['batch'],
@@ -294,6 +295,58 @@ function updateBatch(): RequestHandler {
       defaultLog.error({ label: 'batchUpload', message: 'error', error });
       return res.status(500).json({
         message: 'Error updating batch upload',
+        request: req.body,
+        error: error,
+        namespace: 'batch',
+        code: 500
+      });
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+function deleteBatch(): RequestHandler {
+  return async (req: InvasivesRequest, res) => {
+    const connection = await getDBConnection();
+
+    const id = req.params.id;
+
+    if (!connection) {
+      return res.status(503).json({
+        message: 'Database connection unavailable',
+        request: req.body,
+        namespace: 'batch',
+        code: 503
+      });
+    }
+
+    try {
+      const rereadResponse: QueryResult = await connection.query(
+        `delete from batch_uploads
+         where status = 'NEW' and id = $1 and created_by = $2`,
+        [id, req.authContext.user.user_id]
+      );
+
+      if (rereadResponse.rowCount === 0) {
+        return res.status(404).json({
+          message: 'Could not delete batch ' + id,
+          namespace: 'batch',
+          code: 404
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Batch delete successful',
+        request: req.body,
+        result: {},
+        namespace: 'batch',
+        code: 200
+      });
+    } catch (error) {
+      defaultLog.error({ label: 'batchDelete', message: 'error', error });
+      return res.status(500).json({
+        message: 'Error deleting batch',
         request: req.body,
         error: error,
         namespace: 'batch',
