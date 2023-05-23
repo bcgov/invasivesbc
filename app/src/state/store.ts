@@ -5,7 +5,7 @@ import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 import authenticationSaga from './sagas/auth';
 import { AppConfig } from './config';
-import { AUTH_INITIALIZE_REQUEST } from './actions';
+import { AUTH_INITIALIZE_REQUEST, USER_SETTINGS_SET_API_ERROR_DIALOG } from './actions';
 import activityPageSaga from './sagas/activity';
 import userSettingsSaga from './sagas/userSettings';
 import tabsSaga from './sagas/tabs';
@@ -21,20 +21,52 @@ const setupStore = (configuration: AppConfig) => {
   let middlewares;
 
   const sagaMiddleware = createSagaMiddleware({
-    onError:  async (e, errorInfo) => {
+    onError: async (e, errorInfo) => {
       console.log('there was an error');
       const state = store.getState();
       if (state.Auth.authenticated) {
         let loggingState = JSON.parse(JSON.stringify(state));
         loggingState.Map.activitiesGeoJSON = state.Map.activitiesGeoJSON?.features?.length;
         loggingState.Map.IAPPGeoJSON = state.Map.IAPPGeoJSON?.features?.length;
-        const postObj = { error: { message: e.message + '' + e.stack}, clientState: loggingState, commitHash: configuration.COMMIT_HASH };
+        const postObj = {
+          error: { message: e.message + '' + e.stack },
+          clientState: loggingState,
+          commitHash: configuration.COMMIT_HASH
+        };
         const requestOptions = state.Auth.requestHeaders;
         const config = state.Configuration.current;
         const options = getRequestOptions(config, requestOptions);
-        await InvasivesAPI_Callback('POST', '/api/error', postObj, options)
-        alert(`An error has occurred. Please click here to refresh the page and try again. If the problem persists, please contact the system administrator.  This information will be logged for admins, but in case someone asks here is the error (take a screenshot), \n \n ${JSON.stringify(e.message, null, 2)}, ${JSON.stringify(e.stack)}`) // eslint-disable-line no-alert)
-        window.location.reload()
+        await InvasivesAPI_Callback('POST', '/api/error', postObj, options);
+        store.dispatch({
+          type: USER_SETTINGS_SET_API_ERROR_DIALOG,
+          payload: {
+            APIErrorDialog: {
+              dialogActions: [
+                {
+                  actionName: 'Reset Cache',
+                  actionOnClick: async () => {
+                    localStorage.clear();
+                    window.location.reload();
+                  }
+                },
+                {
+                  actionName: 'Refresh',
+                  actionOnClick: async () => {
+                    window.location.reload();
+                  },
+                  autoFocus: true
+                }
+              ],
+              dialogOpen: true,
+              dialogTitle: 'An error has occurred.',
+              dialogContentText: `Please refresh the page and try again. If refreshing does not work please click 'Reset Cache' to reset your cache and try again. This will reset your record sets and boundaries. If the problem persists, please contact the system administrator.  This information will be logged for admins, but in case someone asks here is the error (take a screenshot), \n \n ${JSON.stringify(
+                e.message,
+                null,
+                2
+              )}, ${JSON.stringify(e.stack)}`
+            }
+          }
+        });
       }
     }
   });

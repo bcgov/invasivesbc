@@ -13,6 +13,7 @@ import {
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+  USER_SETTINGS_SET_API_ERROR_DIALOG,
   USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
   USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
@@ -36,6 +37,7 @@ class UserSettingsState {
 
   mapCenter: [number, number];
   newRecordDialogState: INewRecordDialogState;
+  APIErrorDialog: any;
   recordSets: [
     {
       advancedFilters: [];
@@ -79,6 +81,12 @@ class UserSettingsState {
       recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
       recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
     };
+    this.APIErrorDialog = {
+      dialogActions: [],
+      dialogOpen: false,
+      dialogTitle: '',
+      dialogContentText: ``
+    };
   }
 }
 
@@ -92,7 +100,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           ...state,
           activeActivity: '',
           activeActivityDescription: ''
-        }
+        };
       }
       case GET_API_DOC_SUCCESS: {
         return {
@@ -211,6 +219,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return {
           ...state,
           recordSets: { ...action.payload.recordSets }
+        };
+      }
+      case USER_SETTINGS_SET_API_ERROR_DIALOG: {
+        return {
+          ...state,
+          APIErrorDialog: action.payload.APIErrorDialog
         };
       }
       default:
