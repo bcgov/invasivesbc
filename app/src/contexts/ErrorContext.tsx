@@ -1,5 +1,8 @@
+import { GeneralDialog } from 'components/dialog/GeneralDialog';
 import * as React from 'react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export interface IErrorBanner {
   message: string;
@@ -29,6 +32,7 @@ export const ErrorContextProvider: React.FC<any> = (props: any) => {
   const [errorArray, setErrorArray] = useState<IErrorBanner[]>([]);
   const [hasErrors, setHasErrors] = useState(false);
   const [numErrors, setNumErrors] = useState(0);
+  const userSettingsState = useSelector(selectUserSettings);
 
   const pushError = (error: IErrorBanner) => {
     // Check if error already exists in errorArray
@@ -71,6 +75,12 @@ export const ErrorContextProvider: React.FC<any> = (props: any) => {
           {props.children}
         </ErrorContext.Provider>
       }
+      <GeneralDialog
+        dialogOpen={userSettingsState?.APIErrorDialog?.dialogOpen}
+        dialogTitle={userSettingsState?.APIErrorDialog?.dialogTitle}
+        dialogActions={userSettingsState?.APIErrorDialog?.dialogActions}
+        dialogContentText={userSettingsState?.APIErrorDialog?.dialogContentText}>
+      </GeneralDialog>
     </>
   );
 };
