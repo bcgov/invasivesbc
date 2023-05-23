@@ -43,6 +43,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
       }
     ];
 
+    /*
     if (!showLoggedInTabs) {
       tabConfig.push({
         label: 'Map',
@@ -50,6 +51,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
         icon: TabIconName.Map
       });
     }
+    */
 
     if (showLoggedInTabs) {
       tabConfig.push(

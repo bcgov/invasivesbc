@@ -109,14 +109,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
                 </Box>
               </Grid>
               <Divider flexItem={true} orientation="vertical" />
-              <Grid item md={3}>
-                <Box overflow="hidden" textOverflow="ellipsis">
-                  <Typography>
-                    <strong>Access Requested</strong>
-                  </Typography>
-                  {accessRequested ? 'Yes' : 'No'}
-                </Box>
-              </Grid>
+             
               <Divider flexItem={true} orientation="vertical" />
               {roles.length > 0 && (
                 <Grid item md={3}>
