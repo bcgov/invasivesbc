@@ -107,7 +107,6 @@ function listBatches(): RequestHandler {
          order by created_at desc`,
         [req.authContext.user.user_id]
       );
-
       return res.status(200).json({
         message: 'Batches listed',
         request: req.body,

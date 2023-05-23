@@ -1,15 +1,16 @@
+import 'styles/batch.scss';
 import { Box, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from '../../state/utilities/use_selector';
 import { selectBatch } from '../../state/reducers/batch';
 import { useDispatch } from 'react-redux';
-import { BATCH_LIST_REQUEST } from '../../state/actions';
+import { BATCH_DELETE_REQUEST, BATCH_LIST_REQUEST } from '../../state/actions';
 import Spinner from '../spinner/Spinner';
 import { Error } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const BatchUploadList = () => {
-  const { working, error, list } = useSelector(selectBatch);
+  const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
   const [serial, setSerial] = useState(1);
 
@@ -17,12 +18,21 @@ const BatchUploadList = () => {
     dispatch({ type: BATCH_LIST_REQUEST });
   }, [serial]);
 
+  function deleteBatch(batchId) {
+    dispatch({ type: BATCH_DELETE_REQUEST, payload: { id: batchId } });
+  }
+
+  function renderError() {
+    return (
+    <>
+        <Error /> { errorMessage }
+    </>
+    )
+  }
+
   function renderContent() {
     if (working) {
       return <Spinner />;
-    }
-    if (error) {
-      return <Error />;
     }
     if (list !== null && list?.length === 0) {
       return <span>No batches found</span>;
@@ -30,13 +40,15 @@ const BatchUploadList = () => {
     return (
       <>
         <p>Batch uploads. Click a row for a detailed view.</p>
-        <table>
+        <table className={'batchList'}>
           <thead>
             <tr>
               <th>ID</th>
               <th>Status</th>
               <th>Date</th>
+              <th>Template</th>
               <th>Link</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -45,9 +57,11 @@ const BatchUploadList = () => {
                 <td>{b.id}</td>
                 <td>{b.status}</td>
                 <td>{b.created_at}</td>
+                <td>{templates.find(t => b.template === t.key).name}</td>
                 <td>
                   <Link to={`/home/batch/${b.id}`}>View This Batch</Link>
                 </td>
+                <td>{b.status == 'NEW' ? <button onClick={() => deleteBatch(b.id)}>Delete</button> : ''}</td>
               </tr>
             ))}
           </tbody>
@@ -60,6 +74,7 @@ const BatchUploadList = () => {
     <Paper>
       <Box mx={3} my={3} py={3}>
         <Typography variant={'h4'}>Batch Uploads</Typography>
+        { error ? renderError() : ''}
         {renderContent()}
       </Box>
     </Paper>

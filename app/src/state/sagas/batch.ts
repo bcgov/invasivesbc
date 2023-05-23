@@ -4,6 +4,8 @@ import {selectConfiguration} from 'state/reducers/configuration';
 import {
   BATCH_CREATE_REQUEST, BATCH_CREATE_REQUEST_WITH_CALLBACK,
   BATCH_CREATE_SUCCESS, BATCH_EXECUTE_REQUEST, BATCH_EXECUTE_SUCCESS,
+  BATCH_DELETE_REQUEST,
+  BATCH_DELETE_SUCCESS,
   BATCH_LIST_REQUEST,
   BATCH_LIST_SUCCESS,
   BATCH_RETRIEVE_REQUEST,
@@ -11,11 +13,13 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS
+  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS, BATCH_DELETE_ERROR
 } from '../actions';
 import {Http} from '@capacitor-community/http';
+import { actions } from 'components/map/LayerPicker/JSON/actions';
 
 function* listBatches(action) {
+  yield call(listTemplates, action);
   const configuration = yield select(selectConfiguration);
   const {requestHeaders} = yield select(selectAuth);
 
@@ -103,6 +107,27 @@ function* updateBatch(action) {
   yield put({type: BATCH_UPDATE_SUCCESS, payload: data});
 }
 
+function* deleteBatch(action: any) {
+  const configuration = yield select(selectConfiguration);
+  const {requestHeaders} = yield select(selectAuth);
+  const {id} = action.payload;
+
+  const {data} = yield Http.request({
+    method: 'DELETE',
+    url: configuration.API_BASE + `/api/batch/${id}`,
+    headers: {
+      Authorization: requestHeaders.authorization,
+      'Content-Type': 'application/json'
+    },
+    data: action.payload
+  });
+  if (data.code < 200 || data.code > 299) {
+    yield put({type: BATCH_DELETE_ERROR, payload: data});
+    return;
+  }
+  yield put({type: BATCH_DELETE_SUCCESS, payload: data});
+}
+
 function* listTemplates(action) {
   const configuration = yield select(selectConfiguration);
   const {requestHeaders} = yield select(selectAuth);
@@ -188,6 +213,8 @@ function* batchSaga() {
     takeLatest(BATCH_RETRIEVE_REQUEST, getBatch),
     takeEvery(BATCH_CREATE_REQUEST, createBatch),
     takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
+    takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
+    takeEvery(BATCH_DELETE_SUCCESS, listBatches),
     takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),

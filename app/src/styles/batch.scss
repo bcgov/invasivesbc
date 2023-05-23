@@ -77,6 +77,8 @@ table.code-reference {
 table.batchAlternateLayout {
   border-collapse: collapse;
   font-size: 12px;
+  overflow-x: auto;
+  display: block;
 
   thead {
     tr {
@@ -148,8 +150,6 @@ table.batchAlternateLayout {
 }
 
 table.batchValidation {
-
-
   thead {
     tr {
       th {
@@ -181,3 +181,27 @@ table.batchValidation {
   }
 
 }
+
+table.batchList {
+  width: 80%;
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+        background-color: #f1f1f1;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: #dddddd;
+      }
+      td {
+        padding: 8px;
+      }
+    }
+  }
+}
+

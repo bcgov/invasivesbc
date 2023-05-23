@@ -17,7 +17,10 @@ import {
   BATCH_TEMPLATE_LIST_SUCCESS,
   BATCH_UPDATE_ERROR,
   BATCH_UPDATE_REQUEST,
-  BATCH_UPDATE_SUCCESS
+  BATCH_UPDATE_SUCCESS,
+  BATCH_DELETE_REQUEST,
+  BATCH_DELETE_SUCCESS,
+  BATCH_DELETE_ERROR,
 } from '../actions';
 
 interface DeepBatch {
@@ -46,6 +49,7 @@ interface Batch {
   working: boolean;
   workingOnTemplateDetail: boolean;
   error: boolean;
+  errorMessage: string | null;
   list: ShallowBatch[];
   item: DeepBatch;
   createdBatchId: string | null;
@@ -65,6 +69,7 @@ function createBatchReducer() {
     workingOnTemplateDetail: false,
     createdBatchId: null,
     error: false,
+    errorMessage: null,
     list: [],
     item: null,
     templates: [],
@@ -181,6 +186,28 @@ function createBatchReducer() {
           error: false,
           item: null
         };
+      case BATCH_DELETE_REQUEST:
+        return {
+          ...state,
+          working: true,
+          error: false,
+          item: null
+        };
+      case BATCH_DELETE_SUCCESS:
+        return {
+          ...state,
+          working: false,
+          error: false,
+          item: null
+        };
+      case BATCH_DELETE_ERROR:
+        return {
+          ...state,
+          working: false,
+          error: true,
+          errorMessage: 'Could not delete batch',
+          item: null
+        };
       case BATCH_TEMPLATE_LIST_REQUEST:
         return {
           ...state,
@@ -251,4 +278,4 @@ function createBatchReducer() {
 
 const selectBatch: (state) => Batch = (state) => state.Batch;
 
-export {selectBatch, createBatchReducer};
+export { selectBatch, createBatchReducer };
