@@ -33,7 +33,8 @@ VALUES(79, 'SKC', 'Selkirk College', 1, now(), null, now(), now(), 1, 1),
 (79, 'EDI', 'Environment Dynamics Inc.', 1, now(), null, now(), now(), 1, 1),
 (79, 'STAN', 'Stantec', 1, now(), null, now(), now(), 1, 1),
 (79, 'TWU', 'Scw''exmx Tribal Council', 1, now(), null, now(), now(), 1, 1),
-(79, 'SCW', 'Environment Dynamics Inc.', 1, now(), null, now(), now(), 1, 1);
+(79, 'SCW', 'Environment Dynamics Inc.', 1, now(), null, now(), now(), 1, 1),
+(21, 'NA', 'Not Applicable', 1, now(), null, now(), now(), 1, 1);
 
 UPDATE code AS c
 SET code_sort_order = subquery.row_number
