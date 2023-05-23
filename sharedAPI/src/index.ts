@@ -51,6 +51,8 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.delivery_rate_of_mix;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate =
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type =
+        newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.calculation_type;
 
       delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object;
     }

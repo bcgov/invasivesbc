@@ -656,6 +656,21 @@ export const HerbicidesInformation = [
     .build(),
 
   new TemplateColumnBuilder(
+    'Chemical Treatment (If Tank Mix) - Calculation Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.calculation_type'
+  )
+    .referencesCode('calculation_type_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Chemical Treatment (No Tank Mix) - Calculation Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
+  )
+    .referencesCode('calculation_type_code')
+    .build(),
+
+  new TemplateColumnBuilder(
     'Chemical Treatment (If Tank Mix) - Application Method',
     'codeReference',
     'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
@@ -686,13 +701,7 @@ export const HerbicidesInformation = [
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .isRequired()
     .build(),
-  new TemplateColumnBuilder(
-    'Herbicide - 1 - Calculation Type',
-    'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
-  )
-    .referencesCode('calculation_type_code')
-    .build(),
+
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',
