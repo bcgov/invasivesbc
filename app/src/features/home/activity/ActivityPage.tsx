@@ -26,6 +26,7 @@ import {
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+  ACTIVITY_SET_UNSAVED_NOTIFICATION,
 } from 'state/actions';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
@@ -83,6 +84,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [alertSavedOpen, setAlertSavedOpen] = useState(false);
   const [alertCopiedOpen, setAlertCopiedOpen] = useState(false);
   const [alertPastedOpen, setAlertPastedOpen] = useState(false);
+  const [unsavedDelay, setUnsavedDelay] = useState(false);
   const history = useHistory();
   const [photos, setPhotos] = useState<IPhoto[]>([]);
   const connected = useSelector(selectNetworkConnected);
@@ -227,6 +229,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  const handleUnsavedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    dispatch({
+      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
+      payload: {
+        notification: {
+          visible: false,
+          message: '',
+          severity: 'error'
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setUnsavedDelay(true);
+    }, 5000);
+  }, []);
+
   const handleAlertErrorsClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -290,7 +314,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     //    if (lastField !== '' && lastField !== undefined && lastField !== null)
     dispatch({
       type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: event.formData, lastField: lastField }
+      payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay }
     });
   };
 
@@ -528,6 +552,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       <Snackbar open={activityInStore.notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
         <Alert onClose={handleAPIErrorClose} severity={ activityInStore.notification?.severity } sx={{ width: '100%' }}>
           { activityInStore.notification?.message }
+        </Alert>
+      </Snackbar>
+      <Snackbar open={activityInStore.unsaved_notification?.visible} onClose={handleUnsavedClose}>
+        <Alert onClose={handleUnsavedClose} severity={ activityInStore.unsaved_notification?.severity } sx={{ width: '100%' }}>
+          { activityInStore.unsaved_notification?.message }
         </Alert>
       </Snackbar>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
