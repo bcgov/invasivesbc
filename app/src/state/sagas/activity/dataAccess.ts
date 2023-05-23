@@ -43,6 +43,7 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
+  MAP_INIT_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
@@ -161,6 +162,8 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
         }
       }
     });
+
+    yield put({ type: MAP_INIT_REQUEST });
   } catch (e) {
     console.error(e);
   }
