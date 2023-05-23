@@ -8,8 +8,8 @@ import {
 } from '../shared-columns';
 
 const ObservationTerrestrialPlant = new Template(
-  'observation_terrestrial_plant',
-  'Observation - Terrestrial Plant',
+  'observation_terrestrial_plant_temp',
+  'Observation - Terrestrial Plant TEMP POINT',
   null
 );
 ObservationTerrestrialPlant.subtype = 'Activity_Observation_PlantTerrestrial';

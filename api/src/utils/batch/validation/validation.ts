@@ -1,5 +1,11 @@
 import { Template, TemplateColumn } from '../definitions';
-import { autofillFromPostGIS, parseGeoJSONasWKT, parseWKTasGeoJSON, parsedGeoType, validateAsWKT } from './spatial-validation';
+import {
+  autofillFromPostGIS,
+  parseGeoJSONasWKT,
+  parseWKTasGeoJSON,
+  parsedGeoType,
+  validateAsWKT
+} from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution';
@@ -313,20 +319,18 @@ async function _validateCell(
       }
 
       // hack for year one garbage import data
-      if(shape === 'POINT')
-      {
+      if (shape === 'POINT') {
         const geojson = parseWKTasGeoJSON(data);
         if (!(geojson === null)) {
-          {
-            const newPoly = circle(geojson, row['Area']?.value || 0, { units: 'kilometers' })
-            const newWKT = parseGeoJSONasWKT(newPoly)
-            data = newWKT
-          }
+          const newPoly = circle(geojson, row['Area']?.value || 10, { units: 'meters' });
+          const newWKT = parseGeoJSONasWKT(newPoly);
+          data = newWKT;
+        }
       }
 
       if (validateAsWKT(data)) {
         try {
-            result.parsedValue = await autofillFromPostGIS(data);
+          result.parsedValue = await autofillFromPostGIS(data);
         } catch (e) {
           result.validationMessages.push({
             severity: 'informational',
