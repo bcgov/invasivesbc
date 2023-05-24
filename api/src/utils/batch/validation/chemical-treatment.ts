@@ -16,22 +16,15 @@ const defaultLog = getLogger('batch');
 
 export const ValidateHerbicides = (row) => {
   const appliesToFields = [
-    'Herbicide - 1 - PAR - Production Application Rate',
-    'Herbicide - 2 - PAR - Production Application Rate',
-    'Herbicide - 3 - PAR - Production Application Rate',
-    'Herbicide - 1 - PAR - Delivery Rate of Mix',
-    'Herbicide - 2 - PAR - Delivery Rate of Mix',
-    'Herbicide - 3 - PAR - Delivery Rate of Mix',
+    'Herbicide - 1 - PAR - Product Application Rate',
+    'Herbicide - 2 - PAR - Product Application Rate',
+    'Herbicide - 3 - PAR - Product Application Rate',
+    'Herbicide - Delivery Rate of Mix',
     'Herbicide - Amount of Mix Used',
-    'Herbicide - 1 - Calculation Type',
-    'Herbicide - 2 - Calculation Type',
-    'Herbicide - 3 - Calculation Type',
+    'Chemical Treatment (If Tank Mix) - Calculation Type',
+    'Chemical Treatment (No Tank Mix) - Calculation Type',
     'Herbicide - 1 - Area Treated (Dilution)',
-    'Herbicide - 2 - Area Treated (Dilution)',
-    'Herbicide - 3 - Area Treated (Dilution)',
-    'Herbicide - 1 - Dilution - Dilution %',
-    'Herbicide - 2 - Dilution - Dilution %',
-    'Herbicide - 3 - Dilution - Dilution %'
+    'Herbicide - 1 - Dilution - Dilution %'
   ];
 
   const area = row?.mappedObject?.form_data?.activity_data.reported_area;
@@ -77,12 +70,10 @@ export const ValidateTankMixHerbicides = (row) => {
     'Herbicide - 1 - Herbicide',
     'Herbicide - 2 - Herbicide',
     'Herbicide - 3 - Herbicide',
-    'Herbicide - 1 - Calculation Type',
-    'Herbicide - 2 - Calculation Type',
-    'Herbicide - 3 - Calculation Type',
-    'Herbicide - 1 - PAR - Production Application Rate',
-    'Herbicide - 2 - PAR - Production Application Rate',
-    'Herbicide - 3 - PAR - Production Application Rate'
+    'Chemical Treatment (If Tank Mix) - Calculation Type',
+    'Herbicide - 1 - PAR - Product Application Rate',
+    'Herbicide - 2 - PAR - Product Application Rate',
+    'Herbicide - 3 - PAR - Product Application Rate'
   ];
 
   const formData = mapFormDataToLegacy(row?.mappedObject?.payload.form_data);
@@ -111,12 +102,10 @@ export const ValidateTankMixFields = (row) => {
   try {
     const appliesToFields = [
       'Herbicide - Tank Mix?',
-      'Herbicide - 1 - Calculation Type',
-      'Herbicide - 2 - Calculation Type',
-      'Herbicide - 3 - Calculation Type',
+      'Chemical Treatment (If Tank Mix) - Calculation Type',
       'Herbicide - Amount of Mix Used',
       'Herbicide - 1 - Area Treated (Dilution)',
-      'Herbicide - 1 - PAR - Delivery Rate of Mix',
+      'Herbicide - Delivery Rate of Mix',
       'Herbicide - 1 - Herbicide',
       'Herbicide - 2 - Herbicide',
       'Herbicide - 3 - Herbicide',
@@ -165,9 +154,6 @@ export const ValidateChemAppMethod = (row) => {
 
 export const ValidateHerbicidesArray = (row) => {
   const appliesToFields = [
-    'Chemical Treatment - Herbicide 1',
-    'Chemical Treatment - Herbicide 2',
-    'Chemical Treatment - Herbicide 3',
     'Herbicide - 1 - Herbicide',
     'Herbicide - 2 - Herbicide',
     'Herbicide - 3 - Herbicide',

@@ -190,9 +190,7 @@ export const ActivityPersonsWithApplicatorLicense = [
     'Activity - Person 1 Applicator License',
     'numeric',
     'form_data.activity_type_data.activity_persons[0].applicator_license'
-  )
-    .isRequired()
-    .build(),
+  ).build(),
   new TemplateColumnBuilder(
     'Activity - Person 2',
     'text',
