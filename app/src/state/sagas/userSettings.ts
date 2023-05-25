@@ -367,23 +367,47 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
 function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    let sets = userSettings?.recordSets;
-    const current = sets[action.payload.id];
-
-    current.advancedFilters = [];
-    current.gridFilters = {
+    const authState = yield select(selectAuth);
+    let sets = JSON.parse(JSON.stringify(userSettings?.recordSets))
+    sets[action.payload.id].advancedFilters = action.payload.id === '1' ? [
+      {
+        filterField: 'created_by',
+        filterValue: authState.username,
+        filterKey: 'created_by' + authState.username
+      },
+      {
+        filterField: 'record_status',
+        filterValue: 'Draft',
+        filterKey: 'record_statusDraft'
+      }
+    ]  : [];
+    sets[action.payload.id].gridFilters = {
       enabled: false
     };
-    current.searchBoundary = null;
+    sets[action.payload.id].searchBoundary = null;
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
 
-    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS, payload: { recordSets: sets } });
+    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS, payload: { recordSets: JSON.parse(JSON.stringify(sets)) } });
 
     // sort column update
     const layer_filter = {
       filters: {
-        advancedFilters: [],
+        advancedFilters:
+          action.payload.id === '1'
+            ? [
+              {
+                filterField: 'created_by',
+                filterValue: authState.username,
+                filterKey: 'created_by' + authState.username
+              },
+                {
+                  filterField: 'record_status',
+                  filterValue: 'Draft',
+                  filterKey: 'record_statusDraft'
+                }
+              ]
+            : [],
         gridFilters: {
           enabled: false
         },
