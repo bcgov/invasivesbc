@@ -306,6 +306,22 @@ function updateBatch(): RequestHandler {
   };
 }
 
+const DELETE_API_DOC = {
+  tags: ['batch'],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : []
+};
+
+DELETE.apiDoc = {
+  description: 'Delete a batch by ID',
+  ...DELETE_API_DOC
+};
+
 function deleteBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const connection = await getDBConnection();
