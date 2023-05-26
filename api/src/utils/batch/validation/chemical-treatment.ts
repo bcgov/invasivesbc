@@ -21,8 +21,7 @@ export const ValidateHerbicides = (row) => {
     'Herbicide - 3 - PAR - Product Application Rate',
     'Herbicide - Delivery Rate of Mix',
     'Herbicide - Amount of Mix Used',
-    'Chemical Treatment (If Tank Mix) - Calculation Type',
-    'Chemical Treatment (No Tank Mix) - Calculation Type',
+    'Chemical Treatment - Calculation Type',
     'Herbicide - 1 - Area Treated (Dilution)',
     'Herbicide - 1 - Dilution - Dilution %'
   ];
@@ -70,7 +69,7 @@ export const ValidateTankMixHerbicides = (row) => {
     'Herbicide - 1 - Herbicide',
     'Herbicide - 2 - Herbicide',
     'Herbicide - 3 - Herbicide',
-    'Chemical Treatment (If Tank Mix) - Calculation Type',
+    'Chemical Treatment - Calculation Type',
     'Herbicide - 1 - PAR - Product Application Rate',
     'Herbicide - 2 - PAR - Product Application Rate',
     'Herbicide - 3 - PAR - Product Application Rate'
@@ -102,7 +101,7 @@ export const ValidateTankMixFields = (row) => {
   try {
     const appliesToFields = [
       'Herbicide - Tank Mix?',
-      'Chemical Treatment (If Tank Mix) - Calculation Type',
+      'Chemical Treatment - Calculation Type',
       'Herbicide - Amount of Mix Used',
       'Herbicide - 1 - Area Treated (Dilution)',
       'Herbicide - Delivery Rate of Mix',
