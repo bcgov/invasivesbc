@@ -9,19 +9,23 @@ import {
   ProjectInformation
 } from '../shared-columns';
 
-const TreatmentChemicalTerrestrialPlant = new Template(
-  'treatment_chemical_terrestrial_plant',
-  'Treatment - Chemical - Terrestrial Plant',
+const TreatmentChemicalTerrestrialPlantTemp = new Template(
+  'treatment_chemical_terrestrial_plant_temp',
+  'Treatment - Chemical - Terrestrial Plant TEMP POINT',
   null
 );
-TreatmentChemicalTerrestrialPlant.type = 'Treatment';
-TreatmentChemicalTerrestrialPlant.subtype = 'Activity_Treatment_ChemicalPlantTerrestrial';
+TreatmentChemicalTerrestrialPlantTemp.type = 'Treatment';
+TreatmentChemicalTerrestrialPlantTemp.subtype = 'Activity_Treatment_ChemicalPlantTerrestrial';
 
-TreatmentChemicalTerrestrialPlant.columns = [
+TreatmentChemicalTerrestrialPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersonsWithApplicatorLicense,
   ...ChemicalPlantTreatmentInformation,
+  new TemplateColumnBuilder(
+    'Area',
+    'numeric'
+  ).isRequired().build(),
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 1',
     'codeReference',
@@ -63,5 +67,5 @@ TreatmentChemicalTerrestrialPlant.columns = [
   ).build(),
   ...HerbicidesInformation
 ];
-TreatmentChemicalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
-export { TreatmentChemicalTerrestrialPlant };
+TreatmentChemicalTerrestrialPlantTemp.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
+export { TreatmentChemicalTerrestrialPlantTemp };

@@ -32,7 +32,7 @@ export const parseWKTasGeoJSON = (input: string) => {
   let parsed;
   try {
     parsed = parse(input);
-    return parsed !== null;
+    return parsed !== null? parsed : null;
   } catch (e) {
     defaultLog.error({ message: 'invalid wkt', input, error: e });
   }
@@ -45,7 +45,7 @@ export const parseGeoJSONasWKT = (input: any) => {
   let parsed;
   try {
     parsed = stringify(input);
-    return parsed !== null;
+    return parsed !== null? parsed : null;
   } catch (e) {
     defaultLog.error({ message: 'invalid wkt', input, error: e });
   }

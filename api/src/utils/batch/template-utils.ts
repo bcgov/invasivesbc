@@ -15,8 +15,11 @@ import {TreatmentMechanicalAquaticPlant} from './templates/treatment_mechanical_
 import {TreatmentMechanicalTerrestrialPlant} from './templates/treatment_mechanical_terrestrial_plant';
 import {getDBConnection} from '../../database/db';
 import {PoolClient} from "pg";
+import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp';
+import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
 
 const templateList: Template[] = [
+  ObservationTerrestrialPlantTemp,
   ObservationAquaticPlant,
   ObservationTerrestrialPlant,
   BiocontrolCollection,
@@ -27,6 +30,7 @@ const templateList: Template[] = [
   MonitoringMechanical,
   TreatmentChemicalAquaticPlant,
   TreatmentChemicalTerrestrialPlant,
+  TreatmentChemicalTerrestrialPlantTemp,
   TreatmentMechanicalAquaticPlant,
   TreatmentMechanicalTerrestrialPlant
 ];

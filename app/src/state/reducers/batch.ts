@@ -224,7 +224,8 @@ function createBatchReducer() {
             'observation_terrestrial_plant',
             'observation_terrestrial_plant_temp',
             'treatment_mechanical_terrestrial_plant',
-            'treatment_chemical_terrestrial_plant'
+            'treatment_chemical_terrestrial_plant',
+            'treatment_chemical_terrestrial_plant_temp'
           ].includes(template.key))
         };
       case BATCH_TEMPLATE_LIST_ERROR:

@@ -7,22 +7,21 @@ import {
   ProjectInformation
 } from '../shared-columns';
 
-const ObservationTerrestrialPlant = new Template(
+const ObservationTerrestrialPlantTemp = new Template(
   'observation_terrestrial_plant_temp',
   'Observation - Terrestrial Plant TEMP POINT',
   null
 );
-ObservationTerrestrialPlant.subtype = 'Activity_Observation_PlantTerrestrial';
+ObservationTerrestrialPlantTemp.subtype = 'Activity_Observation_PlantTerrestrial';
 
-ObservationTerrestrialPlant.columns = [
+ObservationTerrestrialPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
   new TemplateColumnBuilder(
-    'Area in sq meters',
-    'numeric',
-    'form_data.activity_type_data.pre_treatment_observation'
-  ).build(),
+    'Area',
+    'numeric'
+  ).isRequired().build(),
   new TemplateColumnBuilder(
     'Observation - Pre-treatment observation?',
     'tristate',
@@ -181,6 +180,6 @@ ObservationTerrestrialPlant.columns = [
   ).build()
 ];
 
-ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
+ObservationTerrestrialPlantTemp.rowValidators = [...BasicInformationRowValidators];
 
-export { ObservationTerrestrialPlant };
+export { ObservationTerrestrialPlantTemp };

@@ -321,8 +321,15 @@ async function _validateCell(
       // hack for year one garbage import data
       if (shape === 'POINT') {
         const geojson = parseWKTasGeoJSON(data);
-        if (!(geojson === null)) {
-          const newPoly = circle(geojson, row['Area']?.value || 10, { units: 'meters' });
+        const parsedArea = parseInt(row?.['data']?.['Area']);
+        if (geojson !== null && !(parsedArea > 0)) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Area needs to be a number`
+          });
+        }
+        if (geojson !== null && parsedArea > 0) {
+          const newPoly = circle(geojson, parsedArea, { units: 'meters', steps: 10 });
           const newWKT = parseGeoJSONasWKT(newPoly);
           data = newWKT;
         }
