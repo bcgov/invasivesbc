@@ -3,33 +3,33 @@ import {Knex} from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(
     `
-    -function for trigger
+    --function for trigger
     CREATE OR REPLACE FUNCTION context_autofill() RETURNS TRIGGER AS $$
     BEGIN
-        UPDATE invasivesbc.activity_incoming_data 
+        UPDATE invasivesbc.activity_incoming_data
         SET invasive_plant_management_areas = (
 	        select
-		      target.ipma target
+		      ipma
 		    from
-		      public.invasive_plant_management_areas target
+		      public.invasive_plant_management_areas
 		    where
 		      public.st_intersects(
-		        public.st_geographyFromText(('POINT('::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT  || ' '::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT || ')'::TEXT)::TEXT),
-		        target.geog
+		        public.st_geographyFromText(('POINT('::TEXT || (activity_payload->'form_data'->'activity_data'->>'longitude')::TEXT  || ' '::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT || ')'::TEXT)::TEXT),
+		        invasive_plant_management_areas.geog
 		      )
 	    ),
 	    regional_invasive_species_organization_areas = (
 	        select
-		      target.agency target
+		      agency
 		    from
-		      public.regional_invasive_species_organization_areas target
+		      public.regional_invasive_species_organization_areas
 		    where
 		      public.st_intersects(
-		        public.st_geographyFromText(('POINT('::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT || ' '::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT || ')'::TEXT)::TEXT),
-		        target.geog
+		        public.st_geographyFromText(('POINT('::TEXT || (activity_payload->'form_data'->'activity_data'->>'longitude')::TEXT || ' '::TEXT || (activity_payload->'form_data'->'activity_data'->>'latitude')::TEXT || ')'::TEXT)::TEXT),
+		        regional_invasive_species_organization_areas.geog
 		      )
-	    )	    
-        WHERE activity_incoming_data_id  =  new.activity_incoming_data_id;
+	    )
+        WHERE activity_id  =  NEW.activity_id;
         
         RETURN NEW;
    	END;
@@ -37,7 +37,8 @@ export async function up(knex: Knex): Promise<void> {
 
 
     -- trigger
-    create trigger update_activity_context AFTER INSERT on invasivesbc.activity_incoming_data
+   DROP TRIGGER IF EXISTS update_activity_context ON invasivesbc.activity_incoming_data;
+    create trigger update_activity_context AFTER INSERT on invasivesbc.activity_incoming_data FOR EACH ROW
       EXECUTE procedure context_autofill();
 `
   );
@@ -45,7 +46,7 @@ export async function up(knex: Knex): Promise<void> {
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
-    
+  DROP TRIGGER IF EXISTS update_activity_context ON invasivesbc.activity_incoming_data;
 
   `);
 }
