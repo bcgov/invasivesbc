@@ -142,7 +142,6 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
     return parseInt(row['site_id']);
   });
-  defaultLog.debug({ label: 'getIAPPjson', message: 'site ids', site_ids });
 
   // get all of them for all the above site ids, vs doing many queries (while looping over sites)
   let all_site_selection_extracts = [];
@@ -168,7 +167,6 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
     all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
   }
 
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites' });
   return site_extract_table_response.rows.map((row) => {
     // Fetching site selection extract
     const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
@@ -387,9 +385,7 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
-    defaultLog.debug({ label: 'getIAPPjson', message: 'about to query for sites' });
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    defaultLog.debug({ label: 'getIAPPjson', message: 'queried for sites' + response.rowCount });
 
     if (searchCriteria.isCSV && searchCriteria.isIAPP) {
       var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, searchCriteria.CSVType) : [];

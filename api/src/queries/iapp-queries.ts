@@ -313,11 +313,6 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
  * @returns {SQLStatement} sql query object
  */
 export const iapp_extract_sql = (site_id: number[], extractName: string): SQLStatement => {
-  const defaultLog = getLogger('point-of-interest');
-
-  defaultLog.debug({ message: 'site id', site_id: site_id[0] });
-  //stupid lib doesn't let you dynamically pass table name
-
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   switch (extractName) {

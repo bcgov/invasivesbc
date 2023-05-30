@@ -24,8 +24,6 @@ POST.apiDoc = {
  */
 function undeleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'activity', message: 'undeleteActivitiesByIds', body: req.body });
-
     const ids = Object.values(req.query.id) as string[];
 
     if (!ids || !ids.length) {

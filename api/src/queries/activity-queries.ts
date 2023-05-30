@@ -315,11 +315,11 @@ export const getActivitiesSQL = (
       }
 
       // include current positive species
-      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_positive, 
+      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_positive,
       (SELECT string_agg(invasive_plant, ', ') FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS current_positive_species`);
 
       // include current negative observations
-      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_negative, 
+      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_negative,
       (SELECT string_agg(invasive_plant, ', ') FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) AS current_negative_species`);
 
       // include the total count of results that would be returned if the limit and offset constraints weren't applied
@@ -710,28 +710,6 @@ export const getActivitiesSQL = (
   }
 
   sqlStatement.append(SQL`;`);
-  const defaultLog = getLogger('activities');
-  defaultLog.info({
-    label: 'activities',
-    message: 'sql',
-    body: sqlStatement.sql
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'values',
-    body: sqlStatement.values
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'text',
-    body: sqlStatement.text
-  });
-  defaultLog.info({
-    label: 'activities',
-    message: 'jsonstr',
-    body: JSON.stringify(sqlStatement)
-  });
-
   return sqlStatement;
 };
 

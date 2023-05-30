@@ -52,7 +52,6 @@ POST.apiDoc = {
 
 function renewUser(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'application-user', message: 'renewUser', body: req.query });
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({ message: 'Database connection unavailable', request: req.body, code: 503 });

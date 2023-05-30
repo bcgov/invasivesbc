@@ -1,21 +1,21 @@
 'use strict';
 
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
-import { SQLStatement } from 'sql-template-strings';
+import {RequestHandler} from 'express';
+import {Operation} from 'express-openapi';
+import {getDBConnection} from '../database/db';
+import {getLogger} from '../utils/logger';
+import {SQLStatement} from 'sql-template-strings';
 import {
   deleteAdministrativelyDefinedShapesSQL,
   getAdministrativelyDefinedShapesSQL
 } from '../queries/admin-defined-shapes';
-import { atob } from 'js-base64';
-import { QueryResult } from 'pg';
-import { FeatureCollection } from 'geojson';
-import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { simplifyGeojson } from '../utils/map-shaper-util';
+import {atob} from 'js-base64';
+import {QueryResult} from 'pg';
+import {FeatureCollection} from 'geojson';
+import {GeoJSONFromKML, KMZToKML, sanitizeGeoJSON} from '../utils/kml-import';
+import {InvasivesRequest} from '../utils/auth-utils';
+import {ALL_ROLES, SECURITY_ON} from '../constants/misc';
+import {simplifyGeojson} from '../utils/map-shaper-util';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -27,10 +27,10 @@ GET.apiDoc = {
   description: 'Fetches a GeoJSON object to display boundaries of administratively-defined shapes (KML uploads)',
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -96,10 +96,10 @@ DELETE.apiDoc = {
   description: 'deletes new Administratively-defined shapes from KML/KMZ data',
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Delete KML/KMZ file',
@@ -198,7 +198,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
+      defaultLog.debug({label: 'getAdministrativelyDefinedShapes', message: 'error', error});
       return res.status(500).json({
         message: 'Failed to get administratively defined shapes',
         request: req.body,
@@ -219,20 +219,21 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
  */
 function uploadShape(): RequestHandler {
   return async (req, res) => {
-    const data = { ...req.body };
+    const data = {...req.body};
     const user_id = data.user_id;
     const title = data.title;
     let geoJSON: FeatureCollection;
 
     try {
       switch (data.type) {
-        case 'kmz':
+        case 'kmz': {
           const buffer = Buffer.from(data['data'], 'base64');
           const KML = KMZToKML(buffer);
           const dirtyGeoJSON = GeoJSONFromKML(KML);
           geoJSON = sanitizeGeoJSON(dirtyGeoJSON);
-          defaultLog.info({message: "sanitized geojson: ", geoJSON});
+
           break;
+        }
         case 'kml':
           geoJSON = sanitizeGeoJSON(GeoJSONFromKML(Buffer.from(data['data'], 'base64')));
           break;
@@ -274,10 +275,9 @@ function uploadShape(): RequestHandler {
 
           const response: QueryResult = await connection.query(
             `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
-            SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3 FROM
-              (SELECT ( ST_Dump(ST_GeomFromGeoJSON(feat->>'geometry')) ).geom AS geog FROM
-                (SELECT json_array_elements($1::json->'features') AS feat) AS f
-              ) AS geogs;`,
+             SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3
+             FROM (SELECT (ST_Dump(ST_GeomFromGeoJSON(feat ->> 'geometry'))).geom AS geog
+                   FROM (SELECT json_array_elements($1::json -> 'features') AS feat) AS f) AS geogs;`,
             [data, user_id, title]
           );
 
@@ -351,7 +351,7 @@ function deleteShape(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
+      defaultLog.debug({label: 'deleteAdministrativelyDefinedShapes', message: 'error', error});
       return res.status(500).json({
         message: 'Failed to delete administratively defined shape',
         request: req.body,
