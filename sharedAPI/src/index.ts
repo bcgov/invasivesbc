@@ -29,19 +29,12 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
 
     for (let i = 0; i < herbicides.length; i++) {
       const herbicide = herbicides[i];
-      herbicide?.herbicide_type_code;
 
       if (herbicide?.herbicide_type_code === 'G') {
+        const product_application_rate = newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[i]?.product_application_rate
         newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[
           i
-        ].product_application_rate_calculated =
-          herbicide?.product_application_rate_calculated ?? herbicide?.product_application_rate / 1000;
-      }
-      if (herbicide?.herbicide_type_code === 'L') {
-        newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[
-          i
-        ].product_application_rate_calculated =
-          herbicide?.product_application_rate_calculated ?? herbicide?.product_application_rate;
+        ].product_application_rate_calculated = product_application_rate / 1000;
       }
     }
 
@@ -69,26 +62,14 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.delivery_rate_of_mix;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate =
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate;
+
       if (
-        newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides[0]
+        newActivity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides[0]
           ?.herbicide_type_code === 'G'
       ) {
-        newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate_calculated =
-          Number(
-            newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]
-              ?.product_application_rate
-          ) / 1000;
+        newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate_calculated = newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate_calculated
       }
-      if (
-        newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides[0]
-          ?.herbicide_type_code === 'L'
-      ) {
-        newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate_calculated =
-          Number(
-            newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]
-              ?.product_application_rate
-          );
-      }
+      
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate =
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type =
