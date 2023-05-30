@@ -202,7 +202,6 @@ export const authenticate = async (req: InvasivesRequest) => {
             .then((roles) => {
               req.authContext.roles = roles;
               MDC.additionalContext.authContext = req.authContext;
-              defaultLog.debug({ label: 'authenticate', message: 'auth pass complete, context set!' });
               resolve();
             })
             .catch((error) => {

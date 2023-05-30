@@ -104,7 +104,8 @@ function getDataBC(): RequestHandler {
         });
       })
       .catch((error) => {
-        return defaultLog.debug({ label: 'getDataBC', message: 'error', error });
+        defaultLog.debug({ label: 'getDataBC', message: 'error', error });
+        throw error;
       });
   };
 }

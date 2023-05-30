@@ -107,7 +107,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
-    defaultLog.info({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
+    defaultLog.debug({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -160,7 +160,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      const message = e.message || e
+      const message = e.message || e;
       defaultLog.warn({
         message:
           'caught an error while checking cache. this is odd but continuing with request as though no cache present.',

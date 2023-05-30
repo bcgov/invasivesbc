@@ -64,7 +64,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
       `;
         return returnVal;
       } catch (e) {
-        defaultLog.error({error: e});
+        defaultLog.error({ error: e });
       }
       break;
     case 'bceid':
@@ -74,7 +74,7 @@ export const createUserSQL = (userType: string, id: string, username: string, em
       `;
         return returnVal;
       } catch (e) {
-        defaultLog.error({error: e});
+        defaultLog.error({ error: e });
       }
       break;
     default:
