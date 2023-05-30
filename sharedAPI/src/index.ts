@@ -26,21 +26,16 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix;
 
     if (tank_mix) {
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].herbicide_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[0]?.herbicide_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].herbicide_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[1]?.herbicide_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].herbicide_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[2]?.herbicide_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].herbicide_type_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[0]?.herbicide_type_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].herbicide_type_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[1]?.herbicide_type_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].herbicide_type_code =
-        activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides?.[2]?.herbicide_type_code;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[0].index = 0;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[1].index = 1;
-      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].index = 2;
+      const tankMixObject = newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object;
+      const herbicides = activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides ?? [];
+
+      for (let i = 0; i < herbicides.length; i++) {
+        const herbicide = herbicides[i];
+        tankMixObject.herbicides[i].herbicide_code = herbicide?.herbicide_code;
+        tankMixObject.herbicides[i].herbicide_type_code = herbicide?.herbicide_type_code;
+        tankMixObject.herbicides[i].index = i;
+      }
+
       delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides;
     }
 
