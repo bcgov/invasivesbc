@@ -35,7 +35,7 @@ export const AccuracyToggle = (props) => {
         ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '130px',
+          bottom: '80px',
           width: '50px',
           height: '40px'
         }}>

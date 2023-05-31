@@ -52,7 +52,7 @@ export const LegendsButton = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' +
+                ' legend ' +
                 (mapState?.legendsPopup ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
