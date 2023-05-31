@@ -190,9 +190,7 @@ export const ActivityPersonsWithApplicatorLicense = [
     'Activity - Person 1 Applicator License',
     'numeric',
     'form_data.activity_type_data.activity_persons[0].applicator_license'
-  )
-    .isRequired()
-    .build(),
+  ).build(),
   new TemplateColumnBuilder(
     'Activity - Person 2',
     'text',
@@ -656,6 +654,14 @@ export const HerbicidesInformation = [
     .build(),
 
   new TemplateColumnBuilder(
+    'Chemical Treatment - Calculation Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.calculation_type'
+  )
+    .referencesCode('calculation_type_code')
+    .build(),
+
+  new TemplateColumnBuilder(
     'Chemical Treatment (If Tank Mix) - Application Method',
     'codeReference',
     'form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method'
@@ -686,13 +692,7 @@ export const HerbicidesInformation = [
     .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
     .isRequired()
     .build(),
-  new TemplateColumnBuilder(
-    'Herbicide - 1 - Calculation Type',
-    'codeReference',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type'
-  )
-    .referencesCode('calculation_type_code')
-    .build(),
+
   new TemplateColumnBuilder(
     'Herbicide - Amount of Mix Used',
     'numeric',
@@ -759,9 +759,46 @@ export const HerbicidesInformation = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Herbicide - 2 - Area Treated (Dilution)',
+    'Herbicide - 3 - Area Treated (Dilution)',
     'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].area_treated_sqm'
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].area_treated_sqm'
+  )
+    .valueRange(0, null)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Herbicide - 3 - Type',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].herbicide_type_code'
+  )
+    .referencesCode('herbicide_type_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 3 - Herbicide',
+    'codeReference',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].herbicide_code'
+  )
+    .referencesCode(['granular_herbicide_code', 'liquid_herbicide_code'])
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 3 - PAR - Production Application Rate',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].product_application_rate'
+  )
+    .valueRange(0, null)
+    .build(),
+  new TemplateColumnBuilder(
+    'Herbicide - 3 - Dilution - Dilution %',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].dilution'
+  )
+    .valueRange(0, 100)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Herbicide - 3 - Area Treated (Dilution)',
+    'numeric',
+    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].area_treated_sqm'
   )
     .valueRange(0, null)
     .build()
