@@ -31,23 +31,53 @@ export const mapTemplateFields = (
     switch (cell?.templateColumn.dataType) {
       case 'WKT':
         try {
-          _.set(output, cell?.templateColumn.mappedPath['geojson'], [{ 'geometry' : (cell.parsedValue as parsedGeoType).geojson, 'type' : 'Feature' }]);
+          _.set(output, cell?.templateColumn.mappedPath['geojson'], [
+            { geometry: (cell.parsedValue as parsedGeoType).geojson, type: 'Feature' }
+          ]);
           _.set(output, cell?.templateColumn.mappedPath['area'], (cell.parsedValue as parsedGeoType).area);
           _.set(output, cell?.templateColumn.mappedPath['latitude'], (cell.parsedValue as parsedGeoType).latitude);
           _.set(output, cell?.templateColumn.mappedPath['longitude'], (cell.parsedValue as parsedGeoType).longitude);
           _.set(output, cell?.templateColumn.mappedPath['utm_zone'], (cell.parsedValue as parsedGeoType).utm_zone);
-          _.set(output, cell?.templateColumn.mappedPath['utm_northing'], (cell.parsedValue as parsedGeoType).utm_northing);
-          _.set(output, cell?.templateColumn.mappedPath['utm_easting'], (cell.parsedValue as parsedGeoType).utm_easting);
+          _.set(
+            output,
+            cell?.templateColumn.mappedPath['utm_northing'],
+            (cell.parsedValue as parsedGeoType).utm_northing
+          );
+          _.set(
+            output,
+            cell?.templateColumn.mappedPath['utm_easting'],
+            (cell.parsedValue as parsedGeoType).utm_easting
+          );
           _.set(output, cell?.templateColumn.mappedPath['geog'], (cell.parsedValue as parsedGeoType).geog);
-
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });
         }
         break;
+      case 'numeric':
+        try {
+          if (
+            !_.get(output, cell?.templateColumn.mappedPath) &&
+            (cell.parsedValue || JSON.stringify(cell.parsedValue) === '0')
+          ) {
+            _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
+          }
+        } catch (e) {
+          defaultLog.error({ message: 'error mapping field into blob', field, cell });
+        }
+      case 'boolean':
+        try {
+          if (
+            !_.get(output, cell?.templateColumn.mappedPath) &&
+            (JSON.stringify(cell.parsedValue) === 'false' || cell.parsedValue)
+          ) {
+            _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
+          }
+        } catch (e) {
+          defaultLog.error({ message: 'error mapping field into blob', field, cell });
+        }
       default:
         try {
-          if(!_.get(output, cell?.templateColumn.mappedPath) && cell.parsedValue)
-          {
+          if (!_.get(output, cell?.templateColumn.mappedPath) && cell.parsedValue) {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
           }
         } catch (e) {
