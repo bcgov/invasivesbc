@@ -38,7 +38,7 @@ interface MonitoringColumn {
 export const defaultMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
   { id: 'project_code', label: 'Paper File ID', minWidth: 100 },
-  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
+  { id: 'invasive_species_agency_code', label: 'Agency', minWidth: 100 },
   { id: 'efficacy_rating', label: 'Efficacy Rating', minWidth: 100 },
   { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
   { id: 'monitoring_comments', label: 'Monitoring Comments', minWidth: 350 },
@@ -52,7 +52,7 @@ export const defaultMonitoringColumns: readonly MonitoringColumn[] = [
 export const customMonitoringColumns: readonly MonitoringColumn[] = [
   { id: 'monitoring_date', label: 'Inspection Date', minWidth: 200 },
   { id: 'project_code', label: 'Monitoring Paper File ID', minWidth: 100 },
-  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 100 },
+  { id: 'invasive_species_agency_code', label: 'Agency', minWidth: 100 },
   { id: 'primary_surveyor', label: 'Primary Surveyor', minWidth: 100 },
   { id: 'biological_agent_code', label: 'Biological Agent', minWidth: 100 },
   { id: 'agent_count', label: 'Agent Count', minWidth: 100 },
