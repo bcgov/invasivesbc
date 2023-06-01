@@ -680,6 +680,7 @@ export const getActivitiesSQL = (
       short_id: 'short_id', //needs a migration because of the payload stuff
       type: 'activity_type',
       subtype: 'activity_subtype_full', //also in payload stuff (activity_type is too but different) ((with subtype update, activity_subtype is also different now))
+      activity_date: 'created_timestamp',
       received_timestamp: 'received_timestamp',
       jurisdiction: 'jurisdiction_display',
       species_positive: 'species_positive_full',
@@ -695,9 +696,11 @@ export const getActivitiesSQL = (
       batch_id: 'batch_id'
     };
     const order = searchCriteria.order.map((column) => {
-      return `${columnMap[column['columnKey']]} ${column['direction']}`;
+      if (columnMap[column['columnKey']] === undefined) return null;
+      else return `${columnMap[column['columnKey']]} ${column['direction']}`;
     });
-    sqlStatement.append(` ORDER BY ${order.join(', ')}`);
+
+    if (!order.includes(null)) sqlStatement.append(` ORDER BY ${order.join(', ')}`);
     //THIS PART OF THE QUERY IS NOT ESCAPED!!! This was due to incompatibility with ORDER BY and SQL``
   }
 
