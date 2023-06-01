@@ -123,6 +123,7 @@ function execBatch(): RequestHandler {
       const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
+        [],
         req.authContext.user
       );
 

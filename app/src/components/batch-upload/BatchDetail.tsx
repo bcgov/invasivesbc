@@ -4,24 +4,17 @@ import { useSelector } from '../../state/utilities/use_selector';
 import { selectBatch } from '../../state/reducers/batch';
 import { useDispatch } from 'react-redux';
 import {
-  BATCH_CREATE_REQUEST_WITH_CALLBACK,
   BATCH_EXECUTE_REQUEST,
   BATCH_RETRIEVE_REQUEST,
   BATCH_UPDATE_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST
 } from '../../state/actions';
 import Spinner from '../spinner/Spinner';
 import { Error } from '@mui/icons-material';
 import BatchTable from './BatchTable';
 import BatchFileComponent from './BatchFileComponent';
-import { file } from '@babel/types';
-import { selectTabs } from '../../state/reducers/tabs';
-import {useHistory} from "react-router-dom";
 
 const BatchMetadata = ({ batch }) => {
   const dispatch = useDispatch();
-  const tabsConfigState = useSelector(selectTabs);
-  const history = useHistory();
 
   function downloadCSV() {
     const dataUrl = `data:text/csv;base64,${btoa(batch['csv_data'] as string)}`;
@@ -58,8 +51,8 @@ const BatchMetadata = ({ batch }) => {
   const [fileData, setFileData] = useState(null);
   const [uploadReady, setUploadReady] = useState(false);
 
-  const [execFinalState, setExecFinalState] = useState('Draft');
-  const [execErrorRowsTreatment, setExecErrorRowsTreatment] = useState('Draft');
+  const [execFinalState, setExecFinalState] = useState('');
+  const [execErrorRowsTreatment, setExecErrorRowsTreatment] = useState('');
 
   useEffect(() => {
     setUploadReady(fileData !== null);
@@ -71,91 +64,88 @@ const BatchMetadata = ({ batch }) => {
 
   return (
     <Paper>
-      <dl>
-        <dt>Created At</dt>
-        <dd>{batch['created_at']}</dd>
-
-        <dt>Status</dt>
-        <dd>{batch['status']}</dd>
-
-        <dt>Template</dt>
-        <dd>{batch['template']?.name}</dd>
-
-        <dt>Download CSV Data (for revision)</dt>
-        <dd>
-          <Button variant={'contained'} onClick={() => downloadCSV()}>
-            Download
-          </Button>
-        </dd>
-
-        {batch['status'] === 'NEW' && (
-          <>
-            <dt>Upload revised CSV Data</dt>
-            <dd>
-              <BatchFileComponent setData={acceptFileData} ready={uploadReady} disabled={false} />
-              <Button disabled={!uploadReady} variant={'contained'} onClick={() => uploadRevisedData()}>
-                Upload
-              </Button>
-            </dd>
-
-            <dt>Execute Batch</dt>
-            <dd>
-              State for created activities:
-              <select
-                value={execFinalState}
-                onChange={(e) => {
-                  setExecFinalState(e.target.value);
-                }}>
-                <option value={'Draft'}>Draft</option>
-                <option value={'Submitted'}>Submitted</option>
-              </select>
-              <br />
-              Treatment of rows with errors:
-              <select
-                value={execErrorRowsTreatment}
-                onChange={(e) => {
-                  setExecErrorRowsTreatment(e.target.value);
-                }}>
-                <option value={'Draft'}>Put in Draft</option>
-                <option value={'Skip'}>Skip</option>
-              </select>
-              <br />
-              <Button variant={'contained'} onClick={() => doBatchExec()}>
-                Execute
-              </Button>
-            </dd>
-          </>
-        )}
-
-        {batch?.['created_activities']?.length > 0 && (
-          <>
-            <dt>Created Activities</dt>
-            <dd>
-              {batch['created_activities'].map((b) => (
-                <Button
-                  key={b.id}
-                  onClick={() => {
-                    dispatch({
-                      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-                      payload: {
-                        description: 'Activity-' + b.short_id,
-                        id: b.id
-                      }
-                    });
-
-                    history.push(
-                      tabsConfigState?.tabConfig?.filter((t) => {
-                        return t?.label === 'Current Activity';
-                      })?.[0]?.path
-                    );
-                  }}>
-                  {b.short_id}
+      <table className={'batch-details'}>
+        <tbody>
+          <tr>
+              <td style={{width: '20%'}}>Created At</td>
+              <td>{batch['created_at']}</td>
+          </tr>
+          <tr>
+              <td>Status</td>
+              <td>{batch['status']}</td>
+          </tr>
+          <tr>
+              <td>Template</td>
+              <td>{batch['template']?.name}</td>
+          </tr>
+          <tr>
+              <td>Download CSV Data (for revision)</td>
+              <td>
+                <Button variant={'contained'} onClick={() => downloadCSV()}>
+                  Download
                 </Button>
-              ))}
-            </dd>
-          </>
-        )}
-      </dl>
+              </td>
+          </tr>
+          {batch['status'] === 'NEW' && (
+            <>
+              <tr>
+                <td>Upload revised CSV Data</td>
+                <td>
+                  <BatchFileComponent setData={acceptFileData} ready={uploadReady} disabled={false} />
+                  <Button disabled={!uploadReady} variant={'contained'} onClick={() => uploadRevisedData()}>
+                    Upload
+                  </Button>
+                </td>
+              </tr>
+              <tr>
+                <td>Execute Batch</td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td>
+                  State for created activities:
+                </td>
+                <td>
+                  <select
+                    value={execFinalState}
+                    onChange={(e) => {
+                      console.log('changed')
+                      setExecFinalState(e.target.value);
+                    }}>
+                    <option value='' disabled>Select</option>
+                    <option value={'Draft'}>Draft</option>
+                    <option value={'Submitted'}>Submitted</option>
+                  </select>
+                  </td>
+              </tr>
+              <tr>
+                <td>
+                  Treatment of rows with errors:
+                </td>
+                <td>
+                  <select
+                    value={execErrorRowsTreatment}
+                    onChange={(e) => {
+                      setExecErrorRowsTreatment(e.target.value);
+                    }}>
+                    <option value='' disabled>Select</option>
+                    <option value={'Draft'}>Put in Draft</option>
+                    <option value={'Skip'}>Skip</option>
+                  </select>
+                  </td>
+              </tr>
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={!execErrorRowsTreatment || !execFinalState}>
+                      Execute
+                    </Button>
+                  </td>
+              </tr>
+            </>
+          )}
+        </tbody>
+      </table>
     </Paper>
   );
 };
@@ -199,7 +189,7 @@ const BatchDetail = ({ id }) => {
       <>
         <BatchMetadata batch={batch}></BatchMetadata>
         <BatchGlobalValidationErrors batch={batch} />
-        <BatchTable jsonRepresentation={batch['json_representation']} />
+        <BatchTable jsonRepresentation={batch['json_representation']} created_activities={batch['created_activities']} />
       </>
     );
   }
