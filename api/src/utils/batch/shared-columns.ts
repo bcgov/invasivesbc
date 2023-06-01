@@ -204,7 +204,8 @@ export const ActivityPersonsWithApplicatorLicense = [
 ];
 
 export const ProjectInformation = [
-  new TemplateColumnBuilder('Project - Code', 'text', 'form_data.activity_data.project_code[0].description').build(),
+  new TemplateColumnBuilder('Project - Code 1', 'text', 'form_data.activity_data.project_code[0].description').build(),
+  new TemplateColumnBuilder('Project - Code 2', 'text', 'form_data.activity_data.project_code[1].description').build(),
   new TemplateColumnBuilder('General Comment', 'text', 'form_data.activity_data.general_comment').build()
 ];
 
