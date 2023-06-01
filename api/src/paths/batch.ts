@@ -17,10 +17,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : []
 };
 
@@ -33,10 +33,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -63,9 +63,7 @@ const POST_API_DOC = {
           schema: {
             type: 'object',
             properties: {
-              id: {
-                type: 'number'
-              }
+              id: { type: 'number' }
             }
           }
         }

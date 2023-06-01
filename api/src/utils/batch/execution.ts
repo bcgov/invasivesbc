@@ -36,13 +36,13 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
-      ]?.templateColumn.codes.map((codeObj) => {
+    ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 
     const chemicalMethodCodes = row.data[
       'Chemical Treatment (No Tank Mix) - Application Method'
-      ]?.templateColumn.codes.map((codeObj) => {
+    ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 
@@ -50,10 +50,10 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
 
-  
+
   mapped = populateSpeciesArrays(mapped);
 
-mapped['form_data']['form_status'] = status
+  mapped['form_data']['form_status'] = status
 
 
   const geog = mapped.geog;
@@ -77,7 +77,7 @@ export const BatchExecutionService = {
     errorRowsBehaviour: 'Draft' | 'Skip',
     userInfo: any
   ): Promise<BatchExecutionResult> => {
-    defaultLog.info({message:`Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}`});
+    defaultLog.info({ message: `Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}` });
     const createdIds = [];
 
     const statusQueryResult = await dbConnection.query({
@@ -111,7 +111,7 @@ export const BatchExecutionService = {
       const qc = {
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
                                                    activity_subtype, form_status, created_by, updated_by,
-                                                   created_by_with_guid, updated_by_with_guid, geog,       
+                                                   created_by_with_guid, updated_by_with_guid, geog,
                                                    species_positive,
                                                    species_negative,
                                                    species_treated)
@@ -142,19 +142,15 @@ export const BatchExecutionService = {
         }
       });
 
-      try
-      {
-
-      await dbConnection.query(qc);
+      try {
+        await dbConnection.query(qc);
       }
-      catch(e)
-      {
+      catch (e) {
         defaultLog.debug({
-          message: 'error executing insert for batch error->' +  JSON.stringify(e),
+          message: 'error executing insert for batch error->' + JSON.stringify(e),
         })
         throw e
       }
-
     }
 
     await dbConnection.query({

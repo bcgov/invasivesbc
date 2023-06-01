@@ -48,7 +48,7 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, maxFiles: 1, validator: fileValidator });
 
   return (
-    <Box mx={3} my={3} py={3}>
+    <>
       {ready && <span>{filename} ready to upload</span>}
       {!ready && (
         <div style={dropzoneStyle} {...getRootProps()}>
@@ -69,7 +69,7 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
           Clear
         </Button>
       </div>
-    </Box>
+      </>
   );
 };
 

@@ -79,12 +79,17 @@ table.batchAlternateLayout {
   font-size: 12px;
   overflow-x: auto;
   display: block;
+  height: 50em;
 
   thead {
     tr {
       th {
         white-space: nowrap;
-        text-align: left;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: darkgray;
       }
     }
   }
@@ -147,6 +152,13 @@ table.batchAlternateLayout {
       }
     }
   }
+  tr > th:first-child, tr > td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: darkgray;
+    font-weight: 600;
+  }
 }
 
 table.batchValidation {
@@ -205,3 +217,12 @@ table.batchList {
   }
 }
 
+
+table.batch-details {
+  width: 70%;
+  tr {
+    td:first-child {
+      width: 40%;
+    }
+  }
+}

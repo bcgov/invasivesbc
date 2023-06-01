@@ -1,16 +1,16 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {QueryResult} from 'pg';
-import {ALL_ROLES, SECURITY_ON} from '../../constants/misc';
-import {getDBConnection} from '../../database/db';
-import {InvasivesRequest} from '../../utils/auth-utils';
-import {TemplateService} from '../../utils/batch/template-utils';
-import {BatchValidationService} from '../../utils/batch/validation/validation';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { QueryResult } from 'pg';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
+import { getDBConnection } from '../../database/db';
+import { InvasivesRequest } from '../../utils/auth-utils';
+import { TemplateService } from '../../utils/batch/template-utils';
+import { BatchValidationService } from '../../utils/batch/validation/validation';
 import csvParser from 'csv-parser';
-import {Readable} from 'stream';
-import {getLogger} from '../../utils/logger';
+import { Readable } from 'stream';
+import { getLogger } from '../../utils/logger';
 
 export const GET: Operation = [getBatch()];
 export const PUT: Operation = [updateBatch()];
@@ -20,10 +20,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : []
 };
 
@@ -36,10 +36,10 @@ const PUT_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -107,7 +107,7 @@ function getBatch(): RequestHandler {
                 json_representation,
                 validation_messages,
                 template,
-                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
+                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
                 created_at,
                 created_by
          from batch_uploads b
@@ -140,6 +140,7 @@ function getBatch(): RequestHandler {
       const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
+        retrievedBatch['created_activities'],
         req.authContext.user
       );
 
@@ -273,6 +274,7 @@ function updateBatch(): RequestHandler {
       const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
         retrievedBatch['json_representation'],
+        [],
         req.authContext.user
       );
 
@@ -310,10 +312,10 @@ const DELETE_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : []
 };
 
