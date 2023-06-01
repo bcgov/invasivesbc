@@ -7,7 +7,8 @@ export async function up(knex: Knex): Promise<void> {
 
     DELETE FROM code
     WHERE (code_name = 'ATV')
-       OR (code_header_id = 44 AND code_name = 'SOGOV');
+       OR (code_header_id = 44 AND code_name = 'SOGOV')
+       OR (code_header_id = 79 AND code_name = 'SCW');
     
     update code 
     set code_description = 'City of New Westminster'
@@ -28,6 +29,10 @@ export async function up(knex: Knex): Promise<void> {
     update code 
     set code_description = 'North Africa grass (Ventenata dubia)'
     where code_header_id = 40 and code_name = 'NA';
+
+    update code 
+    set code_name = 'SCW'
+    where code_header_id = 79 and code_name = 'TWU';
     
     INSERT INTO code
     (code_header_id, code_name, code_description, code_sort_order, valid_from, valid_to, created_at, updated_at, created_by_user_id, updated_by_user_id)
