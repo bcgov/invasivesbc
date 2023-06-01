@@ -1,7 +1,9 @@
 import {
   BATCH_CREATE_ERROR,
   BATCH_CREATE_REQUEST,
-  BATCH_CREATE_SUCCESS, BATCH_EXECUTE_ERROR, BATCH_EXECUTE_REQUEST,
+  BATCH_CREATE_SUCCESS,
+  BATCH_EXECUTE_ERROR,
+  BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
   BATCH_LIST_ERROR,
   BATCH_LIST_REQUEST,
@@ -20,7 +22,7 @@ import {
   BATCH_UPDATE_SUCCESS,
   BATCH_DELETE_REQUEST,
   BATCH_DELETE_SUCCESS,
-  BATCH_DELETE_ERROR,
+  BATCH_DELETE_ERROR
 } from '../actions';
 
 interface DeepBatch {
@@ -220,13 +222,16 @@ function createBatchReducer() {
           ...state,
           working: false,
           error: false,
-          templates: action.payload.filter(template => [
-            'observation_terrestrial_plant',
-            'observation_terrestrial_plant_temp',
-            'treatment_mechanical_terrestrial_plant',
-            'treatment_chemical_terrestrial_plant',
-            'treatment_chemical_terrestrial_plant_temp'
-          ].includes(template.key))
+          templates: action.payload.filter((template) =>
+            [
+              'observation_terrestrial_plant',
+              'observation_terrestrial_plant_temp',
+              'treatment_mechanical_terrestrial_plant',
+              'treatment_mechanical_terrestrial_plant_temp',
+              'treatment_chemical_terrestrial_plant',
+              'treatment_chemical_terrestrial_plant_temp'
+            ].includes(template.key)
+          )
         };
       case BATCH_TEMPLATE_LIST_ERROR:
         return {
