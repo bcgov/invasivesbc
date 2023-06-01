@@ -50,7 +50,7 @@ const surveyColumns: readonly SurveyColumn[] = [
   { id: 'surveyor_name', label: 'Primary Surveyor', minWidth: 250 },
   { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 250 },
   { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
-  { id: 'invasive_species_agency_code', label: 'Funding Agency', minWidth: 350 },
+  { id: 'invasive_species_agency_code', label: 'Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 250 },
   { id: 'reported_area', label: 'Estimated Area (ha)', minWidth: 150 },
   { id: 'density', label: 'Density', minWidth: 150 },
