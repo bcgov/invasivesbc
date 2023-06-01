@@ -43,7 +43,7 @@ export const LabelButton = (props) => {
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
-          title="Show Area Labels"
+          title="Show Map Extent Labels"
           placement="left-start">
           <span>
             <IconButton
