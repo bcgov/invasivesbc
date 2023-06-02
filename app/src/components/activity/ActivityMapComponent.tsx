@@ -114,7 +114,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
       return; // allow for cancel
     }
 
-    let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
+    let result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))))
     const geo: any = {
       type: 'Feature',
       geometry: {
@@ -125,7 +125,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     };
     // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
-    map.setView([result[1], result[0]], 17);
+    
   };
 
   // define default marker icon to override src defined in leaflet.css
