@@ -159,9 +159,36 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
 function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    let prev = userSettings?.recordSets;
+    let prev = JSON.parse(JSON.stringify(userSettings?.recordSets));
+    const authState = yield select(selectAuth);
 
     prev[action.payload.setName] = action.payload.updatedSet;
+
+    if (action.payload.setName === '1') {
+      if (
+        !prev[action.payload.setName].advancedFilters.some(
+          (filter) => filter.filterField === 'created_by' && filter.filterValue === authState.username
+        )
+      ) {
+        prev[action.payload.setName].advancedFilters.push({
+          filterField: 'created_by',
+          filterValue: authState.username,
+          filterKey: 'created_by' + authState.username
+        });
+      }
+
+      if (
+        !prev[action.payload.setName].advancedFilters.some(
+          (filter) => filter.filterField === 'record_status' && filter.filterValue === ActivityStatus.DRAFT
+        )
+      ) {
+        prev[action.payload.setName].advancedFilters.push({
+          filterField: 'record_status',
+          filterValue: ActivityStatus.DRAFT,
+          filterKey: 'record_status' + ActivityStatus.DRAFT
+        });
+      }
+    }
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...prev } }));
 
@@ -368,19 +395,22 @@ function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
     const authState = yield select(selectAuth);
-    let sets = JSON.parse(JSON.stringify(userSettings?.recordSets))
-    sets[action.payload.id].advancedFilters = action.payload.id === '1' ? [
-      {
-        filterField: 'created_by',
-        filterValue: authState.username,
-        filterKey: 'created_by' + authState.username
-      },
-      {
-        filterField: 'record_status',
-        filterValue: 'Draft',
-        filterKey: 'record_statusDraft'
-      }
-    ]  : [];
+    let sets = JSON.parse(JSON.stringify(userSettings?.recordSets));
+    sets[action.payload.id].advancedFilters =
+      action.payload.id === '1'
+        ? [
+            {
+              filterField: 'created_by',
+              filterValue: authState.username,
+              filterKey: 'created_by' + authState.username
+            },
+            {
+              filterField: 'record_status',
+              filterValue: 'Draft',
+              filterKey: 'record_statusDraft'
+            }
+          ]
+        : [];
     sets[action.payload.id].gridFilters = {
       enabled: false
     };
@@ -388,7 +418,10 @@ function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
 
-    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS, payload: { recordSets: JSON.parse(JSON.stringify(sets)) } });
+    yield put({
+      type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
+      payload: { recordSets: JSON.parse(JSON.stringify(sets)) }
+    });
 
     // sort column update
     const layer_filter = {
@@ -396,11 +429,11 @@ function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
         advancedFilters:
           action.payload.id === '1'
             ? [
-              {
-                filterField: 'created_by',
-                filterValue: authState.username,
-                filterKey: 'created_by' + authState.username
-              },
+                {
+                  filterField: 'created_by',
+                  filterValue: authState.username,
+                  filterKey: 'created_by' + authState.username
+                },
                 {
                   filterField: 'record_status',
                   filterValue: 'Draft',
@@ -415,7 +448,10 @@ function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
         sortColumns: []
       }
     };
-    yield put({ type: FILTER_STATE_UPDATE, payload: { [action.payload.id]: layer_filter } });
+    yield put({
+      type: FILTER_STATE_UPDATE,
+      payload: { [action.payload.id]: { ...layer_filter, type: sets[action.payload.id].recordSetType } }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_FAILURE });
@@ -428,7 +464,12 @@ function* handle_GET_API_DOC_REQUEST(action) {
 }
 
 function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/', {}, { 'filterForSelectable': true });
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
+    'GET',
+    '/api/api-docs/',
+    {},
+    { filterForSelectable: true }
+  );
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
   const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
   const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;

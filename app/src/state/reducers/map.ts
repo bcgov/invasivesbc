@@ -380,7 +380,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case FILTER_STATE_UPDATE: {
         let newState = JSON.parse(JSON.stringify({ ...state.layers }));
         for (const x in action.payload) {
-          newState[x].filters = { ...action.payload[x]?.filters };
+          newState[x].filters = { ...action.payload?.[x]?.filters };
           newState[x].loaded = false;
         }
 
