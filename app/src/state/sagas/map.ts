@@ -194,7 +194,11 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     return true;
   };
 
+  let layerStateChanged = false;
+  let filterStateChanged = false;
+
   if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
+    layerStateChanged = true;
     yield put({
       type: LAYER_STATE_UPDATE,
       payload: {
@@ -210,6 +214,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)
     //|| !mapState?.recordTables?.[action.payload.updatedSetName]
   ) {
+    filterStateChanged = true;
     yield put({
       type: FILTER_STATE_UPDATE,
       payload: {
@@ -219,6 +224,32 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
         }
       }
     });
+  }
+
+  const previousOpenState = mapState?.layers?.[action.payload.updatedSetName]?.expanded;
+  const newOpenState = action.payload.updatedSet.expanded;
+
+  // check if we need to grab table rows on open and no filter change
+  if (filterStateChanged === false && previousOpenState === false && newOpenState) {
+    if (action.payload.updatedSet.recordSetType === 'POI') {
+      yield put({
+        type: IAPP_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: action.payload.updatedSetName,
+          IAPPFilterCriteria: filterCriteria
+        }
+      });
+    }
+
+    if (action.payload.updatedSet.recordSetType === 'Activity') {
+      yield put({
+        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: action.payload.updatedSetName,
+          ActivityFilterCriteria: filterCriteria
+        }
+      });
+    }
   }
 }
 
