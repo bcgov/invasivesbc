@@ -22,7 +22,7 @@ class MemoryCache extends AbstractCache {
 
   async get(key: string): Promise<any | null> {
     try {
-      return this.data.get(key);
+      return this.data.get(key).data;
     } catch {
       return null;
     }
