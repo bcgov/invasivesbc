@@ -9,10 +9,12 @@ import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
 
 import { getLogger } from '../utils/logger';
-import cacheService, { versionedKey } from '../utils/cache-service';
+import cacheService from '../utils/cache/cache-service';
 import { createHash } from 'crypto';
+import { versionedKey } from '../utils/cache/cache-utils';
 
 const defaultLog = getLogger('point-of-interest');
+const CACHENAME = 'POI-LEAN';
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -95,7 +97,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     const responseCacheHeaders = {};
     let ETag = null;
     // server-side cache
-    const cache = cacheService.getCache('poi-lean');
+    const cache = cacheService.getCache(CACHENAME);
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
@@ -108,7 +110,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       // tuple: (cacheVersion, parameters)
       // hash it for brevity and to obscure the real modification date
 
-      const cacheTagStr = versionedKey(`${cacheVersion} ${JSON.stringify(criteria)}`);
+      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)}`);
 
       ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
@@ -125,16 +127,18 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
       // check server-side cache
-      const cachedResult = cache.get(ETag);
+      const cachedResult = await cache.get(ETag);
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      defaultLog.warn(
-        {message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.', error: e}
-      );
+      defaultLog.warn({
+        message:
+          'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+        error: e
+      });
     }
 
     try {
@@ -180,7 +184,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       if (ETag !== null) {
         // save for later;
-        cache.put(ETag, responseBody);
+        await cache.put(ETag, responseBody);
       }
 
       return res.status(200).set(responseCacheHeaders).json(responseBody);

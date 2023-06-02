@@ -1,23 +1,19 @@
-import { getLogger } from './logger';
-import { InMemoryCacheService } from './cache/in-memory-cache';
+import { getLogger } from '../logger';
+import { InMemoryCacheService } from './in-memory-cache';
+import { MemcacheCacheService } from './memcache-cache';
+import { AbstractCacheService } from './cache-utils';
 
 const defaultLog = getLogger('cache');
-
-export abstract class AbstractCache {
-  abstract async get(key: string): Promise<any | null>;
-
-  abstract async put(key, data): Promise<void>;
-}
-
-export abstract class AbstractCacheService {
-  abstract getCache(cacheName: string): AbstractCache;
-}
 
 function createCacheInstance(): AbstractCacheService {
   if (process.env['MEMCACHE_ENABLED']) {
     defaultLog.info({ message: 'Memcache support enabled' });
+    return new MemcacheCacheService();
   } else {
-    defaultLog.info({ message: 'Using fallback (local) cache' });
+    defaultLog.info({
+      message:
+        'Using fallback (local) cache. To use memcached, set MEMCACHE_ENABLED and MEMCACHE_SERVER=<host>:<port> in your environment'
+    });
     return new InMemoryCacheService();
   }
 }

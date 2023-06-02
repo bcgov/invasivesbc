@@ -1,20 +1,21 @@
 'use strict';
 
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { ActivitySearchCriteria } from '../models/activity';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { createHash } from 'crypto';
-import cacheService, { versionedKey } from '../utils/cache-service';
-import { mapSitesRowsToCSV } from '../utils/iapp-csv-utils';
+import {RequestHandler} from 'express';
+import {Operation} from 'express-openapi';
+import {SQLStatement} from 'sql-template-strings';
+import {ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON} from '../constants/misc';
+import {getDBConnection} from '../database/db';
+import {ActivitySearchCriteria} from '../models/activity';
+import {getActivitiesSQL, deleteActivitiesSQL} from '../queries/activity-queries';
+import {getLogger} from '../utils/logger';
+import {InvasivesRequest} from '../utils/auth-utils';
+import {createHash} from 'crypto';
+import cacheService from '../utils/cache/cache-service';
+import {mapSitesRowsToCSV} from '../utils/iapp-csv-utils';
+import {versionedKey} from "../utils/cache/cache-utils";
 
 const defaultLog = getLogger('activity');
+const CACHENAME = "Activities - Fat";
 
 export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -25,10 +26,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -79,10 +80,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -144,7 +145,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+    defaultLog.debug({label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria});
 
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
@@ -152,7 +153,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const isAuth = req.authContext?.user !== null ? true : false;
     const user_role = (req as any).authContext?.roles?.[0]?.role_id;
     if (user_role) {
-      const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
+      const user_roles = Array.from({length: user_role}, (_, i) => i + 1);
       sanitizedSearchCriteria.user_roles = user_roles;
     }
 
@@ -168,24 +169,24 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const connection = await getDBConnection();
     if (!connection) {
-      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+      defaultLog.error({label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria});
       return res
         .status(503)
-        .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
+        .json({message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503});
     }
 
     // we'll send it later, overriding cache headers as appropriate
     const responseCacheHeaders = {};
     let ETag = null;
     // server-side cache
-    const cache = cacheService.getCache('activity');
+    const cache = cacheService.getCache(CACHENAME);
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
       const cacheQueryResult = await connection.query(
         `select updated_at
-                                                       from cache_versions
-                                                       where cache_name = $1`,
+         from cache_versions
+         where cache_name = $1`,
         ['activity']
       );
       const cacheVersion = cacheQueryResult.rows[0].updated_at;
@@ -194,7 +195,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       // tuple: (cacheVersion, parameters, roleName)
       // hash it for brevity and to obscure the real modification date
 
-      const cacheTagStr = versionedKey(`${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
+      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
 
       ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
@@ -211,16 +212,19 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
       // check server-side cache
-      const cachedResult = cache.get(ETag);
+      const cachedResult = await cache.get(ETag);
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
         return res.status(200).set(responseCacheHeaders).json(cachedResult);
       }
     } catch (e) {
-      const message = (e === undefined)? 'undefined' : e.message
+      const message = (e === undefined) ? 'undefined' : e.message
       defaultLog.warn(
-        {message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.', error: message}
+        {
+          message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+          error: message
+        }
       );
     }
 
@@ -230,7 +234,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500 });
+          .json({message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500});
       }
 
       // needs to be mutable
@@ -261,7 +265,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
       if (ETag !== null) {
         // save for later;
-        cache.put(ETag, responseBody);
+        await cache.put(ETag, responseBody);
       }
 
       if (sanitizedSearchCriteria.isCSV) {
@@ -271,7 +275,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      defaultLog.debug({label: 'getActivitiesBySearchFilterCriteria', message: 'error', error});
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error,
@@ -291,7 +295,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
+    defaultLog.debug({label: 'activity', message: 'deleteActivitiesByIds', body: req.body});
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria({
       keycloakToken: req.keycloakToken
@@ -306,7 +310,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!connection) {
       return res
         .status(503)
-        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
+        .json({message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503});
     }
 
     if (isAdmin === false) {
@@ -315,7 +319,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+          .json({message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500});
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -337,7 +341,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!ids || !ids.length) {
       return res
         .status(400)
-        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
+        .json({message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400});
     }
 
     try {
@@ -346,7 +350,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+          .json({message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500});
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -360,10 +364,10 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
+      defaultLog.debug({label: 'deleteActivitiesByIds', message: 'error', error});
       return res
         .status(500)
-        .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
+        .json({message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500});
     } finally {
       connection.release();
     }

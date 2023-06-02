@@ -1,58 +1,44 @@
 import { getLogger } from '../logger';
-import { AbstractCache, AbstractCacheService } from './cache-service';
+import { AbstractCache, AbstractCacheService } from './cache-utils';
+import { MemcacheClient } from 'memcache-client';
 
 const defaultLog = getLogger('cache');
 
-class MemoryCache extends AbstractCache {
-  data: Map<string, { data: any; ttl: number }> = new Map();
+class MemcacheCache extends AbstractCache {
+  client: MemcacheClient;
 
-  expireEntries() {
-    for (const [key, ce] of this.data.entries()) {
-      ce.ttl = ce.ttl - 1;
-      if (ce.ttl <= 0) {
-        this.data.delete(key);
-      }
-    }
+  constructor() {
+    super();
+    this.client = new MemcacheClient({
+      server: process.env.MEMCACHE_SERVER || 'localhost:11211',
+      ignoreNotStored: true,
+      lifetime: 3600 * 4 // default TTL = 4 hours
+    });
   }
 
   async get(key: string): Promise<any | null> {
     try {
-      return this.data.get(key);
+      const result = await this.client.get(key);
+      return result?.value;
     } catch {
       return null;
     }
   }
 
   async put(key, data): Promise<void> {
-    // ttl is number of expirations it will survive (eg expiry = initialTTL * interval)
-    this.data.set(key, { data, ttl: 10 });
+    await this.client.set(key, data);
   }
 }
 
-export class InMemoryCacheService extends AbstractCacheService {
-  caches: Map<string, MemoryCache> = new Map();
+export class MemcacheCacheService extends AbstractCacheService {
+  cache: MemcacheCache;
 
-  constructor(interval?: number) {
+  constructor() {
     super();
-    setInterval(
-      () => {
-        this.cleanCaches();
-      },
-      interval ? interval : 600000
-    );
+    this.cache = new MemcacheCache();
   }
 
-  private cleanCaches() {
-    defaultLog.debug({ message: 'expiring old cache entries' });
-    for (const c of this.caches.values()) {
-      c.expireEntries();
-    }
-  }
-
-  getCache(cacheName: string): AbstractCache {
-    if (!this.caches.has(cacheName)) {
-      this.caches.set(cacheName, new MemoryCache());
-    }
-    return this.caches.get(cacheName);
+  getCache(cacheName: string): MemcacheCache {
+    return this.cache;
   }
 }
