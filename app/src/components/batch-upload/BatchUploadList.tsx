@@ -57,7 +57,7 @@ const BatchUploadList = () => {
                 <td>{b.id}</td>
                 <td>{b.status}</td>
                 <td>{b.created_at}</td>
-                <td>{templates.find(t => b.template === t.key).name}</td>
+                <td>{templates.find(t => b.template === t.key)?.name}</td>
                 <td>
                   <Link to={`/home/batch/${b.id}`}>View This Batch</Link>
                 </td>

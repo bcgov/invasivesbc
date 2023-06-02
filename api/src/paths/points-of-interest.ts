@@ -7,14 +7,14 @@ import { getIAPPsites } from '../utils/iapp-json-utils';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
-import cacheService, { versionedKey } from '../utils/cache-service';
+import cacheService from '../utils/cache/cache-service';
 import { createHash } from 'crypto';
-import { InvasivesRequest } from 'utils/auth-utils';
+import { versionedKey } from '../utils/cache/cache-utils';
 
 const defaultLog = getLogger('point-of-interest');
+const CACHENAME = 'POI - Fat';
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -123,20 +123,23 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     const responseCacheHeaders = {};
     let ETag = null;
     // server-side cache
-    const cache = cacheService.getCache('poi');
+    const cache = cacheService.getCache(CACHENAME);
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
-      const cacheQueryResult = await connection.query(`select updated_at from cache_versions where cache_name = $1`, [
-        'iapp_site_summary'
-      ]);
+      const cacheQueryResult = await connection.query(
+        `select updated_at
+         from cache_versions
+         where cache_name = $1`,
+        [isIAPPrelated(sanitizedSearchCriteria) ? 'iapp_site_summary' : 'activity']
+      );
       const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
       // because we have parameters and user roles, the actual resource cache tag is
       // tuple: (cacheVersion, parameters)
       // hash it for brevity and to obscure the real modification date
 
-      const cacheTagStr = versionedKey(`${cacheVersion} ${JSON.stringify(criteria)}`);
+      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(sanitizedSearchCriteria)}`);
 
       ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
@@ -153,7 +156,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
       // check server-side cache
-      const cachedResult = cache.get(ETag);
+      const cachedResult = await cache.get(ETag);
       if (cachedResult) {
         // hit! send this one and save some db traffic
         connection.release();
@@ -176,7 +179,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
         if (ETag !== null) {
           // save for later;
-          //cache.put(ETag, responseBody);
+          await cache.put(ETag, responseBody);
         }
         if (sanitizedSearchCriteria.isCSV) {
           return res
@@ -219,13 +222,13 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
         if (ETag !== null) {
           // save for later;
-          cache.put(ETag, responseBody);
+          await cache.put(ETag, responseBody);
         }
 
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      const message = error.message || error
+      const message = error.message || error;
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error: message });
       return res.status(500).json({
         message: 'Failed to get points of interest by search filter criteria',

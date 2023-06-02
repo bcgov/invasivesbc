@@ -4,10 +4,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
-import { cached } from '../utils/utils';
 import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
 import { retrieveGetDoc } from '../docs/getDoc';
+import cacheService from "../utils/cache/cache-service";
+import CacheService from "../utils/cache/cache-service";
 
 const defaultLog = getLogger('species');
 
@@ -45,9 +46,12 @@ function getSpeciesDetails(): RequestHandler {
     let species: any;
 
     try {
-      const allCodeEntities: IAllCodeEntities = await cached(CacheKeys.ALL_CODE_CATEGORIES, 3600000, () =>
-        getAllCodeEntities()
-      )();
+      const cache = cacheService.getCache(CacheKeys.ALL_CODE_CATEGORIES);
+      let allCodeEntities: IAllCodeEntities = await cache.get(CacheKeys.ALL_CODE_CATEGORIES);
+      if (allCodeEntities === null) {
+        allCodeEntities = await getAllCodeEntities();
+        await cache.put(CacheKeys.ALL_CODE_CATEGORIES, allCodeEntities);
+      }
 
       if (!allCodeEntities) {
         return req;

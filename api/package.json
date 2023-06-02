@@ -54,6 +54,7 @@
     "knex": "^0.21.4",
     "lodash": "^4.17.21",
     "mapshaper": "^0.5.79",
+    "memcache-client": "^1.0.2",
     "memory-cache": "~0.2.0",
     "moment": "~2.29.4",
     "node-fetch": "^2.6.7",
