@@ -136,15 +136,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
   });
 
   const getGPSLocationEntry = async () => {
-    const draw = new (L as any).Draw.Marker(map, { icon: DefaultIcon });
-    draw.enable();
-    setInitialTime(3);
-    setStartTimer(true);
     const position = await Geolocation.getCurrentPosition();
-    timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
-    props.geometryState.setGeometry([turf.point([position.coords.longitude, position.coords.latitude])]);
-    draw.disable();
-    map.setView([position.coords.latitude, position.coords.longitude], 17);
+    const geoForUpdate = JSON.parse(JSON.stringify([turf.point([position.coords.longitude, position.coords.latitude])]))
+    props.geometryState.setGeometry(geoForUpdate);
   };
 
   const endTrack = async () => {
