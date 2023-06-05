@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 export interface IFilterDialog {
   dialogOpen: boolean;
@@ -44,6 +44,26 @@ export const FilterDialog = (props: IFilterDialog) => {
   const [subChoices, setSubChoices] = useState({ ...jurisdictionOptions });
   const [subChoice, setSubChoice] = useState(null);
 
+  /*
+  const getSpeciesOptions = useCallback(async () => {
+
+      
+    const dataTerrestial = await fetchCodeTable('invasive_plant_code');
+    const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
+    const data = [...dataTerrestial, ...dataAquatic];
+
+    return data;
+  },[choice]);
+  */
+
+  const getSpeciesOptions = async () => {
+    const dataTerrestial = await fetchCodeTable('invasive_plant_code');
+    const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
+    const data = [...dataTerrestial, ...dataAquatic];
+
+    return data;
+  };
+
   useEffect(() => {
     let isMounted = true;
     if (props.filterKey !== undefined && props.allFiltersBefore !== undefined) {
@@ -56,14 +76,6 @@ export const FilterDialog = (props: IFilterDialog) => {
 
     const getJurisdictionOptions = async () => {
       const data = props.setType === 'POI' ? await getIappJurisdictions() : await fetchCodeTable('jurisdiction_code');
-      return data;
-    };
-
-    const getSpeciesOptions = async () => {
-      const dataTerrestial = await fetchCodeTable('invasive_plant_code');
-      const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
-      const data = [...dataTerrestial, ...dataAquatic];
-
       return data;
     };
 
@@ -84,28 +96,44 @@ export const FilterDialog = (props: IFilterDialog) => {
       }
     });
 
-    getSpeciesOptions().then((data) => {
-      if (isMounted) {
-        setSpeciesPOptions((prev) => {
-          const newOptions = {};
-          data.forEach((d) => {
-            newOptions[d.code] = d.description;
-          });
-          return newOptions;
-        });
-  
-        setSpeciesNOptions((prev) => {
-          const newOptions = {};
-          data.forEach((d) => {
-            newOptions[d.code] = d.description;
-          });
-          return newOptions;
-        });
-      }
-    });
 
-    return () => { isMounted = false };
+    return () => {
+      isMounted = false;
+    };
   }, [props.setType]);
+
+
+  const setSpeciesOptions = () => {
+          getSpeciesOptions()
+            .then((data) => {
+              console.log('oh boy');
+              console.dir(data);
+              setSpeciesPOptions((prev) => {
+                const newOptions = {};
+                data?.forEach((d) => {
+                  newOptions[d.code] = d.description;
+                });
+                if(choice === 'Species Positive')
+                {
+                  setSubChoices({ ...newOptions });
+                }
+                return newOptions;
+              });
+
+              setSpeciesNOptions((prev) => {
+                const newOptions = {};
+                data.forEach((d) => {
+                  newOptions[d.code] = d.description;
+                if(choice === 'Species Negative')
+                {
+                  setSubChoices({ ...newOptions });
+                }
+                });
+                return newOptions;
+              });
+            })
+
+  }
 
   useEffect(() => {
     switch (choice) {
@@ -114,11 +142,12 @@ export const FilterDialog = (props: IFilterDialog) => {
         // setSubChoice(null);
         break;
       case 'Species Positive':
-        setSubChoices({ ...speciesPOptions });
+        setSpeciesOptions()
         // setSubChoice(null);
         break;
       case 'Species Negative':
-        setSubChoices({ ...speciesNOptions });
+        setSpeciesOptions()
+        //setSubChoices({ ...speciesNOptions });
         // setSubChoice(null);
         break;
       case 'Metabase Report ID':
@@ -238,3 +267,7 @@ const SubChoiceDropDown = (props) => {
     </Select>
   );
 };
+
+export const FilterDialogMemo = React.memo(FilterDialog, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps) === JSON.stringify(nextProps);
+}); // (prevProps, nextProps) => JSON.stringify(prevProps) === JSON.stringify(nextProps
