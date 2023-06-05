@@ -11,7 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Theme } from '@mui/material/styles';
 import './filter-cell.css';
 import { FilterAltOff } from '@mui/icons-material';
-import { FilterDialog, IFilterDialog } from '../FilterDialog';
+import { FilterDialog, IFilterDialog, FilterDialogMemo } from '../FilterDialog';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -770,6 +770,7 @@ const ActivityGrid = (props) => {
         )}
 
         <FilterDialog
+        key={"filterDialog" + props.setName + filterDialog?.filterKey}
           filterKey={filterDialog.filterKey}
           setAllFilters={filterDialog.setAllFilters}
           allFiltersBefore={filterDialog.allFiltersBefore}
