@@ -24,8 +24,16 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     const businessCodes = {};
 
     const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix;
-
+    const invasive_plants = activity.form_data.activity_subtype_data.chemical_treatment_details?.invasive_plants ?? [];
     const herbicides = activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides ?? [];
+
+    if (invasive_plants.length > 1) {
+      const invasivePlantIndex = invasive_plants.map((plant, index) => {
+        return { ...plant, index };
+      });
+
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.invasive_plants = invasivePlantIndex;
+    }
 
     for (let i = 0; i < herbicides.length; i++) {
       const herbicide = herbicides[i];

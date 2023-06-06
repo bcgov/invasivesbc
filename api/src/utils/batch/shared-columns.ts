@@ -751,21 +751,6 @@ export const HerbicidesInformation = [
   )
     .valueRange(0, null)
     .build(),
-  new TemplateColumnBuilder(
-    'Herbicide - 2 - Dilution - Dilution %',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[1].dilution'
-  )
-    .valueRange(0, 100)
-    .build(),
-
-  new TemplateColumnBuilder(
-    'Herbicide - 3 - Area Treated (Dilution)',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].area_treated_sqm'
-  )
-    .valueRange(0, null)
-    .build(),
 
   new TemplateColumnBuilder(
     'Herbicide - 3 - Type',
@@ -785,21 +770,6 @@ export const HerbicidesInformation = [
     'Herbicide - 3 - PAR - Production Application Rate',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[2].product_application_rate'
-  )
-    .valueRange(0, null)
-    .build(),
-  new TemplateColumnBuilder(
-    'Herbicide - 3 - Dilution - Dilution %',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].dilution'
-  )
-    .valueRange(0, 100)
-    .build(),
-
-  new TemplateColumnBuilder(
-    'Herbicide - 3 - Area Treated (Dilution)',
-    'numeric',
-    'form_data.activity_subtype_data.chemical_treatment_details.herbicides[2].area_treated_sqm'
   )
     .valueRange(0, null)
     .build()
