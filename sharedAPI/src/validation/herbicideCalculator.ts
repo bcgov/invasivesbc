@@ -16,7 +16,6 @@
  * -------------------------------------------------------------------------------
  */
 
-
 //chooses the scenario based on the values in the form
 export const performCalculation = (area: number, formData: IGeneralFields, businessCodes: any): IGeneralFields => {
   const { tank_mix, herbicides, tank_mix_object, invasive_plants, chemical_application_method_type } = formData;
@@ -403,7 +402,7 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  let dilution: number = (product_application_rate_lha / delivery_rate_of_mix) * 100;
+  let dilution: number = (product_application_rate_lha / 1000 / delivery_rate_of_mix) * 100;
 
   let species: any[] = [];
 
@@ -583,7 +582,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 
       outputHerb.plantIndex = plant_index;
       outputHerb.herbIndex = index;
-      outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+      outputHerb.dilution = (herbicides[index].product_application_rate / 1000 / delivery_rate_of_mix) * 100;
       outputHerb.amount_of_undiluted_herbicide_used_liters =
         ((outputHerb.dilution / 100) * amount_of_mix * percent_area_covered) / 100;
 
@@ -603,7 +602,6 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 
     outputInvPlantsArr.push(outputSpecie);
   });
-
 
   return { invasive_plants: [...outputInvPlantsArr] };
 };
