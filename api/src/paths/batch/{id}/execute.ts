@@ -17,10 +17,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Batch upload processor',

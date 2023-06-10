@@ -162,7 +162,6 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
   const dispatch = useDispatch();
   const tabsConfigState = useSelector(selectTabs);
   const history = useHistory();
-  console.log(jsonRepresentation)
   return (
     <>
       <table className={'batchAlternateLayout'}>
