@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 
 const dropzoneStyle = {
@@ -10,6 +10,7 @@ const dropzoneStyle = {
   borderRadius: '4px',
   cursor: 'pointer'
 } as React.CSSProperties;
+
 
 const BatchFileComponent = ({ setData, ready, disabled }) => {
   const [filename, setFilename] = useState(null);
@@ -69,7 +70,7 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
           Clear
         </Button>
       </div>
-      </>
+    </>
   );
 };
 

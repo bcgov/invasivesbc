@@ -79,7 +79,6 @@ export const BatchExecutionService = {
   ): Promise<BatchExecutionResult> => {
     defaultLog.info({ message: `Starting batch exec run, status->${desiredFinalStatus}, error rows->${errorRowsBehaviour}` });
     const createdIds = [];
-
     const statusQueryResult = await dbConnection.query({
       text: `SELECT status
              from batch_uploads
@@ -90,9 +89,19 @@ export const BatchExecutionService = {
     if (statusQueryResult.rowCount !== 1) {
       throw new Error('Batch not in executable status');
     }
-
-    for (const row of validatedBatchData.rows) {
-      //@todo skip errored rows
+    for (const [index, row] of validatedBatchData.rows.entries()) {
+      let errorRow = false;
+      if (row.rowValidationResult.find(vr => !vr.valid)) {
+        errorRow = true;
+      } else {
+        Object.values(row.data).forEach((propertyValue: any) => {
+          if ((propertyValue.validationMessages.length > 0 && propertyValue.validationMessages.find(vm => vm.severity === 'error')) || row.RowValidationResult) {
+            errorRow = true;
+          }
+        });
+      }
+      if (errorRow && errorRowsBehaviour === 'Skip')
+        continue;
 
       const { id: activityId, shortId, payload, geog } = _mapToDBObject(
         row,
@@ -111,11 +120,11 @@ export const BatchExecutionService = {
       const qc = {
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
                                                    activity_subtype, form_status, created_by, updated_by,
-                                                   created_by_with_guid, updated_by_with_guid, geog,
+                                                   created_by_with_guid, updated_by_with_guid, geog, row_number,
                                                    species_positive,
                                                    species_negative,
                                                    species_treated)
-               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
         values: [
           activityId,
           shortId,
@@ -123,12 +132,13 @@ export const BatchExecutionService = {
           id,
           template.type,
           template.subtype,
-          desiredFinalStatus,
+          errorRow ? errorRowsBehaviour : desiredFinalStatus,
           userInfo?.preferred_username,
           userInfo?.preferred_username,
           guid,
           guid,
           geog,
+          index,
           JSON.stringify(payload['species_positive']),
           JSON.stringify(payload['species_negative']),
           JSON.stringify(payload['species_treated'])
@@ -155,7 +165,7 @@ export const BatchExecutionService = {
 
     await dbConnection.query({
       text: `UPDATE batch_uploads
-             set status='SUCCESS'
+             set status = 'SUCCESS'
              where id = $1
                and status = 'NEW'`,
       values: [id]

@@ -107,7 +107,7 @@ function getBatch(): RequestHandler {
                 json_representation,
                 validation_messages,
                 template,
-                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
+                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status, 'row_number', aid.row_number) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
                 created_at,
                 created_by
          from batch_uploads b
@@ -125,7 +125,15 @@ function getBatch(): RequestHandler {
       }
 
       const retrievedBatch = response.rows[0];
-
+      let created_activities_with_skiped_rows = []
+      let hasSkippedRows = false;
+      for (let index = 0; index < retrievedBatch['json_representation'].rows.length; index++) {
+        created_activities_with_skiped_rows[index] = retrievedBatch['created_activities'].find(activity => activity.row_number == index)
+        if (created_activities_with_skiped_rows[index])
+          hasSkippedRows = true;
+      }
+      if (hasSkippedRows)
+        retrievedBatch['created_activities'] = created_activities_with_skiped_rows;
       const template = await TemplateService.getTemplateWithExistingDBConnection(retrievedBatch.template, connection);
       if (!template) {
         return res.status(500).json({
