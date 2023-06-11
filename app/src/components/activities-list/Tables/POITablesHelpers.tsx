@@ -51,6 +51,14 @@ export const point_of_interest_iapp_default_headers = [
   {
     key: 'monitored',
     name: 'Monitored'
+  },
+  {
+    key: 'regional_district',
+    name: 'Regional District'
+  },
+  {
+    key: 'regional_invasive_species_organization',
+    name: 'Regional Invasive Species Organization'
   }
 ];
 
@@ -72,6 +80,9 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
     let lastSurveyed = new Date(record?.point_of_interest_payload?.form_data?.point_of_interest_data?.date_created);
     const jurisdictions = record?.point_of_interest_payload?.jurisdictions;
     const surveys = record?.point_of_interest_payload?.form_data?.surveys;
+    const regional_district = record?.point_of_interest_payload?.regional_district;
+    const regional_invasive_species_organization =
+      record?.point_of_interest_payload?.regional_invasive_species_organization;
 
     // releases and dispersals
     const bioRelease = checkIfTheresArray(record?.point_of_interest_payload?.form_data?.biological_treatments);
@@ -109,7 +120,9 @@ export const mapPOI_IAPP_ToDataGridRows = (activities) => {
       chem_treatment: chemTreatment,
       mech_treatment: mechTreatment,
       bio_dispersal: bioDispersal,
-      monitored: monitored
+      monitored: monitored,
+      regional_district: regional_district,
+      regional_invasive_species_organization: regional_invasive_species_organization
     };
   });
 };
