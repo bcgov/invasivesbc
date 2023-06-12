@@ -335,5 +335,12 @@ export async function down(knex: Knex): Promise<void> {
           WHERE 1 = 1
         WITH DATA;
 
+        drop index if exists iapp_site_summary_and_geojson_site_id_idx;
+
+        CREATE index if not exists iapp_site_summary_and_geojson_site_id_idx ON invasivesbc.iapp_site_summary_and_geojson 
+        USING btree (site_id, site_paper_file_id, jurisdictions, all_species_on_site, 
+        max_survey, agencies, has_biological_treatments, has_chemical_treatments,  
+        has_mechanical_treatments, has_biological_dispersals, monitored, all_species_on_site_as_array);
+
   `);
 }
