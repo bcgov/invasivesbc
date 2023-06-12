@@ -121,7 +121,7 @@ const BatchMetadata = ({ batch }) => {
               <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={!execErrorRowsTreatment || !execFinalState}>
+                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={!execFinalState || batch?.globalValidationMessages?.length !== 0}>
                       Execute
                     </Button>
                   </td>

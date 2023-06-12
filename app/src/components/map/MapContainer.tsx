@@ -65,6 +65,7 @@ import { LegendsPopup } from './Tools/ToolTypes/Data/LegendsPopup';
 import { BoundaryLayerDisplayForRecordSetToggle } from './LayerLoaderHelpers/BoundaryLayerDisplayForRecordSetToggle';
 import { IAPPExtentButton } from './Tools/ToolTypes/Data/IAPPExtentButton';
 import { PMTileLayer } from './Layers/PMTileLayer';
+import booleanContains from '@turf/boolean-contains';
 
 const ReactLeafletEditable = ReactLeafletEditableFix.default
   ? ReactLeafletEditableFix.default
@@ -129,7 +130,7 @@ export const q = async.queue(function async(task, callback) {
   console.log('-----------------------------------');
   q.remove((worker: any) => {
     if (worker.data) {
-      if (task.layer === worker.data.layer && booleanWithin(task.extent, worker.data.extent)) {
+      if (task.layer === worker.data.layer && booleanContains(worker.data.extent, task.extent)) {
         console.log(
           '%cReceived a request for the layer that has already been requested and which area is within the old request area. Deleting old request...',
           'color:red'

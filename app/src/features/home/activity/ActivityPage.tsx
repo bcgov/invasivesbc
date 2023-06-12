@@ -30,6 +30,7 @@ import {
 } from 'state/actions';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
+import booleanContains from '@turf/boolean-contains';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -417,7 +418,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
-        if (booleanWithin(activityInStore.activity.geometry[0] as any, bcArea.features[0] as any)) {
+        if (booleanContains(bcArea.features[0] as any, activityInStore.activity.geometry[0] as any )) {
           //saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
