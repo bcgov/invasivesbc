@@ -14,10 +14,10 @@ const DB_DATABASE: string = process.env.DB_DATABASE || 'invasives';
 const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
 
 const poolConfig: PoolConfig = {
-  user: 'invasivebc',
-  password: 'Invasive@BC#2',
-  database: "InvasivesBC",
-  port: 5678,
+  user: DB_USERNAME,
+  password: DB_PASSWORD,
+  database: DB_DATABASE,
+  port: DB_PORT,
   host: DB_HOST,
   max: 20,
   connectionTimeoutMillis: 0, // default
