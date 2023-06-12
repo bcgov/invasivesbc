@@ -396,7 +396,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           recordTables: {
             ...state.recordTables,
             [id]: {
-              ...state.recordTables[id],
+              ...state.recordTables?.[id],
               page: action.payload.page,
               limit: action.payload.limit
             }
