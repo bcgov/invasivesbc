@@ -119,25 +119,9 @@ const BatchMetadata = ({ batch }) => {
                   </td>
               </tr>
               <tr>
-                <td>
-                  Treatment of rows with errors:
-                </td>
-                <td>
-                  <select
-                    value={execErrorRowsTreatment}
-                    onChange={(e) => {
-                      setExecErrorRowsTreatment(e.target.value);
-                    }}>
-                    <option value='' disabled>Select</option>
-                    <option value={'Draft'}>Put in Draft</option>
-                    <option value={'Skip'}>Skip</option>
-                  </select>
-                  </td>
-              </tr>
-              <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={!execErrorRowsTreatment || !execFinalState}>
+                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={!execFinalState || batch?.globalValidationMessages?.length !== 0}>
                       Execute
                     </Button>
                   </td>

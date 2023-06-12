@@ -24,7 +24,8 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
       reader.onerror = () => setStatusMessage('file reading has failed');
 
       reader.onload = () => {
-        const encodedString = btoa(reader.result as string);
+        const encodedString = btoa(unescape(encodeURIComponent(reader.result as string)))
+
         setData(encodedString);
       };
 

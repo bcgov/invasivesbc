@@ -304,10 +304,10 @@ async function _validateCell(
     case 'WKT':
       // validate if not polygon first to avoid WKT autofill and subsequent crashes
       const shape = data.split(' (')[0];
-      if (shape !== 'POLYGON' && !template.key.includes('temp')) {
+      if (shape !== 'POLYGON' && shape !== 'MULTIPOLYGON' && !template.key.includes('temp')) {
         result.validationMessages.push({
           severity: 'error',
-          messageTitle: `Geometry shape must be a Polygon, value read as ${shape}`
+          messageTitle: `Geometry shape must be a Polygon or Multipolygon, value read as ${shape}`
         });
         break;
       } else if (shape !== 'POINT' && template.key.includes('temp')) {
@@ -383,13 +383,13 @@ async function _validateCell(
         case 'no':
         case 'f':
         case 'false':
-          result.parsedValue = 'False';
+          result.parsedValue = 'Yes';
           break;
         case 'y':
         case 'yes':
         case 't':
         case 'true':
-          result.parsedValue = 'True';
+          result.parsedValue = 'No';
           break;
         case 'u':
         case 'unknown':
