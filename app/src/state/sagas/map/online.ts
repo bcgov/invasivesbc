@@ -43,34 +43,30 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
       layerState: action.payload.layerState
     }
   });
-
 }
 
-
-
-
-
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
-/*  const networkReturn = yield InvasivesAPI_Call(
-    'GET',
-    `/api/points-of-interest-lean/`,
-    action.payload.IAPPFilterCriteria
-  );
-  */
+  // const networkReturn = yield InvasivesAPI_Call(
+  //   'GET',
+  //   `/api/points-of-interest-lean/`,
+  //   action.payload.IAPPFilterCriteria
+  // );
 
-
-  // no cache set to get around request origin being cached incorrectly accross tabs (dev/test/prod)
+  //no cache set to get around request origin being cached incorrectly accross tabs (dev/test/prod)
   const networkReturn = yield Http.request({
     method: 'GET',
-    headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-cache' },
-    url: 'https://nrs.objectstore.gov.bc.ca/seeds/x'
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Encoding': 'gzip',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache'
+    },
+    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson'
   });
 
-
-
-  const parsed = JSON.parse(networkReturn.data)
+  const parsed = JSON.parse(networkReturn.data);
   // have no idea why but i'm getting both types back today:
-  const rows = (parsed?.result)? parsed?.result: parsed?.data.result
+  const rows = parsed?.result ? parsed?.result : parsed?.data.result;
   let featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {
@@ -138,7 +134,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
 
   if (networkReturn.data.result || networkReturn.data?.data?.result) {
-    const list = networkReturn.data?.data?.result? networkReturn.data?.data?.result: networkReturn.data?.result
+    const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
     const IDList = list.map((row) => {
       return row.activity_id;
     });

@@ -102,7 +102,11 @@ initialize({
   // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
-    defaultLog.error({ label: 'errorHandler', message: 'unexpected error', error });
+    defaultLog.error({
+      label: 'errorHandler',
+      message: 'unexpected error',
+      error: error?.message + error?.stack || error
+    });
 
     res.status(error.status || error.code || 500).json(error);
   }
