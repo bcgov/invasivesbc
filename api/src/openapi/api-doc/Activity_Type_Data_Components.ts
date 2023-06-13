@@ -82,7 +82,7 @@ export const Monitoring_Biocontrol = {
 export const Monitoring_Biocontrol_Release = {
   title: 'Monitoring Information',
   type: 'object',
-  required: ['activity_persons', 'linked_id'],
+  required: ['activity_persons'],
   properties: {
     legacy_iapp_id: {
       type: 'number',
