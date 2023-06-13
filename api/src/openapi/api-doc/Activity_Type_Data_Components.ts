@@ -28,7 +28,7 @@ export const Observation = {
 export const Monitoring = {
   title: 'Monitoring Information',
   type: 'object',
-  required: ['linked_id', 'activity_persons'],
+  required: ['activity_persons'],
   properties: {
     linked_id: {
       type: 'string',

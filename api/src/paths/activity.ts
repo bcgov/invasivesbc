@@ -425,7 +425,7 @@ function updateActivity(): RequestHandler {
       }
     }
 
-    if (response.rows[0].activity_type === 'Monitoring') {
+    if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
       const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
       const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
       const linked_species_treated = response.rows[0].species_treated;
