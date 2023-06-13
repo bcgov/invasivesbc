@@ -57,10 +57,12 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Accept-Encoding': 'gzip',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Cache-Control': 'max-age=86400'
     },
-    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson'
+    
+    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
   });
 
   const parsed = JSON.parse(networkReturn.data);
