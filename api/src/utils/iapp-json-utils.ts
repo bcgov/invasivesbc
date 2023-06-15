@@ -335,10 +335,10 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
           point_of_interest_subtype: 'First Load' // Could not find
         },
         biogeoclimatic_zones: row['biogeoclimatic_zone'],
-        regional_invasive_species_organization_areas: '', // COME BACK LATER
+        regional_invasive_species_organization: extract.regional_invasive_species_organization,
         invasive_plant_management_areas: '', // Could not find
         forest_cover_ownership: '', // Could not find
-        regional_districts: '', // Could not find
+        regional_district: extract.regional_district,
         flnro_districts: '', // Could not find
         moti_districts: '', // Could not find
         media_keys: '', // Could not find

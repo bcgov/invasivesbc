@@ -184,6 +184,16 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`LOWER(${gridFilters.agencies})`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.regional_district) {
+        sqlStatement.append(SQL` AND LOWER(i.regional_district::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.regional_district})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
+      if (gridFilters.regional_invasive_species_organization) {
+        sqlStatement.append(SQL` AND LOWER(i.regional_invasive_species_organization::text) LIKE '%'||`);
+        sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
       if (gridFilters.bio_release) {
         sqlStatement.append(SQL` AND has_biological_treatments = CASE
         WHEN LOWER('Yes') LIKE '%'||`);
@@ -283,7 +293,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
       chem_treatment: 'has_chemical_treatments',
       mech_treatment: 'has_mechanical_treatments',
       bio_dispersal: 'has_biological_dispersals',
-      monitored: 'monitored'
+      monitored: 'monitored',
+      regional_district: 'regional_district',
+      regional_invasive_species_organization: 'regional_invasive_species_organization'
     };
     const order = searchCriteria.order.map((sortColumn) => {
       return `i.${columnMap[sortColumn['columnKey']]} ${sortColumn['direction']}`;
