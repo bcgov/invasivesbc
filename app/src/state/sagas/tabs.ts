@@ -40,6 +40,11 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
         label: 'Home',
         path: '/home/landing',
         icon: TabIconName.Home
+      },
+      {
+        label: 'Training',
+        path: '/home/training',
+        icon: TabIconName.Training
       }
     ];
 

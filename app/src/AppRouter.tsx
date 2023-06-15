@@ -11,6 +11,7 @@ import {getDesignTokens} from 'utils/CustomThemeProvider';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {CssBaseline} from '@mui/material';
 import LandingPage from './features/home/landing/LandingPage';
+import {TrainingPage} from "./pages/Training";
 
 const BatchTemplates = lazy(() => import("./features/home/batch/BatchTemplates"));
 const BatchCreateNew = lazy(() => import("./features/home/batch/BatchCreateNew"));
@@ -78,6 +79,12 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           path="/home/landing"
           title={getTitle('Landing')}
           component={LandingPage}
+        />
+        <AppRoute
+          accessLevel={AccessLevel.PUBLIC}
+          path="/home/training"
+          title={getTitle('Training')}
+          component={TrainingPage}
         />
         <AppRoute
           accessLevel={AccessLevel.PUBLIC}

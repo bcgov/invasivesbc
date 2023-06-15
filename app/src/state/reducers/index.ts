@@ -12,6 +12,7 @@ import { createTabsReducer } from './tabs';
 import { createMapReducer } from './map';
 import { createIappsiteReducer } from './iappsite';
 import {createBatchReducer} from "./batch";
+import {createTrainingVideosReducer} from "./training_videos";
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -24,7 +25,8 @@ function createRootReducer(config: AppConfig) {
     UserSettings: createUserSettingsReducer(config),
     Tabs: createTabsReducer(config),
     Map: createMapReducer(config),
-    Batch: createBatchReducer()
+    Batch: createBatchReducer(),
+    TrainingVideos: createTrainingVideosReducer()
   });
 }
 

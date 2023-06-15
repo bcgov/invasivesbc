@@ -1,8 +1,9 @@
-import {AdminPanelSettings, Assessment, Assignment, FileUpload, Home, HomeWork, Map} from '@mui/icons-material';
+import {AdminPanelSettings, Assessment, Assignment, FileUpload, Home, HomeWork, Map, School} from '@mui/icons-material';
 import React from 'react';
 
 export enum TabIconName {
   Home = 'Home',
+  Training = 'Training',
   Map = 'Map',
   Homework = 'Homework',
   Assignment = 'Assignment',
@@ -63,6 +64,12 @@ export const getTabIconByName = (iconName: TabIconName): React.ReactElement => {
       return (
         <>
           <AdminPanelSettings fontSize={'small'} />
+        </>
+      );
+    case TabIconName.Training:
+      return (
+        <>
+          <School fontSize={'small'} />
         </>
       );
     default:
