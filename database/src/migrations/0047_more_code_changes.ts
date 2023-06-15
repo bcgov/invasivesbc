@@ -22,8 +22,10 @@ export async function up(knex: Knex): Promise<void> {
     (code_header_id, code_name, code_description, code_sort_order, valid_from, valid_to, created_at, updated_at, created_by_user_id, updated_by_user_id)
     VALUES(79, 'PM', 'Pomerleau Inc.', 1, now(), null, now(), now(), 1, 1),
     (79, 'MGP', 'MGP Contracting', 1, now(), null, now(), now(), 1, 1),
+    (79, 'DRFN', 'Doig River First Nation', 1, now(), null, now(), now(), 1, 1),
     (44, 'NCM', 'Newcrest Mining Ltd.', 1, now(), null, now(), now(), 1, 1),
-    (44, 'NWT', 'Northwestel', 1, now(), null, now(), now(), 1, 1);
+    (44, 'NWT', 'Northwestel', 1, now(), null, now(), now(), 1, 1),
+    (44, 'DRFN', 'Doig River First Nation', 1, now(), null, now(), now(), 1, 1);
     
     UPDATE code AS c
     SET code_sort_order = subquery.row_number
@@ -42,8 +44,8 @@ export async function down(knex: Knex): Promise<void> {
 
     DELETE FROM code
     WHERE (code_header_id = 44
-    AND code_name IN ('NCM', 'NWT'))
-    or (code_header_id = 79 and code_name IN ('PM', 'MGP'));
+    AND code_name IN ('NCM', 'NWT', 'DRFN'))
+    or (code_header_id = 79 and code_name IN ('PM', 'MGP', 'DRFN'));
 
     update code
     set code_name = 'INA',
