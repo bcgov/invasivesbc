@@ -27,7 +27,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     const invasive_plants = activity.form_data.activity_subtype_data.chemical_treatment_details?.invasive_plants ?? [];
     const herbicides = activity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides ?? [];
 
-    if (invasive_plants.length > 1) {
+    if (invasive_plants.length > 0) {
       const invasivePlantIndex = invasive_plants.map((plant, index) => {
         return { ...plant, index };
       });
@@ -74,6 +74,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.delivery_rate_of_mix;
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].product_application_rate =
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.herbicides?.[0]?.product_application_rate;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].index = 0;
 
       if (
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.herbicides[0]?.herbicide_type_code ===
