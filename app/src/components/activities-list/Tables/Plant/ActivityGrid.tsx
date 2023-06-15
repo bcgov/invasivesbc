@@ -1,6 +1,6 @@
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { Box, Button, Chip, CircularProgress, IconButton, List, Typography } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, IconButton, List, Tooltip, Typography } from '@mui/material';
 import { useDataAccess } from 'hooks/useDataAccess';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import DataGrid, { HeaderRendererProps, Row, SortColumn } from 'react-data-grid';
@@ -20,6 +20,10 @@ import { useSelector } from '../../../../state/utilities/use_selector';
 import { selectAuth } from '../../../../state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useDispatch } from 'react-redux';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import TuneIcon from '@mui/icons-material/Tune';
+
 import {
   PAGE_OR_LIMIT_UPDATE,
   SORT_COLUMN_STATE_UPDATE,
@@ -456,9 +460,11 @@ const ActivityGrid = (props) => {
 
   const FilterToggle = (props) => {
     return (
+      <Tooltip title={filters.enabled ? 'Lock Filters to enable sorting, then click on column headers to sort.' : 'Click here to edit filters'}>
       <IconButton color={'primary'} style={props.style} onClick={toggleFilters}>
-        {filters.enabled ? <FilterAltIcon /> : <FilterAltOff />}
+        {filters.enabled ? <><LockOpenIcon/><TuneIcon /></> : <><LockIcon/><TuneIcon/></>}
       </IconButton>
+      </Tooltip>
     );
   };
 
