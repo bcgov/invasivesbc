@@ -49,6 +49,10 @@ export const ActivitiesDefaultHeaders = () => {
       name: 'Activity Date'
     },
     {
+      key: 'date_edited',
+      name: 'Date Edited'
+    },
+    {
       key: 'project_code',
       name: 'Project Code'
     },
@@ -168,6 +172,7 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
+      date_edited: new Date(activity?.received_timestamp).toString(),
       project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,

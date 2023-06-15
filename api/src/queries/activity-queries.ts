@@ -497,6 +497,13 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
         sqlStatement.append(SQL`||'%'`);
       }
+      if (gridFilters.date_created) {
+        sqlStatement.append(
+          SQL` AND LOWER(to_char(a.created_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
+        );
+        sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
+        sqlStatement.append(SQL`||'%'`);
+      }
       if (gridFilters.jurisdiction) {
         sqlStatement.append(SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.jurisdiction})`);
@@ -681,6 +688,7 @@ export const getActivitiesSQL = (
       type: 'activity_type',
       subtype: 'activity_subtype_full', //also in payload stuff (activity_type is too but different) ((with subtype update, activity_subtype is also different now))
       activity_date: 'created_timestamp',
+      date_edited: 'received_timestamp',
       received_timestamp: 'received_timestamp',
       jurisdiction: 'jurisdiction_display',
       species_positive: 'species_positive_full',
