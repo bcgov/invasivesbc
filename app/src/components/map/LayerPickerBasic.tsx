@@ -46,6 +46,18 @@ export const LayerPickerBasic = (props) => {
           />
         </LayerGroup>
       </LayersControl.Overlay>
+      <LayersControl.Overlay checked={false} name="Conservancy Areas">
+        <LayerGroup>
+          <DataBCLayer
+            enabled={true}
+            transparent={true}
+            layer_mode={LayerMode.WMSOnline}
+            bcgw_code="WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW"
+            opacity={0.3}
+            zIndex={3515}
+          />
+        </LayerGroup>
+      </LayersControl.Overlay>
       <LayersControl.Overlay checked={false} name="Municipality Boundaries">
         <LayerGroup>
           <DataBCLayer
