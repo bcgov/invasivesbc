@@ -31,6 +31,7 @@ import {
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
 import booleanContains from '@turf/boolean-contains';
+import { selectMap } from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -461,6 +462,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  const mapState = useSelector(selectMap)
+
   return (
     <Container className={props.classes.container}>
       {!activityInStore.activity && (
@@ -501,7 +504,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
 
-      {useMemo(
+
+      {mapState?.map_center && useMemo(
         () => (
           <ActivityMapComponent
             classes={classes}
@@ -511,6 +515,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             showDrawControls={true}
             //isLoading={isLoading}
             isLoading={false}
+            center={mapState?.map_center}
+            zoom={mapState?.map_zoom}
           />
         ),
         [classes, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
