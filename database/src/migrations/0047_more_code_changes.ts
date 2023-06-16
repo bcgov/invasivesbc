@@ -6,17 +6,17 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = invasivesbc,public;
 
     delete from code
-    where code_header_id = 44 and code_name in ('INF', 'INR', 'INM')
+    where code_header_id = 44 and code_name in ('INF', 'INR', 'INM');
     
     update code
     set code_name = 'INX',
         code_description = 'Innergex'
-    where code_header_id = 44 and code_name = 'INA'
+    where code_header_id = 44 and code_name = 'INA';
     
     update code
     set code_name = 'DFO',
         code_description = 'Department of Fisheries and Oceans'
-    where code_header_id = 44 and code_name = 'SEP'
+    where code_header_id = 44 and code_name = 'SEP';
     
     INSERT INTO code
     (code_header_id, code_name, code_description, code_sort_order, valid_from, valid_to, created_at, updated_at, created_by_user_id, updated_by_user_id)
@@ -50,7 +50,7 @@ export async function down(knex: Knex): Promise<void> {
     update code
     set code_name = 'INA',
         code_description = 'Innergex - Ashlu'
-    where code_header_id = 44 and code_name = 'INX'
+    where code_header_id = 44 and code_name = 'INX';
 
     INSERT INTO code
     (code_header_id, code_name, code_description, code_sort_order, valid_from, valid_to, created_at, updated_at, created_by_user_id, updated_by_user_id)
