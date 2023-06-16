@@ -28,6 +28,9 @@ import { ActivityMapExtentToggle } from 'components/map/Tools/ToolTypes/Nav/Acti
 import { ExtentListener } from 'components/map/ExtentListener';
 import { useSelector } from 'react-redux';
 import { selectMap } from 'state/reducers/map';
+import { select } from 'redux-saga/effects';
+import { el } from 'date-fns/locale';
+import { useMap } from 'react-leaflet';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -41,16 +44,11 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
 };
 
 const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
-  const mapState = useSelector(selectMap)
   const workingPolyline = [];
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
   const [map, setMap] = useState(null);
   const [dialog, setDialog] = useState(false);
-
-
-
-
 
   const isGreaterDistanceThan = (from, to, distanceV) => {
     let returnVal = null;
@@ -114,7 +112,7 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
       return; // allow for cancel
     }
 
-    let result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))))
+    let result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))));
     const geo: any = {
       type: 'Feature',
       geometry: {
@@ -125,7 +123,6 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     };
     // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
-    
   };
 
   // define default marker icon to override src defined in leaflet.css
@@ -137,7 +134,9 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
 
   const getGPSLocationEntry = async () => {
     const position = await Geolocation.getCurrentPosition();
-    const geoForUpdate = JSON.parse(JSON.stringify([turf.point([position.coords.longitude, position.coords.latitude])]))
+    const geoForUpdate = JSON.parse(
+      JSON.stringify([turf.point([position.coords.longitude, position.coords.latitude])])
+    );
     props.geometryState.setGeometry(geoForUpdate);
   };
 
@@ -174,65 +173,66 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
     return <></>;
   }
 
-  return (
-    <MapRecordsContextProvider>
-      <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={props.classes.heading}>Map</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid justifyContent={'space-around'} container>
-            <Grid
-              sx={{ flexWrap: 'nowrap' }}
-              container
-              justifyContent={'center'}
-              alignItems={'stretch'}
-              paddingBottom={'10px'}
-              spacing={'space-evenly'}
-              xs={3}
-              item>
-              <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
-                Enter UTM Manually
-              </Button>
-              <Button
-                id="drop-pin-button"
-                disabled={false}
-                variant="contained"
-                color="primary"
-                onClick={() => setDialog(true)}>
-                Drop Pin
-              </Button>
-              <Dialog open={dialog} onClose={() => setDialog(false)}>
-                <DialogTitle>Use current GPS position?</DialogTitle>
-                <DialogActions>
-                  <Button
-                    onClick={async () => {
-                      getGPSLocationEntry();
-                      setDialog(false);
-                    }}>
-                    Yes
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      new (L as any).Draw.Marker(map, {
-                        icon: DefaultIcon
-                      }).enable();
-                      setDialog(false);
-                    }}>
-                    No
-                  </Button>
-                </DialogActions>
-                <DialogActions>
-                  <Button onClick={() => setDialog(false)}>Cancel</Button>
-                </DialogActions>
-              </Dialog>
-            </Grid>
-            {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+
+    return (
+      <MapRecordsContextProvider>
+        <Accordion defaultExpanded={true}>
+          <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
+            <Typography className={props.classes.heading}>Map</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid justifyContent={'space-around'} container>
+              <Grid
+                sx={{ flexWrap: 'nowrap' }}
+                container
+                justifyContent={'center'}
+                alignItems={'stretch'}
+                paddingBottom={'10px'}
+                spacing={'space-evenly'}
+                xs={3}
+                item>
+                <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
+                  Enter UTM Manually
+                </Button>
+                <Button
+                  id="drop-pin-button"
+                  disabled={false}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setDialog(true)}>
+                  Drop Pin
+                </Button>
+                <Dialog open={dialog} onClose={() => setDialog(false)}>
+                  <DialogTitle>Use current GPS position?</DialogTitle>
+                  <DialogActions>
+                    <Button
+                      onClick={async () => {
+                        getGPSLocationEntry();
+                        setDialog(false);
+                      }}>
+                      Yes
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        new (L as any).Draw.Marker(map, {
+                          icon: DefaultIcon
+                        }).enable();
+                        setDialog(false);
+                      }}>
+                      No
+                    </Button>
+                  </DialogActions>
+                  <DialogActions>
+                    <Button onClick={() => setDialog(false)}>Cancel</Button>
+                  </DialogActions>
+                </Dialog>
+              </Grid>
+              {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
               </Button>
             </Grid> */}
-            {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
+              {/* <Grid container justifyContent={'center'} alignItems={'stretch'} paddingBottom={'10px'} xs={3} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record Buffered Line!
               </Button>
@@ -242,16 +242,21 @@ const ActivityMapComponent: React.FC<IMapContainerProps> = (props) => {
                 End Track Recording
               </Button>
             </Grid> */}
-            <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} activityId={props.activityId} setMapForActivityPage={setMap}>
-                <RecordSetLayersRenderer />
-              </MapContainer>
+              <Grid xs={12} className={props.classes.mapContainer} item>
+                <MapContainer
+                  {...props}
+                  activityId={props.activityId}
+                  setMapForActivityPage={setMap}
+                  zoom={props.zoom}
+                  center={props.center}>
+                  <RecordSetLayersRenderer />
+                </MapContainer>
+              </Grid>
             </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-    </MapRecordsContextProvider>
-  );
+          </AccordionDetails>
+        </Accordion>
+      </MapRecordsContextProvider>
+    );
 };
 
 export default ActivityMapComponent;

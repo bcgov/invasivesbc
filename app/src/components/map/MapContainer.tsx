@@ -270,9 +270,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <ReactLeafletMapContainer
         editable={true}
         //center={[55, -128]}
-        center={mapState.center}
+        center={props.center}
         //zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
-        zoom={mapState.zoom}
+        zoom={props.zoom}
         bounceAtZoomLimits={true}
         maxZoom={mapMaxZoom}
         minZoom={1}
@@ -306,6 +306,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
+            <ExtentListener/>
             <AccuracyToggle />
             <AccuracyMarker />
             <BaseMapToggle />

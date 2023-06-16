@@ -368,6 +368,7 @@ const PageContainer = (props) => {
     }
   };
 
+
   /* set up main menu bar options: */
   return (
     <>
@@ -399,8 +400,8 @@ const PageContainer = (props) => {
               showDrawControls={showDrawControls}
               setShowDrawControls={setShowDrawControls}
               showBoundaryMenu={true}
-              center={userSettings?.mapCenter}
-              zoom={5}
+              center={mapState.activity_center}
+              zoom={mapState?.activity_zoom}
               mapId={'mainMap'}
               geometryState={{ geometry, setGeometry }}>
               {mapState.IAPPGeoJSON?.features.length ? <RecordSetLayersRenderer /> : <></>}

@@ -67,8 +67,10 @@ class MapState {
   IAPPGeoJSON: any;
   LeafletWhosEditing: LeafletWhosEditingEnum;
   legendsPopup: any;
-  zoom: number;
-  center: L.LatLngExpression;
+  map_zoom: number;
+  map_center: L.LatLngExpression;
+  activity_zoom: number;
+  activity_center: L.LatLngExpression;
   activityPageMapExtentToggle: boolean;
   labelBoundsPolygon: any;
   IAPPBoundsPolygon: any;
@@ -76,8 +78,10 @@ class MapState {
 
   constructor() {
     this.initialized = false;
-    this.center = [53, -127];
-    this.zoom = 5;
+    this.map_center = [53, -127];
+    this.map_zoom = 5;
+    this.activity_center = [53, -127];
+    this.activity_zoom = 5;
     this.userHeading = null;
     this.baseMapToggle = false;
     this.HDToggle = false;
@@ -121,12 +125,21 @@ const initialState = new MapState();
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     switch (action.type) {
+      //splitting extent vars to two pairs solves render loop
       case MAIN_MAP_MOVE: {
-        return {
-          ...state,
-          zoom: action.payload.zoom,
-          center: action.payload.center
-        };
+        if (action.payload.tab === 'Current Activity') {
+          return {
+            ...state,
+            activity_zoom: action.payload.zoom,
+            activity_center: action.payload.center
+          };
+        } else {
+          return {
+            ...state,
+            map_zoom: action.payload.zoom,
+            map_center: action.payload.center
+          };
+        }
       }
       case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
         return {
