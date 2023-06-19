@@ -137,7 +137,7 @@ const TemplatePreview = ({ name, id }) => {
           <thead>
             <tr>
               <th>Column</th>
-              <th>Date Type</th>
+              <th>Data Type</th>
               <th>Required?</th>
               <th>Acceptable Values</th>
             </tr>
