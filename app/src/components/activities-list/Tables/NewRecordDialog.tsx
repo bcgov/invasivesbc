@@ -76,13 +76,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
   useEffect(() => {
     const categories = [];
-    if (
-      accessRoles.some((role) => {
-        return role.role_name.includes('plant');
-      })
-    ) {
       categories.push('Plant');
-    }
     if (
       accessRoles.some((role) => {
         return role.role_name === 'frep';
