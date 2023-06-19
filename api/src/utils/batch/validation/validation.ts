@@ -4,7 +4,8 @@ import {
   parseGeoJSONasWKT,
   parseWKTasGeoJSON,
   parsedGeoType,
-  validateAsWKT
+  validateAsWKT,
+  multipolygonIsConnected
 } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
@@ -316,6 +317,14 @@ async function _validateCell(
           messageTitle: `Geometry shape must be a Point, value read as ${shape}`
         });
         break;
+      }
+
+      // if doesn't break from polygon or multipolygon, check for possible segments
+      if (shape === 'MULTIPOLYGON' && !multipolygonIsConnected(data)) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `This multipolygon has more than one distinct polygons`
+        });
       }
 
       // hack for year one garbage import data
