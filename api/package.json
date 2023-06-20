@@ -9,7 +9,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "scripts": {
-    "start": "NODE_OPTIONS='--max-old-space-size=18192' ts-node src/server",
+    "start": "ts-node src/server",
     "clean": "gulp clean",
     "build": "gulp build",
     "start:reload": "./node_modules/.bin/nodemon src/server.ts --exec ts-node",
