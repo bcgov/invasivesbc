@@ -215,8 +215,7 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
       ...BaseUISchemaComponents.general_objects.Well_Information
     },
     Monitoring_ChemicalTerrestrialAquaticPlant_Information: {
-      ...BaseUISchemaComponents.activity_subtype_data_information_objects
-        .Monitoring_ChemicalTerrestrialAquaticPlant_Information
+      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_ChemicalPlants
     },
     'ui:order': ['Well_Information', 'Monitoring_ChemicalTerrestrialAquaticPlant_Information']
   },
@@ -234,8 +233,7 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
   },
   activity_subtype_data: {
     Monitoring_MechanicalTerrestrialAquaticPlant_Information: {
-      ...BaseUISchemaComponents.activity_subtype_data_information_objects
-        .Monitoring_MechanicalTerrestrialAquaticPlant_Information
+      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_MechanicalPlants
     },
     'ui:order': ['Monitoring_MechanicalTerrestrialAquaticPlant_Information']
   },
@@ -255,8 +253,7 @@ const Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = {
     Weather_Conditions: BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions: BaseUISchemaComponents.general_objects.Microsite_Conditions,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information:
-      BaseUISchemaComponents.activity_subtype_data_information_objects
-        .Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+      BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_BiocontrolPlants,
     Target_Plant_Phenology: BaseUISchemaComponents.general_objects.Target_Plant_Phenology,
     Spread_Results: BaseUISchemaComponents.general_objects.Spread_Results,
     'ui:order': [

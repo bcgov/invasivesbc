@@ -20,8 +20,11 @@ import {
 import {
   Monitoring_BiocontrolDispersal_Information,
   Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+  Monitoring_ChemicalPlants,
+  Monitoring_MechanicalPlants,
   Monitoring_ChemicalTerrestrialAquaticPlant_Information,
-  Monitoring_MechanicalTerrestrialAquaticPlant_Information
+  Monitoring_MechanicalTerrestrialAquaticPlant_Information,
+  Monitoring_BiocontrolPlants
 } from '../Components/Monitoring_Sub_Forms';
 import {
   Observation_PlantAquatic_Information,
@@ -101,14 +104,14 @@ export const Subtype_Data_Monitoring_ChemicalTerrestrialAquaticPlant = {
   title: 'invisible',
   properties: {
     Well_Information: Well_Information,
-    Monitoring_ChemicalTerrestrialAquaticPlant_Information: Monitoring_ChemicalTerrestrialAquaticPlant_Information
+    Monitoring_ChemicalTerrestrialAquaticPlant_Information: Monitoring_ChemicalPlants
   }
 };
 export const Subtype_Data_Monitoring_MechanicalTerrestrialAquaticPlant = {
   type: 'object',
   title: 'invisible',
   properties: {
-    Monitoring_MechanicalTerrestrialAquaticPlant_Information: Monitoring_MechanicalTerrestrialAquaticPlant_Information
+    Monitoring_MechanicalTerrestrialAquaticPlant_Information: Monitoring_MechanicalPlants
   }
 };
 export const Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant = {
@@ -117,7 +120,7 @@ export const Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant = {
   properties: {
     Weather_Conditions: Weather_Conditions,
     Microsite_Conditions: Microsite_Conditions,
-    Monitoring_BiocontrolRelease_TerrestrialPlant_Information: Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+    Monitoring_BiocontrolRelease_TerrestrialPlant_Information: Monitoring_BiocontrolPlants,
     Spread_Results: Spread_Results,
     Target_Plant_Phenology: Target_Plant_Phenology
   }

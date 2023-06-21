@@ -992,6 +992,12 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ]
 };
 
+const Monitoring_ChemicalPlants = {
+  items: {
+    ...Monitoring_ChemicalTerrestrialAquaticPlant_Information
+  }
+};
+
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -1015,6 +1021,12 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     'treatment_pass',
     'comment'
   ]
+};
+
+const Monitoring_MechanicalPlants = {
+  items: {
+    ...Monitoring_MechanicalTerrestrialAquaticPlant_Information
+  }
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
@@ -1054,6 +1066,12 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'total_bio_agent_quantity_estimated',
     'suitable_collection_site'
   ]
+};
+
+const Monitoring_BiocontrolPlants = {
+  items: {
+    ...Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+  }
 };
 
 const Monitoring_BiocontrolDispersal_Information = {
@@ -1199,8 +1217,11 @@ const BaseUISchemaComponents = {
     Observation_PlantTerrestrial_Information,
     Observation_PlantAquatic_Information,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
+    Monitoring_ChemicalPlants,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
+    Monitoring_MechanicalPlants,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+    Monitoring_BiocontrolPlants,
     Monitoring_BiocontrolDispersal_Information,
     Biocontrol_Collection_Information,
     Biocontrol_Release_Information

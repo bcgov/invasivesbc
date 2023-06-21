@@ -1,7 +1,7 @@
 import { Biological_Agent_Stage } from './General_Sub_Forms';
 
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
-  title: 'Chemical Treatment Monitoring Information',
+  title: '',
   type: 'object',
   required: ['management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
@@ -113,8 +113,20 @@ export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
     }
   }
 };
+
+export const Monitoring_ChemicalPlants = {
+  type: 'array',
+  default: [{}],
+  title: 'Chemical Treatment Monitoring Information',
+  minItems: 1,
+  items: {
+    ...Monitoring_ChemicalTerrestrialAquaticPlant_Information
+  },
+  'x-tooltip-text': 'Specify one or more invasive plants for this monitoring'
+};
+
 export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
-  title: 'Mechanical Monitoring Information',
+  title: '',
   type: 'object',
   required: ['management_efficacy_rating', 'evidence_of_treatment', 'invasive_plants_on_site'],
   properties: {
@@ -225,10 +237,21 @@ export const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     }
   }
 };
+
+export const Monitoring_MechanicalPlants = {
+  type: 'array',
+  default: [{}],
+  title: 'Mechanical Monitoring Information',
+  minItems: 1,
+  items: {
+    ...Monitoring_MechanicalTerrestrialAquaticPlant_Information
+  },
+  'x-tooltip-text': 'Specify one or more invasive plants for this monitoring'
+};
 //------------------- biocontrol ----------------------
 
 export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
-  title: 'Biological Monitoring Information',
+  title: 'test',
   type: 'object',
   required: [
     'biocontrol_present',
@@ -434,6 +457,18 @@ export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     }
   }
 };
+
+export const Monitoring_BiocontrolPlants = {
+  type: 'array',
+  default: [{}],
+  title: 'Biological Monitoring Information',
+  minItems: 1,
+  items: {
+    ...Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+  },
+  'x-tooltip-text': 'Specify one or more invasive plants for this monitoring'
+};
+
 export const Monitoring_BiocontrolDispersal_Information = {
   title: 'Biological Dispersal Information',
   type: 'object',
