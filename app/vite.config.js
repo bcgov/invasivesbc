@@ -2,7 +2,7 @@ import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-
+import { viteSingleFile } from "vite-plugin-singlefile"
 import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
 
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
@@ -71,22 +71,13 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
-    minify: false,
+    minify: true,
     sourcemap: true,
     rollupOptions: {
       plugins: [
-        rollupNodePolyFill()
+        rollupNodePolyFill(), viteSingleFile({ removeViteModuleLoader: true })
       ],
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return "vendor"
-          }
-          if (id.includes('state/config')) {
-            return "configuration"
-          }
-        }
-      }
+
     }
   },
   define: {
@@ -98,7 +89,8 @@ export default defineConfig({
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}'
-    })
+    }),
+    viteSingleFile()
   ],
   optimizeDeps: {
     esbuildOptions: {
