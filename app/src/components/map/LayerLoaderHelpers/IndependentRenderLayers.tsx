@@ -1,7 +1,5 @@
 import React, { useContext } from 'react';
-import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
-import { PoisLayer } from './PoisLayer';
 import { RISOLayer } from './RISOLayer';
 import { AdminUploadsLayer } from './AdminUploadsLayer';
 import { selectNetworkConnected } from '../../../state/reducers/network';

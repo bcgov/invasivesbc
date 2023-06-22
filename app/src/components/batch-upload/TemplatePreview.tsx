@@ -65,7 +65,7 @@ const TemplatePreview = ({ name, id }) => {
   function renderAcceptableValues(col) {
     switch (col.dataType) {
       case 'text':
-        return <>Quote all text fields and escape literal quotation marks by doubling them.</>;
+        return <>Valid text value - if using excel special characters (like quotes or commas) that can affect the CSV output are handled automatically - so just put text in the field.  If not using Excel, these are valid values:  value, "quoted value", "value containing ""escaped"" quotes"</>;
       case 'numeric':
         return (
           <>
