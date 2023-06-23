@@ -211,7 +211,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   }
 
   if (
-    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)
+    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) && action.payload.updatedSet.expanded
     //|| !mapState?.recordTables?.[action.payload.updatedSetName]
   ) {
     filterStateChanged = true;
@@ -230,7 +230,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const newOpenState = action.payload.updatedSet.expanded;
 
   // check if we need to grab table rows on open and no filter change
-  if (filterStateChanged === false && previousOpenState === false && newOpenState) {
+  if (filterStateChanged === false && newOpenState) {
     if (action.payload.updatedSet.recordSetType === 'POI') {
       yield put({
         type: IAPP_TABLE_ROWS_GET_REQUEST,

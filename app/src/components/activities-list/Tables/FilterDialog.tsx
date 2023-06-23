@@ -40,21 +40,10 @@ export const FilterDialog = (props: IFilterDialog) => {
   const invasivesApi = useInvasivesApi();
   const { fetchCodeTable, getIappJurisdictions } = invasivesApi;
 
-  const [choice, setChoice] = useState('Jurisdiction');
+  const [choice, setChoice] = useState('Choose a type');
   const [subChoices, setSubChoices] = useState({ ...jurisdictionOptions });
   const [subChoice, setSubChoice] = useState(null);
 
-  /*
-  const getSpeciesOptions = useCallback(async () => {
-
-      
-    const dataTerrestial = await fetchCodeTable('invasive_plant_code');
-    const dataAquatic = await fetchCodeTable('invasive_plant_aquatic_code');
-    const data = [...dataTerrestial, ...dataAquatic];
-
-    return data;
-  },[choice]);
-  */
 
   const getSpeciesOptions = async () => {
     const dataTerrestial = await fetchCodeTable('invasive_plant_code');
@@ -74,79 +63,74 @@ export const FilterDialog = (props: IFilterDialog) => {
       setSubChoice(prevChoices.filterValue);
     }
 
-    const getJurisdictionOptions = async () => {
-      const data = props.setType === 'POI' ? await getIappJurisdictions() : await fetchCodeTable('jurisdiction_code');
-      return data;
-    };
-
-    getJurisdictionOptions().then((data) => {
-      if (isMounted) {
-        setJurisdictionOptions((prev) => {
-          const newOptions = {};
-          data.forEach((d, i) => {
-            if (props.setType === 'POI') {
-              // separate because codes are currently null for iapp records
-              newOptions[i] = d.description;
-            } else {
-              newOptions[d.code] = d.description;
-            }
-          });
-          return newOptions;
-        });
-      }
-    });
-
-
     return () => {
       isMounted = false;
     };
   }, [props.setType]);
 
+  const getJurisdictionOptions = async () => {
+    const data = props.setType === 'POI' ? await getIappJurisdictions() : await fetchCodeTable('jurisdiction_code');
+    return data;
+  };
+
+  const setTheJurisdictionOptions = () => {
+    getJurisdictionOptions().then((data) => {
+      const newOptions = {};
+      data.forEach((d, i) => {
+        if (props.setType === 'POI') {
+          // separate because codes are currently null for iapp records
+          newOptions[i] = d.description;
+        } else {
+          newOptions[d.code] = d.description;
+        }
+      });
+      if( choice === 'Jurisdiction'){
+        setSubChoices({ ...newOptions });
+      }
+      return newOptions;
+    });
+  };
 
   const setSpeciesOptions = () => {
-          getSpeciesOptions()
-            .then((data) => {
-              console.log('oh boy');
-              console.dir(data);
-              setSpeciesPOptions((prev) => {
-                const newOptions = {};
-                data?.forEach((d) => {
-                  newOptions[d.code] = d.description;
-                });
-                if(choice === 'Species Positive')
-                {
-                  setSubChoices({ ...newOptions });
-                }
-                return newOptions;
-              });
+    getSpeciesOptions().then((data) => {
+      console.log('oh boy');
+      console.dir(data);
+      setSpeciesPOptions((prev) => {
+        const newOptions = {};
+        data?.forEach((d) => {
+          newOptions[d.code] = d.description;
+        });
+        if (choice === 'Species Positive') {
+          setSubChoices({ ...newOptions });
+        }
+        return newOptions;
+      });
 
-              setSpeciesNOptions((prev) => {
-                const newOptions = {};
-                data.forEach((d) => {
-                  newOptions[d.code] = d.description;
-                if(choice === 'Species Negative')
-                {
-                  setSubChoices({ ...newOptions });
-                }
-                });
-                return newOptions;
-              });
-            })
-
-  }
+      setSpeciesNOptions((prev) => {
+        const newOptions = {};
+        data.forEach((d) => {
+          newOptions[d.code] = d.description;
+          if (choice === 'Species Negative') {
+            setSubChoices({ ...newOptions });
+          }
+        });
+        return newOptions;
+      });
+    });
+  };
 
   useEffect(() => {
     switch (choice) {
       case 'Jurisdiction':
-        setSubChoices({ ...jurisdictionOptions });
+        setTheJurisdictionOptions();
         // setSubChoice(null);
         break;
       case 'Species Positive':
-        setSpeciesOptions()
+        setSpeciesOptions();
         // setSubChoice(null);
         break;
       case 'Species Negative':
-        setSpeciesOptions()
+        setSpeciesOptions();
         //setSubChoices({ ...speciesNOptions });
         // setSubChoice(null);
         break;
@@ -155,7 +139,7 @@ export const FilterDialog = (props: IFilterDialog) => {
         // setSubChoice(null);
         break;
     }
-  }, [choice, jurisdictionOptions]);
+  }, [choice]);
 
   return (
     <Dialog open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">

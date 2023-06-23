@@ -474,7 +474,6 @@ export const getActivitiesSQL = (
     const gridFilters = searchCriteria.grid_filters;
     //TBD if there's a legit reason to need this, client just shouldn't send if api doesn't need??
     //if (gridFilters.enabled) {
-    if (true) {
       if (gridFilters.short_id) {
         sqlStatement.append(SQL` AND LOWER(a.activity_payload ->> 'short_id') LIKE '%'||`);
         sqlStatement.append(SQL`LOWER(${gridFilters.short_id})`);
@@ -599,7 +598,6 @@ export const getActivitiesSQL = (
         sqlStatement.append(SQL` AND a.batch_id::text LIKE '%'||`);
         sqlStatement.append(SQL`${gridFilters.batch_id}`);
         sqlStatement.append(SQL`||'%'`);
-      }
     }
   }
 
