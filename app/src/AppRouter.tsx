@@ -1,35 +1,31 @@
-import React, {useEffect, lazy, Suspense} from 'react';
-import {Redirect, Switch, useHistory} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Redirect, Switch, useHistory } from 'react-router-dom';
 import AccessDenied from './pages/misc/AccessDenied';
-import {NotFoundPage} from './pages/misc/NotFoundPage';
-import {useSelector} from './state/utilities/use_selector';
-import {selectConfiguration} from './state/reducers/configuration';
+import { NotFoundPage } from './pages/misc/NotFoundPage';
+import { useSelector } from './state/utilities/use_selector';
+import { selectConfiguration } from './state/reducers/configuration';
 import AppRoute from './router/AppRoute';
 
-import {createTheme, ThemeOptions, ThemeProvider} from '@mui/material';
-import {getDesignTokens} from 'utils/CustomThemeProvider';
-import {selectUserSettings} from 'state/reducers/userSettings';
-import {CssBaseline} from '@mui/material';
+import { createTheme, CssBaseline, ThemeOptions, ThemeProvider } from '@mui/material';
+import { getDesignTokens } from 'utils/CustomThemeProvider';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import LandingPage from './features/home/landing/LandingPage';
-import {TrainingPage} from "./pages/Training";
-
-const BatchTemplates = lazy(() => import("./features/home/batch/BatchTemplates"));
-const BatchCreateNew = lazy(() => import("./features/home/batch/BatchCreateNew"));
-const BatchView = lazy(() => import("./features/home/batch/BatchView"));
-const BatchList = lazy(() => import("./features/home/batch/BatchList"));
-
-
-const MapPage = lazy(() => import('features/home/map/MapPage'));
-const AccessRequestPage = lazy(() => import('features/home/accessRequest/AccessRequestPage'));
-const DataSharingAgreementPage = lazy(() => import('features/home/dataSharingAgreement/DataSharingAgreementPage'));
-const BulkEditActivitiesPage = lazy(() => import('features/home/search/BulkEditActivitiesPage'));
-const ObservationCreationStepperPage = lazy(() => import('features/home/activity/ObservationCreationStepperPage'));
-const PlanPage = lazy(() => import('features/home/plan/PlanPage'));
-const ActivitiesPage = lazy(() => import('features/home/activities/ActivitiesPage'));
-const ActivityPage = lazy(() => import('features/home/activity/ActivityPage'));
-const EmbeddedReportsPage = lazy(() => import('features/home/reports/EmbeddedReportsPage'));
-const ReferenceIAPPSitePage = lazy(() => import('features/home/references/ReferenceIAPPSitePage'));
-const UserAccessPage = lazy(() => import('./features/admin/userAccess/UserAccessPage'));
+import { TrainingPage } from "./pages/Training";
+import MapPage from './features/home/map/MapPage';
+import AccessRequestPage from './features/home/accessRequest/AccessRequestPage';
+import BulkEditActivitiesPage from './features/home/search/BulkEditActivitiesPage';
+import DataSharingAgreementPage from './features/home/dataSharingAgreement/DataSharingAgreementPage';
+import ObservationCreationStepperPage from './features/home/activity/ObservationCreationStepperPage';
+import PlanPage from './features/home/plan/PlanPage';
+import ActivitiesPage from './features/home/activities/ActivitiesPage';
+import ReferenceIAPPSitePage from './features/home/references/ReferenceIAPPSitePage';
+import EmbeddedReportsPage from './features/home/reports/EmbeddedReportsPage';
+import UserAccessPage from './features/admin/userAccess/UserAccessPage';
+import BatchList from './features/home/batch/BatchList';
+import BatchCreateNew from './features/home/batch/BatchCreateNew';
+import BatchTemplates from './features/home/batch/BatchTemplates';
+import BatchView from './features/home/batch/BatchView';
+import ActivityPage from './features/home/activity/ActivityPage';
 
 interface IAppRouterProps {
   deviceInfo: any;

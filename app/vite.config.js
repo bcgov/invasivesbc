@@ -73,27 +73,20 @@ export default defineConfig({
     outDir: '../dist',
     minify: false,
     sourcemap: true,
+    cssCodeSplit: false,
+
     rollupOptions: {
       plugins: [
         rollupNodePolyFill()
       ],
       output: {
-        sourcemapIgnoreList: (relativeSourcePath, sourcemapPath) => {
-          return relativeSourcePath.includes('node_modules');
-        },
         manualChunks(id) {
-
-
           if (id.includes('node_modules')) {
             return "vendor"
           }
           if (id.includes('state/config')) {
             return "configuration"
           }
-          if (id.includes('app/src')) {
-            return "app"
-          }
-          console.log(`not overriding: ${id}`);
         }
       }
     }
