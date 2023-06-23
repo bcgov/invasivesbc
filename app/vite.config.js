@@ -78,14 +78,22 @@ export default defineConfig({
         rollupNodePolyFill()
       ],
       output: {
+        sourcemapIgnoreList: (relativeSourcePath, sourcemapPath) => {
+          return relativeSourcePath.includes('node_modules');
+        },
         manualChunks(id) {
+
+
           if (id.includes('node_modules')) {
             return "vendor"
           }
           if (id.includes('state/config')) {
             return "configuration"
           }
-          return "app"
+          if (id.includes('app/src')) {
+            return "app"
+          }
+          console.log(`not overriding: ${id}`);
         }
       }
     }
