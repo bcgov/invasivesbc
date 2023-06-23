@@ -24,6 +24,7 @@ const setupStore = (configuration: AppConfig) => {
   const sagaMiddleware = createSagaMiddleware({
     onError: async (e, errorInfo) => {
       console.log('there was an error');
+      console.dir(e, errorInfo);
       const state = store.getState();
       if (state.Auth.authenticated) {
         let loggingState = JSON.parse(JSON.stringify(state));

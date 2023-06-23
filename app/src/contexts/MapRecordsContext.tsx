@@ -38,7 +38,7 @@ export const MapRecordsContext = React.createContext<IMapRecordsContext>({
   setOnEachFeature: () => {},
 
   // place to track current geo being edited
-  // independant of records and selectedRecords (depending on how controlling comp works)
+  // independent of records and selectedRecords (depending on how controlling comp works)
   currentGeoEdit: null,
   setCurrentGeoEdit: () => {},
 

@@ -170,7 +170,8 @@ export interface IMapContainerProps {
 
   setMapForActivityPage?: React.Dispatch<any>;
   contextMenuState?: { state: any; setContextMenuState: (state: any) => void };
-  isLoading?: boolean;
+  isLoading?: boolean,
+  isPublicMode: boolean
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -185,6 +186,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
   const activityState = useSelector(selectActivity);
   const IappsiteState = useSelector(selectIappsite);
+
+  const [showWhatsHere, setShowWhatsHere] = useState(true);
+
+  useEffect(() => {
+    if (props.isPublicMode) {
+      setShowWhatsHere(false);
+    }
+    if (!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity')) {
+      setShowWhatsHere(true);
+    }
+    setShowWhatsHere(false);
+
+  });
 
   useEffect(() => {
     if (props.setMapForActivityPage) {
@@ -268,7 +282,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     >
       <LegendsPopup />
       <ReactLeafletMapContainer
-        editable={true}
+        editable={!(props.isPublicMode)}
         //center={[55, -128]}
         center={props.center}
         //zoom={props.zoom ? props.zoom : 5 /* was mapZoom */}
@@ -287,11 +301,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <ZoomButtons position="bottomleft" />
             <ScaleControl position="bottomleft" imperial={false} />
 
-            {
-              <FeatureGroup>
-                <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-              </FeatureGroup>
-            }
+            <FeatureGroup>
+              {props.isPublicMode || <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />}
+            </FeatureGroup>
 
             <OfflineMap {...props} />
 
@@ -306,21 +318,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <MapResizer />
-            <ExtentListener/>
+            <ExtentListener />
             <AccuracyToggle />
             <AccuracyMarker />
             <BaseMapToggle />
             <HDToggle />
-            <LocationMarker />
-            <FindMeToggle />
-            <PanToMe />
-            <JumpToRecord />
+            {props.isPublicMode || <LocationMarker />}
+            {props.isPublicMode || <FindMeToggle />}
+            {props.isPublicMode || <PanToMe />}
+            {props.isPublicMode || <JumpToRecord />}
             <LegendsButton />
-            <LabelButton />
-            <IAPPExtentButton />
+            {props.isPublicMode || <LabelButton />}
+            {props.isPublicMode || <IAPPExtentButton />}
             <BoundaryLayerDisplayForRecordSetToggle />
 
-            {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (
+            {showWhatsHere ? (
               <>
                 <WhatsHereButton />
                 <WhatsHereDrawComponent />
@@ -362,12 +374,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             )}
 
             <LayerSniffer />
+
             <LayerPickerBasic>
               <LayersControl.Overlay
                 checked={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']}
                 name="Regional Invasive Species Organizations">
                 <LayerGroup>
-                  <PMTileLayer enabled={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']} url="https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles" />
+                  <PMTileLayer
+                    enabled={mapState?.simplePickerLayers?.['Regional Invasive Species Organizations']}
+                    url="https://nrs.objectstore.gov.bc.ca/uphjps/riso.pmtiles" />
                 </LayerGroup>
               </LayersControl.Overlay>
             </LayerPickerBasic>
