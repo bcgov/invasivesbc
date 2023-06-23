@@ -85,6 +85,7 @@ export default defineConfig({
           if (id.includes('state/config')) {
             return "configuration"
           }
+          return "app"
         }
       }
     }
