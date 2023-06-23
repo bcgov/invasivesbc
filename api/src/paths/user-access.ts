@@ -316,7 +316,6 @@ async function getUsersForRole(req, res, next, roleId) {
 async function getRolesForUser(req, res, next, userId) {
   defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
   const connection = await getDBConnection();
-  defaultLog.debug('got db connection');
   if (!connection) {
     return res.status(503).json({
       message: 'Database connection unavailable',

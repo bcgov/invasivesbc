@@ -72,10 +72,10 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.lastName ? accessRequest.lastName : null},
         ${accessRequest.email ? accessRequest.email : null},
         ${accessRequest.phone ? accessRequest.phone : null},
-        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies +  ',NRQ' : 'NRQ'},
-        ${accessRequest.employer ? accessRequest.employer +  ',NRQ' : 'NRQ'},
+        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies + ',NRQ' : 'NRQ'},
+        ${accessRequest.employer ? accessRequest.employer + ',NRQ' : 'NRQ'},
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
-        ${accessRequest.psn1 ? accessRequest.psn1 +  ',NRQ' : 'NRQ'},
+        ${accessRequest.psn1 ? accessRequest.psn1 + ',NRQ' : 'NRQ'},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
         ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
@@ -126,7 +126,7 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
     preferredUsername = accessRequest.primary_email;
   }
   return SQL`
-        update application_user 
+        update application_user
         set
             first_name=${accessRequest.first_name},
             last_name=${accessRequest.last_name},
@@ -145,8 +145,7 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             pac_number=${accessRequest.pac_number},
             pac_service_number_1=${accessRequest.pac_service_number_1},
             pac_service_number_2=${accessRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${
-              accessRequest.bceid_userid
-            }) OR (idir_userid is not null and idir_userid=${accessRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${accessRequest.bceid_userid
+    }) OR (idir_userid is not null and idir_userid=${accessRequest.idir_userid});
     `;
 };

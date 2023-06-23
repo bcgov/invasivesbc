@@ -76,8 +76,7 @@ class LoggerWithContext {
 
               if (formattedAdditionalContext) {
                 const spacer = '-'.repeat(40);
-                const shortSpacer = '-'.repeat(10);
-                return `${spacer}\n${preamble}\nMessage: ${formattedMessage}\n${shortSpacer}\nAdditional Context:\n${shortSpacer}\n${formattedAdditionalContext}\n${spacer}`;
+                return `${preamble}${formattedMessage}\n${formattedAdditionalContext}${spacer}`;
               } else {
                 return `${preamble}${formattedMessage}`;
               }
@@ -119,6 +118,6 @@ class LoggerWithContext {
   }
 }
 
-export const getLogger = function (logLabel: string): LoggerWithContext {
+export const getLogger = function(logLabel: string): LoggerWithContext {
   return new LoggerWithContext(logLabel);
 };
