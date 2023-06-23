@@ -93,6 +93,7 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
           rendered.push(
             <path
               key={`outerpath-${i}`}
+              className={'path'}
               fill={fillColour}
               transform={`rotate(${segment.rotation} 100 100)`}
               d={`M ${segment.outerArc.start.x} ${segment.outerArc.start.y}
@@ -103,8 +104,19 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
             />
           );
         }
+
+
+        const total = sortedData?.reduce((prev, current) => prev + current.count, 0.0);
         return (
           <g key={'Donut-Key-g-' + Math.random()} className={'donut-group'}>
+            <g className={'path'}>
+            {rendered}
+            </g>
+            <g className={'donut-total-label'}>
+              <text x="100" y="84" className="donut-total-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+                {total}
+              </text>
+            </g>
             <g className={'donut-label'}>
               <text x="100" y="84" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
                 {d.name}
@@ -113,7 +125,6 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
                 {d.count}
               </text>
             </g>
-            {rendered}
           </g>
         );
       })}

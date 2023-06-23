@@ -190,7 +190,7 @@ export const ActivitiesLayerV2 = (props: any) => {
     });
   };
 
-  const MarkerMemo = useMemo(() => {
+  const MarkerMemo =  () => { //useMemo(() => {
     if (props.activities && props.activities.features && props.color && palette && props.enabled) {
       const createClusterCustomIcon = (cluster) => {
         const markers = cluster.getAllChildMarkers();
@@ -272,7 +272,7 @@ export const ActivitiesLayerV2 = (props: any) => {
         </MarkerClusterGroup>
       );
     } else return <></>;
-  }, [props.color, props.activities?.features, palette, props.enabled]);
+  }//, [props.color, props.activities?.features, palette, props.enabled]);
 
   const determineRenderMode = useCallback(
     _.debounce((isIAPP, activities, color, enabled, zoomType) => {
@@ -307,6 +307,7 @@ export const ActivitiesLayerV2 = (props: any) => {
     case renderModes.geojson:
       return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options}/>;
     case renderModes.marker:
-      return MarkerMemo;
+      //return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options}/>;
+      return MarkerMemo();
   }
 };
