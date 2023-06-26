@@ -251,8 +251,12 @@ export const Monitoring_MechanicalPlants = {
 //------------------- biocontrol ----------------------
 
 export const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
-  title: 'test',
+  title: '',
   type: 'object',
+  default: {
+    start_time: null,
+    stop_time: null
+  },
   required: [
     'biocontrol_present',
     'invasive_plant_code',

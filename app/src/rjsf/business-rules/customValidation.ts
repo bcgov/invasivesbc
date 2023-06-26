@@ -287,33 +287,20 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalDispersal:
-        console.log('right before: ', errors.activity_subtype_data);
-        // for (let info in errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information) {
-        //   info['start_time'].__errors = [];
-        //   info['stop_time'].__errors = [];
+        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].__errors = [];
+        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].__errors = [];
 
-        //   if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
-        //     info['start_time'].addError(`Date and time cannot be later than your current date and time`);
-        //   }
+        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
+          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
 
-        //   if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
-        //     info['stop_time'].addError(`Date and time cannot be later than your current date and time`);
-        //   }
-        // }
-        // errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].__errors = [];
-        // errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].__errors = [];
-
-        // if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
-        //   errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].addError(
-        //     `Date and time cannot be later than your current date and time`
-        //   );
-        // }
-
-        // if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
-        //   errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].addError(
-        //     `Date and time cannot be later than your current date and time`
-        //   );
-        // }
+        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
+          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].addError(
+            `Date and time cannot be later than your current date and time`
+          );
+        }
         break;
       case ActivitySubtype.Treatment_BiologicalPlant:
         errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].__errors = [];
@@ -325,43 +312,20 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-        for (let info in errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information) {
-          console.log('infoooo: ', info['start_time']);
-          // info['start_time'].__errors = [];
-          // info['stop_time'].__errors = [];
-
-          // if (
-          //   Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'])
-          // ) {
-          //   info['start_time'].addError(`Date and time cannot be later than your current date and time`);
-          // }
-
-          // if (
-          //   Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'])
-          // ) {
-          //   info['stop_time'].addError(`Date and time cannot be later than your current date and time`);
-          // }
+        const length = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.length;
+        const errorArray = errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information;
+        for (let i = 0; i < length; i++) {
+          const thisError = errorArray[i];
+          const thisData = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[i];
+          thisError['start_time'].__errors = [];
+          thisError['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(thisData['start_time'])) {
+            thisError['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(thisData['stop_time'])) {
+            thisError['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
-        // errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].__errors =
-        //   [];
-        // errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].__errors =
-        //   [];
-
-        // if (
-        //   Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'])
-        // ) {
-        //   errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].addError(
-        //     `Date and time cannot be later than your current date and time`
-        //   );
-        // }
-
-        // if (
-        //   Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'])
-        // ) {
-        //   errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].addError(
-        //     `Date and time cannot be later than your current date and time`
-        //   );
-        // }
         break;
       case ActivitySubtype.Treatment_ChemicalPlant:
         errors.activity_subtype_data.Treatment_ChemicalPlant_Information['application_start_time'].__errors = [];
