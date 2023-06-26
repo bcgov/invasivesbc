@@ -519,7 +519,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             zoom={mapState?.map_zoom}
           />
         ),
-        [classes, geometry, setGeometry, extent, setExtent, isLoading, activityInStore?.activity?.geometry]
+        [classes, geometry, setGeometry, extent, setExtent, isLoading, JSON.stringify(activityInStore?.activity?.geometry)]
       )}
 
       {activityInStore.activity && (
