@@ -80,7 +80,7 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
 
   const total = sortedData?.reduce((prev, current) => prev + current.count, 0.0);
   return (
-    <svg viewBox={`0 0 200 200`}>
+    <svg viewBox={`-25 -35 250 250`}>
       <g key={'Donut-Key-g-' + Math.random()} className={'donut-group'}>
         {sortedData.map((d, i) => {
           let fillColour;
@@ -114,10 +114,10 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
                 {rendered}
               </g>
               <g className={'donut-label-wrapper'}>
-                <text x="100" y="84" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+                <text x="100" y="-10" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
                   {d.name}
                 </text>
-                <text x="100" y="116" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+                <text x="100" y="100" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
                   {d.count}
                 </text>
               </g>
@@ -125,7 +125,7 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
           );
         })}
         <g className={'donut-total-label'}>
-          <text x="100" y="84" className="donut-total-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+          <text x="100" y="100" className="donut-total-label" textAnchor={'middle'} dominantBaseline={'middle'}>
             {total}
           </text>
         </g>

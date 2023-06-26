@@ -194,58 +194,58 @@ export const ActivitiesLayerV2 = (props: any) => {
   };
 
   const MarkerMemo = useMemo(() => {
-      if (props.activities && props.activities.features && props.color && palette && props.enabled) {
-        const createClusterCustomIcon = (cluster) => {
-          const markers = cluster.getAllChildMarkers();
-          const data = [];
-          markers.forEach((obj) => {
-            const marker = obj.options.children.props.bufferedGeo.features[0];
-            if (data.length === 0) {
+    if (props.activities && props.activities.features && props.color && palette && props.enabled) {
+      const createClusterCustomIcon = (cluster) => {
+        const markers = cluster.getAllChildMarkers();
+        const data = [];
+        markers.forEach((obj) => {
+          const marker = obj.options.children.props.bufferedGeo.features[0];
+          if (data.length === 0) {
+            data.push({
+              name: marker?.properties?.type,
+              count: 1,
+              fillColour: palette[marker?.properties?.type]
+            });
+          } else {
+            let flag = 0;
+            for (let i of data) {
+              if (marker?.properties?.type === i.name) {
+                flag = 1;
+                i.count += 1;
+                i.fillColour = palette[i.name];
+                break;
+              }
+            }
+            if (flag === 0) {
               data.push({
                 name: marker?.properties?.type,
                 count: 1,
                 fillColour: palette[marker?.properties?.type]
               });
-            } else {
-              let flag = 0;
-              for (let i of data) {
-                if (marker?.properties?.type === i.name) {
-                  flag = 1;
-                  i.count += 1;
-                  i.fillColour = palette[i.name];
-                  break;
-                }
-              }
-              if (flag === 0) {
-                data.push({
-                  name: marker?.properties?.type,
-                  count: 1,
-                  fillColour: palette[marker?.properties?.type]
-                });
-              }
             }
-          });
-          return L.divIcon({
-            html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
-            className: '',
-            iconSize: [64, 64],
-            iconAnchor: [32, 32]
-          });
-        };
-        return (
-          <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
-            {props.activities?.features?.map((a) => {
-              if (a?.geometry?.type) {
-                const position = center(a)?.geometry?.coordinates;
-                const bufferedGeo = {
-                  type: 'FeatureCollection',
-                  features: [a]
-                };
-                if (a?.properties?.id && a?.properties?.type && palette)
-                  return (
-                    <Marker
-                      icon={L.divIcon({
-                        html: `
+          }
+        });
+        return L.divIcon({
+          html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
+          className: '',
+          iconSize: [74, 74],
+          iconAnchor: [37, 37]
+        });
+      };
+      return (
+        <MarkerClusterGroup key={Math.random()} iconCreateFunction={createClusterCustomIcon}>
+          {props.activities?.features?.map((a) => {
+            if (a?.geometry?.type) {
+              const position = center(a)?.geometry?.coordinates;
+              const bufferedGeo = {
+                type: 'FeatureCollection',
+                features: [a]
+              };
+              if (a?.properties?.id && a?.properties?.type && palette)
+                return (
+                  <Marker
+                    icon={L.divIcon({
+                      html: `
                         <svg
                           width="40"
                           height="40"
@@ -257,25 +257,25 @@ export const ActivitiesLayerV2 = (props: any) => {
                           <path d="M45 0C27.677 0 13.584 14.093 13.584 31.416a31.13 31.13 0 0 0 3.175 13.773c2.905 5.831 11.409 20.208 20.412 35.428l4.385 7.417a4 4 0 0 0 6.888 0l4.382-7.413c8.942-15.116 17.392-29.4 20.353-35.309.027-.051.055-.103.08-.155a31.131 31.131 0 0 0 3.157-13.741C76.416 14.093 62.323 0 45 0zm0 42.81c-6.892 0-12.5-5.607-12.5-12.5s5.608-12.5 12.5-12.5 12.5 5.608 12.5 12.5-5.608 12.5-12.5 12.5z"
                             style="stroke:none;stroke-width:1;stroke-dasharray:none;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;
                             fill:${
-                              palette[a?.properties?.type]
-                            };fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
+                        palette[a?.properties?.type]
+                        };fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
                           />
                         </svg>`,
-                        className: '',
-                        iconSize: [10, 17.5],
-                        iconAnchor: [18, 35]
-                      })}
-                      position={[position[1], position[0]]}
-                      key={'activity_marker' + a.properties.id}>
-                      <Dummy bufferedGeo={bufferedGeo} />
-                    </Marker>
-                  );
-              }
-            })}
-          </MarkerClusterGroup>
-        );
-      } else return <></>;
-    }, [props.color, JSON.stringify(props.activities?.features), palette, props.enabled]);
+                      className: '',
+                      iconSize: [10, 17.5],
+                      iconAnchor: [18, 35]
+                    })}
+                    position={[position[1], position[0]]}
+                    key={'activity_marker' + a.properties.id}>
+                    <Dummy bufferedGeo={bufferedGeo} />
+                  </Marker>
+                );
+            }
+          })}
+        </MarkerClusterGroup>
+      );
+    } else return <></>;
+  }, [props.color, JSON.stringify(props.activities?.features), palette, props.enabled]);
 
   const determineRenderMode = useCallback(
     _.debounce((isIAPP, activities, color, enabled, zoomType) => {
