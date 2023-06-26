@@ -14,6 +14,7 @@ import iappPageSaga from './sagas/iappsite';
 import batchSaga from './sagas/batch';
 import { getRequestOptions, InvasivesAPI_Callback } from 'hooks/useInvasivesApi';
 import trainingVideosSaga from "./sagas/training_videos";
+import publicMapSaga from "./sagas/public_map";
 
 const setupStore = (configuration: AppConfig) => {
   const logger = createLogger({
@@ -88,6 +89,7 @@ const setupStore = (configuration: AppConfig) => {
   sagaMiddleware.run(tabsSaga);
   sagaMiddleware.run(batchSaga);
   sagaMiddleware.run(trainingVideosSaga);
+  sagaMiddleware.run(publicMapSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 

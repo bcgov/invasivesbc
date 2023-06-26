@@ -13,6 +13,7 @@ import { createMapReducer } from './map';
 import { createIappsiteReducer } from './iappsite';
 import {createBatchReducer} from "./batch";
 import {createTrainingVideosReducer} from "./training_videos";
+import {createPublicMapReducer} from "./public_map";
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -25,6 +26,7 @@ function createRootReducer(config: AppConfig) {
     UserSettings: createUserSettingsReducer(config),
     Tabs: createTabsReducer(config),
     Map: createMapReducer(config),
+    PublicMap: createPublicMapReducer(config),
     Batch: createBatchReducer(),
     TrainingVideos: createTrainingVideosReducer()
   });
