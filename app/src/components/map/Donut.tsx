@@ -15,9 +15,9 @@ interface IDonutSVGProps {
   thickness?: number;
 }
 
-export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 }) => {
+export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 40 }) => {
   const activityPalette = {
-    Biocontrol : '#845ec2',
+    Biocontrol: '#845ec2',
     FREP: '#de852c',
     Monitoring: '#2138e0',
     Observation: '#399c3e',
@@ -78,45 +78,58 @@ export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness 
     startingBin++;
   }
 
+  const total = sortedData?.reduce((prev, current) => prev + current.count, 0.0);
   return (
     <svg viewBox={`0 0 200 200`}>
-      {sortedData.map((d, i) => {
-        let fillColour;   
-        if (!!d.fillColour) {
-          fillColour = d.fillColour;
-        } else {
-          fillColour = activityPalette[d.name];
-        }
-        const rendered = [];
-        for (let s = d.startBin; s <= d.endBin; s++) {
-          let segment = segments[s];
-          rendered.push(
-            <path
-              key={`outerpath-${i}`}
-              fill={fillColour}
-              transform={`rotate(${segment.rotation} 100 100)`}
-              d={`M ${segment.outerArc.start.x} ${segment.outerArc.start.y}
+      <g key={'Donut-Key-g-' + Math.random()} className={'donut-group'}>
+        {sortedData.map((d, i) => {
+          let fillColour;
+          if (!!d.fillColour) {
+            fillColour = d.fillColour;
+          } else {
+            fillColour = activityPalette[d.name];
+          }
+          const rendered = [];
+          for (let s = d.startBin; s <= d.endBin; s++) {
+            let segment = segments[s];
+            rendered.push(
+              <path
+                key={`outerpath-${i}`}
+                className={'path'}
+                fill={fillColour}
+                transform={`rotate(${segment.rotation} 100 100)`}
+                d={`M ${segment.outerArc.start.x} ${segment.outerArc.start.y}
           A 90 90 0 0 1 ${segment.outerArc.end.x} ${segment.outerArc.end.y}
           L ${segment.innerArc.end.x} ${segment.innerArc.end.y}
           A ${90 - thickness} ${90 - thickness} 0 0 0 ${segment.innerArc.start.x} ${segment.innerArc.start.y}
           `}
-            />
+              />
+            );
+          }
+
+
+          return (
+            <>
+              <g className={'path-wrapper'}>
+                {rendered}
+              </g>
+              <g className={'donut-label-wrapper'}>
+                <text x="100" y="84" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+                  {d.name}
+                </text>
+                <text x="100" y="116" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+                  {d.count}
+                </text>
+              </g>
+            </>
           );
-        }
-        return (
-          <g key={'Donut-Key-g-' + Math.random()} className={'donut-group'}>
-            <g className={'donut-label'}>
-              <text x="100" y="84" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
-                {d.name}
-              </text>
-              <text x="100" y="116" className="donut-label" textAnchor={'middle'} dominantBaseline={'middle'}>
-                {d.count}
-              </text>
-            </g>
-            {rendered}
-          </g>
-        );
-      })}
+        })}
+        <g className={'donut-total-label'}>
+          <text x="100" y="84" className="donut-total-label" textAnchor={'middle'} dominantBaseline={'middle'}>
+            {total}
+          </text>
+        </g>
+      </g>
     </svg>
   );
 };
@@ -139,7 +152,7 @@ const Donut: React.FC<IDonutProps> = ({ center, data, size = 64 }) => {
   useEffect(() => {
     if (data != null && data.length > 0) {
       const donutIcon = new L.DivIcon({
-        html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
+        html: renderToStaticMarkup(<DonutSVG bins={200} data={data} thickness={80} />),
         className: '',
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2]
