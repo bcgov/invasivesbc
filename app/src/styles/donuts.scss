@@ -3,31 +3,36 @@
 
 .donut-group {
 
-  pointer-events: all;
+  pointer-events: all !important;
 
   path {
     opacity: 0.65;
     z-index: 1;
+    pointer-events: all !important;
   }
 
   .path-wrapper:hover ~ .donut-total-label {
     display: none;
+    pointer-events: all !important;
   }
 
   .path-wrapper:hover + .donut-label-wrapper {
     display: inline;
+    pointer-events: all !important;
   }
 
   .donut-total-label {
     display: inline;
     font-family: sans-serif;
     font-size: 40px;
+    pointer-events: all;
     text-align: center;
     stroke: #f1f1f1;
     fill: #f1f1f1;
   }
 
   .donut-label-wrapper {
+    pointer-events: all;
     display: none;
     font-family: sans-serif;
     font-size: 40px;
