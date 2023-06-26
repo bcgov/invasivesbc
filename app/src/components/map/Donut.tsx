@@ -15,7 +15,7 @@ interface IDonutSVGProps {
   thickness?: number;
 }
 
-export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 20 }) => {
+export const DonutSVG: React.FC<IDonutSVGProps> = ({ data, bins = 32, thickness = 40 }) => {
   const activityPalette = {
     Biocontrol: '#845ec2',
     FREP: '#de852c',
@@ -152,7 +152,7 @@ const Donut: React.FC<IDonutProps> = ({ center, data, size = 64 }) => {
   useEffect(() => {
     if (data != null && data.length > 0) {
       const donutIcon = new L.DivIcon({
-        html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
+        html: renderToStaticMarkup(<DonutSVG bins={200} data={data} thickness={80} />),
         className: '',
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2]
