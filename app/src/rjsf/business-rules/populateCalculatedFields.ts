@@ -379,18 +379,61 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     return formData;
   }
 
-  let totalEstimated = new Array(currentForm.length).fill(0);
-  let totalActual = new Array(currentForm.length).fill(0);
+  let newFormData = {};
+  if (formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information) {
+    let totalEstimated = new Array(currentForm.length).fill(0);
+    let totalActual = new Array(currentForm.length).fill(0);
 
-  currentForm.forEach((form, index) => {
-    const { actual_biological_agents, estimated_biological_agents } = form;
+    currentForm.forEach((form, index) => {
+      const { actual_biological_agents, estimated_biological_agents } = form;
+
+      if (estimated_biological_agents) {
+        estimated_biological_agents.forEach((el) => {
+          if (!el.release_quantity || !el.biological_agent_stage_code) {
+            return formData;
+          } else {
+            totalEstimated[index] += el.release_quantity;
+          }
+        });
+      }
+      if (actual_biological_agents) {
+        actual_biological_agents.forEach((el) => {
+          if (!el.release_quantity || !el.biological_agent_stage_code) {
+            return formData;
+          } else {
+            totalActual[index] += el.release_quantity;
+          }
+        });
+      }
+    });
+
+    const newFormPlantArray = formData.activity_subtype_data[formLabel].map((plantData, index) => {
+      return {
+        ...plantData,
+        total_bio_agent_quantity_actual: totalActual[index],
+        total_bio_agent_quantity_estimated: totalEstimated[index]
+      };
+    });
+
+    newFormData = {
+      ...formData,
+      activity_subtype_data: {
+        ...formData.activity_subtype_data,
+        [formLabel]: newFormPlantArray
+      }
+    };
+  } else {
+    let totalEstimated = 0;
+    let totalActual = 0;
+
+    const { actual_biological_agents, estimated_biological_agents } = currentForm;
 
     if (estimated_biological_agents) {
       estimated_biological_agents.forEach((el) => {
         if (!el.release_quantity || !el.biological_agent_stage_code) {
           return formData;
         } else {
-          totalEstimated[index] += el.release_quantity;
+          totalEstimated += el.release_quantity;
         }
       });
     }
@@ -399,27 +442,23 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
         if (!el.release_quantity || !el.biological_agent_stage_code) {
           return formData;
         } else {
-          totalActual[index] += el.release_quantity;
+          totalActual += el.release_quantity;
         }
       });
     }
-  });
 
-  const newFormPlantArray = formData.activity_subtype_data[formLabel].map((plantData, index) => {
-    return {
-      ...plantData,
-      total_bio_agent_quantity_actual: totalActual[index],
-      total_bio_agent_quantity_estimated: totalEstimated[index]
+    newFormData = {
+      ...formData,
+      activity_subtype_data: {
+        ...formData.activity_subtype_data,
+        [formLabel]: {
+          ...formData.activity_subtype_data[formLabel],
+          total_bio_agent_quantity_actual: totalActual,
+          total_bio_agent_quantity_estimated: totalEstimated
+        }
+      }
     };
-  });
-
-  const newFormData = {
-    ...formData,
-    activity_subtype_data: {
-      ...formData.activity_subtype_data,
-      [formLabel]: newFormPlantArray
-    }
-  };
+  }
   return newFormData;
 };
 
