@@ -225,20 +225,11 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
   try {
     const requests = approvedAccessRequests;
     for (const request of requests) {
+      if (!request.requested_roles)
+      continue;
       try {
-        const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
-        if (!sqlStatement) {
-          return res.status(500).json({
-            message: 'Failed to build SQL statement',
-            request: req.body,
-            namespace: 'access-request',
-            code: 500
-          });
-        }
-        await connection.query(sqlStatement.text, sqlStatement.values);
-
         // Update request status
-        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED');
+        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED', request.access_request_id);
         if (!sqlStatement2) {
           return res.status(500).json({
             message: 'Failed to build SQL statement',
@@ -248,8 +239,6 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           });
         }
         await connection.query(sqlStatement2.text, sqlStatement2.values);
-        if (!request.requested_roles)
-          continue;
         for (const requestedRole of request.requested_roles.split(',')) {
           const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
           if (!sqlStatement3) {
@@ -262,6 +251,18 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           }
           await connection.query(sqlStatement3.text, sqlStatement3.values);
         }
+        const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
+        if (!sqlStatement) {
+          return res.status(500).json({
+            message: 'Failed to build SQL statement',
+            request: req.body,
+            namespace: 'access-request',
+            code: 500
+          });
+        }
+        await connection.query(sqlStatement.text, sqlStatement.values);
+
+
         const mailer = await buildMailer();
         const templatesResponse = await getEmailTemplatesFromDB();
         mailer.sendEmail([request.primary_email],

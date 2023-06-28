@@ -45,7 +45,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
   const classes = useStyles();
-  const [transferAccess, setTransferAccess] = useState('yes');
+  const [transferAccess] = useState('yes');
   const [accountType, setAccountType] = useState('');
 
   const authState = useSelector(selectAuth);
@@ -65,7 +65,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [pacNumber, setPacNumber] = React.useState<number>(null);
   const [psn1, setPsn1] = React.useState('');
   const [psn2, setPsn2] = React.useState('');
-  const [employer, setEmployer] = React.useState(null);
+  const [employer, setEmployer] = React.useState([]);
   const [fundingAgencies, setFundingAgencies] = React.useState<string[]>([]);
   const [requestedRoles, setRequestedRoles] = React.useState<string[]>([]);
   const [fundingAgenciesList, setFundingAgenciesList] = React.useState<any[]>([]);
@@ -86,25 +86,25 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
 
   let isUpdating = false;
 
-  const isValid = (decline:Boolean = false, valid:Boolean = true):Boolean => {
+  const isValid = (decline: Boolean = false, valid: Boolean = true): Boolean => {
     let requiredFields = [
-      {value: firstName, error: setFirstNameErrorText, text: 'Please enter First name'},
-      {value: lastName, error: setLastNameErrorText, text: 'Please enter Last name'},
-      {value: email, error: setEmailErrorText, text: 'Please enter primary Email'},
+      { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
+      { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
+      { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' },
     ];
     // if not declining check more fields
     if (!decline) {
       requiredFields.push(
-        {value: employer, error: setEmployerErrorText, text: 'Please enter Employer'},
-        {value: fundingAgencies?.join(), error: setFundingAgenciesErrorText, text: 'Please enter 1 or more Funding Agencies'},
-        {value: requestedRoles?.join(), error: setRequestedRolesErrorText, text: 'Please enter 1 or more Requested Roles'},
+        { value: employer, error: setEmployerErrorText, text: 'Please enter Employer ' },
+        { value: fundingAgencies?.join(), error: setFundingAgenciesErrorText, text: 'Please enter 1 or more Funding Agencies ' },
+        { value: requestedRoles?.join(), error: setRequestedRolesErrorText, text: 'Please enter 1 or more Requested Roles ' },
       );
     }
 
     if (accountType === 'IDIR') {
-      requiredFields.push({value: idir, error: setIdirErrorText, text: 'Please enter IDIR name'});
-    }else{
-      requiredFields.push({value: bceid, error: setBceidErrorText, text: 'Please enter BCeID'});
+      requiredFields.push({ value: idir, error: setIdirErrorText, text: 'Please enter IDIR name ' });
+    } else {
+      requiredFields.push({ value: bceid, error: setBceidErrorText, text: 'Please enter BCeID ' });
 
     }
 
@@ -224,8 +224,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       userInfo?.pac_number && setPacNumber(userInfo?.pac_number);
       userInfo?.pac_service_number_1 && setPsn1(userInfo?.pac_service_number_1);
       userInfo?.pac_service_number_2 && setPsn2(userInfo?.pac_service_number_2);
-      userInfo?.employer && setEmployer(userInfo?.employer);
+      userInfo?.employer && setEmployer(userInfo?.employer.split(','));
       userInfo?.funding_agencies && setFundingAgencies(userInfo?.funding_agencies.split(','));
+      userInfo?.requested_roles && setRequestedRoles(userInfo?.requested_roles.split(','));
     }
   }, [userInfo]);
 
@@ -247,21 +248,12 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     fetchFundingAgencies();
     fetchEmployers();
     api.getRoles().then((response) => {
-      const roles = [];
-      for (const role of response) {
-        roles.push({
-          id: role.id,
-          value: role.role_name,
-          name: role.role_description
-        });
-      }
-      setRoles(roles);
+      if (userInfo?.requested_roles.indexOf('administrator') == -1)
+        setRoles(response.filter(res => res.role_name.indexOf('administrator') == -1));
+      else
+        setRoles(response);
     });
   }, []);
-
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTransferAccess(event.target.value);
-  };
 
   const handleAccountRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAccountType(event.target.value);
@@ -282,7 +274,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     },
   };
 
-  const getAgencyDescription = (name:String):String => fundingAgenciesList.find(({code_name}) => code_name === name)?.code_description;
+  const getAgencyDescription = (name: string): string => fundingAgenciesList.find(({ code_name }) => code_name === name)?.code_description;
+
+  const getEmployerDescription = (name: string): string => employersList.find(({ code_name }) => code_name === name)?.code_description;
+
+  const getRoleDescription = (name: string): string => roles.find(({ role_name }) => role_name === name)?.role_description;
 
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
@@ -459,30 +455,46 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             label="Work Phone (optional)"
                           />
                         </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item>
+                      <Grid container direction="row" spacing={5}>
                         <Grid item>
                           <Tooltip placement="left" title="Who do you work for?">
-                            <TextField
-                              required
-                              style={{ width: 320 }}
-                              classes={{ root: classes.root }}
-                              select
-                              name="Employer"
-                              id="employer"
-                              variant="outlined"
-                              label="Employer"
-                              InputLabelProps={{ shrink: true }}
-                              error={!!employerErrorText}
-                              SelectProps={{
-                                multiple: false,
-                                value: employer,
-                                onChange: handleEmployerChange
-                              }}>
-                              {employersList.map((employer) => (
-                                <MenuItem key={employer.code_id} value={employer.code_name}>
-                                  {employer.code_description}
-                                </MenuItem>
-                              ))}
-                            </TextField>
+                            <>
+                              <InputLabel htmlFor="employer">
+                                Employer
+                              </InputLabel>
+                              <Select
+                                label="Employer"
+                                id="employer"
+                                required
+                                // variant="outlined"
+                                style={{ width: 1000 }}
+                                multiple
+                                value={employer}
+                                error={!!employerErrorText}
+                                onChange={handleEmployerChange}
+                                input={<OutlinedInput label="Employer" />}
+                                renderValue={(selected) => (
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                      <Chip key={value} label={getEmployerDescription(value)} />
+                                    ))}
+                                  </Box>
+                                )}
+                                MenuProps={MenuProps}
+                              >
+                                {employersList.map((employer) => (
+                                  <MenuItem
+                                    key={employer.code_id}
+                                    value={employer.code_name}
+                                  >
+                                    {employer.code_description}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </>
                           </Tooltip>
                         </Grid>
                       </Grid>
@@ -494,9 +506,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             placement="left"
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
                             <>
-                              <InputLabel
-                                htmlFor="funding-agency"
-                              >
+                              <InputLabel htmlFor="funding-agency">
                                 Funding Agencies
                               </InputLabel>
                               <Select
@@ -504,7 +514,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 id="funding-agency"
                                 required
                                 // variant="outlined"
-                                style={{ width: 1000}}
+                                style={{ width: 1000 }}
                                 multiple
                                 value={fundingAgencies}
                                 error={!!fundingAgenciesErrorText}
@@ -582,35 +592,52 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           </Tooltip>
                         </Grid>
                       </Grid>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item style={{ marginBottom: '10px' }}>
-                          <Tooltip placement="left" title="Select one or more roles to request.">
-                            <TextField
-                              required
-                              style={{ width: 320 }}
-                              classes={{ root: classes.root }}
-                              select
-                              name="Requested Roles"
-                              id="requested-roles"
-                              variant="outlined"
-                              label="Requested Role(s)"
-                              error={!!requestedRolesErrorText}
-                              SelectProps={{
-                                multiple: true,
-                                value: requestedRoles,
-                                onChange: handleRequestedRoleChange
-                              }}>
-                              {roles.map((role) => (
-                                <MenuItem key={role.value} value={role.value}>
-                                  {role.name}
-                                </MenuItem>
-                              ))}
-                            </TextField>
-                          </Tooltip>
+                      <Grid item>
+                        <Grid container direction="row" spacing={5}>
+                          <Grid item>
+                            <Tooltip
+                              placement="left"
+                              title="Select one or more roles to request.">
+                              <>
+                                <InputLabel htmlFor="requested-roles">
+                                  Requested roles
+                              </InputLabel>
+                                <Select
+                                  label="Requested roles"
+                                  id="requested-roles"
+                                  required
+                                  // variant="outlined"
+                                  style={{ width: 1000 }}
+                                  multiple
+                                  value={requestedRoles}
+                                  error={!!requestedRolesErrorText}
+                                  onChange={handleRequestedRoleChange}
+                                  input={<OutlinedInput label="Requested roles" />}
+                                  renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                      {selected.map((value) => (
+                                        <Chip key={value} label={getRoleDescription(value)} />
+                                      ))}
+                                    </Box>
+                                  )}
+                                  MenuProps={MenuProps}
+                                >
+                                  {roles.map((role) => (
+                                    <MenuItem
+                                      key={role.role_id}
+                                      value={role.role_name}
+                                    >
+                                      {role.role_description}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </>
+                            </Tooltip>
+                          </Grid>
                         </Grid>
                       </Grid>
                       <Grid container direction="row" spacing={5}>
-                        <Grid item style={{ marginBottom: '10px' }}>
+                        <Grid item style={{ marginBottom: '10px', marginTop: '10px' }}>
                           <Tooltip
                             placement="left"
                             title="If your employer or agency were not on our lists, please enter it here.">

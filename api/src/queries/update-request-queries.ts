@@ -39,6 +39,14 @@ export const getUpdateRequestForUserSQL = (username: string, email?: string): SQ
   }
 };
 
+export function appendNRQ(input: string) {
+  if (input)
+    if (input.indexOf('NRQ') == -1)
+      return input + ',NRQ'
+    else
+      return input
+  return 'NRQ'
+}
 /**
  * SQL query to create an access request.
  *
@@ -72,10 +80,10 @@ export const createUpdateRequestSQL = (updateRequest): SQLStatement => {
         ${updateRequest.lastName ? updateRequest.lastName : null},
         ${updateRequest.email ? updateRequest.email : null},
         ${updateRequest.phone ? updateRequest.phone : null},
-        ${updateRequest.fundingAgencies ? updateRequest.fundingAgencies +  ',NRQ' : 'NRQ'},
-        ${updateRequest.employer ? updateRequest.employer +  ',NRQ' : 'NRQ'},
+        ${appendNRQ(updateRequest.fundingAgencies)},
+        ${appendNRQ(updateRequest.employer)},
         ${updateRequest.pacNumber ? updateRequest.pacNumber : null},
-        ${updateRequest.psn1 ? updateRequest.psn1 +  ',NRQ' : 'NRQ'},
+        ${updateRequest.psn1 ? updateRequest.psn1 : null},
         ${updateRequest.psn2 ? updateRequest.psn2 : null},
         ${updateRequest.requestedRoles ? updateRequest.requestedRoles : null},
         ${updateRequest.comments ? updateRequest.comments : ''},
@@ -84,7 +92,7 @@ export const createUpdateRequestSQL = (updateRequest): SQLStatement => {
         ${updateRequest.bceidUserId ? updateRequest.bceidUserId : null},
         'UPDATE'
     )
-    on conflict (idir_userid, bceid_userid) do nothing; 
+    on conflict (idir_userid, bceid_userid) do nothing;
   `; // TODO: Maybe change line above?
 };
 
@@ -140,8 +148,7 @@ export const approveUpdateRequestsSQL = (updateRequest): SQLStatement => {
             pac_number=${updateRequest.pac_number},
             pac_service_number_1=${updateRequest.pac_service_number_1},
             pac_service_number_2=${updateRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${
-              updateRequest.bceid_userid
-            }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${updateRequest.bceid_userid
+    }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
     `;
 };

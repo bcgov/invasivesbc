@@ -813,17 +813,27 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               </Grid>
             )}
             {detailsDialogUser.employer && (
-              <Grid item>
-                <Typography variant="h6">
-                  <strong>Employer: </strong>
-                  {employerCodes.map((employer) => {
-                    if (employer.value === detailsDialogUser.employer) {
-                      return employer.description;
-                    }
-                    return '';
-                  })}
-                </Typography>
-              </Grid>
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Employer: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogUser.employer.split(',').map((employer) => (
+                    <Typography variant="h6" key={employer}>
+                      <li key={employer}>
+                        {employerCodes.map((employerCode) => {
+                          if (employerCode.value === employer) {
+                            return employerCode.description;
+                          }
+                          return '';
+                        })}
+                      </li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
             )}
             {detailsDialogUser.pacNumber && (
               <Grid item>
@@ -970,13 +980,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             <Grid item>
               <Typography variant="h6">
                 <strong>Employer: </strong>
-                {employerCodes.map((employer) => {
-                  if (employer.value === detailsDialogRequestUser.employer) {
-                    return employer.description;
-                  }
-                  return '';
-                })}
               </Typography>
+            </Grid>
+            <Grid item>
+              {detailsDialogRequestUser.employer.split(',').map((employer) => (
+                <Typography variant="h6" key={employer}>
+                  <li key={employer}>
+                    {employerCodes.map((employerCode) => {
+                      if (employerCode.value === employer) {
+                        return employerCode.description;
+                      }
+                      return '';
+                    })}
+                  </li>
+                </Typography>
+              ))}
             </Grid>
             <Grid item>
               <Typography variant="h6">

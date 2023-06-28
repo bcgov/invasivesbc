@@ -1,4 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { appendNRQ } from './update-request-queries';
 
 /**
  * SQL query to fetch an access request and their associated role.
@@ -30,12 +31,12 @@ export const getAccessRequestForUserSQL = (username: string, email?: string): SQ
 
   if (email) {
     return isIdir
-      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email} AND request_type != 'UPDATE';`
-      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND primary_email = ${email} AND request_type != 'UPDATE';`;
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email} AND status = 'APPROVED' order by updated_at desc;`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND primary_email = ${email} AND status = 'APPROVED' order by updated_at desc;`;
   } else {
     return isIdir
-      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND request_type != 'UPDATE';`
-      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND request_type != 'UPDATE';`;
+      ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND status = 'APPROVED' order by updated_at desc;`
+      : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND status = 'APPROVED' order by updated_at desc;`;
   }
 };
 
@@ -72,10 +73,10 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
         ${accessRequest.lastName ? accessRequest.lastName : null},
         ${accessRequest.email ? accessRequest.email : null},
         ${accessRequest.phone ? accessRequest.phone : null},
-        ${accessRequest.fundingAgencies ? accessRequest.fundingAgencies + ',NRQ' : 'NRQ'},
-        ${accessRequest.employer ? accessRequest.employer + ',NRQ' : 'NRQ'},
+        ${appendNRQ(accessRequest.fundingAgencies)},
+        ${appendNRQ(accessRequest.employer)},
         ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
-        ${accessRequest.psn1 ? accessRequest.psn1 + ',NRQ' : 'NRQ'},
+        ${accessRequest.psn1 ? accessRequest.psn1 : null},
         ${accessRequest.psn2 ? accessRequest.psn2 : null},
         ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
         ${accessRequest.comments ? accessRequest.comments : ''},
@@ -92,14 +93,14 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
 /**
  * SQL query to update an access request's status
  */
-export const updateAccessRequestStatusSQL = (email, status): SQLStatement => {
+export const updateAccessRequestStatusSQL = (email, status, access_request_id): SQLStatement => {
   return SQL`
         update access_request
         set
         status=${status},
         updated_at=CURRENT_TIMESTAMP
         where primary_email=${email}
-        AND request_type != 'UPDATE';
+        AND access_request_id=${access_request_id};
     `;
 };
 
