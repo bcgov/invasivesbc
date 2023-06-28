@@ -1,5 +1,5 @@
-import {AppConfig} from "state/config";
-import {PUBLIC_MAP_LOAD_ALL_REQUEST, PUBLIC_MAP_LOAD_ALL_REQUEST_COMPLETE, PUBLIC_MAP_LOAD_ERROR} from "../actions";
+import { AppConfig } from 'state/config';
+import { PUBLIC_MAP_LOAD_ALL_REQUEST, PUBLIC_MAP_LOAD_ALL_REQUEST_COMPLETE, PUBLIC_MAP_LOAD_ERROR } from '../actions';
 
 class PublicMapLayers {
   initialized: boolean;
@@ -49,4 +49,4 @@ function createPublicMapReducer(configuration: AppConfig): (PublicMapLayers, Any
 
 const selectPublicMapState: (state) => PublicMapLayers = (state) => state.PublicMap;
 
-export {createPublicMapReducer, selectPublicMapState};
+export { createPublicMapReducer, selectPublicMapState };

@@ -13,22 +13,10 @@ function* loadAll() {
 
   const activities = activitiesResponse.data;
 
-  const IAPPResponse = yield Http.request({
-    method: 'GET',
-    headers: {
-      'Accept-Encoding': 'gzip, deflate, br'
-    },
-
-    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
-  });
-
-  const iapp = IAPPResponse.data;
-
   yield put({
     type: PUBLIC_MAP_LOAD_ALL_REQUEST_COMPLETE,
     payload: {
-      activities,
-      iapp: JSON.parse(iapp)
+      activities
     }
   });
 }

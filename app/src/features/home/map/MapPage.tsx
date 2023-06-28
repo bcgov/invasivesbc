@@ -8,7 +8,8 @@ import { PUBLIC_MAP_LOAD_ALL_REQUEST } from '../../../state/actions';
 import { selectPublicMapState } from '../../../state/reducers/public_map';
 import Spinner from '../../../components/spinner/Spinner';
 import { GeoJSON } from 'react-leaflet';
-import { GeoJSONVtLayer } from '../../../components/map/LayerLoaderHelpers/GeoJsonVtLayer';
+import { PMTileLayer } from '../../../components/map/Layers/PMTileLayer';
+import { IAPPPMTilesLayer } from '../../../components/map/Layers/IAPPPMTilesLayer';
 
 const MapContainer = lazy(() => import('components/map/MapContainer'));
 
@@ -38,7 +39,6 @@ const MapPage = () => {
   }, []);
 
   const [ActivitiesGEOJSON, setActivitiesGEOJSON] = useState([]);
-  const [IAPPGeoJSON, setIAPPGeoJSON] = useState([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -50,8 +50,6 @@ const MapPage = () => {
         }
       }));
       setActivitiesGEOJSON(activities);
-
-      setIAPPGeoJSON({ type: 'FeatureCollection', features: layers.iapp.result });
 
       setReady(true);
     }
@@ -81,29 +79,7 @@ const MapPage = () => {
                 l.bindPopup(f.properties.short_id);
               }}
             />
-            <GeoJSONVtLayer
-              key={'iapp'}
-              zIndex={10001}
-              options={{
-                maxZoom: 24,
-                minZoom: 1,
-                tolerance: 200,
-                extent: 4096,
-                buffer: 128,
-                indexMaxPoints: 200000,
-                layerStyles: {},
-                style: {
-                  stroke: false,
-                  strokeOpacity: 1,
-                  strokeWidth: 2,
-                  opacity: 1.0,
-                  fillOpacity: 0.8,
-                  weight: 1,
-                  zIndex: 10003
-                }
-              }}
-              geoJSON={IAPPGeoJSON}
-            />
+            <IAPPPMTilesLayer />
           </MapContainer>
         </Suspense>
       </MapRecordsContextProvider>
