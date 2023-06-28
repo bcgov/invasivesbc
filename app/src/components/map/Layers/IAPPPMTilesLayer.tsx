@@ -1,7 +1,7 @@
 import * as protomaps from 'protomaps';
-import React, {useEffect} from 'react';
-import {useMap} from 'react-leaflet';
-import {useLeafletContext} from '@react-leaflet/core';
+import React, { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
+import { useLeafletContext } from '@react-leaflet/core';
 
 export const IAPPPMTilesLayer = (props) => {
   const map = useMap();
@@ -10,28 +10,32 @@ export const IAPPPMTilesLayer = (props) => {
 
   const onFirstRender = useEffect(() => {
     class IAPPTextSymbolizer {
-      place(layout,geom,feature) {
-        if (layout.zoom < 15)
-          return;
+      place(layout, geom, feature) {
+        if (layout.zoom < 13) return;
 
-        let pt = geom[0][0]
-        let name = `Site ${feature.props.site_id}: ${feature.props.species}`
+        let pt = geom[0][0];
+        let name = `${feature.props.site_id}: ${JSON.parse(feature.props.species_on_site)}`;
 
-        const font = "12px serif"
+        const font = '13px Tahoma';
+        const outlineColor = 'black';
 
-        layout.scratch.font = font
-        let metrics = layout.scratch.measureText(name)
-        let width = metrics.width
-        let ascent = metrics.actualBoundingBoxAscent
-        let descent = metrics.actualBoundingBoxDescent
-        let bbox = {minX:pt.x-width/2,minY:pt.y-ascent,maxX:pt.x+width/2,maxY:pt.y+descent}
+        layout.scratch.font = font;
+        let metrics = layout.scratch.measureText(name);
+        let width = metrics.width;
+        let ascent = metrics.actualBoundingBoxAscent;
+        let descent = metrics.actualBoundingBoxDescent;
+        let bbox = { minX: pt.x - width / 2, minY: pt.y - ascent, maxX: pt.x + width / 2, maxY: pt.y + descent };
 
-        let draw = ctx => {
-          ctx.font = font
-          ctx.fillStyle = "white"
-          ctx.fillText(name,-width/2,20)
-        }
-        return [{anchor:pt,bboxes:[bbox],draw:draw}]
+        let draw = (ctx) => {
+          ctx.font = font;
+          ctx.strokeStyle = outlineColor;
+          ctx.lineWidth = 2;
+          ctx.strokeText(name, -width / 2, 20);
+          ctx.fillStyle = 'white';
+          ctx.fillText(name, -width / 2, 20);
+        };
+
+        return [{ anchor: pt, bboxes: [bbox], draw: draw }];
       }
     }
 
@@ -42,11 +46,11 @@ export const IAPPPMTilesLayer = (props) => {
           fill: (z: number, p: any) => {
             switch (p.props.site_id) {
               default:
-                return 'blue';
+                return 'rgb(0, 238, 0)';
             }
           },
-          opacity: 0.6,
-          stroke: 'blue',
+          opacity: 1,
+          stroke: 'rgb(0, 238, 0)',
           width: 1
         })
       }
@@ -65,7 +69,7 @@ export const IAPPPMTilesLayer = (props) => {
       label_rules: LABEL_RULES
     });
 
-    layer.options.zIndex = 3005;
+    layer.options.zIndex = 9999;
 
     if (!map.hasLayer(layer)) {
       container.addLayer(layer);
