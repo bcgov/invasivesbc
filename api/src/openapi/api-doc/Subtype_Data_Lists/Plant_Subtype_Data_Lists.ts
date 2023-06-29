@@ -19,6 +19,7 @@ import {
 } from '../Components/General_Sub_Forms';
 import {
   Monitoring_BiocontrolDispersal_Information,
+  Monitoring_BiocontrolDispersalPlants,
   Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
   Monitoring_ChemicalPlants,
   Monitoring_MechanicalPlants,
@@ -131,7 +132,7 @@ export const Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
   properties: {
     Weather_Conditions: Weather_Conditions,
     Microsite_Conditions: Microsite_Conditions,
-    Monitoring_BiocontrolDispersal_Information: Monitoring_BiocontrolDispersal_Information,
+    Monitoring_BiocontrolDispersal_Information: Monitoring_BiocontrolDispersalPlants,
     Target_Plant_Phenology: Target_Plant_Phenology
   }
 };

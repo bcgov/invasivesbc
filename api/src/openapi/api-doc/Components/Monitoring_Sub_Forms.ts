@@ -474,8 +474,12 @@ export const Monitoring_BiocontrolPlants = {
 };
 
 export const Monitoring_BiocontrolDispersal_Information = {
-  title: 'Biological Dispersal Information',
+  title: '',
   type: 'object',
+  default: {
+    start_time: null,
+    stop_time: null
+  },
   required: [
     'biological_agent_code',
     'monitoring_type',
@@ -690,6 +694,17 @@ export const Monitoring_BiocontrolDispersal_Information = {
       'x-tooltip-text': 'Numeric value (exact or approximate)'
     }
   }
+};
+
+export const Monitoring_BiocontrolDispersalPlants = {
+  type: 'array',
+  default: [{}],
+  title: 'Biological Dispersal Information',
+  minItems: 1,
+  items: {
+    ...Monitoring_BiocontrolDispersal_Information
+  },
+  'x-tooltip-text': 'Specify one or more invasive plants for this monitoring'
 };
 
 // -------------------- Animal ------------------------

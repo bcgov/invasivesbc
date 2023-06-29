@@ -280,7 +280,7 @@ const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
     Weather_Conditions: BaseUISchemaComponents.general_objects.Weather_Conditions,
     Microsite_Conditions: BaseUISchemaComponents.general_objects.Microsite_Conditions,
     Monitoring_BiocontrolDispersal_Information:
-      BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_BiocontrolDispersal_Information,
+      BaseUISchemaComponents.activity_subtype_data_information_objects.Monitoring_BiocontrolDispersalPlants,
     Target_Plant_Phenology: BaseUISchemaComponents.general_objects.Target_Plant_Phenology,
     'ui:order': [
       'Weather_Conditions',

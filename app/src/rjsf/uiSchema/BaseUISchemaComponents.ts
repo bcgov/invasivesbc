@@ -1118,6 +1118,12 @@ const Monitoring_BiocontrolDispersal_Information = {
   ]
 };
 
+const Monitoring_BiocontrolDispersalPlants = {
+  items: {
+    ...Monitoring_BiocontrolDispersal_Information
+  }
+};
+
 const Biocontrol_Collection_Information = {
   ...ThreeColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -1223,6 +1229,7 @@ const BaseUISchemaComponents = {
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
     Monitoring_BiocontrolPlants,
     Monitoring_BiocontrolDispersal_Information,
+    Monitoring_BiocontrolDispersalPlants,
     Biocontrol_Collection_Information,
     Biocontrol_Release_Information
   },

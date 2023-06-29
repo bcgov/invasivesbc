@@ -380,7 +380,10 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
   }
 
   let newFormData = {};
-  if (formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information) {
+  if (
+    formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ||
+    formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information
+  ) {
     let totalEstimated = new Array(currentForm.length).fill(0);
     let totalActual = new Array(currentForm.length).fill(0);
 

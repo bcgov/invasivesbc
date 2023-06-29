@@ -287,19 +287,19 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalDispersal:
-        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].__errors = [];
-        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].__errors = [];
-
-        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
-          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
-        }
-
-        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
-          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+        const dispersaLength = subtypeData.Monitoring_BiocontrolDispersal_Information.length;
+        const dispersalErrorArray = errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information;
+        for (let i = 0; i < dispersaLength; i++) {
+          const dispersalError = dispersalErrorArray[i];
+          const dispersalPlantData = subtypeData.Monitoring_BiocontrolDispersal_Information[i];
+          dispersalError['start_time'].__errors = [];
+          dispersalError['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(dispersalPlantData['start_time'])) {
+            dispersalError['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(dispersalPlantData['stop_time'])) {
+            dispersalError['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
         break;
       case ActivitySubtype.Treatment_BiologicalPlant:
@@ -312,10 +312,10 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-        const length = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.length;
-        const errorArray = errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information;
-        for (let i = 0; i < length; i++) {
-          const thisError = errorArray[i];
+        const bioLength = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.length;
+        const bioErrorArray = errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information;
+        for (let i = 0; i < bioLength; i++) {
+          const thisError = bioErrorArray[i];
           const thisData = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[i];
           thisError['start_time'].__errors = [];
           thisError['stop_time'].__errors = [];
