@@ -793,7 +793,8 @@ const ActivityGrid = (props) => {
       filters,
       activities,
       JSON.stringify(recordsState?.layers?.[props.setName]?.filters?.sortColumns),
-      rows
+      rows,
+      JSON.stringify(userSettings?.darkTheme)
     ]
   );
 };
