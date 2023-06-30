@@ -3,7 +3,7 @@ import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
-  BasicInformationRowValidators,
+  BasicInformationRowValidators, PositiveObservationPlantValidator,
   ProjectInformation,
   ShorelineInformation,
   ShorelineSumValidator,
@@ -52,7 +52,7 @@ ObservationAquaticPlant.columns = [
     'form_data.activity_subtype_data.AquaticPlants[0].plant_life_stage_code'
   )
     .referencesCode('plant_seed_stage_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
     'Observation - Density',
@@ -60,7 +60,7 @@ ObservationAquaticPlant.columns = [
     'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_density_code'
   )
     .referencesCode('invasive_plant_density_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
     'Observation - Distribution',
@@ -68,7 +68,7 @@ ObservationAquaticPlant.columns = [
     'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_distribution_code'
   )
     .referencesCode('invasive_plant_distribution_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
     'Observation - Suitable for Biocontrol Agent?',
@@ -143,6 +143,6 @@ ObservationAquaticPlant.columns = [
   ).build()
 ];
 
-ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
+ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator, PositiveObservationPlantValidator];
 
 export { ObservationAquaticPlant };

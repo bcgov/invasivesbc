@@ -3,7 +3,7 @@ import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
-  BasicInformationRowValidators,
+  BasicInformationRowValidators, PositiveObservationPlantValidator,
   ProjectInformation
 } from '../shared-columns';
 
@@ -95,7 +95,7 @@ ObservationTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_density_code'
   )
     .referencesCode('invasive_plant_density_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
     'Observation - Distribution',
@@ -103,7 +103,7 @@ ObservationTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_distribution_code'
   )
     .referencesCode('invasive_plant_distribution_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
     'Observation - Life Stage',
@@ -111,7 +111,7 @@ ObservationTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.TerrestrialPlants[0].plant_life_stage_code'
   )
     .referencesCode('plant_life_stage_code')
-    .isRequired()
+    .isRequired(false)
     .build(),
 
   new TemplateColumnBuilder(
@@ -176,6 +176,6 @@ ObservationTerrestrialPlant.columns = [
   ).build()
 ];
 
-ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators];
+ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, PositiveObservationPlantValidator];
 
 export { ObservationTerrestrialPlant };

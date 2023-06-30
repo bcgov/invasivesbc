@@ -1,6 +1,6 @@
-import { TemplateColumnBuilder } from './definitions';
-import { RowValidationResult } from './validation/validation';
-import { WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES } from './hard-coded-codes';
+import {TemplateColumnBuilder} from './definitions';
+import {RowValidationResult} from './validation/validation';
+import {WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES} from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -536,6 +536,34 @@ export const PhenologySumValidator = (row) => {
       'When phenology details are recorded, % values must sum to 100'
     )(row);
   }
+};
+
+export const PositiveObservationPlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Observation - Life Stage', 'Observation - Distribution', 'Observation - Density'];
+  const rowData = row.data;
+  const validationMessages = [];
+  if (rowData?.['Observation - Type']?.parsedValue === 'Positive Observation') {
+    // if it was a positive occurrence, three other fields become required
+
+    for (const v of fields) {
+      if (!rowData?.[v]?.parsedValue) {
+        valid = false;
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Required value',
+          messageDetail: `${v} is required when Observation - Type is Positive Observation`
+        });
+      }
+    }
+
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
 };
 
 export const ChemicalPlantTreatmentInformation = [
