@@ -254,7 +254,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       // updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
     }
 
-    if (beforeState.activity.activity_type === ActivityType.Treatment) {
+    if (beforeState.activity.activity_type === ActivityType.Treatment && beforeState.suggestedPersons) {
       updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
     }
     let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });

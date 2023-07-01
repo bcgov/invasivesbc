@@ -271,19 +271,19 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
 
     switch (activitySubtype) {
       case ActivitySubtype.Collection_Biocontrol:
-        errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].__errors = [];
-        errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].__errors = [];
-
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['start_time'])) {
-          errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
-        }
-
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['stop_time'])) {
-          errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+        const bioCollectionLength = subtypeData.Biocontrol_Collection_Information.length;
+        const bioCollectionErrorArray = errors.activity_subtype_data.Biocontrol_Collection_Information;
+        for (let i = 0; i < bioCollectionLength; i++) {
+          const bioCollectionErrors = bioCollectionErrorArray[i];
+          const dispersalPlantData = subtypeData.Biocontrol_Collection_Information[i];
+          bioCollectionErrors['start_time'].__errors = [];
+          bioCollectionErrors['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(dispersalPlantData['start_time'])) {
+            bioCollectionErrors['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(dispersalPlantData['stop_time'])) {
+            bioCollectionErrors['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalDispersal:
@@ -303,12 +303,18 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
         }
         break;
       case ActivitySubtype.Treatment_BiologicalPlant:
-        errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].__errors = [];
+        const bioTreatmentLength = subtypeData.Biocontrol_Release_Information.length;
+        const bioTreatmentErrorArray = errors.activity_subtype_data.Biocontrol_Release_Information;
+        for (let i = 0; i < bioTreatmentLength; i++) {
+          const bioTreatmentError = bioTreatmentErrorArray[i];
+          const bioTreatmentPlantData = subtypeData.Biocontrol_Release_Information[i];
 
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Release_Information['collection_date'])) {
-          errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+          bioTreatmentError['collection_date'].__errors = [];
+          if (Date.now() < Date.parse(bioTreatmentPlantData['collection_date'])) {
+            bioTreatmentError['collection_date'].addError(
+              `Date and time cannot be later than your current date and time`
+            );
+          }
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:

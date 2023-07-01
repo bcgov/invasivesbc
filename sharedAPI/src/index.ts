@@ -198,19 +198,22 @@ export function generateDBActivityPayload(
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Collection_Biocontrol) {
-    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = {
+    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = [];
+    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant) {
-    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information = {
+    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information = [];
+    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal) {
-    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
+    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information = [];
+    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
