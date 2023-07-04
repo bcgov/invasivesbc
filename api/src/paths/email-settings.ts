@@ -140,7 +140,7 @@ function getEmailSettings(): RequestHandler {
 function updateEmailSettings(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'email-settings', message: 'updateEmailSettings', body: req.params });
-    const isAdmin = (req as any).authContext.roles[0].role_id === 18 ? true : false;
+    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18)
     if (!isAdmin) {
       return res.status(401).json({
         message: 'Invalid request, user is not authorized to update this record',
