@@ -14,6 +14,8 @@ import {
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
 import { getLogger } from '../utils/logger';
+import { buildMailer } from '../utils/mailer';
+import { getEmailTemplatesFromDB } from './email-templates';
 
 const defaultLog = getLogger('access-request');
 
@@ -25,10 +27,10 @@ POST.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -68,10 +70,10 @@ GET.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -222,37 +224,13 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
   }
   try {
     const requests = approvedAccessRequests;
-    // for each request, approve it
     for (const request of requests) {
-      // Create user record
-      const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
-      if (!sqlStatement) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement',
-          request: req.body,
-          namespace: 'access-request',
-          code: 500
-        });
-      }
-      const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
-      const result1 = response1.rows;
-
-      // Update request status
-      const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED');
-      if (!sqlStatement2) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement',
-          request: req.body,
-          namespace: 'access-request',
-          code: 500
-        });
-      }
-      // query update access request status
-      const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
-      const result2 = response2.rows;
-      for (const requestedRole of request.requested_roles.split(',')) {
-        const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
-        if (!sqlStatement3) {
+      if (!request.requested_roles)
+      continue;
+      try {
+        // Update request status
+        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED', request.access_request_id);
+        if (!sqlStatement2) {
           return res.status(500).json({
             message: 'Failed to build SQL statement',
             request: req.body,
@@ -260,30 +238,53 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
             code: 500
           });
         }
-        // query grant role by value
-        await connection.query(sqlStatement3.text, sqlStatement3.values);
-        // const result3 = response3.rows;
+        await connection.query(sqlStatement2.text, sqlStatement2.values);
+        for (const requestedRole of request.requested_roles.split(',')) {
+          const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
+          if (!sqlStatement3) {
+            return res.status(500).json({
+              message: 'Failed to build SQL statement',
+              request: req.body,
+              namespace: 'access-request',
+              code: 500
+            });
+          }
+          await connection.query(sqlStatement3.text, sqlStatement3.values);
+        }
+        const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
+        if (!sqlStatement) {
+          return res.status(500).json({
+            message: 'Failed to build SQL statement',
+            request: req.body,
+            namespace: 'access-request',
+            code: 500
+          });
+        }
+        await connection.query(sqlStatement.text, sqlStatement.values);
+
+
+        const mailer = await buildMailer();
+        const templatesResponse = await getEmailTemplatesFromDB();
+        mailer.sendEmail([request.primary_email],
+          templatesResponse.result[0].fromemail,
+          templatesResponse.result[0].emailsubject,
+          templatesResponse.result[0].emailbody,
+          'html');
+      } catch (error) {
+        defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'database encountered an error', error });
       }
-      return res.status(201).json({
-        message: 'Access request approved',
-        request: req.body,
-        result: { result1, result2 },
-        namespace: 'access-request',
-        code: 201
-      });
     }
   } catch (error) {
     defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
-    return res.status(500).json({
-      message: 'Database encountered an error',
-      request: req.body,
-      error: error,
-      namespace: 'access-request',
-      code: 500
-    });
   } finally {
     connection.release();
   }
+  return res.status(201).json({
+    message: 'Acccess requests processed',
+    request: req.body,
+    namespace: 'access-request',
+    code: 201
+  });
 }
 
 async function declineAccessRequest(req, res, next, declinedAccessRequest) {

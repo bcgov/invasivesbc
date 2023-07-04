@@ -14,6 +14,8 @@ import iappPageSaga from './sagas/iappsite';
 import batchSaga from './sagas/batch';
 import { getRequestOptions, InvasivesAPI_Callback } from 'hooks/useInvasivesApi';
 import trainingVideosSaga from "./sagas/training_videos";
+import emailSettingsSaga from './sagas/email-setup/emailSettings';
+import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
 
 const setupStore = (configuration: AppConfig) => {
   const logger = createLogger({
@@ -87,6 +89,8 @@ const setupStore = (configuration: AppConfig) => {
   sagaMiddleware.run(tabsSaga);
   sagaMiddleware.run(batchSaga);
   sagaMiddleware.run(trainingVideosSaga);
+  sagaMiddleware.run(emailSettingsSaga);
+  sagaMiddleware.run(emailTemplatesSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 

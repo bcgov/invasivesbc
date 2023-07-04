@@ -6,7 +6,6 @@ import { useSelector } from './state/utilities/use_selector';
 import { selectConfiguration } from './state/reducers/configuration';
 import AppRoute from './router/AppRoute';
 
-import { createTheme, CssBaseline, ThemeOptions, ThemeProvider } from '@mui/material';
 import { getDesignTokens } from 'utils/CustomThemeProvider';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import LandingPage from './features/home/landing/LandingPage';
@@ -26,6 +25,7 @@ import BatchCreateNew from './features/home/batch/BatchCreateNew';
 import BatchTemplates from './features/home/batch/BatchTemplates';
 import BatchView from './features/home/batch/BatchView';
 import ActivityPage from './features/home/activity/ActivityPage';
+import { createTheme, ThemeOptions, CssBaseline, ThemeProvider } from '@mui/material';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -38,9 +38,9 @@ export enum AccessLevel {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const {DEBUG} = useSelector(selectConfiguration);
-  const {location} = useHistory();
-  const {darkTheme} = useSelector(selectUserSettings);
+  const { DEBUG } = useSelector(selectConfiguration);
+  const { location } = useHistory();
+  const { darkTheme } = useSelector(selectUserSettings);
 
   const theme = createTheme(getDesignTokens(darkTheme) as ThemeOptions);
   const getTitle = (page: string) => {
@@ -55,9 +55,9 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline/>
+      <CssBaseline />
       <Switch>
-        <Redirect exact from="/" to="/home/landing"/>
+        <Redirect exact from="/" to="/home/landing" />
         <AppRoute
           accessLevel={AccessLevel.PUBLIC}
           path="/forbidden"
@@ -193,7 +193,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           accessLevel={AccessLevel.PUBLIC}
           title="*"
           path="*"
-          component={() => <Redirect to="/page-not-found"/>}
+          component={() => <Redirect to="/page-not-found" />}
         />
       </Switch>
 

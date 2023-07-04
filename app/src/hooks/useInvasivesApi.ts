@@ -307,9 +307,8 @@ export const useInvasivesApi = () => {
     return data.result;
   };
 
-  const approveAccessRequests = async (accessRequests: any[]): Promise<any> => {
+  const approveAccessRequests = async (accessRequests: any[]) => {
     const options = await getRequestOptions();
-
     const { data, status, url } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -317,11 +316,7 @@ export const useInvasivesApi = () => {
       data: { approvedAccessRequests: accessRequests }
     });
     checkForErrors(data, status, url);
-    if (DEBUG) {
-      console.log('approveAccessRequests', data);
-    }
-
-    return data.result;
+    return data;
   };
 
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
@@ -1179,6 +1174,26 @@ export const useInvasivesApi = () => {
     return data.result;
   };
 
+  const getEmailSettings = async (): Promise<any> => {
+    const options = await getRequestOptions();
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: `${options.baseUrl}/api/email`
+    });
+    return data.result;
+  };
+
+  const getEmailTemplate = async (templateId: string): Promise<any> => {
+    const options = await getRequestOptions();
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: `${options.baseUrl}/api/email/template/{templateId}`
+    });
+    return data.result;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -1231,9 +1246,12 @@ export const useInvasivesApi = () => {
     approveUpdateRequests,
     listEmbeddedMetabaseReports,
     getEmbeddedMetabaseReport,
-    getIappJurisdictions
+    getIappJurisdictions,
+    getEmailSettings,
+    getEmailTemplate,
   };
 };
+
 
 export const getRequestOptions = (config, requestHeaders) => {
   return {

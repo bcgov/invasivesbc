@@ -11,8 +11,10 @@ import { createUserSettingsReducer } from './userSettings';
 import { createTabsReducer } from './tabs';
 import { createMapReducer } from './map';
 import { createIappsiteReducer } from './iappsite';
-import {createBatchReducer} from "./batch";
-import {createTrainingVideosReducer} from "./training_videos";
+import { createTrainingVideosReducer } from "./training_videos";
+import { createEmailSettingsReducer } from './emailSettings';
+import { createEmailTemplatesReducer } from './emailTemplates';
+import { createBatchReducer } from './batch';
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -26,7 +28,9 @@ function createRootReducer(config: AppConfig) {
     Tabs: createTabsReducer(config),
     Map: createMapReducer(config),
     Batch: createBatchReducer(),
-    TrainingVideos: createTrainingVideosReducer()
+    TrainingVideos: createTrainingVideosReducer(),
+    EmailSettings: createEmailSettingsReducer(),
+    EmailTemplates: createEmailTemplatesReducer(),
   });
 }
 

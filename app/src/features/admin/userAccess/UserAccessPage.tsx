@@ -34,6 +34,7 @@ import {
 import { CustomNoRowsOverlay } from '../../../components/data-grid/CustomNoRowsOverlay';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
+import EmailSetup from '../email-setup/EmailSetup';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -177,9 +178,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const [mode, setMode] = useState<any>(Mode.GRANT);
 
-  /* 
+  /*
     ================================================================================================
-    ROW DATA CONTROLS 
+    ROW DATA CONTROLS
     ================================================================================================
   */
 
@@ -264,9 +265,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setSelectedRequestUsers(requests);
   };
 
-  /* 
+  /*
     ================================================================================================
-    ROWS 
+    ROWS
     ================================================================================================
   */
 
@@ -332,9 +333,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setRequestRows(rows);
   };
 
-  /* 
+  /*
     ================================================================================================
-    COLUMNS 
+    COLUMNS
     ================================================================================================
   */
 
@@ -389,9 +390,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     }
   ];
 
-  /* 
+  /*
     ================================================================================================
-    SEARCH 
+    SEARCH
     ================================================================================================
   */
 
@@ -422,9 +423,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     getEmployers();
   }, []);
 
-  /* 
+  /*
     ================================================================================================
-    LOAD INFO 
+    LOAD INFO
     ================================================================================================
   */
 
@@ -484,9 +485,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     });
   };
 
-  /* 
+  /*
     ================================================================================================
-    DIALOG CONTROLS 
+    DIALOG CONTROLS
     ================================================================================================
   */
 
@@ -574,10 +575,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const approveUsers = () => {
     // TODO: Handle multiple types of requests
-    api.approveAccessRequests(selectedRequestUsers).then(() => {
+    api.approveAccessRequests(selectedRequestUsers).then((response) => {
       closeApproveDeclineDialog();
       loadUsers();
-    });
+    })
   };
 
   const declineUser = () => {
@@ -601,9 +602,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     });
   };
 
-  /* 
+  /*
     ================================================================================================
-    FORM CONTROLS 
+    FORM CONTROLS
     ================================================================================================
   */
 
@@ -736,10 +737,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           </Card>
         </Grid>
       </Grid>
+      <EmailSetup />
 
-      {/* 
+      {/*
         ================================================================================================
-        DIALOGS 
+        DIALOGS
         ================================================================================================
       */}
 
@@ -811,17 +813,27 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               </Grid>
             )}
             {detailsDialogUser.employer && (
-              <Grid item>
-                <Typography variant="h6">
-                  <strong>Employer: </strong>
-                  {employerCodes.map((employer) => {
-                    if (employer.value === detailsDialogUser.employer) {
-                      return employer.description;
-                    }
-                    return '';
-                  })}
-                </Typography>
-              </Grid>
+              <>
+                <Grid item>
+                  <Typography variant="h6">
+                    <strong>Employer: </strong>
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  {detailsDialogUser.employer.split(',').map((employer) => (
+                    <Typography variant="h6" key={employer}>
+                      <li key={employer}>
+                        {employerCodes.map((employerCode) => {
+                          if (employerCode.value === employer) {
+                            return employerCode.description;
+                          }
+                          return '';
+                        })}
+                      </li>
+                    </Typography>
+                  ))}
+                </Grid>
+              </>
             )}
             {detailsDialogUser.pacNumber && (
               <Grid item>
@@ -904,9 +916,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Dialog>
       )}
 
-      {/* 
-        ### 
-        Access Request Details Dialog 
+      {/*
+        ###
+        Access Request Details Dialog
         ###
       */}
       {detailsDialogRequestUserLoaded && (
@@ -968,13 +980,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             <Grid item>
               <Typography variant="h6">
                 <strong>Employer: </strong>
-                {employerCodes.map((employer) => {
-                  if (employer.value === detailsDialogRequestUser.employer) {
-                    return employer.description;
-                  }
-                  return '';
-                })}
               </Typography>
+            </Grid>
+            <Grid item>
+              {detailsDialogRequestUser.employer.split(',').map((employer) => (
+                <Typography variant="h6" key={employer}>
+                  <li key={employer}>
+                    {employerCodes.map((employerCode) => {
+                      if (employerCode.value === employer) {
+                        return employerCode.description;
+                      }
+                      return '';
+                    })}
+                  </li>
+                </Typography>
+              ))}
             </Grid>
             <Grid item>
               <Typography variant="h6">
@@ -1050,9 +1070,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </Dialog>
       )}
 
-      {/* 
+      {/*
         ###
-        Role grant/revoke flexible dialog 
+        Role grant/revoke flexible dialog
         ###
       */}
       <Dialog
@@ -1092,15 +1112,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             }}>
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))
               : userRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))}
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))}
           </TextField>
         </DialogContent>
         <DialogActions>
@@ -1120,7 +1140,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </DialogActions>
       </Dialog>
 
-      {/* 
+      {/*
         ###
         Approve request / decline request flexible dialog
         ###
@@ -1140,8 +1160,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {mode === Mode.APPROVE ? (
               <strong>Approve selected requests?</strong>
             ) : (
-              <strong>Decline the selected request?</strong>
-            )}
+                <strong>Decline the selected request?</strong>
+              )}
           </DialogContentText>
           {mode === Mode.APPROVE && (
             <DialogContentText>
