@@ -1,7 +1,10 @@
 import { getDBConnection } from '../../../database/db';
 
-import { parse } from 'wkt';
-import { stringify} from 'wkt';
+import { parse, polygon } from 'wkt';
+import { stringify } from 'wkt';
+import * as turf from '@turf/helpers';
+import booleanOverlap from '@turf/boolean-overlap';
+import booleanWithin from '@turf/boolean-within';
 import { getLogger } from '../../logger';
 
 const defaultLog = getLogger('batch');
@@ -88,4 +91,49 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
   } finally {
     connection.release();
   }
+};
+
+const getOverlappedIndexes = (polygons: Array<turf.Polygon>, index: number) => {
+  const overlappedIndexes = [];
+  for (let i = 0; i < polygons.length; i++) {
+    if (i !== index) {
+      if (
+        booleanOverlap(polygons[index], polygons[i]) ||
+        booleanWithin(polygons[index], polygons[i]) ||
+        booleanWithin(polygons[i], polygons[index])
+      ) {
+        overlappedIndexes.push(i);
+      }
+    }
+  }
+  return overlappedIndexes;
+};
+
+const checkPolygonsConnected = (polygons: Array<turf.Polygon>) => {
+  const visited = new Array(polygons.length).fill(false);
+
+  const dfs = (index) => {
+    visited[index] = true;
+
+    const overlapped = getOverlappedIndexes(polygons, index);
+    for (let i of overlapped) {
+      if (!visited[i]) {
+        dfs(i);
+      }
+    }
+  };
+
+  dfs(0);
+
+  return visited.every((isVisited) => isVisited);
+};
+
+export const multipolygonIsConnected = (input: string) => {
+  const polygons = parse(input).coordinates.map((polygon) => turf.polygon(polygon));
+
+  // if only one polygon in multipolygon, return true
+  if (polygons.length <= 1) return true;
+
+  // if more than two polygons
+  return checkPolygonsConnected(polygons);
 };
