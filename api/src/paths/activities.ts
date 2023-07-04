@@ -301,7 +301,7 @@ function deleteActivitiesByIds(): RequestHandler {
       keycloakToken: req.keycloakToken
     });
 
-    const isAdmin = (req as any)?.authContext?.roles[0]?.role_id === 18 ? true : false; // Determines if user can delete other peoples records
+    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18)
     const preferred_username = req.authContext.preferredUsername;
     const ids = Object.values(req.query.id) as string[];
     sanitizedSearchCriteria.activity_ids = ids;
