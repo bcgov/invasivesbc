@@ -278,7 +278,7 @@ export function populateSpeciesArrays(record) {
       species_treated = subtypeData?.Treatment_MechanicalPlant_Information?.map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Treatment_BiologicalPlant:
-      species_treated = [subtypeData?.Biocontrol_Release_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Biocontrol_Release_Information?.map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
       species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.map((plantInfo) => {
@@ -329,7 +329,7 @@ export function populateSpeciesArrays(record) {
       species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
       break;
     case ActivitySubtype.Collection_Biocontrol:
-      species_treated = [subtypeData?.Biocontrol_Collection_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Biocontrol_Collection_Information?.map((plant) => plant.invasive_plant_code);
       break;
     default:
       break;
