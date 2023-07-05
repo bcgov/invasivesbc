@@ -1,6 +1,6 @@
-import {TemplateColumnBuilder} from './definitions';
-import {RowValidationResult} from './validation/validation';
-import {WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES} from './hard-coded-codes';
+import { TemplateColumnBuilder } from './definitions';
+import { RowValidationResult } from './validation/validation';
+import { WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES } from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -45,7 +45,7 @@ export const BasicInformation = [
     'numeric',
     'form_data.activity_data.jurisdictions[0].percent_covered'
   )
-    .valueRange(0, 100)
+    .valueRange(1, 100)
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -61,7 +61,7 @@ export const BasicInformation = [
     'numeric',
     'form_data.activity_data.jurisdictions[1].percent_covered'
   )
-    .valueRange(0, 100)
+    .valueRange(1, 100)
     .build(),
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 3',
@@ -75,7 +75,7 @@ export const BasicInformation = [
     'numeric',
     'form_data.activity_data.jurisdictions[2].percent_covered'
   )
-    .valueRange(0, 100)
+    .valueRange(1, 100)
     .build(),
   new TemplateColumnBuilder('Basic - Location Description', 'text', 'form_data.activity_data.location_description')
     .isRequired()
@@ -83,7 +83,7 @@ export const BasicInformation = [
     .build(),
   new TemplateColumnBuilder('Basic - Access Description', 'text', 'form_data.activity_data.access_description')
     .isRequired()
-    .lengthRange(5, 300)
+    .lengthRange(5, 2000)
     .build()
 ];
 
@@ -556,7 +556,6 @@ export const PositiveObservationPlantValidator = (row): RowValidationResult => {
         });
       }
     }
-
   }
 
   return {
