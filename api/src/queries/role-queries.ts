@@ -33,6 +33,18 @@ export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
   }
 };
 
+export const revokeAllRoles = (userId): SQLStatement => {
+  if (!userId) {
+    return null;
+  } else {
+    const sql = SQL`
+        DELETE FROM user_access
+        WHERE user_id = ${userId};
+    `;
+    return sql;
+  }
+};
+
 /**
  * SQL query to revoke a role from a user.
  *

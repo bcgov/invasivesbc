@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import {getLogger} from "../utils/logger";
+import { getLogger } from "../utils/logger";
 
 const defaultLog = getLogger('user-queries');
 
@@ -23,6 +23,12 @@ export const getUserByIDIRSQL = (idir_userid: string): SQLStatement => {
 export const getUserByBCEIDSQL = (bceid_userid: string): SQLStatement => {
   return SQL`
     SELECT * FROM application_user WHERE bceid_userid = ${bceid_userid};
+  `;
+};
+
+export const getUserIdFromEmail = (email: string): SQLStatement => {
+  return SQL`
+    SELECT user_id FROM application_user WHERE email = ${email};
   `;
 };
 
