@@ -2,16 +2,15 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getUserIdFromEmail } from '../queries/user-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import {
-  approveAccessRequestsSQL, createAccessRequestSQL,
-  declineAccessRequestSQL, getAccessRequestsSQL,
+  approveAccessRequestsSQL, createAccessRequestSQL, getAccessRequestsSQL,
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
 import { grantRoleByValueSQL, revokeAllRoles } from '../queries/role-queries';
+import { getUserIdFromEmail } from '../queries/user-queries';
 import { getLogger } from '../utils/logger';
 import { buildMailer } from '../utils/mailer';
 import { getEmailTemplatesFromDB } from './email-templates';
@@ -281,14 +280,13 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           });
         }
         await connection.query(sqlStatement.text, sqlStatement.values);
-
-
         const mailer = await buildMailer();
         const templatesResponse = await getEmailTemplatesFromDB();
+        const approvedTemplate = templatesResponse.result?.find(template => template.templatename === 'Approved')
         mailer.sendEmail([request.primary_email],
-          templatesResponse.result[0].fromemail,
-          templatesResponse.result[0].emailsubject,
-          templatesResponse.result[0].emailbody,
+          approvedTemplate.fromemail,
+          approvedTemplate.emailsubject,
+          approvedTemplate.emailbody,
           'html');
       } catch (error) {
         defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'database encountered an error', error });
@@ -319,7 +317,7 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
   }
   try {
     const request = declinedAccessRequest;
-    const sqlStatement: SQLStatement = declineAccessRequestSQL(request.primary_email);
+    const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'DECLINED', request.access_request_id);
     if (!sqlStatement) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
@@ -330,6 +328,14 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     const result = response.rows;
+    const mailer = await buildMailer();
+    const templatesResponse = await getEmailTemplatesFromDB();
+    const declinedTemplate = templatesResponse.result?.find(template => template.templatename === 'Declined')
+    mailer.sendEmail([request.primary_email],
+      declinedTemplate.fromemail,
+      declinedTemplate.emailsubject,
+      declinedTemplate.emailbody,
+      'html');
     return res.status(200).json({
       message: 'Access request declined',
       request: req.body,

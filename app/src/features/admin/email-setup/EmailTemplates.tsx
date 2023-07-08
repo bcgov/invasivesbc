@@ -1,29 +1,33 @@
+import { Card, CardContent, Grid } from '@mui/material';
+import { Form } from '@rjsf/mui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv6';
 import React, { useEffect } from 'react';
-import { Form } from '@rjsf/mui';
-import {
-  Card,
-  CardContent,
-  Grid,
-} from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { EMAIL_TEMPLATES_RETRIEVE_REQUEST, EMAIL_TEMPLATES_UPDATE } from 'state/actions';
+import { EMAIL_TEMPLATES_RETRIEVE_REQUEST, EMAIL_TEMPLATES_SET_ACTIVE, EMAIL_TEMPLATES_UPDATE } from 'state/actions';
 import { selectEmailTemplates } from 'state/reducers/emailTemplates';
+
+export const templateNames = ['Approved', 'Declined'];
 
 const jsonSchemaEmailTemplates: RJSFSchema = {
   title: 'Email Template',
   type: 'object',
   properties: {
-    fromEmail: {
+    templatename: {
+      type: 'string',
+      title: 'Template Name',
+      enum: templateNames,
+      default: templateNames[0],
+    },
+    fromemail: {
       title: 'From email',
       type: 'string',
     },
-    emailSubject: {
+    emailsubject: {
       title: 'Email subject',
       type: 'string',
     },
-    emailBody: {
+    emailbody: {
       title: 'Email body',
       type: 'string',
     },
@@ -31,13 +35,16 @@ const jsonSchemaEmailTemplates: RJSFSchema = {
 }
 
 const uiSchemaEmailTemplates: UiSchema = {
-  fromEmail: {
+  templatename: {
+    'ui:widget': 'select'
+  },
+  fromemail: {
     'ui:widget': 'text'
   },
-  emailSubject: {
+  emailsubject: {
     'ui:widget': 'text'
   },
-  emailBody: {
+  emailbody: {
     'ui:widget': 'textarea'
   },
 }
@@ -46,6 +53,7 @@ const EmailTemplates = (props) => {
 
   const emailTemplatesState = useSelector(selectEmailTemplates);
   const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch({
       type: EMAIL_TEMPLATES_RETRIEVE_REQUEST,
@@ -59,6 +67,21 @@ const EmailTemplates = (props) => {
     });
   }
 
+  const onFormChange = (event) => {
+    if (emailTemplatesState.activetemplate != event.formData.templatename)
+      dispatch({
+        type: EMAIL_TEMPLATES_SET_ACTIVE,
+        payload: {
+          ...emailTemplatesState,
+          'activetemplate': event.formData.templatename
+        }
+      })
+  }
+  const getActiveTemplate = () => {
+    if (emailTemplatesState.emailTemplates)
+      return emailTemplatesState.emailTemplates.find(template => template.templatename === emailTemplatesState.activetemplate)
+  }
+
   return (
     <Grid item xs={6}>
       <Card elevation={8}>
@@ -67,7 +90,8 @@ const EmailTemplates = (props) => {
             validator={validator}
             uiSchema={uiSchemaEmailTemplates}
             onSubmit={onSubmitEmailTemplates}
-            formData={emailTemplatesState?.emailTemplates}
+            formData={getActiveTemplate()}
+            onChange={onFormChange}
           />
           {emailTemplatesState.message}
         </CardContent>

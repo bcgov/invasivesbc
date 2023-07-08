@@ -104,17 +104,6 @@ export const updateAccessRequestStatusSQL = (email, status, access_request_id): 
     `;
 };
 
-export const declineAccessRequestSQL = (email): SQLStatement => {
-  return SQL`
-        update access_request
-        set
-        status='DECLINED',
-        updated_at=CURRENT_TIMESTAMP
-        where primary_email=${email}
-        AND request_type != 'UPDATE';
-    `;
-};
-
 export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
   let preferredUsername = '';
   const today = new Date();

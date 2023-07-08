@@ -119,7 +119,7 @@ export async function getEmailTemplatesFromDB() {
       code: 200
     };
   } catch (error) {
-    defaultLog.debug({ label: 'getEmailTemplates', message: 'error', error });
+    defaultLog.error({ label: 'getEmailTemplates', message: 'error', error });
     return {
       message: 'Database encountered an error',
       error: error,
@@ -161,7 +161,7 @@ function updateEmailTemplates(): RequestHandler {
       });
     }
     try {
-      const sqlStatement = updateEmailTemplatesSQL(data.fromEmail, data.emailSubject, data.emailBody, data.id);
+      const sqlStatement = updateEmailTemplatesSQL(data.fromemail, data.emailsubject, data.emailbody, data.id);
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Failed to build SQL statement.',

@@ -1,14 +1,9 @@
-import {
-  EMAIL_TEMPLATES_RETRIEVE_REQUEST,
-  EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS,
-  EMAIL_TEMPLATES_UPDATE,
-  EMAIL_TEMPLATES_UPDATE_SUCCESS,
-  EMAIL_TEMPLATES_UPDATE_FAILURE,
-} from "state/actions";
-import { all, takeEvery, select, put } from "redux-saga/effects";
-import { selectConfiguration } from "state/reducers/configuration";
-import { selectAuth } from "state/reducers/auth";
 import { Http } from "@capacitor-community/http";
+import { all, put, select, takeEvery } from "redux-saga/effects";
+import { EMAIL_TEMPLATES_RETRIEVE_REQUEST, EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS, EMAIL_TEMPLATES_UPDATE, EMAIL_TEMPLATES_UPDATE_FAILURE, EMAIL_TEMPLATES_UPDATE_SUCCESS } from "state/actions";
+import { selectAuth } from "state/reducers/auth";
+import { selectConfiguration } from "state/reducers/configuration";
+import { selectEmailTemplates } from "state/reducers/emailTemplates";
 
 function* fetchEmailTemplates() {
   const configuration = yield select(selectConfiguration);
@@ -24,12 +19,7 @@ function* fetchEmailTemplates() {
   });
   yield put({
     type: EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS, payload: {
-      emailTemplates: {
-        fromEmail: data.result[0].fromemail,
-        emailSubject: data.result[0].emailsubject,
-        emailBody: data.result[0].emailbody,
-        id: data.result[0].id,
-      }
+      'emailTemplates': data.result
     }
   });
 };
@@ -46,18 +36,21 @@ function* updateEmailTemplates(action) {
     },
     data: action.payload
   });
-  if (data.code >= 200 && data.code <= 300)
+  const emailTemplatesState = yield select(selectEmailTemplates);
+  emailTemplatesState.emailTemplates[emailTemplatesState.emailTemplates.findIndex(template => template.templatename === data.request.templatename)] = data.request
+  if (data.code >= 200 && data.code <= 300) {
     yield put({
       type: EMAIL_TEMPLATES_UPDATE_SUCCESS, payload: {
         'message': 'Email template updated successfully',
-        'emailTemplates': data.request,
+        emailTemplates: emailTemplatesState.emailTemplates
       }
     });
+  }
   else
     yield put({
       type: EMAIL_TEMPLATES_UPDATE_FAILURE, payload: {
         'message': data.message,
-        'emailTemplates': data.request,
+        emailTemplates: emailTemplatesState.emailTemplates
       }
     });
 };
