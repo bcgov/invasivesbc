@@ -2,17 +2,16 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { grantRoleByValueSQL } from '../queries/role-queries';
+import { getUserIdFromEmail } from '../queries/user-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import {
-  createAccessRequestSQL,
-  declineAccessRequestSQL,
-  approveAccessRequestsSQL,
-  getAccessRequestsSQL,
+  approveAccessRequestsSQL, createAccessRequestSQL,
+  declineAccessRequestSQL, getAccessRequestsSQL,
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
+import { grantRoleByValueSQL, revokeAllRoles } from '../queries/role-queries';
 import { getLogger } from '../utils/logger';
 import { buildMailer } from '../utils/mailer';
 import { getEmailTemplatesFromDB } from './email-templates';
@@ -226,7 +225,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
     const requests = approvedAccessRequests;
     for (const request of requests) {
       if (!request.requested_roles)
-      continue;
+        continue;
       try {
         // Update request status
         const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED', request.access_request_id);
@@ -239,6 +238,27 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           });
         }
         await connection.query(sqlStatement2.text, sqlStatement2.values);
+        const sqlStatement5: SQLStatement = getUserIdFromEmail(request.primary_email);
+        if (!sqlStatement5) {
+          return res.status(500).json({
+            message: 'Failed to generate SQL statement',
+            request: req.body,
+            namespace: 'user-access',
+            code: 500
+          });
+        }
+        const response = await connection.query(sqlStatement5.text, sqlStatement5.values);
+        const userId = response.rows[0].user_id;
+        const sqlStatement4: SQLStatement = revokeAllRoles(userId);
+        if (!sqlStatement4) {
+          return res.status(500).json({
+            message: 'Failed to generate SQL statement',
+            request: req.body,
+            namespace: 'user-access',
+            code: 500
+          });
+        }
+        await connection.query(sqlStatement4.text, sqlStatement4.values);
         for (const requestedRole of request.requested_roles.split(',')) {
           const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
           if (!sqlStatement3) {
