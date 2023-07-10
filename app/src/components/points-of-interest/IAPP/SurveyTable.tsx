@@ -45,11 +45,11 @@ interface SurveyColumn {
 const surveyColumns: readonly SurveyColumn[] = [
   { id: 'survey_id', label: 'Survey ID', minWidth: 150 },
   { id: 'survey_date', label: 'Survey Date', minWidth: 150 },
+  { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
   { id: 'survey_paper_file_id', label: 'Survey Paper File ID', minWidth: 250 },
   { id: 'survey_type', label: 'Survey Type', minWidth: 150 },
   { id: 'surveyor_name', label: 'Primary Surveyor', minWidth: 250 },
   { id: 'other_surveyors', label: 'Other Surveyors', minWidth: 250 },
-  { id: 'species_common_name', label: 'Invasive Plant', minWidth: 150 },
   { id: 'invasive_species_agency_code', label: 'Agency', minWidth: 350 },
   { id: 'employer', label: 'Employer', minWidth: 250 },
   { id: 'reported_area', label: 'Estimated Area (ha)', minWidth: 150 },
@@ -164,7 +164,7 @@ export const SurveysTable = (props: any) => {
       invasive_plant_code: survey.invasive_plant_code,
       species_common_name: survey.common_name,
       genus: survey.genus,
-      survey_date: survey.survey_date.substring(0, survey.survey_date.indexOf('T')),
+      survey_date: new Date(survey.survey_date).toISOString().substring(0, 10),
       invasive_species_agency_code: survey.invasive_species_agency_code,
       employer: survey.employer,
       reported_area: getReportedAreaOutput(survey.reported_area),
@@ -176,9 +176,9 @@ export const SurveysTable = (props: any) => {
       distribution: survey.distribution,
       general_comment: survey.general_comment,
       entered_by: survey.entered_by,
-      date_entered: survey.date_entered.substring(0, survey.date_entered.indexOf('T')),
+      date_entered: new Date(survey.date_entered).toISOString().substring(0, 10),
       updated_by: survey.updated_by,
-      date_updated: survey.date_updated.substring(0, survey.date_updated.indexOf('T'))
+      date_updated: new Date(survey.date_updated).toISOString().substring(0, 10)
     };
   };
 
@@ -198,9 +198,12 @@ export const SurveysTable = (props: any) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <Row key={row.survey_id} row={row} />
-              ))}
+              {rows
+                .sort((a, b) => new Date(b.survey_date) - new Date(a.survey_date))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <Row key={row.survey_id} row={row} />
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

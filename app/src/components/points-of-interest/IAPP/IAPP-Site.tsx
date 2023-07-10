@@ -220,17 +220,21 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       {/* oldRecords Table <IAPPSurveyTable rows={surveys} /> */}
       <SurveysTable surveys={surveys} />
 
-      {/* oldRecords Table {mechanical_treatments && <IAPPMechanicalTreatmentsTable rows={mechanical_treatments} />} */}
-      <TreatmentsTable type={'Mechanical Treatment'} treatments={mechanical_treatments} />
+      {mechanical_treatments.length > 0 && (
+        <TreatmentsTable type={'Mechanical Treatment'} treatments={mechanical_treatments} />
+      )}
 
-      {/* oldRecords Table {chemical_treatments && <IAPPChemicalTreatmentsTable rows={chemical_treatments} />} */}
-      <TreatmentsTable type={'Chemical Treatment'} treatments={chemical_treatments} />
+      {chemical_treatments.length > 0 && (
+        <TreatmentsTable type={'Chemical Treatment'} treatments={chemical_treatments} />
+      )}
 
-      {/* oldRecords Table {biological_treatments && <IAPPBiologicalTreatmentsTable rows={biological_treatments} />} */}
-      <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />
+      {biological_treatments.length > 0 && (
+        <TreatmentsTable type={'Biological Treatment'} treatments={biological_treatments} />
+      )}
 
-      {/* oldRecords Table {biological_dispersals && <IAPPBiologicalDispersalsTable rows={biological_dispersals} />} */}
-      <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
+      {biological_dispersals.length > 0 && (
+        <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
+      )}
     </Container>
   );
 };

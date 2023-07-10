@@ -280,7 +280,7 @@ const Row = (props: any) => {
   const convertData = (item: any) => {
     return {
       monitoring_id: item.monitoring_id,
-      monitoring_date: item.monitoring_date.substring(0, item.monitoring_date.indexOf('T')),
+      monitoring_date: new Date(item.monitoring_date).toISOString().substring(0, 10),
       invasive_species_agency_code: item.invasive_species_agency_code,
       project_code: item.project_code,
       primary_surveyor: item.primary_surveyor,
@@ -301,9 +301,9 @@ const Row = (props: any) => {
       efficacy_rating: item.efficacy_code,
       monitoring_comments: item.monitoring_comments,
       entered_by: item.entered_by,
-      date_entered: item.date_entered.substring(0, item.date_entered.indexOf('T')),
+      date_entered: new Date(item.date_entered).toISOString().substring(0, 10),
       updated_by: item.updated_by,
-      date_updated: item.date_updated.substring(0, item.date_updated.indexOf('T'))
+      date_updated: new Date(item.date_updated).toISOString().substring(0, 10)
     };
   };
 
@@ -366,21 +366,31 @@ const Row = (props: any) => {
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box margin={1} marginLeft={5}>
                 <Typography fontSize={'0.925rem'}>Monitoring</Typography>
-                <Table size="small" aria-label="monitoring">
+                <Table size="small" aria-label="monitoring" style={{ display: 'inline-block' }}>
                   <TableHead>
-                    <TableRow
-                      sx={{ '& > *': { borderBottom: 'unset' }, '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableRow>
                       {monitoringColumns.map((column) => (
-                        <TableCell align={column.align} colSpan={1} key={column.id}>
+                        <TableCell key={column.id} align={column.align} style={{ width: 'auto', tableLayout: 'fixed' }}>
                           <Typography fontSize={'0.875rem'}>{column.label}</Typography>
                         </TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {monitoringRows.map((item) => {
-                      return <MonitoringRow row={item} type={type} />;
-                    })}
+                    {monitoringRows
+                      .sort((a, b) => new Date(b.monitoring_date) - new Date(a.monitoring_date))
+                      .map((item) => (
+                        <TableRow key={item.id}>
+                          {monitoringColumns.map((column) => (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              style={{ width: 'auto', tableLayout: 'fixed' }}>
+                              {item[column.id]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </Box>
@@ -436,7 +446,7 @@ export const TreatmentsTable = (props) => {
         returnObj = {
           mechanical_id: treatment.mechanical_id,
           species_common_name: treatment.common_name,
-          treatment_date: treatment.treatment_date.substring(0, treatment.treatment_date.indexOf('T')),
+          treatment_date: new Date(treatment.treatment_date).toISOString().substring(0, 10),
           invasive_species_agency_code: treatment.invasive_species_agency_code,
           employer: treatment.employer,
           primary_applicator: treatment.primary_applicator,
@@ -446,9 +456,9 @@ export const TreatmentsTable = (props) => {
           project_code: treatment?.project_code[0]?.description,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
+          date_entered: new Date(treatment.date_entered).toISOString().substring(0, 10),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
+          date_updated: new Date(treatment.date_updated).toISOString().substring(0, 10),
           monitoring: treatment.monitoring
         };
         break;
@@ -457,7 +467,7 @@ export const TreatmentsTable = (props) => {
           treatment_id: treatment.treatment_id,
           species_common_name: treatment.common_name,
           project_code: treatment?.project_code[0]?.description,
-          treatment_date: treatment.treatment_date.substring(0, treatment.treatment_date.indexOf('T')),
+          treatment_date: new Date(treatment.treatment_date).toISOString().substring(0, 10),
           pmp_confirmation_number: treatment.pmp_confirmation_number,
           service_licence_number: treatment.service_licence_number,
           invasive_species_agency_code: treatment.invasive_species_agency_code,
@@ -480,9 +490,9 @@ export const TreatmentsTable = (props) => {
           humidity: treatment.humidity,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
+          date_entered: new Date(treatment.date_entered).toISOString().substring(0, 10),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
+          date_updated: new Date(treatment.date_updated).toISOString().substring(0, 10),
           monitoring: treatment.monitoring
         };
         break;
@@ -490,7 +500,7 @@ export const TreatmentsTable = (props) => {
         returnObj = {
           dispersal_id: treatment.biological_dispersal_id,
           species_common_name: treatment.common_name,
-          monitoring_date: treatment.monitoring_date.substring(0, treatment.monitoring_date.indexOf('T')),
+          monitoring_date: new Date(treatment.monitoring_date).toISOString().substring(0, 10),
           project_code: treatment?.project_code[0]?.description,
           primary_surveyor: treatment.primary_surveyor,
           other_surveyors: treatment.other_surveyors,
@@ -511,9 +521,9 @@ export const TreatmentsTable = (props) => {
           dispersal_utm_northing: treatment.dispersal_utm_northing,
           monitoring_comments: treatment.monitoring_comments,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
+          date_entered: new Date(treatment.date_entered).toISOString().substring(0, 10),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
+          date_updated: new Date(treatment.date_updated).toISOString().substring(0, 10),
           general_comment: treatment.general_comment
         };
         break;
@@ -521,7 +531,7 @@ export const TreatmentsTable = (props) => {
         returnObj = {
           treatment_id: treatment.treatment_id,
           species_common_name: treatment.common_name,
-          treatment_date: treatment.treatment_date.substring(0, treatment.treatment_date.indexOf('T')),
+          treatment_date: new Date(treatment.treatment_date).toISOString().substring(0, 10),
           invasive_species_agency_code: treatment.invasive_species_agency_code,
           employer: treatment.employer,
           primary_applicator: treatment.primary_applicator,
@@ -539,9 +549,9 @@ export const TreatmentsTable = (props) => {
           release_utm_northing: treatment.release_utm_northing,
           general_comment: treatment.general_comment,
           entered_by: treatment.entered_by,
-          date_entered: treatment.date_entered.substring(0, treatment.date_entered.indexOf('T')),
+          date_entered: new Date(treatment.date_entered).toISOString().substring(0, 10),
           updated_by: treatment.updated_by,
-          date_updated: treatment.date_updated.substring(0, treatment.date_updated.indexOf('T')),
+          date_updated: new Date(treatment.date_updated).toISOString().substring(0, 10),
           monitoring: treatment.monitoring
         };
         break;
@@ -590,10 +600,13 @@ export const TreatmentsTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                if (row.treatment_id) return <Row key={row.treatment_id} row={row} type={type} />;
-                else return <Row key={row.dispersal_id} row={row} type={type} />;
-              })}
+              {rows
+                .sort((a, b) => new Date(b.treatment_date) - new Date(a.treatment_date))
+                .map((row) => {
+                  if (row.treatment_id) return <Row key={row.treatment_id} row={row} type={type} />;
+                  else return <Row key={row.dispersal_id} row={row} type={type} />;
+                })
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
             </TableBody>
           </Table>
         </TableContainer>
