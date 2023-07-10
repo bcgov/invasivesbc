@@ -4,6 +4,10 @@
   margin: 0;
 }
 
+.batchDarkNav {
+  background: #272727;
+}
+
 div.template-description {
   text-align: center;
   border: 1px solid #444;
@@ -161,6 +165,26 @@ table.batchAlternateLayout {
   }
 }
 
+table.batchDarkMode {
+  thead {
+    tr {
+      th {
+        background: #1b1b1b;
+      }
+    }
+  }
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #171717;
+      }
+    }
+  }
+  tr > th:first-child, tr > td:first-child {
+    background: #1b1b1b;
+  }
+}
+
 table.batchValidation {
   thead {
     tr {
@@ -212,6 +236,24 @@ table.batchList {
       }
       td {
         padding: 8px;
+      }
+    }
+  }
+}
+
+table.batchDarkList {
+  thead {
+    tr {
+      th {
+        background-color: #1b1b1b;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: #171717;
       }
     }
   }
