@@ -499,115 +499,133 @@ export const Treatment_MechanicalAnimalTerrestrial = {
 
 //--------------------- Biocontrol ---------------------
 export const Biocontrol_Release_Information = {
-  title: 'Biological Treatment Information',
-  type: 'object',
-  required: ['invasive_plant_code', 'mortality', 'agent_source', 'biological_agent_code'],
-  properties: {
-    invasive_plant_code: {
-      type: 'string',
-      title: 'Invasive Plant',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
+  type: 'array',
+  title: 'Biological Treatments',
+  default: [{}],
+  minItems: 1,
+  items: {
+    title: 'Biological Treatment Information',
+    type: 'object',
+    required: ['invasive_plant_code', 'mortality', 'agent_source', 'biological_agent_code'],
+    default: {
+      collection_date: null
+    },
+    properties: {
+      invasive_plant_code: {
+        type: 'string',
+        title: 'Invasive Plant',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Target invasive plant species treated at this location'
       },
-      'x-tooltip-text': 'Target invasive plant species treated at this location'
-    },
-    mortality: {
-      type: 'number',
-      title: 'Mortality',
-      'x-tooltip-text': 'Number of agents dead at time of release'
-    },
-    agent_source: {
-      type: 'string',
-      title: 'Agent Source',
-      maxLength: 50,
-      'x-tooltip-text':
-        'Details of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.'
-    },
-    collection_date: {
-      title: 'Collection Date',
-      type: 'string',
-      format: 'date-time'
-    },
-    plant_collected_from: {
-      type: 'string',
-      title: 'Plant Collected From',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
+      mortality: {
+        type: 'number',
+        title: 'Mortality',
+        'x-tooltip-text': 'Number of agents dead at time of release'
       },
-      'x-tooltip-text': 'If known, choose the species from the list that the agents were collected from'
-    },
-    plant_collected_from_unlisted: {
-      type: 'string',
-      title: 'Plant Collected From - unlisted',
-      'x-tooltip-text':
-        'If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required.'
-    },
-    biological_agent_code: {
-      type: 'string',
-      title: 'Biological Agent',
-      'x-enum-code': {
-        'x-enum-code-category-name': 'invasives',
-        'x-enum-code-header-name': 'biological_agent_code',
-        'x-enum-code-name': 'code_name',
-        'x-enum-code-text': 'code_description',
-        'x-enum-code-sort-order': 'code_sort_order'
+      agent_source: {
+        type: 'string',
+        title: 'Agent Source',
+        maxLength: 50,
+        'x-tooltip-text':
+          'Details of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.'
       },
-      'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
-    },
-    actual_biological_agents: {
-      type: 'array',
-      title: 'Actual Biological Agents',
-      items: {
-        ...Biocontrol_Release_Biological_Agent_Stage
+      collection_date: {
+        title: 'Collection Date',
+        type: 'string',
+        format: 'date-time'
       },
-      'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
-    },
-    estimated_biological_agents: {
-      type: 'array',
-      title: 'Estimated Biological Agents',
-      items: {
-        ...Biocontrol_Release_Biological_Agent_Stage
+      plant_collected_from: {
+        type: 'string',
+        title: 'Plant Collected From',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'invasive_plant_code_withbiocontrol',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'If known, choose the species from the list that the agents were collected from'
       },
-      'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
-    },
-    total_bio_agent_quantity_estimated: {
-      type: 'number',
-      default: 0,
-      title: 'Total Bioagent Quantity (Estimated)'
-    },
-    total_bio_agent_quantity_actual: {
-      type: 'number',
-      default: 0,
-      title: 'Total Bioagent Quantity (Actual)'
-    },
-    linear_segment: {
-      type: 'string',
-      title: 'Linear segment',
-      default: 'Unknown',
-      enum: ['Unknown', 'Yes', 'No'],
-      'x-tooltip-text': 'If the invasive plant infestation is primarily linear in nature, choose Yes.'
+      plant_collected_from_unlisted: {
+        type: 'string',
+        title: 'Plant Collected From - unlisted',
+        'x-tooltip-text':
+          'If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required.'
+      },
+      biological_agent_code: {
+        type: 'string',
+        title: 'Biological Agent',
+        'x-enum-code': {
+          'x-enum-code-category-name': 'invasives',
+          'x-enum-code-header-name': 'biological_agent_code',
+          'x-enum-code-name': 'code_name',
+          'x-enum-code-text': 'code_description',
+          'x-enum-code-sort-order': 'code_sort_order'
+        },
+        'x-tooltip-text': 'Genus species code of the agent (ie ALTICAR [Altica carduorum])'
+      },
+      actual_biological_agents: {
+        type: 'array',
+        title: 'Actual Biological Agents',
+        items: {
+          ...Biocontrol_Release_Biological_Agent_Stage
+        },
+        'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
+      },
+      estimated_biological_agents: {
+        type: 'array',
+        title: 'Estimated Biological Agents',
+        items: {
+          ...Biocontrol_Release_Biological_Agent_Stage
+        },
+        'x-tooltip-text': 'The quantity of the biocontrol agents in the life stage present.'
+      },
+      total_bio_agent_quantity_estimated: {
+        type: 'number',
+        default: 0,
+        title: 'Total Bioagent Quantity (Estimated)'
+      },
+      total_bio_agent_quantity_actual: {
+        type: 'number',
+        default: 0,
+        title: 'Total Bioagent Quantity (Actual)'
+      },
+      linear_segment: {
+        type: 'string',
+        title: 'Linear segment',
+        default: 'Unknown',
+        enum: ['Unknown', 'Yes', 'No'],
+        'x-tooltip-text': 'If the invasive plant infestation is primarily linear in nature, choose Yes.'
+      }
     }
   }
 };
 export const Biocontrol_Collection_Information = {
   title: 'Biocontrol Collection',
-  type: 'object',
-  required: [
-    'invasive_plant_code',
-    'biological_agent_code',
-    'collection_method',
-    'collection_type',
-    'start_time',
-    'stop_time'
-  ],
+  type: 'array',
+  default: [{}],
+  minItems: 1,
+  items: {
+    title: '',
+    type: 'object',
+    default: {
+      start_time: null,
+      stop_time: null
+    },
+    required: [
+      'invasive_plant_code',
+      'biological_agent_code',
+      'collection_method',
+      'collection_type',
+      'start_time',
+      'stop_time'
+    ],
     dependencies: {
       collection_type: {
         oneOf: [
@@ -754,6 +772,6 @@ export const Biocontrol_Collection_Information = {
         title: 'Comment',
         'x-tooltip-text': 'Any comments of particular interest regarding this collection that does not fit elsewhere.'
       }
-
+    }
   }
 };

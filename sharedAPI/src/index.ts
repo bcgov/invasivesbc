@@ -198,19 +198,22 @@ export function generateDBActivityPayload(
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Collection_Biocontrol) {
-    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = {
+    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information = [];
+    returnVal.form_data.activity_subtype_data.Biocontrol_Collection_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant) {
-    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information = {
+    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information = [];
+    returnVal.form_data.activity_subtype_data.Biocontrol_Release_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
   }
   if (returnVal.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal) {
-    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
+    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information = [];
+    returnVal.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0] = {
       actual_biological_agents: [{}],
       estimated_biological_agents: [{}]
     };
@@ -275,23 +278,27 @@ export function populateSpeciesArrays(record) {
       species_treated = subtypeData?.Treatment_MechanicalPlant_Information?.map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Treatment_BiologicalPlant:
-      species_treated = [subtypeData?.Biocontrol_Release_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Biocontrol_Release_Information?.map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.invasive_plant_code
-        ? [subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.invasive_plant_code]
-        : [subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.invasive_plant_aquatic_code];
+      species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.map((plantInfo) => {
+        return plantInfo?.invasive_plant_code ? plantInfo?.invasive_plant_code : plantInfo?.invasive_plant_aquatic_code;
+      });
       break;
     case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.invasive_plant_code
-        ? [subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.invasive_plant_code]
-        : [subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.invasive_plant_aquatic_code];
+      species_treated = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.map((plantInfo) => {
+        return plantInfo?.invasive_plant_code ? plantInfo?.invasive_plant_code : plantInfo?.invasive_plant_aquatic_code;
+      });
       break;
     case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-      species_treated = [subtypeData?.Monitoring_BiocontrolRelease_TerrestrialPlant_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Monitoring_BiocontrolRelease_TerrestrialPlant_Information?.map(
+        (plantInfo) => plantInfo?.invasive_plant_code
+      );
       break;
     case ActivitySubtype.Monitoring_BiologicalDispersal:
-      species_positive = [subtypeData?.Monitoring_BiocontrolDispersal_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Monitoring_BiocontrolDispersal_Information?.map(
+        (plantInfo) => plantInfo?.invasive_plant_code
+      );
       break;
     case ActivitySubtype.Transect_FireMonitoring:
       species_positive = subtypeData?.fire_monitoring_transect_lines
@@ -322,7 +329,7 @@ export function populateSpeciesArrays(record) {
       species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
       break;
     case ActivitySubtype.Collection_Biocontrol:
-      species_treated = [subtypeData?.Biocontrol_Collection_Information?.invasive_plant_code];
+      species_treated = subtypeData?.Biocontrol_Collection_Information?.map((plant) => plant.invasive_plant_code);
       break;
     default:
       break;

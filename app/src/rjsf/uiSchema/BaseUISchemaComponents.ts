@@ -992,6 +992,12 @@ const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ]
 };
 
+const Monitoring_ChemicalPlants = {
+  items: {
+    ...Monitoring_ChemicalTerrestrialAquaticPlant_Information
+  }
+};
+
 const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -1015,6 +1021,12 @@ const Monitoring_MechanicalTerrestrialAquaticPlant_Information = {
     'treatment_pass',
     'comment'
   ]
+};
+
+const Monitoring_MechanicalPlants = {
+  items: {
+    ...Monitoring_MechanicalTerrestrialAquaticPlant_Information
+  }
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
@@ -1054,6 +1066,12 @@ const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
     'total_bio_agent_quantity_estimated',
     'suitable_collection_site'
   ]
+};
+
+const Monitoring_BiocontrolPlants = {
+  items: {
+    ...Monitoring_BiocontrolRelease_TerrestrialPlant_Information
+  }
 };
 
 const Monitoring_BiocontrolDispersal_Information = {
@@ -1100,74 +1118,84 @@ const Monitoring_BiocontrolDispersal_Information = {
   ]
 };
 
+const Monitoring_BiocontrolDispersalPlants = {
+  items: {
+    ...Monitoring_BiocontrolDispersal_Information
+  }
+};
+
 const Biocontrol_Collection_Information = {
-  ...ThreeColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  historical_iapp_site_id: {},
-  collection_type: {},
-  plant_count: {},
-  collection_method: { 'ui:widget': 'single-select-autocomplete' },
-  num_of_sweeps: {},
-  start_time: {},
-  stop_time: { 'ui:widget': 'datetime' },
-  actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
-  estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
-  total_bio_agent_quantity_actual: { 'ui:readonly': true },
-  total_bio_agent_quantity_estimated: { 'ui:readonly': true },
-  comment: { 'ui:widget': 'textarea' },
-  'ui:order': [
-    'invasive_plant_code',
-    'biological_agent_code',
-    'historical_iapp_site_id',
-    'collection_type',
-    'plant_count',
-    'collection_method',
-    'num_of_sweeps',
-    'start_time',
-    'stop_time',
-    'actual_biological_agents',
-    'estimated_biological_agents',
-    'total_bio_agent_quantity_actual',
-    'total_bio_agent_quantity_estimated',
-    'comment'
-  ]
+  items: {
+    ...ThreeColumnStyle,
+    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+    historical_iapp_site_id: {},
+    collection_type: {},
+    plant_count: {},
+    collection_method: { 'ui:widget': 'single-select-autocomplete' },
+    num_of_sweeps: {},
+    start_time: {},
+    stop_time: { 'ui:widget': 'datetime' },
+    actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+    estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+    total_bio_agent_quantity_actual: { 'ui:readonly': true },
+    total_bio_agent_quantity_estimated: { 'ui:readonly': true },
+    comment: { 'ui:widget': 'textarea' },
+    'ui:order': [
+      'invasive_plant_code',
+      'biological_agent_code',
+      'historical_iapp_site_id',
+      'collection_type',
+      'plant_count',
+      'collection_method',
+      'num_of_sweeps',
+      'start_time',
+      'stop_time',
+      'actual_biological_agents',
+      'estimated_biological_agents',
+      'total_bio_agent_quantity_actual',
+      'total_bio_agent_quantity_estimated',
+      'comment'
+    ]
+  }
 };
 
 const Biocontrol_Release_Information = {
-  ...ThreeColumnStyle,
-  invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
-  mortality: {},
-  agent_source: {},
-  collection_date: {},
-  plant_collected_from: { 'ui:widget': 'single-select-autocomplete' },
-  plant_collected_from_unlisted: {},
-  biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
-  biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
-  actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
-  estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
-  total_bio_agent_quantity_actual: { 'ui:readonly': true },
-  total_bio_agent_quantity_estimated: { 'ui:readonly': true },
-  total_release_quantity: { 'ui:readonly': true },
-  linear_segment: {},
-  'ui:order': [
-    'invasive_plant_code',
-    'biological_agent_code',
-    'biological_agent_stages',
-    'linear_segment',
-    'release_quantity',
-    'mortality',
-    'agent_source',
-    'collection_date',
-    'plant_collected_from',
-    'plant_collected_from_unlisted',
-    'total_release_quantity',
-    'biological_agent_stage_code',
-    'actual_biological_agents',
-    'estimated_biological_agents',
-    'total_bio_agent_quantity_actual',
-    'total_bio_agent_quantity_estimated'
-  ]
+  items: {
+    ...ThreeColumnStyle,
+    invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
+    mortality: {},
+    agent_source: {},
+    collection_date: {},
+    plant_collected_from: { 'ui:widget': 'single-select-autocomplete' },
+    plant_collected_from_unlisted: {},
+    biological_agent_stage_code: { 'ui:widget': 'single-select-autocomplete' },
+    biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
+    actual_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+    estimated_biological_agents: { items: { ...Biocontrol_Release_Biological_Agent_Stage } },
+    total_bio_agent_quantity_actual: { 'ui:readonly': true },
+    total_bio_agent_quantity_estimated: { 'ui:readonly': true },
+    total_release_quantity: { 'ui:readonly': true },
+    linear_segment: {},
+    'ui:order': [
+      'invasive_plant_code',
+      'biological_agent_code',
+      'biological_agent_stages',
+      'linear_segment',
+      'release_quantity',
+      'mortality',
+      'agent_source',
+      'collection_date',
+      'plant_collected_from',
+      'plant_collected_from_unlisted',
+      'total_release_quantity',
+      'biological_agent_stage_code',
+      'actual_biological_agents',
+      'estimated_biological_agents',
+      'total_bio_agent_quantity_actual',
+      'total_bio_agent_quantity_estimated'
+    ]
+  }
 };
 
 /*
@@ -1199,9 +1227,13 @@ const BaseUISchemaComponents = {
     Observation_PlantTerrestrial_Information,
     Observation_PlantAquatic_Information,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
+    Monitoring_ChemicalPlants,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
+    Monitoring_MechanicalPlants,
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+    Monitoring_BiocontrolPlants,
     Monitoring_BiocontrolDispersal_Information,
+    Monitoring_BiocontrolDispersalPlants,
     Biocontrol_Collection_Information,
     Biocontrol_Release_Information
   },

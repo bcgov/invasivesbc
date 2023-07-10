@@ -271,66 +271,66 @@ export function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValid
 
     switch (activitySubtype) {
       case ActivitySubtype.Collection_Biocontrol:
-        errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].__errors = [];
-        errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].__errors = [];
-
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['start_time'])) {
-          errors.activity_subtype_data.Biocontrol_Collection_Information['start_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
-        }
-
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Collection_Information['stop_time'])) {
-          errors.activity_subtype_data.Biocontrol_Collection_Information['stop_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+        const bioCollectionLength = subtypeData.Biocontrol_Collection_Information.length;
+        const bioCollectionErrorArray = errors.activity_subtype_data.Biocontrol_Collection_Information;
+        for (let i = 0; i < bioCollectionLength; i++) {
+          const bioCollectionErrors = bioCollectionErrorArray[i];
+          const dispersalPlantData = subtypeData.Biocontrol_Collection_Information[i];
+          bioCollectionErrors['start_time'].__errors = [];
+          bioCollectionErrors['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(dispersalPlantData['start_time'])) {
+            bioCollectionErrors['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(dispersalPlantData['stop_time'])) {
+            bioCollectionErrors['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalDispersal:
-        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].__errors = [];
-        errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].__errors = [];
-
-        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['start_time'])) {
-          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['start_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
-        }
-
-        if (Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolDispersal_Information['stop_time'])) {
-          errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information['stop_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+        const dispersaLength = subtypeData.Monitoring_BiocontrolDispersal_Information.length;
+        const dispersalErrorArray = errors.activity_subtype_data.Monitoring_BiocontrolDispersal_Information;
+        for (let i = 0; i < dispersaLength; i++) {
+          const dispersalError = dispersalErrorArray[i];
+          const dispersalPlantData = subtypeData.Monitoring_BiocontrolDispersal_Information[i];
+          dispersalError['start_time'].__errors = [];
+          dispersalError['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(dispersalPlantData['start_time'])) {
+            dispersalError['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(dispersalPlantData['stop_time'])) {
+            dispersalError['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
         break;
       case ActivitySubtype.Treatment_BiologicalPlant:
-        errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].__errors = [];
+        const bioTreatmentLength = subtypeData.Biocontrol_Release_Information.length;
+        const bioTreatmentErrorArray = errors.activity_subtype_data.Biocontrol_Release_Information;
+        for (let i = 0; i < bioTreatmentLength; i++) {
+          const bioTreatmentError = bioTreatmentErrorArray[i];
+          const bioTreatmentPlantData = subtypeData.Biocontrol_Release_Information[i];
 
-        if (Date.now() < Date.parse(subtypeData.Biocontrol_Release_Information['collection_date'])) {
-          errors.activity_subtype_data.Biocontrol_Release_Information['collection_date'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+          bioTreatmentError['collection_date'].__errors = [];
+          if (Date.now() < Date.parse(bioTreatmentPlantData['collection_date'])) {
+            bioTreatmentError['collection_date'].addError(
+              `Date and time cannot be later than your current date and time`
+            );
+          }
         }
         break;
       case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-        errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].__errors =
-          [];
-        errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].__errors =
-          [];
-
-        if (
-          Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'])
-        ) {
-          errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['start_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
-        }
-
-        if (
-          Date.now() < Date.parse(subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'])
-        ) {
-          errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information['stop_time'].addError(
-            `Date and time cannot be later than your current date and time`
-          );
+        const bioLength = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.length;
+        const bioErrorArray = errors.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information;
+        for (let i = 0; i < bioLength; i++) {
+          const thisError = bioErrorArray[i];
+          const thisData = subtypeData.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[i];
+          thisError['start_time'].__errors = [];
+          thisError['stop_time'].__errors = [];
+          if (Date.now() < Date.parse(thisData['start_time'])) {
+            thisError['start_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
+          if (Date.now() < Date.parse(thisData['stop_time'])) {
+            thisError['stop_time'].addError(`Date and time cannot be later than your current date and time`);
+          }
         }
         break;
       case ActivitySubtype.Treatment_ChemicalPlant:
@@ -790,24 +790,30 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
     const isChemical =
       formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information === undefined;
 
-    let informationObject = isChemical
+    // let informationObject = isChemical
+    // ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
+    // : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
+
+    let informationArray = isChemical
       ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
       : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
-    if (!informationObject.invasive_plant_aquatic_code && !informationObject.invasive_plant_code) {
-      errors['activity_subtype_data'][
-        isChemical
-          ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
-          : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-      ].addError('Either Aquatic or Terrestrial plant has to be specified.');
-    }
+    for (let object of informationArray) {
+      if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
+        errors['activity_subtype_data'][
+          isChemical
+            ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+            : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+        ].addError('Either Aquatic or Terrestrial plant has to be specified.');
+      }
 
-    if (informationObject.invasive_plant_aquatic_code && informationObject.invasive_plant_code) {
-      errors['activity_subtype_data'][
-        isChemical
-          ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
-          : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-      ].addError("You can't specify both aquatic and terrestrial plants.");
+      if (object.invasive_plant_aquatic_code && object.invasive_plant_code) {
+        errors['activity_subtype_data'][
+          isChemical
+            ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+            : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+        ].addError("You can't specify both aquatic and terrestrial plants.");
+      }
     }
 
     return errors;
