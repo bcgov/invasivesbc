@@ -1,39 +1,11 @@
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Divider,
-  MenuItem,
-  TextField,
-  Box,
-  Theme,
-  IconButton,
-  Chip
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import {
-  DataGrid,
-  GridColDef,
-  GridToolbarFilterButton,
-  GridValueGetterParams,
-  GridToolbarExport,
-  GridToolbarColumnsButton
-} from '@mui/x-data-grid';
-import { CustomNoRowsOverlay } from '../../../components/data-grid/CustomNoRowsOverlay';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, Button, Card, CardActions, CardContent, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, MenuItem, TextField, Theme, Tooltip, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarExport, GridToolbarFilterButton, GridValueGetterParams } from '@mui/x-data-grid';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useEffect, useState } from 'react';
+import { CustomNoRowsOverlay } from '../../../components/data-grid/CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 
 interface IAccessRequestPage {
@@ -702,6 +674,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     rows={requestRows}
                     columns={requestColumns}
                     pageSize={5}
+                    sortModel={[{ field: 'id', sort: 'desc' }]}
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                     onCellClick={handleRowClick}

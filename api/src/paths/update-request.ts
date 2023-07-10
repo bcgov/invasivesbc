@@ -2,18 +2,18 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { grantRoleByValueSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
+import { buildMailer } from '../utils/mailer';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
+import { updateAccessRequestStatusSQL } from '../queries/access-request-queries';
+import { grantRoleByValueSQL } from '../queries/role-queries';
 import {
-  createUpdateRequestSQL,
-  declineUpdateRequestSQL,
-  approveUpdateRequestsSQL,
-  getUpdateRequestsSQL,
+  approveUpdateRequestsSQL, createUpdateRequestSQL, getUpdateRequestsSQL,
   updateUpdateRequestStatusSQL
 } from '../queries/update-request-queries';
 import { getLogger } from '../utils/logger';
+import { getEmailTemplatesFromDB } from './email-templates';
 
 const defaultLog = getLogger('update-request');
 
@@ -25,10 +25,10 @@ POST.apiDoc = {
   tags: ['update-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -62,14 +62,10 @@ POST.apiDoc = {
     }
   }
 };
-
 GET.apiDoc = {
-  description: 'Get list of update requests',
-  tags: ['update-request'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
+  description: 'Get list of update requests', tags: ['update-request'], security: [{
+    Bearer: ALL_ROLES
+  }
   ],
   responses: {
     200: {
@@ -294,7 +290,7 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
   }
   try {
     const request = declinedUpdateRequest;
-    const sqlStatement: SQLStatement = declineUpdateRequestSQL(request.primary_email);
+    const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'DECLINED', request.access_request_id);
     if (!sqlStatement) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
@@ -304,6 +300,14 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       });
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const mailer = await buildMailer();
+    const templatesResponse = await getEmailTemplatesFromDB();
+    const declinedTemplate = templatesResponse.result?.find(template => template.templatename === 'Declined')
+    mailer.sendEmail([request.primary_email],
+      declinedTemplate.fromemail,
+      declinedTemplate.emailsubject,
+      declinedTemplate.emailbody,
+      'html');
     return res.status(200).json({
       message: 'Declined update request',
       request: req.body,
