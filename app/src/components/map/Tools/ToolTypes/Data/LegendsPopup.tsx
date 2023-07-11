@@ -3,6 +3,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MAP_TOGGLE_LEGENDS } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import invbclogo from '../../../../../InvasivesBC_Icon.svg';
 import './LegendsPopup.css';
 
@@ -10,6 +11,7 @@ export const LegendsPopup = (props) => {
 
   const dispatch = useDispatch();
   const mapState = useSelector(selectMap);
+  const {darkTheme} = useSelector(selectUserSettings);
 
   const popupOnClose = () => {
     dispatch({ type: MAP_TOGGLE_LEGENDS });
@@ -39,7 +41,7 @@ export const LegendsPopup = (props) => {
             borderRadius: 20,
             top: 0,
             left: 0,
-            backgroundColor: 'white',
+            backgroundColor: `${darkTheme? '#272727' : 'white'}`,
             width: '100%',
             height: '100%',
             overflow: 'auto',
@@ -107,7 +109,7 @@ export const LegendsPopup = (props) => {
                 <h2>2. Two letter invasive plant species map codes</h2>
                 <p>The following is a list of all possible map label species codes indicating the species are associated with
                   the record. Each record may have one or more invasive plant codes.</p>
-                <table className="table table-striped table-blue-header">
+                <table className={`table table-striped table-blue-header ${darkTheme? 'table-dark-striped table-dark-header' : ''}`}>
                   <thead>
                     <tr>
                       <th style={{textAlign: 'left'}}>Map Label</th>
@@ -1860,7 +1862,7 @@ export const LegendsPopup = (props) => {
                   Activities and Current Activity tabs in InvasivesBC. The table below lists the name of each layer in the
                   Layer Picker feature of the application with the source object name from the BC Data warehouse -
                   accessible through the <a href="https://catalogue.data.gov.bc.ca/">British Columbia Data Catalogue</a>.</p>
-                <table className="table table-blue-header">
+                <table className={`table table-blue-header ${darkTheme? 'table-dark-header' : ''}`}>
                   <thead>
                     <tr>
                       <th>Layer Picker Label </th>

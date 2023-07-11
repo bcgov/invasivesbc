@@ -10,3 +10,15 @@
   background-color: #3373ca;
   color: #ffffff;
 }
+
+.table-dark-striped>tbody>tr:nth-of-type(odd) {
+  background-color: #171717;
+ }
+
+.table-dark-striped>tbody>tr:nth-of-type(even) {
+  background-color: #1e1e1e;
+}
+
+.table-dark-header > thead > tr {
+  background-color: #1b1b1b;
+}
