@@ -53,6 +53,19 @@ table.template-preview {
   margin-bottom: 2rem;
 }
 
+table.template-dark-preview {
+  tbody {
+
+    tr:nth-child(2n) {
+      background: #171717;
+    }
+
+    tr:hover {
+      background: #272727;
+    }
+  }
+}
+
 
 code {
   font-family: "Courier New", monospace;
@@ -165,7 +178,7 @@ table.batchAlternateLayout {
   }
 }
 
-table.batchDarkMode {
+table.batchDarkLayout {
   thead {
     tr {
       th {

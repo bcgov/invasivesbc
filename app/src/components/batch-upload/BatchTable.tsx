@@ -162,11 +162,11 @@ const BatchTableCell = ({ field, row }) => {
 const BatchTable = ({ jsonRepresentation, created_activities }) => {
   const dispatch = useDispatch();
   const tabsConfigState = useSelector(selectTabs);
-  const darkTheme = useSelector(selectUserSettings);
+  const { darkTheme } = useSelector(selectUserSettings);
   const history = useHistory();
   return (
     <>
-      <table className={`batchAlternateLayout ${darkTheme ? 'batchDarkMode' : ''}`}>
+      <table className={`batchAlternateLayout ${darkTheme ? 'batchDarkLayout' : ''}`}>
         <thead>
           <tr>
             <th>Field</th>
