@@ -3,7 +3,9 @@ import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
-  BasicInformationRowValidators, PositiveObservationPlantValidator,
+  BasicInformationRowValidators,
+  PositiveObservationPlantValidator,
+  SlopeAspectValidator,
   ProjectInformation
 } from '../shared-columns';
 
@@ -176,6 +178,10 @@ ObservationTerrestrialPlant.columns = [
   ).build()
 ];
 
-ObservationTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, PositiveObservationPlantValidator];
+ObservationTerrestrialPlant.rowValidators = [
+  ...BasicInformationRowValidators,
+  PositiveObservationPlantValidator,
+  SlopeAspectValidator
+];
 
 export { ObservationTerrestrialPlant };

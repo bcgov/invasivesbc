@@ -564,6 +564,43 @@ export const PositiveObservationPlantValidator = (row): RowValidationResult => {
     }
   }
 
+  if (rowData?.['Observation - Type']?.parsedValue === 'Negative Observation') {
+    for (const v of fields) {
+      if (rowData?.[v]?.parsedValue) {
+        valid = false;
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Invalid value',
+          messageDetail: `${v} must be blank when Observation - Type is Negative Observation`
+        });
+      }
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const SlopeAspectValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Observation - Terrestrial - Aspect', 'Observation - Terrestrial - Slope'];
+  const rowData = row.data;
+  const aspect = rowData?.['Observation - Terrestrial - Aspect']?.inputValue;
+  const slope = rowData?.['Observation - Terrestrial - Slope']?.inputValue;
+  const validationMessages = [];
+
+  if ((aspect === 'FL' && slope !== 'FL') || (slope === 'FL' && aspect !== 'FL')) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If either Aspect or Slope is Flat, both must be Flat.'
+    });
+  }
+
   return {
     valid,
     validationMessages,

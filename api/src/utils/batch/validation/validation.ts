@@ -339,7 +339,7 @@ async function _validateCell(
         }
         if (geojson !== null && parsedArea > 0) {
           const radius = Math.sqrt(parsedArea / Math.PI);
-          const newPoly = circle(geojson, radius, { units: 'meters', steps: 10 });
+          const newPoly = circle(geojson, radius, { units: 'meters', steps: 46 });
           const newWKT = parseGeoJSONasWKT(newPoly);
           data = newWKT;
         }
@@ -416,7 +416,12 @@ async function _validateCell(
 }
 
 export const BatchValidationService = {
-  validateBatchAgainstTemplate: async (template: Template, batch, created_activities, reqUser: any): Promise<BatchValidationResult> => {
+  validateBatchAgainstTemplate: async (
+    template: Template,
+    batch,
+    created_activities,
+    reqUser: any
+  ): Promise<BatchValidationResult> => {
     const result = new BatchValidationResult();
     let totalErrorCount = 0;
     const globalValidationMessages = [];
@@ -457,7 +462,12 @@ export const BatchValidationService = {
         }
       }
 
-      const { mappedObject, messages } = _mapRowToDBObject(row, created_activities[rowIndex]?.form_status, template, reqUser);
+      const { mappedObject, messages } = _mapRowToDBObject(
+        row,
+        created_activities[rowIndex]?.form_status,
+        template,
+        reqUser
+      );
       row.mappedObject = mappedObject;
       row.mappedObjectMessages = messages;
 
