@@ -8,7 +8,6 @@ import { createUserInfoReducer } from './userInfo';
 import { createNetworkReducer } from './network';
 import { createActivityReducer } from './activity';
 import { createUserSettingsReducer } from './userSettings';
-import { createTabsReducer } from './tabs';
 import { createMapReducer } from './map';
 import { createIappsiteReducer } from './iappsite';
 import { createTrainingVideosReducer } from "./training_videos";
@@ -25,7 +24,6 @@ function createRootReducer(config: AppConfig) {
     ActivityPage: createActivityReducer(config),
     IappsitePage: createIappsiteReducer(config),
     UserSettings: createUserSettingsReducer(config),
-    Tabs: createTabsReducer(config),
     Map: createMapReducer(config),
     Batch: createBatchReducer(),
     TrainingVideos: createTrainingVideosReducer(),

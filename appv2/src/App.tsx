@@ -17,7 +17,7 @@ const App: React.FC = () => {
   // and these useEffects
  // const navigate = useNavigate();
   const location = useLocation();
-  const targetURL = useSelector((state: any) => state.appMode.url);
+  const targetURL = useSelector((state: any) => state.appMode?.url);
   const ref = useRef(0)
 
   useEffect(() => {
@@ -56,8 +56,14 @@ const App: React.FC = () => {
   const setMode = (newMode: appModeEnum) =>
     dispatch({ type: SET_APP_MODE, payload: { mode: newMode } });
 
-  const toggled = useSelector((state: any) => state.appMode.panelOpen);
-  const mode = useSelector((state: any) => state.appMode.mode);
+  const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
+  const mode = useSelector((state: any) => state.AppMode?.mode);
+
+
+  useEffect(()=> {
+    console.log('app mode changed')
+    console.log(toggled)
+  }, [toggled])
 
   return (
     <div className="App">

@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
-import { rootReducer } from "./reducers/rootReducer";
+import { createRootReducer } from "./reducers/rootReducer";
 import rootSaga from "./sagas/rootSaga";
 import { createLogger } from 'redux-logger';
 import { AUTH_INITIALIZE_REQUEST } from "./actions";
@@ -13,8 +13,9 @@ import iappPageSaga from "./sagas/iappsite";
 import activitiesPageSaga from "./sagas/map";
 import trainingVideosSaga from "./sagas/training_videos";
 import userSettingsSaga from "./sagas/userSettings";
+import { AppConfig } from "./config";
 
-export function setupStore(reducer: any, saga: any) {
+export function setupStore(configuration: AppConfig) {
   const sagaMiddleware = createSagaMiddleware();
 
   const logger = createLogger({
@@ -24,20 +25,17 @@ export function setupStore(reducer: any, saga: any) {
     timestamp: true,
     logErrors: true,
     diff: true,
-    diffPredicate: (getState, action) => true,
-    titleFormatter: (action, time, duration) =>
-    `[action]    ${action.type} (in ${duration.toFixed(2)} ms)`,
+    diffPredicate: (getState, action) => true
     }
   );
 
   const store = configureStore({
-    reducer: reducer,
+    reducer: createRootReducer(configuration),
     middleware: [sagaMiddleware, logger],
   });
-  sagaMiddleware.run(saga);
 
-
-  sagaMiddleware.run(authenticationSaga);
+  sagaMiddleware.run(rootSaga);
+ /* sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
@@ -48,7 +46,8 @@ export function setupStore(reducer: any, saga: any) {
   sagaMiddleware.run(emailTemplatesSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+  */
   return store;
 }
 
-export const DefaultStore = setupStore(rootReducer, rootSaga);
+export default setupStore

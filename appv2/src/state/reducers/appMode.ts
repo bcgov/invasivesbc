@@ -14,6 +14,7 @@ const initialState: { mode: appModeEnum; panelOpen: boolean, url: string } = {
 };
 
 export default function appMode(state = initialState, action: any) {
+    console.dir(action)
   switch (action.type) {
     case SET_APP_MODE:
       return {

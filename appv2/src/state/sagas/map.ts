@@ -937,7 +937,7 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
 }
 
 function* activitiesPageSaga() {
-  yield fork(leafletWhosEditing);
+//  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
