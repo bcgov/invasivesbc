@@ -1,8 +1,7 @@
 import {Alert, Box, Container, Snackbar, Theme, Typography} from '@mui/material';
 import {makeStyles} from '@mui/styles';
-import booleanWithin from '@turf/boolean-within';
 import {Feature} from 'geojson';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
 import {GeneralDialog, IGeneralDialog} from '../../../components/dialog/GeneralDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
@@ -11,6 +10,7 @@ import {getCustomErrorTransformer} from '../../../rjsf/business-rules/customErro
 import {validatorForActivity} from '../../../rjsf/business-rules/customValidation';
 import './scrollbar.css';
 import {useHistory} from 'react-router';
+import _ from 'lodash';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
 import {useSelector} from '../../../state/utilities/use_selector';
 import {selectAuth} from '../../../state/reducers/auth';
@@ -23,15 +23,15 @@ import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
-  ACTIVITY_SUBMIT_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
+  ACTIVITY_SUBMIT_REQUEST,
+  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST,
 } from 'state/actions';
 import {selectUserSettings} from 'state/reducers/userSettings';
 import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
 import booleanContains from '@turf/boolean-contains';
-import { selectMap } from 'state/reducers/map';
+import {selectMap} from 'state/reducers/map';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -71,13 +71,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     if (geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry) {
-      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: geometry } });
+      dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: geometry}});
     }
   }, [geometry]);
 
   const classes = useStyles();
-  const { extendedInfo, displayName, roles } = useSelector(selectAuth);
-  const { MOBILE } = useSelector(selectConfiguration);
+  const {extendedInfo, displayName, roles} = useSelector(selectAuth);
+  const {MOBILE} = useSelector(selectConfiguration);
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity] = useState(null);
@@ -112,13 +112,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         {
           actionName: 'No',
           actionOnClick: async () => {
-            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            setWarningDialog({...warningDialog, dialogOpen: false});
           }
         },
         {
           actionName: 'Yes',
           actionOnClick: async () => {
-            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            setWarningDialog({...warningDialog, dialogOpen: false});
             history.push('/home/activities');
           },
           autoFocus: true
@@ -140,13 +140,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         {
           actionName: 'No',
           actionOnClick: async () => {
-            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            setWarningDialog({...warningDialog, dialogOpen: false});
           }
         },
         {
           actionName: 'Yes',
           actionOnClick: async () => {
-            setWarningDialog({ ...warningDialog, dialogOpen: false });
+            setWarningDialog({...warningDialog, dialogOpen: false});
             dispatch({
               type: ACTIVITY_SUBMIT_REQUEST,
               payload: {
@@ -205,13 +205,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
-    const form_data = { ...activityInStore.activity.form_data, ...formRef.current.state.formData };
+    const form_data = {...activityInStore.activity.form_data, ...formRef.current.state.formData};
 
     setCanSubmitWithoutErrors(false);
 
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
-      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...form_data } }
+      payload: {activity_ID: activityInStore.activity.activity_id, updatedFormData: {...form_data}}
     });
   };
 
@@ -291,7 +291,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setFormHasErrors) {
       props.setFormHasErrors(false);
     }
-    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
+    const formData = {...activityInStore.activity.formData, ...formRef.current.state.formData};
 
     setCanSubmitWithoutErrors(true);
 
@@ -299,7 +299,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       type: ACTIVITY_SAVE_REQUEST,
       payload: {
         activity_ID: activityInStore.activity.activity_id,
-        updatedFormData: { ...formData, form_status: ActivityStatus.SUBMITTED }
+        updatedFormData: {...formData, form_status: ActivityStatus.SUBMITTED}
       }
     });
   };
@@ -311,33 +311,40 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
-    console.log('last field check');
-    //    if (lastField !== '' && lastField !== undefined && lastField !== null)
-    dispatch({
-      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay }
-    });
-  };
+  const debouncedFormChange = useCallback(
+    _.debounce((event, ref, lastField, callbackFun) => {
+      dispatch({
+        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+        payload: {eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay}
+      });
+    }, 150), []);
+
+
+  // const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
+  //   dispatch({
+  //     type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  //     payload: {eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay}
+  //   });
+  // };
 
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
    */
-  //TODO redux copy and paste
+    //TODO redux copy and paste
   const pasteFormData = async () => {
-    dispatch({
-      type: ACTIVITY_PASTE_REQUEST
-    });
-    setAlertPastedOpen(true);
-  };
+      dispatch({
+        type: ACTIVITY_PASTE_REQUEST
+      });
+      setAlertPastedOpen(true);
+    };
 
   /**
    * Copy form data into session storage
    */
   const copyFormData = () => {
     dispatch({type: ACTIVITY_COPY_REQUEST})
-  //  const { form_data, activity_subtype } = activityInStore?.activity;
+    //  const { form_data, activity_subtype } = activityInStore?.activity;
     // saveFormDataToSession(activityInStore.activity.form_data, activity_subtype);
     setAlertCopiedOpen(true);
   };
@@ -394,14 +401,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           {
             actionName: 'No',
             actionOnClick: () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
-              dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+              setWarningDialog({...warningDialog, dialogOpen: false});
+              dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: null}});
             }
           },
           {
             actionName: 'Yes',
             actionOnClick: () => {
-              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              setWarningDialog({...warningDialog, dialogOpen: false});
             },
             autoFocus: true
           }
@@ -419,7 +426,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
-        if (booleanContains(bcArea.features[0] as any, activityInStore.activity.geometry[0] as any )) {
+        if (booleanContains(bcArea.features[0] as any, activityInStore.activity.geometry[0] as any)) {
           //saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
@@ -432,7 +439,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               {
                 actionName: 'OK',
                 actionOnClick: async () => {
-                  setWarningDialog({ ...warningDialog, dialogOpen: false });
+                  setWarningDialog({...warningDialog, dialogOpen: false});
                   // dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
                 },
                 autoFocus: true
@@ -488,7 +495,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             <Typography align="left">
               Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
             </Typography>
-            <Typography style={{ display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word' }} align="left">
+            <Typography style={{display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word'}} align="left">
               Date created:
               {activityInStore.activity.date_created
                 ? new Date(activityInStore.activity.date_created).toString()
@@ -511,7 +518,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             classes={classes}
             activityId={activityInStore?.activity?.activity_id}
             mapId={activityInStore?.activity?.activity_id}
-            geometryState={{ geometry: [activityInStore?.activity?.geometry], setGeometry: setGeometry }}
+            geometryState={{geometry: [activityInStore?.activity?.geometry], setGeometry: setGeometry}}
             showDrawControls={true}
             //isLoading={isLoading}
             isLoading={false}
@@ -531,7 +538,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             activity={activityInStore.activity}
             suggestedJurisdictions={activityInStore.suggestedJurisdictions}
             linkedActivity={linkedActivity}
-            onFormChange={onFormChange}
+            onFormChange={debouncedFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
             onSubmitAsOfficial={onSubmitAsOfficial}
             canBeSubmittedWithoutErrors={() => {
@@ -540,7 +547,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             onNavBack={onNavBack}
             onFormSubmitError={onFormSubmitError}
             isAlreadySubmitted={isAlreadySubmitted}
-            photoState={{ photos, setPhotos }}
+            photoState={{photos, setPhotos}}
             pasteFormData={() => pasteFormData()}
             copyFormData={() => copyFormData()}
             //cloneActivityButton={generateCloneActivityButton}
@@ -557,32 +564,33 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       />
 
       <Snackbar open={activityInStore.notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
-        <Alert onClose={handleAPIErrorClose} severity={ activityInStore.notification?.severity } sx={{ width: '100%' }}>
-          { activityInStore.notification?.message }
+        <Alert onClose={handleAPIErrorClose} severity={activityInStore.notification?.severity} sx={{width: '100%'}}>
+          {activityInStore.notification?.message}
         </Alert>
       </Snackbar>
       <Snackbar open={activityInStore.unsaved_notification?.visible} onClose={handleUnsavedClose}>
-        <Alert onClose={handleUnsavedClose} severity={ activityInStore.unsaved_notification?.severity } sx={{ width: '100%' }}>
-          { activityInStore.unsaved_notification?.message }
+        <Alert onClose={handleUnsavedClose} severity={activityInStore.unsaved_notification?.severity}
+               sx={{width: '100%'}}>
+          {activityInStore.unsaved_notification?.message}
         </Alert>
       </Snackbar>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
-        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
+        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{width: '100%'}}>
           The form was saved with errors.
         </Alert>
       </Snackbar>
       <Snackbar open={alertSavedOpen} autoHideDuration={6000} onClose={handleAlertSavedClose}>
-        <Alert onClose={handleAlertSavedClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleAlertSavedClose} severity="success" sx={{width: '100%'}}>
           The form was saved successfully.
         </Alert>
       </Snackbar>
       <Snackbar open={alertCopiedOpen} autoHideDuration={6000} onClose={handleAlertCopiedClose}>
-        <Alert onClose={handleAlertCopiedClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleAlertCopiedClose} severity="success" sx={{width: '100%'}}>
           The form data was copied successfully.
         </Alert>
       </Snackbar>
       <Snackbar open={alertPastedOpen} autoHideDuration={6000} onClose={handleAlertPastedClose}>
-        <Alert onClose={handleAlertPastedClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleAlertPastedClose} severity="success" sx={{width: '100%'}}>
           The form data was pasted successfully.
         </Alert>
       </Snackbar>
