@@ -1,0 +1,51 @@
+.map {
+    height: 90vh;
+    width: 100vw;
+    background-color: #ccc;
+    position: absolute;
+    top: 5vh;
+    left: 0;
+}
+  
+  .map__leaflet {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .map__overlay {
+    bottom: 0;
+    height: 50%;
+    left: 0;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    transition: all 0.5s ease;
+    transform: translateY(100%);
+    z-index:10000000;
+  }
+  
+  .map__overlay--show {
+    transform: translateY(0);
+  }
+  
+  .overlay_toggle {
+    z-index: 10000000;
+    position: absolute;
+    top: 18px;
+    height: 65px;
+    right: 18px;
+    border:0;
+    background-color: #fff;
+    box-shadow: 1px 1px black;
+  }
+
+  .cycle_mode {
+    z-index: 10000000;
+    position: absolute;
+    top: 104px;
+    height: 65px;
+    right: 18px;
+    border:0;
+    background-color: #fff;
+    box-shadow: 1px 1px black;
+  }
