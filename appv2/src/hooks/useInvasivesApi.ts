@@ -3,7 +3,7 @@ import qs from 'qs';
 import { useContext } from 'react';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 import { DocType } from '../constants/database';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
+//import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import { ErrorContext } from 'contexts/ErrorContext';
 import {
   IActivitySearchCriteria,
@@ -15,10 +15,10 @@ import {
   IRisoSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
-import { useSelector } from 'state/utilities/use_selector';
 import { selectConfiguration } from '../state/reducers/configuration';
 import { selectAuthHeaders } from '../state/reducers/auth';
 import { select } from 'redux-saga/effects';
+import { useSelector } from 'util/use_selector';
 
 /**
  * Returns a set of supported api methods.
@@ -26,8 +26,9 @@ import { select } from 'redux-saga/effects';
  * @return {object} object whose properties are supported api methods.
  */
 export const useInvasivesApi = () => {
-  const databaseContext = useContext(DatabaseContext);
-  const errorContext = useContext(ErrorContext);
+  const databaseContext = useContext({} as any);
+ // const errorContext = useContext(ErrorContext);
+ const errorContext = {} as any;
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
   const requestHeaders = useSelector(selectAuthHeaders);

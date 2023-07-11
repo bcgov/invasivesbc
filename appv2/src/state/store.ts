@@ -11,7 +11,6 @@ import emailSettingsSaga from "./sagas/email-setup/emailSettings";
 import emailTemplatesSaga from "./sagas/email-setup/emailTemplates";
 import iappPageSaga from "./sagas/iappsite";
 import activitiesPageSaga from "./sagas/map";
-import tabsSaga from "./sagas/tabs";
 import trainingVideosSaga from "./sagas/training_videos";
 import userSettingsSaga from "./sagas/userSettings";
 
@@ -43,7 +42,6 @@ export function setupStore(reducer: any, saga: any) {
   sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
   sagaMiddleware.run(userSettingsSaga);
-  sagaMiddleware.run(tabsSaga);
   sagaMiddleware.run(batchSaga);
   sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);

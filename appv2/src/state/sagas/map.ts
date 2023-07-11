@@ -73,7 +73,6 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { Geolocation } from '@capacitor/geolocation';
 import { channel } from 'redux-saga';
-import { selectTabs } from 'state/reducers/tabs';
 import { ActivityStatus } from 'sharedAPI';
 import * as turf from '@turf/turf';
 import { format } from 'date-fns';
@@ -624,29 +623,9 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   Geolocation.clearWatch(watchID);
 }
 
-function* handleTabChange(action) {
-  const tabState = yield select(selectTabs);
-  const tab = tabState.tabConfig[tabState.activeTab];
 
-  switch (tab.label) {
-    case 'Current Activity':
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY } });
-      break;
-    case 'Recorded Activities':
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY } });
-      break;
-    default:
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.NONE } });
-      break;
-  }
-}
 
-function* leafletWhosEditing() {
-  yield all([
-    takeEvery(TABS_SET_ACTIVE_TAB_SUCCESS, handleTabChange),
-    takeEvery(TABS_GET_INITIAL_STATE_SUCCESS, handleTabChange)
-  ]);
-}
+
 
 function* handle_WHATS_HERE_FEATURE(action) {
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });

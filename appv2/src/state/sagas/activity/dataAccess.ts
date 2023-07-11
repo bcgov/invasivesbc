@@ -1,5 +1,3 @@
-import { getClosestWells } from 'components/activity/closestWellsHelpers';
-import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { call, put, select, take } from 'redux-saga/effects';
 import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
@@ -49,9 +47,11 @@ import {
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
-import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
-import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
+import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'util/addActivity';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { getClosestWells } from 'util/closestWellsHelpers';
+import { calc_utm } from 'util/utm';
+import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
 
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
