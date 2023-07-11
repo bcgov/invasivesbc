@@ -20,6 +20,7 @@ export class Mailer {
   private async getBearerToken(): Promise<string> {
     const tokenEndpoint = `${this.authenticationURL}/auth/realms/comsvcauth/protocol/openid-connect/token`;
     const credentials = btoa(`${this.clientId}:${this.clientSecret}`)
+    defaultLog.error("Tokenendpoint: " + tokenEndpoint + "\nCredentails; " + credentials )
     try {
       const response = await fetch(tokenEndpoint, {
         method: 'POST',
@@ -31,9 +32,11 @@ export class Mailer {
       });
 
       const data = await response.json();
+      defaultLog.error("Data: " + JSON.stringify(data));
       const { access_token } = data;
       return access_token;
     } catch (error) {
+      console.error(JSON.stringify(error))
       defaultLog.error({ label: 'Mailer', message: 'Failed to retrieve bearer token: ', error });
       throw error;
     }
@@ -67,7 +70,7 @@ export class Mailer {
         },
         body: JSON.stringify(emailPayload),
       }).then(response => {
-        if(response.status > 199 && response.status < 300)
+        if (response.status > 199 && response.status < 300)
           defaultLog.debug({ label: 'Mailer', message: 'Email sent successfully' });
         else
           defaultLog.debug({ label: 'Mailer', message: 'Could not send Email: ' + response.statusText });
@@ -76,6 +79,7 @@ export class Mailer {
       });
 
     } catch (error) {
+      console.error(JSON.stringify(error))
       defaultLog.error({ label: 'Mailer', message: 'Failed to send email:', error });
     }
   }
