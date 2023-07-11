@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100vw;
+  max-width: 100%;
+}
+
+.HeaderBar {
+  height: 5vh;
+  width: 100vw;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.FooterBar {
+  height: 5vh;
+  width: 100vw;
+  background-color: #333;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+}
