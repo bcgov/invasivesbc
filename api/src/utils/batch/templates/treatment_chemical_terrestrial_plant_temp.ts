@@ -6,7 +6,9 @@ import {
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
   HerbicidesInformation,
-  ProjectInformation
+  PmpValidator,
+  ProjectInformation,
+  WindDirectionValidator
 } from '../shared-columns';
 
 const TreatmentChemicalTerrestrialPlantTemp = new Template(
@@ -22,10 +24,7 @@ TreatmentChemicalTerrestrialPlantTemp.columns = [
   ...ProjectInformation,
   ...ActivityPersonsWithApplicatorLicense,
   ...ChemicalPlantTreatmentInformation,
-  new TemplateColumnBuilder(
-    'Area',
-    'numeric'
-  ).isRequired().build(),
+  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 1',
     'codeReference',
@@ -67,5 +66,10 @@ TreatmentChemicalTerrestrialPlantTemp.columns = [
   ).build(),
   ...HerbicidesInformation
 ];
-TreatmentChemicalTerrestrialPlantTemp.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
+TreatmentChemicalTerrestrialPlantTemp.rowValidators = [
+  ...BasicInformationRowValidators,
+  ...ChemTreatmentValidators,
+  PmpValidator,
+  WindDirectionValidator
+];
 export { TreatmentChemicalTerrestrialPlantTemp };

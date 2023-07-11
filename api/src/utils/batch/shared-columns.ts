@@ -588,8 +588,8 @@ export const SlopeAspectValidator = (row): RowValidationResult => {
   let valid = true;
   const fields = ['Observation - Terrestrial - Aspect', 'Observation - Terrestrial - Slope'];
   const rowData = row.data;
-  const aspect = rowData?.['Observation - Terrestrial - Aspect']?.inputValue;
-  const slope = rowData?.['Observation - Terrestrial - Slope']?.inputValue;
+  const aspect = rowData?.['Observation - Terrestrial - Aspect']?.parsedValue;
+  const slope = rowData?.['Observation - Terrestrial - Slope']?.parsedValue;
   const validationMessages = [];
 
   if ((aspect === 'FL' && slope !== 'FL') || (slope === 'FL' && aspect !== 'FL')) {
@@ -598,6 +598,72 @@ export const SlopeAspectValidator = (row): RowValidationResult => {
       severity: 'error',
       messageTitle: 'Invalid value',
       messageDetail: 'If either Aspect or Slope is Flat, both must be Flat.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const PmpValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Chemical Treatment - PMP', 'Chemical Treatment - PMP Unlisted'];
+  const rowData = row.data;
+  const pmp = rowData?.['Chemical Treatment - PMP']?.parsedValue;
+  const pmp_unlisted = rowData?.['Chemical Treatment - PMP Unlisted']?.parsedValue;
+  const validationMessages = [];
+
+  if (!pmp && !pmp_unlisted) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'Either PMP or PMP Unlisted is required.'
+    });
+  }
+
+  if (pmp && pmp_unlisted) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'Only 1 of PMP or PMP Unlisted is required.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const WindDirectionValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Chemical Treatment - Wind Speed', 'Chemical Treatment - Wind Direction'];
+  const rowData = row.data;
+  const wind_speed = rowData?.['Chemical Treatment - Wind Speed']?.parsedValue;
+  const wind_direction = rowData?.['Chemical Treatment - Wind Direction']?.parsedValue;
+  const validationMessages = [];
+
+  if (wind_speed === 0 && wind_direction !== 'NA') {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If Wind Speed is 0, Wind Direction must be No Wind.'
+    });
+  }
+
+  if (wind_direction === 'NA' && wind_speed > 0) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If Wind Direction is No Wind, Wind Speed must be 0.'
     });
   }
 
