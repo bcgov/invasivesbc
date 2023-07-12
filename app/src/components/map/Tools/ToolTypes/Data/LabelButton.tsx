@@ -12,11 +12,13 @@ import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { MAP_LABEL_EXTENT_FILTER_REQUEST } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const LabelButton = (props) => {
   const map = useMap();
 
   const mapState = useSelector(selectMap);
+  const {darkTheme} = useSelector(selectUserSettings);
   const dispatch = useDispatch();
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
@@ -61,7 +63,7 @@ export const LabelButton = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' + toolClass.notSelected
+                ' ' + (darkTheme? toolClass.notSelectedDark : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <RefreshIcon fontSize='small'/>

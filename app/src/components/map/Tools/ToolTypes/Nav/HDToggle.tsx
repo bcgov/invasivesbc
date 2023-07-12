@@ -14,12 +14,14 @@ import { MAP_TOGGLE_HD } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const HDToggle = (props) => {
   const map = useMap();
 
   //refactor stuff for topo button
   const mapState = useSelector(selectMap);
+  const {darkTheme} = useSelector(selectUserSettings);
   const dispatch = useDispatch();
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
@@ -56,7 +58,7 @@ export const HDToggle = (props) => {
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' ' +
-                (mapState.HDToggle ? toolClass.selected : toolClass.notSelected)
+                (mapState.HDToggle ? toolClass.selected : (darkTheme? toolClass.notSelectedDark : toolClass.notSelected))
               }
               sx={{ color: '#000' }}>
               {mapState.HDToggle ? <HdIcon /> : <SdIcon />}

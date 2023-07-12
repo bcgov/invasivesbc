@@ -113,6 +113,10 @@ export const toolStyles = makeStyles((theme: Theme) => ({
   notSelected: {
     backgroundColor: 'white',
     color: 'black'
+  },
+  notSelectedDark: {
+    backgroundColor: 'black',
+    color: 'white'
   }
 }));
 
