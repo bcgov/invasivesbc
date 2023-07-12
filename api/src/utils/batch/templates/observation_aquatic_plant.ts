@@ -3,7 +3,8 @@ import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
-  BasicInformationRowValidators, PositiveObservationPlantValidator,
+  BasicInformationRowValidators,
+  PositiveObservationPlantValidator,
   ProjectInformation,
   ShorelineInformation,
   ShorelineSumValidator,
@@ -12,6 +13,9 @@ import {
 } from '../shared-columns';
 
 const ObservationAquaticPlant = new Template('observation_aquatic_plant', 'Observation - Aquatic Plant', null);
+
+ObservationAquaticPlant.subtype = 'Activity_Observation_PlantAquatic';
+
 ObservationAquaticPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
@@ -51,7 +55,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].plant_life_stage_code'
   )
-    .referencesCode('plant_seed_stage_code')
+    .referencesCode('plant_life_stage_code')
     .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
@@ -143,6 +147,10 @@ ObservationAquaticPlant.columns = [
   ).build()
 ];
 
-ObservationAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator, PositiveObservationPlantValidator];
+ObservationAquaticPlant.rowValidators = [
+  ...BasicInformationRowValidators,
+  ShorelineSumValidator,
+  PositiveObservationPlantValidator
+];
 
 export { ObservationAquaticPlant };

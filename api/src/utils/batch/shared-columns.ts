@@ -1,6 +1,11 @@
 import { TemplateColumnBuilder } from './definitions';
 import { RowValidationResult } from './validation/validation';
-import { WATER_LEVEL_MANAGEMENT_CODES, WIND_DIRECTION_CODES } from './hard-coded-codes';
+import {
+  WATER_LEVEL_MANAGEMENT_CODES,
+  WIND_DIRECTION_CODES,
+  WATERBODY_TYPE_CODES,
+  SUBSTRATE_TYPE_CODES
+} from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -345,7 +350,7 @@ export const WaterbodyInformation = [
     'form_data.activity_subtype_data.WaterbodyData.waterbody_type'
   )
     .isRequired()
-    .referencesCode('shoreline_type_code')
+    .hardcodedCodes(WATERBODY_TYPE_CODES)
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Tidal?',
@@ -390,7 +395,7 @@ export const WaterbodyInformation = [
     'codeReference',
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
-    .referencesCode('surface_substrate_code')
+    .hardcodedCodes(SUBSTRATE_TYPE_CODES)
     .build(),
 
   new TemplateColumnBuilder(
@@ -452,7 +457,7 @@ export const WaterQualityInformation = [
     .valueRange(0, null)
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Water - Colour', 'text', 'form_data.activity_subtype_data.water_colour')
+  new TemplateColumnBuilder('Water - Colour', 'text', 'form_data.activity_subtype_data.WaterQuality.water_colour')
     .isRequired()
     .build()
 ];

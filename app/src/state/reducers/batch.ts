@@ -224,6 +224,8 @@ function createBatchReducer() {
           error: false,
           templates: action.payload.filter((template) =>
             [
+              'observation_aquatic_plant',
+              'observation_aquatic_plant_temp',
               'observation_terrestrial_plant',
               'observation_terrestrial_plant_temp',
               'treatment_mechanical_terrestrial_plant',
