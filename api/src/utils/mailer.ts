@@ -1,4 +1,5 @@
 import { getEmailSettingsFromDB } from "../paths/email-settings";
+import axios from "axios";
 import { getLogger } from "./logger";
 const defaultLog = getLogger('access-request');
 
@@ -20,27 +21,23 @@ export class Mailer {
   private async getBearerToken(): Promise<string> {
     const tokenEndpoint = `${this.authenticationURL}/auth/realms/comsvcauth/protocol/openid-connect/token`;
     const credentials = btoa(`${this.clientId}:${this.clientSecret}`)
-    defaultLog.error("Tokenendpoint: " + tokenEndpoint + "\nCredentails; " + credentials )
     try {
-      const response = await fetch(tokenEndpoint, {
-        method: 'POST',
+      const response = await axios.post(tokenEndpoint, 'grant_type=client_credentials', {
         headers: {
+          'Authorization': `Basic ${credentials}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${credentials}`,
-        },
-        body: 'grant_type=client_credentials',
+        }
       });
-
-      const data = await response.json();
-      defaultLog.error("Data: " + JSON.stringify(data));
+      const data = response.data;
       const { access_token } = data;
       return access_token;
-    } catch (error) {
-      console.error(JSON.stringify(error))
+    }
+    catch (error) {
       defaultLog.error({ label: 'Mailer', message: 'Failed to retrieve bearer token: ', error });
       throw error;
     }
   }
+
 
   public async sendEmail(
     to: [string],
@@ -52,7 +49,6 @@ export class Mailer {
     if (!this.enabled)
       return;
     const emailEndpoint = `${this.emailServiceURL}/api/v1/email`;
-
     try {
       const token = await this.getBearerToken();
       const emailPayload = {
@@ -62,13 +58,11 @@ export class Mailer {
         body,
         bodyType,
       };
-      await fetch(emailEndpoint, {
-        method: 'POST',
+      await axios.post(emailEndpoint, JSON.stringify(emailPayload), {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(emailPayload),
       }).then(response => {
         if (response.status > 199 && response.status < 300)
           defaultLog.debug({ label: 'Mailer', message: 'Email sent successfully' });
