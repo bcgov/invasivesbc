@@ -1,25 +1,21 @@
+import { Button, StepIcon } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useLocation } from 'react-router-dom';
+import { TOGGLE_PANEL, URL_CHANGE } from '../state/actions';
 import './App.css';
+import { Footer } from './Footer/Footer';
+import { Header } from './Header/Header';
 import Map from './Map/Map';
 import MapControls from './Map/MapControls';
-import Overlay from './Overlay/Overlay';
-import { appModeEnum } from '../state/reducers/appMode';
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../state/actions';
-import { URLAndLayerManager } from '../URLManager';
-import { Header } from './Header/Header';
-import { Footer } from './Footer/Footer';
 import { LandingComponent } from './Overlay/Landing/Landing';
-import { Button, StepIcon } from '@mui/material';
+import Overlay from './Overlay/Overlay';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const targetURL = useSelector((state: any) => state.AppMode?.url);
-  const history = useHistory()
   const ref = useRef(0);
-  const [mode, setMode] = useState();
 
   // State for the overlay 
   const toggleOverlayCallback = () => dispatch({ type: TOGGLE_PANEL });
@@ -37,7 +33,6 @@ const App: React.FC = () => {
 
 
   const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
-  const modeState = useSelector((state: any) => state.AppMode);
 
   return (
     <div className="App">
@@ -64,7 +59,7 @@ const App: React.FC = () => {
           )}
         />
       </Map>
-      <Overlay showOverlay={true}>
+      <Overlay showOverlay={toggled}>
         <Route path="/landing" component={LandingComponent} />
         <Route path="/other" component={StepIcon} />
       </Overlay>
