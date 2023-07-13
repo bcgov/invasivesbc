@@ -24,8 +24,8 @@ export function setupStore(configuration: AppConfig) {
     duration: true,
     timestamp: true,
     logErrors: true,
-    diff: true,
-    diffPredicate: (getState, action) => true
+/*    diff: true,
+    diffPredicate: (getState, action) => true*/
     }
   );
 
