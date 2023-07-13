@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-//import { useLocation, useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 import './App.css';
 import Map from './Map/Map';
 import MapControls from './Map/MapControls';
@@ -12,48 +11,30 @@ import { URLAndLayerManager } from '../URLManager';
 import { Header } from './Header/Header';
 import { Footer } from './Footer/Footer';
 import { LandingComponent } from './Overlay/Landing/Landing';
+import { Button, StepIcon } from '@mui/material';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-
-  // the 'router' behaviour is controlled by redux-saga effect handler
-  // and these useEffects
-  // const navigate = useNavigate();
   const location = useLocation();
-  const targetURL = useSelector((state: any) => state.appMode?.url);
+  const targetURL = useSelector((state: any) => state.AppMode?.url);
+  const history = useHistory()
   const ref = useRef(0);
+  const [mode, setMode] = useState();
 
+  // State for the overlay 
+  const toggleOverlayCallback = () => dispatch({ type: TOGGLE_PANEL });
+
+
+  // URL listener so that the auth saga can redirect to the correct page
   useEffect(() => {
-    console.log(ref);
     if (location.pathname !== targetURL && ref.current === 0) {
       dispatch({
         type: URL_CHANGE,
         payload: { url: location.pathname }
       });
     }
+  }, [location.pathname]);
 
-    /*
-    if (targetURL !== location.pathname && ref.current !== 0) {
-      //navigate("/explore");
-      navigate(targetURL);
-    }
-    */
-  }, [targetURL]);
-
-  /*
-  useEffect(() => {
-    if (targetURL !== location.pathname) {
-      //navigate("/explore");
-      navigate(targetURL);
-    }
-  }, [targetURL]);
-  */
-
-  // State for the overlay and app mode:
-  const toggleOverlayCallback = () => dispatch({ type: TOGGLE_PANEL });
-  const setMode = (newMode: appModeEnum) => {
-    dispatch({ type: SET_APP_MODE, payload: { mode: newMode } });
-  };
 
   const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
   const modeState = useSelector((state: any) => state.AppMode);
@@ -61,19 +42,31 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Header />
-      <URLAndLayerManager />
-
       <Map className="Map">
-        <MapControls
-          className="MapControls"
-          modeSetter={setMode}
-          mode={modeState?.mode}
-          showOverlay={toggled}
-          toggleShowOverlay={toggleOverlayCallback}
+        <Route
+          path="*"
+          render={(props) => (
+            <MapControls
+              className="MapControls"
+              showOverlay={toggled}
+              toggleShowOverlay={toggleOverlayCallback}
+            />
+          )}
+        />
+        <Route
+          path="/other"
+          render={(props) => (
+            <Button
+              onClick={() => {
+                console.log('banana');
+              }}    
+            />
+          )}
         />
       </Map>
-      <Overlay mode={modeState?.mode} showOverlay={toggled}>
-        {parseInt(modeState?.mode) === appModeEnum.Landing ? <LandingComponent /> : <></>}
+      <Overlay showOverlay={true}>
+        <Route path="/landing" component={LandingComponent} />
+        <Route path="/other" component={StepIcon} />
       </Overlay>
       <Footer />
     </div>

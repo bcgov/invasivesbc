@@ -1,4 +1,5 @@
-import {all, call, delay, put, select, takeLatest} from 'redux-saga/effects';
+import {all, call, delay, put, select, take, takeLatest} from 'redux-saga/effects';
+
 import Keycloak from 'keycloak-js';
 import {
   AUTH_INITIALIZE_COMPLETE,
@@ -14,6 +15,7 @@ import {
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
   TABS_GET_INITIAL_STATE_REQUEST,
+  URL_CHANGE,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';
@@ -29,6 +31,7 @@ let keycloakInstance = null;
 
 function* initializeAuthentication() {
   const config: AppConfig = yield select(selectConfiguration);
+  let appModeState = yield select(state => state.AppMode);
 
   keycloakInstance = Keycloak({
     clientId: config.KEYCLOAK_CLIENT_ID,
@@ -36,10 +39,15 @@ function* initializeAuthentication() {
     url: config.KEYCLOAK_URL
   });
 
+  if(appModeState.url === null) {
+    yield take(URL_CHANGE);
+    appModeState = yield select(state => state.AppMode);
+  }
+
   yield call(keycloakInstance.init, {
     checkLoginIframe: false,
     adapter: config.KEYCLOAK_ADAPTER,
-    redirectUri: config.REDIRECT_URI,
+    redirectUri: config.REDIRECT_URI + appModeState.url,
     onLoad: 'check-sso',
     pkceMethod: 'S256'
   });

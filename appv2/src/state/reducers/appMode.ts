@@ -2,15 +2,18 @@ import { Action } from "redux";
 import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from "../actions";
 
 export enum appModeEnum {
-  "ViewAllRecords",
-  "ViewOrEditRecord",
+  "Records",
+  "Record",
   "Landing",
+  "Reports",
+  "Batch",
+  "IAPP",
 }
 
-const initialState: { mode: appModeEnum; panelOpen: boolean, url: string } = {
+const initialState: { mode?: appModeEnum; panelOpen: boolean, url: string | null} = {
   mode: appModeEnum.Landing,
   panelOpen: false,
-  url: '/explore'
+  url: null
 };
 
 export default function appMode(state = initialState, action: any) {

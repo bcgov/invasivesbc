@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import { createRootReducer } from "./reducers/rootReducer";
-import rootSaga from "./sagas/rootSaga";
 import { createLogger } from 'redux-logger';
 import { AUTH_INITIALIZE_REQUEST } from "./actions";
 import activityPageSaga from "./sagas/activity";
@@ -34,7 +33,6 @@ export function setupStore(configuration: AppConfig) {
     middleware: [sagaMiddleware, logger],
   });
 
-  sagaMiddleware.run(rootSaga);
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(iappPageSaga);
