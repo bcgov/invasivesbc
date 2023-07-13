@@ -35,7 +35,7 @@ export function setupStore(configuration: AppConfig) {
   });
 
   sagaMiddleware.run(rootSaga);
- /* sagaMiddleware.run(authenticationSaga);
+  sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
@@ -46,7 +46,6 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailTemplatesSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
-  */
   return store;
 }
 

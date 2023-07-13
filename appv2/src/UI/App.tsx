@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 //import { useLocation, useNavigate } from "react-router-dom";
 import { useLocation} from "react-router-dom";
 import "./App.css";
-import Map from "./Map";
-import MapControls from "./MapControls";
-import Overlay from "./Overlay";
-import { appModeEnum } from "./state/reducers/appMode";
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from "./state/actions";
-import { URLAndLayerManager } from "./URLManager";
+import Map from "../Map";
+import MapControls from "../MapControls";
+import Overlay from "../Overlay";
+import { appModeEnum } from "../state/reducers/appMode";
+import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from "../state/actions";
+import { URLAndLayerManager } from "../URLManager";
+import { Header } from "./Header/Header"; 
+import { Footer } from "./Footer/Footer"; 
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -67,8 +69,9 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <div className="HeaderBar" />
+      <Header/>
       <URLAndLayerManager/>
+      
       <Map className="Map">
         <MapControls
           className="MapControls"
@@ -80,7 +83,7 @@ const App: React.FC = () => {
       </Map>
       <Overlay mode={mode} showOverlay={toggled} >
         </Overlay>
-      <div className="FooterBar" />
+        <Footer/>
     </div>
   );
 };

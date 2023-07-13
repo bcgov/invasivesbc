@@ -1,0 +1,27 @@
+
+.HeaderBar {
+    display: flex;
+    height: 5vh;
+    width: 100vw;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    align-items: center;
+  }
+
+.LoginButton {
+    align-items: center;
+    right: 0;
+    position: fixed;
+    margin-right: 10px;
+}
+
+.LogoutButton {
+    align-items: center;
+    right: 0;
+    position: fixed;
+    margin-right: 10px;
+}
+  
