@@ -11,6 +11,7 @@ export const Header: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
 
+
   const LoginButton = () => {
     return (
       <div className="LoginButton">

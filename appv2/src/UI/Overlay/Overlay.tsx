@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Map.css";
-import { appModeEnum } from "./state/reducers/appMode";
+import "./Overlay.css";
+import { appModeEnum } from "../../state/reducers/appMode";
 
 const Overlay = (props: {showOverlay: boolean, mode: appModeEnum, children: React.FC[]}) => {
   return (

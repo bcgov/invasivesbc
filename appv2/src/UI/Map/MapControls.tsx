@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Map.css";
-import { appModeEnum } from "./state/reducers/appMode";
+import { appModeEnum } from "../../state/reducers/appMode";
 
 const MapControls = (props: {
   className: string;

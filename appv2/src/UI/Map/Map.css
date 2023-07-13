@@ -12,21 +12,7 @@
     width: 100%;
   }
   
-  .map__overlay {
-    bottom: 0;
-    height: 50%;
-    left: 0;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    transition: all 0.5s ease;
-    transform: translateY(100%);
-    z-index:10000000;
-  }
-  
-  .map__overlay--show {
-    transform: translateY(0);
-  }
+
   
   .overlay_toggle {
     z-index: 10000000;
