@@ -1,0 +1,31 @@
+body {
+  font-family: BCSans, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.userInfoItemGrid {
+  display: 'flex';
+  flex-direction: 'row';
+}
+
+.cardListItemGrid {
+  display: 'flex';
+  flex-direction: 'row';
+  justify-content: 'space-between';
+}
+
+.cardWidth {
+  margin-bottom: 2em;
+}
+
+.container {
+  text-align: left;
+  font-family: BCSans, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+
+
+@media (min-device-width: 600px) {
+  .cardWidth {
+    width: 600
+  }
+}
