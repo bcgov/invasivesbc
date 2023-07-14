@@ -6,6 +6,7 @@ import { TOGGLE_PANEL, URL_CHANGE } from '../state/actions';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
+import { ButtonContainer } from './Map/Buttons/ButtonContainer';
 import Map from './Map/Map';
 import MapControls from './Map/MapControls';
 import { LandingComponent } from './Overlay/Landing/Landing';
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             />
           )}
         />
+        <ButtonContainer></ButtonContainer>
         <Route
           path="/other"
           render={(props) => (
