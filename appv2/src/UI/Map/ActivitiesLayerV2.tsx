@@ -305,11 +305,11 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   switch (renderMode) {
     case renderModes.empty:
-      return <></>;
+      return <></>
     case renderModes.geojson:
-      return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />;
+      return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options} />
     case renderModes.marker:
       //return <GeoJSONVtLayer zIndex={props.zIndex} key={Math.random()} geoJSON={props.activities} options={options}/>;
-      return MarkerMemo;
+      return MarkerMemo
   }
 };

@@ -285,10 +285,10 @@ export const RecordSetLayersRenderer = (props: any) => {
           if (layerKey)
             return (
               <div key={layerKey + 'activityLayerDivWrapper'}>
-                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey}/>;
-                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey}/>;
+                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey}/>
+                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey}/>
               </div>
-            );
+            )
         })
       ) : (
         <div key={Math.random()}></div>
@@ -298,10 +298,10 @@ export const RecordSetLayersRenderer = (props: any) => {
           if (layerKey)
             return (
               <div key={layerKey + 'IAPPLayerDivWrapper'}>
-                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey}/>;
-                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey}/>;
+                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey}/>
+                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey}/>
               </div>
-            );
+            )
         })
       ) : (
         <div key={Math.random()}></div>
