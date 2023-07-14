@@ -14,8 +14,6 @@ interface IntermediateRowRepresentation {
 }
 
 function _shouldCellBeWritten(output, cell): boolean {
-  return true;
-
   if (cell?.templateColumn.overwritesPrevious) {
     return true;
   }
