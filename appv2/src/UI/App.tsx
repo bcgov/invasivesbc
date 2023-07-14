@@ -10,6 +10,7 @@ import { ButtonContainer } from './Map/Buttons/ButtonContainer';
 import Map from './Map/Map';
 import MapControls from './Map/MapControls';
 import { LandingComponent } from './Overlay/Landing/Landing';
+import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
 

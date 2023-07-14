@@ -1,27 +1,17 @@
-import * as L from "leaflet";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import * as L from "leaflet";
 import { Marker, Popup, useMap } from "react-leaflet";
+import { Divider, IconButton, Tooltip } from "@mui/material";
+import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
 import { selectMap } from "state/reducers/map";
-import { useEffect, useRef, useState } from "react";
-import React from "react";
-import { Divider, IconButton, makeStyles, Tooltip } from "@mui/material";
-import MyLocationIcon from '@mui/icons-material/MyLocation';
-import { MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from "state/actions";
 import { calc_utm } from "util/utm";
+import { MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from "state/actions";
+
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 const baseUrl = window.location.href.split('/home')[0];
-
-const findMeStyles = {
-  selected: {
-    backgroundColor: '#2196f3',
-    color: 'white'
-  },
-  notSelected: {
-    backgroundColor: 'white',
-    color: 'black'
-  }
-};
 
 export const FindMeToggle = (props) => {
   const dispatch = useDispatch();
@@ -32,6 +22,7 @@ export const FindMeToggle = (props) => {
    */
   const mapState = useSelector(selectMap);
   const map = useMap();
+  const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
   useEffect(() => {
@@ -45,7 +36,7 @@ export const FindMeToggle = (props) => {
         ref={divRef}
         className="leaflet-bottom leaflet-right"
         style={{
-          bottom: '30px',
+          bottom: '51%',
           width: '40px',
           height: '40px'
         }}>
@@ -65,7 +56,7 @@ export const FindMeToggle = (props) => {
                 className={
                   'leaflet-control-zoom leaflet-bar leaflet-control ' +
                   ' ' +
-                  (mapState.positionTracking ? findMeStyles.selected : findMeStyles.notSelected)
+                  (mapState.positionTracking ? toolClass.selected : toolClass.notSelected)
                 }
                 sx={{ color: '#000' }}>
                 <MyLocationIcon />
@@ -114,7 +105,7 @@ export const FindMeToggle = (props) => {
         position={[mapState.userCoords.lat, mapState.userCoords.long]}
         key={'locationmarkerforbluedot'}
         icon={L.icon({
-          iconUrl: baseUrl + '/assets/icon/circle.png',
+          iconUrl: '/assets/icon/circle.png',
           iconSize: [30, 30],
           iconAnchor: [15, 15],
           popupAnchor: [0, -20]

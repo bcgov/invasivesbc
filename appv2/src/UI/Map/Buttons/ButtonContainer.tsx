@@ -1,12 +1,16 @@
 import React from "react";
 import { FindMeToggle, LocationMarker, PanToMe } from "./FindMe";
+import { LegendsButton } from "./LegendsButton";
 
 export const ButtonContainer = (props) => {
 
   return (
     <>
-      <LocationMarker />
+      <LegendsButton />
       <FindMeToggle />
+
+      {/* helper for find me */}
+      <LocationMarker />
       <PanToMe />
     </>
   );
