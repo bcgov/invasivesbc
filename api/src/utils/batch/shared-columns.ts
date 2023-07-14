@@ -15,9 +15,10 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Basic - Date', 'date', 'form_data.activity_data.activity_date_time')
+  new TemplateColumnBuilder('Basic - Date', 'datetime', 'form_data.activity_data.activity_date_time')
     .isRequired()
     .mustNotBeFuture()
+    .mapperOverwritesPrevious()
     .build(),
   new TemplateColumnBuilder('Basic - Employer', 'codeReference', 'form_data.activity_data.employer_code')
     .isRequired()

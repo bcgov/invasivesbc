@@ -18,11 +18,11 @@ export class TemplateColumn {
     readonly name,
     readonly dataType: templateDataType,
     readonly mappedPath: string | Record<string, string> | null
-  ) {
-  }
+  ) {}
 
   helpText: string | null;
   required = false;
+  overwritesPrevious = false;
 
   validations: {
     minLength: number | null;
@@ -65,8 +65,7 @@ export class TemplateColumn {
 }
 
 export class CodeEntry {
-  constructor(readonly header: string, readonly code: string, readonly description: string) {
-  }
+  constructor(readonly header: string, readonly code: string, readonly description: string) {}
 }
 
 export class TemplateColumnBuilder {
@@ -85,6 +84,7 @@ export class TemplateColumnBuilder {
   build(): TemplateColumn {
     const tc = new TemplateColumn(this.name, this.dataType, this.mappedPath);
     tc.required = this.required;
+    tc.overwritesPrevious = this.overwritesPrevious;
     tc.helpText = this.helpText;
     tc.validations = {
       ...this.validations
@@ -96,6 +96,16 @@ export class TemplateColumnBuilder {
 
   isRequired(required = true): this {
     this.required = required;
+    return this;
+  }
+
+  overwritesPrevious = false;
+
+  /* Normally the mapper for building JSON objects will not overwrite values that already exist in the blob
+   * (for example, those created by activity_create_function). Setting this flag on a template column
+   * overrides this behaviour on a per-column basis */
+  mapperOverwritesPrevious(overwritesPrevious = true): this {
+    this.overwritesPrevious = overwritesPrevious;
     return this;
   }
 
