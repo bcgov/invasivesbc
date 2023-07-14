@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getLogger } from '../logger';
 import { TemplateColumn } from './definitions';
-import {parsedGeoType} from "./validation/spatial-validation";
+import { parsedGeoType } from './validation/spatial-validation';
 
 const defaultLog = getLogger('batch');
 
@@ -11,6 +11,14 @@ interface IntermediateRowRepresentation {
     parsedValue: any;
     templateColumn: TemplateColumn;
   };
+}
+
+function _shouldCellBeWritten(output, cell): boolean {
+  if (cell?.templateColumn.overwritesPrevious) {
+    return true;
+  }
+
+  return !_.get(output, cell?.templateColumn.mappedPath);
 }
 
 export const mapTemplateFields = (
@@ -55,19 +63,17 @@ export const mapTemplateFields = (
         break;
       case 'numeric':
         try {
-          if (
-            !_.get(output, cell?.templateColumn.mappedPath) &&
-            (cell.parsedValue || JSON.stringify(cell.parsedValue) === '0')
-          ) {
+          if (_shouldCellBeWritten(output, cell) && (cell.parsedValue || JSON.stringify(cell.parsedValue) === '0')) {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
           }
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });
         }
+        break;
       case 'boolean':
         try {
           if (
-            !_.get(output, cell?.templateColumn.mappedPath) &&
+            _shouldCellBeWritten(output, cell) &&
             (JSON.stringify(cell.parsedValue) === 'false' || cell.parsedValue)
           ) {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
@@ -75,9 +81,10 @@ export const mapTemplateFields = (
         } catch (e) {
           defaultLog.error({ message: 'error mapping field into blob', field, cell });
         }
+        break;
       default:
         try {
-          if (!_.get(output, cell?.templateColumn.mappedPath) && cell.parsedValue) {
+          if (_shouldCellBeWritten(output, cell) && cell.parsedValue) {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);
           }
         } catch (e) {
