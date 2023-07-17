@@ -33,13 +33,14 @@ export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
   }
 };
 
-export const revokeAllRoles = (userId): SQLStatement => {
+export const revokeAllRolesExceptAdmin = (userId): SQLStatement => {
   if (!userId) {
     return null;
   } else {
     const sql = SQL`
         DELETE FROM user_access
-        WHERE user_id = ${userId};
+        WHERE user_id = ${userId}
+        AND role_id != 18;
     `;
     return sql;
   }
