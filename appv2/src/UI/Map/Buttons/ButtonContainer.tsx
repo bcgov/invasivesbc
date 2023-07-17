@@ -1,4 +1,5 @@
 import React from "react";
+import { AccuracyMarker, AccuracyToggle } from "./AccuracyToggle";
 import { BaseMapToggle } from "./BaseMapToggle";
 import { FindMeToggle, LocationMarker, PanToMe } from "./FindMe";
 import { HDToggle } from "./HDToggle";
@@ -8,12 +9,14 @@ export const ButtonContainer = (props) => {
 
   return (
     <>
-      <HDToggle/>
-      <BaseMapToggle/>
+      <AccuracyToggle />
+      <HDToggle />
+      <BaseMapToggle />
       <LegendsButton />
       <FindMeToggle />
 
-      {/* helper for find me */}
+      {/* helpers */}
+      <AccuracyMarker />
       <LocationMarker />
       <PanToMe />
     </>
