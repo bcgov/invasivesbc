@@ -7,7 +7,7 @@ import { MAP_TOGGLE_LEGENDS } from "state/actions";
 
 import './LegendsPopup.css';
 
-import invbclogo from "../../../../public/assets/InvasivesBC_Icon.svg";
+import invbclogo from "/assets/InvasivesBC_Icon.svg";
 
 export const LegendsPopup = (props) => {
 
