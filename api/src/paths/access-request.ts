@@ -9,7 +9,7 @@ import {
   approveAccessRequestsSQL, createAccessRequestSQL, getAccessRequestsSQL,
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
-import { grantRoleByValueSQL, revokeAllRoles } from '../queries/role-queries';
+import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from '../queries/role-queries';
 import { getUserIdFromEmail } from '../queries/user-queries';
 import { getLogger } from '../utils/logger';
 import { buildMailer } from '../utils/mailer';
@@ -248,7 +248,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         }
         const response = await connection.query(sqlStatement5.text, sqlStatement5.values);
         const userId = response.rows[0].user_id;
-        const sqlStatement4: SQLStatement = revokeAllRoles(userId);
+        const sqlStatement4: SQLStatement = revokeAllRolesExceptAdmin(userId);
         if (!sqlStatement4) {
           return res.status(500).json({
             message: 'Failed to generate SQL statement',
