@@ -392,13 +392,13 @@ async function _validateCell(
         case 'no':
         case 'f':
         case 'false':
-          result.parsedValue = 'Yes';
+          result.parsedValue = 'No';
           break;
         case 'y':
         case 'yes':
         case 't':
         case 'true':
-          result.parsedValue = 'No';
+          result.parsedValue = 'Yes';
           break;
         case 'u':
         case 'unknown':
