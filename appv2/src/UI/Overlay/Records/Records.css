@@ -1,0 +1,64 @@
+.records__container {
+  height: 100%;
+  width: 100%;
+}
+
+.records__set {
+  height: 100px;
+  width: 100%;
+  border-style: dotted;
+  border-width: 1px;
+  border-color: green;
+  background-color: #fff;
+}
+
+.record {
+  height: 100px;
+  width: 100%; 
+}
+
+.records_activity {
+  color: white
+}
+
+.records__activity__header {
+  /* same height as the apps header and footer */ 
+  height: 5vh;
+  width: 100%;
+  border-style: dotted;
+  border-color: black;
+  display: flex;
+  justify-content: center;
+}
+
+.records__activity_buttons {
+  height: 5vh;
+  width: 350px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+.records__activity__photos_button {
+  height: 5vh;
+  width: 100px;
+  border-style: dotted;
+  border-color: black;
+}
+
+.records__activity__form_button {
+  height: 5vh;
+  width: 100px;
+  border-style: dotted;
+  border-color: black;
+}
+
+
+.records__activity__map_button {
+  height: 5vh;
+  width: 100px;
+  border-style: dotted;
+  border-color: black;
+}
+

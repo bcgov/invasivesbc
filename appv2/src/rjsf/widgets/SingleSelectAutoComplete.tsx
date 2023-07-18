@@ -1,7 +1,7 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
 import { Typography, Box, TextField, Autocomplete } from '@mui/material';
-import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
+import { SelectAutoCompleteContext } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
 import { selectActivity } from 'state/reducers/activity';

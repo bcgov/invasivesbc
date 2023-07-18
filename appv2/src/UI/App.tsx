@@ -10,6 +10,7 @@ import Map from './Map/Map';
 import MapControls from './Map/MapControls';
 import { LandingComponent } from './Overlay/Landing/Landing';
 import Overlay from './Overlay/Overlay';
+import { Records } from './Overlay/Records/Records';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -56,12 +57,12 @@ const App: React.FC = () => {
                 console.log('banana');
               }}    
             />
-          )}
+          )}    
         />
       </Map>
       <Overlay showOverlay={toggled}>
-        <Route path="/landing" component={LandingComponent} />
-        <Route path="/other" component={StepIcon} />
+        <Route path="/Landing" component={LandingComponent} />
+        <Route path="/Records" component={Records} />
       </Overlay>
       <Footer />
     </div>

@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import React, { useState } from 'react';
 import { MultipleSelect } from 'react-select-material-ui';
-import { useSelector } from 'state/utilities/use_selector';
+import { useSelector } from 'util/use_selector';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { WidgetProps } from "@rjsf/utils";
 
