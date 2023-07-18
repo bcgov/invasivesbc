@@ -5,6 +5,7 @@
     width: 100vw;
     background-color: #333;
     position: fixed;
+    z-index: 2147483646;
     top: 0;
     left: 0;
     color: white;

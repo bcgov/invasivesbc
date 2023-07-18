@@ -29,7 +29,7 @@ export const ActivityForm = (props) => {
     <FormContainer
       activity={activityState.activity}
       isAlreadySubmitted={function (): boolean {
-        return false;
+        return activityState.activity.form_status === 'Submitted'
       }}
       canBeSubmittedWithoutErrors={function (): boolean {
         return false;

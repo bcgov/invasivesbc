@@ -48,6 +48,7 @@ export const Activity = (props) => {
               map
           </div>
         </div>
+      </div>
         <Route
           path="/Records/Activity:id/form"
           render={() => {
@@ -55,7 +56,6 @@ export const Activity = (props) => {
             else return <div>loading</div>;
           }}
         />
-      </div>
 
       {settingsState.activeActivity}
     </div>
