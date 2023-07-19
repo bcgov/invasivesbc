@@ -4,6 +4,9 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import setupStore from 'state/store';
 import App from './UI/App';
+import './main.css';
+
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 let store;
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
@@ -22,5 +25,6 @@ import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) 
         </BrowserRouter>
       );
     }
+    defineCustomElements(window);
   }
 });

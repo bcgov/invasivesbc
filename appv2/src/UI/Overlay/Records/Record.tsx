@@ -9,6 +9,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectAuth } from 'state/reducers/auth';
 import { ActivityForm } from './Activity/Form';
 import { selectActivity } from 'state/reducers/activity';
+import { ActivityPhotos } from './Activity/Photos';
 
 export const Activity = (props) => {
   const history = useHistory();
@@ -56,8 +57,13 @@ export const Activity = (props) => {
             else return <div>loading</div>;
           }}
         />
-
-      {settingsState.activeActivity}
+        <Route
+          path="/Records/Activity:id/photos"
+          render={() => {
+            if (activityState?.activity?.activity_id) return <ActivityPhotos/>;
+            else return <div>loading</div>;
+          }}
+        />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { LandingComponent } from './Overlay/Landing/Landing';
 import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
 
+
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
