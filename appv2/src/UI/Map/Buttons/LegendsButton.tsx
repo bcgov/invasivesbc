@@ -41,18 +41,13 @@ export const LegendsButton = (props) => {
     return (
       <div
         ref={divRef}
-        className="leaflet-bottom leaflet-right"
-        style={{
-          bottom: '57%',
-          width: '50px',
-          height: '50px'
-        }}>
+        className="map-btn">
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title="Map Legend"
-          placement="left-start">
+          placement="top-end">
           <span>
             <IconButton
               onClick={() => {toggleLegend()}}

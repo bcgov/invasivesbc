@@ -31,18 +31,13 @@ export const HDToggle = (props) => {
     return (
       <div
         ref={divRef}
-        className="leaflet-bottom leaflet-right"
-        style={{
-          bottom: '70%',
-          width: '50px',
-          height: '40px'
-        }}>
+        className="map-btn">
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`Max Zoom Resolution: ${mapState.HDToggle ? 'Low Def' : 'High Def'}`}
-          placement="left-start">
+          placement="top-end">
           <span>
             <IconButton
               onClick={() => {

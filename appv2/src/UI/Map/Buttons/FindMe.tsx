@@ -34,18 +34,13 @@ export const FindMeToggle = (props) => {
     return (
       <div
         ref={divRef}
-        className="leaflet-bottom leaflet-right"
-        style={{
-          bottom: '51%',
-          width: '40px',
-          height: '40px'
-        }}>
+        className="map-btn">
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title="Find Me"
-          placement="left-start">
+          placement="top-end">
           <span>
             {mapState?.panned ? (
               <IconButton

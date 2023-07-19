@@ -30,19 +30,13 @@ export const AccuracyToggle = (props) => {
     return (
       <div
         ref={divRef}
-        className="leaflet-bottom leaflet-right"
-        style={{
-          bottom: '51%',
-          right: '50px',
-          width: '50px',
-          height: '40px'
-        }}>
+        className="map-btn">
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={mapState?.accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
-          placement="left-start">
+          placement="top-end">
           <span>
             <IconButton
               onClick={() => {

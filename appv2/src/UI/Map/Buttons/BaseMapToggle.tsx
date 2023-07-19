@@ -32,18 +32,13 @@ export const BaseMapToggle = (props) => {
   return (
     <div
       ref={divRef}
-      className="leaflet-bottom leaflet-right"
-      style={{
-        bottom: '64%',
-        width: '50px',
-        height: '40px'
-      }}>
+      className="map-btn">
       <Tooltip
         open={show}
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
         title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'}
-        placement="left-start">
+        placement="top-end">
         <span>
           <IconButton
             onClick={() => {
