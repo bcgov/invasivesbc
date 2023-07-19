@@ -9,23 +9,33 @@ import { selectMap } from "state/reducers/map";
 import { MAP_TOGGLE_LEGENDS } from "state/actions";
 
 import InfoIcon from '@mui/icons-material/Info';
+import { useHistory } from "react-router";
 
 export const LegendsButton = (props) => {
   const map = useMap();
-
-  //refactor stuff for topo button
-  const mapState = useSelector(selectMap);
+  const history = useHistory();
   const dispatch = useDispatch();
+  const divRef = useRef();
   const toolClass = toolStyles();
+
+  const mapState = useSelector(selectMap);
   const [show, setShow] = React.useState(false);
 
-  const divRef = useRef();
   useEffect(() => {
     try {
       L.DomEvent.disableClickPropagation(divRef?.current);
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
+  
+  const toggleLegend = () => {
+    if (mapState.legendsPopup) {
+      history.goBack();
+    } else {
+      history.push('/Legend');
+    }
+    dispatch({type: MAP_TOGGLE_LEGENDS});
+  }
 
   if (mapState && map) {
     return (
@@ -45,9 +55,7 @@ export const LegendsButton = (props) => {
           placement="left-start">
           <span>
             <IconButton
-              onClick={() => {
-                dispatch({ type: MAP_TOGGLE_LEGENDS });
-              }}
+              onClick={() => {toggleLegend()}}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' legend ' +

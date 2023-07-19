@@ -3,26 +3,29 @@ import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import { useSelector } from "util/use_selector";
 import { selectMap } from "state/reducers/map";
-import { MAP_TOGGLE_LEGENDS } from "state/actions";
+import { useHistory } from "react-router";
 
 import './LegendsPopup.css';
 
 import invbclogo from "/assets/InvasivesBC_Icon.svg";
+import { MAP_TOGGLE_LEGENDS } from "state/actions";
 
 export const LegendsPopup = (props) => {
 
   const dispatch = useDispatch();
+  const history = useHistory();
   const mapState = useSelector(selectMap);
-
-  const popupOnClose = () => {
-    dispatch({ type: MAP_TOGGLE_LEGENDS });
-  }
 
   const escFunction = useCallback((event) => {
     if (event.key === "Escape" && document.getElementById('legendspopup')) {
-      dispatch({ type: MAP_TOGGLE_LEGENDS });
+      goBack();
     }
   }, []);
+
+  const goBack = () => {
+    history.goBack();
+    dispatch({type: MAP_TOGGLE_LEGENDS });
+  }
 
   useEffect(() => {
     document.addEventListener("keyup", escFunction, false);
@@ -48,7 +51,7 @@ export const LegendsPopup = (props) => {
             overflow: 'auto',
             zIndex: 1000000
           }}>
-          <Button onClick={popupOnClose}>Close</Button>
+          <Button onClick={goBack}>Go Back</Button>
           <div className="py-3">
             <div className="container" style={{ textAlign: 'center' }}>
             <img

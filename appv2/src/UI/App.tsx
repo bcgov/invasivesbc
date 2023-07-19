@@ -67,6 +67,7 @@ const App: React.FC = () => {
       <Overlay showOverlay={toggled}>
         <Route path="/Landing" component={LandingComponent} />
         <Route path="/Records" component={Records} />
+        <Route path="/Legend" component={LegendsPopup} />
       </Overlay>
       <Footer />
     </div>
