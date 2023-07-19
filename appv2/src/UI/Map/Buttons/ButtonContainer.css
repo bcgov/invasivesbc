@@ -6,7 +6,7 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar; 
-  justify-content: center safe;
+  justify-content: center;
   position: absolute;
   bottom: 0;
   width: 100vw;

@@ -18,8 +18,10 @@ body {
 }
 
 .container {
-  text-align: left;
   font-family: BCSans, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  text-align: left;
+  margin: 1rem;
+  padding: 4rem;
 }
 
 
