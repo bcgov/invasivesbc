@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 export const mapSitesRowsToCSV = async (response: any, templateName: string) => {
   const headers = response.fields.map((fieldObj) => fieldObj?.name).join(',') + '\n';
@@ -11,62 +11,84 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
   switch (templateName) {
     default:
       fieldFormatMap['site_created_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['survey_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['treatment_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['monitoring_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['collection_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
-      };
+      }
       fieldFormatMap['inspection_date'] = (value) => {
-        if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['last_surveyed_date'] = (value) => {
-        const date = format(value, 'yyyy-MM-dd');
+        if (value === null) {
+            return '';
+        } 
+        const justDate = typeof value === 'string'? value : value.toISOString()
+        const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['activity_date_time'] = (value) => {
         if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd HH:mm:ss');
+        const date = format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
         return date;
       };
       fieldFormatMap['created_timestamp'] = (value) => {
         if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd HH:mm:ss');
+        const date = format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
         return date;
       };
       fieldFormatMap['updated_timestamp'] = (value) => {
         if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd HH:mm:ss');
+        const date = format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
         return date;
       };
       fieldFormatMap['date_entered'] = (value) => {
         if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        const date = format(parseISO(value), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['date_updated'] = (value) => {
         if (value === null) return '';
-        const date = format(value, 'yyyy-MM-dd');
+        const date = format(parseISO(value), 'yyyy-MM-dd');
         return date;
       };
       fieldFormatMap['jurisdictions'] = (value) => {
