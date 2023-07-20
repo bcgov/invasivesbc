@@ -11,7 +11,7 @@ export const WIND_DIRECTION_CODES: CodeEntry[] = [
   new CodeEntry('wind_direction', 'S', 'South'),
   new CodeEntry('wind_direction', 'SW', 'Southwest'),
   new CodeEntry('wind_direction', 'W', 'West'),
-  new CodeEntry('wind_direction', 'NE', 'Northwest')
+  new CodeEntry('wind_direction', 'NW', 'Northwest')
 ];
 
 export const OBSERVATION_TYPE_CODES: CodeEntry[] = [
