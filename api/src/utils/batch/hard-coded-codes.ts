@@ -3,7 +3,7 @@
 import { CodeEntry } from './definitions';
 
 export const WIND_DIRECTION_CODES: CodeEntry[] = [
-  new CodeEntry('wind_direction', 'NA', 'No Wind'),
+  new CodeEntry('wind_direction', 'No Wind', 'No Wind'),
   new CodeEntry('wind_direction', 'N', 'North'),
   new CodeEntry('wind_direction', 'NE', 'Northeast'),
   new CodeEntry('wind_direction', 'E', 'East'),
@@ -11,7 +11,7 @@ export const WIND_DIRECTION_CODES: CodeEntry[] = [
   new CodeEntry('wind_direction', 'S', 'South'),
   new CodeEntry('wind_direction', 'SW', 'Southwest'),
   new CodeEntry('wind_direction', 'W', 'West'),
-  new CodeEntry('wind_direction', 'NE', 'Northwest')
+  new CodeEntry('wind_direction', 'NW', 'Northwest')
 ];
 
 export const OBSERVATION_TYPE_CODES: CodeEntry[] = [
@@ -38,4 +38,26 @@ export const WATER_LEVEL_MANAGEMENT_CODES: CodeEntry[] = [
   new CodeEntry('water_level_management', 'Other', 'Other'),
   new CodeEntry('water_level_management', 'Station', 'Station'),
   new CodeEntry('water_level_management', 'Weir', 'Weir')
+];
+
+export const WATERBODY_TYPE_CODES: CodeEntry[] = [
+  new CodeEntry('waterbody_type_code', 'Bog', 'Bog'),
+  new CodeEntry('waterbody_type_code', 'Confined Pond', 'Confined Pond'),
+  new CodeEntry('waterbody_type_code', 'Discharging Pond', 'Discharging Pond'),
+  new CodeEntry('waterbody_type_code', 'Ditch', 'Ditch'),
+  new CodeEntry('waterbody_type_code', 'Intertidal', 'Intertidal'),
+  new CodeEntry('waterbody_type_code', 'Lake', 'Lake'),
+  new CodeEntry('waterbody_type_code', 'River', 'River'),
+  new CodeEntry('waterbody_type_code', 'Slough', 'Slough'),
+  new CodeEntry('waterbody_type_code', 'Stream', 'Stream'),
+  new CodeEntry('waterbody_type_code', 'Wetland', 'Wetland')
+];
+
+export const SUBSTRATE_TYPE_CODES: CodeEntry[] = [
+  new CodeEntry('substrate_type_code', 'Clay', 'Clay'),
+  new CodeEntry('substrate_type_code', 'Cobble', 'Cobble'),
+  new CodeEntry('substrate_type_code', 'Gravel', 'Gravel'),
+  new CodeEntry('substrate_type_code', 'Rip-rap', 'Rip-rap'),
+  new CodeEntry('substrate_type_code', 'Sand', 'Sand'),
+  new CodeEntry('substrate_type_code', 'Silt/Organic', 'Silt/Organic')
 ];

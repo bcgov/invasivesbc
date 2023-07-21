@@ -6,7 +6,9 @@ import {
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
   HerbicidesInformation,
-  ProjectInformation
+  PmpValidator,
+  ProjectInformation,
+  WindDirectionValidator
 } from '../shared-columns';
 
 const TreatmentChemicalTerrestrialPlant = new Template(
@@ -63,5 +65,10 @@ TreatmentChemicalTerrestrialPlant.columns = [
   ).build(),
   ...HerbicidesInformation
 ];
-TreatmentChemicalTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, ...ChemTreatmentValidators];
+TreatmentChemicalTerrestrialPlant.rowValidators = [
+  ...BasicInformationRowValidators,
+  ...ChemTreatmentValidators,
+  PmpValidator,
+  WindDirectionValidator
+];
 export { TreatmentChemicalTerrestrialPlant };

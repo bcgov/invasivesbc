@@ -5,6 +5,7 @@ import {
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
   HerbicidesInformation,
+  PositiveObservationPlantValidator,
   ProjectInformation
 } from '../shared-columns';
 
@@ -64,5 +65,5 @@ TreatmentChemicalAquaticPlant.columns = [
     .build(),
   ...HerbicidesInformation
 ];
-TreatmentChemicalAquaticPlant.rowValidators = [...BasicInformationRowValidators];
+TreatmentChemicalAquaticPlant.rowValidators = [...BasicInformationRowValidators, PositiveObservationPlantValidator];
 export { TreatmentChemicalAquaticPlant };

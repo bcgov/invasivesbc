@@ -12,17 +12,22 @@ import {
   WaterQualityInformation
 } from '../shared-columns';
 
-const ObservationAquaticPlant = new Template('observation_aquatic_plant', 'Observation - Aquatic Plant', null);
+const ObservationAquaticPlantTemp = new Template(
+  'observation_aquatic_plant_temp',
+  'Observation - Aquatic Plant TEMP POINT',
+  null
+);
 
-ObservationAquaticPlant.subtype = 'Activity_Observation_PlantAquatic';
+ObservationAquaticPlantTemp.subtype = 'Activity_Observation_PlantAquatic';
 
-ObservationAquaticPlant.columns = [
+ObservationAquaticPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
   ...ShorelineInformation,
   ...WaterbodyInformation,
   ...WaterQualityInformation,
+  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
   new TemplateColumnBuilder(
     'Observation - Pre-treatment observation?',
     'tristate',
@@ -147,10 +152,10 @@ ObservationAquaticPlant.columns = [
   ).build()
 ];
 
-ObservationAquaticPlant.rowValidators = [
+ObservationAquaticPlantTemp.rowValidators = [
   ...BasicInformationRowValidators,
   ShorelineSumValidator,
   PositiveObservationPlantValidator
 ];
 
-export { ObservationAquaticPlant };
+export { ObservationAquaticPlantTemp };

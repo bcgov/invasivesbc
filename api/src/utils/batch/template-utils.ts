@@ -16,11 +16,11 @@ import { PoolClient } from 'pg';
 import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp';
 import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
 import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp';
+import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp';
 
 const templateList: Template[] = [
-  ObservationTerrestrialPlantTemp,
-  ObservationAquaticPlant,
   ObservationTerrestrialPlant,
+  ObservationTerrestrialPlantTemp,
   BiocontrolCollection,
   BiocontrolRelease,
   MonitoringBiocontrolDispersalTerrestrialPlant,
@@ -32,7 +32,9 @@ const templateList: Template[] = [
   TreatmentChemicalTerrestrialPlantTemp,
   TreatmentMechanicalAquaticPlant,
   TreatmentMechanicalTerrestrialPlant,
-  TreatmentMechanicalTerrestrialPlantTemp
+  TreatmentMechanicalTerrestrialPlantTemp,
+  ObservationAquaticPlant,
+  ObservationAquaticPlantTemp
 ];
 
 export const TemplateService = {

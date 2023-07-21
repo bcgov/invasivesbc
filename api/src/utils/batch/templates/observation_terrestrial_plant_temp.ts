@@ -3,7 +3,9 @@ import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
-  BasicInformationRowValidators, PositiveObservationPlantValidator,
+  BasicInformationRowValidators,
+  PositiveObservationPlantValidator,
+  SlopeAspectValidator,
   ProjectInformation
 } from '../shared-columns';
 
@@ -18,10 +20,7 @@ ObservationTerrestrialPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
-  new TemplateColumnBuilder(
-    'Area',
-    'numeric'
-  ).isRequired().build(),
+  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
   new TemplateColumnBuilder(
     'Observation - Pre-treatment observation?',
     'tristate',
@@ -180,6 +179,10 @@ ObservationTerrestrialPlantTemp.columns = [
   ).build()
 ];
 
-ObservationTerrestrialPlantTemp.rowValidators = [...BasicInformationRowValidators, PositiveObservationPlantValidator];
+ObservationTerrestrialPlantTemp.rowValidators = [
+  ...BasicInformationRowValidators,
+  PositiveObservationPlantValidator,
+  SlopeAspectValidator
+];
 
 export { ObservationTerrestrialPlantTemp };
