@@ -6,9 +6,11 @@ import { TOGGLE_PANEL, URL_CHANGE } from '../state/actions';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
+import { ButtonContainer } from './Map/Buttons/ButtonContainer';
 import Map from './Map/Map';
 import MapControls from './Map/MapControls';
 import { LandingComponent } from './Overlay/Landing/Landing';
+import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
 
@@ -50,6 +52,7 @@ const App: React.FC = () => {
             />
           )}
         />
+        <ButtonContainer></ButtonContainer>
         <Route
           path="/other"
           render={(props) => (
@@ -64,6 +67,7 @@ const App: React.FC = () => {
       <Overlay showOverlay={toggled}>
         <Route path="/Landing" component={LandingComponent} />
         <Route path="/Records" component={Records} />
+        <Route path="/Legend" component={LegendsPopup} />
       </Overlay>
       <Footer />
     </div>

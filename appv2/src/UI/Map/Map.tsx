@@ -2,6 +2,7 @@ import "leaflet/dist/leaflet.css";
 import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "./Map.css";
+import OfflineLayers from "./OfflineLayers";
 
 const Map = (props: any) => {
   return (
@@ -12,6 +13,7 @@ const Map = (props: any) => {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
         {props.children}
+        <OfflineLayers {...props} />
       </MapContainer>
     </div>
   );
