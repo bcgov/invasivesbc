@@ -648,7 +648,9 @@ export const getActivitiesSQL = (
     sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
     for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
-    sqlStatement.append(SQL`]::varchar[] && jsonb_array_to_text_array(species_positive)::varchar[]`);
+    sqlStatement.append(
+      SQL`]::varchar[] && jsonb_array_to_text_array(species_positive)::varchar[] AND species_positive != 'null'`
+    );
   }
 
   // search intersects with some species codes
@@ -657,7 +659,9 @@ export const getActivitiesSQL = (
     sqlStatement.append(SQL`${searchCriteria.species_negative[0]}`);
     for (let idx = 1; idx < searchCriteria.species_negative.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.species_negative[idx]}`);
-    sqlStatement.append(SQL`]::varchar[] && jsonb_array_to_text_array(species_negative)::varchar[]`);
+    sqlStatement.append(
+      SQL`]::varchar[] && jsonb_array_to_text_array(species_negative)::varchar[] AND species_negative != 'null'`
+    );
   }
 
   // search intersects with jurisdiction codes
