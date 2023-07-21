@@ -309,15 +309,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <ExtentListener/>
             <AccuracyToggle />
             <AccuracyMarker />
-            <BaseMapToggle />
-            <HDToggle />
             <LocationMarker />
             <FindMeToggle />
             <PanToMe />
             <JumpToRecord />
-            <LegendsButton />
-            <LabelButton />
+
             <IAPPExtentButton />
+            <LabelButton />
+
+            <HDToggle />
+            <BaseMapToggle />
+            <LegendsButton />
             <BoundaryLayerDisplayForRecordSetToggle />
 
             {!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') ? (

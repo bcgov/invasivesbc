@@ -8,6 +8,7 @@ import { Button } from '@mui/material';
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
 import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { useHistory } from "react-router-dom";
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
   const [truncate, setTruncate] = useState(true);
@@ -161,10 +162,11 @@ const BatchTableCell = ({ field, row }) => {
 const BatchTable = ({ jsonRepresentation, created_activities }) => {
   const dispatch = useDispatch();
   const tabsConfigState = useSelector(selectTabs);
+  const { darkTheme } = useSelector(selectUserSettings);
   const history = useHistory();
   return (
     <>
-      <table className={'batchAlternateLayout'}>
+      <table className={`batchAlternateLayout ${darkTheme ? 'batchDarkLayout' : ''}`}>
         <thead>
           <tr>
             <th>Field</th>

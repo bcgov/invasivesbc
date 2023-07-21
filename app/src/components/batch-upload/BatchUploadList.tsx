@@ -8,10 +8,12 @@ import { BATCH_DELETE_REQUEST, BATCH_LIST_REQUEST } from '../../state/actions';
 import Spinner from '../spinner/Spinner';
 import { Error } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
+  const {darkTheme} = useSelector(selectUserSettings);
   const [serial, setSerial] = useState(1);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const BatchUploadList = () => {
     return (
       <>
         <p>Batch uploads. Click a row for a detailed view.</p>
-        <table className={'batchList'}>
+        <table className={`batchList ${darkTheme? 'batchDarkList' : ''}`}>
           <thead>
             <tr>
               <th>ID</th>

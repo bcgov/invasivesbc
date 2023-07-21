@@ -11,12 +11,14 @@ import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { MAP_TOGGLE_LEGENDS } from 'state/actions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const LegendsButton = (props) => {
   const map = useMap();
 
   //refactor stuff for topo button
   const mapState = useSelector(selectMap);
+  const {darkTheme} = useSelector(selectUserSettings);
   const dispatch = useDispatch();
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
@@ -53,7 +55,7 @@ export const LegendsButton = (props) => {
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' legend ' +
-                (mapState?.legendsPopup ? toolClass.selected : toolClass.notSelected)
+                (mapState?.legendsPopup ? toolClass.selected : (darkTheme? toolClass.notSelectedDark : toolClass.notSelected))
               }
               sx={{ color: '#000' }}>
               <InfoIcon />

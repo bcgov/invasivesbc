@@ -15,6 +15,7 @@ import { selectMap } from 'state/reducers/map';
 import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { useMap } from 'react-leaflet';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export interface IMapLocationControlGroupProps {
   classes?: any;
@@ -28,6 +29,7 @@ export const BaseMapToggle = (props) => {
   //refactor stuff for topo button
   const map = useMap();
   const mapState = useSelector(selectMap);
+  const {darkTheme} = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
   const [show, setShow] = React.useState(false);
@@ -70,7 +72,7 @@ export const BaseMapToggle = (props) => {
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
               //classes.customHoverFocus +
               ' ' +
-              (mapState.baseMapToggle ? toolClass.selected : toolClass.notSelected)
+              (mapState.baseMapToggle ? toolClass.selected : (darkTheme? toolClass.notSelectedDark : toolClass.notSelected))
             }
             sx={{ color: '#000' }}>
             {mapState.baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}

@@ -6,9 +6,11 @@ import { useSelector } from '../state/utilities/use_selector';
 import { useDispatch } from 'react-redux';
 import { TRAINING_VIDEOS_LIST_REQUEST } from '../state/actions';
 import Spinner from '../components/spinner/Spinner';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 export const TrainingPage = () => {
   const { list: videos, working } = useSelector(selectTrainingVideos);
+  const { darkTheme } = useSelector(selectUserSettings);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export const TrainingPage = () => {
   }
 
   return (
-    <Container className={'training'} maxWidth={false}>
+    <Container className={`training ${darkTheme ? 'trainingDark' : ''}`} maxWidth={false}>
       <h2>Training Videos</h2>
       <Grid container spacing={4}>
         {videos.length === 0 && (<Grid item><span>No videos are available at this time.</span></Grid>)}

@@ -10,10 +10,12 @@ import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, BATCH_TEMPLATE_DOWNLOAD_REQUEST } 
 import { useDispatch } from 'react-redux';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Download } from '@mui/icons-material';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const TemplatePreview = ({ name, id }) => {
   const dispatch = useDispatch();
   const { templateDetail } = useSelector(selectBatch);
+  const { darkTheme } = useSelector(selectUserSettings);
 
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +135,7 @@ const TemplatePreview = ({ name, id }) => {
     }
     return (
       <div className="template-description">
-        <table className={'template-preview'}>
+        <table className={`template-preview ${darkTheme? 'template-dark-preview' : ''}`}>
           <thead>
             <tr>
               <th>Column</th>

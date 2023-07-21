@@ -15,6 +15,7 @@ import { useSelector } from 'state/utilities/use_selector';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { calc_utm } from './DisplayPosition';
 import { Geolocation } from '@capacitor/geolocation';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const baseUrl = window.location.href.split('/home')[0]; // Base URL of application for hosted image
 
@@ -30,6 +31,7 @@ export const FindMeToggle = (props) => {
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
+  const {darkTheme} = useSelector(selectUserSettings);
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
@@ -61,7 +63,7 @@ export const FindMeToggle = (props) => {
                 className={
                   'leaflet-control-zoom leaflet-bar leaflet-control ' +
                   ' ' +
-                  (mapState.positionTracking ? toolClass.selected : toolClass.notSelected)
+                  (mapState.positionTracking ? toolClass.selected : (darkTheme? toolClass.notSelectedDark : toolClass.notSelected))
                 }
                 sx={{ color: '#000' }}>
                 <MyLocationIcon />
