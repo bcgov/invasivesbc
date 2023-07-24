@@ -12,6 +12,7 @@ import { getLogger } from '../utils/logger';
 import cacheService from '../utils/cache/cache-service';
 import { createHash } from 'crypto';
 import { versionedKey } from '../utils/cache/cache-utils';
+import { requestVectorLayerGeneration } from '../utils/vector-tiles';
 
 const defaultLog = getLogger('point-of-interest');
 const CACHENAME = 'POI - Fat';
@@ -175,12 +176,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       if (isIAPPrelated(sanitizedSearchCriteria)) {
         const responseSurveyExtract = await getIAPPsites(sanitizedSearchCriteria);
 
-        const responseBody = { message: 'Got IAPP sites', result: responseSurveyExtract, code: 200 };
-
-        if (ETag !== null) {
-          // save for later;
-          await cache.put(ETag, responseBody);
-        }
         if (sanitizedSearchCriteria.isCSV) {
           return res
             .status(200)
@@ -189,6 +184,27 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
             .set('Content-Disposition', 'attachment; filename="export.csv"')
             .send((responseSurveyExtract as unknown) as string);
         } else {
+          let vectorLayerRequestID = null;
+
+          if (sanitizedSearchCriteria.site_id_only) {
+            vectorLayerRequestID = await requestVectorLayerGeneration(connection, {
+              ...sanitizedSearchCriteria,
+              isGeoJSON: true
+            });
+          }
+
+          const responseBody = {
+            message: 'Got IAPP sites',
+            result: responseSurveyExtract,
+            code: 200,
+            vectorLayerRequestID
+          };
+
+          if (ETag !== null) {
+            // save for later;
+            await cache.put(ETag, responseBody);
+          }
+
           return res.status(200).set(responseCacheHeaders).json(responseBody);
         }
       } else {

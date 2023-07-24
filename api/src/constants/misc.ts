@@ -96,7 +96,8 @@ export enum ActivitySubType {
  * @enum {number}
  */
 export enum S3ACLRole {
-  AUTH_READ = 'authenticated-read'
+  AUTH_READ = 'authenticated-read',
+  PUBLIC_READ = 'public-read'
 }
 
 /**

@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "ts-node src/server",
+    "tiles": "ts-node src/tile_processor",
     "clean": "gulp clean",
     "build": "gulp build",
     "start:reload": "./node_modules/.bin/nodemon src/server.ts --exec ts-node",
