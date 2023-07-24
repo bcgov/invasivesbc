@@ -192,9 +192,19 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
 
     const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...prev } }));
 
+    const expandedToOpen =
+      action.payload?.updatedSet?.expanded === true &&
+      userSettings?.recordSets?.[action.payload.setName]?.expanded === false
+        ? true
+        : false;
     yield put({
       type: USER_SETTINGS_SET_RECORD_SET_SUCCESS,
-      payload: { recordSets: prev, updatedSetName: action.payload.setName, updatedSet: action.payload.updatedSet }
+      payload: {
+        recordSets: prev,
+        updatedSetName: action.payload.setName,
+        updatedSet: action.payload.updatedSet,
+        expandedToOpen: expandedToOpen
+      }
     });
   } catch (e) {
     console.error(e);

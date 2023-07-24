@@ -40,6 +40,7 @@ import {
   TABS_SET_ACTIVE_TAB_SUCCESS,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+  USER_SETTINGS_SET_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
@@ -108,7 +109,8 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
     gridFilters: { ...action.payload.updatedSet.gridFilters },
     searchBoundary: { ...action.payload.updatedSet.searchBoundary },
-    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary?.server_id }
+    sortColumns: action.payload.updatedSet.sortColumns
+    // serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary?.server_id }
   };
 
   const testStateEqual = (a, b) => {
@@ -209,9 +211,22 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       }
     });
   }
+  console.log('curr layers: ', mapState?.layers?.[action.payload.updatedSetName]?.layerState);
+  console.log('new layer state: ', layerState);
+  console.log(
+    'compare objects',
+    compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)
+  );
 
+  console.log('curr filters: ', mapState?.layers?.[action.payload.updatedSetName]?.filters);
+  console.log('new filter state: ', newFilterState);
+  console.log(
+    'compare objects',
+    compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState)
+  );
   if (
-    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) && action.payload.updatedSet.expanded
+    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) &&
+    action.payload.updatedSet.expanded
     //|| !mapState?.recordTables?.[action.payload.updatedSetName]
   ) {
     filterStateChanged = true;
@@ -226,11 +241,12 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     });
   }
 
-  const previousOpenState = mapState?.layers?.[action.payload.updatedSetName]?.expanded;
+  // const previousOpenState = userSettingsState?.recordSets?.[action.payload.updatedSetName]?.expanded;
+  const expandedToOpen = action.payload.expandedToOpen;
   const newOpenState = action.payload.updatedSet.expanded;
 
   // check if we need to grab table rows on open and no filter change
-  if (filterStateChanged === false && newOpenState) {
+  if (expandedToOpen) {
     if (action.payload.updatedSet.recordSetType === 'POI') {
       yield put({
         type: IAPP_TABLE_ROWS_GET_REQUEST,
@@ -540,6 +556,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   const mapState = yield select(selectMap);
+  const userSettings = yield select(selectUserSettings);
   const filters = mapState?.layers?.[action.payload.id]?.filters;
   const newFilterState = {
     advancedFilters: [...filters.advancedFilters],
@@ -548,14 +565,24 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
     sortColumns: action.payload.sortColumns
   };
   yield put({
-    type: FILTER_STATE_UPDATE,
+    type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
     payload: {
-      [action.payload.id]: {
-        filters: { ...newFilterState },
-        type: mapState?.layers?.[action.payload.id]?.type
-      }
+      updatedSet: {
+        ...userSettings.recordSets?.[action.payload.id],
+        ...newFilterState
+      },
+      setName: action.payload.id
     }
   });
+  // yield put({
+  //   type: FILTER_STATE_UPDATE,
+  //   payload: {
+  //     [action.payload.id]: {
+  //       filters: { ...newFilterState },
+  //       type: mapState?.layers?.[action.payload.id]?.type
+  //     }
+  //   }
+  // });
 }
 
 function* getPOIIDsOnline(feature, filterCriteria) {}
