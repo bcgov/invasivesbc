@@ -1,4 +1,4 @@
-import { all, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import {all, delay, fork, put, select, take, takeEvery} from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -40,7 +40,7 @@ import {
   TABS_SET_ACTIVE_TAB_SUCCESS,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
-  USER_SETTINGS_SET_RECORD_SET_SUCCESS,
+  USER_SETTINGS_SET_RECORD_SET_SUCCESS, VECTOR_LAYER_GET_ERROR, VECTOR_LAYER_GET_SUCCESS, VECTOR_LAYER_START_POLL,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_REQUEST,
@@ -67,26 +67,27 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
-import { getSearchCriteriaFromFilters } from 'components/activities-list/Tables/Plant/ActivityGrid';
-import { selectAuth } from 'state/reducers/auth';
-import { LeafletWhosEditingEnum, selectMap } from 'state/reducers/map';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { Geolocation } from '@capacitor/geolocation';
-import { channel } from 'redux-saga';
-import { selectTabs } from 'state/reducers/tabs';
-import { ActivityStatus } from 'sharedAPI';
+import {getSearchCriteriaFromFilters} from 'components/activities-list/Tables/Plant/ActivityGrid';
+import {selectAuth} from 'state/reducers/auth';
+import {LeafletWhosEditingEnum, selectMap} from 'state/reducers/map';
+import {selectUserSettings} from 'state/reducers/userSettings';
+import {InvasivesAPI_Call} from 'hooks/useInvasivesApi';
+import {Geolocation} from '@capacitor/geolocation';
+import {channel} from 'redux-saga';
+import {selectTabs} from 'state/reducers/tabs';
+import {ActivityStatus} from 'sharedAPI';
 import * as turf from '@turf/turf';
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
 }
+
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
   const sets = {};
-  sets[action.payload.updatedSetName] = { ...action.payload.updatedSet };
+  sets[action.payload.updatedSetName] = {...action.payload.updatedSet};
   const filterCriteria = yield getSearchCriteriaFromFilters(
     action.payload.updatedSet.advancedFilterRows,
     sets,
@@ -106,14 +107,15 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 
   const newFilterState = {
     advancedFilters: [...action.payload.updatedSet.advancedFilters],
-    gridFilters: { ...action.payload.updatedSet.gridFilters },
-    searchBoundary: { ...action.payload.updatedSet.searchBoundary },
-    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary?.server_id }
+    gridFilters: {...action.payload.updatedSet.gridFilters},
+    searchBoundary: {...action.payload.updatedSet.searchBoundary},
+    serverSearchBoundary: {...action.payload.updatedSet.searchBoundary?.server_id}
   };
 
   const testStateEqual = (a, b) => {
     return a.color === b.color && a.drawOrder === b.drawOrder && a.mapToggle === b.mapToggle;
   };
+
   function arraysEqual(a, b) {
     if (a === b) return true;
     if (a == null || b == null) return false;
@@ -203,7 +205,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       type: LAYER_STATE_UPDATE,
       payload: {
         [action.payload.updatedSetName]: {
-          layerState: { ...layerState },
+          layerState: {...layerState},
           type: action.payload.updatedSet.recordSetType
         }
       }
@@ -219,7 +221,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
       type: FILTER_STATE_UPDATE,
       payload: {
         [action.payload.updatedSetName]: {
-          filters: { ...newFilterState },
+          filters: {...newFilterState},
           type: action.payload.updatedSet.recordSetType
         }
       }
@@ -254,7 +256,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
-  yield put({ type: MAP_INIT_REQUEST, payload: {} });
+  yield put({type: MAP_INIT_REQUEST, payload: {}});
 }
 
 function* handle_MAP_INIT_REQUEST(action) {
@@ -301,7 +303,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     type: IAPP_GEOJSON_GET_REQUEST,
     payload: {
       //   recordSetID: '3',
-      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
+      IAPPFilterCriteria: {...IAPP_filter, limit: 200000}
       //   layerState: IAPPlayerState
     }
   });
@@ -366,8 +368,8 @@ function* handle_MAP_INIT_REQUEST(action) {
       return s.id === recordSets[rs].searchBoundary?.server_id;
     })[0];
     const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
-      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
-      : { ...recordSets[rs].searchBoundary };
+      ? {...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features]}
+      : {...recordSets[rs].searchBoundary};
 
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
@@ -380,23 +382,23 @@ function* handle_MAP_INIT_REQUEST(action) {
     };
 
     const newLayer = {
-      layerState: { ...newLayerState },
-      filters: { ...newFilters },
+      layerState: {...newLayerState},
+      filters: {...newFilters},
       type: recordSets[rs].recordSetType,
       loaded: false
     };
 
-    newMapState[rs] = { ...newLayer };
+    newMapState[rs] = {...newLayer};
   }
 
   yield put({
     type: LAYER_STATE_UPDATE,
-    payload: { ...newMapState }
+    payload: {...newMapState}
   });
 
   yield put({
     type: FILTER_STATE_UPDATE,
-    payload: { ...newMapState }
+    payload: {...newMapState}
   });
 }
 
@@ -419,7 +421,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
         type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: {
           recordSetID: x,
-          IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
+          IAPPFilterCriteria: {...IAPP_filter, site_id_only: true}
         }
       });
     } else {
@@ -436,7 +438,7 @@ function* handle_FILTER_STATE_UPDATE(action) {
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: {
           recordSetID: x,
-          ActivityFilterCriteria: { ...activityFilter, activity_id_only: true }
+          ActivityFilterCriteria: {...activityFilter, activity_id_only: true}
         }
       });
     }
@@ -469,7 +471,7 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   //trigger get
   yield put({
     type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-    payload: { recordSetID: recordSetID, ActivityFilterCriteria: filters }
+    payload: {recordSetID: recordSetID, ActivityFilterCriteria: filters}
   });
 }
 
@@ -497,7 +499,7 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   );
 
   //trigger get
-  yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: recordSetID, IAPPFilterCriteria: filters } });
+  yield put({type: IAPP_TABLE_ROWS_GET_REQUEST, payload: {recordSetID: recordSetID, IAPPFilterCriteria: filters}});
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
@@ -543,29 +545,30 @@ function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   const filters = mapState?.layers?.[action.payload.id]?.filters;
   const newFilterState = {
     advancedFilters: [...filters.advancedFilters],
-    gridFilters: { ...filters.gridFilters },
-    searchBoundary: { ...filters.searchBoundary },
+    gridFilters: {...filters.gridFilters},
+    searchBoundary: {...filters.searchBoundary},
     sortColumns: action.payload.sortColumns
   };
   yield put({
     type: FILTER_STATE_UPDATE,
     payload: {
       [action.payload.id]: {
-        filters: { ...newFilterState },
+        filters: {...newFilterState},
         type: mapState?.layers?.[action.payload.id]?.type
       }
     }
   });
 }
 
-function* getPOIIDsOnline(feature, filterCriteria) {}
+function* getPOIIDsOnline(feature, filterCriteria) {
+}
 
 function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
-  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { recordSetID: action.payload.deletedID } });
+  yield put({type: MAP_DELETE_LAYER_AND_TABLE, payload: {recordSetID: action.payload.deletedID}});
 }
 
 function* handle_MAP_DELETE_LAYER(action) {
-  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { ...action.payload } });
+  yield put({type: MAP_DELETE_LAYER_AND_TABLE, payload: {...action.payload}});
 }
 
 function* handle_MAP_TOGGLE_TRACKING(action) {
@@ -611,7 +614,7 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   let counter = 0;
   while (state.positionTracking) {
     if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED });
+      yield put({type: MAP_TOGGLE_PANNED});
     }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
@@ -630,13 +633,13 @@ function* handleTabChange(action) {
 
   switch (tab.label) {
     case 'Current Activity':
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY } });
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.ACTIVITY}});
       break;
     case 'Recorded Activities':
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY } });
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.BOUNDARY}});
       break;
     default:
-      yield put({ type: LEAFLET_SET_WHOS_EDITING, payload: { LeafletWhosEditing: LeafletWhosEditingEnum.NONE } });
+      yield put({type: LEAFLET_SET_WHOS_EDITING, payload: {LeafletWhosEditing: LeafletWhosEditingEnum.NONE}});
       break;
   }
 }
@@ -649,8 +652,8 @@ function* leafletWhosEditing() {
 }
 
 function* handle_WHATS_HERE_FEATURE(action) {
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
+  yield put({type: MAP_WHATS_HERE_INIT_GET_POI});
+  yield put({type: MAP_WHATS_HERE_INIT_GET_ACTIVITY});
 }
 
 function* whatsHereSaga() {
@@ -700,7 +703,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
 
     yield put({
       type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
+      payload: {data: mappedToWhatsHereColumns}
     });
   } catch (e) {
     console.error(e);
@@ -709,7 +712,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
 
 function* handle_WHATS_HERE_PAGE_POI(action) {
   // WHATS_HERE_IAPP_ROWS_REQUEST
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
+  yield put({type: WHATS_HERE_IAPP_ROWS_REQUEST});
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
@@ -725,12 +728,12 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       .sort((a, b) => {
         if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
           return a?.properties[mapState?.whatsHere?.ActivitySortField] >
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
             ? 1
             : -1;
         } else {
           return a?.properties[mapState?.whatsHere?.ActivitySortField] <
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
             ? 1
             : -1;
         }
@@ -799,7 +802,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 
     yield put({
       type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
+      payload: {data: mappedToWhatsHereColumns}
     });
   } catch (e) {
     console.error(e);
@@ -807,7 +810,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+  yield put({type: WHATS_HERE_ACTIVITY_ROWS_REQUEST});
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
@@ -861,7 +864,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.isCSV = true;
       filters.CSVType = action.payload.CSVType;
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, { 'Content-Type': 'text/csv' });
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {'Content-Type': 'text/csv'});
       const daBlob = new Blob([networkReturn.data]);
 
       const url = window.URL.createObjectURL(daBlob);
@@ -888,10 +891,10 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
   switch (action.payload.recordType) {
     case 'IAPP':
-      yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
+      yield put({type: WHATS_HERE_IAPP_ROWS_REQUEST});
       break;
     default:
-      yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+      yield put({type: WHATS_HERE_ACTIVITY_ROWS_REQUEST});
       break;
   }
 }
@@ -957,6 +960,39 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
   });
 }
 
+function* handle_VECTOR_LAYER_START_POLL(action) {
+  let DELAY = 2500;
+  let MAXTRIES = 10;
+
+  let i = 0;
+  let success = false;
+  let url = null;
+  do {
+    yield delay(DELAY);
+
+    const networkReturn = yield InvasivesAPI_Call('GET', `/api/vector-layer/${action.payload.id}`, null, {
+      'Accept': 'application/json'
+    });
+    if (networkReturn.data.status === 'READY') {
+      success = true;
+      url = networkReturn.data.url;
+      break;
+    }
+    if (networkReturn.data.status === 'ERROR') {
+      // something went wrong generating the tile layer
+      success = false;
+      break;
+    }
+    i++;
+  } while (i < MAXTRIES);
+
+  if (!success) {
+    yield put({type: VECTOR_LAYER_GET_ERROR, payload: { id: action.payload.id} });
+  } else {
+    yield put({type: VECTOR_LAYER_GET_SUCCESS, payload: { id: action.payload.id, url } });
+  }
+}
+
 function* activitiesPageSaga() {
   yield fork(leafletWhosEditing);
   yield all([
@@ -990,7 +1026,8 @@ function* activitiesPageSaga() {
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
-    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST)
+    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
+    takeEvery(VECTOR_LAYER_START_POLL, handle_VECTOR_LAYER_START_POLL)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);

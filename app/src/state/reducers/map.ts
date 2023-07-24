@@ -1,5 +1,5 @@
-import { IGeneralDialog } from 'components/dialog/GeneralDialog';
-import { calculateGeometryArea } from 'utils/geometryHelpers';
+import {IGeneralDialog} from 'components/dialog/GeneralDialog';
+import {calculateGeometryArea} from 'utils/geometryHelpers';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -37,16 +37,29 @@ import {
   MAP_TOGGLE_LEGENDS,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   SET_TOO_MANY_LABELS_DIALOG,
-  IAPP_EXTENT_FILTER_SUCCESS
+  IAPP_EXTENT_FILTER_SUCCESS,
+  VECTOR_LAYER_GET_REQUEST,
+  VECTOR_LAYER_START_POLL,
+  VECTOR_LAYER_GET_SUCCESS,
+  VECTOR_LAYER_GET_ERROR
 } from '../actions';
 
-import { AppConfig } from '../config';
+import {AppConfig} from '../config';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
   WHATSHERE = 'WHATSHERE',
   BOUNDARY = 'BOUNDARY',
   NONE = 'NONE'
+}
+
+interface VectorLayerState {
+  id: number;
+  polling: boolean;
+  error: boolean;
+  loaded: boolean;
+  state: string | null;
+  url: string | null;
 }
 
 class MapState {
@@ -75,6 +88,7 @@ class MapState {
   labelBoundsPolygon: any;
   IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
+  vectorLayers: VectorLayerState[];
 
   constructor() {
     this.initialized = false;
@@ -93,6 +107,7 @@ class MapState {
     this.legendsPopup = false;
     this.labelBoundsPolygon = null;
     this.IAPPBoundsPolygon = null;
+    this.vectorLayers = [];
     this.tooManyLabelsDialog = {
       dialogActions: [],
       dialogOpen: false,
@@ -120,6 +135,7 @@ class MapState {
     };
   }
 }
+
 const initialState = new MapState();
 
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
@@ -306,7 +322,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case MAP_SET_COORDS: {
-        const userCoords = { ...action?.payload?.position?.coords };
+        const userCoords = {...action?.payload?.position?.coords};
         return {
           ...state,
           userCoords: {
@@ -325,7 +341,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case TOGGLE_BASIC_PICKER_LAYER: {
-        let newState = JSON.parse(JSON.stringify({ ...state.simplePickerLayers }));
+        let newState = JSON.parse(JSON.stringify({...state.simplePickerLayers}));
 
         for (const layerNameProperty in action.payload) {
           //if exists, toggle
@@ -339,11 +355,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         return {
           ...state,
-          simplePickerLayers: JSON.parse(JSON.stringify({ ...newState }))
+          simplePickerLayers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case LAYER_STATE_UPDATE: {
-        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        let newState = JSON.parse(JSON.stringify({...state.layers}));
         for (const x in action.payload) {
           if (newState[x]?.layerState) {
             newState[x].layerState = action.payload[x]?.layerState;
@@ -357,7 +373,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case MAP_TOGGLE_BASEMAP: {
@@ -379,27 +395,27 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {
-        const newLayersState = JSON.parse(JSON.stringify({ ...state.layers }));
+        const newLayersState = JSON.parse(JSON.stringify({...state.layers}));
         delete newLayersState[action.payload.recordSetID];
-        const newTablesState = JSON.parse(JSON.stringify({ ...state.recordTables }));
+        const newTablesState = JSON.parse(JSON.stringify({...state.recordTables}));
         delete newTablesState[action.payload.recordSetID];
 
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newLayersState })),
-          recordTables: JSON.parse(JSON.stringify({ ...newTablesState }))
+          layers: JSON.parse(JSON.stringify({...newLayersState})),
+          recordTables: JSON.parse(JSON.stringify({...newTablesState}))
         };
       }
       case FILTER_STATE_UPDATE: {
-        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        let newState = JSON.parse(JSON.stringify({...state.layers}));
         for (const x in action.payload) {
-          newState[x].filters = { ...action.payload?.[x]?.filters };
+          newState[x].filters = {...action.payload?.[x]?.filters};
           newState[x].loaded = false;
         }
 
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case PAGE_OR_LIMIT_UPDATE: {
@@ -423,25 +439,25 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        const newState = JSON.parse(JSON.stringify({...state.layers}));
         newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
         newState[action.payload.recordSetID].loaded = true;
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+        const newState = JSON.parse(JSON.stringify({...state.layers}));
         newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
         newState[action.payload.recordSetID].loaded = true;
         return {
           ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
+          layers: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
-        let newState = state.recordTables ? JSON.parse(JSON.stringify({ ...state.recordTables })) : {};
+        let newState = state.recordTables ? JSON.parse(JSON.stringify({...state.recordTables})) : {};
 
         if (newState?.[action.payload.recordSetID]) {
           newState[action.payload.recordSetID].rows = action.payload.rows;
@@ -456,11 +472,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         return {
           ...state,
-          recordTables: JSON.parse(JSON.stringify({ ...newState }))
+          recordTables: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case IAPP_TABLE_ROWS_GET_SUCCESS: {
-        let newState = state.recordTables ? JSON.parse(JSON.stringify({ ...state.recordTables })) : {};
+        let newState = state.recordTables ? JSON.parse(JSON.stringify({...state.recordTables})) : {};
 
         if (newState?.[action.payload.recordSetID]) {
           newState[action.payload.recordSetID].rows = action.payload.rows;
@@ -469,13 +485,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           newState[action.payload.recordSetID].rows = action.payload.rows;
         }
 
+        newState[action.payload.recordSetID].vectorLayerRequestID = action.payload.vectorLayerRequestID;
+
         // set defaults
         if (!newState?.[action.payload.recordSetID]?.page) newState[action.payload.recordSetID].page = 0;
         if (!newState?.[action.payload.recordSetID]?.limit) newState[action.payload.recordSetID].limit = 20;
 
         return {
           ...state,
-          recordTables: JSON.parse(JSON.stringify({ ...newState }))
+          recordTables: JSON.parse(JSON.stringify({...newState}))
         };
       }
       case IAPP_GEOJSON_GET_SUCCESS: {
@@ -520,6 +538,66 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           tooManyLabelsDialog: action.payload.dialog
         };
       }
+      case VECTOR_LAYER_GET_REQUEST: {
+        const newVectorState = [...state.vectorLayers];
+        const foundId = newVectorState.find(p => p.id === action.payload.id);
+        if (foundId === null) {
+          return state;
+        }
+        foundId.loaded = false;
+        foundId.error = false;
+
+        return {
+          ...state,
+          vectorLayers: newVectorState
+        };
+      }
+      case VECTOR_LAYER_START_POLL: {
+
+        const newVectorState = [...state.vectorLayers];
+        newVectorState.push({
+          id: action.payload.id,
+          loaded: false,
+          polling: true
+        });
+
+        return {
+          ...state,
+          vectorLayers: newVectorState
+        };
+
+      }
+      case VECTOR_LAYER_GET_SUCCESS: {
+        const newVectorState = [...state.vectorLayers];
+        const foundId = newVectorState.find(p => p.id === action.payload.id);
+        if (foundId === null) {
+          return state;
+        }
+        foundId.loaded = false;
+        foundId.error = false;
+        foundId.polling = false;
+        foundId.url = action.payload.url;
+
+        return {
+          ...state,
+          vectorLayers: newVectorState
+        };
+      }
+      case VECTOR_LAYER_GET_ERROR: {
+        const newVectorState = [...state.vectorLayers];
+        const foundId = newVectorState.find(p => p.id === action.payload.id);
+        if (foundId === null) {
+          return state;
+        }
+        foundId.loaded = false;
+        foundId.error = true;
+        foundId.polling = false;
+
+        return {
+          ...state,
+          vectorLayers: newVectorState
+        };
+      }
       default:
         return state;
     }
@@ -528,4 +606,4 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
 const selectMap: (state) => MapState = (state) => state.Map;
 
-export { createMapReducer, selectMap };
+export {createMapReducer, selectMap};

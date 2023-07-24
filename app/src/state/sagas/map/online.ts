@@ -10,7 +10,7 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
-  IAPP_TABLE_ROWS_GET_SUCCESS
+  IAPP_TABLE_ROWS_GET_SUCCESS, VECTOR_LAYER_START_POLL
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuthHeaders } from 'state/reducers/auth';
@@ -61,7 +61,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
       'Accept-Encoding': 'gzip, deflate, br',
       'Cache-Control': 'max-age=86400'
     },
-    
+
     url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
   });
 
@@ -117,9 +117,18 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       type: IAPP_TABLE_ROWS_GET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result.rows
+        rows: networkReturn.data.result.rows,
+        vectorLayerRequestID: networkReturn.data.vectorLayerRequestID
       }
     });
+    if (networkReturn.data.vectorLayerRequestID) {
+      yield put({
+        type: VECTOR_LAYER_START_POLL,
+        payload: {
+          id: networkReturn.data.vectorLayerRequestID
+        }
+      });
+    }
   } else {
     put({
       type: IAPP_TABLE_ROWS_GET_FAILURE,
