@@ -13,6 +13,7 @@ import { LandingComponent } from './Overlay/Landing/Landing';
 import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
+import { ActivityGeo } from './Map/ActivityGeo';
 
 
 const App: React.FC = () => {
@@ -53,6 +54,7 @@ const App: React.FC = () => {
           )}
         />
         <ButtonContainer></ButtonContainer>
+        <Route path="/Records/Activity:id" component={ActivityGeo} />
         <Route
           path="/other"
           render={(props) => (
