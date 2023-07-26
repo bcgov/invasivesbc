@@ -4,6 +4,8 @@ import { BaseMapToggle } from "./BaseMapToggle";
 import { FindMeToggle, LocationMarker, PanToMe } from "./FindMe";
 import { HDToggle } from "./HDToggle";
 import { LegendsButton } from "./LegendsButton";
+import { WhatsHereButton, WhatsHereDrawComponent } from "./WhatsHereButton";
+import { WhatsHereMarker } from "./WhatsHereMarker";
 import "./ButtonContainer.css";
 
 export const ButtonContainer = (props) => {
@@ -15,11 +17,15 @@ export const ButtonContainer = (props) => {
       <LegendsButton />
       <FindMeToggle />
       <AccuracyToggle />
+      <WhatsHereButton />
+      {/* <WhatsHereCurrentRecordHighlighted /> */}
 
       {/* helpers */}
       <AccuracyMarker />
       <LocationMarker />
       <PanToMe />
+      <WhatsHereMarker />
+      <WhatsHereDrawComponent />
     </div>
   );
 }

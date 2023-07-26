@@ -13,6 +13,12 @@ import { LandingComponent } from './Overlay/Landing/Landing';
 import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
+import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
+import rjsfTheme from "UI/Overlay/Records/Activity/form/rjsfTheme";
+import { createTheme, ThemeOptions } from "@mui/material";
+import { ThemeProvider } from '@mui/styles';
+
+const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
 
 const App: React.FC = () => {
@@ -68,6 +74,9 @@ const App: React.FC = () => {
         <Route path="/Landing" component={LandingComponent} />
         <Route path="/Records" component={Records} />
         <Route path="/Legend" component={LegendsPopup} />
+        <ThemeProvider theme={rjsfThemeLight}>
+          <Route path="/WhatsHere" component={WhatsHereTable} />
+        </ThemeProvider>
       </Overlay>
       <Footer />
     </div>
