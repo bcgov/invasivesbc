@@ -9,9 +9,10 @@ import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
 import { selectMap } from "state/reducers/map";
 import { selectUserSettings } from "state/reducers/userSettings";
-import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE } from "state/actions";
+import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE, TOGGLE_PANEL } from "state/actions";
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
+import { useHistory } from "react-router";
 
 export const WhatsHereButton = (props) => {
   const map = useMap();
@@ -67,8 +68,9 @@ export const WhatsHereButton = (props) => {
 
 export const WhatsHereDrawComponent = (props) => {
   const map = useMap();
-  const dispatch = useDispatch();
   const ref = useRef();
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const mapState = useSelector(selectMap);
 
@@ -85,7 +87,9 @@ export const WhatsHereDrawComponent = (props) => {
 
   useMapEvent('draw:created' as any, (e) => {
     if ((mapState?.whatsHere as any).toggle && (mapState?.whatsHere as any)?.feature === null) {
+      history.push('/WhatsHere');
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
+      dispatch({ type: TOGGLE_PANEL });
     }
   });
 

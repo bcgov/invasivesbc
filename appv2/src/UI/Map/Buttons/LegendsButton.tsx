@@ -6,7 +6,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
 import { selectMap } from "state/reducers/map";
-import { MAP_TOGGLE_LEGENDS } from "state/actions";
+import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from "state/actions";
 
 import InfoIcon from '@mui/icons-material/Info';
 import { useHistory } from "react-router";
@@ -35,6 +35,7 @@ export const LegendsButton = (props) => {
       history.push('/Legend');
     }
     dispatch({type: MAP_TOGGLE_LEGENDS});
+    dispatch({ type: TOGGLE_PANEL });
   }
 
   if (mapState && map) {

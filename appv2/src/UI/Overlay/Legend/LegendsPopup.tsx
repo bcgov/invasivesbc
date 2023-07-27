@@ -8,7 +8,7 @@ import { useHistory } from "react-router";
 import './LegendsPopup.css';
 
 import invbclogo from "/assets/InvasivesBC_Icon.svg";
-import { MAP_TOGGLE_LEGENDS } from "state/actions";
+import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from "state/actions";
 
 export const LegendsPopup = (props) => {
 
@@ -25,6 +25,7 @@ export const LegendsPopup = (props) => {
   const goBack = () => {
     history.goBack();
     dispatch({type: MAP_TOGGLE_LEGENDS });
+    dispatch({ type: TOGGLE_PANEL });
   }
 
   useEffect(() => {

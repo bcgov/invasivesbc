@@ -8,21 +8,23 @@ import { selectUserSettings } from "state/reducers/userSettings";
 import { calc_utm } from "util/utm";
 import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer } from "@mui/material";
 import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from "util/WhatsHereTableHelpers";
-import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE } from "state/actions";
+import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from "state/actions";
 
 import "./WhatsHereTable.css";
 
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useHistory } from "react-router";
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
 };
 
 export const WhatsHereTable = (props) => {
-  const { darkTheme } = useSelector(selectUserSettings);
+  // const { darkTheme } = useSelector(selectUserSettings);
   const mapState = useSelector(selectMap);
+  const history = useHistory();
 
   const position = mapState?.whatsHere?.feature?.geometry ? center(mapState?.whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
   const utmResult = calc_utm(position[0], position[1]);
@@ -34,7 +36,9 @@ export const WhatsHereTable = (props) => {
   const dispatch = useDispatch();
 
   const popupOnClose = () => {
+    history.goBack();
     dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+    dispatch({ type: TOGGLE_PANEL });
   };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
