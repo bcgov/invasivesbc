@@ -40,7 +40,9 @@ export const revokeAllRolesExceptAdmin = (userId): SQLStatement => {
     const sql = SQL`
         DELETE FROM user_access
         WHERE user_id = ${userId}
-        AND role_id != 18;
+        AND role_id != 18
+        AND role_id != 1
+        AND role_id != 2;
     `;
     return sql;
   }

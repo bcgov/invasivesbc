@@ -26,12 +26,6 @@ export const getUserByBCEIDSQL = (bceid_userid: string): SQLStatement => {
   `;
 };
 
-export const getUserIdFromEmail = (email: string): SQLStatement => {
-  return SQL`
-    SELECT user_id FROM application_user WHERE email = ${email};
-  `;
-};
-
 export const renewUserSQL = (userId: string): SQLStatement => {
   const today = new Date();
   const expiryDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).toUTCString();

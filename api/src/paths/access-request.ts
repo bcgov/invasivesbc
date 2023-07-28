@@ -10,7 +10,7 @@ import {
   updateAccessRequestStatusSQL
 } from '../queries/access-request-queries';
 import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from '../queries/role-queries';
-import { getUserIdFromEmail } from '../queries/user-queries';
+import { getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
 import { getLogger } from '../utils/logger';
 import { buildMailer } from '../utils/mailer';
 import { getEmailTemplatesFromDB } from './email-templates';
@@ -237,7 +237,7 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           });
         }
         await connection.query(sqlStatement2.text, sqlStatement2.values);
-        const sqlStatement5: SQLStatement = getUserIdFromEmail(request.primary_email);
+        const sqlStatement5: SQLStatement = request.idir_userid ? getUserByIDIRSQL(request.idir_userid) : getUserByBCEIDSQL(request.bceid_userid);
         if (!sqlStatement5) {
           return res.status(500).json({
             message: 'Failed to generate SQL statement',
