@@ -73,19 +73,11 @@ export const WhatsHereMarker = (props) => {
   });
 
   return (
-    <>
-      {position?.lat && map && panned ? (
-        <div id="no-scrolling-clicking">
-          {mapState?.whatsHere?.toggle ? (
-            <Marker key={Math.random()} icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
-          ) : (
-            <></>
-          )}
-        </div>
-      ) : (
-        <></>
-      )}
-    </>
+    position?.lat && map && panned && mapState?.whatsHere?.toggle ? (
+      <Marker key={Math.random()} icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
+    ) : (
+      <></>
+    )
   );
 };
 

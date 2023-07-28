@@ -16,9 +16,10 @@ import { useHistory } from "react-router";
 
 export const WhatsHereButton = (props) => {
   const map = useMap();
+  const history = useHistory();
+  const dispatch = useDispatch();
   const mapState = useSelector(selectMap);
   const {darkTheme} = useSelector(selectUserSettings);
-  const dispatch = useDispatch();
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
 
@@ -43,12 +44,13 @@ export const WhatsHereButton = (props) => {
           <span>
             <IconButton
               onClick={() => {
+                if ((mapState?.whatsHere as any).toggle) history.goBack();
                 dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !mapState.whatsHere.toggle} });
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' ' +
-                ((mapState?.whatsHere as any)?.toggle ? toolClass.selected : (darkTheme? toolClass.notSelectedDark : toolClass.notSelected))
+                ((mapState?.whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <DocumentScannerIcon />
