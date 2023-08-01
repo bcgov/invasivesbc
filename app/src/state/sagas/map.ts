@@ -837,7 +837,13 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {
         'Content-Type': 'text/csv'
       });
-      const daBlob = new Blob([networkReturn.data]);
+
+      const conditionallyUnnestedData = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
+
+
+      let daBlob
+      try {
+      daBlob = new Blob([conditionallyUnnestedData]);
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -847,6 +853,12 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      }
+      catch(e)
+      {
+        console.error(e);
+        return;
+      }
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,
@@ -862,7 +874,8 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.CSVType = action.payload.CSVType;
 
       networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, { 'Content-Type': 'text/csv' });
-      const daBlob = new Blob([networkReturn.data]);
+      const conditionallyUnnestedData = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
+      const daBlob = new Blob([conditionallyUnnestedData]);
 
       const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
