@@ -44,7 +44,6 @@ export const WhatsHereButton = (props) => {
           <span>
             <IconButton
               onClick={() => {
-                if ((mapState?.whatsHere as any).toggle) history.goBack();
                 dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !mapState.whatsHere.toggle} });
               }}
               className={

@@ -243,6 +243,16 @@ export const RenderTableActivity = (props: any) => {
     history.push({ pathname: `/home/activity` });
   };
 
+  const highlightActivity = async (params) => {
+    dispatch({
+      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
+      payload: {
+        id: params?.row?.short_id
+      }
+    });
+    // activityPage(params);
+  }
+
   return (
     <>
       {mapState?.whatsHere?.section === "invasivesbc" ? 
@@ -262,7 +272,8 @@ export const RenderTableActivity = (props: any) => {
             headerHeight={30}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
-                activityPage(params);
+                // activityPage(params);
+                highlightActivity(params);
               } else {
                 // errorContext.pushError({
                 //   message:
@@ -357,6 +368,16 @@ export const RenderTablePOI = (props: any) => {
       }
     ];
 
+    const highlightPOI = async (params) => {
+      dispatch({
+        type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+        payload: {
+          id: params?.id
+        }
+      });
+      // activityPage(params);
+    }
+
   return (
     <>
       {mapState?.whatsHere?.section === "iapp" ? 
@@ -373,15 +394,16 @@ export const RenderTablePOI = (props: any) => {
               dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'IAPP', field: c.field}})
             })}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-              dispatch({
-                type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-                payload: {
-                  description: 'IAPP-' + params.id,
-                  id: params.id
-                }
-              });
+              // dispatch({
+              //   type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+              //   payload: {
+              //     description: 'IAPP-' + params.id,
+              //     id: params.id
+              //   }
+              // });
               if (authenticated && roles.length > 0) {
-                history.push(`/home/iapp/`);
+                // history.push(`/home/iapp/`);
+                highlightPOI(params);
               } else {
                 // errorContext.pushError({
                 //   message:
