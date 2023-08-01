@@ -37,7 +37,10 @@ import {
   MAP_TOGGLE_LEGENDS,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   SET_TOO_MANY_LABELS_DIALOG,
-  IAPP_EXTENT_FILTER_SUCCESS
+  IAPP_EXTENT_FILTER_SUCCESS,
+  RECORD_SET_TO_EXCEL_REQUEST,
+  RECORD_SET_TO_EXCEL_FAILURE,
+  RECORD_SET_TO_EXCEL_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -75,6 +78,7 @@ class MapState {
   labelBoundsPolygon: any;
   IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
+  CanTriggerCSV: true;
 
   constructor() {
     this.initialized = false;
@@ -99,6 +103,7 @@ class MapState {
       dialogTitle: '',
       dialogContentText: null
     };
+    this.CanTriggerCSV = true;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -520,6 +525,25 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           tooManyLabelsDialog: action.payload.dialog
         };
       }
+      case RECORD_SET_TO_EXCEL_REQUEST: {
+        return {
+          ...state,
+          CanTriggerCSV: false
+        };
+      }
+      case RECORD_SET_TO_EXCEL_SUCCESS: {
+        return {
+          ...state,
+          CanTriggerCSV: true
+        };
+      }
+      case RECORD_SET_TO_EXCEL_FAILURE: {
+        return {
+          ...state,
+          CanTriggerCSV: true
+        };
+      }
+      
       default:
         return state;
     }

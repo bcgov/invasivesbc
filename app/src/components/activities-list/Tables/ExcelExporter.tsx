@@ -4,10 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import DownloadIcon from '@mui/icons-material/Download';
+import { selectMap } from 'state/reducers/map';
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();
   const userSettingsState = useSelector(selectUserSettings);
+  const mapState = useSelector(selectMap)
   const setType = userSettingsState?.recordSets[props.setName]?.recordSetType;
   const [selection, setSelection] = useState(
     setType === 'POI' ? 'site_selection_extract' : 'terrestrial_plant_observation'
@@ -46,6 +48,7 @@ const ExcelExporter = (props) => {
     <>
       <Tooltip title="CSV Export">
         <Button
+          disabled={!mapState?.CanTriggerCSV}
           onClick={() =>
             dispatch({
               type: RECORD_SET_TO_EXCEL_REQUEST,
