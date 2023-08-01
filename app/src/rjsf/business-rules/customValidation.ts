@@ -34,7 +34,8 @@ export function validatorForActivity(activity, linkedActivity): rjsfValidator {
     getVegTransectPointsPercentCoverValidator(),
     getJurisdictionPercentValidator(),
     getInvasivePlantsValidator(linkedActivity),
-    getPlotIdentificationTreesValidator(activity.activity_subtype)
+    getPlotIdentificationTreesValidator(activity.activity_subtype),
+    accessDescriptionMinChars()
   ]);
 }
 
@@ -896,6 +897,21 @@ export function getTreatedAreaValidator(): rjsfValidator {
       }
     });
 
+    return errors;
+  };
+}
+
+// Validate access description length
+export function accessDescriptionMinChars(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_data || !formData.activity_data.access_description) {
+      return errors;
+    }
+    if (formData && formData.activity_data.access_description && formData.activity_data.access_description.length < 5) {
+      errors.activity_data.access_description.addError(
+        'If there is an access description it must be 5 or more characters long.'
+      );
+    }
     return errors;
   };
 }

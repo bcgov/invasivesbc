@@ -88,8 +88,7 @@ export const BasicInformation = [
     .lengthRange(5, 2000)
     .build(),
   new TemplateColumnBuilder('Basic - Access Description', 'text', 'form_data.activity_data.access_description')
-    .isRequired()
-    .lengthRange(5, 2000)
+    .lengthRange(0, 2000)
     .build()
 ];
 
