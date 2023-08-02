@@ -105,10 +105,10 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       }, 14);
     } else if (isPoint && geo) {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
-      setHighlightedMarkerLtLng(centerOfGeo);
+      setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
       map.flyTo({
-        lat: centerOfGeo[1],
-        lng: centerOfGeo[0] - 0.01
+        lat: centerOfGeo[1] - 0.01,
+        lng: centerOfGeo[0]
       }, 14);
     } else return;
   }, [

@@ -1,8 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
 import { Box, Button, Table, TableBody, TableCell, TableRow, Theme } from "@mui/material";
-import { createStyles, withStyles } from "@mui/styles";
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import { MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY, MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI, WHATS_HERE_SORT_FILTER_UPDATE } from "state/actions";
 import { selectAuth } from "state/reducers/auth";
@@ -149,7 +147,6 @@ export const RenderTablePosition = ({ rows }) => {
 
 
 export const RenderTableActivity = (props: any) => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
@@ -159,7 +156,8 @@ export const RenderTableActivity = (props: any) => {
     dispatch({
       type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
       payload: {
-        id: params.value,
+        id: params.row.id,
+        short_id: params.value
       }
     });
   }
@@ -230,7 +228,7 @@ export const RenderTableActivity = (props: any) => {
     }
   ];
 
-  const activityPage = async (params) => {
+  const highlightActivity = async (params) => {
     const id = params.row.id;
     const short_id = params.row.short_id;
     dispatch({
@@ -240,14 +238,11 @@ export const RenderTableActivity = (props: any) => {
         id: id
       }
     });
-    history.push({ pathname: `/home/activity` });
-  };
-
-  const highlightActivity = async (params) => {
     dispatch({
       type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
       payload: {
-        id: params?.row?.short_id
+        id: params?.row?.id,
+        short_id: params?.row?.short_id
       }
     });
     // activityPage(params);
@@ -272,7 +267,6 @@ export const RenderTableActivity = (props: any) => {
             headerHeight={30}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
-                // activityPage(params);
                 highlightActivity(params);
               } else {
                 // errorContext.pushError({
@@ -296,7 +290,6 @@ export const RenderTableActivity = (props: any) => {
 
 export const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
-  const history = useHistory();
   const { authenticated, roles } = useSelector(selectAuth);
   const mapState = useSelector(selectMap);
   // const errorContext = useContext(ErrorContext);
@@ -370,12 +363,18 @@ export const RenderTablePOI = (props: any) => {
 
     const highlightPOI = async (params) => {
       dispatch({
+        type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+        payload: {
+          description: 'IAPP-' + params.id,
+          id: params.id
+        }
+      });
+      dispatch({
         type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
         payload: {
           id: params?.id
         }
       });
-      // activityPage(params);
     }
 
   return (
@@ -394,15 +393,8 @@ export const RenderTablePOI = (props: any) => {
               dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'IAPP', field: c.field}})
             })}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-              // dispatch({
-              //   type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-              //   payload: {
-              //     description: 'IAPP-' + params.id,
-              //     id: params.id
-              //   }
-              // });
+
               if (authenticated && roles.length > 0) {
-                // history.push(`/home/iapp/`);
                 highlightPOI(params);
               } else {
                 // errorContext.pushError({

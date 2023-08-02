@@ -50,6 +50,19 @@ export const WhatsHereTable = (props) => {
     });
   };
 
+  const goToRecord = () => {
+    const id = mapState?.whatsHere?.highlightedURLID;
+    // if (authenticated && roles.length > 0) {
+      // }
+    if (mapState?.whatsHere?.highlightedType === "Activity") {
+      history.push(`/Records/Activity:${id}/form`);
+      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
+    } else if (mapState?.whatsHere?.highlightedType === "IAPP") {
+      history.push(`/Records/IAPP:${id}/form`);
+      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
+    }
+  }
+
   return (
     <>
       {mapState?.whatsHere?.section ? (
@@ -60,6 +73,17 @@ export const WhatsHereTable = (props) => {
             <Grid item>
               <Button onClick={popupOnClose}>Close</Button>
             </Grid>
+            {mapState?.whatsHere?.highlightedACTIVITY || mapState?.whatsHere?.highlightedIAPP ? 
+            <Button onClick={goToRecord}>
+              {`Open ${mapState?.whatsHere?.highlightedType} record: ${
+                mapState?.whatsHere?.highlightedType === "IAPP" ? 
+                  mapState?.whatsHere?.highlightedIAPP
+                  :
+                  mapState?.whatsHere?.highlightedACTIVITY}
+              `}
+            </Button>
+            :
+            <></>}
           </Grid>
           <TableContainer className="whatshere-position">
             <RenderTablePosition rows={utmRows} />

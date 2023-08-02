@@ -116,7 +116,8 @@ class MapState {
       IAPPIDs: [],
       ActivityIDs: [],
       limit: 5,
-      page: 0
+      page: 0,
+      highlightedType: null
     };
   }
 }
@@ -272,6 +273,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
+            highlightedType: 'IAPP',
+            highlightedURLID: action.payload.id,
             highlightedIAPP: action.payload.id,
             highlightedACTIVITY: null,
             highlightedGeo: state?.whatsHere?.iappRows.filter((row) => {
@@ -285,10 +288,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           whatsHere: {
             ...state.whatsHere,
+            highlightedType: 'Activity',
+            highlightedURLID: action.payload.id,
             highlightedIAPP: null,
-            highlightedACTIVITY: action.payload.id,
+            highlightedACTIVITY: action.payload.short_id,
             highlightedGeo: state?.whatsHere?.activityRows.filter((row) => {
-              return row.short_id === action.payload.id;
+              return row.short_id === action.payload.short_id;
             })[0]
           }
         };
