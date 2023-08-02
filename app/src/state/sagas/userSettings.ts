@@ -301,8 +301,10 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
     const recordsExpanded = recordsExpandedState ? recordsExpandedState : false;
 
-    yield put({ type: GET_API_DOC_REQUEST });
-    yield take(GET_API_DOC_SUCCESS);
+    if (authState.authenticated) {
+      yield put({ type: GET_API_DOC_REQUEST });
+      yield take(GET_API_DOC_SUCCESS);
+    }
 
     yield put({
       type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,

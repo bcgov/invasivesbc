@@ -15,6 +15,7 @@ import { createTrainingVideosReducer } from "./training_videos";
 import { createEmailSettingsReducer } from './emailSettings';
 import { createEmailTemplatesReducer } from './emailTemplates';
 import { createBatchReducer } from './batch';
+import { createPublicMapReducer } from "./public_map";
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -31,6 +32,7 @@ function createRootReducer(config: AppConfig) {
     TrainingVideos: createTrainingVideosReducer(),
     EmailSettings: createEmailSettingsReducer(),
     EmailTemplates: createEmailTemplatesReducer(),
+    PublicMap: createPublicMapReducer(config)
   });
 }
 

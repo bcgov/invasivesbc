@@ -48,7 +48,6 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
       }
     ];
 
-    /*
     if (!showLoggedInTabs) {
       tabConfig.push({
         label: 'Map',
@@ -56,7 +55,6 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
         icon: TabIconName.Map
       });
     }
-    */
 
     if (showLoggedInTabs) {
       tabConfig.push(
@@ -122,7 +120,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
 function* handle_TABS_SET_ACTIVE_TAB_REQUEST(action) {
   try {
     const tabs = yield select(selectTabs);
-    const mapState = yield select(selectMap)
+    const mapState = yield select(selectMap);
     if (tabs.initialized) {
       yield localStorage.setItem('TABS_CURRENT_TAB', action.payload.activeTab.toString());
       yield console.log('tabs', tabs);
