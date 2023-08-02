@@ -42,7 +42,9 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     );
   }
 
-  if (searchCriteria.site_id_only) {
+  if (searchCriteria.isGeoJSON) {
+    sqlStatement.append(SQL`SELECT i.geojson `);
+  } else if (searchCriteria.site_id_only) {
     sqlStatement.append(SQL`SELECT i.site_id `);
   } else if (searchCriteria.isCSV && searchCriteria.isIAPP) {
     sqlStatement.append(SQL`SELECT pe.* `);
