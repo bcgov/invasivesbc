@@ -1272,11 +1272,42 @@ export async function InvasivesAPI_Callback(method, endpoint, payloadData?, opti
   return { data, status, url };
 }
 
+export function* InvasivesAPI_Public_Call(method, endpoint, payloadData?, additionalHeaders?) {
+  // get config and request setup from store
+  const config = yield select(selectConfiguration);
+  const options = {
+    baseUrl: config.API_BASE,
+    headers: { 'Access-Control-Allow-Origin': '*' }
+  };
+
+  if (method === 'GET') {
+    const { data, status, url } = yield Http.request({
+      method: method,
+      headers: { ...options.headers, ...additionalHeaders },
+      url: options.baseUrl + endpoint,
+      params: {
+        query: JSON.stringify(payloadData)
+      }
+    });
+
+    return { data, status, url };
+  } else {
+    throw new Error('Write operations not supported for unauthenticated users');
+  }
+}
+
 export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?) {
   // get config and request setup from store
+  const { authenticated } = yield select(state => state.Auth);
+
+  if (!authenticated) {
+    throw new Error("The user is not authenticated. This call cannot proceed.");
+  }
+
   const requestOptions = yield select(selectAuthHeaders);
   const config = yield select(selectConfiguration);
   const options = getRequestOptions(config, requestOptions);
+
 
   //this is a bit of a hack. this whole function needs a rewrite
   if (method === 'GET') {

@@ -83,9 +83,11 @@ export class PointOfInterestSearchCriteria {
 
 
   //for use in csv endpoint
-  isCSV?: boolean
+  isCSV?: boolean;
   CSVType?: string;
-  
+
+  isGeoJSON: boolean;
+
   pointOfInterest_type: string;
   pointOfInterest_subtype: string;
   iappType: string;
@@ -151,6 +153,8 @@ export class PointOfInterestSearchCriteria {
     this.jurisdiction = obj.jurisdiction || [];
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];
+
+    this.isGeoJSON = false;
   }
 
   setPage(page: number): number {
