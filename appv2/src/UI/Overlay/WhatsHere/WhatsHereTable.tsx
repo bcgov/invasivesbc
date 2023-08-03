@@ -54,6 +54,7 @@ export const WhatsHereTable = (props) => {
     const id = mapState?.whatsHere?.highlightedURLID;
     // if (authenticated && roles.length > 0) {
       // }
+    // authentication is needed eventually
     if (mapState?.whatsHere?.highlightedType === "Activity") {
       history.push(`/Records/Activity:${id}/form`);
       dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
@@ -69,6 +70,16 @@ export const WhatsHereTable = (props) => {
         <div
           id="whatsherepopup"
           className="whatshere-table">
+          <Grid container justifyContent="center">
+            <BottomNavigation
+              value={mapState?.whatsHere?.section}
+              onChange={handleChange}>
+              <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
+              <BottomNavigationAction value="invasivesbc" label="InvasivesBC" icon={<FolderIcon />} />
+              {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
+              <BottomNavigationAction value="iapp" label="IAPP" icon={<AdjustIcon />} />
+            </BottomNavigation>
+          </Grid>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
               <Button variant="outlined" onClick={popupOnClose}>Close</Button>
@@ -93,16 +104,6 @@ export const WhatsHereTable = (props) => {
             {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
             <RenderTablePOI />
           </TableContainer>
-          <Grid container justifyContent="center">
-            <BottomNavigation
-              value={mapState?.whatsHere?.section}
-              onChange={handleChange}>
-              <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-              <BottomNavigationAction value="invasivesbc" label="InvasivesBC" icon={<FolderIcon />} />
-              {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
-              <BottomNavigationAction value="iapp" label="IAPP" icon={<AdjustIcon />} />
-            </BottomNavigation>
-          </Grid>
 
         </div>
       ) : (
