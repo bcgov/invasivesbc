@@ -12,6 +12,10 @@ export const BoundaryLayerDisplayForRecordSetToggle: React.FC<any> = (props) => 
   const userSettingsState = useSelector(selectUserSettings);
 
   useEffect(() => {
+    if(!userSettingsState?.recordSets || !userSettingsState?.boundaries)
+    {
+      return;
+    }
     const recordSetsAsArray = Object.keys(userSettingsState?.recordSets).map((key) => {
       return userSettingsState.recordSets[key];
     });
