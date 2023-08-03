@@ -13,18 +13,18 @@ export const ExtentListener = (props) => {
   const map = useMapEvent('moveend', (e) => {
     const zoom = map.getZoom();
     const center = map.getCenter();
-    if(zoom && center)
+    if(zoom && center && tab?.label)
     {
-      dispatch({ type: MAIN_MAP_MOVE, payload: { zoom: zoom, center: center, tab: tab.label } });
+      dispatch({ type: MAIN_MAP_MOVE, payload: { zoom: zoom, center: center, tab: tab?.label } });
     }
   });
 
   useEffect(()=> {
     const zoom = map.getZoom();
     const center = map.getCenter();
-    if(zoom && center)
+    if(zoom && center && tab?.label)
     {
-      dispatch({ type: MAIN_MAP_MOVE, payload: { zoom: zoom, center: center, tab: tab.label } });
+      dispatch({ type: MAIN_MAP_MOVE, payload: { zoom: zoom, center: center, tab: tab?.label } });
     }
 
   },[])
