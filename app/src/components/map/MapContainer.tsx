@@ -186,19 +186,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
   const activityState = useSelector(selectActivity);
   const IappsiteState = useSelector(selectIappsite);
+  const tabsState = useSelector(selectTabs);
+  const mapState = useSelector(selectMap);
 
   const [showWhatsHere, setShowWhatsHere] = useState(true);
 
   useEffect(() => {
-    if (props.isPublicMode) {
+
+    if (props.isPublicMode){
       setShowWhatsHere(false);
-    }
-    if (!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity')) {
+    } 
+    if (!tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') && !props.isPublicMode) {
       setShowWhatsHere(true);
     }
-    setShowWhatsHere(false);
+    if (tabsState?.tabConfig[tabsState.activeTab]?.path.includes('activity') && !props.isPublicMode) {
+      setShowWhatsHere(false);
+    }
 
-  });
+  },[props.isPublicMode, JSON.stringify(tabsState?.tabConfig[tabsState.activeTab]?.path)]);
 
   useEffect(() => {
     if (props.setMapForActivityPage) {
@@ -234,10 +239,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       map.flyTo([userSettingsState?.mapCenter[1], userSettingsState?.mapCenter[0]]);
   }, [userSettingsState?.mapCenter]);
 
-  const tabsState = useSelector(selectTabs);
-  const mapState = useSelector(selectMap);
 
   return (
+    <>{tabsState?.tabConfig? 
     <ReactLeafletEditable
       ref={editRef}
       map={map}
@@ -390,6 +394,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </FlyToAndFadeContextProvider>
       </ReactLeafletMapContainer>
     </ReactLeafletEditable>
+    : <></> } </>
   );
 };
 
