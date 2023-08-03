@@ -2,15 +2,3 @@
   margin: 1rem;
   padding: 1rem;
 }
-
-.whatshere-position {
-  /* width: 100%; */
-}
-
-.whatshere-position::tbody {
-  /* width: 100%; */
-}
-
-.whatshere-position::td {
-  /* padding: 3rem; */
-}

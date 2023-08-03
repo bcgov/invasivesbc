@@ -251,7 +251,7 @@ export const RenderTableActivity = (props: any) => {
   return (
     <>
       {mapState?.whatsHere?.section === "invasivesbc" ? 
-        <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '25vh', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
             rows={mapState?.whatsHere?.activityRows}
@@ -380,7 +380,7 @@ export const RenderTablePOI = (props: any) => {
   return (
     <>
       {mapState?.whatsHere?.section === "iapp" ? 
-        <div style={{ height: 300, minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '25vh', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
             rows={mapState?.whatsHere?.iappRows}

@@ -69,19 +69,21 @@ export const WhatsHereTable = (props) => {
         <div
           id="whatsherepopup"
           className="whatshere-table">
-          <Grid container justifyContent="center">
+          <Grid container spacing={2} justifyContent="center">
             <Grid item>
-              <Button onClick={popupOnClose}>Close</Button>
+              <Button variant="outlined" onClick={popupOnClose}>Close</Button>
             </Grid>
             {mapState?.whatsHere?.highlightedACTIVITY || mapState?.whatsHere?.highlightedIAPP ? 
-            <Button onClick={goToRecord}>
-              {`Open ${mapState?.whatsHere?.highlightedType} record: ${
-                mapState?.whatsHere?.highlightedType === "IAPP" ? 
-                  mapState?.whatsHere?.highlightedIAPP
-                  :
-                  mapState?.whatsHere?.highlightedACTIVITY}
-              `}
-            </Button>
+            <Grid item>
+              <Button variant="contained" onClick={goToRecord}>
+                {`Open ${mapState?.whatsHere?.highlightedType} record: ${
+                  mapState?.whatsHere?.highlightedType === "IAPP" ? 
+                    mapState?.whatsHere?.highlightedIAPP
+                    :
+                    mapState?.whatsHere?.highlightedACTIVITY}
+                `}
+              </Button>
+            </Grid>
             :
             <></>}
           </Grid>
