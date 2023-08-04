@@ -27,11 +27,19 @@
 }
 
 .record_sets_header_new_set_button {
+<<<<<<< HEAD
   margin-left: auto;
 
 }
 .record_sets_header_close_button {
   margin-right: auto;
+=======
+  margin-right: auto;
+
+}
+.record_sets_header_close_button {
+  margin-left: auto;
+>>>>>>> 51785448 (top level activities page components done and working - table next)
 }
 
 
@@ -48,7 +56,10 @@
   height: 100%;
   font-size: small;
   overflow-y: hidden;
+<<<<<<< HEAD
 /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
+=======
+>>>>>>> 51785448 (top level activities page components done and working - table next)
 
 }
 
