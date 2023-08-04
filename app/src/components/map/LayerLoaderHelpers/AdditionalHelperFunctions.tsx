@@ -1,7 +1,6 @@
-import booleanOverlap from '@turf/boolean-overlap';
 import booleanContains from '@turf/boolean-contains';
+import booleanOverlap from '@turf/boolean-overlap';
 import { query, QueryType } from 'contexts/DatabaseContext';
-import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 
 export const getStyleForLayerFeature = (feature: any, layerStyles: any, opacity: number): any => {
   let style = {};
