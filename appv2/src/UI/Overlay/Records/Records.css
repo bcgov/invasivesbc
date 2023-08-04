@@ -3,13 +3,71 @@
   width: 100%;
 }
 
-.records__set {
-  height: 100px;
+.records_set {
+  height: 30px;
   width: 100%;
+  display: flex;
+  flex-direction: row;
   border-style: dotted;
   border-width: 1px;
   border-color: green;
   background-color: #fff;
+  color: black;
+  overflow: auto
+}
+.record_sets_header {
+  height: 40px;
+  width: 100%;
+  background-color:  #333;
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.record_sets_header_new_set_button {
+  margin-right: auto;
+
+}
+.record_sets_header_close_button {
+  margin-left: auto;
+}
+
+
+.records_set_left_hand_items{
+  height: 100%;
+
+  width:25%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+
+}
+.records_set_name {
+  height: 100%;
+  font-size: small;
+  overflow-y: hidden;
+
+}
+
+.records_set_name_edit {
+  padding-left: 5px;
+
+  height: 50px;
+}
+
+.records_set_right_hand_items{
+  height: 100%;
+  display: flex;
+  width: 75%;
+  flex-direction: row;
+  justify-content: right;
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+}
+.records_set_layer_colour {
 }
 
 .record {

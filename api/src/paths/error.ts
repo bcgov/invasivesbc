@@ -66,7 +66,7 @@ function errorLog(): RequestHandler {
     defaultLog.debug({
       label: 'error',
       message: 'client error',
-      body: req.body,
+     // body: req.body,
       namespace: 'error'
     });
 
