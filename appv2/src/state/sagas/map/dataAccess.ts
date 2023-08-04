@@ -168,11 +168,13 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   let unfilteredRecordSetIDs = [];
 
   Object.keys(currentMapState?.layers).map((id) => {
-    if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
-      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs)
+    if (
+      currentMapState.layers?.[id].type === 'POI'
+      // && currentMapState.layers?.[id].layerState.mapToggle
+    ) {
+      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs);
     }
   });
-
 
   const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
     return featureFilteredIDS.includes(id);
@@ -180,9 +182,9 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
-  
+
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0} });
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0 } });
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
@@ -209,7 +211,10 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 
   let unfilteredRecordSetIDs = [];
   Object.keys(currentMapState?.layers).map((id) => {
-    if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
+    if (
+      currentMapState.layers?.[id].type === 'Activity'
+      //&& currentMapState.layers?.[id].layerState.mapToggle
+    ) {
       unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
     }
   });
