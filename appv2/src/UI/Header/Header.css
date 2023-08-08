@@ -1,20 +1,20 @@
 
 .HeaderBar {
-    display: flex;
     height: 5vh;
     width: 100vw;
     background-color: #333;
-    position: fixed;
+    /*position: fixed;*/
     z-index: 2147483646;
-    top: 0;
-    left: 0;
+    /*top: 0;
+    left: 0;*/
     color: white;
     align-items: center;
+  overflow: hidden;
   }
 
 .LoginButton {
     align-items: center;
-    right: 0;
+    right: 1;
     position: fixed;
     margin-right: 10px;
 }

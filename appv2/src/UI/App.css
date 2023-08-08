@@ -3,9 +3,19 @@ body {
 }
 
 .App {
+  height: 100%;
+  width: 100%;
   text-align: center;
   margin: 0px;
+  /* flex-direction: column;*/
   display: flex;
+  flex: 1;
   flex-direction: column;
+  flex-wrap: wrap;
   max-width: 100%;
+  overflow: hidden;
+}
+
+.Map {
+  flex: 1;
 }

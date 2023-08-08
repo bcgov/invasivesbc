@@ -1,11 +1,11 @@
-
 .FooterBar {
-    height: 5vh;
-    width: 100vw;
-    background-color: #333;
-    position: fixed;
+  height: 5vh;
+  width: 100vw;
+  background-color: #333;
+  /*    position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 2147483646;
-  
-  }
+    */
+  z-index: 2147483646;
+  overflow: hidden;
+}

@@ -7,6 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useHistory } from 'react-router';
 import Accordion from '@mui/material/Accordion';
 import { AccordionSummary } from '@mui/material';
+import { RecordTable } from './RecordTable';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
@@ -32,6 +33,7 @@ export const RecordSet = (props) => {
     default:
       return (
         <div className="recordSet_container">
+          <div className="stickyHeader">
           <div
             className="recordSet_header"
             style={{ backgroundColor: userSettingsState?.recordSets?.[props.setId]?.color }}>
@@ -51,8 +53,8 @@ export const RecordSet = (props) => {
               </Button>
             </div>
           </div>
-          <Accordion>
-          <AccordionSummary>Filters: 5</AccordionSummary>
+          <Accordion >
+          <AccordionSummary className="recordSet_filter_accordion_collapsed">Filters: 5</AccordionSummary>
           <div className="recordSet_filters_container">
             <div className="recordSet_filters">
               {
@@ -84,6 +86,8 @@ export const RecordSet = (props) => {
             </div>
           </div>
           </Accordion>
+          </div>
+            <RecordTable setId={props.setId} />
         </div>
       );
   }
