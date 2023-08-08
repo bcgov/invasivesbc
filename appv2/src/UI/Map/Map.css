@@ -2,9 +2,7 @@
     height: 90vh;
     width: 100vw;
     background-color: #ccc;
-    position: absolute;
-    top: 5vh;
-    left: 0;
+  overflow: hidden;
 }
   
   .map__leaflet {

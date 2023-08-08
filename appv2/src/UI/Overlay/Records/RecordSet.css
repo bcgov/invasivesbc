@@ -1,0 +1,74 @@
+.recordSet_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column
+}
+
+.recordSet_header {
+  height: 5vh;
+  width: 100%;
+  top: 0;
+  background-color: #333;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.stickyHeader {
+  position: sticky;
+  top: 0;
+
+}
+
+
+.recordSet_header_name {
+  font-size: large;
+  font-weight: bold;
+  color: white;
+  width: auto;
+}
+
+.recordSet_back_button {
+  margin-right: auto;
+}
+.recordSet_menu_button {
+  width: auto;
+}
+.recordSet_new_filter_button {
+  margin-left: auto;
+}
+
+.recordSet_filters_container {
+  padding-top: 10px;
+  display: flex;
+  position: sticky;
+  justify-content: center;
+  align-items: center;
+}
+
+.recordSet_filters {
+  position: sticky;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.recordSet_filter {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+}
+
+.recordSet_filter_operator {
+}
+
+.recordSet_filter_type {
+  padding-left: 2vw;
+}
+
+.recordSet_filter_name {
+  padding-left: 2vw;
+}

@@ -44,7 +44,7 @@ const IAPPCanvasLayerMemo = (props) => {
           points={filteredFeatures()}
           enabled={mapState.layers[props.layerKey].layerState.mapToggle}
           colour={mapState.layers[props.layerKey].layerState.color}
-          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
+          zIndex={100000 + mapState.layers[props.layerKey].layerState.drawOrder}
         />
       );
     } else return <></>;

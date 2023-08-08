@@ -16,6 +16,7 @@ import Overlay from './Overlay/Overlay';
 import { Records } from './Overlay/Records/Records';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { ActivityGeo } from './Map/ActivityGeo';
+import { RecordSet } from './Overlay/Records/RecordSet';
 
 
 const App: React.FC = () => {
@@ -26,14 +27,13 @@ const App: React.FC = () => {
   const ref = useRef(0);
 
   // State for the overlay 
+
   const toggleOverlayCallback = () => {
     dispatch({ type: TOGGLE_PANEL });
     if (targetURL === "/WhatsHere") {
-      history.goBack();
       dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
     }
     if (targetURL === "/Legend") {
-      history.goBack();
       dispatch({type: MAP_TOGGLE_LEGENDS});
     }
   };
@@ -68,20 +68,11 @@ const App: React.FC = () => {
         />
         <ButtonContainer></ButtonContainer>
         <Route path="/Records/Activity:id" component={ActivityGeo} />
-        <Route
-          path="/other"
-          render={(props) => (
-            <Button
-              onClick={() => {
-                console.log('banana');
-              }}    
-            />
-          )}    
-        />
       </Map>
       <Overlay showOverlay={toggled}>
         <Route path="/Landing" component={LandingComponent} />
-        <Route path="/Records" component={Records} />
+        <Route exact={true} path="/Records" component={Records} />
+        <Route exact={true} path="/Records/List/Local:id" render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />} />
         <Route path="/Legend" component={LegendsPopup} />
         <Route path="/WhatsHere" component={WhatsHereTable} />
       </Overlay>
