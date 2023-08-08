@@ -94,22 +94,35 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     const geo = mapState?.whatsHere?.highlightedGeo;
 
     const isPoint = isIAPP || geo?.geometry?.type === 'Point' ? true : false;
+    const area = geo?.reported_area;
+    let addedZoom = 0;
+    let latOffset = 0.004
+    if (area < 10000) {
+      addedZoom = 3;
+      latOffset = 0.0005;
+    } else if (area < 50000) {
+      addedZoom = 2;
+      latOffset = 0.001;
+    } else if (area < 250000) {
+      addedZoom = 1;
+      latOffset = 0.002;
+    }
 
     if (!isPoint && geo) {
       setHighlightedGeo({ ...geo });
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng(centerOfGeo);
       map.flyTo({
-        lat: centerOfGeo[1] - 0.01,
+        lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]
-      }, 14);
+      }, 15 + addedZoom);
     } else if (isPoint && geo) {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
       map.flyTo({
-        lat: centerOfGeo[1] - 0.01,
+        lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]
-      }, 14);
+      }, (15 + addedZoom));
     } else return;
   }, [
     mapState?.whatsHere?.highlightedIAPP,
