@@ -168,10 +168,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   let unfilteredRecordSetIDs = [];
 
   Object.keys(currentMapState?.layers).map((id) => {
-    if (
-      currentMapState.layers?.[id].type === 'POI'
-      // && currentMapState.layers?.[id].layerState.mapToggle
-    ) {
+    if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
       largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs);
     }
   });
@@ -211,10 +208,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 
   let unfilteredRecordSetIDs = [];
   Object.keys(currentMapState?.layers).map((id) => {
-    if (
-      currentMapState.layers?.[id].type === 'Activity'
-      //&& currentMapState.layers?.[id].layerState.mapToggle
-    ) {
+    if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
     }
   });
