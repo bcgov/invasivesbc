@@ -18,6 +18,7 @@ import {
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { Activity } from './Record';
 import './Records.css';
+import { OverlayHeader } from '../OverlayHeader';
 
 export const Records = (props) => {
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
@@ -36,12 +37,6 @@ export const Records = (props) => {
         recordSetType: isPOI ? 'POI' : 'Activity'
       }
     });
-  };
-
-  const onClickClose = (e) => {
-    e.stopPropagation();
-    dispatch({ type: 'TOGGLE_PANEL' });
-    history.push('/');
   };
 
   //Record set on click handlers:
@@ -119,19 +114,13 @@ export const Records = (props) => {
         render={(props) =>
           userSettingsState?.recordSets ? (
             <>
-              <div className="record_sets_header">
-                <div className="record_sets_header_close_button">
-                  <Button variant="contained" onClick={onClickClose}>
-                    Close
-                  </Button>
-                </div>
-
+              <OverlayHeader>
                 <div className="record_sets_header_new_set_button">
                   <Button variant="contained" onClick={(e) => onClickCreateRecordSet(false, e)}>
                     + Add List / Layer
                   </Button>
                 </div>
-              </div>
+              </OverlayHeader>
               {Object.keys(userSettingsState?.recordSets)?.map((set) => {
                 return (
                   <div
