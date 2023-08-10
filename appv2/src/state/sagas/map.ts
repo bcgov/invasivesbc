@@ -270,7 +270,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     [],
     //action.payload.recordSets[2].gridFilters,
     0,
-    999
+    100000
   );
 
   const IAPP_filter = yield getSearchCriteriaFromFilters(
