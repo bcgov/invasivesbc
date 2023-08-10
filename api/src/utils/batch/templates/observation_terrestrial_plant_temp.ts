@@ -25,7 +25,9 @@ ObservationTerrestrialPlantTemp.columns = [
     'Observation - Pre-treatment observation?',
     'tristate',
     'form_data.activity_type_data.pre_treatment_observation'
-  ).build(),
+  )
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Observation - Terrestrial - Soil Texture',
     'codeReference',
