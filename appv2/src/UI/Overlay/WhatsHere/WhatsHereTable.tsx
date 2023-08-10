@@ -4,9 +4,8 @@ import center from "@turf/center";
 
 import { useSelector } from "util/use_selector";
 import { selectMap } from "state/reducers/map";
-import { selectUserSettings } from "state/reducers/userSettings";
 import { calc_utm } from "util/utm";
-import { BottomNavigation, BottomNavigationAction, Button, Grid, TableContainer } from "@mui/material";
+import { Button, Grid, Tab, TableContainer, Tabs } from "@mui/material";
 import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from "util/WhatsHereTableHelpers";
 import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from "state/actions";
 
@@ -16,6 +15,7 @@ import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useHistory } from "react-router";
+import { OverlayHeader } from "../OverlayHeader";
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -65,50 +65,47 @@ export const WhatsHereTable = (props) => {
   }
 
   return (
-    <>
+    <div className="whatshere-container">
+      <OverlayHeader closeCallback={popupOnClose}></OverlayHeader>
       {mapState?.whatsHere?.section ? (
-        <div
-          id="whatsherepopup"
-          className="whatshere-table">
-          <Grid container justifyContent="center">
-            <BottomNavigation
-              value={mapState?.whatsHere?.section}
-              onChange={handleChange}>
-              <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-              <BottomNavigationAction value="invasivesbc" label="InvasivesBC" icon={<FolderIcon />} />
-              {/*<BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />*/}
-              <BottomNavigationAction value="iapp" label="IAPP" icon={<AdjustIcon />} />
-            </BottomNavigation>
-          </Grid>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <Button variant="outlined" onClick={popupOnClose}>Close</Button>
+        <div className="whatshere-table-container">
+          <div
+            id="whatsherepopup"
+            className="whatshere-table">
+            <Grid container justifyContent="center" sx={{mb: 2, pb: 1}}>
+              <Tabs value={mapState?.whatsHere?.section} onChange={handleChange} centered>
+                <Tab value="position" label="" icon={<LocationOnIcon />} />
+                <Tab value="invasivesbc" label="" icon={<FolderIcon />} />
+                {/* value="databc" label="Data BC" icon={<StorageIcon />} */}
+                <Tab value="iapp" label="" icon={<AdjustIcon />} />
+              </Tabs>
             </Grid>
-            {mapState?.whatsHere?.highlightedACTIVITY || mapState?.whatsHere?.highlightedIAPP ? 
-            <Grid item>
-              <Button variant="contained" onClick={goToRecord}>
-                {`Open ${mapState?.whatsHere?.highlightedType} record: ${
-                  mapState?.whatsHere?.highlightedType === "IAPP" ? 
-                    mapState?.whatsHere?.highlightedIAPP
-                    :
-                    mapState?.whatsHere?.highlightedACTIVITY}
-                `}
-              </Button>
+            <Grid container spacing={2} justifyContent="center">
+              {mapState?.whatsHere?.highlightedACTIVITY || mapState?.whatsHere?.highlightedIAPP ? 
+              <Grid item>
+                <Button variant="contained" onClick={goToRecord}>
+                  {`Open ${mapState?.whatsHere?.highlightedType} record: ${
+                    mapState?.whatsHere?.highlightedType === "IAPP" ? 
+                      mapState?.whatsHere?.highlightedIAPP
+                      :
+                      mapState?.whatsHere?.highlightedACTIVITY}
+                  `}
+                </Button>
+              </Grid>
+              :
+              <></>}
             </Grid>
-            :
-            <></>}
-          </Grid>
-          <TableContainer className="whatshere-position">
-            <RenderTablePosition rows={utmRows} />
-            <RenderTableActivity />
-            {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
-            <RenderTablePOI />
-          </TableContainer>
-
+            <TableContainer className="whatshere-position">
+              <RenderTablePosition rows={utmRows} />
+              <RenderTableActivity />
+              {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
+              <RenderTablePOI />
+            </TableContainer>
+          </div>
         </div>
       ) : (
         <></>
       )}
-    </>
+    </div>
   );
 };
