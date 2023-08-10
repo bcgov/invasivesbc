@@ -9,6 +9,7 @@ import './LegendsPopup.css';
 
 import invbclogo from "/assets/InvasivesBC_Icon.svg";
 import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from "state/actions";
+import { OverlayHeader } from "../OverlayHeader";
 
 export const LegendsPopup = (props) => {
 
@@ -42,8 +43,6 @@ export const LegendsPopup = (props) => {
           id="legendspopup"
           style={{
             position: 'fixed',
-            padding: 20,
-            borderRadius: 20,
             top: 0,
             left: 0,
             backgroundColor: 'white',
@@ -52,7 +51,7 @@ export const LegendsPopup = (props) => {
             overflow: 'auto',
             zIndex: 1000000
           }}>
-          <Button onClick={goBack}>Go Back</Button>
+          <OverlayHeader closeCallback={goBack}></OverlayHeader>
           <div className="py-3">
             <div className="container" style={{ textAlign: 'center' }}>
             <img
