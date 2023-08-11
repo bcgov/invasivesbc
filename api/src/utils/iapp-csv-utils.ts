@@ -13,7 +13,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['site_created_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -21,7 +21,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['survey_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -29,7 +29,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['treatment_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -37,7 +37,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['monitoring_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -45,7 +45,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['collection_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -53,7 +53,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['inspection_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
@@ -61,7 +61,7 @@ export const mapSitesRowsToCSV = async (response: any, templateName: string) => 
       fieldFormatMap['last_surveyed_date'] = (value) => {
         if (value === null) {
             return '';
-        } 
+        }
         const justDate = typeof value === 'string'? value : value.toISOString()
         const date = format(parseISO(justDate), 'yyyy-MM-dd');
         return date;
