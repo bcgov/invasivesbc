@@ -1,18 +1,18 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {SQLStatement} from 'sql-template-strings';
-import {ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON} from '../constants/misc';
-import {getDBConnection} from '../database/db';
-import {ActivitySearchCriteria} from '../models/activity';
-import {getActivitiesSQL, deleteActivitiesSQL} from '../queries/activity-queries';
-import {getLogger} from '../utils/logger';
-import {InvasivesRequest} from '../utils/auth-utils';
-import {createHash} from 'crypto';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { SQLStatement } from 'sql-template-strings';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import { ActivitySearchCriteria } from '../models/activity';
+import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
+import { getLogger } from '../utils/logger';
+import { InvasivesRequest } from '../utils/auth-utils';
+import { createHash } from 'crypto';
 import cacheService from '../utils/cache/cache-service';
-import {mapSitesRowsToCSV} from '../utils/iapp-csv-utils';
-import {versionedKey} from "../utils/cache/cache-utils";
+import { versionedKey } from "../utils/cache/cache-utils";
+import { streamActivitiesResult, streamIAPPResult } from '../utils/iapp-json-utils';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = "Activities - Fat";
@@ -145,7 +145,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const criteria = JSON.parse(<string>req.query['query']);
 
-    defaultLog.debug({label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria});
+    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
 
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
@@ -153,7 +153,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const isAuth = req.authContext?.user !== null ? true : false;
     const user_role = (req as any).authContext?.roles?.[0]?.role_id;
     if (user_role) {
-      const user_roles = Array.from({length: user_role}, (_, i) => i + 1);
+      const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
       sanitizedSearchCriteria.user_roles = user_roles;
     }
 
@@ -169,10 +169,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const connection = await getDBConnection();
     if (!connection) {
-      defaultLog.error({label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria});
+      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
       return res
         .status(503)
-        .json({message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503});
+        .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
     }
 
     // we'll send it later, overriding cache headers as appropriate
@@ -181,101 +181,109 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     // server-side cache
     const cache = cacheService.getCache(CACHENAME);
 
-    // check the cache tag to see if, perhaps, the user already has the latest
-    try {
-      const cacheQueryResult = await connection.query(
-        `select updated_at
-         from cache_versions
-         where cache_name = $1`,
-        ['activity']
-      );
-      const cacheVersion = cacheQueryResult.rows[0].updated_at;
+    if (!sanitizedSearchCriteria.isCSV) {
 
-      // because we have parameters and user roles, the actual resource cache tag is
-      // tuple: (cacheVersion, parameters, roleName)
-      // hash it for brevity and to obscure the real modification date
+      // check the cache tag to see if, perhaps, the user already has the latest
+      try {
+        const cacheQueryResult = await connection.query(
+          `select updated_at
+           from cache_versions
+           where cache_name = $1`,
+          ['activity']
+        );
+        const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
-      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
+        // because we have parameters and user roles, the actual resource cache tag is
+        // tuple: (cacheVersion, parameters, roleName)
+        // hash it for brevity and to obscure the real modification date
 
-      ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+        const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
 
-      // ok, see if we got a conditional request
-      const ifNoneMatch = req.header('If-None-Match');
-      if (ifNoneMatch && ifNoneMatch === ETag) {
-        // great, we can shortcut this request.
-        connection.release();
-        return res.status(304).send({}); //not-modified
-      }
+        ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
-      // we computed ok, so make sure we send it
-      responseCacheHeaders['ETag'] = ETag;
-      responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
-
-      // check server-side cache
-      const cachedResult = await cache.get(ETag);
-      if (cachedResult) {
-        // hit! send this one and save some db traffic
-        connection.release();
-        return res.status(200).set(responseCacheHeaders).json(cachedResult);
-      }
-    } catch (e) {
-      const message = (e === undefined) ? 'undefined' : e.message
-      defaultLog.warn(
-        {
-          message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
-          error: message
+        // ok, see if we got a conditional request
+        const ifNoneMatch = req.header('If-None-Match');
+        if (ifNoneMatch && ifNoneMatch === ETag) {
+          // great, we can shortcut this request.
+          connection.release();
+          return res.status(304).send({}); //not-modified
         }
-      );
+
+        // we computed ok, so make sure we send it
+        responseCacheHeaders['ETag'] = ETag;
+        responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
+
+        // check server-side cache
+        const cachedResult = await cache.get(ETag);
+        if (cachedResult) {
+          // hit! send this one and save some db traffic
+          connection.release();
+          return res.status(200).set(responseCacheHeaders).json(cachedResult);
+        }
+      } catch (e) {
+        const message = (e === undefined) ? 'undefined' : e.message;
+        defaultLog.warn(
+          {
+            message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+            error: message
+          }
+        );
+      }
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
+      if (sanitizedSearchCriteria.isCSV) {
+        res.status(200)
+        await streamActivitiesResult(sanitizedSearchCriteria, res);
+      } else {
+        const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
 
-      if (!sqlStatement) {
-        return res
-          .status(500)
-          .json({message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500});
-      }
+        if (!sqlStatement) {
+          return res
+            .status(500)
+            .json({
+              message: 'Unable to generate SQL statement',
+              request: criteria,
+              namespace: 'activities',
+              code: 500
+            });
+        }
 
-      // needs to be mutable
-      let response = await connection.query(sqlStatement.text, sqlStatement.values);
-      if (!isAuth) {
-        if (response.rows.length > 0) {
-          // remove sensitive data from json obj
-          for (var i in response.rows) {
-            response.rows[i].activity_payload.created_by = null;
-            response.rows[i].activity_payload.updated_by = null;
-            response.rows[i].activity_payload.reviewed_by = null;
-            response.rows[i].activity_payload.user_role = [];
-            if (response.rows[i].activity_payload.form_data.activity_type_data) {
-              response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+        // needs to be mutable
+        let response = await connection.query(sqlStatement.text, sqlStatement.values);
+        if (!isAuth) {
+          if (response.rows.length > 0) {
+            // remove sensitive data from json obj
+            for (var i in response.rows) {
+              response.rows[i].activity_payload.created_by = null;
+              response.rows[i].activity_payload.updated_by = null;
+              response.rows[i].activity_payload.reviewed_by = null;
+              response.rows[i].activity_payload.user_role = [];
+              if (response.rows[i].activity_payload.form_data.activity_type_data) {
+                response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+              }
             }
           }
         }
-      }
 
-      const responseBody = {
-        message: 'Got activities by search filter criteria',
-        request: criteria,
-        result: response.rows,
-        count: response.rowCount,
-        namespace: 'activities',
-        code: 200
-      };
+        const responseBody = {
+          message: 'Got activities by search filter criteria',
+          request: criteria,
+          result: response.rows,
+          count: response.rowCount,
+          namespace: 'activities',
+          code: 200
+        };
 
-      if (ETag !== null) {
-        // save for later;
-        await cache.put(ETag, responseBody);
-      }
+        if (ETag !== null && responseBody.result.length < 200) {
+          // save for later;
+          await cache.put(ETag, responseBody);
+        }
 
-      if (sanitizedSearchCriteria.isCSV) {
-        const responseCSV = response.rowCount > 0 ? await mapSitesRowsToCSV(response, sanitizedSearchCriteria.CSVType) : [];
-        return res.status(200).set(responseCacheHeaders).contentType('text/csv').set('Content-Disposition', 'attachment; filename="export.csv"').send(responseCSV as unknown as string);
-      } else {
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      defaultLog.debug({label: 'getActivitiesBySearchFilterCriteria', message: 'error', error});
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error,
@@ -295,13 +303,13 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({label: 'activity', message: 'deleteActivitiesByIds', body: req.body});
+    defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria({
       keycloakToken: req.keycloakToken
     });
 
-    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18)
+    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18);
     const preferred_username = req.authContext.preferredUsername;
     const ids = Object.values(req.query.id) as string[];
     sanitizedSearchCriteria.activity_ids = ids;
@@ -310,7 +318,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!connection) {
       return res
         .status(503)
-        .json({message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503});
+        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
     }
 
     if (isAdmin === false) {
@@ -319,7 +327,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500});
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -341,7 +349,7 @@ function deleteActivitiesByIds(): RequestHandler {
     if (!ids || !ids.length) {
       return res
         .status(400)
-        .json({message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400});
+        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
     }
 
     try {
@@ -350,7 +358,7 @@ function deleteActivitiesByIds(): RequestHandler {
       if (!sqlStatement) {
         return res
           .status(500)
-          .json({message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500});
+          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
       }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -364,10 +372,10 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({label: 'deleteActivitiesByIds', message: 'error', error});
+      defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
       return res
         .status(500)
-        .json({message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500});
+        .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
     } finally {
       connection.release();
     }

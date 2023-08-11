@@ -1,7 +1,6 @@
 import { speciesRefSql } from '../queries/species_ref';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
 import { getLogger } from './logger';
 import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
@@ -11,7 +10,9 @@ import {
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
-import { mapSitesRowsToCSV } from './iapp-csv-utils';
+import { generateSitesCSV } from './iapp-csv-utils';
+import Cursor from 'pg-cursor';
+import { getActivitiesSQL } from '../queries/activity-queries';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -354,27 +355,57 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   }
 };
 
-export const getIAPPsites = async (searchCriteria: any) => {
-  let connection;
-  try {
-    connection = await getDBConnection();
-  } catch (e) {
-    throw {
-      message: 'Error connecting to database',
-      code: 500,
-      namespace: 'iapp-json-utils'
-    };
-  }
+export async function streamActivitiesResult(searchCriteria: any, res: any) {
+  const connection = await getDBConnection();
 
-  if (!connection) {
+  const sqlStatement: SQLStatement = getActivitiesSQL(searchCriteria, false, true);
+
+  if (!sqlStatement) {
     throw {
-      code: 503,
-      message: 'Failed to establish database connection',
+      code: 400,
+      message: 'Failed to build SQL statement',
       namespace: 'iapp-json-utils'
     };
   }
 
   try {
+    res.contentType('text/csv')
+      .setHeader('Content-Disposition', 'attachment; filename="export.csv"')
+      .setHeader('transfer-encoding', 'chunked');
+
+
+    const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
+
+    const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
+    for await (const row of generatedRows) {
+      res.write(row);
+    }
+  } finally {
+    res.end();
+    connection.release();
+  }
+}
+
+export const streamIAPPResult = async (searchCriteria: any, res: any) => {
+    let connection;
+    try {
+      connection = await getDBConnection();
+    } catch (e) {
+      throw {
+        message: 'Error connecting to database',
+        code: 500,
+        namespace: 'iapp-json-utils'
+      };
+    }
+
+    if (!connection) {
+      throw {
+        code: 503,
+        message: 'Failed to establish database connection',
+        namespace: 'iapp-json-utils'
+      };
+    }
+
     const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(searchCriteria);
 
     if (!sqlStatement) {
@@ -385,27 +416,50 @@ export const getIAPPsites = async (searchCriteria: any) => {
       };
     }
 
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    try {
+      if (searchCriteria.isCSV) {
+        res.contentType('text/csv')
+          .setHeader('Content-Disposition', 'attachment; filename="export.csv"')
+          .setHeader('transfer-encoding', 'chunked');
 
-    if (searchCriteria.isCSV && searchCriteria.isIAPP) {
-      var returnVal1 = response.rowCount > 0 ? await mapSitesRowsToCSV(response, searchCriteria.CSVType) : [];
-      return returnVal1;
-    } else {
-      var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+        const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
 
-      return {
-        rows: returnVal2,
-        count: returnVal2.length
-      };
+        const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
+        for await (const row of generatedRows) {
+          res.write(row);
+        }
+
+      } else {
+        try {
+          const response = await connection.query(sqlStatement.text, sqlStatement.values);
+          var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+          res.write(
+            JSON.stringify({
+              message: 'Got points of interest by search filter criteria',
+              request: searchCriteria,
+              result: {
+                rows: returnVal2
+              },
+              count: returnVal2.length,
+              namespace: 'points-of-interest',
+              code: 200
+            })
+          );
+        } catch (error) {
+          defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
+          throw {
+            code: 500,
+            message: 'Failed to get IAPP sites',
+            namespace: 'iapp-json-utils'
+          };
+        }
+      }
+    } finally {
+      res.end();
+      connection.release();
     }
-  } catch (error) {
-    defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed to get IAPP sites',
-      namespace: 'iapp-json-utils'
-    };
-  } finally {
-    connection.release();
   }
-};
+;

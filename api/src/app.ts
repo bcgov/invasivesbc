@@ -107,8 +107,13 @@ initialize({
       message: 'unexpected error',
       error: error?.message + error?.stack || error
     });
+    if (!res.headersSent) {
+      // streaming responses cannot alter headers after dispatch
+      res.status(error.status || error.code || 500).json(error);
+    } else {
 
-    res.status(error.status || error.code || 500).json(error);
+    }
+
   }
 });
 
