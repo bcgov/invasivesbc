@@ -15,9 +15,13 @@ const Tab = (props: any) => {
   const dispatch = useDispatch();
   const panelState = useSelector((state: any) => state.AppMode?.panelOpen);
 
-
   return (
-    <div className="Tab" onClick={() => {history.push(props.path); if(props.panelOpen && !panelState) dispatch({type: TOGGLE_PANEL})}}>
+    <div
+      className="Tab"
+      onClick={() => {
+        history.push(props.path);
+        if (props.panelOpen && !panelState) dispatch({ type: TOGGLE_PANEL });
+      }}>
       <div className="Tab__Content">{props.children}</div>
       <div className="Tab__Label">{props.label}</div>
       <Route path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
@@ -66,18 +70,23 @@ export const Header: React.FC = () => {
     );
   };
 
-  return <div className="HeaderBar">
-    
-    
-    <ButtonWrapper>
-      <Tab path="/Records" label="Records" panelOpen={true} panelFullScreen={false}>
-        <ManageSearchIcon/>
-      </Tab>
-    
-      <Tab path={"/Records/Activity:" + userSettingsState?.activeActivity} label="Current Activity" panelOpen={true} panelFullScreen={false}>
-        <AssignmentIcon/>
-      </Tab>
-    </ButtonWrapper>
-    
-    {authState.authenticated ? <LogoutButton /> : <LoginButton />}</div>;
+  return (
+    <div className="HeaderBar">
+      <ButtonWrapper>
+        <Tab path="/Records" label="Records" panelOpen={true} panelFullScreen={false}>
+          <ManageSearchIcon />
+        </Tab>
+
+        <Tab
+          path={'/Records/Activity:' + userSettingsState?.activeActivity}
+          label="Current Activity"
+          panelOpen={true}
+          panelFullScreen={false}>
+          <AssignmentIcon />
+        </Tab>
+
+        {authState.authenticated ? <LogoutButton /> : <LoginButton />}
+      </ButtonWrapper>
+    </div>
+  );
 };
