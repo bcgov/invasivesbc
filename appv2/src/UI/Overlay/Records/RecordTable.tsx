@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordTable.css';
-import { getUnnestedFieldsForActivity } from './RecordTableHelpers';
+import { getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP } from './RecordTableHelpers';
 
 
 export const RecordTableHeader = (props) => {
@@ -106,8 +106,67 @@ export const RecordTable = (props) => {
     }
   ];
 
+  const iappColumnsToDisplay = [
+    {
+      key: 'point_of_interest_id',
+      name: 'Site ID'
+    },
+    {
+      key: 'paper_file_id',
+      name: 'Site Paper File ID'
+    },
+    {
+      key: 'jurisdictions',
+      name: 'Jurisdictions'
+    },
+    {
+      key: 'date_created',
+      name: 'Site Create Date'
+    },
+    {
+      key: 'species_on_site',
+      name: 'Invasive Plants'
+    },
+    {
+      key: 'date_last_surveyed',
+      name: 'Last Surveyed Date'
+    },
+    {
+      key: 'agencies',
+      name: 'Agencies'
+    },
+    {
+      key: 'bio_release',
+      name: 'Biocontrol Release'
+    },
+    {
+      key: 'chem_treatment',
+      name: 'Chemical Treatment'
+    },
+    {
+      key: 'mech_treatment',
+      name: 'Mechanical Treatment'
+    },
+    {
+      key: 'bio_dispersal',
+      name: 'Biocontrol Dispersal'
+    },
+    {
+      key: 'monitored',
+      name: 'Monitored'
+    },
+    {
+      key: 'regional_district',
+      name: 'Regional District'
+    },
+    {
+      key: 'regional_invasive_species_organization',
+      name: 'Regional Invasive Species Organization'
+    }
+  ];
+
   const mappedRows = unmappedRows?.map((row) => {
-    let unnestedRow = getUnnestedFieldsForActivity(row); 
+    let unnestedRow = tableType === "Activity" ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row); 
     let mappedRow = {};
     Object.keys(unnestedRow).forEach((key) => {
         mappedRow[key] = unnestedRow[key];
@@ -120,26 +179,50 @@ export const RecordTable = (props) => {
     <div className="record_table_container">
       <table className="record_table">
         <tr className="record_table_header">
-          {activityColumnsToDisplay.map((col: any, i) => {
-            return (
-              <th
-                className="record_table_header_column"
-                key={i}>
-                {col.name}
-              </th>
-            );
-          })}
+          {
+            tableType === "Activity" ?
+              activityColumnsToDisplay.map((col: any, i) => {
+                return (
+                  <th
+                    className="record_table_header_column"
+                    key={i}>
+                    {col.name}
+                  </th>
+                );
+              })
+            :
+              iappColumnsToDisplay.map((col: any, i) => {
+                return (
+                  <th
+                    className="record_table_header_column"
+                    key={i}>
+                    {col.name}
+                  </th>
+                );
+              })
+          }
         </tr>
         {mappedRows?.map((row, i) => {
           return (
             <tr className="record_table_row" key={i}>
-              {activityColumnsToDisplay.map((col, j) => {
-                return (
-                  <td className="record_table_row_column" key={j}>
-                    {JSON.stringify(row[col.key])}
-                  </td>
-                );
-              })}
+              {
+                tableType === "Activity" ?
+                  activityColumnsToDisplay.map((col, j) => {
+                    return (
+                      <td className="record_table_row_column" key={j}>
+                        {JSON.stringify(row[col.key])}
+                      </td>
+                    );
+                  })
+                :
+                  iappColumnsToDisplay.map((col, j) => {
+                    return (
+                      <td className="record_table_row_column" key={j}>
+                        {JSON.stringify(row[col.key])}
+                      </td>
+                    );
+                  })
+              }
             </tr>
           );
         })}
