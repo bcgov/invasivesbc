@@ -9,8 +9,30 @@
     left: 0;*/
     color: white;
     align-items: center;
-  overflow: hidden;
   }
+
+
+.ButtonWrapper {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.Tab{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.Tab__Label {
+    font-size: small;
+
+}
+
+.Tab__Content {
+
+}
 
 .LoginButton {
     align-items: center;
