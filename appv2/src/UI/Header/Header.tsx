@@ -25,7 +25,7 @@ const Tab = (props: any) => {
       }}>
       <div className="Tab__Content">{props.children}</div>
       <div className="Tab__Label">{props.label}</div>
-      <Route path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
+      <Route exact={true} path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
     </div>
   );
 };
