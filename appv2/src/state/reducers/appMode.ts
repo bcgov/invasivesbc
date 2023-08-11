@@ -26,8 +26,10 @@ export default function appMode(state = initialState, action: any) {
     case TOGGLE_PANEL:
       return {
         ...state,
-        panelOpen: !state.panelOpen,
+        panelOpen: action.payload.panelOpen !== null?  action.payload.panelOpen: !state.panelOpen,
+        panelFullScreen: action.payload.fullScreen !== null? action.payload.fullScreen: false
       }
+    
     case URL_CHANGE:
       return {
         ...state,

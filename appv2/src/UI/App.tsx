@@ -51,6 +51,7 @@ const App: React.FC = () => {
 
 
   const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
+  const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
 
   return (
     <div className="App">
@@ -69,7 +70,7 @@ const App: React.FC = () => {
         <ButtonContainer></ButtonContainer>
         <Route path="/Records/Activity:id" component={ActivityGeo} />
       </Map>
-      <Overlay showOverlay={toggled}>
+      <Overlay showOverlay={toggled} fullScreen={fullScreen} >
         <Route path="/Landing" component={LandingComponent} />
         <Route exact={true} path="/Records" component={Records} />
         <Route exact={true} path="/Records/List/Local:id" render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />} />

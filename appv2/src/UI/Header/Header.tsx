@@ -21,7 +21,7 @@ const Tab = (props: any) => {
       className="Tab"
       onClick={() => {
         history.push(props.path);
-        if (props.panelOpen && !panelState) dispatch({ type: TOGGLE_PANEL });
+        dispatch({ type: TOGGLE_PANEL, payload: { panelOpen: props.panelOpen, fullScreen: props.panelFullScreen } });
       }}>
       <div className="Tab__Content">{props.children}</div>
       <div className="Tab__Label">{props.label}</div>
@@ -74,11 +74,7 @@ export const Header: React.FC = () => {
   return (
     <div className="HeaderBar">
       <ButtonWrapper>
-        <Tab
-          path={'/Landing'}
-          label="Home"
-          panelOpen={true}
-          panelFullScreen={false}>
+        <Tab path={'/Landing'} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
         </Tab>
 
@@ -86,11 +82,7 @@ export const Header: React.FC = () => {
           <ManageSearchIcon />
         </Tab>
 
-        <Tab
-          path={'/Training'}
-          label="Training"
-          panelOpen={true}
-          panelFullScreen={false}>
+        <Tab path={'/Training'} label="Training" panelOpen={true} panelFullScreen={false}>
           <School />
         </Tab>
 
@@ -107,39 +99,24 @@ export const Header: React.FC = () => {
           label="Current IAPP"
           panelOpen={true}
           panelFullScreen={false}>
-          <img
-            alt="iapp logo"
-            src={'/assets/iapp_logo.gif'}
-            style={{ maxWidth: '1rem', marginBottom: '0px' }}
-          />
+          <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
         </Tab>
 
-        <Tab
-          path={'/Batch'}
-          label="Batch"
-          panelOpen={true}
-          panelFullScreen={false}>
+        <Tab path={'/Batch'} label="Batch" panelOpen={true} panelFullScreen={false}>
           <FileUpload />
         </Tab>
 
-        <Tab
-          path={'/Reports'}
-          label="Reports"
-          panelOpen={true}
-          panelFullScreen={false}>
+        <Tab path={'/Reports'} label="Reports" panelOpen={true} panelFullScreen={false}>
           <Assessment />
         </Tab>
 
-        {authState.roles.find((role) => role.role_id === 18) ?
-          <Tab
-            path={'/Admin'}
-            label="Admin"
-            panelOpen={true}
-            panelFullScreen={false}>
+        {authState.roles.find((role) => role.role_id === 18) ? (
+          <Tab path={'/Admin'} label="Admin" panelOpen={true} panelFullScreen={false}>
             <AdminPanelSettings />
-          </Tab> :
+          </Tab>
+        ) : (
           <></>
-        }
+        )}
 
         {authState.authenticated ? <LogoutButton /> : <LoginButton />}
       </ButtonWrapper>

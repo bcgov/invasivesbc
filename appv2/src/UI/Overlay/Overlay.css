@@ -17,3 +17,10 @@
     display: flex;
     overflow-y: visible;;
   }
+
+.map__overlay--show-fullscreen {
+    height: 100%;
+    transform: translateY(-5vh);
+    display: flex;
+    overflow-y: visible;;
+}
