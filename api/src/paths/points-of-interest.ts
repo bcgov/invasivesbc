@@ -1,20 +1,18 @@
 'use strict';
 
-import { RequestHandler, response } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getIAPPsites } from '../utils/iapp-json-utils';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
+import { streamIAPPResult } from '../utils/iapp-json-utils';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
-import cacheService from '../utils/cache/cache-service';
-import { createHash } from 'crypto';
 import { versionedKey } from '../utils/cache/cache-utils';
+import { createHash } from 'crypto';
 
 const defaultLog = getLogger('point-of-interest');
-const CACHENAME = 'POI - Fat';
 
 export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
@@ -23,10 +21,10 @@ GET.apiDoc = {
   tags: ['point-of-interest'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -83,6 +81,7 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
+
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({
@@ -108,90 +107,68 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
     defaultLog.debug({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
-    const connection = await getDBConnection();
 
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: criteria,
-        namespace: 'points-of-interest',
-        code: 503
-      });
-    }
-
-    // we'll send it later, overriding cache headers as appropriate
     const responseCacheHeaders = {};
     let ETag = null;
-    // server-side cache
-    const cache = cacheService.getCache(CACHENAME);
-
     // check the cache tag to see if, perhaps, the user already has the latest
-    try {
-      const cacheQueryResult = await connection.query(
-        `select updated_at
-         from cache_versions
-         where cache_name = $1`,
-        [isIAPPrelated(sanitizedSearchCriteria) ? 'iapp_site_summary' : 'activity']
-      );
-      const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
-      // because we have parameters and user roles, the actual resource cache tag is
-      // tuple: (cacheVersion, parameters)
-      // hash it for brevity and to obscure the real modification date
+    // do not check cache for CSV files
+    if (!(isIAPPrelated(sanitizedSearchCriteria) && sanitizedSearchCriteria.isCSV)) {
+      const cacheCheckConnection = await getDBConnection();
 
-      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(sanitizedSearchCriteria)}`);
+      try {
+        const cacheQueryResult = await cacheCheckConnection.query(
+          `select updated_at
+           from cache_versions
+           where cache_name = $1`,
+          [isIAPPrelated(sanitizedSearchCriteria) ? 'iapp_site_summary' : 'activity']
+        );
+        const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
-      ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+        // because we have parameters and user roles, the actual resource cache tag is
+        // tuple: (cacheVersion, parameters)
+        // hash it for brevity and to obscure the real modification date
 
-      // ok, see if we got a conditional request
-      const ifNoneMatch = req.header('If-None-Match');
-      if (ifNoneMatch && ifNoneMatch == ETag) {
-        // great, we can shortcut this request.
-        connection.release();
-        return res.status(304).send({}); //not-modified
+        const cacheTagStr = versionedKey(`POI ${cacheVersion} ${JSON.stringify(sanitizedSearchCriteria)}`);
+
+        ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+
+        // ok, see if we got a conditional request
+        const ifNoneMatch = req.header('If-None-Match');
+        if (ifNoneMatch && ifNoneMatch == ETag) {
+          // great, we can shortcut this request.
+          return res.status(304).send({}); //not-modified
+        }
+
+        // we computed ok, so make sure we send it
+        responseCacheHeaders['ETag'] = ETag;
+        responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
+
+        res.set(responseCacheHeaders);
+
+      } finally {
+        cacheCheckConnection.release();
       }
-
-      // we computed ok, so make sure we send it
-      responseCacheHeaders['ETag'] = ETag;
-      responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
-
-      // check server-side cache
-      const cachedResult = await cache.get(ETag);
-      if (cachedResult) {
-        // hit! send this one and save some db traffic
-        connection.release();
-        return res.status(200).set(responseCacheHeaders).json(cachedResult);
-      }
-    } catch (e) {
-      const message = e.message || e;
-      defaultLog.warn({
-        message:
-          'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
-        error: message
-      });
     }
 
-    try {
-      if (isIAPPrelated(sanitizedSearchCriteria)) {
-        const responseSurveyExtract = await getIAPPsites(sanitizedSearchCriteria);
+    if (isIAPPrelated(sanitizedSearchCriteria)) {
+      res.status(200);
+      await streamIAPPResult(sanitizedSearchCriteria, res);
+    } else {
+      const connection = await getDBConnection();
 
-        const responseBody = { message: 'Got IAPP sites', result: responseSurveyExtract, code: 200 };
 
-        if (ETag !== null) {
-          // save for later;
-          await cache.put(ETag, responseBody);
-        }
-        if (sanitizedSearchCriteria.isCSV) {
-          return res
-            .status(200)
-            .set(responseCacheHeaders)
-            .contentType('text/csv')
-            .set('Content-Disposition', 'attachment; filename="export.csv"')
-            .send((responseSurveyExtract as unknown) as string);
-        } else {
-          return res.status(200).set(responseCacheHeaders).json(responseBody);
-        }
-      } else {
+
+      if (!connection) {
+        return res.status(503).json({
+          message: 'Database connection unavailable.',
+          request: criteria,
+          namespace: 'points-of-interest',
+          code: 503
+        });
+      }
+
+      try {
         const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 
         if (!sqlStatement) {
@@ -220,25 +197,21 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           code: 200
         };
 
-        if (ETag !== null) {
-          // save for later;
-          await cache.put(ETag, responseBody);
-        }
+        return res.status(200).json(responseBody);
 
-        return res.status(200).set(responseCacheHeaders).json(responseBody);
+      } catch (error) {
+        const message = error.message || error;
+        defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error: message });
+        return res.status(500).json({
+          message: 'Failed to get points of interest by search filter criteria',
+          request: criteria,
+          error: error,
+          namespace: 'points-of-interest',
+          code: 500
+        });
+      } finally {
+        connection.release();
       }
-    } catch (error) {
-      const message = error.message || error;
-      defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error: message });
-      return res.status(500).json({
-        message: 'Failed to get points of interest by search filter criteria',
-        request: criteria,
-        error: error,
-        namespace: 'points-of-interest',
-        code: 500
-      });
-    } finally {
-      connection.release();
     }
   };
 }

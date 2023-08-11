@@ -11,9 +11,8 @@ import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService from '../utils/cache/cache-service';
-import { mapSingleRowToCSV, mapSitesRowsToCSV } from '../utils/iapp-csv-utils';
 import { versionedKey } from "../utils/cache/cache-utils";
-import Cursor from 'pg-cursor';
+import { streamActivitiesResult, streamIAPPResult } from '../utils/iapp-json-utils';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = "Activities - Fat";
@@ -137,47 +136,6 @@ DELETE.apiDoc = {
   }
 };
 
-function _sanitizeRow(isAuth, row) {
-  const sanitized = { ...row };
-
-  sanitized.activity_payload.created_by = null;
-  sanitized.activity_payload.updated_by = null;
-  sanitized.activity_payload.reviewed_by = null;
-  sanitized.activity_payload.user_role = [];
-  if (sanitized.activity_payload?.form_data?.activity_type_data) {
-    sanitized.activity_payload.form_data.activity_type_data.activity_persons = [];
-  }
-  return sanitized;
-}
-
-
-async function _handleStreamingCSVResponse(isAuth, response, cursor, CSVType) {
-
-  response
-    .status(200)
-    .contentType('text/csv')
-    .set('Content-Disposition', 'attachment; filename="export.csv"');
-
-
-  while (true) {
-    const rows = await cursor.read(10);
-    if (rows.length === 0) {
-      break;
-    }
-
-    rows.forEach((row) => {
-      try {
-        const csvRow = mapSingleRowToCSV(_sanitizeRow(isAuth, row), CSVType);
-        response.write(csvRow);
-      } catch (e) {
-        defaultLog.error({ error: e });
-        response.write('Error processing row\r\n');
-      }
-    });
-  }
-  response.end();
-}
-
 /**
  * Fetches all activity records based on request search filter criteria.
  *
@@ -223,92 +181,109 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     // server-side cache
     const cache = cacheService.getCache(CACHENAME);
 
-    // check the cache tag to see if, perhaps, the user already has the latest
-    try {
-      const cacheQueryResult = await connection.query(
-        `select updated_at
-         from cache_versions
-         where cache_name = $1`,
-        ['activity']
-      );
-      const cacheVersion = cacheQueryResult.rows[0].updated_at;
+    if (!sanitizedSearchCriteria.isCSV) {
 
-      // because we have parameters and user roles, the actual resource cache tag is
-      // tuple: (cacheVersion, parameters, roleName)
-      // hash it for brevity and to obscure the real modification date
+      // check the cache tag to see if, perhaps, the user already has the latest
+      try {
+        const cacheQueryResult = await connection.query(
+          `select updated_at
+           from cache_versions
+           where cache_name = $1`,
+          ['activity']
+        );
+        const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
-      const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
+        // because we have parameters and user roles, the actual resource cache tag is
+        // tuple: (cacheVersion, parameters, roleName)
+        // hash it for brevity and to obscure the real modification date
 
-      ETag = createHash('sha1').update(cacheTagStr).digest('hex');
+        const cacheTagStr = versionedKey(`${CACHENAME} ${cacheVersion} ${JSON.stringify(criteria)} ${roleName}`);
 
-      // ok, see if we got a conditional request
-      const ifNoneMatch = req.header('If-None-Match');
-      if (ifNoneMatch && ifNoneMatch === ETag) {
-        // great, we can shortcut this request.
-        connection.release();
-        return res.status(304).send({}); //not-modified
-      }
+        ETag = createHash('sha1').update(cacheTagStr).digest('hex');
 
-      // we computed ok, so make sure we send it
-      responseCacheHeaders['ETag'] = ETag;
-      responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
-
-      // check server-side cache
-      const cachedResult = await cache.get(ETag);
-      if (cachedResult) {
-        // hit! send this one and save some db traffic
-        connection.release();
-        return res.status(200).set(responseCacheHeaders).json(cachedResult);
-      }
-    } catch (e) {
-      const message = (e === undefined) ? 'undefined' : e.message;
-      defaultLog.warn(
-        {
-          message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
-          error: message
+        // ok, see if we got a conditional request
+        const ifNoneMatch = req.header('If-None-Match');
+        if (ifNoneMatch && ifNoneMatch === ETag) {
+          // great, we can shortcut this request.
+          connection.release();
+          return res.status(304).send({}); //not-modified
         }
-      );
+
+        // we computed ok, so make sure we send it
+        responseCacheHeaders['ETag'] = ETag;
+        responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
+
+        // check server-side cache
+        const cachedResult = await cache.get(ETag);
+        if (cachedResult) {
+          // hit! send this one and save some db traffic
+          connection.release();
+          return res.status(200).set(responseCacheHeaders).json(cachedResult);
+        }
+      } catch (e) {
+        const message = (e === undefined) ? 'undefined' : e.message;
+        defaultLog.warn(
+          {
+            message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+            error: message
+          }
+        );
+      }
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
-
-      if (!sqlStatement) {
-        return res
-          .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: criteria, namespace: 'activities', code: 500 });
-      }
-
       if (sanitizedSearchCriteria.isCSV) {
-        const resultSetCursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
-
-        return await _handleStreamingCSVResponse(
-          isAuth,
-          res,
-          resultSetCursor,
-          sanitizedSearchCriteria.CSVType
-        );
-
+        res.status(200)
+        await streamActivitiesResult(sanitizedSearchCriteria, res);
       } else {
-        const resultSet = await connection.query(sqlStatement.text, sqlStatement.values);
+        const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
+
+        if (!sqlStatement) {
+          return res
+            .status(500)
+            .json({
+              message: 'Unable to generate SQL statement',
+              request: criteria,
+              namespace: 'activities',
+              code: 500
+            });
+        }
+
+        // needs to be mutable
+        let response = await connection.query(sqlStatement.text, sqlStatement.values);
+        if (!isAuth) {
+          if (response.rows.length > 0) {
+            // remove sensitive data from json obj
+            for (var i in response.rows) {
+              response.rows[i].activity_payload.created_by = null;
+              response.rows[i].activity_payload.updated_by = null;
+              response.rows[i].activity_payload.reviewed_by = null;
+              response.rows[i].activity_payload.user_role = [];
+              if (response.rows[i].activity_payload.form_data.activity_type_data) {
+                response.rows[i].activity_payload.form_data.activity_type_data.activity_persons = [];
+              }
+            }
+          }
+        }
 
         const responseBody = {
           message: 'Got activities by search filter criteria',
           request: criteria,
-          result: resultSet.rows.map((r) => _sanitizeRow(isAuth, r)),
-          count: resultSet.rowCount,
+          result: response.rows,
+          count: response.rowCount,
           namespace: 'activities',
           code: 200
         };
 
-        if (ETag !== null) {
+        if (ETag !== null && responseBody.result.length < 200) {
           // save for later;
           await cache.put(ETag, responseBody);
         }
+
         return res.status(200).set(responseCacheHeaders).json(responseBody);
       }
     } catch (error) {
-      defaultLog.error({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting activities by search filter criteria',
         error,

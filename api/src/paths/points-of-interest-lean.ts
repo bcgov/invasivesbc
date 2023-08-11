@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getIAPPsites, getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from '../utils/iapp-json-utils';
+import { getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from '../utils/iapp-json-utils';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
