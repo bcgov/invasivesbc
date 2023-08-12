@@ -1,5 +1,5 @@
 import { Button, StepIcon } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useLocation } from 'react-router-dom';
 import { selectMap } from 'state/reducers/map';
@@ -18,27 +18,11 @@ import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { ActivityGeo } from './Map/ActivityGeo';
 import { RecordSet } from './Overlay/Records/RecordSet';
 
-
-const App: React.FC = () => {
+const URL_LISTENER = (props) => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const history = useHistory();
-  const targetURL = useSelector((state: any) => state.AppMode?.url);
   const ref = useRef(0);
 
-  // State for the overlay 
-
-  const toggleOverlayCallback = () => {
-    dispatch({ type: TOGGLE_PANEL });
-    if (targetURL === "/WhatsHere") {
-      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
-    }
-    if (targetURL === "/Legend") {
-      dispatch({type: MAP_TOGGLE_LEGENDS});
-    }
-  };
-
-
+  const targetURL = useSelector((state: any) => state.AppMode?.url);
   // URL listener so that the auth saga can redirect to the correct page
   useEffect(() => {
     if (location.pathname !== targetURL && ref.current === 0) {
@@ -49,33 +33,53 @@ const App: React.FC = () => {
     }
   }, [location.pathname]);
 
+  return null;
+};
 
+const URL_ListenerMemo = React.memo((props: any) => {
+  return <URL_LISTENER />;
+}
+)
+
+
+const App: React.FC = () => {
   const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
 
+  const OverlayContentMemo = React.memo((props: any) => {
+    return (
+      <>
+        <Route path="/Landing" render={(props) => <LandingComponent />} />
+        <Route exact={true} path="/Records" render={(props) => <Records />} />
+        <Route
+          exact={true}
+          path="/Records/List/Local:id"
+          render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />}
+        />
+        <Route path="/Legend" render={(props) => <LegendsPopup />} />
+        <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
+      </>
+    );
+  });
+
+  const HeaderMemo = React.memo((props: any) => {
+    return <Header />;
+  })
+
+  const MapMemo = React.memo((props: any) => {
+    return <Map className="Map">
+        <ButtonContainer></ButtonContainer>
+        <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
+      </Map>
+  })
+
   return (
     <div className="App">
-      <Header />
-      <Map className="Map">
-        <Route
-          path="*"
-          render={(props) => (
-            <MapControls
-              className="MapControls"
-              showOverlay={toggled}
-              toggleShowOverlay={toggleOverlayCallback}
-            />
-          )}
-        />
-        <ButtonContainer></ButtonContainer>
-        <Route path="/Records/Activity:id" component={ActivityGeo} />
-      </Map>
-      <Overlay showOverlay={toggled} fullScreen={fullScreen} >
-        <Route path="/Landing" component={LandingComponent} />
-        <Route exact={true} path="/Records" component={Records} />
-        <Route exact={true} path="/Records/List/Local:id" render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />} />
-        <Route path="/Legend" component={LegendsPopup} />
-        <Route path="/WhatsHere" component={WhatsHereTable} />
+      <URL_ListenerMemo />
+      <HeaderMemo />
+      <MapMemo/>
+      <Overlay showOverlay={toggled} fullScreen={fullScreen}>
+        <OverlayContentMemo />
       </Overlay>
       <Footer />
     </div>

@@ -14,7 +14,6 @@ import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/i
 const Tab = (props: any) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const panelState = useSelector((state: any) => state.AppMode?.panelOpen);
 
   return (
     <div
