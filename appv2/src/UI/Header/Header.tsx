@@ -9,6 +9,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { Route, useHistory } from 'react-router';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
 
 const Tab = (props: any) => {
@@ -115,10 +116,6 @@ export const Header: React.FC = () => {
           <ManageSearchIcon />
         </Tab>
 
-        <Tab path={'/Training'} label="Training" loggedInOnly={false} panelOpen={true} panelFullScreen={false}>
-          <School />
-        </Tab>
-
         <Tab
           path={'/Records/Activity:' + userSettingsState?.activeActivity}
           label="Current Activity"
@@ -137,16 +134,24 @@ export const Header: React.FC = () => {
           <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
         </Tab>
 
-        <Tab path={'/Batch'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
+        <Tab path={'/Batch'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <FileUpload />
         </Tab>
 
-        <Tab path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
+        <Tab path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <Assessment />
         </Tab>
 
+        <Tab path={'/Training'} label="Training" loggedInOnly={false} panelOpen={true} panelFullScreen={true}>
+          <School />
+        </Tab>
+
+        <Tab path={'/Legend'} label="Map Legend" loggedInOnly={false} panelOpen={true} panelFullScreen={true}>
+          <InfoIcon />
+        </Tab>
+
         {authState.roles.find((role) => role.role_id === 18) ? (
-          <Tab path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={false}>
+          <Tab path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
             <AdminPanelSettings />
           </Tab>
         ) : (
