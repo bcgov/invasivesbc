@@ -14,18 +14,52 @@ import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/i
 const Tab = (props: any) => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const authState = useSelector(selectAuth);
+
+  const [canDisplay, setCanDisplay] = React.useState(false);
+
+  React.useEffect(() => {
+    if (props.loggedInOnly && !authState?.authenticated) {
+      setCanDisplay(false);
+      return;
+    }
+
+    if (props.loggedInOnly && authState?.authenticated) {
+      setCanDisplay(true);
+      return;
+    }
+
+    if (!props.loggedInOnly) {
+      setCanDisplay(true);
+      return;
+    }
+
+    if (!authState?.authenticated) {
+      setCanDisplay(false);
+      return;
+    }
+  }, [JSON.stringify(authState?.authenticated), JSON.stringify(props.loggedInOnly)]);
 
   return (
-    <div
-      className="Tab"
-      onClick={() => {
-        history.push(props.path);
-        dispatch({ type: TOGGLE_PANEL, payload: { panelOpen: props.panelOpen, fullScreen: props.panelFullScreen } });
-      }}>
-      <div className="Tab__Content">{props.children}</div>
-      <div className="Tab__Label">{props.label}</div>
-      <Route exact={true} path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
-    </div>
+    <>
+      {canDisplay ? (
+        <div
+          className="Tab"
+          onClick={() => {
+            history.push(props.path);
+            dispatch({
+              type: TOGGLE_PANEL,
+              payload: { panelOpen: props.panelOpen, fullScreen: props.panelFullScreen }
+            });
+          }}>
+          <div className="Tab__Content">{props.children}</div>
+          <div className="Tab__Label">{props.label}</div>
+          <Route exact={true} path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
+        </div>
+      ) : (
+        <> </>
+      )}
+    </>
   );
 };
 
@@ -73,21 +107,22 @@ export const Header: React.FC = () => {
   return (
     <div className="HeaderBar">
       <ButtonWrapper>
-        <Tab path={'/Landing'} label="Home" panelOpen={true} panelFullScreen={true}>
+        <Tab path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
         </Tab>
 
-        <Tab path="/Records" label="Records" panelOpen={true} panelFullScreen={false}>
+        <Tab path="/Records" label="Records" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
           <ManageSearchIcon />
         </Tab>
 
-        <Tab path={'/Training'} label="Training" panelOpen={true} panelFullScreen={false}>
+        <Tab path={'/Training'} label="Training" loggedInOnly={false} panelOpen={true} panelFullScreen={false}>
           <School />
         </Tab>
 
         <Tab
           path={'/Records/Activity:' + userSettingsState?.activeActivity}
           label="Current Activity"
+          loggedInOnly={true}
           panelOpen={true}
           panelFullScreen={false}>
           <AssignmentIcon />
@@ -96,21 +131,22 @@ export const Header: React.FC = () => {
         <Tab
           path={'/Records/IAPP:' + userSettingsState?.activeIAPP}
           label="Current IAPP"
+          loggedInOnly={true}
           panelOpen={true}
           panelFullScreen={false}>
           <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
         </Tab>
 
-        <Tab path={'/Batch'} label="Batch" panelOpen={true} panelFullScreen={false}>
+        <Tab path={'/Batch'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
           <FileUpload />
         </Tab>
 
-        <Tab path={'/Reports'} label="Reports" panelOpen={true} panelFullScreen={false}>
+        <Tab path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
           <Assessment />
         </Tab>
 
         {authState.roles.find((role) => role.role_id === 18) ? (
-          <Tab path={'/Admin'} label="Admin" panelOpen={true} panelFullScreen={false}>
+          <Tab path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={false}>
             <AdminPanelSettings />
           </Tab>
         ) : (
