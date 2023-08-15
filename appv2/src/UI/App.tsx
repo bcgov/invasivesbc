@@ -17,6 +17,7 @@ import { Records } from './Overlay/Records/Records';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { ActivityGeo } from './Map/ActivityGeo';
 import { RecordSet } from './Overlay/Records/RecordSet';
+import EmbeddedReportsPage from './Overlay/Reports/EmbeddedReportsPage';
 
 const URL_LISTENER = (props) => {
   const dispatch = useDispatch();
@@ -56,6 +57,8 @@ const App: React.FC = () => {
           path="/Records/List/Local:id"
           render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />}
         />
+        <Route path="/Batch" render={(props) => <LandingComponent />} />
+        <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
         <Route path="/Legend" render={(props) => <LegendsPopup />} />
         <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
       </>
