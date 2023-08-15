@@ -42,5 +42,6 @@ export const HerbicideApplicationRates = {
   '26980': 9.2,
   '27615': 9,
   '29994': 9,
-  '28840': 9
+  '28840': 9,
+  '27736': 8
 };
