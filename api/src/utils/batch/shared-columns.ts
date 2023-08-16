@@ -648,7 +648,7 @@ export const WindDirectionValidator = (row): RowValidationResult => {
   const wind_direction = rowData?.['Chemical Treatment - Wind Direction']?.parsedValue;
   const validationMessages = [];
 
-  if (wind_speed === 0 && wind_direction !== 'NA') {
+  if (wind_speed === 0 && wind_direction !== 'No Wind') {
     valid = false;
     validationMessages.push({
       severity: 'error',
@@ -657,7 +657,7 @@ export const WindDirectionValidator = (row): RowValidationResult => {
     });
   }
 
-  if (wind_direction === 'NA' && wind_speed > 0) {
+  if (wind_direction === 'No Wind' && wind_speed > 0) {
     valid = false;
     validationMessages.push({
       severity: 'error',
