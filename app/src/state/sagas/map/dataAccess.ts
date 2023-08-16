@@ -198,6 +198,9 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
       case "Polygon":
         const featurePolygon = polygon(feature.geometry.coordinates);
         return intersect(featurePolygon, boundaryPolygon);
+      case "MultiPolygon":
+        const multiPolygon = polygon(feature.geometry.coordinates);
+        return intersect(multiPolygon, boundaryPolygon);
       default:
         return false;
     }
