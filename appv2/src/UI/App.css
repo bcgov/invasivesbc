@@ -19,3 +19,8 @@ body {
 .Map {
   flex: 1;
 }
+
+.overlay-content {
+  padding-top: 6rem;
+  width: 100%;
+}

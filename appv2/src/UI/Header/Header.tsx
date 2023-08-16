@@ -134,7 +134,7 @@ export const Header: React.FC = () => {
           <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
         </Tab>
 
-        <Tab path={'/Batch'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <Tab path={'/Batch/list'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <FileUpload />
         </Tab>
 
