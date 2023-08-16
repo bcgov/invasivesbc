@@ -20,7 +20,7 @@ import {
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
-import { booleanPointInPolygon, point, polygon } from '@turf/turf';
+import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -144,10 +144,10 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   }
 }
 
-function largePush(src, dest){
-  const len = src.length
-  for(let i = 0; i < len; i++){
-      dest.push(src[i])
+function largePush(src, dest) {
+  const len = src.length;
+  for (let i = 0; i < len; i++) {
+    dest.push(src[i]);
   }
 }
 
@@ -169,10 +169,9 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 
   Object.keys(currentMapState?.layers).map((id) => {
     if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
-      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs)
+      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs);
     }
   });
-
 
   const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
     return featureFilteredIDS.includes(id);
@@ -180,9 +179,9 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
-  
+
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0} });
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0 } });
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
@@ -191,16 +190,16 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
     // activities can have points and polygons, lines are considered polygons
     const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-    switch(feature?.geometry?.type) {
-      case "Point":
+    switch (feature?.geometry?.type) {
+      case 'Point':
         const featurePoint = point(feature.geometry.coordinates);
         return booleanPointInPolygon(featurePoint, boundaryPolygon);
-      case "Polygon":
+      case 'Polygon':
         const featurePolygon = polygon(feature.geometry.coordinates);
         return intersect(featurePolygon, boundaryPolygon);
-      case "MultiPolygon":
-        const multiPolygon = polygon(feature.geometry.coordinates);
-        return intersect(multiPolygon, boundaryPolygon);
+      case 'MultiPolygon':
+        const amultiPolygon = multiPolygon(feature.geometry.coordinates);
+        return intersect(amultiPolygon, boundaryPolygon);
       default:
         return false;
     }
@@ -225,5 +224,5 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
   yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { page: 0} });
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { page: 0 } });
 }

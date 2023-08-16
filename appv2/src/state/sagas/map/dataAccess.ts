@@ -20,7 +20,7 @@ import {
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
-import { booleanPointInPolygon, point, polygon } from '@turf/turf';
+import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -193,13 +193,16 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
     // activities can have points and polygons, lines are considered polygons
     const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-    switch(feature?.geometry?.type) {
-      case "Point":
+    switch (feature?.geometry?.type) {
+      case 'Point':
         const featurePoint = point(feature.geometry.coordinates);
         return booleanPointInPolygon(featurePoint, boundaryPolygon);
-      case "Polygon":
+      case 'Polygon':
         const featurePolygon = polygon(feature.geometry.coordinates);
         return intersect(featurePolygon, boundaryPolygon);
+      case 'MultiPolygon':
+        const amultiPolygon = multiPolygon(feature.geometry.coordinates);
+        return intersect(amultiPolygon, boundaryPolygon);
       default:
         return false;
     }
