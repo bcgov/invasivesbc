@@ -5,6 +5,8 @@ import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarExport, GridToolbarFilterButton, GridValueGetterParams } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
+import { selectAuth } from 'state/reducers/auth';
+import { useSelector } from 'util/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 
@@ -115,6 +117,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const classes = useStyles();
   const api = useInvasivesApi();
+  const authState = useSelector(selectAuth);
 
   const [usersTableLoading, setUsersTableLoading] = useState(false);
   const [requestTableLoading, setRequestTableLoading] = useState(false);
@@ -389,11 +392,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   /* ON MOUNT */
 
   useEffect(() => {
+    if (!authState?.authenticated) {
+      return;
+    }
     loadUsers();
     getAvailableRoles();
     getFundingAgencies();
     getEmployers();
-  }, []);
+  }, [authState?.authenticated]);
 
   /*
     ================================================================================================
@@ -1055,7 +1061,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       <Dialog
         open={roleDialogOpen}
         onClose={closeRoleDialog}
-        sx={{ zIndex: 100000000}}
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
         fullWidth>
