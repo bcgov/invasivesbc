@@ -2,6 +2,7 @@
   display: flex;
   width: 100%;
   overflow-x: scroll;
+  z-index: 2183646;
 }
 
 .record_table {

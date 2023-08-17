@@ -15,6 +15,7 @@
 .ButtonWrapper {
     width: 50%;
     display: flex;
+    height: 5vh;
     flex-direction: row;
     justify-content: space-between;
 
@@ -29,7 +30,7 @@
 }
 
 .Tab__Label {
-    padding-top: 5px;
+/*    padding-top: 5px;*/
     align-self: flex-start;
     font-size: small;
 

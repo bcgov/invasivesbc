@@ -112,3 +112,145 @@ export const getUnnestedFieldsForIAPP = (record) => {
 
   return JSON.parse(JSON.stringify(columns));
 };
+
+export const activityColumnsToDisplay = [
+    {
+      key: 'short_id',
+      name: 'Activity ID',
+      displayWidget: 'div'
+    },
+    {
+      key: 'type',
+      name: 'Activity Type'
+    },
+    {
+      key: 'subtype',
+      name: 'Activity Sub Type'
+    },
+    {
+      key: 'activity_date',
+      name: 'Activity Date'
+    },
+    {
+      key: 'project_code',
+      name: 'Project Code'
+    },
+    {
+      key: 'jurisdiction',
+      name: 'Jurisdiction'
+    },
+    {
+      key: 'species_positive',
+      name: 'All Positive'
+    },
+    {
+      key: 'species_negative',
+      name: 'All Negative'
+    },
+    {
+      key: 'has_current_positive',
+      name: 'Has Current Positive'
+    },
+    {
+      key: 'current_positive',
+      name: 'Current Positive Species'
+    },
+    {
+      key: 'has_current_negative',
+      name: 'Has Current Negative'
+    },
+    {
+      key: 'current_negative',
+      name: 'Current Negative Species'
+    },
+    {
+      key: 'species_treated',
+      name: 'Species Treated'
+    },
+    { key: 'created_by', name: 'Created By' },
+    { key: 'updated_by', name: 'Updated By' },
+    {
+      key: 'agency',
+      name: 'Agency'
+    },
+    {
+      key: 'regional_invasive_species_organization_areas',
+      name: 'Regional Invasive Species Organization Areas'
+    },
+    {
+      key: 'regional_districts',
+      name: 'Regional Districts'
+    },
+    {
+      key: 'biogeoclimatic_zones',
+      name: 'Bio Geo Climatic Zones'
+    },
+    {
+      key: 'elevation',
+      name: 'Elevation'
+    },
+    {
+      key: 'batch_id',
+      name: 'Batch ID'
+    }
+  ];
+
+ export const iappColumnsToDisplay = [
+    {
+      key: 'point_of_interest_id',
+      name: 'Site ID'
+    },
+    {
+      key: 'paper_file_id',
+      name: 'Site Paper File ID'
+    },
+    {
+      key: 'jurisdictions',
+      name: 'Jurisdictions'
+    },
+    {
+      key: 'date_created',
+      name: 'Site Create Date'
+    },
+    {
+      key: 'species_on_site',
+      name: 'Invasive Plants'
+    },
+    {
+      key: 'date_last_surveyed',
+      name: 'Last Surveyed Date'
+    },
+    {
+      key: 'agencies',
+      name: 'Agencies'
+    },
+    {
+      key: 'bio_release',
+      name: 'Biocontrol Release'
+    },
+    {
+      key: 'chem_treatment',
+      name: 'Chemical Treatment'
+    },
+    {
+      key: 'mech_treatment',
+      name: 'Mechanical Treatment'
+    },
+    {
+      key: 'bio_dispersal',
+      name: 'Biocontrol Dispersal'
+    },
+    {
+      key: 'monitored',
+      name: 'Monitored'
+    },
+    {
+      key: 'regional_district',
+      name: 'Regional District'
+    },
+    {
+      key: 'regional_invasive_species_organization',
+      name: 'Regional Invasive Species Organization'
+    }
+  ];
+

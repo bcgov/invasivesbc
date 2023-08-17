@@ -18,7 +18,6 @@
 .stickyHeader {
   position: sticky;
   top: 0;
-
 }
 
 
@@ -67,8 +66,9 @@
 
 .recordSet_filter_type {
   padding-left: 2vw;
+  z-index: 2147483646;
 }
 
-.recordSet_filter_name {
+.recordSet_filter_value {
   padding-left: 2vw;
 }
