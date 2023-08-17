@@ -22,6 +22,7 @@ import BatchList from './Overlay/Batch/BatchList';
 import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchTemplates from './Overlay/Batch/BatchTemplates';
 import BatchView from './Overlay/Batch/BatchView';
+import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
 
 const URL_LISTENER = (props) => {
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ const App: React.FC = () => {
         <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
         <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
         <Route path="/Legend" render={(props) => <LegendsPopup />} />
+        <Route path="/Admin" render={(props) => <UserAccessPage />} />
         <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
       </div>
     );
