@@ -55,7 +55,7 @@ const App: React.FC = () => {
 
   const OverlayContentMemo = React.memo((props: any) => {
     return (
-      <div className="overlay-content">
+      <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen': ''}`}>
         <Route path="/Landing" render={(props) => <LandingComponent />} />
         <Route exact={true} path="/Records" render={(props) => <Records />} />
         <Route path="/Records/Activity:id" component={Activity} />
