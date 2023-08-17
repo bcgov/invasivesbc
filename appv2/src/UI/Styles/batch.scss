@@ -1,0 +1,283 @@
+.batchNav {
+  background: #0078A8;
+  padding: 0;
+  margin: 0;
+}
+
+.batchDarkNav {
+  background: #272727;
+}
+
+div.template-description {
+  text-align: center;
+  border: 1px solid #444;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+
+  h5 {
+    display: inline;
+    padding-right: 2rem;
+    font-size: 14pt;
+    vertical-align: middle;
+  }
+}
+
+table.template-preview {
+  width: 100%;
+  border-collapse: collapse;
+
+  tbody {
+
+    tr:nth-child(2n) {
+      background: #eeeeee;
+    }
+
+    tr:hover {
+      background: #d2daef;
+    }
+
+    tr {
+      td:first-child {
+        text-align: left;
+        width: 60%;
+      }
+
+      td:not(:first-child) {
+        text-align: center;
+      }
+    }
+  }
+
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+table.template-dark-preview {
+  tbody {
+
+    tr:nth-child(2n) {
+      background: #171717;
+    }
+
+    tr:hover {
+      background: #272727;
+    }
+  }
+}
+
+
+code {
+  font-family: "Courier New", monospace;
+  display: block;
+}
+
+table.code-reference {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 70%;
+  max-height: 10rem;
+  overflow-y: scroll;
+
+  tbody {
+    td:last-child {
+      font-family: 'Courier New', monospace;
+      text-align: center;
+    }
+  }
+
+  margin: 0;
+  padding: 0;
+}
+
+table.batchAlternateLayout {
+  border-collapse: collapse;
+  font-size: 12px;
+  overflow-x: auto;
+  display: block;
+  height: 50em;
+
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: darkgray;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #e3e3e3;
+      }
+
+      td:not(:first-child) {
+        span.value {
+          font-weight: bold;
+
+          &.empty:after {
+            font-weight: normal;
+            font-style: italic;
+            content: "~";
+          }
+        }
+
+        div.metadata {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+
+          span.dataType {
+            color: #555555;
+            font-size: 80%;
+          }
+
+          span.spreadsheetColumn {
+            color: #333333;
+            font-size: 80%;
+          }
+        }
+      }
+
+      td.informational {
+        background-color: #66afe9;
+      }
+
+      td.warning {
+        background-color: khaki;
+      }
+
+      td.error {
+        background-color: palevioletred;
+      }
+
+      td.unknown {
+        background-color: lime;
+
+      }
+    }
+  }
+  tr > th:first-child, tr > td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: darkgray;
+    font-weight: 600;
+  }
+}
+
+table.batchDarkLayout {
+  thead {
+    tr {
+      th {
+        background: #1b1b1b;
+      }
+    }
+  }
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #171717;
+      }
+    }
+  }
+  tr > th:first-child, tr > td:first-child {
+    background: #1b1b1b;
+  }
+}
+
+table.batchValidation {
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
+  tbody {
+    font-family: "Courier New", monospace;
+
+    tr {
+      border-top: 1px solid darkblue;
+
+      &:hover {
+        background-color: #ccccff;
+      }
+
+      td {
+        &:nth-child(odd) {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
+}
+
+table.batchList {
+  width: 80%;
+  thead {
+    tr {
+      th {
+        white-space: nowrap;
+        background-color: #f1f1f1;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: #dddddd;
+      }
+      td {
+        padding: 8px;
+      }
+    }
+  }
+}
+
+table.batchDarkList {
+  thead {
+    tr {
+      th {
+        background-color: #1b1b1b;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: #171717;
+      }
+    }
+  }
+}
+
+
+table.batch-details {
+  width: 70%;
+  tr {
+    td:first-child {
+      width: 40%;
+    }
+  }
+}
