@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
@@ -12,10 +12,12 @@ import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHel
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { set } from 'lodash';
+import { RECORDSET_ADD_FILTER, USER_SETTINGS_SET_RECORD_SET_REQUEST } from 'state/actions';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const [filterTypeChooserOpen, setFilterTypeChooserOpen] = React.useState(false);
 
@@ -32,6 +34,8 @@ export const RecordSet = (props) => {
   };
 
   const Filter = (props) => {
+    const dispatch = useDispatch()
+
     return (
       <div className="recordSet_filter">
         <div className="recordSet_filter_operator">{props.operator}</div>
@@ -40,7 +44,8 @@ export const RecordSet = (props) => {
             key={'filterType' + props.name}
             value={props.type}
             onChange={(e) => {
-              alert('need dispatch here');
+
+              dispatch({ type: USER_SETTINGS_SET_RECORD_SET_REQUEST, payload: { updatedSet: props.setID}})
             }}>
             {filterOptions.map((option) => {
               return (
@@ -91,9 +96,10 @@ export const RecordSet = (props) => {
                   <select
                     onChange={(e) => {
                       setFilterTypeChooserOpen(false);
+                      dispatch({ type: RECORDSET_ADD_FILTER, payload: { filterType: e.target.value, setID: props.setId, blockFetchForNow: true}} )
                     }}>
                     <option value="searchBoundary">Choose a filter type</option>
-                    <option value="data">Data/Field</option>
+                    <option value="tableFilter">Data/Field</option>
                     <option value="searchBoundary">Search Boundary</option>
                     <option value="cancel">Cancel</option>
                   </select>

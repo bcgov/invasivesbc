@@ -1,8 +1,9 @@
 // vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
@@ -14,17 +15,13 @@ function buildSpecificDefines() {
   defines.CONFIGURATION_IS_MOBILE = JSON.stringify(isMobile);
 
   if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
-    const commitHash = require('child_process')
-      .execSync('git rev-parse --short HEAD')
-      .toString();
+    const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
 
     defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
     defines.CONFIGURATION_SOURCE = JSON.stringify('Hardcoded');
   } else if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Provided');
-    const commitHash = require('child_process')
-      .execSync('git rev-parse --short HEAD')
-      .toString();
+    const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
 
     defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
 
@@ -53,7 +50,6 @@ function buildSpecificDefines() {
       console.log('Using fallback commit hash');
       defines.INJECTED_COMMIT_HASH = JSON.stringify('local');
     }
-
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }
@@ -66,6 +62,9 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       plugins: [
+        NodeGlobalsPolyfillPlugin({
+          process: true
+        }),
         NodeModulesPolyfillPlugin()
       ]
     }
@@ -78,7 +77,7 @@ export default defineConfig({
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      "@mui/styled-engine": "@mui/styled-engine-sc"
+      '@mui/styled-engine': '@mui/styled-engine-sc'
     }
   }
-})
+});

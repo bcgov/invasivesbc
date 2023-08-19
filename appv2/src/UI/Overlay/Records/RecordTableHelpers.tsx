@@ -20,7 +20,6 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
     }
 
     //console.dir(activity)
-    console.log(activity?.activity_type)
     let columns: any = {
       // id: index,
       activity_id: activity?.activity_id,
@@ -51,7 +50,6 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
       // longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
     }
 
-    console.log(columns?.type)
     return JSON.parse(JSON.stringify(columns))
 };
 

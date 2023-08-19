@@ -1,9 +1,16 @@
-import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
+import { createNextState } from '@reduxjs/toolkit'
+import { Uuid, UuidOptions } from 'node-ts-uuid';
+import  process from 'process'
+window.process = process
+
 import {
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_REQUEST,
   GET_API_DOC_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
+  RECORDSET_ADD_FILTER,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
   USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
@@ -27,6 +34,16 @@ import {
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
 
+
+const options: UuidOptions = {
+  length: 50,
+};
+
+export function getUuid() {
+  const uuid: string = Uuid.generate(options);
+  return uuid;
+}
+
 class UserSettingsState {
   initialized: boolean;
   error: boolean;
@@ -38,7 +55,8 @@ class UserSettingsState {
   apiDocsWithSelectOptions: object;
 
   mapCenter: [number, number];
-  newRecordDialogState: INewRecordDialogState;
+  //newRecordDialogState: INewRecordDialogState;
+  newRecordDialogState: any;
   APIErrorDialog: any;
   recordSets: [
     {
@@ -120,6 +138,71 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case MAP_TOGGLE_WHATS_HERE: {
         return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
       }
+      case RECORDSET_ADD_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
+              {
+                draftState.recordSets[action.payload.setID].tableFilters = []
+              }
+              draftState.recordSets[action.payload.setID]?.tableFilters.push({
+                id: getUuid(),
+                field: 'activity_id',
+                operator: 'contains',
+                filter: ''
+              });
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+      case RECORDSET_REMOVE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+              draftState.recordSets[action.setID]?.tableFilters.filter(
+                (filter) => filter.id !== action.payload.filterID
+              );
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+      case RECORDSET_UPDATE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+              draftState.recordSets[action.setID]?.tableFilters.filter(
+                (filter) => filter.id !== action.payload.filterID
+              );
+
+              if (action.payload.tableField) {
+                const index = draftState.recordSets[action.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1) draftState.recordSets[action.setID].tableFilters[index].field = action.payload.filter;
+              }
+
+              if (action.payload.filterVal) {
+                const index = draftState.recordSets[action.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.setID].tableFilters[index].filter = action.payload.filter;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         const nextState = createNextState((draftState) => {
           if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
