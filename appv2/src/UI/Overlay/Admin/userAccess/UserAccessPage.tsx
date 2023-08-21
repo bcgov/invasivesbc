@@ -19,22 +19,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '320px'
   },
   error: {
-  backgroundColor: theme?.palette?.error?.main
+  backgroundColor: theme.palette.error.main
   },
   warning: {
-    backgroundColor: theme?.palette?.warning?.main
+    backgroundColor: theme.palette.warning.main
   },
   info: {
-    backgroundColor: theme?.palette?.info?.main
+    backgroundColor: theme.palette.info.main
   },
   success: {
-    backgroundColor: theme?.palette?.success?.main
+    backgroundColor: theme.palette.success.main
   },
   gray: {
-    backgroundColor: theme?.palette?.grey[100]
+    backgroundColor: theme.palette.grey[100]
   },
   paddingTop: {
     paddingTop: '1rem'
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4)
   }
 }));
 
@@ -594,7 +598,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container className={props?.classes?.container} style={{ paddingBottom: '50px' }}>
+    <Container className={classes?.container} style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
@@ -1057,7 +1061,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         Role grant/revoke flexible dialog
         ###
       */}
-      <p>test</p>
       <Dialog
         open={roleDialogOpen}
         onClose={closeRoleDialog}
