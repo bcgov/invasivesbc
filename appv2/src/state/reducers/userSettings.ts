@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit'
-import { Uuid, UuidOptions } from 'node-ts-uuid';
-import  process from 'process'
-window.process = process
+//import { Uuid, UuidOptions } from 'node-ts-uuid';
+//import  process from 'process'
+//window.process = process
 
 import {
   ACTIVITY_DELETE_SUCCESS,
@@ -35,12 +35,13 @@ import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
 
 
-const options: UuidOptions = {
+/*const options: UuidOptions = {
   length: 50,
 };
+*/
 
 export function getUuid() {
-  const uuid: string = Uuid.generate(options);
+  const uuid: string = Math.random() + Date.now().toString();
   return uuid;
 }
 
@@ -60,6 +61,7 @@ class UserSettingsState {
   APIErrorDialog: any;
   recordSets: [
     {
+      tableFilters?: any;
       advancedFilters: [];
       gridFilters: [];
       color: string;
@@ -163,9 +165,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const nextState = createNextState(state, (draftState) => {
           switch (action.payload.filterType) {
             case 'tableFilter':
-              draftState.recordSets[action.setID]?.tableFilters.filter(
-                (filter) => filter.id !== action.payload.filterID
-              );
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+
+                draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1)
               break;
             default:
               break;
@@ -177,23 +181,27 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const nextState = createNextState(state, (draftState) => {
           switch (action.payload.filterType) {
             case 'tableFilter':
-              draftState.recordSets[action.setID]?.tableFilters.filter(
+              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
+              {
+                draftState.recordSets[action.payload.setID].tableFilters = []
+              }
+              draftState.recordSets[action.payload.setID]?.tableFilters.filter(
                 (filter) => filter.id !== action.payload.filterID
               );
 
               if (action.payload.tableField) {
-                const index = draftState.recordSets[action.setID]?.tableFilters.findIndex(
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
                   (filter) => filter.id === action.payload.filterID
                 );
-                if (index !== -1) draftState.recordSets[action.setID].tableFilters[index].field = action.payload.filter;
+                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.tableField;
               }
 
-              if (action.payload.filterVal) {
-                const index = draftState.recordSets[action.setID]?.tableFilters.findIndex(
+              if (action.payload.filter !== undefined) {
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
                   (filter) => filter.id === action.payload.filterID
                 );
                 if (index !== -1)
-                  draftState.recordSets[action.setID].tableFilters[index].filter = action.payload.filter;
+                  draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
               }
               break;
             default:
