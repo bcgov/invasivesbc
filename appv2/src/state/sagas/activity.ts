@@ -79,9 +79,9 @@ import {selectActivity} from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_USER_SETTINGS_READY(action) {
-  if (action.payload.activeActivity) {
-    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
-  }
+ // if (action.payload.activeActivity) {
+//    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
+ // }
 }
 
 function* handle_ACTIVITY_DEBUG(action) {
@@ -169,7 +169,12 @@ function* handle_URL_CHANGE(action) {
   const userSettingsState = yield select(selectUserSettings)
   const isActivityURL = action.payload.url.includes('/Records/Activity:')
   if(isActivityURL) {
-    const id = action.payload.url.split(':')[1]
+    const afterColon = action.payload.url.split(':')?.[1]
+    let id;
+    if(afterColon)
+    {
+      id = (afterColon.includes('/')? afterColon.split('/')[0]: afterColon)
+    }
     if(id && id.length === 36 && userSettingsState.activeActivity !== id)
     yield put({type: ACTIVITY_GET_REQUEST, payload: {activityID: id}})
   }

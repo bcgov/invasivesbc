@@ -25,6 +25,7 @@ import {
 } from '../actions';
 
 import { AppConfig } from '../config';
+import { createNextState } from '@reduxjs/toolkit';
 
 class UserSettingsState {
   initialized: boolean;
@@ -96,11 +97,11 @@ const initialState = new UserSettingsState();
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     switch (action.type) {
-      case ACTIVITY_GET_REQUEST : {
+      case ACTIVITY_GET_REQUEST: {
         return {
           ...state,
           activeActivity: action.payload.activityID
-        }
+        };
       }
       case ACTIVITY_DELETE_SUCCESS: {
         return {
@@ -120,14 +121,18 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
       }
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-        return {
-          ...state,
-          activeActivity: action.payload.activeActivity,
-          activeActivityDescription: action.payload.activeActivityDescription,
-          activeIAPP: action.payload.activeIAPP,
-          recordSets: { ...action.payload.recordSets },
-          recordsExpanded: action.payload.recordsExpanded
-        };
+        const nextState = createNextState((draftState) => {
+          if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
+
+          if (!draftState.activeActivityDescription)
+            draftState.activeActivityDescription = action.payload.activeActivityDescription;
+
+          if (!draftState.activeIAPP) draftState.activeIAPP = action.payload.activeIAPP;
+
+          draftState.recordSets = { ...action.payload.recordSets };
+          draftState.recordsExpanded = action.payload.recordsExpanded;
+        });
+        return nextState;
       }
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
         return {
