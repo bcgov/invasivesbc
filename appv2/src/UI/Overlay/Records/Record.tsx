@@ -19,15 +19,6 @@ export const Activity = (props) => {
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
   const activityState = useSelector(selectActivity);
 
-  useEffect(() => {
-    if (!authState?.authenticated) {
-      return;
-    }
-    if (typeof id === 'string' && id?.length > 0 && settingsState?.activeActivity !== id) {
-      dispatch({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, payload: { id: id } });
-    }
-  }, [id, authState?.authenticated]);
-
   return (
     <div //onClick={()=> history.goBack()}
       className="records__activity">
@@ -46,24 +37,30 @@ export const Activity = (props) => {
           <div
             className="records__activity__map_button"
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/map')}>
-              map
+            map
           </div>
         </div>
       </div>
-        <Route
-          path="/Records/Activity:id/form"
-          render={() => {
-            if (activityState?.activity?.activity_id && settingsState.apiDocsWithSelectOptions && settingsState.apiDocsWithViewOptions) return <ActivityForm />;
-            else return <div>loading</div>;
-          }}
-        />
-        <Route
-          path="/Records/Activity:id/photos"
-          render={() => {
-            if (activityState?.activity?.activity_id) return <ActivityPhotos/>;
-            else return <div>loading</div>;
-          }}
-        />
+      <Route
+        path="/Records/Activity:id/form"
+        render={() => {
+          if (
+            activityState?.activity?.activity_id &&
+            settingsState.apiDocsWithSelectOptions &&
+            settingsState.apiDocsWithViewOptions &&
+            activityState.loading === false
+          )
+            return <ActivityForm />;
+          else return <div>loading</div>;
+        }}
+      />
+      <Route
+        path="/Records/Activity:id/photos"
+        render={() => {
+          if (activityState?.activity?.activity_id) return <ActivityPhotos />;
+          else return <div>loading</div>;
+        }}
+      />
     </div>
   );
 };

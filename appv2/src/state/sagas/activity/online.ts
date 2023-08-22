@@ -1,5 +1,5 @@
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { put, select } from 'redux-saga/effects';
+import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus, getShortActivityID } from 'sharedAPI';
 
 import {
@@ -10,8 +10,10 @@ import {
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+  AUTH_INITIALIZE_COMPLETE,
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
+import { selectAuth } from 'state/reducers/auth';
 
 const checkForErrors = (response: any, status?: any, url?: any) => {
   if (response.code > 201) {
@@ -26,6 +28,11 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
 }
 
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
+  const authState = yield select(selectAuth)
+  if(!authState.authenticated)
+  {
+    yield take(AUTH_INITIALIZE_COMPLETE)
+  }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
 
   const datav2 = {

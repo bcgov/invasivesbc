@@ -23,15 +23,16 @@ import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchTemplates from './Overlay/Batch/BatchTemplates';
 import BatchView from './Overlay/Batch/BatchView';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
+import { Activity } from './Overlay/Records/Record';
 
 const URL_LISTENER = (props) => {
   const dispatch = useDispatch();
-  const ref = useRef(0);
+  const location = useLocation();
 
   const targetURL = useSelector((state: any) => state.AppMode?.url);
   // URL listener so that the auth saga can redirect to the correct page
   useEffect(() => {
-    if (location.pathname !== targetURL && ref.current === 0) {
+    if (location.pathname !== targetURL) {
       dispatch({
         type: URL_CHANGE,
         payload: { url: location.pathname }
@@ -57,6 +58,7 @@ const App: React.FC = () => {
       <div className="overlay-content">
         <Route path="/Landing" render={(props) => <LandingComponent />} />
         <Route exact={true} path="/Records" render={(props) => <Records />} />
+        <Route path="/Records/Activity:id" component={Activity} />
         <Route
           exact={true}
           path="/Records/List/Local:id"

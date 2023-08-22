@@ -41,6 +41,7 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
   MAP_INIT_REQUEST,
+  URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS
 } from '../actions';
@@ -75,6 +76,7 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import {selectActivity} from 'state/reducers/activity';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_USER_SETTINGS_READY(action) {
   if (action.payload.activeActivity) {
@@ -163,8 +165,19 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
   }
 }
 
+function* handle_URL_CHANGE(action) {
+  const userSettingsState = yield select(selectUserSettings)
+  const isActivityURL = action.payload.url.includes('/Records/Activity:')
+  if(isActivityURL) {
+    const id = action.payload.url.split(':')[1]
+    if(id && id.length === 36 && userSettingsState.activeActivity !== id)
+    yield put({type: ACTIVITY_GET_REQUEST, payload: {activityID: id}})
+  }
+}
+
 function* activityPageSaga() {
   yield all([
+    takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
     takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
