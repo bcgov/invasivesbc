@@ -72,3 +72,7 @@
 .recordSet_filter_value {
   padding-left: 2vw;
 }
+
+.recordSetFilterTable {
+  width: 100vw;
+}

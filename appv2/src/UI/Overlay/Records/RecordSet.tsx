@@ -52,9 +52,10 @@ export const RecordSet = (props) => {
     const value = useRef();
 
     return (
-      <div className="recordSet_filter">
-        <div className="recordSet_filter_operator">{props.operator}</div>
-        <div className="recordSet_filter_type">
+      <tr>
+        <td>Data</td>
+        <td>Contains</td>
+        <td>
           <select
             key={'filterType' + props.name}
             value={typeInState}
@@ -78,57 +79,44 @@ export const RecordSet = (props) => {
               );
             })}
           </select>
-        </div>
-        <div className="recordSet_filter_value">
-          {props.type === 'searchBoundary' ? (
-            <select
-              key={'filterValue' + props.name}
-              value={props.name}
-              onChange={(e) => {
-                alert('need dispatch here');
-              }}>
-              <option value="searchBoundary">example search boundary</option>
-            </select>
-          ) : (
-            <> </>
-          )}
-          ;
-          {props.type === 'data' ? (
-            <>
-              <input
-                ref={value}
-                onBlur={(e) => {
-                  if (value.current !== undefined)
-                    dispatch({
-                      type: RECORDSET_UPDATE_FILTER,
-                      payload: {
-                        filterType: 'tableFilter',
-                        setID: props.setID,
-                        filterID: props.id,
-                        filter: value.current.value
-                      }
-                    });
-                }}
-                type="text"
-                //value={valueInState}
-                defaultValue={valueInState}
-              />
-              <Button
-                variant="contained"
-                onClick={() => {
+        </td>
+        {props.type === 'data' ? (
+          <td>
+            <input
+              ref={value}
+              onBlur={(e) => {
+                if (value.current !== undefined)
                   dispatch({
-                    type: RECORDSET_REMOVE_FILTER,
-                    payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
+                    type: RECORDSET_UPDATE_FILTER,
+                    payload: {
+                      filterType: 'tableFilter',
+                      setID: props.setID,
+                      filterID: props.id,
+                      filter: value.current.value
+                    }
                   });
-                }}>
-                Delete
-              </Button>
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
-      </div>
+              }}
+              type="text"
+              //value={valueInState}
+              defaultValue={valueInState}
+            />
+          </td>
+        ) : (
+          <></>
+        )}
+        <td>
+          <Button
+            variant="contained"
+            onClick={() => {
+              dispatch({
+                type: RECORDSET_REMOVE_FILTER,
+                payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
+              });
+            }}>
+            Delete
+          </Button>
+        </td>
+      </tr>
     );
   };
 
@@ -184,46 +172,47 @@ export const RecordSet = (props) => {
               <AccordionSummary className="recordSet_filter_accordion_collapsed">Filters: 5</AccordionSummary>
               <div className="recordSet_filters_container">
                 <div className="recordSet_filters">
-                  {
-                    /*we'll map over a list of these later*/
-                    userSettingsState?.recordSets?.[props.setId]?.searchBoundary?.name ? (
-                      <Filter
-                        operator="DOES Match"
-                        type="searchBoundary"
-                        name={userSettingsState?.recordSets?.[props.setId]?.searchBoundary?.name}
-                      />
+                  <table className="recordSetFilterTable">
+                    <tr>
+                      <th>Filter type</th>
+                      <th>Operator</th>
+                      <th>Field</th>
+                      <th>Value</th>
+                      <th></th>
+                    </tr>
+                    {
+                      /*we'll map over a list of these later*/
+                      userSettingsState?.recordSets?.[props.setId]?.searchBoundary?.name ? (
+                        <Filter
+                          operator="DOES Match"
+                          type="searchBoundary"
+                          name={userSettingsState?.recordSets?.[props.setId]?.searchBoundary?.name}
+                        />
+                      ) : (
+                        <></>
+                      )
+                    }
+                    {userSettingsState?.recordSets?.[props.setId]?.tableFilters ? (
+                      userSettingsState?.recordSets?.[props.setId]?.tableFilters.map((filter: any, i) => {
+                        return <Filter key={'filterIndex' + i} type="data" setID={props.setId} id={filter.id} />;
+                      })
                     ) : (
                       <></>
-                    )
-                  }
-                  {userSettingsState?.recordSets?.[props.setId]?.tableFilters ? (
-                    userSettingsState?.recordSets?.[props.setId]?.tableFilters.map((filter: any, i) => {
-                      return (
-                        <Filter
-                          key={'filterIndex' + i}
-                          type="data"
-                          setID={props.setId}
-                          id={filter.id}
-                        />
-                      );
-                    })
-                  ) : (
-                    <></>
-                  )}
-                  {userSettingsState?.recordSets?.[props.setId]?.advancedFilters ? (
-                    userSettingsState?.recordSets?.[props.setId]?.advancedFilters?.map((filter: any, i) => {
-                      return (
-                        <Filter key={'filterIndex' + i} operator="DOES Match" type="data2" name={filter?.filterKey} />
-                      );
-                    })
-                  ) : (
-                    <></>
-                  )}
-                  <Button >CLEAR</Button>
+                    )}
+                    {userSettingsState?.recordSets?.[props.setId]?.advancedFilters ? (
+                      userSettingsState?.recordSets?.[props.setId]?.advancedFilters?.map((filter: any, i) => {
+                        return (
+                          <Filter key={'filterIndex' + i} operator="DOES Match" type="data2" name={filter?.filterKey} />
+                        );
+                      })
+                    ) : (
+                      <></>
+                    )}
+                  </table>
+                  <Button>CLEAR</Button>
                   <Button> Apply </Button>
                 </div>
               </div>
-
             </Accordion>
           </div>
           <RecordTable setId={props.setId} />
