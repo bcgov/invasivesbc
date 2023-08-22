@@ -212,7 +212,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       }
 
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-        const nextState = createNextState((draftState) => {
+        const nextState = createNextState(state, (draftState) => {
           if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
 
           if (!draftState.activeActivityDescription)
