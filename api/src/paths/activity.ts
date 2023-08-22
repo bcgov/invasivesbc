@@ -399,7 +399,7 @@ function updateActivity(): RequestHandler {
       });
     }
 
-    const sanitizedSearchCriteria: string = data._id;
+    const sanitizedSearchCriteria: string = data.activity_id;
     const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
 
     if (!sqlStatementForCheck) {
@@ -414,7 +414,11 @@ function updateActivity(): RequestHandler {
     const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
 
     if (!isAdmin) {
-      if (sanitizedActivityData.updated_by_with_guid !== response.rows[0].created_by_with_guid &&
+
+      // some batch record guids don't have the suffix or id.  this will still work for the new ones though
+      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(response.rows[0]?.created_by_with_guid?.toLowerCase())
+
+      if ((sanitizedActivityData.updated_by_with_guid !== response.rows[0].created_by_with_guid && !containsOldIDAndIsOK) &&
         (response.rows[0].created_by_with_guid !== null)) { // some old records are null
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',

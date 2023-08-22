@@ -113,9 +113,9 @@ export const BatchExecutionService = {
 
       let guid = null;
       if (userInfo?.idir_userid !== null) {
-        guid = userInfo?.idir_userid;
+        guid = userInfo?.idir_userid.toLowerCase() + '@idir';
       } else if (userInfo?.bceid_userid !== null) {
-        guid = userInfo?.bceid_userid;
+        guid = userInfo?.bceid_userid.toLowerCase() + '@bceid-business';
       }
       const qc = {
         text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
