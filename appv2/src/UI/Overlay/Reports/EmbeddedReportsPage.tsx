@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
   const classes = useStyles();
-  const metabaseIconUrl = window.location.href.split('/home')[0] + '/assets/icon/metabase-icon.svg';
+  const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeReport, setActiveReport] = useState(null);

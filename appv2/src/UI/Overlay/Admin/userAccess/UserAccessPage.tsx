@@ -5,6 +5,8 @@ import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarExport, GridToolbarFilterButton, GridValueGetterParams } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
+import { selectAuth } from 'state/reducers/auth';
+import { useSelector } from 'util/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 
@@ -17,22 +19,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '320px'
   },
   error: {
-  backgroundColor: theme?.palette?.error?.main
+  backgroundColor: theme.palette.error.main
   },
   warning: {
-    backgroundColor: theme?.palette?.warning?.main
+    backgroundColor: theme.palette.warning.main
   },
   info: {
-    backgroundColor: theme?.palette?.info?.main
+    backgroundColor: theme.palette.info.main
   },
   success: {
-    backgroundColor: theme?.palette?.success?.main
+    backgroundColor: theme.palette.success.main
   },
   gray: {
-    backgroundColor: theme?.palette?.grey[100]
+    backgroundColor: theme.palette.grey[100]
   },
   paddingTop: {
     paddingTop: '1rem'
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4)
   }
 }));
 
@@ -115,6 +121,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const classes = useStyles();
   const api = useInvasivesApi();
+  const authState = useSelector(selectAuth);
 
   const [usersTableLoading, setUsersTableLoading] = useState(false);
   const [requestTableLoading, setRequestTableLoading] = useState(false);
@@ -389,11 +396,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   /* ON MOUNT */
 
   useEffect(() => {
+    if (!authState?.authenticated) {
+      return;
+    }
     loadUsers();
     getAvailableRoles();
     getFundingAgencies();
     getEmployers();
-  }, []);
+  }, [authState?.authenticated]);
 
   /*
     ================================================================================================
@@ -588,7 +598,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container className={props?.classes?.container} style={{ paddingBottom: '50px' }}>
+    <Container className={classes?.container} style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
@@ -1051,11 +1061,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         Role grant/revoke flexible dialog
         ###
       */}
-      <p>test</p>
       <Dialog
         open={roleDialogOpen}
         onClose={closeRoleDialog}
-        sx={{ zIndex: 100000000}}
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
         fullWidth>
