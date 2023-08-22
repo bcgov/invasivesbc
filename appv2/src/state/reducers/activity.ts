@@ -40,13 +40,15 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
-  ACTIVITY_SET_UNSAVED_NOTIFICATION
+  ACTIVITY_SET_UNSAVED_NOTIFICATION,
+  ACTIVITY_GET_REQUEST
 } from '../actions';
 
 import { AppConfig } from '../config';
 
 class ActivityState {
   initialized: boolean;
+  loading: boolean;
   error: boolean;
   activity: any;
   suggestedJurisdictions: [];
@@ -72,11 +74,18 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...new ActivityState()
         }
       }
+      case ACTIVITY_GET_REQUEST: {
+        return {
+          ...state,
+          loading: true
+        };
+      }
       case ACTIVITY_GET_SUCCESS: {
         return {
           ...state,
           activity: { ...action.payload.activity },
-          suggestedTreatmentIDs: []
+          suggestedTreatmentIDs: [],
+          loading: false
         };
       }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {

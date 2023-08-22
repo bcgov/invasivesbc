@@ -113,7 +113,6 @@ export const Records = (props) => {
 
   return (
     <div className="records__container">
-      <Route path="/Records/Activity:id" component={Activity} />
       <Route
         path="/Records"
         exact={true}
