@@ -11,6 +11,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 const Tab = (props: any) => {
   const history = useHistory();
@@ -67,7 +68,7 @@ const Tab = (props: any) => {
 export const Header: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
-  const userSettingsState = useSelector((state: any) => state.userSettings);
+  const userSettingsState = useSelector(selectUserSettings);
 
   const ButtonWrapper = (props: any) => {
     return <div className="ButtonWrapper">{props.children}</div>;

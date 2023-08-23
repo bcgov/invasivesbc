@@ -1,4 +1,4 @@
-import { Button, StepIcon } from '@mui/material';
+import { Button, createTheme, StepIcon, ThemeOptions } from '@mui/material';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useLocation } from 'react-router-dom';
@@ -23,15 +23,18 @@ import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchTemplates from './Overlay/Batch/BatchTemplates';
 import BatchView from './Overlay/Batch/BatchView';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
+import { Activity } from './Overlay/Records/Record';
+import { ThemeProvider } from '@mui/styles';
+import { getDesignTokens } from 'util/CustomThemeProvider';
 
 const URL_LISTENER = (props) => {
   const dispatch = useDispatch();
-  const ref = useRef(0);
+  const location = useLocation();
 
   const targetURL = useSelector((state: any) => state.AppMode?.url);
   // URL listener so that the auth saga can redirect to the correct page
   useEffect(() => {
-    if (location.pathname !== targetURL && ref.current === 0) {
+    if (location.pathname !== targetURL) {
       dispatch({
         type: URL_CHANGE,
         payload: { url: location.pathname }
@@ -51,12 +54,14 @@ const URL_ListenerMemo = React.memo((props: any) => {
 const App: React.FC = () => {
   const toggled = useSelector((state: any) => state.AppMode?.panelOpen);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
+  const theme = createTheme(getDesignTokens(false) as ThemeOptions);
 
   const OverlayContentMemo = React.memo((props: any) => {
     return (
-      <div className="overlay-content">
+      <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen': ''}`}>
         <Route path="/Landing" render={(props) => <LandingComponent />} />
         <Route exact={true} path="/Records" render={(props) => <Records />} />
+        <Route path="/Records/Activity:id" component={Activity} />
         <Route
           exact={true}
           path="/Records/List/Local:id"
@@ -68,7 +73,9 @@ const App: React.FC = () => {
         <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
         <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
         <Route path="/Legend" render={(props) => <LegendsPopup />} />
-        <Route path="/Admin" render={(props) => <UserAccessPage />} />
+        <ThemeProvider theme={theme}>
+          <Route path="/Admin" render={(props) => <UserAccessPage />} />
+        </ThemeProvider>
         <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
       </div>
     );

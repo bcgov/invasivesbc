@@ -21,6 +21,9 @@ body {
 }
 
 .overlay-content {
-  padding-top: 6rem;
   width: 100%;
+}
+
+.overlay-content-fullscreen {
+  padding-top: 6rem;
 }

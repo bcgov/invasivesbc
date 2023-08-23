@@ -402,6 +402,9 @@ function* handle_MAP_INIT_REQUEST(action) {
 function* handle_FILTER_STATE_UPDATE(action) {
   const authState = yield select(selectAuth);
   const settingsState = yield select(selectUserSettings);
+  if(!settingsState.recordSets) {
+    yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS)
+  }
   const recordSets = JSON.parse(JSON.stringify(settingsState.recordSets));
   for (const x in action.payload) {
     if (action.payload[x].type === 'POI') {

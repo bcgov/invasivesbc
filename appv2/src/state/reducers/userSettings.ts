@@ -1,8 +1,16 @@
-import { INewRecordDialogState } from 'components/activities-list/Tables/NewRecordDialog';
+import { createNextState } from '@reduxjs/toolkit'
+//import { Uuid, UuidOptions } from 'node-ts-uuid';
+//import  process from 'process'
+//window.process = process
+
 import {
   ACTIVITY_DELETE_SUCCESS,
+  ACTIVITY_GET_REQUEST,
   GET_API_DOC_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
+  RECORDSET_ADD_FILTER,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
   USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
@@ -24,6 +32,18 @@ import {
 } from '../actions';
 
 import { AppConfig } from '../config';
+import { createNextState } from '@reduxjs/toolkit';
+
+
+/*const options: UuidOptions = {
+  length: 50,
+};
+*/
+
+export function getUuid() {
+  const uuid: string = Math.random() + Date.now().toString();
+  return uuid;
+}
 
 class UserSettingsState {
   initialized: boolean;
@@ -36,10 +56,12 @@ class UserSettingsState {
   apiDocsWithSelectOptions: object;
 
   mapCenter: [number, number];
-  newRecordDialogState: INewRecordDialogState;
+  //newRecordDialogState: INewRecordDialogState;
+  newRecordDialogState: any;
   APIErrorDialog: any;
   recordSets: [
     {
+      tableFilters?: any;
       advancedFilters: [];
       gridFilters: [];
       color: string;
@@ -95,6 +117,12 @@ const initialState = new UserSettingsState();
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case ACTIVITY_GET_REQUEST: {
+        return {
+          ...state,
+          activeActivity: action.payload.activityID
+        };
+      }
       case ACTIVITY_DELETE_SUCCESS: {
         return {
           ...state,
@@ -112,15 +140,90 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       case MAP_TOGGLE_WHATS_HERE: {
         return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
       }
+      case RECORDSET_ADD_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
+              {
+                draftState.recordSets[action.payload.setID].tableFilters = []
+              }
+              draftState.recordSets[action.payload.setID]?.tableFilters.push({
+                id: getUuid(),
+                field: 'activity_id',
+                operator: 'contains',
+                filter: ''
+              });
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+      case RECORDSET_REMOVE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+
+                draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1)
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+      case RECORDSET_UPDATE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          switch (action.payload.filterType) {
+            case 'tableFilter':
+              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
+              {
+                draftState.recordSets[action.payload.setID].tableFilters = []
+              }
+              draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+                (filter) => filter.id !== action.payload.filterID
+              );
+
+              if (action.payload.tableField) {
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.tableField;
+              }
+
+              if (action.payload.filter !== undefined) {
+                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+        return nextState;
+      }
+
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-        return {
-          ...state,
-          activeActivity: action.payload.activeActivity,
-          activeActivityDescription: action.payload.activeActivityDescription,
-          activeIAPP: action.payload.activeIAPP,
-          recordSets: { ...action.payload.recordSets },
-          recordsExpanded: action.payload.recordsExpanded
-        };
+        const nextState = createNextState(state, (draftState) => {
+          if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
+
+          if (!draftState.activeActivityDescription)
+            draftState.activeActivityDescription = action.payload.activeActivityDescription;
+
+          if (!draftState.activeIAPP) draftState.activeIAPP = action.payload.activeIAPP;
+
+          draftState.recordSets = { ...action.payload.recordSets };
+          draftState.recordsExpanded = action.payload.recordsExpanded;
+        });
+        return nextState;
       }
       case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
         return {

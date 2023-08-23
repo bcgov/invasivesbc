@@ -7,7 +7,7 @@
     background-color: #fff;
     transition: all 0.5s ease;
     transform: translateY(100%);
-    z-index:10000000;
+    z-index:1000;
     overflow: hidden;
   }
   
