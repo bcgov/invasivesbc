@@ -10,8 +10,10 @@ export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                                 'properties', jsonb_build_object(
                                                   'id', a.short_id,
                                                   'activityType', a.activity_type,
-                                                  'speciesPositive', a.species_positive_full,
-                                                  'speciesNegative', a.species_negative_full,
+                                                  'speciesPositive', a.species_positive,
+                                                  'speciesNegative', a.species_negative,
+                                                  'speciesPositiveFull', a.species_positive_full,
+                                                  'speciesNegativeFull', a.species_negative_full,
                                                   'jurisdiction', a.jurisdiction_display,
                                                   'RISO', a.regional_invasive_species_organization_areas,
                                                   'agency', a.agency,

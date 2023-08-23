@@ -40,7 +40,7 @@ export async function buildPublicMapExport(connection) {
   try {
     await new Promise<void>((resolve, reject) => {
       exec(
-        `tippecanoe -o ${filePrefix}.mbtiles -n IAPP -zg --extend-zooms-if-still-dropping -r1 --cluster-distance=3 -S3 -ah -U 3 -ae -Liapp:${filePrefix}-iapp.json -Linvasives:${filePrefix}-activities.json`,
+        `tippecanoe -o ${filePrefix}.mbtiles -n InvasivesBC -z15 -r1 -aC --cluster-distance=4 -Liapp:${filePrefix}-iapp.json -Linvasives:${filePrefix}-activities.json`,
         (error, stdout, stderr) => {
           if (error) {
             defaultLog.error({message: 'Error in tippecanoe', stdout, stderr});
@@ -75,9 +75,9 @@ export async function buildPublicMapExport(connection) {
     fs.unlinkSync(`${filePrefix}.mbtiles`);
   }
 
-  defaultLog.info({message: `processing complete, starting upload`});
+  const s3key = `invasives-${process.env.ENVIRONMENT || 'local'}.pmtiles`;
 
-  const s3key = `invasives.pmtiles`;
+  defaultLog.info({message: `processing complete, starting upload of ${s3key}`});
 
   try {
     await S3.upload({
