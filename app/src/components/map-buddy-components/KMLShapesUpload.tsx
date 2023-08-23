@@ -145,6 +145,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         showPreviews={true}
         useChipsForPreview={true}
         showFileNamesInPreview={true}
+        maxFileSize={10485760}
       />
 
       <Box className={classes.buttonsContainer}>
@@ -157,7 +158,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
           disabled={uploadRequests.length < 1 || uploadClicked}
           onClick={() => {
             setUploadClicked(true);
-            doUpload()
+            doUpload();
           }}>
           Upload
         </Button>
