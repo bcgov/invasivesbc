@@ -71,7 +71,6 @@
   /* same height as the apps header and footer */ 
   height: 5vh;
   width: 100%;
-  border-style: dotted;
   border-color: black;
   display: flex;
   justify-content: center;
@@ -79,32 +78,30 @@
 
 .records__activity_buttons {
   height: 5vh;
-  width: 350px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
+.records__activity_buttons > * {
+  flex-grow: 1;
+}
+
 
 .records__activity__photos_button {
   height: 5vh;
-  width: 100px;
-  border-style: dotted;
   border-color: black;
 }
 
 .records__activity__form_button {
   height: 5vh;
-  width: 100px;
-  border-style: dotted;
   border-color: black;
 }
 
 
 .records__activity__map_button {
   height: 5vh;
-  width: 100px;
-  border-style: dotted;
   border-color: black;
 }
 

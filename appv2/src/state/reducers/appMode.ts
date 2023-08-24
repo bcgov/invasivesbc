@@ -12,7 +12,7 @@ export enum appModeEnum {
 
 const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null, overlay_menu_toggle?: boolean } = {
   mode: appModeEnum.Landing,
-  panelOpen: false,
+  panelOpen: true,
   overlay_menu_toggle: false,
   url: null
 };

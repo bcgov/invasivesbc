@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useLocation } from 'react-router-dom';
 import { selectMap } from 'state/reducers/map';
 import {
+  ACTIVITY_COPY_REQUEST,
+  ACTIVITY_DELETE_REQUEST,
+  ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
   MAP_TOGGLE_LEGENDS,
@@ -84,7 +87,7 @@ const App: React.FC = () => {
                       dispatch({ type: OVERLAY_MENU_TOGGLE });
                     }}
                     variant="contained">
-                    SAVE TEH FORM
+                    SAVE TO DRAFT
                   </Button>
                   <Button
                     onClick={() => {
@@ -92,7 +95,31 @@ const App: React.FC = () => {
                       dispatch({ type: OVERLAY_MENU_TOGGLE });
                     }}
                     variant="contained">
-                    SUBMIT TEH FORM
+                    PUBLISH DRAFT TO SUBMITTED
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      dispatch({ type: ACTIVITY_COPY_REQUEST });
+                      dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    }}
+                    variant="contained">
+                    COPY FORM
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      dispatch({ type: ACTIVITY_PASTE_REQUEST });
+                      dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    }}
+                    variant="contained">
+                    PASTE FORM
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      dispatch({ type: ACTIVITY_DELETE_REQUEST });
+                      dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    }}
+                    variant="contained">
+                    DELETE
                   </Button>
                 </OverlayMenu>
               )}

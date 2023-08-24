@@ -118,6 +118,7 @@ function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
   }
 }
 
+
 function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
   yield delay(2000);
 

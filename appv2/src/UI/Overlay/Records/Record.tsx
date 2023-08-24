@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import './Records.css';
 import { Route, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, OVERLAY_MENU_TOGGLE, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, OVERLAY_MENU_TOGGLE, TOGGLE_PANEL, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { select } from 'redux-saga/effects';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectAuth } from 'state/reducers/auth';
@@ -28,26 +28,36 @@ export const Activity = (props) => {
         </OverlayHeader>
       <div className="records__activity__header">
         <div className="records__activity_buttons">
-          <div
+          <Button
+          variant="contained"
             className="records__activity__photos_button"
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/photos')}>
-            photos
-          </div>
-          <div
+            Photos
+          </Button>
+          <Button
+          variant="contained"
             className="records__activity__form_button"
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/form')}>
-            form
-          </div>
-          <div
+            Form
+          </Button>
+          <Button
+          variant="contained"
             className="records__activity__map_button"
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/map')}>
-            map
-          </div>
+            Re-center Map
+          </Button>
         </div>
       </div>
       <Route
         path="/Records/Activity:id/form"
         render={() => {
+          if( activityState.failCode === 404)
+          {
+            setTimeout(()=> {
+              history.push('/Records')
+            },3000)
+            return <div>Activity does not exists, redirecting...</div>
+          }
           if (
             activityState?.activity?.activity_id &&
             settingsState.apiDocsWithSelectOptions &&

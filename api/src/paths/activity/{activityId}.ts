@@ -79,9 +79,7 @@ function getActivity(): RequestHandler {
         namespace: 'activity/{activityId}',
         code: 503
       });
-
     }
-
 
     try {
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
@@ -99,9 +97,9 @@ function getActivity(): RequestHandler {
 
       const result = (response && response.rows && response.rows[0]) || null;
 
-      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result)});
+      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result) });
 
-      req['activity'] = result
+      req['activity'] = result;
     } catch (error) {
       defaultLog.debug({ label: 'getActivity', message: 'error', error });
       return res.status(500).json({
@@ -152,16 +150,25 @@ function getMedia(): RequestHandler {
  */
 function returnActivity(): RequestHandler {
   return async (req, res) => {
-
+    if (req['activity'] === null) {
+      return res
+        .status(404)
+        .json({
+          message: 'Activity not found.  Maybe it was deleted.',
+          request: req.body,
+          namespace: 'activity/{activityId}',
+          code: 404
+        });
+    }
     // original blob from client:
-    let originalPayload = { ...req['activity'].activity_payload}
+    let originalPayload = { ...req['activity'].activity_payload };
 
     // other columns in activity_incoming_data:
-    let supplementalFields = { ...req['activity']}
-    delete supplementalFields.activity_payload
+    let supplementalFields = { ...req['activity'] };
+    delete supplementalFields.activity_payload;
 
     // merge the two
-    const returnVal = { ...originalPayload, ...supplementalFields}
+    const returnVal = { ...originalPayload, ...supplementalFields };
 
     return res.status(200).json(returnVal);
   };

@@ -21,6 +21,8 @@ import {
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_FAILURE,
   ACTIVITY_CREATE_NETWORK,
+  ACTIVITY_DELETE_FAILURE,
+  ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_DELETE_PHOTO_FAILURE,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_FAILURE,
@@ -310,6 +312,20 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
+
+export function* handle_ACTIVITY_DELETE_REQUEST(action) {
+  const activityState = yield select(selectActivity)
+  try {
+    yield put({
+      type: ACTIVITY_DELETE_NETWORK_REQUEST,
+      payload: { activity_id: activityState.activity_id}
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_DELETE_FAILURE });
+  } 
+}
+
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
