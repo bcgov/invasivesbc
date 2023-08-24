@@ -1,5 +1,12 @@
+.whatshere-container {
+  width: 100%;
+}
+
 .whatshere-table {
+  width: 100%;
+}
+
+.whatshere-table-container {
   margin: 0 1rem;
-  padding: 1rem;
   padding-bottom: 3rem;
 }

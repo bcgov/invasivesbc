@@ -10,6 +10,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { ActivityForm } from './Activity/Form';
 import { selectActivity } from 'state/reducers/activity';
 import { ActivityPhotos } from './Activity/Photos';
+import { OverlayHeader } from '../OverlayHeader';
 
 export const Activity = (props) => {
   const history = useHistory();
@@ -20,8 +21,8 @@ export const Activity = (props) => {
   const activityState = useSelector(selectActivity);
 
   return (
-    <div //onClick={()=> history.goBack()}
-      className="records__activity">
+    <div className="records__activity">
+      <OverlayHeader/>
       <div className="records__activity__header">
         <div className="records__activity_buttons">
           <div
