@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import {  OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
 
 export enum appModeEnum {
   'Records',
@@ -10,9 +10,10 @@ export enum appModeEnum {
   'IAPP'
 }
 
-const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null } = {
+const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null, overlay_menu_toggle?: boolean } = {
   mode: appModeEnum.Landing,
   panelOpen: false,
+  overlay_menu_toggle: false,
   url: null
 };
 
@@ -29,7 +30,12 @@ export default function appMode(state = initialState, action: any) {
         panelOpen: action?.payload?.panelOpen ? action.payload.panelOpen : !state.panelOpen,
         panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
       };
-
+    case OVERLAY_MENU_TOGGLE: {
+      return {
+        ...state, 
+        overlay_menu_toggle: !state.overlay_menu_toggle
+      }
+    }
     case URL_CHANGE:
       return {
         ...state,

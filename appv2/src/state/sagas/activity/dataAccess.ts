@@ -171,9 +171,10 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   try {
+    const activityState = yield select(selectActivity)
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: action.payload.activity_id, updatedFormData: action.payload.updatedFormData }
+      payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
     });
   } catch (e) {
     console.error(e);
@@ -298,10 +299,11 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
+    const activityState = yield select(selectActivity)
   try {
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: action.payload.activity_id, form_status: ActivityStatus.SUBMITTED }
+      payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
     });
   } catch (e) {
     console.error(e);
