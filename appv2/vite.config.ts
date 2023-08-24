@@ -1,12 +1,16 @@
-// vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import {defineConfig} from 'vite';
+import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
+
 import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
+
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import inject from 'rollup-plugin-inject';
 
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
-  const defines: any = {};
+  const defines = {};
 
   const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
 
@@ -62,16 +66,48 @@ function buildSpecificDefines() {
 }
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  root: 'src',
+  publicDir: '../public',
+  build: {
+    // Relative to the root
+    outDir: '../dist',
+    minify: false,
+    sourcemap: true,
+    cssCodeSplit: false,
+
+    rollupOptions: {
+      plugins: [
+        rollupNodePolyFill()
+      ],
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return "vendor"
+          }
+          if (id.includes('state/config')) {
+            return "configuration"
+          }
+        }
+      }
+    }
+  },
+  define: {
+    ...buildSpecificDefines()
+  },
+  assetsInclude: ['**/*.tiff'],
+  plugins: [
+    tsconfigPaths(),
+    react({
+      // Use React plugin in all *.jsx and *.tsx files
+      include: '**/*.{jsx,tsx}'
+    })
+  ],
   optimizeDeps: {
     esbuildOptions: {
       plugins: [
         NodeModulesPolyfillPlugin()
       ]
     }
-  },
-  define: {
-    ...buildSpecificDefines()
   },
   resolve: {
     alias: {
@@ -81,4 +117,4 @@ export default defineConfig({
       "@mui/styled-engine": "@mui/styled-engine-sc"
     }
   }
-})
+});
