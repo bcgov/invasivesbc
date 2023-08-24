@@ -41,7 +41,8 @@ import {
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
-  ACTIVITY_GET_REQUEST
+  ACTIVITY_GET_REQUEST,
+  ACTIVITY_GET_FAILURE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -57,6 +58,7 @@ class ActivityState {
   current_activity_hash: string;
   saved_activity_hash: string;
   unsaved_notification: any;
+  failCode: number;
   constructor() {
     this.initialized = false;
     this.current_activity_hash = null;
@@ -74,9 +76,18 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...new ActivityState()
         }
       }
+      case ACTIVITY_GET_FAILURE: {
+        return {
+          ...state,
+        loading: false,
+        failCode: action.payload?.failNetworkObj?.status
+        }
+
+      }
       case ACTIVITY_GET_REQUEST: {
         return {
           ...state,
+          failCode: null,
           loading: true
         };
       }

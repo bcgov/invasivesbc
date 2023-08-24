@@ -21,6 +21,8 @@ import {
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_FAILURE,
   ACTIVITY_CREATE_NETWORK,
+  ACTIVITY_DELETE_FAILURE,
+  ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_DELETE_PHOTO_FAILURE,
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_FAILURE,
@@ -171,9 +173,10 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   try {
+    const activityState = yield select(selectActivity)
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: action.payload.activity_id, updatedFormData: action.payload.updatedFormData }
+      payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
     });
   } catch (e) {
     console.error(e);
@@ -298,16 +301,31 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
+    const activityState = yield select(selectActivity)
   try {
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: action.payload.activity_id, form_status: ActivityStatus.SUBMITTED }
+      payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
     });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
+
+export function* handle_ACTIVITY_DELETE_REQUEST(action) {
+  const activityState = yield select(selectActivity)
+  try {
+    yield put({
+      type: ACTIVITY_DELETE_NETWORK_REQUEST,
+      payload: { activity_id: activityState.activity_id}
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({ type: ACTIVITY_DELETE_FAILURE });
+  } 
+}
+
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {

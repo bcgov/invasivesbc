@@ -22,7 +22,6 @@ import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
-import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import PasteButtonComponent from './PasteButtonComponent';
 import { useSelector } from 'util/use_selector';
@@ -35,7 +34,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import validator from '@rjsf/validator-ajv6';
 
 // import './aditionalFormStyles.css';
-export interface IFormContainerProps extends IFormControlsComponentProps {
+export interface IFormContainerProps {
   classes?: any;
   activity: any;
   customValidation?: any;
@@ -343,26 +342,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           </SelectAutoCompleteContextProvider>
         </ThemeProvider>
 
-        <Box mt={3} style={{ paddingBottom: '50px' }}>
-          <FormControlsComponent
-            onSubmit={() => {
-              console.dir(formRef);
-              //https://github.com/rjsf-team/react-jsonschema-form/issues/2104#issuecomment-847924986
-              (formRef.current as any).formElement.current.dispatchEvent(
-                new CustomEvent('submit', {
-                  cancelable: true,
-                  bubbles: true // <-- actual fix
-                })
-              );
-            }}
-            isDisabled={isDisabled}
-            activitySubtype={props.activity.activity_subtype}
-            onCopy={props.copyFormData ? () => props.copyFormData() : null}
-            onPaste={pasteCallback}
-            {...props}
-            onSubmitAsOfficial={props.onSubmitAsOfficial ? () => props.onSubmitAsOfficial() : null}
-          />
-        </Box>
         <Dialog
           open={open}
           onClose={handleClose}

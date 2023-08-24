@@ -1,16 +1,20 @@
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import qs from 'qs';
 import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus, getShortActivityID } from 'sharedAPI';
 
 import {
   ACTIVITY_CREATE_SUCCESS,
+  ACTIVITY_DELETE_FAILURE,
+  ACTIVITY_DELETE_SUCCESS,
+  ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  AUTH_INITIALIZE_COMPLETE,
+  AUTH_INITIALIZE_COMPLETE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -27,13 +31,37 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
 }
 
+export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
+  try {
+    const activityState = yield select(selectActivity)
+    console.dir(activityState)
+    const networkReturn = yield InvasivesAPI_Call(
+      'DELETE',
+      `/api/activities?` + 
+      qs.stringify({ id: [activityState.activity.activity_id]})
+    );
+    if (networkReturn?.status == 200) {
+      yield put({ type: ACTIVITY_DELETE_SUCCESS });
+    } else {
+      yield put({ type: ACTIVITY_DELETE_FAILURE });
+    }
+  } catch (e) {
+    yield put({ type: ACTIVITY_DELETE_FAILURE });
+  }
+}
+
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
-  const authState = yield select(selectAuth)
-  if(!authState.authenticated)
-  {
-    yield take(AUTH_INITIALIZE_COMPLETE)
+  const authState = yield select(selectAuth);
+  if (!authState.authenticated) {
+    yield take(AUTH_INITIALIZE_COMPLETE);
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
+
+  if(!(networkReturn.status === 200))
+  {
+    yield put({type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn }})
+    return;
+  }
 
   const datav2 = {
     ...networkReturn.data,
@@ -81,7 +109,7 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
     }
   }
 
-  const filtered_media_delete_keys = newActivity.media_delete_keys.filter(key => !keys_to_delete.includes(key));
+  const filtered_media_delete_keys = newActivity.media_delete_keys.filter((key) => !keys_to_delete.includes(key));
 
   const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
     ...newActivity,
@@ -92,23 +120,25 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
   if (networkReturn.status < 200 || networkReturn.status > 299) {
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS, payload: {
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      payload: {
         notification: {
           visible: true,
           message: networkReturn.data.message,
-          severity: "error"
+          severity: 'error'
         }
       }
     });
   } else {
     yield put({
-        type: ACTIVITY_SAVE_SUCCESS, payload: {
-          activity: {
-            ...newActivity,
-            media_delete_keys: filtered_media_delete_keys,
-          },
+      type: ACTIVITY_SAVE_SUCCESS,
+      payload: {
+        activity: {
+          ...newActivity,
+          media_delete_keys: filtered_media_delete_keys
         }
-      });
+      }
+    });
   }
 }
 
@@ -137,11 +167,11 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, {
     activity_subtype: action.payload.activity_subtype,
     search_feature,
-    form_status: ["Submitted"]
+    form_status: ['Submitted']
   });
 
   let treatments = [];
-  const result = (networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result);
+  const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
   if (result && result.length > 0) {
     treatments = result.map((treatment, i) => {
       const shortActID = getShortActivityID(treatment);

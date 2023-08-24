@@ -118,7 +118,7 @@ export const Header: React.FC = () => {
         </Tab>
 
         <Tab
-          path={'/Records/Activity:' + userSettingsState?.activeActivity}
+          path={'/Records/Activity:' + userSettingsState?.activeActivity + '/form'}
           label="Current Activity"
           loggedInOnly={true}
           panelOpen={true}
