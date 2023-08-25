@@ -24,7 +24,8 @@
     "isolatedModules": true,
     "noEmit": false,
     "types": ["cypress"],
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types", "src/types"],
+    //"typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src", "**/*.ts"],
