@@ -323,15 +323,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
             <MapResizer />
             <ExtentListener />
-            <AccuracyToggle />
+            {props.isPublicMode || <AccuracyToggle /> }
             <AccuracyMarker />
-            {props.isPublicMode || <LocationMarker />}
+            <LocationMarker />
+            <BaseMapToggle/>
             {props.isPublicMode || <FindMeToggle />}
-            {props.isPublicMode || <PanToMe />}
+            {props.isPublicMode || <PanToMe /> }
             {props.isPublicMode || <JumpToRecord />}
 
-            <IAPPExtentButton />
-            <LabelButton />
 
             <HDToggle />
             {props.isPublicMode || <LabelButton />}
