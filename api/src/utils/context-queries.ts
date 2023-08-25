@@ -37,11 +37,11 @@ const saveBCGW = async (id: any, req: any) => {
       targetAttribute: 'BGC_LABEL',
       targetColumn: 'biogeoclimatic_zones'
     },
-    {
-      tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
-      targetAttribute: 'ADMIN_AREA_NAME',
-      targetColumn: 'regional_districts'
-    },
+    // {
+    //   tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+    //   targetAttribute: 'ADMIN_AREA_NAME',
+    //   targetColumn: 'regional_districts'
+    // },
     {
       tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
       targetAttribute: 'DISTRICT_NAME',
