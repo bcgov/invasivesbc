@@ -326,6 +326,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {props.isPublicMode || <AccuracyToggle /> }
             <AccuracyMarker />
             <LocationMarker />
+            {props.isPublicMode || <LegendsButton/>}
             <BaseMapToggle/>
             {props.isPublicMode || <FindMeToggle />}
             {props.isPublicMode || <PanToMe /> }
