@@ -66,8 +66,9 @@ export const VectorOverviewLayer = (props) => {
         url: CONFIG.PUBLIC_MAP_URL,
         paint_rules: PAINT_RULES,
         label_rules: LABEL_RULES,
-        maxZoom: 22,
-        maxNativeZoom: 15
+        maxZoom: 30,
+        maxNativeZoom: 23,
+        maxDataZoom: 15
       });
 
       layer.options.zIndex = 9999;
@@ -107,19 +108,19 @@ class InvasivesGeoSymbolizer {
   }
 
   fontForZoom(z: number) {
-    let size = 13;
+    let size = 12;
 
     const sizeMap = {
       13: 12,
       14: 12,
-      15: 10,
-      16: 10,
-      17: 8,
-      18: 7,
-      19: 6,
-      20: 5,
-      21: 4,
-      22: 4
+      15: 12,
+      16: 12,
+      17: 12,
+      18: 13,
+      19: 13,
+      20: 13,
+      21: 13,
+      22: 14
     };
 
     if (sizeMap[z]) {
@@ -132,14 +133,24 @@ class InvasivesGeoSymbolizer {
   _drawPoint(context, geom, z, feature) {
     context.globalAlpha = 1;
 
-    let radius = 2;
-    let width = 1;
-    if (width > 0) {
-      context.lineWidth = 1;
-      context.beginPath();
-      context.arc(geom[0][0].x, geom[0][0].y, radius + width / 2, 0, 2 * Math.PI);
-      context.stroke();
+    let radius = 3;
+    let width = 3;
+
+    if (context.zoom > 15) {
+      radius = 5;
+      width = 5;
+    } if (context.zoom > 20) {
+      radius = 10;
+      width = 10;
+    } if (context.zoom > 23) {
+      radius = 15;
+      width = 15;
     }
+
+    context.lineWidth = 1;
+    context.beginPath();
+    context.arc(geom[0][0].x, geom[0][0].y, radius + width / 2, 0, 2 * Math.PI);
+    context.stroke();
 
     context.fillStyle = this.colour;
     context.beginPath();
