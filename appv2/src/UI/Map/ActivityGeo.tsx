@@ -92,14 +92,22 @@ export const ActivityGeo = (props) => {
     case 'READ':
       return <>{activityState?.activity?.geometry ? <GeoJSON data={activityState?.activity?.geometry} /> : <></>}</>;
     case 'EDIT':
-      if(map?.pm)
-      return (
-        <>
-          <GeoEditTools /> <GeoJSON  pmIgnore={true} key={Math.random()} data={activityState?.activity?.geometry} />
-        </>
-      );
-      else
-      return null;
+      if (map?.pm)
+        return (
+          <>
+            <GeoEditTools />
+            <GeoJSON
+              pointToLayer={(point, ltlng) => {
+                const newLayer = new L.Marker(ltlng, { pmIgnore: false });
+                return newLayer;
+              }}
+              pmIgnore={false}
+              key={Math.random()}
+              data={activityState?.activity?.geometry}
+            />
+          </>
+        );
+      else return null;
     default:
       return <></>;
   }
