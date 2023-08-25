@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
-import 'UI/styles/batch.scss';
+import 'UI/Styles/batch.scss';
 import { CodeTableReference } from './CodeTableReference';
 import { useDispatch } from 'react-redux';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
