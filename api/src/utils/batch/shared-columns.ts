@@ -30,12 +30,26 @@ export const BasicInformation = [
     .referencesCode('employer_code')
     .build(),
   new TemplateColumnBuilder(
-    'Basic - Funding Agency',
+    'Basic - Funding Agency 1',
     'codeReference',
-    'form_data.activity_data.invasive_species_agency_code'
+    'form_data.activity_data.invasive_species_agency_code[0]'
   )
     .referencesCode('invasive_species_agency_code')
     .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Basic - Funding Agency 2',
+    'codeReference',
+    'form_data.activity_data.invasive_species_agency_code[1]'
+  )
+    .referencesCode('invasive_species_agency_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Basic - Funding Agency 3',
+    'codeReference',
+    'form_data.activity_data.invasive_species_agency_code[2]'
+  )
+    .referencesCode('invasive_species_agency_code')
     .build(),
   new TemplateColumnBuilder(
     'Basic - Jurisdiction 1',
