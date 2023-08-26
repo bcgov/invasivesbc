@@ -152,15 +152,15 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   }
 }
 
-
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   try {
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS, payload: {
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      payload: {
         notification: {
           visible: true,
-          message: "Activity saved successfully",
-          severity: "success"
+          message: 'Activity saved successfully',
+          severity: 'success'
         }
       }
     });
@@ -173,7 +173,7 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   try {
-    const activityState = yield select(selectActivity)
+    const activityState = yield select(selectActivity);
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
       payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
@@ -279,7 +279,11 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const oldLinkedId = beforeActivity.form_data.activity_type_data.linked_id;
     const oldCopyGeometry = beforeActivity.form_data.activity_type_data.copy_geometry;
 
-    if (updatedFormData.activity_type_data.copy_geometry === 'Yes' && linked_id && (oldLinkedId  !== linked_id || oldCopyGeometry !== 'Yes')) {
+    if (
+      updatedFormData.activity_type_data.copy_geometry === 'Yes' &&
+      linked_id &&
+      (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes')
+    ) {
       const linked_geo = mapState.activitiesGeoJSON?.features?.find(
         (activity) => activity?.properties?.id === linked_id
       );
@@ -301,7 +305,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
-    const activityState = yield select(selectActivity)
+  const activityState = yield select(selectActivity);
   try {
     yield put({
       type: ACTIVITY_SAVE_NETWORK_REQUEST,
@@ -314,18 +318,17 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_DELETE_REQUEST(action) {
-  const activityState = yield select(selectActivity)
+  const activityState = yield select(selectActivity);
   try {
     yield put({
       type: ACTIVITY_DELETE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id}
+      payload: { activity_id: activityState.activity_id }
     });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_DELETE_FAILURE });
-  } 
+  }
 }
-
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
@@ -406,9 +409,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-        type: 'FeatureCollection',
-        features: payloadActivity.geometry
-      }
+          type: 'FeatureCollection',
+          features: payloadActivity.geometry
+        }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {

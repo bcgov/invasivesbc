@@ -138,7 +138,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           return {
             ...state,
             map_zoom: action.payload.zoom,
-            map_center: action.payload.center
+            map_center: action.payload.center,
+            panned: false
           };
         }
       }
