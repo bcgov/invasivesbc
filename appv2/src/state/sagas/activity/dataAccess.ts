@@ -1,11 +1,13 @@
 import { call, put, select, take } from 'redux-saga/effects';
 import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
+import centroid from '@turf/centroid';
 import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
-  ActivityType, MAX_AREA,
+  ActivityType,
+  MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
 import {
@@ -43,6 +45,7 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
+  MAIN_MAP_MOVE,
   MAP_INIT_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
@@ -55,11 +58,8 @@ import { getClosestWells } from 'util/closestWellsHelpers';
 import { calc_utm } from 'util/utm';
 import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
 
-
 export function* handle_ACTIVITY_GET_REQUEST(action) {
-
   try {
-
     // if mobile or web
     yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
   } catch (e) {
@@ -424,6 +424,26 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  }
+}
+
+export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
+  const activityState = yield select(selectActivity);
+
+  const geometry = activityState.activity.geometry?.[0];
+  if (geometry) {
+    const isPoint = geometry.geometry?.type === 'Point' ? true : false;
+    let target;
+    if (isPoint) {
+      target = geometry.geometry
+    } else {
+      var acentroid = centroid(geometry);
+
+      target = acentroid.geometry;
+    }
+
+    console.dir(target)
+    yield put({ type: MAIN_MAP_MOVE, payload: { center: {lat: target.coordinates[1], lng: target.coordinates[0]}, zoom: 16 } });
   }
 }
 

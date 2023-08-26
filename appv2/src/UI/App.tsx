@@ -38,6 +38,7 @@ import { Activity } from './Overlay/Records/Record';
 import { ThemeProvider } from '@mui/styles';
 import { getDesignTokens } from 'util/CustomThemeProvider';
 import { OverlayMenu } from './Overlay/OverlayMenu';
+import { MapCenterSetter } from './Map/MapCenterSetter';
 
 const URL_LISTENER = (props) => {
   const dispatch = useDispatch();

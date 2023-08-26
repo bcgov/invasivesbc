@@ -65,7 +65,7 @@ export const ActivityGeo = (props) => {
       dispatch({ type: 'update', payload: { event: e } });
       dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
     });
-    dispatch({ type: 'create', payload: { event: e } });
+    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
   });
   /*layer.on('pm:markerdragend',  (e) => {
       dispatch({type: 'update', payload: { event: e}})
@@ -86,7 +86,7 @@ export const ActivityGeo = (props) => {
     dispatch({type: 'banana', payload: {event: e}})
   })*/
 
-  let mode = 'EDIT';
+  let mode = 'EDIT'; // check user access
 
   switch (mode) {
     case 'READ':
@@ -97,10 +97,26 @@ export const ActivityGeo = (props) => {
           <>
             <GeoEditTools />
             <GeoJSON
+              onEachFeature={(feature, layer) => {
+                (L as any).PM.reInitLayer(layer);
+                layer.on('pm:update', (e) => {
+                  console.log('we got there')
+                  dispatch({ type: 'update', payload: { event: e } });
+                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
+                });
+                return layer
+              }}
               pointToLayer={(point, ltlng) => {
                 const newLayer = new L.Marker(ltlng, { pmIgnore: false });
+                (L as any).PM.reInitLayer(newLayer);
+                newLayer.on('pm:update', (e) => {
+                  console.log('we got there')
+                  dispatch({ type: 'update', payload: { event: e } });
+                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
+                });
                 return newLayer;
               }}
+              
               pmIgnore={false}
               key={Math.random()}
               data={activityState?.activity?.geometry}

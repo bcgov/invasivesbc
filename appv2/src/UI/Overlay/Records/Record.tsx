@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import './Records.css';
 import { Route, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, OVERLAY_MENU_TOGGLE, TOGGLE_PANEL, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, OVERLAY_MENU_TOGGLE, PAN_AND_ZOOM_TO_ACTIVITY, TOGGLE_PANEL, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { select } from 'redux-saga/effects';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectAuth } from 'state/reducers/auth';
@@ -43,7 +43,16 @@ export const Activity = (props) => {
           <Button
           variant="contained"
             className="records__activity__map_button"
-            onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/map')}>
+            onClick={() => {
+
+
+
+              dispatch({type: PAN_AND_ZOOM_TO_ACTIVITY})
+
+            
+            
+            
+            history.push(history.location.pathname.split(':')[0] + ':' + id + '/map')}}>
             Re-center Map
           </Button>
         </div>
