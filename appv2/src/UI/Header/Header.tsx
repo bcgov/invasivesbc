@@ -1,6 +1,6 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React from 'react';
+import React, { useRef } from 'react';
 import './Header.css';
 import { IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -66,6 +66,10 @@ const Tab = (props: any) => {
 };
 
 export const Header: React.FC = () => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cHeader render:' + ref.current.toString(), 'color: yellow')
+
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
   const userSettingsState = useSelector(selectUserSettings);

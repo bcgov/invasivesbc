@@ -1,14 +1,12 @@
+import { useLeafletContext } from '@react-leaflet/core';
+import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectActivity } from 'state/reducers/activity';
 import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import type { LayerGroup } from 'leaflet';
-
-import * as L from 'leaflet';
-import { useLeafletContext } from '@react-leaflet/core';
 
 export const GeoEditTools = (props) => {
   const { map, layerContainer } = useLeafletContext();
@@ -23,8 +21,7 @@ export const GeoEditTools = (props) => {
     L.PM.setOptIn(true);
     map.pm.addControls({
       position: 'topleft',
-      drawCircle: false,
-
+      drawCircle: false
     });
   };
 
@@ -38,11 +35,9 @@ export const GeoEditTools = (props) => {
 };
 
 export const ActivityGeo = (props) => {
-  const activityState = useSelector(selectActivity);
-
+  const geo = useSelector((state: any) => state.ActivityState?.activity?.geometry);
   const map = useMap();
   const dispatch = useDispatch();
-
   const [lastLayer, setLastLayer] = useState(null);
 
   /*  useMapEvent('pm:drawend', (e) => {
@@ -90,7 +85,7 @@ export const ActivityGeo = (props) => {
 
   switch (mode) {
     case 'READ':
-      return <>{activityState?.activity?.geometry ? <GeoJSON data={activityState?.activity?.geometry} /> : <></>}</>;
+      return <>{geo ? <GeoJSON data={geo} /> : <></>}</>;
     case 'EDIT':
       if (map?.pm)
         return (
@@ -99,27 +94,28 @@ export const ActivityGeo = (props) => {
             <GeoJSON
               onEachFeature={(feature, layer) => {
                 (L as any).PM.reInitLayer(layer);
+                //setLastLayer(layer);
                 layer.on('pm:update', (e) => {
-                  console.log('we got there')
+                  console.log('we got there');
                   dispatch({ type: 'update', payload: { event: e } });
                   dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
                 });
-                return layer
+                return layer;
               }}
               pointToLayer={(point, ltlng) => {
                 const newLayer = new L.Marker(ltlng, { pmIgnore: false });
                 (L as any).PM.reInitLayer(newLayer);
+               // setLastLayer(newLayer);
                 newLayer.on('pm:update', (e) => {
-                  console.log('we got there')
+                  console.log('we got there');
                   dispatch({ type: 'update', payload: { event: e } });
-                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
+                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newLayer.toGeoJSON()] } });
                 });
                 return newLayer;
               }}
-              
               pmIgnore={false}
               key={Math.random()}
-              data={activityState?.activity?.geometry}
+              data={geo}
             />
           </>
         );
