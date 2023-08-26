@@ -1,6 +1,6 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import './Header.css';
 import { IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,35 +12,37 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { debounce } from 'lodash';
 
 const Tab = (props: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cTab ' + props.path + ' render:' + ref.current.toString(), 'color: yellow');
+
   const history = useHistory();
   const dispatch = useDispatch();
-  const authState = useSelector(selectAuth);
+  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
 
-  const [canDisplay, setCanDisplay] = React.useState(false);
+  const canDisplay = useCallback(
+    debounce(() => {
+      if (props.loggedInOnly && !authenticated) {
+        return false;
+      }
 
-  React.useEffect(() => {
-    if (props.loggedInOnly && !authState?.authenticated) {
-      setCanDisplay(false);
-      return;
-    }
+      if (props.loggedInOnly && authenticated) {
+        return true;
+      }
 
-    if (props.loggedInOnly && authState?.authenticated) {
-      setCanDisplay(true);
-      return;
-    }
+      if (!props.loggedInOnly) {
+        return true;
+      }
 
-    if (!props.loggedInOnly) {
-      setCanDisplay(true);
-      return;
-    }
-
-    if (!authState?.authenticated) {
-      setCanDisplay(false);
-      return;
-    }
-  }, [JSON.stringify(authState?.authenticated), JSON.stringify(props.loggedInOnly)]);
+      if (!authenticated) {
+        return false;
+      }
+    }, 1000),
+    [JSON.stringify(authenticated), JSON.stringify(props.loggedInOnly)]
+  );
 
   return (
     <>
@@ -65,105 +67,151 @@ const Tab = (props: any) => {
   );
 };
 
+const ButtonWrapper = (props: any) => {
+  return <div className="ButtonWrapper">{props.children}</div>;
+};
+
+const LoginButton = () => {
+  const dispatch = useDispatch();
+  return (
+    <div className="LoginButton">
+      <IconButton
+        onClick={() => {
+          dispatch({ type: AUTH_SIGNIN_REQUEST });
+        }}
+        size="large"
+        color="inherit"
+        aria-label="login">
+        <VpnKeyIcon />
+      </IconButton>
+    </div>
+  );
+};
+
+const LogoutButton = () => {
+  const dispatch = useDispatch();
+  return (
+    <div className="LogoutButton">
+      <IconButton
+        onClick={() => {
+          dispatch({ type: AUTH_SIGNOUT_REQUEST });
+        }}
+        size="large"
+        color="inherit"
+        aria-label="logout">
+        <LogoutIcon />
+      </IconButton>
+    </div>
+  );
+};
+
+const ActivityTabMemo = React.memo((props) => {
+  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity);
+  return (
+    <Tab
+      key={'tab3'}
+      path={'/Records/Activity:' + activeActivity + '/form'}
+      label="Current Activity"
+      loggedInOnly={true}
+      panelOpen={true}
+      panelFullScreen={false}>
+      <AssignmentIcon />
+    </Tab>
+  );
+});
+
+const IAPPTabMemo = React.memo((props) => {
+  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP);
+  return (
+    <Tab
+      key={'tab4'}
+      path={'/Records/IAPP:' + activeIAPP}
+      label="Current IAPP"
+      loggedInOnly={true}
+      panelOpen={true}
+      panelFullScreen={false}>
+      <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
+    </Tab>
+  );
+});
+
+const AdminPanelMemo = React.memo((props) => {
+  const roles = useSelector((state: any) => state?.Auth?.roles);
+  return (
+    <>
+      {roles.find((role) => role.role_id === 18) ? (
+        <Tab key={'tab9'} path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
+          <AdminPanelSettings />
+        </Tab>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+});
+
+const LoginOrOutMemo = React.memo((props) => {
+  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
+  return <>{authenticated ? <LogoutButton /> : <LoginButton />}</>;
+});
+
 export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
-  console.log('%cHeader render:' + ref.current.toString(), 'color: yellow')
-
-  const dispatch = useDispatch();
-  const authState = useSelector(selectAuth);
-  const userSettingsState = useSelector(selectUserSettings);
-
-  const ButtonWrapper = (props: any) => {
-    return <div className="ButtonWrapper">{props.children}</div>;
-  };
-
-  const LoginButton = () => {
-    return (
-      <div className="LoginButton">
-        <IconButton
-          onClick={() => {
-            dispatch({ type: AUTH_SIGNIN_REQUEST });
-          }}
-          size="large"
-          color="inherit"
-          aria-label="login">
-          <VpnKeyIcon />
-        </IconButton>
-      </div>
-    );
-  };
-
-  const LogoutButton = () => {
-    return (
-      <div className="LogoutButton">
-        <IconButton
-          onClick={() => {
-            dispatch({ type: AUTH_SIGNOUT_REQUEST });
-          }}
-          size="large"
-          color="inherit"
-          aria-label="logout">
-          <LogoutIcon />
-        </IconButton>
-      </div>
-    );
-  };
+  console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
 
   return (
     <div className="HeaderBar">
       <ButtonWrapper>
-        <Tab path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
+        <Tab key={'tab1'} path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
         </Tab>
 
-        <Tab path="/Records" label="Records" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
+        <Tab key={'tab2'} path="/Records" label="Records" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
           <ManageSearchIcon />
         </Tab>
 
-        <Tab
-          path={'/Records/Activity:' + userSettingsState?.activeActivity + '/form'}
-          label="Current Activity"
-          loggedInOnly={true}
-          panelOpen={true}
-          panelFullScreen={false}>
-          <AssignmentIcon />
-        </Tab>
+        <ActivityTabMemo />
+
+        <IAPPTabMemo />
 
         <Tab
-          path={'/Records/IAPP:' + userSettingsState?.activeIAPP}
-          label="Current IAPP"
+          key={'tab5'}
+          path={'/Batch/list'}
+          label="Batch"
           loggedInOnly={true}
           panelOpen={true}
-          panelFullScreen={false}>
-          <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
-        </Tab>
-
-        <Tab path={'/Batch/list'} label="Batch" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+          panelFullScreen={true}>
           <FileUpload />
         </Tab>
 
-        <Tab path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <Assessment />
         </Tab>
 
-        <Tab path={'/Training'} label="Training" loggedInOnly={false} panelOpen={true} panelFullScreen={true}>
+        <Tab
+          key={'tab7'}
+          path={'/Training'}
+          label="Training"
+          loggedInOnly={false}
+          panelOpen={true}
+          panelFullScreen={true}>
           <School />
         </Tab>
 
-        <Tab path={'/Legend'} label="Map Legend" loggedInOnly={false} panelOpen={true} panelFullScreen={true}>
+        <Tab
+          key={'tab8'}
+          path={'/Legend'}
+          label="Map Legend"
+          loggedInOnly={false}
+          panelOpen={true}
+          panelFullScreen={true}>
           <InfoIcon />
         </Tab>
 
-        {authState.roles.find((role) => role.role_id === 18) ? (
-          <Tab path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
-            <AdminPanelSettings />
-          </Tab>
-        ) : (
-          <></>
-        )}
+        <AdminPanelMemo />
 
-        {authState.authenticated ? <LogoutButton /> : <LoginButton />}
+        <LoginOrOutMemo />
       </ButtonWrapper>
     </div>
   );

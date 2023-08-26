@@ -143,6 +143,10 @@ const OverlayContentMemo = React.memo((props: any) => {
 });
 
 const HeaderMemo = React.memo((props: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cHeaderMemo render:' + ref.current.toString(), 'color: yellow');
+
   return <Header />;
 });
 
@@ -161,10 +165,8 @@ const MapMemo = React.memo((props: any) => {
 
 const App: React.FC = () => {
   const ref = useRef(0);
-  useEffect(() => {
-    ref.current += 1;
-    console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
-  });
+  ref.current += 1;
+  console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
   return (
     <div className="App">

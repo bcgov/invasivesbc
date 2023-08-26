@@ -99,7 +99,10 @@ export default defineConfig({
     tsconfigPaths(),
     react({
       // Use React plugin in all *.jsx and *.tsx files
-      include: '**/*.{jsx,tsx}'
+      include: '**/*.{jsx,tsx}',
+      //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react" 
+      jsxImportSource: "@welldone-software/why-did-you-render" 
+
     })
   ],
   optimizeDeps: {
