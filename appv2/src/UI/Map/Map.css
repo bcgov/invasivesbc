@@ -1,35 +1,36 @@
 .map {
-    height: 90vh;
-    width: 100vw;
-    background-color: #ccc;
+  height: 90vh;
+  width: 100vw;
   overflow: hidden;
 }
-  
-  .map__leaflet {
-    height: 100%;
-    width: 100%;
-  }
-  
+#themap {
+  background-color: black;
+  -webkit-font-smoothing: antialiased;
+}
 
-  
-  .overlay_toggle {
-    z-index: 10000000;
-    position: absolute;
-    top: 18px;
-    height: 65px;
-    right: 18px;
-    border:0;
-    background-color: #fff;
-    box-shadow: 1px 1px black;
-  }
+.map__leaflet {
+  height: 100%;
+  width: 100%;
+}
 
-  .cycle_mode {
-    z-index: 10000000;
-    position: absolute;
-    top: 104px;
-    height: 65px;
-    right: 18px;
-    border:0;
-    background-color: #fff;
-    box-shadow: 1px 1px black;
-  }
+.overlay_toggle {
+  z-index: 10000000;
+  position: absolute;
+  top: 18px;
+  height: 65px;
+  right: 18px;
+  border: 0;
+  background-color: #fff;
+  box-shadow: 1px 1px black;
+}
+
+.cycle_mode {
+  z-index: 10000000;
+  position: absolute;
+  top: 104px;
+  height: 65px;
+  right: 18px;
+  border: 0;
+  background-color: #fff;
+  box-shadow: 1px 1px black;
+}

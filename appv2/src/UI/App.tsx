@@ -169,7 +169,7 @@ const App: React.FC = () => {
   console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
   return (
-    <div className="App">
+    <div id="app" className="App">
       <URL_ListenerMemo />
       <HeaderMemo />
       <MapMemo />
