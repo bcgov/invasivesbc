@@ -74,6 +74,7 @@
   border-color: black;
   display: flex;
   justify-content: center;
+  overflow: scroll;
 }
 
 .records__activity_buttons {

@@ -34,6 +34,7 @@ const SatAndLabelLayer = React.memo((props) => {
         attribution: '&copy; <a href="http://www.esri.com/copyright">ESRI</a>',
         subdomains: 'abc',
         maxZoom: MAP_MAX_ZOOM,
+//        tileSize: 256,
         zIndex: 3000,
         maxNativeZoom: HDToggle ? 21 : 17,
         crossOrigin: true

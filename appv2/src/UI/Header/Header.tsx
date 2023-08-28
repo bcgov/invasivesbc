@@ -5,14 +5,11 @@ import './Header.css';
 import { IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH_SIGNIN_REQUEST, AUTH_SIGNOUT_REQUEST, TOGGLE_PANEL } from 'state/actions';
-import { selectAuth } from 'state/reducers/auth';
 import { Route, useHistory } from 'react-router';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { debounce } from 'lodash';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -23,30 +20,27 @@ const Tab = (props: any) => {
   const dispatch = useDispatch();
   const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
 
-  const canDisplay = useCallback(
-    debounce(() => {
-      if (props.loggedInOnly && !authenticated) {
-        return false;
-      }
+  const canDisplayCallBack = useCallback(() => {
+    if (props.loggedInOnly && !authenticated) {
+      return false;
+    }
 
-      if (props.loggedInOnly && authenticated) {
-        return true;
-      }
+    if (props.loggedInOnly && authenticated) {
+      return true;
+    }
 
-      if (!props.loggedInOnly) {
-        return true;
-      }
+    if (!props.loggedInOnly) {
+      return true;
+    }
 
-      if (!authenticated) {
-        return false;
-      }
-    }, 1000),
-    [JSON.stringify(authenticated), JSON.stringify(props.loggedInOnly)]
-  );
+    if (!authenticated) {
+      return false;
+    }
+  }, [JSON.stringify(authenticated), JSON.stringify(props.loggedInOnly), JSON.stringify(props.path)]);
 
   return (
     <>
-      {canDisplay ? (
+      {canDisplayCallBack() ? (
         <div
           className="Tab"
           onClick={() => {

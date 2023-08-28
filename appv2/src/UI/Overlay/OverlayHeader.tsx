@@ -20,6 +20,7 @@ export const OverlayHeader = (props) => {
   return(
     <div className="overlay-header">
       <div className="overlay-header-close-button">
+           ^^ Resize
         <Button variant="contained" onClick={props.closeCallback ? props.closeCallback : onClickClose}>
           Close or back
         </Button>

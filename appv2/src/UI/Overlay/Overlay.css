@@ -8,14 +8,27 @@
     transition: all 0.5s ease;
     transform: translateY(100%);
     z-index:1000;
-    overflow: hidden;
+  }
+
+  .mapOverlayContentsWrapperWithResize { 
+    transform: rotate(180deg) ;
+    width: 100%;
+    resize: vertical;
+    overflow-y: auto;
+  }
+  .mapOverlayContents { 
+    transform: rotate(180deg) ;
+    height: 100%;
+    width: 100%;
+    /*/scroll-behavior: ;*/
   }
   
   .map__overlay--show {
-    height: 50%;
+    height: auto;
     transform: translateY(-5vh);
+    overflow-y: auto;
     display: flex;
-    overflow-y: visible;;
+/*    overflow-y: visible;; */
   }
 
 .map__overlay--show-fullscreen {
@@ -23,4 +36,14 @@
     transform: translateY(-5vh);
     display: flex;
     overflow-y: visible;;
+
+}
+
+::-webkit-resizer {
+  top: 0;
+  left: 500;
+  border-width: 80px;
+  height: 200px;
+  border-style: solid;
+  border-color: transparent orangered orangered transparent;
 }
