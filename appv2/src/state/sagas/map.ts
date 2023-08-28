@@ -38,6 +38,7 @@ import {
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
   TABS_SET_ACTIVE_TAB_SUCCESS,
+  URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
@@ -451,11 +452,11 @@ function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const mapState = yield select(selectMap);
   const recordSetID = action.payload.recordSetID;
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const isOpen = recordSet.expanded;
+  // const isOpen = recordSet.expanded;
 
-  if (!isOpen) {
-    return;
-  }
+  // if (!isOpen) {
+  //   return;
+  // }
 
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
@@ -481,11 +482,11 @@ function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
   const mapState = yield select(selectMap);
   const recordSetID = action.payload.recordSetID;
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const isOpen = recordSet.expanded;
+  // const isOpen = recordSet.expanded;
 
-  if (!isOpen) {
-    return;
-  }
+  // if (!isOpen) {
+  //   return;
+  // }
 
   const filters = getSearchCriteriaFromFilters(
     recordSet.advancedFilters,
@@ -939,8 +940,66 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
   });
 }
 
+function* handle_URL_CHANGE(action) {
+  const url = action.payload.url;
+  const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
+  if (isRecordSet) {
+    const id = url.split(':')[1].split('/')[0];
+
+    let recordSetsState = yield select(selectUserSettings);
+    let mapState = yield select(selectMap);
+    if (!recordSetsState.recordSets) {
+      yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS);
+      recordSetsState = yield select(selectUserSettings);
+      mapState = yield select(selectMap);
+    }
+    const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[id]));
+
+    const type = recordSet.recordSetType;
+    if (type === 'Activity') {
+      const filters = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        recordSetsState.recordSets,
+        id,
+        false,
+        recordSet.gridFilters,
+        0,
+        20,
+        mapState?.layers?.[id]?.filters?.sortColumns
+      );
+
+      yield put({
+        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: id,
+          ActivityFilterCriteria: filters
+        }
+      });
+    } else {
+      const filters = getSearchCriteriaFromFilters(
+        recordSet.advancedFilters,
+        recordSetsState.recordSets,
+        id,
+        true,
+        recordSet.gridFilters,
+        0,
+        20,
+        mapState?.layers?.[id]?.filters?.sortColumns
+      );
+
+      yield put({
+        type: IAPP_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: id,
+          IAPPFilterCriteria: filters
+        }
+      });
+    }
+  }
+}
+
 function* activitiesPageSaga() {
-//  yield fork(leafletWhosEditing);
+  //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
@@ -955,8 +1014,8 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
-    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
-    takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
+    // takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
+    // takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
@@ -972,7 +1031,8 @@ function* activitiesPageSaga() {
     takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
-    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST)
+    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
+    takeEvery(URL_CHANGE, handle_URL_CHANGE)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
