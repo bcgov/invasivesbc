@@ -15,12 +15,14 @@
 .overlay-header-close-button {
 /*/  margin-right: auto; */
 width: 100px;
+justify-content: flex-start;
 display: flex;
 }
 
 .overlay-header-menu-button {
 width: 100px;
 display: flex;
+justify-content: flex-end;
 
 }
 

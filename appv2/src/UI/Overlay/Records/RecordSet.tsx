@@ -18,6 +18,7 @@ import {
   RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_SET_RECORD_SET_REQUEST
 } from 'state/actions';
+import { OverlayHeader } from '../OverlayHeader';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
@@ -126,6 +127,7 @@ export const RecordSet = (props) => {
     default:
       return (
         <div className="recordSet_container">
+          <OverlayHeader/>
           <div className="stickyHeader">
             <div
               className="recordSet_header"

@@ -93,9 +93,8 @@ export const OverlayHeader = (props) => {
           </Button>
         </div>
       </div>
-      <div>
+      <div className="overlay-header-menu-button">
         <Button
-          className="overlay-header-menu-button"
           variant="contained"
           onClick={() => {
             dispatch({ type: OVERLAY_MENU_TOGGLE });
