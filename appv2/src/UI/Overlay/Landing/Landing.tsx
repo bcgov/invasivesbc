@@ -14,7 +14,6 @@ export const LandingComponent = (props) => {
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   return (
     <>
-      <OverlayHeader/>
       <Container className='container'>
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>

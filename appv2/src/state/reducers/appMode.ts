@@ -1,5 +1,6 @@
 import { Action } from 'redux';
-import {  OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import { OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import { createNextState } from '@reduxjs/toolkit';
 
 export enum appModeEnum {
   'Records',
@@ -10,7 +11,7 @@ export enum appModeEnum {
   'IAPP'
 }
 
-const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null, overlay_menu_toggle?: boolean } = {
+const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null; overlay_menu_toggle?: boolean } = {
   mode: appModeEnum.Landing,
   panelOpen: true,
   overlay_menu_toggle: false,
@@ -32,16 +33,18 @@ export default function appMode(state = initialState, action: any) {
       };
     case OVERLAY_MENU_TOGGLE: {
       return {
-        ...state, 
+        ...state,
         overlay_menu_toggle: !state.overlay_menu_toggle
-      }
+      };
     }
     case URL_CHANGE:
-      return {
-        ...state,
-        url: action.payload.url
-      };
-
+      const nextState = createNextState(state, (draftState: any) => {
+        draftState.url = action?.payload?.url;
+        if (['Batch', 'Reports', 'Training', 'Legend'].includes(action.payload.url.split('/')[1])) {
+          draftState.panelFullScreen = true;
+        }
+      });
+      return nextState;
     default:
       return state;
   }
