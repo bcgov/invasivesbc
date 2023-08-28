@@ -5,7 +5,6 @@ import { selectNetworkConnected } from "state/reducers/network";
 import { selectAuth } from "state/reducers/auth";
 import { selectUserInfo } from "state/reducers/userInfo";
 import { useSelector } from "util/use_selector";
-import { OverlayHeader } from "../OverlayHeader";
 
 export const LandingComponent = (props) => {
   const connected = useSelector(selectNetworkConnected);

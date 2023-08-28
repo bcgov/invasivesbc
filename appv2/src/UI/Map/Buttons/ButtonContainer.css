@@ -8,7 +8,7 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; 
   justify-content: center;
   position: absolute;
-  bottom: 0;
+  bottom: 5vh;
   width: 100vw;
   left: 50%;
   transform: translateX(-50%);
