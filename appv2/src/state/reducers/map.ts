@@ -37,10 +37,14 @@ import {
   MAP_TOGGLE_LEGENDS,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   SET_TOO_MANY_LABELS_DIALOG,
-  IAPP_EXTENT_FILTER_SUCCESS
+  IAPP_EXTENT_FILTER_SUCCESS,
+  USER_CLICKED_RECORD,
+  URL_CHANGE,
+  OVERLAY_MENU_TOGGLE
 } from '../actions';
 
 import { AppConfig } from '../config';
+import { createNextState } from '@reduxjs/toolkit';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -57,6 +61,7 @@ class MapState {
   userHeading: number;
   baseMapToggle: boolean;
   HDToggle: boolean;
+  userRecordOnClickMenuOpen?: boolean;
   accuracyToggle: boolean;
   layers: object;
   whatsHere: any;
@@ -93,6 +98,7 @@ class MapState {
     this.legendsPopup = false;
     this.labelBoundsPolygon = null;
     this.IAPPBoundsPolygon = null;
+    this.userRecordOnClickMenuOpen = false;
     this.tooManyLabelsDialog = {
       dialogActions: [],
       dialogOpen: false,
@@ -127,6 +133,27 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
   return (state = initialState, action) => {
     switch (action.type) {
       //splitting extent vars to two pairs solves render loop
+      case USER_CLICKED_RECORD: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.userRecordOnClickMenuOpen = true;
+          draftState.userRecordOnClickRecordType = action.payload.recordType;
+          draftState.userRecordOnClickRecordID = action.payload.id;
+          draftState.userRecordOnClickRecordRow = action.payload.row;
+        });
+        return nextState;
+      }
+      case URL_CHANGE: {
+        return {
+          ...state,
+          userRecordOnClickMenuOpen: false
+        }
+      }
+      case OVERLAY_MENU_TOGGLE: {
+        return {
+          ...state, 
+          userRecordOnClickMenuOpen: false
+        }
+      }
       case MAIN_MAP_MOVE: {
         if (action.payload.tab === 'Current Activity') {
           return {

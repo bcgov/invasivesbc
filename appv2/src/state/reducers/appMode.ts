@@ -34,7 +34,7 @@ export default function appMode(state = initialState, action: any) {
     case OVERLAY_MENU_TOGGLE: {
       return {
         ...state,
-        overlay_menu_toggle: !state.overlay_menu_toggle
+        overlay_menu_toggle : !state.overlay_menu_toggle
       };
     }
     case URL_CHANGE:
@@ -43,6 +43,7 @@ export default function appMode(state = initialState, action: any) {
         if (['Batch', 'Reports', 'Training', 'Legend'].includes(action.payload.url.split('/')[1])) {
           draftState.panelFullScreen = true;
         }
+        draftState.overlay_menu_toggle = false
       });
       return nextState;
     default:

@@ -2,7 +2,7 @@ import { Button, createTheme, ThemeOptions } from '@mui/material';
 import { ThemeProvider } from '@mui/styles';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, useLocation } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 import { getDesignTokens } from 'util/CustomThemeProvider';
 import {
   ACTIVITY_COPY_REQUEST,
@@ -62,6 +62,13 @@ const OverlayContentMemo = React.memo((props: any) => {
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
   const theme = createTheme(getDesignTokens(false) as ThemeOptions);
+  const history = useHistory();
+  const {
+    userRecordOnClickMenuOpen,
+    userRecordOnClickRecordType,
+    userRecordOnClickRecordID,
+    userRecordOnClickRecordRow
+  } = useSelector((state: any) => state.Map);
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <Route path="/Landing" render={(props) => <LandingComponent />} />
@@ -123,7 +130,27 @@ const OverlayContentMemo = React.memo((props: any) => {
       <Route
         exact={true}
         path="/Records/List/Local:id"
-        render={(props) => <RecordSet setId={props.match.params.id.split(':')[1]} />}
+        render={(props) => (
+          <>
+            {!userRecordOnClickMenuOpen ? (
+              <RecordSet setId={props.match.params.id.split(':')[1]} />
+            ) : (
+              <OverlayMenu>
+                <Button
+                  onClick={() => {
+                    const url =
+                      userRecordOnClickRecordType === 'Activity'
+                        ? '/Records/Activity:' + userRecordOnClickRecordID + '/form'
+                        : '/Records/IAPP:' + userRecordOnClickRecordID + '/form';
+                    history.push(url);
+                  }}
+                  variant="contained">
+                  Open {}
+                </Button>
+              </OverlayMenu>
+            )}
+          </>
+        )}
       />
       <Route exact={true} path="/Batch/list" render={(props) => <BatchList />} />
       <Route
