@@ -1,3 +1,13 @@
+#overlaydiv {
+  height: 100px;
+  min-height: 5vh;
+  max-height: calc(100% - 10vh);
+}
+.overlayMenuResizeButtons {
+  display: flex;
+  flex-direction: row;
+}
+
 .map__overlay {
     bottom: 0;
     height: 0;
@@ -5,26 +15,19 @@
     position: absolute;
     right: 0;
     background-color: #fff;
-    transition: all 0.5s ease;
+    transition: all 0.2s ease;
     transform: translateY(100%);
     z-index:1000;
   }
 
-  .mapOverlayContentsWrapperWithResize { 
-    transform: rotate(180deg) ;
-    width: 100%;
-    resize: vertical;
-    overflow-y: auto;
-  }
   .mapOverlayContents { 
-    transform: rotate(180deg) ;
     height: 100%;
     width: 100%;
+    overflow-y: auto;
     /*/scroll-behavior: ;*/
   }
   
   .map__overlay--show {
-    height: auto;
     transform: translateY(-5vh);
     overflow-y: auto;
     display: flex;

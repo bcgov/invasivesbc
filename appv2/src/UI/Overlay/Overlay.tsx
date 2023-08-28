@@ -7,12 +7,11 @@ const Overlay = (props) => {
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
   return (
     <div
+    id='overlaydiv'
       className={`map__overlay ${panelOpen && !fullScreen ? 'map__overlay--show' : ''} ${
         panelOpen && fullScreen ? 'map__overlay--show-fullscreen' : ''
       }`}>
-      <div className={`mapOverlayContentsWrapperWithResize `}>
         <div className={`mapOverlayContents `}> {props.children}</div>
-      </div>
     </div>
   );
 };
