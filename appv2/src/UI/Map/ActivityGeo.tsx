@@ -21,7 +21,12 @@ export const GeoEditTools = (props) => {
     L.PM.setOptIn(true);
     map.pm.addControls({
       position: 'topleft',
-      drawCircle: false
+      drawCircle: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
+      drawText: false,
+      cutPolygon: false,
+      rotateMode: false
     });
   };
 
@@ -35,7 +40,7 @@ export const GeoEditTools = (props) => {
 };
 
 export const ActivityGeo = (props) => {
-  const geo = useSelector((state: any) => state.ActivityState?.activity?.geometry);
+  const geo = useSelector((state: any) => state.ActivityPage?.activity?.geometry);
   const map = useMap();
   const dispatch = useDispatch();
   const [lastLayer, setLastLayer] = useState(null);
