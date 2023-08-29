@@ -212,7 +212,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 
   if (
     !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) && action.payload.updatedSet.expanded
-    //|| !mapState?.recordTables?.[action.payload.updatedSetName]
+    || mapState?.recordTables?.[action.payload.updatedSetName]?.IDList === undefined
   ) {
     filterStateChanged = true;
     yield put({
