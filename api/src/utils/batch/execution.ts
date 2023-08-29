@@ -25,7 +25,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   const shortYear = moment().format().substr(2, 2);
 
-  const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 4).toUpperCase();
+  const shortId = shortYear + ActivityLetter[subtype] + uuidToCreate.substr(0, 8).toUpperCase();
 
   let mapped = activity_create_function(
     type,
@@ -66,6 +66,8 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   const geog = mapped.geog;
   delete mapped.geog;
+  mapped.short_id = shortId
+  mapped.activity_id = uuidToCreate
 
   return {
     id: uuidToCreate,

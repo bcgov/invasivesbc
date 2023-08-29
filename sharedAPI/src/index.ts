@@ -227,7 +227,7 @@ export const getShortActivityID = (activity) => {
   const shortYear = moment(activity.date_created || activity.created_timestamp)
     .format()
     .substr(2, 2);
-  return shortYear + ActivityLetter[activity.activity_subtype] + activity.activity_id.substr(0, 4).toUpperCase();
+  return shortYear + ActivityLetter[activity.activity_subtype] + activity.activity_id.substr(0, 8).toUpperCase();
 };
 
 export function populateSpeciesArrays(record) {
