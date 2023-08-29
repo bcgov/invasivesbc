@@ -33,6 +33,7 @@ import { Activity } from './Overlay/Records/Record';
 import { Records } from './Overlay/Records/Records';
 import { RecordSet } from './Overlay/Records/RecordSet';
 import EmbeddedReportsPage from './Overlay/Reports/EmbeddedReportsPage';
+import { TrainingPage } from './Overlay/Training/Training';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 
 // URL listener so that the auth saga can redirect to the correct page
@@ -160,6 +161,7 @@ const OverlayContentMemo = React.memo((props: any) => {
       <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
       <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
       <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
+      <Route path="/Training" render={(props) => <TrainingPage />} />
       <Route path="/Legend" render={(props) => <LegendsPopup />} />
       <ThemeProvider theme={theme}>
         <Route path="/Admin" render={(props) => <UserAccessPage />} />
