@@ -263,7 +263,7 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'short_id',
       headerName: 'Activity ID',
-      minWidth: 80,
+      minWidth: 130,
       sortable: false,
       renderCell: (params) => {
         return (
