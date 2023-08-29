@@ -196,6 +196,31 @@ export const getActivitiesSQL = (
     ) AS anything) `);
   }
 
+  if (!searchCriteria.search_feature_server_id && !searchCriteria.search_feature) {
+    sqlStatement.append(` with `);
+  } else {
+    sqlStatement.append(' , ');
+  }
+
+  sqlStatement.append(` CurrentPositiveObservations AS (
+    SELECT
+        cpo.activity_incoming_data_id,
+        string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+    FROM
+        current_positive_observations cpo
+    GROUP BY
+        cpo.activity_incoming_data_id
+),
+CurrentNegativeObservations AS (
+    SELECT
+        cno.activity_incoming_data_id,
+        string_agg(cno.invasive_plant, ', ') AS current_negative_species
+    FROM
+        current_negative_observations cno
+    GROUP BY
+        cno.activity_incoming_data_id
+)  `);
+
   if (searchCriteria.isCSV === false) {
     sqlStatement.append(SQL`SELECT`);
 
@@ -314,16 +339,12 @@ export const getActivitiesSQL = (
         }
       }
 
-      // include current positive species
-      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_positive,
-      (SELECT string_agg(invasive_plant, ', ') FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) AS current_positive_species`);
-
-      // include current negative observations
-      sqlStatement.append(SQL`, EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) AS has_current_negative,
-      (SELECT string_agg(invasive_plant, ', ') FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) AS current_negative_species`);
-
+      sqlStatement.append(`,     CASE WHEN cpo.activity_incoming_data_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_current_positive,
+      cpo.current_positive_species,
+      CASE WHEN cno.activity_incoming_data_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_current_negative,
+      cno.current_negative_species `);
       // include the total count of results that would be returned if the limit and offset constraints weren't applied
-   //   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+      //   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
     }
   } else {
     sqlStatement.append('SELECT extract.* ');
@@ -341,6 +362,13 @@ export const getActivitiesSQL = (
       )
     `);
   }
+
+  sqlStatement.append(`
+
+LEFT JOIN
+    CurrentPositiveObservations cpo ON cpo.activity_incoming_data_id = a.activity_incoming_data_id
+LEFT JOIN
+    CurrentNegativeObservations cno ON cno.activity_incoming_data_id = a.activity_incoming_data_id `);
 
   if (searchCriteria.isCSV) {
     switch (searchCriteria.CSVType) {
@@ -474,130 +502,130 @@ export const getActivitiesSQL = (
     const gridFilters = searchCriteria.grid_filters;
     //TBD if there's a legit reason to need this, client just shouldn't send if api doesn't need??
     //if (gridFilters.enabled) {
-      if (gridFilters.short_id) {
-        sqlStatement.append(SQL` AND LOWER(a.activity_payload ->> 'short_id') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.short_id})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.type) {
-        sqlStatement.append(SQL` AND LOWER(a.activity_type)::text LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.type})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.subtype) {
-        sqlStatement.append(SQL` AND LOWER(a.activity_subtype_full::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.subtype})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.received_timestamp) {
+    if (gridFilters.short_id) {
+      sqlStatement.append(SQL` AND LOWER(a.activity_payload ->> 'short_id') LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.short_id})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.type) {
+      sqlStatement.append(SQL` AND LOWER(a.activity_type)::text LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.type})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.subtype) {
+      sqlStatement.append(SQL` AND LOWER(a.activity_subtype_full::text) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.subtype})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.received_timestamp) {
+      sqlStatement.append(
+        SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
+      );
+      sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.jurisdiction) {
+      sqlStatement.append(SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.jurisdiction})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.species_positive) {
+      sqlStatement.append(SQL` AND LOWER(a.species_positive_full) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.species_positive})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.project_code) {
+      sqlStatement.append(
+        SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`
+      );
+      sqlStatement.append(SQL`LOWER(${gridFilters.project_code})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.species_negative) {
+      sqlStatement.append(SQL` AND LOWER(a.species_negative_full) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.species_negative})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.current_positive) {
+      sqlStatement.append(
+        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+      );
+      sqlStatement.append(SQL`LOWER(${gridFilters.current_positive})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.current_negative) {
+      sqlStatement.append(
+        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+      );
+      sqlStatement.append(SQL`LOWER(${gridFilters.current_negative})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.has_current_positive) {
+      if ('yes'.includes(gridFilters.has_current_positive.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
+          SQL` AND EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
-        sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.jurisdiction) {
-        sqlStatement.append(SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.jurisdiction})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.species_positive) {
-        sqlStatement.append(SQL` AND LOWER(a.species_positive_full) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.species_positive})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.project_code) {
+      } else if ('no'.includes(gridFilters.has_current_positive.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND  LOWER( (a.activity_payload::json->'form_data'->'activity_data'-> 'project_code'::text)::text ) LIKE '%'||`
+          SQL` AND NOT EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
-        sqlStatement.append(SQL`LOWER(${gridFilters.project_code})`);
-        sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.species_negative) {
-        sqlStatement.append(SQL` AND LOWER(a.species_negative_full) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.species_negative})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.current_positive) {
+    }
+    if (gridFilters.has_current_negative) {
+      if ('yes'.includes(gridFilters.has_current_negative.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+          SQL` AND EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
-        sqlStatement.append(SQL`LOWER(${gridFilters.current_positive})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.current_negative) {
+      } else if ('no'.includes(gridFilters.has_current_negative.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+          SQL` AND NOT EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
-        sqlStatement.append(SQL`LOWER(${gridFilters.current_negative})`);
-        sqlStatement.append(SQL`||'%'`);
       }
-      if (gridFilters.has_current_positive) {
-        if ('yes'.includes(gridFilters.has_current_positive.toLowerCase())) {
-          sqlStatement.append(
-            SQL` AND EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
-          );
-        } else if ('no'.includes(gridFilters.has_current_positive.toLowerCase())) {
-          sqlStatement.append(
-            SQL` AND NOT EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
-          );
-        }
-      }
-      if (gridFilters.has_current_negative) {
-        if ('yes'.includes(gridFilters.has_current_negative.toLowerCase())) {
-          sqlStatement.append(
-            SQL` AND EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
-          );
-        } else if ('no'.includes(gridFilters.has_current_negative.toLowerCase())) {
-          sqlStatement.append(
-            SQL` AND NOT EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
-          );
-        }
-      }
-      if (gridFilters.species_treated) {
-        sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (isAuth && gridFilters.created_by) {
-        sqlStatement.append(SQL` AND LOWER(a.created_by)::text LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.created_by})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (isAuth && gridFilters.updated_by) {
-        sqlStatement.append(SQL` AND LOWER(a.updated_by)::text LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.updated_by})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.agency) {
-        sqlStatement.append(SQL` AND LOWER(a.agency) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.regional_invasive_species_organization_areas) {
-        sqlStatement.append(SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization_areas})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.regional_districts) {
-        sqlStatement.append(SQL` AND LOWER(a.regional_districts) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.regional_districts})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.biogeoclimatic_zones) {
-        sqlStatement.append(SQL` AND LOWER(a.biogeoclimatic_zones) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.biogeoclimatic_zones})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.elevation) {
-        sqlStatement.append(SQL` AND a.elevation::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.elevation}`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.batch_id) {
-        sqlStatement.append(SQL` AND a.batch_id::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.batch_id}`);
-        sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.species_treated) {
+      sqlStatement.append(SQL` AND LOWER(a.species_treated_full) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.species_treated})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (isAuth && gridFilters.created_by) {
+      sqlStatement.append(SQL` AND LOWER(a.created_by)::text LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.created_by})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (isAuth && gridFilters.updated_by) {
+      sqlStatement.append(SQL` AND LOWER(a.updated_by)::text LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.updated_by})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.agency) {
+      sqlStatement.append(SQL` AND LOWER(a.agency) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.agency})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.regional_invasive_species_organization_areas) {
+      sqlStatement.append(SQL` AND LOWER(a.regional_invasive_species_organization_areas) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization_areas})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.regional_districts) {
+      sqlStatement.append(SQL` AND LOWER(a.regional_districts) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.regional_districts})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.biogeoclimatic_zones) {
+      sqlStatement.append(SQL` AND LOWER(a.biogeoclimatic_zones) LIKE '%'||`);
+      sqlStatement.append(SQL`LOWER(${gridFilters.biogeoclimatic_zones})`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.elevation) {
+      sqlStatement.append(SQL` AND a.elevation::text LIKE '%'||`);
+      sqlStatement.append(SQL`${gridFilters.elevation}`);
+      sqlStatement.append(SQL`||'%'`);
+    }
+    if (gridFilters.batch_id) {
+      sqlStatement.append(SQL` AND a.batch_id::text LIKE '%'||`);
+      sqlStatement.append(SQL`${gridFilters.batch_id}`);
+      sqlStatement.append(SQL`||'%'`);
     }
   }
 
