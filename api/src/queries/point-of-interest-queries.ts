@@ -169,7 +169,7 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   }
 
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+  //sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
   if (searchCriteria.iappType) {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_and_geojson ON
@@ -312,11 +312,11 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
     )
    `);
     sqlStatement.append(
-      SQL`SELECT a.site_id, b.intersects, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`
+      SQL`SELECT a.site_id, b.intersects, geojson  FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`
     );
   } else {
     sqlStatement.append(
-      SQL`SELECT a.site_id, geojson, COUNT(*) OVER() AS "total_rows_count" FROM iapp_site_summary_and_geojson a WHERE 1 = 1`
+      SQL`SELECT a.site_id, geojson  FROM iapp_site_summary_and_geojson a WHERE 1 = 1`
     );
   }
 
