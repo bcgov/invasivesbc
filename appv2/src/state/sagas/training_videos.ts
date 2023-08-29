@@ -1,5 +1,4 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
-import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
 import { Http } from '@capacitor-community/http';
