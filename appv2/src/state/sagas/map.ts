@@ -95,7 +95,7 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
     action.payload.updatedSet.recordSetType === 'POI' ? true : false,
     action.payload.updatedSet.gridFilters,
     0,
-    200000
+    20
   );
 
   const layerState = {
