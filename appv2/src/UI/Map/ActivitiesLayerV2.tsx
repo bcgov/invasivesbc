@@ -77,11 +77,11 @@ export const ActivitiesLayerV2 = (props: any) => {
       setZoomType(ZoomTypes.LOW);
       return;
     }
-    if (zoom >= 8 && zoom < 15) {
+    if (zoom >= 8 && zoom < 19) {
       setZoomType(ZoomTypes.MEDIUM);
       return;
     }
-    if (zoom >= 15) {
+    if (zoom >= 19) {
       setZoomType(ZoomTypes.HIGH);
     }
   });
