@@ -166,7 +166,7 @@ export interface ICreateOrUpdateActivity {
   activity_id: string;
   activity_type: any;
   activity_subtype: any;
-  received_timestamp?: string;
+  modified_timestamp?: string;
   deleted_timestamp?: string;
   media_keys?: any;
   biogeoclimatic_zones?: any;

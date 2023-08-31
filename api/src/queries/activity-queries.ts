@@ -296,7 +296,7 @@ CurrentNegativeObservations AS (
               'activity_type',
               'activity_subtype',
               'created_timestamp',
-              'received_timestamp',
+              'modified_timestamp',
               'deleted_timestamp',
               'geom',
               'geog',
@@ -517,13 +517,13 @@ LEFT JOIN
       sqlStatement.append(SQL`LOWER(${gridFilters.subtype})`);
       sqlStatement.append(SQL`||'%'`);
     }
-    if (gridFilters.received_timestamp) {
-      sqlStatement.append(
-        SQL` AND LOWER(to_char(a.received_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
-      );
-      sqlStatement.append(SQL`LOWER(${gridFilters.received_timestamp})`);
-      sqlStatement.append(SQL`||'%'`);
-    }
+    // if (gridFilters.modified_timestamp) {
+    //   sqlStatement.append(
+    //     SQL` AND LOWER(to_char(a.modified_timestamp at time zone 'UTC' at time zone 'America/Vancouver', 'Dy Mon DD YYYY HH24:MI:SS')::text) LIKE '%'||`
+    //   );
+    //   sqlStatement.append(SQL`LOWER(${gridFilters.modified_timestamp})`);
+    //   sqlStatement.append(SQL`||'%'`);
+    // }
     if (gridFilters.jurisdiction) {
       sqlStatement.append(SQL` AND LOWER(a.jurisdiction_display) LIKE '%'||`);
       sqlStatement.append(SQL`LOWER(${gridFilters.jurisdiction})`);
@@ -653,13 +653,13 @@ LEFT JOIN
     );
   }
 
-  if (searchCriteria.date_range_start) {
-    sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
-  }
+  // if (searchCriteria.date_range_start) {
+  //   sqlStatement.append(SQL` AND modified_timestamp >= ${searchCriteria.date_range_start}::DATE`);
+  // }
 
-  if (searchCriteria.date_range_end) {
-    sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
-  }
+  // if (searchCriteria.date_range_end) {
+  //   sqlStatement.append(SQL` AND modified_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+  // }
 
   if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
     sqlStatement.append(SQL` AND a.activity_id IN (`);
@@ -710,8 +710,10 @@ LEFT JOIN
       short_id: 'short_id', //needs a migration because of the payload stuff
       type: 'activity_type',
       subtype: 'activity_subtype_full', //also in payload stuff (activity_type is too but different) ((with subtype update, activity_subtype is also different now))
-      activity_date: 'created_timestamp',
-      received_timestamp: 'received_timestamp',
+      created_timestamp: 'created_timestamp',
+      activity_date_time: 'activity_date_time',
+      modified_timestamp: 'modified_timestamp',
+      //received_timestamp: 'received_timestamp',
       jurisdiction: 'jurisdiction_display',
       species_positive: 'species_positive_full',
       species_negative: 'species_negative_full',

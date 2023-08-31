@@ -27,6 +27,8 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
       type: activity?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
+      created_timestamp: new Date(activity?.created_timestamp).toString(),
+      modified_timestamp: new Date(activity?.modified_timestamp).toString(),
       project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
@@ -128,6 +130,14 @@ export const activityColumnsToDisplay = [
     {
       key: 'activity_date',
       name: 'Activity Date'
+    },
+    {
+      key: 'created_timestamp',
+      name: 'Created Date'
+    },
+    {
+      key: 'modified_timestamp',
+      name: 'Modified Date'
     },
     {
       key: 'project_code',

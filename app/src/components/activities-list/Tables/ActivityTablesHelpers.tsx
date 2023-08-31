@@ -1,14 +1,14 @@
-import {useSelector} from 'react-redux';
-import {selectConfiguration} from 'state/reducers/configuration';
+import { useSelector } from 'react-redux';
+import { selectConfiguration } from 'state/reducers/configuration';
 import React from 'react';
-import {ActivitySubtypeShortLabels} from 'sharedAPI';
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
 
 export interface ActivityRow {
   activity_id: string; // activity_incoming_data.activity_id
   short_id: string; // activity_incoming_data.activity_payload.short_id
   type: string; // activity_incoming_data.activity_type
   subtype: string; // activity_incoming_data.activity_subtype
-  received_timestamp: string; // activity_incoming_data.received_timestamp
+  //modified_timestamp: string; // activity_incoming_data.modified_timestamp
   jurisdiction: string[]; // activity_incoming_data.jurisdiction
   species_positive: string[]; // activity_incoming_data.species_positive ***
   species_negative: string[]; // activity_incoming_data.species_negative ***
@@ -49,6 +49,14 @@ export const ActivitiesDefaultHeaders = () => {
       name: 'Activity Date'
     },
     {
+      key: 'created_timestamp',
+      name: 'Created Date'
+    },
+    {
+      key: 'modified_timestamp',
+      name: 'Modified Date'
+    },
+    {
       key: 'project_code',
       name: 'Project Code'
     },
@@ -84,8 +92,8 @@ export const ActivitiesDefaultHeaders = () => {
       key: 'species_treated',
       name: 'Species Treated'
     },
-    {key: 'created_by', name: 'Created By'},
-    {key: 'updated_by', name: 'Updated By'},
+    { key: 'created_by', name: 'Created By' },
+    { key: 'updated_by', name: 'Updated By' },
     {
       key: 'agency',
       name: 'Agency'
@@ -168,7 +176,14 @@ export const MapActivitiesToDataGridRows = (activities, MOBILE, cachedActivities
       type: activity?.activity_payload?.activity_type,
       subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
-      project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
+      created_timestamp: new Date(activity?.created_timestamp).toString(),
+      modified_timestamp: new Date(activity?.modified_timestamp).toString(),
+      project_code: getArrayString(
+        Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code)
+          ? activity?.activity_payload?.form_data?.activity_data?.project_code
+          : [],
+        'description'
+      ),
       jurisdiction: activity?.jurisdiction_display,
       species_positive: activity?.species_positive_full,
       species_negative: activity?.species_negative_full,

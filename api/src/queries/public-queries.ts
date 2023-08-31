@@ -12,7 +12,6 @@ export function getPublicActivitiesSQL(): SQLStatement {
                                      a.species_positive,
                                      a.species_negative,
                                      a.regional_districts,
-                                     a.received_timestamp,
                                      a.short_id,
                                      st_asgeojson(a.geog) as geo
                               from activity_incoming_data a

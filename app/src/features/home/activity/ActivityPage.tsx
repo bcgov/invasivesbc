@@ -495,15 +495,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             <Typography align="left">
               Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
             </Typography>
-            <Typography style={{display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word'}} align="left">
+            <Typography style={{ display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word' }} align="left">
               Date created:
               {activityInStore.activity.date_created
                 ? new Date(activityInStore.activity.date_created).toString()
                 : 'unknown'}
               {'\n'}Created by: {activityInStore.activity.created_by ? activityInStore.activity.created_by : 'unknown'}
               {'\n'}Date modified:{' '}
-              {activityInStore.activity.received_timestamp
-                ? new Date(activityInStore.activity.received_timestamp).toString()
+              {activityInStore.activity.modified_timestamp
+                ? new Date(activityInStore.activity.modified_timestamp).toString()
                 : new Date(activityInStore.activity.date_created).toString()}
               {'\n'}Modified by: {activityInStore.activity.updated_by ? activityInStore.activity.updated_by : 'unknown'}
             </Typography>
