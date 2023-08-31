@@ -687,6 +687,43 @@ export const WindDirectionValidator = (row): RowValidationResult => {
   };
 };
 
+export const ApplicationMethodValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = [
+    'Chemical Treatment (If Tank Mix) - Application Method',
+    'Chemical Treatment (No Tank Mix) - Application Method'
+  ];
+  const rowData = row.data;
+  const tank_mix_application = rowData?.['Chemical Treatment (If Tank Mix) - Application Method']?.parsedValue;
+  const no_tank_mix_application = rowData?.['Chemical Treatment (No Tank Mix) - Application Method']?.parsedValue;
+  const validationMessages = [];
+
+  if (!tank_mix_application && !no_tank_mix_application) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail:
+        'Either Chemical Treatment (If Tank Mix) - Application Method or Chemical Treatment (No Tank Mix) - Application Method is required.'
+    });
+  }
+
+  if (tank_mix_application && no_tank_mix_application) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'Only 1 application method is required.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Service License',
