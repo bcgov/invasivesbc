@@ -35,8 +35,8 @@ const Map = (props: any) => {
         zoomDelta={1}
         fadeAnimation={true}
         id="themap"
-        center={[50.5, 30.5]}
-        zoom={13}
+        center={[51, -128]}
+        zoom={5}
         className="map__leaflet">
         <RecordSetLayers />
         {props.children}
