@@ -1,16 +1,10 @@
-import {Button, createTheme, ThemeOptions} from '@mui/material';
-import {ThemeProvider} from '@mui/styles';
-import React, {useEffect, useRef} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Route, useHistory, useLocation} from 'react-router-dom';
-import {getDesignTokens} from 'util/CustomThemeProvider';
+import { Button, createTheme, ThemeOptions } from '@mui/material';
+import { ThemeProvider } from '@mui/styles';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, useHistory, useLocation } from 'react-router-dom';
+import { getDesignTokens } from 'util/CustomThemeProvider';
 import {
-  ACTIVITY_COPY_REQUEST,
-  ACTIVITY_DELETE_REQUEST,
-  ACTIVITY_PASTE_REQUEST,
-  ACTIVITY_SAVE_REQUEST,
-  ACTIVITY_SUBMIT_REQUEST,
-  OVERLAY_MENU_TOGGLE,
   URL_CHANGE
 } from '../state/actions';
 import './App.css';
@@ -25,8 +19,8 @@ import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchList from './Overlay/Batch/BatchList';
 import BatchTemplates from './Overlay/Batch/BatchTemplates';
 import BatchView from './Overlay/Batch/BatchView';
-import {LandingComponent} from './Overlay/Landing/Landing';
-import {LegendsPopup} from './Overlay/Legend/LegendsPopup';
+import { LandingComponent } from './Overlay/Landing/Landing';
+import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
 import {OverlayMenu} from './Overlay/OverlayMenu';
 import {Activity} from './Overlay/Records/Record';
@@ -36,6 +30,7 @@ import EmbeddedReportsPage from './Overlay/Reports/EmbeddedReportsPage';
 import {TrainingPage} from './Overlay/Training/Training';
 import {WhatsHereTable} from './Overlay/WhatsHere/WhatsHereTable';
 import {IAPPRecord} from "./Overlay/IAPP/IAPPRecord";
+import { FormMenuButtons } from './Overlay/FormMenuButtons';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -60,7 +55,6 @@ const URL_ListenerMemo = React.memo((props: any) => {
 });
 
 const OverlayContentMemo = React.memo((props: any) => {
-  const dispatch = useDispatch();
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
   const theme = createTheme(getDesignTokens(false) as ThemeOptions);
@@ -83,46 +77,7 @@ const OverlayContentMemo = React.memo((props: any) => {
               <Activity/>
             ) : (
               <OverlayMenu>
-                <Button
-                  onClick={() => {
-                    dispatch({type: ACTIVITY_SAVE_REQUEST});
-                    dispatch({type: OVERLAY_MENU_TOGGLE});
-                  }}
-                  variant="contained">
-                  SAVE TO DRAFT
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch({type: ACTIVITY_SUBMIT_REQUEST});
-                    dispatch({type: OVERLAY_MENU_TOGGLE});
-                  }}
-                  variant="contained">
-                  PUBLISH DRAFT TO SUBMITTED
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch({type: ACTIVITY_COPY_REQUEST});
-                    dispatch({type: OVERLAY_MENU_TOGGLE});
-                  }}
-                  variant="contained">
-                  COPY FORM
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch({type: ACTIVITY_PASTE_REQUEST});
-                    dispatch({type: OVERLAY_MENU_TOGGLE});
-                  }}
-                  variant="contained">
-                  PASTE FORM
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch({type: ACTIVITY_DELETE_REQUEST});
-                    dispatch({type: OVERLAY_MENU_TOGGLE});
-                  }}
-                  variant="contained">
-                  DELETE
-                </Button>
+                <FormMenuButtons />
               </OverlayMenu>
             )}
           </>
