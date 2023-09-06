@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import './Records.css';
 import { Route, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, OVERLAY_MENU_TOGGLE, PAN_AND_ZOOM_TO_ACTIVITY, TOGGLE_PANEL, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
+import { ACTIVITY_SAVE_REQUEST, ACTIVITY_SUBMIT_REQUEST, ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, OVERLAY_MENU_TOGGLE, PAN_AND_ZOOM_TO_ACTIVITY, TOGGLE_PANEL, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { select } from 'redux-saga/effects';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectAuth } from 'state/reducers/auth';
@@ -11,7 +11,7 @@ import { ActivityForm } from './Activity/Form';
 import { selectActivity } from 'state/reducers/activity';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
-import { Button } from '@mui/material';
+import { Alert, Button, Snackbar } from '@mui/material';
 
 export const Activity = (props) => {
   const history = useHistory();
@@ -21,11 +21,27 @@ export const Activity = (props) => {
   const authState = useSelector(selectAuth);
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
   const activityState = useSelector(selectActivity);
+  const notification = useSelector((state: any) => state.ActivityPage?.notification);
+
+  const handleAPIErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    dispatch({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+      payload: {
+        notification: {
+          visible: false,
+          message: '',
+          severity: 'success'
+        }
+      }
+    });
+  };
 
   return (
     <div className="records__activity">
-      <OverlayHeader>
-        </OverlayHeader>
+      <OverlayHeader />
       <div className="records__activity__header">
         <div className="records__activity_buttons">
           <Button
@@ -84,6 +100,11 @@ export const Activity = (props) => {
           else return <div>loading</div>;
         }}
       />
+      <Snackbar open={notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
+        <Alert onClose={handleAPIErrorClose} severity={notification?.severity} sx={{width: '100%'}}>
+          {notification?.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
