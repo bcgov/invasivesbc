@@ -22,7 +22,7 @@ export const ActivityForm = (props) => {
         payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay }
       });
     }, 150),
-    []
+    [unsavedDelay]
   );
 
   return (
