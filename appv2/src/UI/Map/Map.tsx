@@ -6,21 +6,23 @@ import * as L from 'leaflet';
 import OfflineLayers from './OfflineLayers';
 import { useSelector } from 'util/use_selector';
 import { RecordSetLayersRenderer } from './RecordSetLayersRenderer';
+import { VectorOverviewLayer } from './VectorOverviewLayer';
 
 const RecordSetLayers = (props: any) => {
   const { IAPPGeoJSON } = useSelector((state: any) => state.Map);
   const [shouldDisplay, setShouldDisplay] = useState(false);
-
+  
   useLayoutEffect(() => {
     if (IAPPGeoJSON?.features.length && !shouldDisplay) {
       setShouldDisplay(true);
     }
   }, [JSON.stringify(IAPPGeoJSON?.features.length)]);
-
+  
   return shouldDisplay ? <RecordSetLayersRenderer /> : null;
 };
 
 const Map = (props: any) => {
+  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   let ref = useRef(0);
   ref.current += 1;
   console.log('%cMap.tsx render' + ref.current.toString(), 'color: yellow');
@@ -39,6 +41,7 @@ const Map = (props: any) => {
         <RecordSetLayers />
         {props.children}
         <OfflineLayers />
+        {!isAuth && <VectorOverviewLayer />}
       </MapContainer>
     </div>
   );

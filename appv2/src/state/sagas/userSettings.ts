@@ -368,7 +368,7 @@ function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
 }
 
 function* handle_APP_AUTH_READY(action) {
-  yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST });
+  if (action.payload.authenticated) yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST });
 }
 
 function* handle_USER_SETTINGS_SET_DARK_THEME(action) {

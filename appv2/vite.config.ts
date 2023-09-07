@@ -41,6 +41,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_REALM = JSON.stringify(process.env['SSO_REALM']);
     defines.CONFIGURATION_KEYCLOAK_URL = JSON.stringify(process.env['SSO_URL']);
     defines.CONFIGURATION_REDIRECT_URI = JSON.stringify(process.env['REDIRECT_URI']);
+    defines.CONFIGURATION_PUBLIC_MAP_URL = JSON.stringify(process.env['PUBLIC_MAP_URL']);
 
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
