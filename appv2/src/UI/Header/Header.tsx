@@ -10,6 +10,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
+import invbclogo from "/assets/InvasivesBC_Icon.svg";
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -156,6 +157,20 @@ export const Header: React.FC = () => {
 
   return (
     <div className="HeaderBar">
+      <img
+        src={invbclogo}
+        style={{
+          marginRight: '5px',
+          objectFit: 'contain',
+          backgroundColor: 'white',
+          padding: 4,
+          borderRadius: 4,
+          float: 'left'
+        }}
+        height="40"
+        width="40"
+        alt="B.C. Government Logo"
+      />
       <ButtonWrapper>
         <Tab key={'tab1'} path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
