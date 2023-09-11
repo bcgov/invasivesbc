@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AccuracyMarker, AccuracyToggle } from './AccuracyToggle';
 import { BaseMapToggle } from './BaseMapToggle';
 import { FindMeToggle, LocationMarker, PanToMe } from './FindMe';
@@ -12,7 +12,7 @@ export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   
   return (
-    <div className="map-btn-container">
+    <div id="map-btn-container">
       <HDToggle />
       <BaseMapToggle />
       {isAuth && <FindMeToggle />}

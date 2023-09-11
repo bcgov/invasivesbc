@@ -32,6 +32,7 @@ const debouncedDrag = debounce((e) => {
   console.log('dragging to resize');
   const elementWeWant = document.getElementById('overlaydiv');
   const appElement = document.getElementById('app');
+  const buttonContainer = document.getElementById('map-btn-container');
   //const originalHeight = document.getElementById('overlaydiv').style.height;
 
   const currentAppStyle = window.getComputedStyle(appElement);
@@ -40,7 +41,9 @@ const debouncedDrag = debounce((e) => {
 
   const currentAppHeight = parseInt(currentAppStyle.height.split('px')[0]);
   const mousePos = e.y;
-  elementWeWant.style.height = currentAppHeight - mousePos + 'px';
+  const newHeight = currentAppHeight - mousePos;
+  elementWeWant.style.height = newHeight + 'px';
+  buttonContainer.style.bottom = newHeight + 'px';
 }, 10);
 // }
 
