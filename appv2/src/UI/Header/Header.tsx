@@ -214,16 +214,6 @@ export const Header: React.FC = () => {
           <School />
         </Tab>
 
-        <Tab
-          key={'tab8'}
-          path={'/Legend'}
-          label="Map Legend"
-          loggedInOnly={false}
-          panelOpen={true}
-          panelFullScreen={true}>
-          <InfoIcon />
-        </Tab>
-
         <AdminPanelMemo />
 
       </ButtonWrapper>
