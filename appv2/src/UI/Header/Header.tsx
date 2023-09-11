@@ -100,6 +100,25 @@ const LogoutButton = () => {
   );
 };
 
+const InvIcon = () => {
+  return (
+    <div className="inv-icon">
+      <img
+        src={invbclogo}
+        style={{
+          objectFit: 'contain',
+          backgroundColor: 'white',
+          borderRadius: 4,
+          padding: 4
+        }}
+        height="20"
+        width="20"
+        alt="B.C. Government Logo"
+      />
+    </div>
+  );
+};
+
 const ActivityTabMemo = React.memo((props) => {
   const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity);
   return (
@@ -157,20 +176,7 @@ export const Header: React.FC = () => {
 
   return (
     <div className="HeaderBar">
-      <img
-        src={invbclogo}
-        style={{
-          marginRight: '5px',
-          objectFit: 'contain',
-          backgroundColor: 'white',
-          padding: 4,
-          borderRadius: 4,
-          float: 'left'
-        }}
-        height="40"
-        width="40"
-        alt="B.C. Government Logo"
-      />
+      <InvIcon />
       <ButtonWrapper>
         <Tab key={'tab1'} path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
@@ -220,8 +226,8 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
-        <LoginOrOutMemo />
       </ButtonWrapper>
+      <LoginOrOutMemo />
     </div>
   );
 };

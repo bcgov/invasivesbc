@@ -13,31 +13,42 @@
 
 
 .ButtonWrapper {
-    width: 50%;
+    width: 55%;
     display: flex;
     height: 5vh;
-    flex-direction: row;
     justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar; 
+    /* justify-content: center; */
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    /* width: 80vw; */
 
 }
 
 .Tab{
     display: flex;
-    flex-direction: row;
-    flex-flow: row wrap;
+    /* flex-direction: row;
+    flex-flow: row wrap; */
     align-items: center;
+    padding-right: .5rem;
 
 }
 
 .Tab__Label {
 /*    padding-top: 5px;*/
-    align-self: flex-start;
+    /* align-self: flex-start; */
     font-size: small;
 
 }
 
 .Tab__Content {
-    align-self: flex-start
+    /* align-self: flex-start */
 
 }
 .Tab__Indicator {
@@ -46,17 +57,21 @@
     background-color: #fff;
     align-self: flex-end;
 }
-.LoginButton {
-    align-items: center;
-    right: 1;
-    position: fixed;
-    margin-right: 10px;
+.LoginButton, .LogoutButton {
+  display: flex;
+  position: fixed;
+  align-items: center;
+  height: 5vh;
+  right: 0;
+  margin-right: 10px;
 }
 
-.LogoutButton {
-    align-items: center;
-    right: 0;
-    position: fixed;
-    margin-right: 10px;
+
+.inv-icon {
+  display: flex;
+  position: fixed;
+  align-items: center;
+  height: 5vh;
+  margin: 0 10px;
 }
   
