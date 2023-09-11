@@ -71,7 +71,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const { displayName, accessRoles, username } = useSelector(selectAuth);
+  const  displayName = useSelector((state) => state.Auth.displayName);
   const { newRecordDialogState } = useSelector(selectUserSettings);
 
   useEffect(() => {

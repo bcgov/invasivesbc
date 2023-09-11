@@ -21,6 +21,8 @@ import {
 } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { getSearchCriteriaFromFilters } from 'util/miscYankedFromComponents';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -104,15 +106,37 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   }
 }
 
+export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState) => {
+  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
+  const recordSetType = recordSetsState?.recordSets?.[recordSetID]?.recordSetType;
+  const sortColumns = recordSet?.sortColumns
+  const tableFilters = recordSet?.tableFilters
+  const spatialFilters = recordSet?.spatialFilters
+  const selectColumns = recordSet?.selectColumns? recordSet?.selectColumns: getSelectColumnsByRecordSetType(recordSetType)
+
+  return {
+    recordSetType: recordSetType,
+    sortColumns: sortColumns,
+    tableFilters: tableFilters,
+    spatialFilters: spatialFilters,
+    selectColumns: selectColumns
+  } as any
+}
+
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
-    // if mobile or web
+
+    // new filter object:
+    const currentState = yield select(selectUserSettings)
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState)
+    filterObject.page = action.payload.page? action.payload.page: 0
+    filterObject.limit = action.payload.limit? action.payload.limit: 20
+
     if (true) {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
         payload: {
-          ...action.payload
-        }
+          filterObj: filterObject, recordSetID: action.payload.recordSetID}
       });
     }
     if (false) {
@@ -225,4 +249,9 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 
   yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { page: 0} });
+}
+
+function getSelectColumnsByRecordSetType(recordSetType: any) {
+  //throw new Error('Function not implemented.');
+  return []
 }

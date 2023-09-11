@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { debounce, set, values } from 'lodash';
 import {
+  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   RECORDSET_ADD_FILTER,
   RECORDSET_REMOVE_FILTER,
   RECORDSET_UPDATE_FILTER,
@@ -211,8 +212,8 @@ export const RecordSet = (props) => {
                       <></>
                     )}
                   </table>
-                  <Button>CLEAR</Button>
-                  <Button> Apply </Button>
+                  <Button onClick={() => {dispatch({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: props.setId}})}}>APPLY FILTERS</Button>
+                  <Button> CLEAR FILTERS </Button>
                 </div>
               </div>
             </Accordion>

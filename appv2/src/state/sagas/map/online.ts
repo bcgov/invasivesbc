@@ -88,7 +88,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, { filterObjects: [action.payload.filterObj]});
 
   if (networkReturn.data.result) {
     yield put({
