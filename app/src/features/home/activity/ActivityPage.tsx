@@ -1,23 +1,23 @@
-import {Alert, Box, Container, Snackbar, Theme, Typography} from '@mui/material';
-import {makeStyles} from '@mui/styles';
-import {Feature} from 'geojson';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import { Alert, Box, Container, Snackbar, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Feature } from 'geojson';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
-import {GeneralDialog, IGeneralDialog} from '../../../components/dialog/GeneralDialog';
+import { GeneralDialog, IGeneralDialog } from '../../../components/dialog/GeneralDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
-import {IPhoto} from '../../../components/photo/PhotoContainer';
-import {getCustomErrorTransformer} from '../../../rjsf/business-rules/customErrorTransformer';
-import {validatorForActivity} from '../../../rjsf/business-rules/customValidation';
+import { IPhoto } from '../../../components/photo/PhotoContainer';
+import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
+import { validatorForActivity } from '../../../rjsf/business-rules/customValidation';
 import './scrollbar.css';
-import {useHistory} from 'react-router';
+import { useHistory } from 'react-router';
 import _ from 'lodash';
 import ActivityMapComponent from 'components/activity/ActivityMapComponent';
-import {useSelector} from '../../../state/utilities/use_selector';
-import {selectAuth} from '../../../state/reducers/auth';
-import {selectActivity} from '../../../state/reducers/activity';
-import {selectNetworkConnected} from '../../../state/reducers/network';
-import {selectConfiguration} from '../../../state/reducers/configuration';
-import {useDispatch} from 'react-redux';
+import { useSelector } from '../../../state/utilities/use_selector';
+import { selectAuth } from '../../../state/reducers/auth';
+import { selectActivity } from '../../../state/reducers/activity';
+import { selectNetworkConnected } from '../../../state/reducers/network';
+import { selectConfiguration } from '../../../state/reducers/configuration';
+import { useDispatch } from 'react-redux';
 import {
   ACTIVITY_COPY_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
@@ -26,12 +26,13 @@ import {
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST
 } from 'state/actions';
-import {selectUserSettings} from 'state/reducers/userSettings';
-import {ActivityStatus, ActivitySubtype, MAX_AREA} from 'sharedAPI';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { ActivityStatus, ActivitySubtype, MAX_AREA } from 'sharedAPI';
 import booleanContains from '@turf/boolean-contains';
-import {selectMap} from 'state/reducers/map';
+import { selectMap } from 'state/reducers/map';
+import { kinks } from '@turf/turf';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -71,13 +72,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     if (geometry && geometry[0] && JSON.stringify(geometry) !== activityInStore.activity.geometry) {
-      dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: geometry}});
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: geometry } });
     }
   }, [geometry]);
 
   const classes = useStyles();
-  const {extendedInfo, displayName, roles} = useSelector(selectAuth);
-  const {MOBILE} = useSelector(selectConfiguration);
+  const { extendedInfo, displayName, roles } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity] = useState(null);
@@ -112,13 +113,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         {
           actionName: 'No',
           actionOnClick: async () => {
-            setWarningDialog({...warningDialog, dialogOpen: false});
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
           }
         },
         {
           actionName: 'Yes',
           actionOnClick: async () => {
-            setWarningDialog({...warningDialog, dialogOpen: false});
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
             history.push('/home/activities');
           },
           autoFocus: true
@@ -140,13 +141,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         {
           actionName: 'No',
           actionOnClick: async () => {
-            setWarningDialog({...warningDialog, dialogOpen: false});
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
           }
         },
         {
           actionName: 'Yes',
           actionOnClick: async () => {
-            setWarningDialog({...warningDialog, dialogOpen: false});
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
             dispatch({
               type: ACTIVITY_SUBMIT_REQUEST,
               payload: {
@@ -205,13 +206,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormSubmitError = async (error: any, formRef: any) => {
     setAlertErrorsOpen(true);
     console.log('ERROR: ', error);
-    const form_data = {...activityInStore.activity.form_data, ...formRef.current.state.formData};
+    const form_data = { ...activityInStore.activity.form_data, ...formRef.current.state.formData };
 
     setCanSubmitWithoutErrors(false);
 
     dispatch({
       type: ACTIVITY_SAVE_REQUEST,
-      payload: {activity_ID: activityInStore.activity.activity_id, updatedFormData: {...form_data}}
+      payload: { activity_ID: activityInStore.activity.activity_id, updatedFormData: { ...form_data } }
     });
   };
 
@@ -291,7 +292,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (props.setFormHasErrors) {
       props.setFormHasErrors(false);
     }
-    const formData = {...activityInStore.activity.formData, ...formRef.current.state.formData};
+    const formData = { ...activityInStore.activity.formData, ...formRef.current.state.formData };
 
     setCanSubmitWithoutErrors(true);
 
@@ -299,7 +300,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       type: ACTIVITY_SAVE_REQUEST,
       payload: {
         activity_ID: activityInStore.activity.activity_id,
-        updatedFormData: {...formData, form_status: ActivityStatus.SUBMITTED}
+        updatedFormData: { ...formData, form_status: ActivityStatus.SUBMITTED }
       }
     });
   };
@@ -315,10 +316,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     _.debounce((event, ref, lastField, callbackFun) => {
       dispatch({
         type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: {eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay}
+        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay }
       });
-    }, 150), []);
-
+    }, 150),
+    []
+  );
 
   // const onFormChange = async (event: any, ref: any, lastField: any, callbackFun: (updatedFormData) => void) => {
   //   dispatch({
@@ -331,19 +333,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
    */
-    //TODO redux copy and paste
+  //TODO redux copy and paste
   const pasteFormData = async () => {
-      dispatch({
-        type: ACTIVITY_PASTE_REQUEST
-      });
-      setAlertPastedOpen(true);
-    };
+    dispatch({
+      type: ACTIVITY_PASTE_REQUEST
+    });
+    setAlertPastedOpen(true);
+  };
 
   /**
    * Copy form data into session storage
    */
   const copyFormData = () => {
-    dispatch({type: ACTIVITY_COPY_REQUEST})
+    dispatch({ type: ACTIVITY_COPY_REQUEST });
     //  const { form_data, activity_subtype } = activityInStore?.activity;
     // saveFormDataToSession(activityInStore.activity.form_data, activity_subtype);
     setAlertCopiedOpen(true);
@@ -401,14 +403,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           {
             actionName: 'No',
             actionOnClick: () => {
-              setWarningDialog({...warningDialog, dialogOpen: false});
-              dispatch({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: {geometry: null}});
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
+              dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
             }
           },
           {
             actionName: 'Yes',
             actionOnClick: () => {
-              setWarningDialog({...warningDialog, dialogOpen: false});
+              setWarningDialog({ ...warningDialog, dialogOpen: false });
             },
             autoFocus: true
           }
@@ -421,7 +423,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   //todo: fully move to redux saga
   useEffect(() => {
     if (activityInStore?.activity?.geometry && activityInStore.activity.geometry[0]) {
-      if (activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA) {
+      const hasSelfIntersections = kinks(activityInStore.activity.geometry[0]).features.length > 0;
+
+      if (hasSelfIntersections) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Error!',
+          dialogContentText: 'The geometry has self-intersections and cannot be saved.',
+          dialogActions: [
+            {
+              actionName: 'OK',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      } else if (activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA) {
         setClosestWells();
       }
       //if geometry is withing british columbia boundries, save it
@@ -439,7 +459,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               {
                 actionName: 'OK',
                 actionOnClick: async () => {
-                  setWarningDialog({...warningDialog, dialogOpen: false});
+                  setWarningDialog({ ...warningDialog, dialogOpen: false });
                   // dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
                 },
                 autoFocus: true
@@ -469,7 +489,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
-  const mapState = useSelector(selectMap)
+  const mapState = useSelector(selectMap);
 
   return (
     <Container className={props.classes.container}>
@@ -495,7 +515,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             <Typography align="left">
               Activity ID: {activityInStore.activity.short_id ? activityInStore.activity.short_id : 'unknown'}
             </Typography>
-            <Typography style={{display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word'}} align="left">
+            <Typography style={{ display: 'block', whiteSpace: 'pre-line', wordWrap: 'break-word' }} align="left">
               Date created:
               {activityInStore.activity.date_created
                 ? new Date(activityInStore.activity.date_created).toString()
@@ -511,23 +531,31 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
 
-
-      {mapState?.map_center && useMemo(
-        () => (
-          <ActivityMapComponent
-            classes={classes}
-            activityId={activityInStore?.activity?.activity_id}
-            mapId={activityInStore?.activity?.activity_id}
-            geometryState={{geometry: [activityInStore?.activity?.geometry], setGeometry: setGeometry}}
-            showDrawControls={true}
-            //isLoading={isLoading}
-            isLoading={false}
-            center={mapState?.map_center}
-            zoom={mapState?.map_zoom}
-          />
-        ),
-        [classes, geometry, setGeometry, extent, setExtent, isLoading, JSON.stringify(activityInStore?.activity?.geometry)]
-      )}
+      {mapState?.map_center &&
+        useMemo(
+          () => (
+            <ActivityMapComponent
+              classes={classes}
+              activityId={activityInStore?.activity?.activity_id}
+              mapId={activityInStore?.activity?.activity_id}
+              geometryState={{ geometry: [activityInStore?.activity?.geometry], setGeometry: setGeometry }}
+              showDrawControls={true}
+              //isLoading={isLoading}
+              isLoading={false}
+              center={mapState?.map_center}
+              zoom={mapState?.map_zoom}
+            />
+          ),
+          [
+            classes,
+            geometry,
+            setGeometry,
+            extent,
+            setExtent,
+            isLoading,
+            JSON.stringify(activityInStore?.activity?.geometry)
+          ]
+        )}
 
       {activityInStore.activity && (
         <>
@@ -547,7 +575,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             onNavBack={onNavBack}
             onFormSubmitError={onFormSubmitError}
             isAlreadySubmitted={isAlreadySubmitted}
-            photoState={{photos, setPhotos}}
+            photoState={{ photos, setPhotos }}
             pasteFormData={() => pasteFormData()}
             copyFormData={() => copyFormData()}
             //cloneActivityButton={generateCloneActivityButton}
@@ -564,33 +592,35 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       />
 
       <Snackbar open={activityInStore.notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
-        <Alert onClose={handleAPIErrorClose} severity={activityInStore.notification?.severity} sx={{width: '100%'}}>
+        <Alert onClose={handleAPIErrorClose} severity={activityInStore.notification?.severity} sx={{ width: '100%' }}>
           {activityInStore.notification?.message}
         </Alert>
       </Snackbar>
       <Snackbar open={activityInStore.unsaved_notification?.visible} onClose={handleUnsavedClose}>
-        <Alert onClose={handleUnsavedClose} severity={activityInStore.unsaved_notification?.severity}
-               sx={{width: '100%'}}>
+        <Alert
+          onClose={handleUnsavedClose}
+          severity={activityInStore.unsaved_notification?.severity}
+          sx={{ width: '100%' }}>
           {activityInStore.unsaved_notification?.message}
         </Alert>
       </Snackbar>
       <Snackbar open={alertErrorsOpen} autoHideDuration={6000} onClose={handleAlertErrorsClose}>
-        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{width: '100%'}}>
+        <Alert onClose={handleAlertErrorsClose} severity="warning" sx={{ width: '100%' }}>
           The form was saved with errors.
         </Alert>
       </Snackbar>
       <Snackbar open={alertSavedOpen} autoHideDuration={6000} onClose={handleAlertSavedClose}>
-        <Alert onClose={handleAlertSavedClose} severity="success" sx={{width: '100%'}}>
+        <Alert onClose={handleAlertSavedClose} severity="success" sx={{ width: '100%' }}>
           The form was saved successfully.
         </Alert>
       </Snackbar>
       <Snackbar open={alertCopiedOpen} autoHideDuration={6000} onClose={handleAlertCopiedClose}>
-        <Alert onClose={handleAlertCopiedClose} severity="success" sx={{width: '100%'}}>
+        <Alert onClose={handleAlertCopiedClose} severity="success" sx={{ width: '100%' }}>
           The form data was copied successfully.
         </Alert>
       </Snackbar>
       <Snackbar open={alertPastedOpen} autoHideDuration={6000} onClose={handleAlertPastedClose}>
-        <Alert onClose={handleAlertPastedClose} severity="success" sx={{width: '100%'}}>
+        <Alert onClose={handleAlertPastedClose} severity="success" sx={{ width: '100%' }}>
           The form data was pasted successfully.
         </Alert>
       </Snackbar>
