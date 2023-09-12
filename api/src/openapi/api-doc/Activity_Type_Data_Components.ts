@@ -10,7 +10,8 @@ export const Observation = {
       type: 'string',
       enum: ['Yes', 'No', 'Unknown'],
       default: 'Unknown',
-      'x-tooltip-text': 'Choose yes if this observation was completed directly before a treatment'
+      'x-tooltip-text':
+        'Choose yes if this observation was completed before any treatment occurred within the current growing season'
     },
     activity_persons: {
       type: 'array',
@@ -93,7 +94,7 @@ export const Monitoring_Biocontrol_Release = {
     },
     linked_id: {
       type: 'string',
-    default: '',
+      default: '',
       title: 'Linked Treatment ID',
       'x-tooltip-text': 'Identifier of linked treatment record'
     },
