@@ -11,6 +11,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
 import invbclogo from "/assets/InvasivesBC_Icon.svg";
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -39,6 +41,29 @@ const Tab = (props: any) => {
     }
   }, [JSON.stringify(authenticated), JSON.stringify(props.loggedInOnly), JSON.stringify(props.path)]);
 
+  useEffect(() => {
+    const scrollContainer = document.getElementById('ButtonWrapper');
+    const rightIconContainer = document.getElementById('right-icon-container');
+    const leftIconContainer = document.getElementById('left-icon-container');
+
+    if (scrollContainer.scrollWidth <= scrollContainer.clientWidth) {
+      rightIconContainer.style.visibility = 'hidden';
+      leftIconContainer.style.visibility = 'hidden';
+    }
+
+    scrollContainer.addEventListener('scroll', () => {
+      if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
+        rightIconContainer.style.visibility = 'hidden';
+        leftIconContainer.style.visibility = 'visible';
+      } else if (scrollContainer.scrollLeft <= 5) {
+        rightIconContainer.style.visibility = 'visible';
+        leftIconContainer.style.visibility = 'hidden';
+      } else {
+        rightIconContainer.style.visibility = 'visible';
+        leftIconContainer.style.visibility = 'visible';
+      }
+    });
+  }, []);
   return (
     <>
       {canDisplayCallBack() ? (
@@ -63,7 +88,19 @@ const Tab = (props: any) => {
 };
 
 const ButtonWrapper = (props: any) => {
-  return <div className="ButtonWrapper">{props.children}</div>;
+  return (
+    <div className="ButtonWrapperContainer">
+      <div id="left-icon-container">
+        <ArrowLeftIcon className="direction-icon"/>
+      </div>
+      <div id="ButtonWrapper">
+        {props.children}
+      </div>
+      <div id="right-icon-container">
+        <ArrowRightIcon className="direction-icon"/>
+      </div>
+    </div>
+  );
 };
 
 const LoginButton = () => {
