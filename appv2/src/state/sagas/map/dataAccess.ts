@@ -258,7 +258,29 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
   //throw new Error('Function not implemented.');
   let columns = [];
   if (recordSetType === 'Activity') {
-    columns = ['activity_id, short_id', 'activity_type', 'activity_subtype' ];
+    columns = [
+      'activity_id',
+      'short_id',
+      'activity_type',
+      'activity_subtype',
+      'project_code',
+      'jurisdiction_display',
+      'species_positive_full',
+      'species_negative_full',
+      'has_current_positive',
+      'has_current_negative',
+      'current_positive_species',
+      'current_negative_species',
+      'species_treated_full',
+      'created_by', 
+      'updated_by',
+      'agency',
+      'regional_invasive_species_organization_areas',
+      'regional_districts',
+      'biogeoclimatic_zones',
+      'elevation', 
+      'batch_id'
+    ];
   }
   return columns;
 }

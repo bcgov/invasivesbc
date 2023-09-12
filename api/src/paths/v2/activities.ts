@@ -101,6 +101,9 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   if (!isAuth) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = true;
   }
+  else {
+    sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
+  }
 
   let selectColumns = [];
 
@@ -117,7 +120,19 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
             selectColumns.push(column);
           }
           break;
+        /* NOTE: any payload columns need this: */
+        case 'project_code':
+          if(!selectColumns.includes('activity_payload')){
+            selectColumns.push('activity_payload');
+          }
+          break;
+        case 'activity_date':
+          if(!selectColumns.includes('activity_payload')){
+            selectColumns.push('activity_payload');
+          }
+          break;
         default:
+          // probably not acceptable to allow this, but it's here for now
           selectColumns.push(column);
           break;
       }
@@ -125,7 +140,6 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   sanitizedSearchCriteria.selectColumns = selectColumns;
-
 
   let sanitizedTableFilters = [];
 
@@ -150,7 +164,11 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
-  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sanitizedObject', body: sanitizedSearchCriteria });
+  defaultLog.debug({
+    label: 'getActivitiesBySearchFilterCriteria',
+    message: 'sanitizedObject',
+    body: sanitizedSearchCriteria
+  });
 
   return sanitizedSearchCriteria;
 }
@@ -223,7 +241,7 @@ function getActivitiesSQLv2(filterObject: any) {
 
 function initialWithStatement(sqlStatement: SQLStatement) {
   const withStatement = sqlStatement.append(
-    `with activities as (SELECT * FROM invasivesbc.activity_incoming_data where deleted_timestamp is null)   `
+    `with not_deleted_activities as (SELECT * FROM invasivesbc.activity_incoming_data where deleted_timestamp is null)   `
   );
   return withStatement;
 }
@@ -235,7 +253,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
         cpo.activity_incoming_data_id,
         string_agg(cpo.invasive_plant, ', ') AS current_positive_species
     FROM
-        current_positive_observations cpo
+        invasivesbc.current_positive_observations cpo
     GROUP BY
         cpo.activity_incoming_data_id
 ),
@@ -244,15 +262,23 @@ CurrentNegativeObservations AS (
         cno.activity_incoming_data_id,
         string_agg(cno.invasive_plant, ', ') AS current_negative_species
     FROM
-        current_negative_observations cno
+        invasivesbc.current_negative_observations cno
     GROUP BY
-        cno.activity_incoming_data_id) `);
+        cno.activity_incoming_data_id),
+activities as (
+    select not_deleted_activities.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species, 
+    case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
+    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative  
+    from not_deleted_activities
+    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = not_deleted_activities.activity_incoming_data_id
+    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = not_deleted_activities.activity_incoming_data_id
+) `);
   return cte;
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.selectColumns) {
-    const select = sqlStatement.append(`select ${filterObject.selectColumns.join(',')} `);
+    const select = sqlStatement.append(`select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `);
     return select;
   } else {
     const select = sqlStatement.append(`select * `);
@@ -274,13 +300,72 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'activity_id':
-        where.append(`and activities.activity_id like '%${filter.filter}%' `);
+        where.append(`and activities.activity_id ${filter.operator === 'CONTAINS'? 'like': 'not like'} '%${filter.filter}%' `);
         break;
       case 'short_id':
-        where.append(`and activities.short_id like '%${filter.filter}%' `);
+        where.append(`and activities.short_id ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
         break;
       case 'activity_type':
-        where.append(`and activities.activity_type like '%${filter.filter}%' `);
+        where.append(`and activities.activity_type ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'activity_subtype':
+        where.append(`and activities.activity_subtype ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'activity_date':
+          where.append(`and substring((activities.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `)
+        break;
+      case 'project_code':
+        where.append(
+          `and (activities.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `
+        );
+        break;
+      case 'jurisdiction_display':
+        where.append(`and activities.jurisdiction_display ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'species_positive_full':
+        where.append(`and activities.species_positive_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'species_negative_full':
+        where.append(`and activities.species_negative_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'has_current_positive':
+        where.append(`and activities.current_positive_species ${filter.operator === 'CONTAINS'? 'is not': 'is'} null `);
+        break;
+      case 'has_current_negative':
+        where.append(`and activities.current_negative_species  ${filter.operator === 'CONTAINS'? 'is not': 'is'} null `);
+        break;
+      case 'current_positive_species':
+        where.append(`and activities.current_positive_species ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'current_negative_species':
+        where.append(`and activities.current_negative_species  ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'species_treated_full':
+        where.append(`and activities.species_treated_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'created_by':
+        where.append(`and activities.created_by ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'updated_by':
+        where.append(`and activities.updated_by ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'agency':
+        where.append(`and activities.agency ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'regional_invasive_species_organization_areas':
+        where.append(`and activities.regional_invasive_species_organization_areas ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'regional_districts':
+        where.append(`and activities.regional_districts ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'biogeoclimatic_zones':
+        where.append(`and activities.biogeoclimatic_zones ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'elevation':
+        where.append(`and activities.elevation ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        break;
+      case 'batch_id':
+        where.append(`and activities.batch_id::text ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
         break;
       default:
         break;

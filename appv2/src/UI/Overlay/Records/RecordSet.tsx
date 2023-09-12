@@ -51,18 +51,45 @@ export const RecordSet = (props) => {
       (filter) => filter.id === props.id
     )?.field;
 
+    const operatorInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+      (filter) => filter.id === props.id
+    )?.operator;
+
     const value = useRef();
 
     return (
       <tr>
         <td>Data</td>
-        <td>Contains</td>
+          <select
+            key={'operand' + props.name}
+            value={operatorInState}
+            onChange={(e) => {
+              console.dir(e.target.value);
+
+              dispatch({
+                type: RECORDSET_UPDATE_FILTER,
+                payload: {
+                  filterType: 'tableFilter',
+                  setID: props.setID,
+                  filterID: props.id,
+                  operator: e.target.value
+                }
+              });
+            }}>
+                <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}> 
+                 CONTAINS
+                </option>
+                <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}> 
+                DOES NOT CONTAIN
+                </option>
+          </select>
         <td>
           <select
             key={'filterType' + props.name}
             value={typeInState}
             onChange={(e) => {
               console.dir(e.target);
+
               dispatch({
                 type: RECORDSET_UPDATE_FILTER,
                 payload: {
@@ -87,16 +114,17 @@ export const RecordSet = (props) => {
             <input
               ref={value}
               onBlur={(e) => {
-                if (value.current !== undefined)
+                if (value.current !== undefined) {
                   dispatch({
                     type: RECORDSET_UPDATE_FILTER,
                     payload: {
                       filterType: 'tableFilter',
                       setID: props.setID,
                       filterID: props.id,
-                      filter: value.current.value
+                      filter: value?.current?.value
                     }
                   });
+                }
               }}
               type="text"
               //value={valueInState}
@@ -147,7 +175,13 @@ export const RecordSet = (props) => {
 
                       dispatch({
                         type: RECORDSET_ADD_FILTER,
-                        payload: { filterType: e.target.value, field: 'short_id',  setID: props.setId, blockFetchForNow: true }
+                        payload: {
+                          filterType: e.target.value,
+                          field: 'short_id',
+                          setID: props.setId,
+                          operator: 'CONTAINS',
+                          blockFetchForNow: true
+                        }
                       });
                     }}>
                     <option value="searchBoundary">Choose a filter type</option>
@@ -173,7 +207,7 @@ export const RecordSet = (props) => {
               </div>
             </div>
             <Accordion>
-              <AccordionSummary className="recordSet_filter_accordion_collapsed">Filters: 5</AccordionSummary>
+              <AccordionSummary className="recordSet_filter_accordion_collapsed">Filters: {userSettingsState?.recordSets?.[props.setId]?.tableFilters?.length}</AccordionSummary>
               <div className="recordSet_filters_container">
                 <div className="recordSet_filters">
                   <table className="recordSetFilterTable">
@@ -213,7 +247,12 @@ export const RecordSet = (props) => {
                       <></>
                     )}
                   </table>
-                  <Button onClick={() => {dispatch({type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: props.setId}})}}>APPLY FILTERS</Button>
+                  <Button
+                    onClick={() => {
+                      dispatch({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: props.setId } });
+                    }}>
+                    APPLY FILTERS
+                  </Button>
                   <Button> CLEAR FILTERS </Button>
                 </div>
               </div>

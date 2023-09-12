@@ -71,7 +71,7 @@ export const RecordTable = (props) => {
                   activityColumnsToDisplay.map((col, j) => {
                     return (
                       <td className="record_table_row_column" key={j}>
-                        {JSON.stringify(row[col.key])}
+                        {row[col.key]}
                       </td>
                     );
                   })
@@ -79,7 +79,7 @@ export const RecordTable = (props) => {
                   iappColumnsToDisplay.map((col, j) => {
                     return (
                       <td className="record_table_row_column" key={j}>
-                        {JSON.stringify(row[col.key])}
+                        {(row[col.key])}
                       </td>
                     );
                   })
