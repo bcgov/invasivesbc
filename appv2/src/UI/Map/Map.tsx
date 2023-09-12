@@ -41,7 +41,7 @@ const Map = (props: any) => {
         <RecordSetLayers />
         {props.children}
         <OfflineLayers />
-        {/*!isAuth && <VectorOverviewLayer />*/}
+        {!isAuth && <VectorOverviewLayer />}
       </MapContainer>
     </div>
   );
