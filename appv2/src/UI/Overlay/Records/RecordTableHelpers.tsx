@@ -19,23 +19,22 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
       return output
     }
 
-    //console.dir(activity)
+    // needs to be consistent with API column names
     let columns: any = {
-      // id: index,
       activity_id: activity?.activity_id,
-      short_id: activity?.activity_payload?.short_id,
-      type: activity?.activity_type,
-      subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-      activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
+      short_id: activity?.short_id,
+      activity_type: activity?.activity_type,
+      activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
+      activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toISOString().substring(0, 10),
       project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
-      jurisdiction: activity?.jurisdiction_display,
-      species_positive: activity?.species_positive_full,
-      species_negative: activity?.species_negative_full,
+      jurisdiction_display: activity?.jurisdiction_display,
+      species_positive_full: activity?.species_positive_full,
+      species_negative_full: activity?.species_negative_full,
       has_current_positive: activity?.has_current_positive ? 'Yes' : 'No',
-      current_positive: activity?.current_positive_species,
+      current_positive_species: activity?.current_positive_species,
       has_current_negative: activity?.has_current_negative ? 'Yes' : 'No',
-      current_negative: activity?.current_negative_species,
-      species_treated: activity?.species_treated_full,
+      current_negative_species: activity?.current_negative_species,
+      species_treated_full: activity?.species_treated_full,
       created_by: activity?.created_by,
       updated_by: activity?.updated_by,
       agency: activity?.agency,
@@ -118,11 +117,11 @@ export const activityColumnsToDisplay = [
       displayWidget: 'div'
     },
     {
-      key: 'type',
+      key: 'activity_type',
       name: 'Activity Type'
     },
     {
-      key: 'subtype',
+      key: 'activity_subtype',
       name: 'Activity Sub Type'
     },
     {
@@ -134,15 +133,15 @@ export const activityColumnsToDisplay = [
       name: 'Project Code'
     },
     {
-      key: 'jurisdiction',
+      key: 'jurisdiction_display',
       name: 'Jurisdiction'
     },
     {
-      key: 'species_positive',
+      key: 'species_positive_full',
       name: 'All Positive'
     },
     {
-      key: 'species_negative',
+      key: 'species_negative_full',
       name: 'All Negative'
     },
     {
@@ -150,7 +149,7 @@ export const activityColumnsToDisplay = [
       name: 'Has Current Positive'
     },
     {
-      key: 'current_positive',
+      key: 'current_positive_species',
       name: 'Current Positive Species'
     },
     {
@@ -158,11 +157,11 @@ export const activityColumnsToDisplay = [
       name: 'Has Current Negative'
     },
     {
-      key: 'current_negative',
+      key: 'current_negative_species',
       name: 'Current Negative Species'
     },
     {
-      key: 'species_treated',
+      key: 'species_treated_full',
       name: 'Species Treated'
     },
     { key: 'created_by', name: 'Created By' },
