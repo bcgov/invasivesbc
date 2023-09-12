@@ -19,13 +19,11 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
       return output
     }
 
-    //console.dir(activity)
     let columns: any = {
-      // id: index,
       activity_id: activity?.activity_id,
-      short_id: activity?.activity_payload?.short_id,
-      type: activity?.activity_type,
-      subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
+      short_id: activity?.short_id,
+      activity_type: activity?.activity_type,
+      activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
       activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time).toString(),
       project_code: getArrayString(Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code) ? activity?.activity_payload?.form_data?.activity_data?.project_code : [], 'description'),
       jurisdiction: activity?.jurisdiction_display,
@@ -118,11 +116,11 @@ export const activityColumnsToDisplay = [
       displayWidget: 'div'
     },
     {
-      key: 'type',
+      key: 'activity_type',
       name: 'Activity Type'
     },
     {
-      key: 'subtype',
+      key: 'activity_subtype',
       name: 'Activity Sub Type'
     },
     {

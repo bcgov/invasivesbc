@@ -150,9 +150,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               }
               draftState.recordSets[action.payload.setID]?.tableFilters.push({
                 id: getUuid(),
-                field: 'activity_id',
+                field: action.payload.field,
                 operator: 'contains',
-                filter: ''
+                filter: action.payload.filter
               });
               break;
             default:
@@ -189,11 +189,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 (filter) => filter.id !== action.payload.filterID
               );
 
-              if (action.payload.tableField) {
+              if (action.payload.field) {
                 const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
                   (filter) => filter.id === action.payload.filterID
                 );
-                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.tableField;
+                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
               }
 
               if (action.payload.filter !== undefined) {

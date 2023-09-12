@@ -104,7 +104,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   let selectColumns = [];
 
-  if (filterObject?.selectColumns) {
+  if (filterObject?.selectColumns?.length > 0) {
     filterObject.selectColumns.forEach((column) => {
       switch (column) {
         case 'created_by':
@@ -123,6 +123,34 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
       }
     });
   }
+
+  sanitizedSearchCriteria.selectColumns = selectColumns;
+
+
+  let sanitizedTableFilters = [];
+
+  if (filterObject?.tableFilters?.length > 0) {
+    filterObject.tableFilters.forEach((filter) => {
+      switch (filter.field) {
+        case 'created_by':
+          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+            sanitizedTableFilters.push(filter);
+          }
+          break;
+        case 'updated_by':
+          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+            sanitizedTableFilters.push(filter);
+          }
+          break;
+        default:
+          sanitizedTableFilters.push(filter);
+          break;
+      }
+    });
+  }
+
+  sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
+  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sanitizedObject', body: sanitizedSearchCriteria });
 
   return sanitizedSearchCriteria;
 }
@@ -189,6 +217,7 @@ function getActivitiesSQLv2(filterObject: any) {
   sqlStatement = orderByStatement(sqlStatement, filterObject);
   sqlStatement = limitStatement(sqlStatement, filterObject);
 
+  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
   return sqlStatement;
 }
 
@@ -238,6 +267,26 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   const where = sqlStatement.append(`where 1=1 `);
+  if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
+    where.append(`and activities.activity_type not in ('Treatment','Monitoring') `);
+  }
+
+  filterObject.clientReqTableFilters.forEach((filter) => {
+    switch (filter.field) {
+      case 'activity_id':
+        where.append(`and activities.activity_id like '%${filter.filter}%' `);
+        break;
+      case 'short_id':
+        where.append(`and activities.short_id like '%${filter.filter}%' `);
+        break;
+      case 'activity_type':
+        where.append(`and activities.activity_type like '%${filter.filter}%' `);
+        break;
+      default:
+        break;
+    }
+  });
+
   return where;
 }
 

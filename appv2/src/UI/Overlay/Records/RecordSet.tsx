@@ -69,7 +69,7 @@ export const RecordSet = (props) => {
                   filterType: 'tableFilter',
                   setID: props.setID,
                   filterID: props.id,
-                  tableField: e.target.value
+                  field: e.target.value
                 }
               });
             }}>
@@ -144,9 +144,10 @@ export const RecordSet = (props) => {
                   <select
                     onChange={(e) => {
                       setFilterTypeChooserOpen(false);
+
                       dispatch({
                         type: RECORDSET_ADD_FILTER,
-                        payload: { filterType: e.target.value, setID: props.setId, blockFetchForNow: true }
+                        payload: { filterType: e.target.value, field: 'short_id',  setID: props.setId, blockFetchForNow: true }
                       });
                     }}>
                     <option value="searchBoundary">Choose a filter type</option>
