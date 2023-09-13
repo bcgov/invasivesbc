@@ -43,7 +43,7 @@ const debouncedDrag = debounce((e) => {
   const mousePos = e.y;
   const newHeight = currentAppHeight - mousePos;
   elementWeWant.style.height = newHeight + 'px';
-  buttonContainer.style.bottom = newHeight + 'px';
+  buttonContainer.style.marginBottom = newHeight + 'px';
 }, 10);
 // }
 
