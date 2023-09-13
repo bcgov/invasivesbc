@@ -8,11 +8,13 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; 
   justify-content: center;
   position: absolute;
-  bottom: 200px;
+  bottom: 0;
+  margin-bottom: 200px;
   width: 100vw;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+  transition: all 0.2s ease;
   /* in case we want a gradient background */
   /* background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.500437675070028) 50%, rgba(255,255,255,0) 100%); */
