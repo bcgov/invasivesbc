@@ -180,6 +180,32 @@ const ChemicalTreatmentDetailsForm = (props) => {
           ]
         });
       }
+      if (err.includes('low for a granular')) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: `${err}. Do you wish to proceed?`,
+          dialogActions: [
+            {
+              actionName: 'No',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              }
+            },
+            {
+              actionName: 'Yes',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+
+                setFormDetails((prev) => {
+                  return { ...prev, form_data: { ...prev.form_data, skipAppRateValidation: true } };
+                });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      }
     });
   }, [localErrors]);
 

@@ -9,7 +9,8 @@ import {
   PmpValidator,
   ProjectInformation,
   WindDirectionValidator,
-  ApplicationMethodValidator
+  ApplicationMethodValidator,
+  GranularHerbicideRate
 } from '../shared-columns';
 
 const TreatmentChemicalTerrestrialPlantTemp = new Template(
@@ -72,6 +73,7 @@ TreatmentChemicalTerrestrialPlantTemp.rowValidators = [
   ...ChemTreatmentValidators,
   PmpValidator,
   WindDirectionValidator,
-  ApplicationMethodValidator
+  ApplicationMethodValidator,
+  GranularHerbicideRate
 ];
 export { TreatmentChemicalTerrestrialPlantTemp };

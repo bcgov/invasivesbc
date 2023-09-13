@@ -724,6 +724,41 @@ export const ApplicationMethodValidator = (row): RowValidationResult => {
   };
 };
 
+export const GranularHerbicideRate = (row): RowValidationResult => {
+  let valid = true;
+  const fields = [
+    'Herbicide - 1 - Type',
+    'Herbicide - 1 - PAR - Production Application Rate',
+    'Herbicide - 2 - Type',
+    'Herbicide - 2 - PAR - Production Application Rate',
+    'Herbicide - 3 - Type',
+    'Herbicide - 3 - PAR - Production Application Rate'
+  ];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  // Check herbicide type and application rate
+  for (let i = 1; i <= 3; i++) {
+    const herbicideType = rowData[`Herbicide - ${i} - Type`]?.parsedValue;
+    const applicationRate = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+
+    if (herbicideType === 'G' && applicationRate < 10) {
+      valid = false;
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Invalid value',
+        messageDetail: `Herbicide - ${i} - PAR - Production Application Rate must be >= 10 for granular herbicide.`
+      });
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Service License',

@@ -250,6 +250,12 @@ export const validate_herbicide_fields = (
           HerbicideApplicationRates[herb.herbicide_code]
         } L/ha for this herbicide`
       );
+    } else if (
+      herb.herbicide_type_code === 'G' &&
+      herb.product_application_rate &&
+      herb.product_application_rate < 10
+    ) {
+      errors.push(`Product Application Rate is low for a granular herbicide`);
     }
     if (!herb.calculation_type) {
       noCalculationType = true;
