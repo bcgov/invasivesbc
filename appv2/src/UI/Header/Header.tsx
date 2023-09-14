@@ -46,10 +46,12 @@ const Tab = (props: any) => {
     const rightIconContainer = document.getElementById('right-icon-container');
     const leftIconContainer = document.getElementById('left-icon-container');
 
-    if (scrollContainer.scrollWidth <= scrollContainer.clientWidth) {
-      rightIconContainer.style.visibility = 'hidden';
-      leftIconContainer.style.visibility = 'hidden';
-    }
+    // workaround for scroll = client on load race
+    setTimeout(() => {
+      if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
+        rightIconContainer.style.visibility = 'visible';
+      }
+    }, 100)
 
     scrollContainer.addEventListener('scroll', () => {
       if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
@@ -64,6 +66,7 @@ const Tab = (props: any) => {
       }
     });
   }, []);
+
   return (
     <>
       {canDisplayCallBack() ? (
