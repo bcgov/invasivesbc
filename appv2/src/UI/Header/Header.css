@@ -43,6 +43,7 @@
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   pointer-events: none;
+  visibility: hidden;
 }
 
 #left-icon-container {
@@ -53,6 +54,7 @@
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   pointer-events: none;
+  visibility: hidden;
 }
 
 .direction-icon {
