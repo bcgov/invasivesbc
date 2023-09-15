@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectActivity } from 'state/reducers/activity';
 import _ from 'lodash';
 import { ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
+import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 
 export const ActivityForm = (props) => {
   const activityState = useSelector(selectActivity);
@@ -35,6 +36,7 @@ export const ActivityForm = (props) => {
         return false;
       }}
       onFormChange={debouncedFormChange}
+      customValidation={validatorForActivity(activityState.activity, null)} //linked activity
     />
   );
 };
