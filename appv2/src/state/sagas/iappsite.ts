@@ -1,6 +1,13 @@
 import { all, put, takeEvery } from "redux-saga/effects";
-import { IAPP_GET_REQUEST, IAPP_GET_NETWORK_REQUEST, USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS, IAPP_GET_SUCCESS } from "state/actions";
-import { handle_IAPP_GET_REQUEST, handle_IAPP_GET_SUCCESS } from "./iappsite/dataAccess";
+import {
+  IAPP_GET_REQUEST,
+  IAPP_GET_NETWORK_REQUEST,
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+  IAPP_GET_SUCCESS,
+  IAPP_PAN_AND_ZOOM
+} from "state/actions";
+import {handle_IAPP_GET_REQUEST, handle_IAPP_GET_SUCCESS, handle_IAPP_PAN_AND_ZOOM} from "./iappsite/dataAccess";
 import { handle_IAPP_GET_NETWORK_REQUEST } from "./iappsite/online";
 
 function* handle_USER_SETTINGS_READY(action) {
@@ -16,6 +23,7 @@ function* iappPageSaga() {
     takeEvery(IAPP_GET_SUCCESS, handle_IAPP_GET_SUCCESS),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_READY),
     takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS, handle_USER_SETTINGS_READY),
+    takeEvery(IAPP_PAN_AND_ZOOM, handle_IAPP_PAN_AND_ZOOM)
   ]);
 }
 

@@ -1,9 +1,9 @@
-import { Button, createTheme, ThemeOptions } from '@mui/material';
-import { ThemeProvider } from '@mui/styles';
-import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory, useLocation } from 'react-router-dom';
-import { getDesignTokens } from 'util/CustomThemeProvider';
+import {Button, createTheme, ThemeOptions} from '@mui/material';
+import {ThemeProvider} from '@mui/styles';
+import React, {useEffect, useRef} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {Route, useHistory, useLocation} from 'react-router-dom';
+import {getDesignTokens} from 'util/CustomThemeProvider';
 import {
   ACTIVITY_COPY_REQUEST,
   ACTIVITY_DELETE_REQUEST,
@@ -14,27 +14,28 @@ import {
   URL_CHANGE
 } from '../state/actions';
 import './App.css';
-import { Footer } from './Footer/Footer';
-import { Header } from './Header/Header';
-import { ActivityGeo } from './Map/ActivityGeo';
-import { ButtonContainer } from './Map/Buttons/ButtonContainer';
+import {Footer} from './Footer/Footer';
+import {Header} from './Header/Header';
+import {ActivityGeo} from './Map/ActivityGeo';
+import {ButtonContainer} from './Map/Buttons/ButtonContainer';
 import Map from './Map/Map';
-import { MapCenterSetter } from './Map/MapCenterSetter';
+import {MapCenterSetter} from './Map/MapCenterSetter';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
 import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchList from './Overlay/Batch/BatchList';
 import BatchTemplates from './Overlay/Batch/BatchTemplates';
 import BatchView from './Overlay/Batch/BatchView';
-import { LandingComponent } from './Overlay/Landing/Landing';
-import { LegendsPopup } from './Overlay/Legend/LegendsPopup';
+import {LandingComponent} from './Overlay/Landing/Landing';
+import {LegendsPopup} from './Overlay/Legend/LegendsPopup';
 import Overlay from './Overlay/Overlay';
-import { OverlayMenu } from './Overlay/OverlayMenu';
-import { Activity } from './Overlay/Records/Record';
-import { Records } from './Overlay/Records/Records';
-import { RecordSet } from './Overlay/Records/RecordSet';
+import {OverlayMenu} from './Overlay/OverlayMenu';
+import {Activity} from './Overlay/Records/Record';
+import {Records} from './Overlay/Records/Records';
+import {RecordSet} from './Overlay/Records/RecordSet';
 import EmbeddedReportsPage from './Overlay/Reports/EmbeddedReportsPage';
-import { TrainingPage } from './Overlay/Training/Training';
-import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
+import {TrainingPage} from './Overlay/Training/Training';
+import {WhatsHereTable} from './Overlay/WhatsHere/WhatsHereTable';
+import {IAPPRecord} from "./Overlay/IAPP/IAPPRecord";
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -46,7 +47,7 @@ const URL_LISTENER = (props) => {
     if (location.pathname !== targetURL) {
       dispatch({
         type: URL_CHANGE,
-        payload: { url: location.pathname }
+        payload: {url: location.pathname}
       });
     }
   }, [location.pathname]);
@@ -55,7 +56,7 @@ const URL_LISTENER = (props) => {
 };
 
 const URL_ListenerMemo = React.memo((props: any) => {
-  return <URL_LISTENER />;
+  return <URL_LISTENER/>;
 });
 
 const OverlayContentMemo = React.memo((props: any) => {
@@ -72,52 +73,52 @@ const OverlayContentMemo = React.memo((props: any) => {
   } = useSelector((state: any) => state.Map);
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
-      <Route path="/Landing" render={(props) => <LandingComponent />} />
-      <Route exact={true} path="/Records" render={(props) => <Records />} />
+      <Route path="/Landing" render={(props) => <LandingComponent/>}/>
+      <Route exact={true} path="/Records" render={(props) => <Records/>}/>
       <Route
         path="/Records/Activity:id"
         render={(props) => (
           <>
             {!overlayMenuOpen ? (
-              <Activity />
+              <Activity/>
             ) : (
               <OverlayMenu>
                 <Button
                   onClick={() => {
-                    dispatch({ type: ACTIVITY_SAVE_REQUEST });
-                    dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    dispatch({type: ACTIVITY_SAVE_REQUEST});
+                    dispatch({type: OVERLAY_MENU_TOGGLE});
                   }}
                   variant="contained">
                   SAVE TO DRAFT
                 </Button>
                 <Button
                   onClick={() => {
-                    dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
-                    dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    dispatch({type: ACTIVITY_SUBMIT_REQUEST});
+                    dispatch({type: OVERLAY_MENU_TOGGLE});
                   }}
                   variant="contained">
                   PUBLISH DRAFT TO SUBMITTED
                 </Button>
                 <Button
                   onClick={() => {
-                    dispatch({ type: ACTIVITY_COPY_REQUEST });
-                    dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    dispatch({type: ACTIVITY_COPY_REQUEST});
+                    dispatch({type: OVERLAY_MENU_TOGGLE});
                   }}
                   variant="contained">
                   COPY FORM
                 </Button>
                 <Button
                   onClick={() => {
-                    dispatch({ type: ACTIVITY_PASTE_REQUEST });
-                    dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    dispatch({type: ACTIVITY_PASTE_REQUEST});
+                    dispatch({type: OVERLAY_MENU_TOGGLE});
                   }}
                   variant="contained">
                   PASTE FORM
                 </Button>
                 <Button
                   onClick={() => {
-                    dispatch({ type: ACTIVITY_DELETE_REQUEST });
-                    dispatch({ type: OVERLAY_MENU_TOGGLE });
+                    dispatch({type: ACTIVITY_DELETE_REQUEST});
+                    dispatch({type: OVERLAY_MENU_TOGGLE});
                   }}
                   variant="contained">
                   DELETE
@@ -129,12 +130,22 @@ const OverlayContentMemo = React.memo((props: any) => {
       />
 
       <Route
+        path="/Records/IAPP/:id"
+        render={(props) => (
+          <>
+            <IAPPRecord/>
+          </>
+        )}
+      />
+
+
+      <Route
         exact={true}
         path="/Records/List/Local:id"
         render={(props) => (
           <>
             {!userRecordOnClickMenuOpen ? (
-              <RecordSet setID={props.match.params.id.split(':')[1]} />
+              <RecordSet setID={props.match.params.id.split(':')[1]}/>
             ) : (
               <OverlayMenu>
                 <Button
@@ -142,7 +153,7 @@ const OverlayContentMemo = React.memo((props: any) => {
                     const url =
                       userRecordOnClickRecordType === 'Activity'
                         ? '/Records/Activity:' + userRecordOnClickRecordID + '/form'
-                        : '/Records/IAPP:' + userRecordOnClickRecordID + '/form';
+                        : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
                     history.push(url);
                   }}
                   variant="contained">
@@ -153,20 +164,20 @@ const OverlayContentMemo = React.memo((props: any) => {
           </>
         )}
       />
-      <Route exact={true} path="/Batch/list" render={(props) => <BatchList />} />
+      <Route exact={true} path="/Batch/list" render={(props) => <BatchList/>}/>
       <Route
         path="/Batch/list/:id"
-        render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined} />}
+        render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined}/>}
       />
-      <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
-      <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
-      <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
-      <Route path="/Training" render={(props) => <TrainingPage />} />
-      <Route path="/Legend" render={(props) => <LegendsPopup />} />
+      <Route path="/Batch/new" render={(props) => <BatchCreateNew/>}/>
+      <Route path="/Batch/templates" render={(props) => <BatchTemplates/>}/>
+      <Route path="/Reports" render={(props) => <EmbeddedReportsPage/>}/>
+      <Route path="/Training" render={(props) => <TrainingPage/>}/>
+      <Route path="/Legend" render={(props) => <LegendsPopup/>}/>
       <ThemeProvider theme={theme}>
-        <Route path="/Admin" render={(props) => <UserAccessPage />} />
+        <Route path="/Admin" render={(props) => <UserAccessPage/>}/>
       </ThemeProvider>
-      <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
+      <Route path="/WhatsHere" render={(props) => <WhatsHereTable/>}/>
     </div>
   );
 });
@@ -176,7 +187,7 @@ const HeaderMemo = React.memo((props: any) => {
   ref.current += 1;
   console.log('%cHeaderMemo render:' + ref.current.toString(), 'color: yellow');
 
-  return <Header />;
+  return <Header/>;
 });
 
 const MapMemo = React.memo((props: any) => {
@@ -186,8 +197,8 @@ const MapMemo = React.memo((props: any) => {
   return (
     <Map className="Map">
       <ButtonContainer></ButtonContainer>
-      <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
-      <MapCenterSetter />
+      <Route path="/Records/Activity:id" render={(props) => <ActivityGeo/>}/>
+      <MapCenterSetter/>
     </Map>
   );
 });
@@ -199,13 +210,13 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className="App">
-      <URL_ListenerMemo />
-      <HeaderMemo />
-      <MapMemo />
+      <URL_ListenerMemo/>
+      <HeaderMemo/>
+      <MapMemo/>
       <Overlay>
-        <OverlayContentMemo />
+        <OverlayContentMemo/>
       </Overlay>
-      <Footer />
+      <Footer/>
     </div>
   );
 };
