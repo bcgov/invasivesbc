@@ -32,3 +32,11 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
   background-color: lightgray;
 }
+
+th {
+  width: 50px;
+}
+
+td {
+  width: 50px;
+}

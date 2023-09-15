@@ -1,4 +1,4 @@
-import { all, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import { all, fork, put, select, take, takeEvery, throttle } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -32,6 +32,9 @@ import {
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI,
   PAGE_OR_LIMIT_UPDATE,
+  RECORDSET_CLEAR_FILTERS,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
@@ -999,10 +1002,17 @@ function* handle_URL_CHANGE(action) {
   }
 }
 
+function* handle_UserFilterChange(action) {
+  yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
+    takeEvery(RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
+    takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
+    takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
@@ -1017,7 +1027,7 @@ function* activitiesPageSaga() {
     takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
     // takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
     // takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
-    takeEvery(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
+    throttle(500, ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),

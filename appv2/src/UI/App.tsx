@@ -134,7 +134,7 @@ const OverlayContentMemo = React.memo((props: any) => {
         render={(props) => (
           <>
             {!userRecordOnClickMenuOpen ? (
-              <RecordSet setId={props.match.params.id.split(':')[1]} />
+              <RecordSet setID={props.match.params.id.split(':')[1]} />
             ) : (
               <OverlayMenu>
                 <Button
