@@ -9,6 +9,7 @@ import {
   GET_API_DOC_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
   RECORDSET_ADD_FILTER,
+  RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
   RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
@@ -153,7 +154,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 field: action.payload.field,
                 fieldPath: action.payload.fieldPath,
                 operator: action.payload.operator,
-                filter: action.payload.filter
+                filter: action.payload.filter? action.payload.filter : ''
               });
               break;
             default:
@@ -220,6 +221,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         });
         return nextState;
       }
+      case RECORDSET_CLEAR_FILTERS: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
+        });
+        return nextState;
+      }
+
 
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {

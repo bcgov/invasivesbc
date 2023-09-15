@@ -14,17 +14,17 @@ export const RecordTableHeader = (props) => {
 export const RecordTable = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
   const mapAndRecordsState = useSelector(selectMap);
-  const tableType = userSettingsState?.recordSets?.[props.setId]?.recordSetType;
+  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
   const dispatch = useDispatch();
 
   // maybe useful for when there's no headers during dev for adding new types:
   /*
-  const unmappedColumns = mapAndRecordsState?.recordTables?.[props.setId]?.rows[0]
-    ? Object.keys(mapAndRecordsState?.recordTables?.[props.setId]?.rows[0])
+  const unmappedColumns = mapAndRecordsState?.recordTables?.[props.setID]?.rows[0]
+    ? Object.keys(mapAndRecordsState?.recordTables?.[props.setID]?.rows[0])
     : [];
    */
 
-  const unmappedRows = mapAndRecordsState?.recordTables?.[props.setId]?.rows;
+  const unmappedRows = mapAndRecordsState?.recordTables?.[props.setID]?.rows;
 
   const mappedRows = unmappedRows?.map((row) => {
     let unnestedRow = tableType === "Activity" ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row); 

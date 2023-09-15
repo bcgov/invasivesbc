@@ -39,7 +39,7 @@
 }
 
 .recordSet_filters_container {
-  padding-top: 10px;
+  /*padding-top: 10px;*/
   display: flex;
   position: sticky;
   justify-content: center;
@@ -61,12 +61,26 @@
   justify-content: left;
 }
 
+.deleteButton {
+  width: 30px;
+  height: 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
 .recordSet_filter_operator {
 }
 
 .recordSet_filter_type {
   padding-left: 2vw;
-  z-index: 2147483646;
+  /*z-index: 2147483646;*/
 }
 
 .recordSet_filter_value {
@@ -75,4 +89,33 @@
 
 .recordSetFilterTable {
   width: 100vw;
+
+
+}
+
+tr:hover {background-color: coral;}
+
+tr {
+  width: 50px
+}
+
+td {
+  width: 50px
+}
+
+.filterSelect {
+  width: 100px;
+}
+
+.recordSet_footer {
+  bottom: 0;
+  z-index: 2147483646;
+  height: 5vh;
+  width: 100%;
+  background-color: #333;
+  align-items: center;
+  display: flex;
+  position:  fixed;
+  flex-direction: row;
+  justify-content: flex-end;
 }
