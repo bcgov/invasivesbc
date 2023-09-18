@@ -121,6 +121,4 @@ td {
   align-items: center;
   display: flex;
   position:  fixed;
-  flex-direction: row;
-  justify-content: flex-end;
 }

@@ -140,7 +140,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   //sanitize limit
-  let limit = 100;
+  let limit = 20;
   if (filterObject?.limit && !isNaN(filterObject.limit)) {
     limit = filterObject.limit;
   }
@@ -260,7 +260,8 @@ function getActivitiesSQLv2(filterObject: any) {
 
 function initialWithStatement(sqlStatement: SQLStatement) {
   const withStatement = sqlStatement.append(
-    `with not_deleted_activities as (SELECT * FROM invasivesbc.activity_incoming_data where deleted_timestamp is null)   `
+    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a inner join invasivesbc.activity_current b on 
+      a.activity_incoming_data_id = b.incoming_data_id )   `
   );
   return withStatement;
 }
