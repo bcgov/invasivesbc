@@ -11,9 +11,12 @@ import { RecordTable } from './RecordTable';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { debounce, set, values } from 'lodash';
 import {
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  PAGE_OR_LIMIT_UPDATE,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
@@ -31,11 +34,9 @@ export const RecordSet = (props) => {
 
   const [filterTypeChooserOpen, setFilterTypeChooserOpen] = React.useState(false);
 
-
   const onClickBackButton = () => {
     history.push('/Records');
   };
-
 
   switch (userSettingsState?.recordSets?.[props.setID]) {
     case undefined:
@@ -65,7 +66,7 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                  <FilterAltOffIcon/>
+                  <FilterAltOffIcon />
                 </Button>
               </div>
               <div className="recordSet_new_filter_button">
@@ -83,7 +84,7 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                  + <FilterAltIcon/>
+                  + <FilterAltIcon />
                 </Button>
               </div>
             </div>
@@ -119,7 +120,13 @@ export const RecordSet = (props) => {
                   {userSettingsState?.recordSets?.[props.setID]?.advancedFilters ? (
                     userSettingsState?.recordSets?.[props.setID]?.advancedFilters?.map((filter: any, i) => {
                       return (
-                        <Filter setID={props.setID} key={'filterIndex' + i} operator="DOES Match" type="data2" name={filter?.filterKey} />
+                        <Filter
+                          setID={props.setID}
+                          key={'filterIndex' + i}
+                          operator="DOES Match"
+                          type="data2"
+                          name={filter?.filterKey}
+                        />
                       );
                     })
                   ) : (
@@ -130,15 +137,65 @@ export const RecordSet = (props) => {
             </div>
           </div>
           <RecordTable setID={props.setID} />
-          <div className="recordSet_footer"></div>
+          <RecordSetFooter setID={props.setID} />
         </div>
       );
   }
 };
 
-  const Filter = (props) => {
-    const userSettingsState = useSelector((state: any) => state.UserSettings);
-    console.dir(userSettingsState)
+const RecordSetFooter = (props) => {
+  const userSettingsState = useSelector((state: any) => state.UserSettings);
+  const mapState = useSelector((state: any) => state.Map);
+
+  const totalRecords = mapState?.layers?.[props.setID]?.IDList?.length;
+  const firstRowIndex = mapState?.recordTables?.[props.setID]?.page * mapState?.recordTables?.[props.setID]?.limit + 1;
+  const lastRowIndex =
+    totalRecords < firstRowIndex + mapState?.recordTables?.[props.setID]?.limit
+      ? totalRecords
+      : firstRowIndex + mapState?.recordTables?.[props.setID]?.limit;
+
+  const shouldDisplayNextButton = totalRecords > lastRowIndex;
+  const shouldDisplayPreviousButton = firstRowIndex > 0;
+
+  const dispatch = useDispatch();
+
+  const onClickPrevious = () => {
+    dispatch({
+      type: PAGE_OR_LIMIT_UPDATE,
+      payload: {
+        setID: props.setID,
+        page: mapState?.recordTables?.[props.setID]?.page - 1,
+        limit: mapState?.recordTables?.[props.setID]?.limit
+      }
+    });
+  };
+  const onClickNext = () => {
+    dispatch({
+      type: PAGE_OR_LIMIT_UPDATE,
+      payload: {
+        setID: props.setID,
+        page: mapState?.recordTables?.[props.setID]?.page + 1,
+        limit: mapState?.recordTables?.[props.setID]?.limit
+      }
+    });
+  };
+
+  return (
+    <div className="recordSet_footer">
+      <div className="recordSet_pagePrevious">
+        {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
+      </div>
+      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex} to ${lastRowIndex} of ${totalRecords} records`}</div>
+      <div className="recordSet_pageNext">
+        {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
+      </div>
+    </div>
+  );
+};
+
+const Filter = (props) => {
+  const userSettingsState = useSelector((state: any) => state.UserSettings);
+  console.dir(userSettingsState);
 
   const filterColumns =
     userSettingsState?.recordSets?.[props.setID].recordSetType === 'Activity'
@@ -147,44 +204,69 @@ export const RecordSet = (props) => {
   const filterOptions = filterColumns.map((option) => {
     return { label: option.name, value: option.key };
   });
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const valueInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
-      (filter) => filter.id === props.id
-    )?.filter;
+  const valueInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+    (filter) => filter.id === props.id
+  )?.filter;
 
-    const typeInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
-      (filter) => filter.id === props.id
-    )?.field;
+  const typeInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+    (filter) => filter.id === props.id
+  )?.field;
 
-    const operatorInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
-      (filter) => filter.id === props.id
-    )?.operator;
+  const operatorInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+    (filter) => filter.id === props.id
+  )?.operator;
 
-    const value = useRef();
+  const value = useRef();
 
-    //const debouncedUpdate = debounce((value) => {
-    const debouncedUpdate = (value) => {
-      dispatch({
-        type: RECORDSET_UPDATE_FILTER,
-        payload: {
-          filterType: 'tableFilter',
-          setID: props.setID,
-          filterID: props.id,
-          filter: value
-        }
-      });
-    }
+  //const debouncedUpdate = debounce((value) => {
+  const debouncedUpdate = (value) => {
+    dispatch({
+      type: RECORDSET_UPDATE_FILTER,
+      payload: {
+        filterType: 'tableFilter',
+        setID: props.setID,
+        filterID: props.id,
+        filter: value
+      }
+    });
+  };
 
-    return (
-      <tr>
-        <td>Data</td>
+  return (
+    <tr>
+      <td>Data</td>
+      <select
+        className="filterSelect"
+        key={'operand' + props.name}
+        value={operatorInState}
+        onChange={(e) => {
+          console.dir(e.target.value);
+
+          dispatch({
+            type: RECORDSET_UPDATE_FILTER,
+            payload: {
+              filterType: 'tableFilter',
+              setID: props.setID,
+              filterID: props.id,
+              operator: e.target.value
+            }
+          });
+        }}>
+        <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
+          CONTAINS
+        </option>
+        <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
+          DOES NOT CONTAIN
+        </option>
+      </select>
+      <td>
         <select
           className="filterSelect"
-          key={'operand' + props.name}
-          value={operatorInState}
+          key={'filterType' + props.name}
+          value={typeInState}
           onChange={(e) => {
-            console.dir(e.target.value);
+            console.dir(e.target);
 
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
@@ -192,75 +274,50 @@ export const RecordSet = (props) => {
                 filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
-                operator: e.target.value
+                field: e.target.value
               }
             });
           }}>
-          <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
-            CONTAINS
-          </option>
-          <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
-            DOES NOT CONTAIN
-          </option>
+          {filterOptions.map((option) => {
+            return (
+              <option key={option.value + option.label} value={option.value}>
+                {option.label}
+              </option>
+            );
+          })}
         </select>
+      </td>
+      {props.type === 'data' ? (
         <td>
-          <select
+          <input
+            key={'banana' + props.id}
+            ref={value}
             className="filterSelect"
-            key={'filterType' + props.name}
-            value={typeInState}
             onChange={(e) => {
-              console.dir(e.target);
-
-              dispatch({
-                type: RECORDSET_UPDATE_FILTER,
-                payload: {
-                  filterType: 'tableFilter',
-                  setID: props.setID,
-                  filterID: props.id,
-                  field: e.target.value
-                }
-              });
-            }}>
-            {filterOptions.map((option) => {
-              return (
-                <option key={option.value + option.label} value={option.value}>
-                  {option.label}
-                </option>
-              );
-            })}
-          </select>
+              console.log('it changed');
+              debouncedUpdate(e.target.value);
+            }}
+            type="text"
+            value={valueInState}
+            //defaultValue={valueInState}
+          />
         </td>
-        {props.type === 'data' ? (
-          <td>
-            <input
-               key={"banana" + props.id}
-              ref={value}
-              className="filterSelect"
-              onChange={(e) => {
-                console.log('it changed');
-                debouncedUpdate(e.target.value);
-              }}
-              type="text"
-              value={valueInState}
-              //defaultValue={valueInState}
-            />
-          </td>
-        ) : (
-          <></>
-        )}
-        <td className="deleteButtonCell">
-          <Button
-            className={'deleteButton'}
-            variant="contained"
-            onClick={() => {
-              dispatch({
-                type: RECORDSET_REMOVE_FILTER,
-                payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
-              });
-            }}>
-            Delete
-          </Button>
-        </td>
-      </tr>
-    );
-  };
+      ) : (
+        <></>
+      )}
+      <td className="deleteButtonCell">
+        <Button
+          className={'deleteButton'}
+          variant="contained"
+          onClick={() => {
+            dispatch({
+              type: RECORDSET_REMOVE_FILTER,
+              payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
+            });
+          }}>
+          Delete
+        </Button>
+      </td>
+    </tr>
+  );
+};

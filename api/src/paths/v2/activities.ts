@@ -139,6 +139,22 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
     });
   }
 
+  //sanitize limit
+  let limit = 100;
+  if (filterObject?.limit && !isNaN(filterObject.limit)) {
+    limit = filterObject.limit;
+  }
+
+  //compute offset by page and limit
+  let offset = 0;
+  if (filterObject?.page && filterObject?.limit) {
+    offset = filterObject.page * filterObject.limit;
+  }
+
+
+  sanitizedSearchCriteria.limit = limit;
+  sanitizedSearchCriteria.offset = offset;
+
   sanitizedSearchCriteria.selectColumns = selectColumns;
 
   let sanitizedTableFilters = [];
@@ -162,6 +178,8 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
       }
     });
   }
+
+
 
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
   defaultLog.debug({
@@ -234,6 +252,7 @@ function getActivitiesSQLv2(filterObject: any) {
   sqlStatement = groupByStatement(sqlStatement, filterObject);
   sqlStatement = orderByStatement(sqlStatement, filterObject);
   sqlStatement = limitStatement(sqlStatement, filterObject);
+  sqlStatement = offSetStatement(sqlStatement, filterObject)
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
   return sqlStatement;
@@ -386,6 +405,11 @@ function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function limitStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const limit = sqlStatement.append(`limit 20;`);
+  const limit = sqlStatement.append(` limit ${filterObject.limit}`);
   return limit;
+}
+
+function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
+  const offset = sqlStatement.append(` offset ${filterObject.offset};`);
+  return offset;
 }

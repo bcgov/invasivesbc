@@ -129,9 +129,10 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // new filter object:
     const currentState = yield select(selectUserSettings);
+    const mapState = yield select(selectMap);
     let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    filterObject.page = action.payload.page ? action.payload.page : 0;
-    filterObject.limit = action.payload.limit ? action.payload.limit : 20;
+    filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = action.payload.limit ? action.payload.limit : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
     if (true) {
       yield put({
