@@ -1,4 +1,4 @@
-import { all, fork, put, select, take, takeEvery, throttle } from 'redux-saga/effects';
+import { all, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -450,100 +450,8 @@ function* handle_FILTER_STATE_UPDATE(action) {
   }
 }
 
-function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
-  const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings);
-  const mapState = yield select(selectMap);
-  const recordSetID = action.payload.recordSetID;
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  // const isOpen = recordSet.expanded;
 
-  // if (!isOpen) {
-  //   return;
-  // }
 
-  const filters = getSearchCriteriaFromFilters(
-    recordSet.advancedFilters,
-    recordSetsState.recordSets,
-    recordSetID,
-    false,
-    recordSet.gridFilters,
-    0,
-    20,
-    mapState?.layers?.[recordSetID]?.filters?.sortColumns
-  );
-
-  //trigger get
-  yield put({
-    type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-    payload: { recordSetID: recordSetID, ActivityFilterCriteria: filters }
-  });
-}
-
-function* handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS(action) {
-  const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings);
-  const mapState = yield select(selectMap);
-  const recordSetID = action.payload.recordSetID;
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  // const isOpen = recordSet.expanded;
-
-  // if (!isOpen) {
-  //   return;
-  // }
-
-  const filters = getSearchCriteriaFromFilters(
-    recordSet.advancedFilters,
-    recordSetsState.recordSets,
-    recordSetID,
-    true,
-    recordSet.gridFilters,
-    0,
-    20,
-    mapState?.layers?.[recordSetID]?.filters?.sortColumns
-  );
-
-  //trigger get
-  yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: recordSetID, IAPPFilterCriteria: filters } });
-}
-
-function* handle_PAGE_OR_LIMIT_UPDATE(action) {
-  const authState = yield select(selectAuth);
-  const recordSetsState = yield select(selectUserSettings);
-  const mapState = yield select(selectMap);
-  const recordSetID = action.payload.recordSetID;
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const type = recordSetsState.recordSets?.[recordSetID]?.recordSetType;
-
-  const filters = getSearchCriteriaFromFilters(
-    recordSet.advancedFilters,
-    recordSetsState.recordSets,
-    recordSetID,
-    type === 'POI' ? true : false,
-    recordSet.gridFilters,
-    action.payload.page,
-    action.payload.limit,
-    mapState?.layers?.[recordSetID]?.filters?.sortColumns
-  );
-
-  if (type === 'POI') {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: recordSetID,
-        IAPPFilterCriteria: filters
-      }
-    });
-  } else {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: recordSetID,
-        ActivityFilterCriteria: filters
-      }
-    });
-  }
-}
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   const mapState = yield select(selectMap);
@@ -1013,8 +921,9 @@ function* activitiesPageSaga() {
     takeEvery(RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
+    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_UserFilterChange),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-    takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
+   // takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
@@ -1027,13 +936,13 @@ function* activitiesPageSaga() {
     takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
     // takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
     // takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
-    throttle(500, ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
+    takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
-    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+//    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),

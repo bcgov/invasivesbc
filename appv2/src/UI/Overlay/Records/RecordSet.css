@@ -108,6 +108,11 @@ td {
 }
 
 .recordSet_footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: white;
   bottom: 0;
   z-index: 2147483646;
   height: 5vh;

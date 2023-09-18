@@ -436,7 +436,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case PAGE_OR_LIMIT_UPDATE: {
-        const id = action.payload.recordSetID;
+        const id = action.payload.setID;
         return {
           ...state,
           recordTables: {
