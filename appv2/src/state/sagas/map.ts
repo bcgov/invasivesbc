@@ -1,4 +1,4 @@
-import { all, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { all, debounce, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -22,6 +22,7 @@ import {
   LAYER_STATE_UPDATE,
   LEAFLET_SET_WHOS_EDITING,
   MAP_DELETE_LAYER_AND_TABLE,
+  MAP_INIT_FOR_RECORDSET,
   MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
@@ -85,176 +86,6 @@ import { getSearchCriteriaFromFilters } from '../../util/miscYankedFromComponent
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
-}
-function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  const authState = yield select(selectAuth);
-  const mapState = yield select(selectMap);
-  const sets = {};
-  sets[action.payload.updatedSetName] = { ...action.payload.updatedSet };
-  const filterCriteria = yield getSearchCriteriaFromFilters(
-    action.payload.updatedSet.advancedFilterRows,
-    sets,
-    action.payload.updatedSetName,
-    action.payload.updatedSet.recordSetType === 'POI' ? true : false,
-    action.payload.updatedSet.gridFilters,
-    0,
-    200000
-  );
-
-  const layerState = {
-    color: action.payload.updatedSet.color,
-    drawOrder: action.payload.updatedSet.drawOrder,
-    mapToggle: action.payload.updatedSet.mapToggle,
-    labelToggle: action.payload.updatedSet.labelToggle
-  };
-
-  const newFilterState = {
-    advancedFilters: [...action.payload.updatedSet.advancedFilters],
-    gridFilters: { ...action.payload.updatedSet.gridFilters },
-    searchBoundary: { ...action.payload.updatedSet.searchBoundary },
-    serverSearchBoundary: { ...action.payload.updatedSet.searchBoundary?.server_id }
-  };
-
-  const testStateEqual = (a, b) => {
-    return a.color === b.color && a.drawOrder === b.drawOrder && a.mapToggle === b.mapToggle;
-  };
-  function arraysEqual(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
-
-    // If you don't care about the order of the elements inside
-    // the array, you should sort both arrays here.
-    // Please note that calling sort on an array will modify that array.
-    // you might want to clone your array first.
-
-    for (var i = 0; i < a.length; ++i) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  }
-
-  const compareObjects = (a, b) => {
-    if (a && !b) {
-      return false;
-    }
-    if (b && !a) {
-      return false;
-    }
-    for (const p in a) {
-      switch (typeof a[p]) {
-        case 'string':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        case 'boolean':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        case 'number':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        default:
-          if (!arraysEqual(a[p], b[p])) {
-            return false;
-          } else {
-            if (!compareObjects(a[p], b[p])) {
-              return false;
-            }
-          }
-      }
-    }
-    for (const p in b) {
-      switch (typeof b[p]) {
-        case 'string':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        case 'boolean':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        case 'number':
-          if (a[p] !== b[p]) {
-            return false;
-          }
-          break;
-        default:
-          if (!arraysEqual(a[p], b[p])) {
-            return false;
-          } else {
-            if (!compareObjects(b[p], a[p])) {
-              return false;
-            }
-          }
-      }
-    }
-    return true;
-  };
-
-  let layerStateChanged = false;
-  let filterStateChanged = false;
-
-  if (!compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.layerState, layerState)) {
-    layerStateChanged = true;
-    yield put({
-      type: LAYER_STATE_UPDATE,
-      payload: {
-        [action.payload.updatedSetName]: {
-          layerState: { ...layerState },
-          type: action.payload.updatedSet.recordSetType
-        }
-      }
-    });
-  }
-
-  if (
-    !compareObjects(mapState?.layers?.[action.payload.updatedSetName]?.filters, newFilterState) && action.payload.updatedSet.expanded
-    //|| !mapState?.recordTables?.[action.payload.updatedSetName]
-  ) {
-    filterStateChanged = true;
-    yield put({
-      type: FILTER_STATE_UPDATE,
-      payload: {
-        [action.payload.updatedSetName]: {
-          filters: { ...newFilterState },
-          type: action.payload.updatedSet.recordSetType
-        }
-      }
-    });
-  }
-
-  const previousOpenState = mapState?.layers?.[action.payload.updatedSetName]?.expanded;
-  const newOpenState = action.payload.updatedSet.expanded;
-
-  // check if we need to grab table rows on open and no filter change
-  if (filterStateChanged === false && newOpenState) {
-    if (action.payload.updatedSet.recordSetType === 'POI') {
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: action.payload.updatedSetName,
-          IAPPFilterCriteria: filterCriteria
-        }
-      });
-    }
-
-    if (action.payload.updatedSet.recordSetType === 'Activity') {
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: action.payload.updatedSetName,
-          ActivityFilterCriteria: filterCriteria
-        }
-      });
-    }
-  }
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
@@ -393,62 +224,18 @@ function* handle_MAP_INIT_REQUEST(action) {
     newMapState[rs] = { ...newLayer };
   }
 
+
+  yield put({ type: MAP_INIT_FOR_RECORDSET})
+
   yield put({
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
   });
 
-  yield put({
-    type: FILTER_STATE_UPDATE,
-    payload: { ...newMapState }
-  });
+
+
 }
 
-function* handle_FILTER_STATE_UPDATE(action) {
-  const authState = yield select(selectAuth);
-  const settingsState = yield select(selectUserSettings);
-  if(!settingsState.recordSets) {
-    yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS)
-  }
-  const recordSets = JSON.parse(JSON.stringify(settingsState.recordSets));
-  for (const x in action.payload) {
-    if (action.payload[x].type === 'POI') {
-      const IAPP_filter = getSearchCriteriaFromFilters(
-        action.payload?.[x]?.filters?.advancedFilters,
-        recordSets,
-        x,
-        true,
-        action.payload[x].filters.gridFilters,
-        0,
-        200000
-      );
-      yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: {
-          recordSetID: x,
-          IAPPFilterCriteria: { ...IAPP_filter, site_id_only: true }
-        }
-      });
-    } else {
-      const activityFilter = getSearchCriteriaFromFilters(
-        action.payload?.[x]?.filters?.advancedFilters,
-        recordSets,
-        x,
-        false,
-        action.payload?.[x]?.filters?.gridFilters,
-        0,
-        200000
-      );
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: {
-          recordSetID: x,
-          ActivityFilterCriteria: { ...activityFilter, activity_id_only: true }
-        }
-      });
-    }
-  }
-}
 
 
 
@@ -869,22 +656,10 @@ function* handle_URL_CHANGE(action) {
 
     const type = recordSet.recordSetType;
     if (type === 'Activity') {
-      const filters = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        recordSetsState.recordSets,
-        id,
-        false,
-        recordSet.gridFilters,
-        0,
-        20,
-        mapState?.layers?.[id]?.filters?.sortColumns
-      );
-
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
         payload: {
           recordSetID: id,
-          ActivityFilterCriteria: filters
         }
       });
     } else {
@@ -912,20 +687,38 @@ function* handle_URL_CHANGE(action) {
 
 function* handle_UserFilterChange(action) {
   yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+  yield put({type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: {recordSetID: action.payload.setID}})
 }
+
+function* handle_PAGE_OR_LIMIT_UPDATE(action) {
+  yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+ }
+
+ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
+  const userSettingsState = yield select(selectUserSettings);
+  const recordSets = Object.keys(userSettingsState.recordSets)
+  let actionsToPut = []
+  recordSets.map((recordSetID) => {
+    actionsToPut.push( { type:  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } })})
+    yield all(actionsToPut.map((action) => put(action)))
+ }
+
+
+
 
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
-    takeEvery(RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
+    debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
-    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_UserFilterChange),
+    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
    // takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
+    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
@@ -933,7 +726,7 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
+    //takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
     // takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
     // takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
     takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),

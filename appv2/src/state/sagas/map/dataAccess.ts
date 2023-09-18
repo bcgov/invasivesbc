@@ -67,13 +67,21 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
+    const currentState = yield select(selectUserSettings);
+    const mapState = yield select(selectMap);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = 200000
+    filterObject.selectColumns = ['activity_id']
+
   try {
     // if mobile or web
     if (true) {
       yield put({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
         payload: {
-          ...action.payload
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID
         }
       });
     }

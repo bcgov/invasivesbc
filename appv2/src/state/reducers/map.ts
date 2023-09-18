@@ -40,7 +40,9 @@ import {
   IAPP_EXTENT_FILTER_SUCCESS,
   USER_CLICKED_RECORD,
   URL_CHANGE,
-  OVERLAY_MENU_TOGGLE
+  OVERLAY_MENU_TOGGLE,
+  RECORDSET_UPDATE_FILTER,
+  RECORDSET_REMOVE_FILTER
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -146,13 +148,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           userRecordOnClickMenuOpen: false
-        }
+        };
       }
       case OVERLAY_MENU_TOGGLE: {
         return {
-          ...state, 
+          ...state,
           userRecordOnClickMenuOpen: false
-        }
+        };
       }
       case MAIN_MAP_MOVE: {
         if (action.payload.tab === 'Current Activity') {
@@ -434,6 +436,18 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           layers: JSON.parse(JSON.stringify({ ...newState }))
         };
+      }
+      case RECORDSET_UPDATE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.recordTables[action.payload.setID].page = 0;
+        });
+        return nextState;
+      }
+      case RECORDSET_REMOVE_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.recordTables[action.payload.setID].page = 0;
+        })
+        return nextState;
       }
       case PAGE_OR_LIMIT_UPDATE: {
         const id = action.payload.setID;

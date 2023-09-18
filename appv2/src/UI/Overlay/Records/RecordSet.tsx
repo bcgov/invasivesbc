@@ -144,11 +144,10 @@ export const RecordSet = (props) => {
 };
 
 const RecordSetFooter = (props) => {
-  const userSettingsState = useSelector((state: any) => state.UserSettings);
   const mapState = useSelector((state: any) => state.Map);
 
   const totalRecords = mapState?.layers?.[props.setID]?.IDList?.length;
-  const firstRowIndex = mapState?.recordTables?.[props.setID]?.page * mapState?.recordTables?.[props.setID]?.limit + 1;
+  const firstRowIndex = mapState?.recordTables?.[props.setID]?.page * mapState?.recordTables?.[props.setID]?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + mapState?.recordTables?.[props.setID]?.limit
       ? totalRecords
@@ -185,7 +184,7 @@ const RecordSetFooter = (props) => {
       <div className="recordSet_pagePrevious">
         {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
       </div>
-      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex} to ${lastRowIndex} of ${totalRecords} records`}</div>
+      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords? totalRecords: '(Loading)'} records`}</div>
       <div className="recordSet_pageNext">
         {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
       </div>
