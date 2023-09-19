@@ -41,9 +41,10 @@
 .recordSet_filters_container {
   /*padding-top: 10px;*/
   display: flex;
-  position: sticky;
+  position: relative;
   justify-content: center;
   align-items: center;
+  padding-bottom: 5vh;
 }
 
 .recordSet_filters {
@@ -114,7 +115,6 @@ td {
   justify-content: center;
   color: white;
   bottom: 0;
-  z-index: 2147483646;
   height: 5vh;
   width: 100%;
   background-color: #333;

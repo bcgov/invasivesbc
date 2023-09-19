@@ -2,15 +2,18 @@
   display: flex;
   width: 100%;
   overflow-x: scroll;
-  z-index: 2183646;
+  bottom: 5vh;
+  position: relative
 }
 
 .record_table {
   white-space: nowrap;
+  border-collapse: separate;
+  border: 1px solid;
 }
 .record_table_header {
   top: 0;
-  position: sticky;
+  /*position: sticky;*/
   overflow-x: scroll;
 }
 .record_table_header_column {
@@ -22,15 +25,26 @@
   text-align: left;
 }
 tr {
-  border-collapse: collapse;
-  border-spacing: 0px;
+  border-width: 2px;
+  border-spacing: 10px;
+  border: solid;
 }
 tr:nth-child(even) {
   background-color: white;
+  border-left: white;
+  border-right: white;
 }
 
 tr:nth-child(odd) {
-  background-color: lightgray;
+  background-color: rgb(227, 227, 227);
+  border-left: rgb(227, 227, 227); 
+  border-right:  rgb(227, 227, 227);
+  border-style: solid;
+}
+
+tr:hover {
+  background-color: rgb(0, 0, 0);
+  color: white;
 }
 
 th {

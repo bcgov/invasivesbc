@@ -22,7 +22,7 @@ const maximize = (e) => {
 
 const minimize = (e) => {
   const elementWeWant = document.getElementById('overlaydiv');
-  elementWeWant.style.height = '5vh';
+  elementWeWant.style.height = '0px';
 };
 
 const debouncedDrag = debounce((e) => {
@@ -67,37 +67,40 @@ export const OverlayHeader = (props) => {
   const onClickClose = (e) => {
     e.stopPropagation();
     dispatch({ type: 'TOGGLE_PANEL' });
+    debouncedDrag(e);
     history.push('/');
   };
 
   return (
     <div className="overlay-header">
-      <div className="overlay-header-close-button">
-        <Button variant="contained" onClick={props.closeCallback ? props.closeCallback : onClickClose}>
+      <div></div>
+      {/*<div className="overlay-header-close-button">
+        <Button sx={{height: '20px'}} variant="contained" onClick={props.closeCallback ? props.closeCallback : onClickClose}>
           <CloseIcon />
         </Button>
-      </div>
+  </div>*/}
 
       <div className="overlayMenuResizeButtons">
         <div className="fullScreenOverlayButton">
-          <Button onClick={maximize} variant="contained">
+          <Button sx={{height: '20px'}} onClick={maximize} variant="contained">
             <ArrowDropUpIcon />
           </Button>
         </div>
 
         <div onMouseDown={onClickDragButton} className="dragMeToResize">
-          <Button variant="contained">
+          <Button sx={{height: '20px'}} variant="contained">
             <DragHandleIcon />
           </Button>
         </div>
         <div className="minimizeOverlayButton">
-          <Button onClick={minimize} variant="contained">
+          <Button sx={{height: '20px'}} onClick={minimize} variant="contained">
             <ArrowDropDownIcon />
           </Button>
         </div>
       </div>
       <div className="overlay-header-menu-button">
         <Button
+        sx={{height: '20px'}}
           variant="contained"
           onClick={() => {
             dispatch({ type: OVERLAY_MENU_TOGGLE });

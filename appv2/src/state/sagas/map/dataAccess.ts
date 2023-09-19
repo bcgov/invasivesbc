@@ -288,7 +288,8 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
       'regional_districts',
       'biogeoclimatic_zones',
       'elevation', 
-      'batch_id'
+      'batch_id',
+      'geom'
     ];
   }
   return columns;

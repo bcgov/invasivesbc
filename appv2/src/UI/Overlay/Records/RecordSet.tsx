@@ -12,11 +12,14 @@ import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHel
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { debounce, set, values } from 'lodash';
 import {
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   PAGE_OR_LIMIT_UPDATE,
+  RECORDSETS_TOGGLE_VIEW_FILTER,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
@@ -29,6 +32,7 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
+  const viewFilters = useSelector((state: any) => state.Map.viewFilters);
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -69,6 +73,17 @@ export const RecordSet = (props) => {
                   <FilterAltOffIcon />
                 </Button>
               </div>
+              <div className="recordSet_toggleView_filter_button">
+                <Button
+                  onClick={() => {
+                    dispatch({
+                      type: RECORDSETS_TOGGLE_VIEW_FILTER,
+                    });
+                  }}
+                  variant="contained">
+                  {!viewFilters?  (<><VisibilityIcon /><FilterAltIcon/></>) : (<><VisibilityOffIcon /><FilterAltIcon/></>)}
+                </Button>
+              </div>
               <div className="recordSet_new_filter_button">
                 <Button
                   onClick={() => {
@@ -88,8 +103,10 @@ export const RecordSet = (props) => {
                 </Button>
               </div>
             </div>
-            <div className="recordSet_filters_container">
-              <div className="recordSet_filters">
+          </div>
+          <div className="recordSet_filters_container">
+            <div className="recordSet_filters">
+              {userSettingsState?.recordSets?.[props.setID]?.tableFilters?.length > 0 && viewFilters ? (
                 <table className="recordSetFilterTable">
                   <tr>
                     <th>Filter type</th>
@@ -98,42 +115,13 @@ export const RecordSet = (props) => {
                     <th>Value</th>
                     <th></th>
                   </tr>
-                  {
-                    /*we'll map over a list of these later*/
-                    userSettingsState?.recordSets?.[props.setID]?.searchBoundary?.name ? (
-                      <Filter
-                        operator="DOES Match"
-                        type="searchBoundary"
-                        name={userSettingsState?.recordSets?.[props.setID]?.searchBoundary?.name}
-                      />
-                    ) : (
-                      <></>
-                    )
-                  }
-                  {userSettingsState?.recordSets?.[props.setID]?.tableFilters ? (
-                    userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
-                      return <Filter key={'filterIndex' + i} type="data" setID={props.setID} id={filter.id} />;
-                    })
-                  ) : (
-                    <></>
-                  )}
-                  {userSettingsState?.recordSets?.[props.setID]?.advancedFilters ? (
-                    userSettingsState?.recordSets?.[props.setID]?.advancedFilters?.map((filter: any, i) => {
-                      return (
-                        <Filter
-                          setID={props.setID}
-                          key={'filterIndex' + i}
-                          operator="DOES Match"
-                          type="data2"
-                          name={filter?.filterKey}
-                        />
-                      );
-                    })
-                  ) : (
-                    <></>
-                  )}
+                  {userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
+                    return <Filter key={'filterIndex' + i} type="data" setID={props.setID} id={filter.id} />;
+                  })}
                 </table>
-              </div>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <RecordTable setID={props.setID} />
@@ -184,7 +172,9 @@ const RecordSetFooter = (props) => {
       <div className="recordSet_pagePrevious">
         {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
       </div>
-      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords? totalRecords: '(Loading)'} records`}</div>
+      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex + 1} to ${lastRowIndex} of ${
+        totalRecords ? totalRecords : '(Loading)'
+      } records`}</div>
       <div className="recordSet_pageNext">
         {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
       </div>

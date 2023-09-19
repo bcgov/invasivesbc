@@ -4,7 +4,7 @@ import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordTable.css';
 import { activityColumnsToDisplay, getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP, iappColumnsToDisplay } from './RecordTableHelpers';
-import { USER_CLICKED_RECORD } from 'state/actions';
+import { USER_CLICKED_RECORD, USER_HOVERED_RECORD } from 'state/actions';
 
 
 export const RecordTableHeader = (props) => {
@@ -65,7 +65,12 @@ export const RecordTable = (props) => {
         </tr>
         {mappedRows?.map((row, i) => {
           return (
-            <tr onClick={(()=> { dispatch({type: USER_CLICKED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.point_of_interest_id, row: row}})})} className="record_table_row" key={i}>
+            <tr 
+
+            onClick={(()=> { dispatch({type: USER_CLICKED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.point_of_interest_id, row: row}})})} 
+            onMouseOver={(()=> { dispatch({type: USER_HOVERED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.point_of_interest_id, row: row}})})} 
+            
+            className="record_table_row" key={i}>
               {
                 tableType === "Activity" ?
                   activityColumnsToDisplay.map((col, j) => {

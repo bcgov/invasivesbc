@@ -31,6 +31,7 @@ import {TrainingPage} from './Overlay/Training/Training';
 import {WhatsHereTable} from './Overlay/WhatsHere/WhatsHereTable';
 import {IAPPRecord} from "./Overlay/IAPP/IAPPRecord";
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
+import { OnHoverActivity } from './Map/OnHoverActivity';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -153,6 +154,7 @@ const MapMemo = React.memo((props: any) => {
     <Map className="Map">
       <ButtonContainer></ButtonContainer>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo/>}/>
+      <Route exact={false} path="/Records" render={(props) => <OnHoverActivity/>}/>
       <MapCenterSetter/>
     </Map>
   );

@@ -42,7 +42,9 @@ import {
   URL_CHANGE,
   OVERLAY_MENU_TOGGLE,
   RECORDSET_UPDATE_FILTER,
-  RECORDSET_REMOVE_FILTER
+  RECORDSET_REMOVE_FILTER,
+  RECORDSETS_TOGGLE_VIEW_FILTER,
+  USER_HOVERED_RECORD
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -82,9 +84,11 @@ class MapState {
   labelBoundsPolygon: any;
   IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
+  viewFilters: boolean;
 
   constructor() {
     this.initialized = false;
+    this.viewFilters = true;
     this.map_center = [53, -127];
     this.map_zoom = 5;
     this.activity_center = [53, -127];
@@ -135,12 +139,27 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
   return (state = initialState, action) => {
     switch (action.type) {
       //splitting extent vars to two pairs solves render loop
+      case RECORDSETS_TOGGLE_VIEW_FILTER: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.viewFilters = !draftState.viewFilters;
+        })
+        return nextState;
+      }
       case USER_CLICKED_RECORD: {
         const nextState = createNextState(state, (draftState) => {
           draftState.userRecordOnClickMenuOpen = true;
           draftState.userRecordOnClickRecordType = action.payload.recordType;
           draftState.userRecordOnClickRecordID = action.payload.id;
           draftState.userRecordOnClickRecordRow = action.payload.row;
+        });
+        return nextState;
+      }
+      case USER_HOVERED_RECORD: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.userRecordOnHoverMenuOpen = true;
+          draftState.userRecordOnHoverRecordType = action.payload.recordType;
+          draftState.userRecordOnHoverRecordID = action.payload.id;
+          draftState.userRecordOnHoverRecordRow = action.payload.row;
         });
         return nextState;
       }
