@@ -1,4 +1,4 @@
-import { createNextState } from '@reduxjs/toolkit'
+import { createNextState } from '@reduxjs/toolkit';
 //import { Uuid, UuidOptions } from 'node-ts-uuid';
 //import  process from 'process'
 //window.process = process
@@ -34,7 +34,6 @@ import {
 
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
-
 
 /*const options: UuidOptions = {
   length: 50,
@@ -145,16 +144,15 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const nextState = createNextState(state, (draftState) => {
           switch (action.payload.filterType) {
             case 'tableFilter':
-              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
-              {
-                draftState.recordSets[action.payload.setID].tableFilters = []
+              if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+                draftState.recordSets[action.payload.setID].tableFilters = [];
               }
               draftState.recordSets[action.payload.setID]?.tableFilters.push({
                 id: getUuid(),
                 field: action.payload.field,
                 fieldPath: action.payload.fieldPath,
                 operator: action.payload.operator,
-                filter: action.payload.filter? action.payload.filter : ''
+                filter: action.payload.filter ? action.payload.filter : ''
               });
               break;
             default:
@@ -167,11 +165,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const nextState = createNextState(state, (draftState) => {
           switch (action.payload.filterType) {
             case 'tableFilter':
-                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
+              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+                (filter) => filter.id === action.payload.filterID
+              );
 
-                draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1)
+              draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
               break;
             default:
               break;
@@ -183,9 +181,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const nextState = createNextState(state, (draftState) => {
           switch (action.payload.filterType) {
             case 'tableFilter':
-              if(!draftState.recordSets[action.payload.setID]?.tableFilters)
-              {
-                draftState.recordSets[action.payload.setID].tableFilters = []
+              if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+                draftState.recordSets[action.payload.setID].tableFilters = [];
               }
               draftState.recordSets[action.payload.setID]?.tableFilters.filter(
                 (filter) => filter.id !== action.payload.filterID
@@ -195,16 +192,16 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
                   (filter) => filter.id === action.payload.filterID
                 );
-                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
               }
 
-
-              if(action.payload.operator)
-              {
+              if (action.payload.operator) {
                 const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
                   (filter) => filter.id === action.payload.filterID
                 );
-                if (index !== -1) draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
               }
 
               if (action.payload.filter !== undefined) {
@@ -214,6 +211,59 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 if (index !== -1)
                   draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
               }
+              break;
+            case 'spatialFilterDrawn':
+              if (!draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn) {
+                draftState.recordSets[action.payload.setID].spatialFiltersDrawn = [];
+              }
+              draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.filter(
+                (filter) => filter.id !== action.payload.filterID
+              );
+
+              if (action.payload.shape) {
+                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].spatialFiltersDrawn[index].shape = action.payload.shape;
+              }
+
+              if (action.payload.operator) {
+                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].spatialFiltersDrawn[index].operator =
+                    action.payload.operator;
+              }
+
+              break;
+            case 'spatialFilterUploaded':
+              if (!draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded) {
+                draftState.recordSets[action.payload.setID].spatialFiltersUploaded = [];
+              }
+              draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.filter(
+                (filter) => filter.id !== action.payload.filterID
+              );
+
+              if (action.payload.shape) {
+                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].spatialFiltersUploaded[index].shapeID =
+                    action.payload.shapeID;
+              }
+
+              if (action.payload.operator) {
+                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.findIndex(
+                  (filter) => filter.id === action.payload.filterID
+                );
+                if (index !== -1)
+                  draftState.recordSets[action.payload.setID].spatialFiltersUploaded[index].operator =
+                    action.payload.operator;
+              }
+
               break;
             default:
               break;
@@ -227,7 +277,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         });
         return nextState;
       }
-
 
       case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {

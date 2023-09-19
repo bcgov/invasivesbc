@@ -77,11 +77,21 @@ export const RecordSet = (props) => {
                 <Button
                   onClick={() => {
                     dispatch({
-                      type: RECORDSETS_TOGGLE_VIEW_FILTER,
+                      type: RECORDSETS_TOGGLE_VIEW_FILTER
                     });
                   }}
                   variant="contained">
-                  {!viewFilters?  (<><VisibilityIcon /><FilterAltIcon/></>) : (<><VisibilityOffIcon /><FilterAltIcon/></>)}
+                  {!viewFilters ? (
+                    <>
+                      <VisibilityIcon />
+                      <FilterAltIcon />
+                    </>
+                  ) : (
+                    <>
+                      <VisibilityOffIcon />
+                      <FilterAltIcon />
+                    </>
+                  )}
                 </Button>
               </div>
               <div className="recordSet_new_filter_button">
@@ -224,8 +234,34 @@ const Filter = (props) => {
 
   return (
     <tr>
-      <td>Data</td>
-      <select
+      <td><select
+        className="filterTypeSelect"
+        key={'filterTypeSelect' + props.name}
+        value={operatorInState}
+        onChange={(e) => {
+          console.dir(e.target.value);
+
+          dispatch({
+            type: RECORDSET_UPDATE_FILTER,
+            payload: {
+              filterType: e.target.value,
+              setID: props.setID,
+              filterID: props.id,
+              //operator: e.target.value
+            }
+          });
+        }}>
+        <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
+          Field/Column
+        </option>
+        <option key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
+          Spatial - Drawn
+        </option>
+        <option key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
+          Spatial - Uploaded
+        </option>
+      </select></td>
+      <td><select
         className="filterSelect"
         key={'operand' + props.name}
         value={operatorInState}
@@ -248,7 +284,7 @@ const Filter = (props) => {
         <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
           DOES NOT CONTAIN
         </option>
-      </select>
+      </select></td>
       <td>
         <select
           className="filterSelect"

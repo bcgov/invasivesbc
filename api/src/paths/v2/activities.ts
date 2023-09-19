@@ -100,8 +100,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
   if (!isAuth) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = true;
-  }
-  else {
+  } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
 
@@ -122,12 +121,12 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
           break;
         /* NOTE: any payload columns need this: */
         case 'project_code':
-          if(!selectColumns.includes('activity_payload')){
+          if (!selectColumns.includes('activity_payload')) {
             selectColumns.push('activity_payload');
           }
           break;
         case 'activity_date':
-          if(!selectColumns.includes('activity_payload')){
+          if (!selectColumns.includes('activity_payload')) {
             selectColumns.push('activity_payload');
           }
           break;
@@ -150,7 +149,6 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   if (filterObject?.page && filterObject?.limit) {
     offset = filterObject.page * filterObject.limit;
   }
-
 
   sanitizedSearchCriteria.limit = limit;
   sanitizedSearchCriteria.offset = offset;
@@ -175,6 +173,27 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
         default:
           sanitizedTableFilters.push(filter);
           break;
+      }
+    });
+  }
+
+  //sanitize serverFilterGeometries
+  let serverFilterGeometries = [];
+  if (filterObject?.serverFilterGeometryIDs?.length > 0) {
+
+    filterObject.serverFilterGeometryIDs.forEach((geometry) => {
+      if(!isNaN(geometry)){
+        serverFilterGeometries.push(geometry);
+      }
+    });
+  }
+
+  //sanitize clientFilterGeometries
+  let clientFilterGeometries = [];
+  if (filterObject?.clientFilterGeometries?.length > 0) {
+    filterObject.clientFilterGeometries.forEach((geometry) => {
+      if (geometry?.geometry) {
+        clientFilterGeometries.push(geometry);
       }
     });
   }
@@ -252,7 +271,7 @@ function getActivitiesSQLv2(filterObject: any) {
   sqlStatement = groupByStatement(sqlStatement, filterObject);
   sqlStatement = orderByStatement(sqlStatement, filterObject);
   sqlStatement = limitStatement(sqlStatement, filterObject);
-  sqlStatement = offSetStatement(sqlStatement, filterObject)
+  sqlStatement = offSetStatement(sqlStatement, filterObject);
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
   return sqlStatement;
@@ -285,20 +304,121 @@ CurrentNegativeObservations AS (
         invasivesbc.current_negative_observations cno
     GROUP BY
         cno.activity_incoming_data_id),
+`);
+
+  if (filterObject?.serverFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+     
+        serverFilterGeometryIDs as (
+ 
+          select unnest(array[79,80]) as id
+         
+          ),
+         serverFilterGeometries AS (
+         select a.id, title, st_subdivide(geog::geometry) as geo
+         from invasivesbc.admin_defined_shapes a
+         inner join serverFilterGeometryIDs b on a.id = b.id
+         ),
+         
+          serverFilterGeometriesIntersecting as (
+         
+         select a.activity_incoming_data_id, b.id
+         from not_deleted_activities a
+         inner join serverFilterGeometries b on st_intersects((a.geog::geometry), b.geo)
+         group by a.activity_incoming_data_id, b.id
+         
+         
+         ),
+          serverFilterGeometriesIntersectingAll as (
+         
+         select a.activity_incoming_data_id, count(*)
+         from not_deleted_activities a
+         inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+         group by a.activity_incoming_data_id 
+         
+         having count(*) = (select count(*) from serverFilterGeometryIDs)
+         ),
+         `);
+  }
+  if (filterObject?.clientFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+         clientFilterGeometries AS (
+             SELECT
+                 unnest(array[${filterObject.clientFilterGeometries
+                   .map((geometry) => `st_setsrid(st_geomfromgeojson(${geometry.geometry}, 4326)`)
+                   .join(',')}]) AS geojson
+         ),
+         
+          clientFilterGeometriesIntersecting as (
+         
+         select a.activity_incoming_data_id 
+         from not_deleted_activities a
+         left join clientFilterGeometries on st_intersects((a.geog::geometry), geojson)
+         
+         ),
+          clientFilterGeometriesIntersectingAll as (
+         
+         select a.activity_incoming_data_id, count(*)
+         from not_deleted_activities a
+         inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+         group by a.activity_incoming_data_id 
+         
+         having count(*) = (select count(*) from clientFilterGeometries)
+         ),
+         `);
+  }
+
+  sqlStatement.append(`
 activities as (
-    select not_deleted_activities.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species, 
+    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species, 
     case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
     case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative  
-    from not_deleted_activities
-    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = not_deleted_activities.activity_incoming_data_id
-    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = not_deleted_activities.activity_incoming_data_id
-) `);
+    `);
+
+  if (filterObject?.serverFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+    ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
+    `);
+  }
+  if(filterObject?.clientFilterGeometries?.length > 0){
+    sqlStatement.append(`
+    ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
+    `);
+  }
+
+  sqlStatement.append(`
+    from not_deleted_activities a
+    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
+    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
+
+    `);
+
+  if (filterObject?.serverFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+      inner join serverFilterGeometriesIntersectingAll c on a.activity_incoming_data_id = c.activity_incoming_data_id
+      `);
+  }
+
+  if (filterObject?.clientFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+      inner join clientFilterGeometriesIntersectingAll d on a.activity_incoming_data_id = d.activity_incoming_data_id
+      `);
+  }
+
+  sqlStatement.append(`
+    )  `);
+
+
+    defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
+
   return cte;
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.selectColumns) {
-    const select = sqlStatement.append(`select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `);
+    const select = sqlStatement.append(
+      `select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `
+    );
     return select;
   } else {
     const select = sqlStatement.append(`select * `);
@@ -320,72 +440,138 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'activity_id':
-        where.append(`and activities.activity_id ${filter.operator === 'CONTAINS'? 'like': 'not like'} '%${filter.filter}%' `);
+        where.append(
+          `and activities.activity_id ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} '%${filter.filter}%' `
+        );
         break;
       case 'short_id':
-        where.append(`and activities.short_id ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.short_id ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'activity_type':
-        where.append(`and activities.activity_type ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.activity_type ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'activity_subtype':
-        where.append(`and activities.activity_subtype ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.activity_subtype ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'activity_date':
-          where.append(`and substring((activities.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `)
+        where.append(
+          `and substring((activities.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  '%${filter.filter}%' `
+        );
         break;
       case 'project_code':
         where.append(
-          `and (activities.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `
+          `and (activities.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  '%${filter.filter}%' `
         );
         break;
       case 'jurisdiction_display':
-        where.append(`and activities.jurisdiction_display ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.jurisdiction_display ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'species_positive_full':
-        where.append(`and activities.species_positive_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.species_positive_full ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'species_negative_full':
-        where.append(`and activities.species_negative_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.species_negative_full ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'has_current_positive':
-        where.append(`and activities.current_positive_species ${filter.operator === 'CONTAINS'? 'is not': 'is'} null `);
+        where.append(
+          `and activities.current_positive_species ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+        );
         break;
       case 'has_current_negative':
-        where.append(`and activities.current_negative_species  ${filter.operator === 'CONTAINS'? 'is not': 'is'} null `);
+        where.append(
+          `and activities.current_negative_species  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+        );
         break;
       case 'current_positive_species':
-        where.append(`and activities.current_positive_species ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.current_positive_species ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'current_negative_species':
-        where.append(`and activities.current_negative_species  ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.current_negative_species  ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'species_treated_full':
-        where.append(`and activities.species_treated_full ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.species_treated_full ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'created_by':
-        where.append(`and activities.created_by ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.created_by ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'updated_by':
-        where.append(`and activities.updated_by ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.updated_by ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'agency':
-        where.append(`and activities.agency ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.agency ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'regional_invasive_species_organization_areas':
-        where.append(`and activities.regional_invasive_species_organization_areas ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.regional_invasive_species_organization_areas ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  '%${filter.filter}%' `
+        );
         break;
       case 'regional_districts':
-        where.append(`and activities.regional_districts ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.regional_districts ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'biogeoclimatic_zones':
-        where.append(`and activities.biogeoclimatic_zones ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.biogeoclimatic_zones ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
+        );
         break;
       case 'elevation':
-        where.append(`and activities.elevation ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.elevation ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       case 'batch_id':
-        where.append(`and activities.batch_id::text ${filter.operator === 'CONTAINS'? 'like': 'not like'}  '%${filter.filter}%' `);
+        where.append(
+          `and activities.batch_id::text ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+        );
         break;
       default:
         break;
