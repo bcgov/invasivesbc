@@ -42,7 +42,8 @@ export const getUnnestedFieldsForActivity = (activity) =>  {
       regional_districts: activity?.regional_districts,
       biogeoclimatic_zones: activity?.biogeoclimatic_zones,
       elevation: activity?.elevation,
-      batch_id: activity?.batch_id
+      batch_id: activity?.batch_id,
+      geometry: activity?.activity_payload?.geometry,
       // date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
       // reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
       // latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,

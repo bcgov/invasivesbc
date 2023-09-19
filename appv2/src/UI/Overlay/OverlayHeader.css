@@ -1,11 +1,11 @@
 .overlay-header {
-  height: 40px;
+  height: 20px;
   width: 100%;
-  top: 0;
+  top: -1px;
   position: sticky;
   background-color:  #333;
   align-items: center;
-  z-index: 9999;
+  z-index: 99999;
 
   display: flex;
   flex-direction: row;
@@ -15,12 +15,14 @@
 .overlay-header-close-button {
 /*/  margin-right: auto; */
 width: 100px;
+height: 20px;
 justify-content: flex-start;
 display: flex;
 }
 
 .overlay-header-menu-button {
 width: 100px;
+height: 20px;
 display: flex;
 justify-content: flex-end;
 
@@ -29,7 +31,7 @@ justify-content: flex-end;
 
 .dragMeToResize {
   height: auto;
+height: 20px;
   width: 50px;
-  background-color: yellow;
 
 }
