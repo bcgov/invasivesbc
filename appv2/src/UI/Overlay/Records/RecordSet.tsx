@@ -194,8 +194,8 @@ const RecordSetFooter = (props) => {
 
 const Filter = (props) => {
   const userSettingsState = useSelector((state: any) => state.UserSettings);
-  const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries).map((boundary) => {
-    return { label: boundary.name, value: boundary.id };
+  const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries)?.map((boundary) => {
+    return { label: boundary.title, value: boundary.id };
   });
   console.dir(userSettingsState);
 
@@ -269,7 +269,6 @@ const Filter = (props) => {
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
-                filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
                 filter: e.target.value
@@ -333,7 +332,7 @@ const Filter = (props) => {
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
-                filterType: 'tableFilter',
+                //filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
                 operator: e.target.value
@@ -354,21 +353,21 @@ const Filter = (props) => {
               ),
               spatialFilterDrawn: (
                 <>
-                  <option key={Math.random()} value={'CONAINED IN'} label={'CONAINED IN'}>
-                    CONAINED IN
+                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
+                  CONTAINED IN
                   </option>
-                  <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
-                    DOES NOT CONTAIN
+                  <option key={Math.random()} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                    NOT CONTAINED IN
                   </option>
                 </>
               ),
               spatialFilterUploaded: (
                 <>
-                  <option key={Math.random()} value={'CONAINED IN'} label={'CONAINED IN'}>
+                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
                     CONAINED IN
                   </option>
-                  <option key={Math.random()} value={'NOT CONAINED IN'} label={'NOT CONAINED IN'}>
-                    NOT CONAINED IN
+                  <option key={Math.random()} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                    NOT CONTAINED IN
                   </option>
                 </>
               )

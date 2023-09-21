@@ -299,7 +299,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     const recordsExpandedState = JSON.parse(localStorage.getItem('records-expanded'));
 
     const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
-    const recordsExpanded = recordsExpandedState ? recordsExpandedState : false;
 
     yield put({ type: GET_API_DOC_REQUEST });
     yield take(GET_API_DOC_SUCCESS);
@@ -311,7 +310,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         activeActivityDescription: oldDesc,
         activeIAPP: IAPPID,
         recordSets: recordSets,
-        recordsExpanded: recordsExpanded
       }
     });
   } catch (e) {

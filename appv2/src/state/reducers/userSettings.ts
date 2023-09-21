@@ -151,7 +151,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 id: getUuid(),
                 field: action.payload.field,
                 filterType: action.payload.filterType,
-                operator: action.payload.operator,
+                operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
                 filter: action.payload.filter ? action.payload.filter : ''
               });
               break;
@@ -180,25 +180,24 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             (filter) => filter.id !== action.payload.filterID
           );
 
-          if (action.payload.filterType) {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
+          if (index !== -1)
+            if (action.payload.filterType) {
               draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
+            }
 
-            if (
-              action.payload.filterType === 'spatialFilterDrawn' ||
-              action.payload.filterType === 'spatialFilterUploaded'
-            ) {
-              delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
-              if (!action.payload.operator) {
-                draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
-              }
-              delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
-              if (!action.payload.filter) {
-                delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
-              }
+          if (
+            action.payload.filterType === 'spatialFilterDrawn' ||
+            action.payload.filterType === 'spatialFilterUploaded'
+          ) {
+            delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
+            if (!action.payload.operator) {
+              draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
+            }
+            if (!action.payload.filter) {
+              delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
             }
           }
 
