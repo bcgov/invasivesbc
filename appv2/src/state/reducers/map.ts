@@ -44,7 +44,8 @@ import {
   RECORDSET_UPDATE_FILTER,
   RECORDSET_REMOVE_FILTER,
   RECORDSETS_TOGGLE_VIEW_FILTER,
-  USER_HOVERED_RECORD
+  USER_HOVERED_RECORD,
+  INIT_SERVER_BOUNDARIES_GET
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -465,6 +466,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case RECORDSET_REMOVE_FILTER: {
         const nextState = createNextState(state, (draftState) => {
           draftState.recordTables[action.payload.setID].page = 0;
+        })
+        return nextState;
+      }
+      case INIT_SERVER_BOUNDARIES_GET: {
+        const nextState = createNextState(state, (draftState) => {
+          //draftState.layers[action.payload.setID].loaded = false;
+          draftState.serverBoundaries = action.payload.data;
         })
         return nextState;
       }

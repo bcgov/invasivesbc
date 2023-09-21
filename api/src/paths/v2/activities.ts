@@ -156,49 +156,46 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.selectColumns = selectColumns;
 
   let sanitizedTableFilters = [];
-
-  if (filterObject?.tableFilters?.length > 0) {
-    filterObject.tableFilters.forEach((filter) => {
-      switch (filter.field) {
-        case 'created_by':
-          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
-            sanitizedTableFilters.push(filter);
-          }
-          break;
-        case 'updated_by':
-          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
-            sanitizedTableFilters.push(filter);
-          }
-          break;
-        default:
-          sanitizedTableFilters.push(filter);
-          break;
-      }
-    });
-  }
-
   //sanitize serverFilterGeometries
   let serverFilterGeometries = [];
-  if (filterObject?.serverFilterGeometryIDs?.length > 0) {
-
-    filterObject.serverFilterGeometryIDs.forEach((geometry) => {
-      if(!isNaN(geometry)){
-        serverFilterGeometries.push(geometry);
-      }
-    });
-  }
 
   //sanitize clientFilterGeometries
   let clientFilterGeometries = [];
-  if (filterObject?.clientFilterGeometries?.length > 0) {
-    filterObject.clientFilterGeometries.forEach((geometry) => {
-      if (geometry?.geometry) {
-        clientFilterGeometries.push(geometry);
+
+  if (filterObject?.tableFilters?.length > 0) {
+    filterObject.tableFilters.forEach((filter) => {
+      switch (filter.filterType) {
+        case 'tableFilter':
+          switch (filter.field) {
+            case 'created_by':
+              if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+                sanitizedTableFilters.push(filter);
+              }
+              break;
+            case 'updated_by':
+              if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+                sanitizedTableFilters.push(filter);
+              }
+              break;
+            default:
+              sanitizedTableFilters.push(filter);
+              break;
+          }
+        case 'spatialFilterDrawn':
+          if (filter.filter) {
+            clientFilterGeometries.push(filter.filter);
+          }
+          break;
+        case 'spatialFilterUploaded':
+          if (!isNaN(filter?.filter?.geometry)) {
+            serverFilterGeometries.push(filter.filter.geometry);
+          }
+          break;
+        default:
+          break;
       }
     });
   }
-
-
 
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
   defaultLog.debug({
@@ -380,7 +377,7 @@ activities as (
     ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
     `);
   }
-  if(filterObject?.clientFilterGeometries?.length > 0){
+  if (filterObject?.clientFilterGeometries?.length > 0) {
     sqlStatement.append(`
     ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
     `);
@@ -408,8 +405,7 @@ activities as (
   sqlStatement.append(`
     )  `);
 
-
-    defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
+  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
   return cte;
 }

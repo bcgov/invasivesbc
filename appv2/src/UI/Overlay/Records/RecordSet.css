@@ -105,7 +105,8 @@ td {
 }
 
 .filterSelect {
-  width: 100px;
+  /*width: 100px;*/
+  max-width: 150px;
 }
 
 .recordSet_footer {

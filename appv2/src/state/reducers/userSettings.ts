@@ -150,7 +150,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               draftState.recordSets[action.payload.setID]?.tableFilters.push({
                 id: getUuid(),
                 field: action.payload.field,
-                fieldPath: action.payload.fieldPath,
+                filterType: action.payload.filterType,
                 operator: action.payload.operator,
                 filter: action.payload.filter ? action.payload.filter : ''
               });
@@ -163,110 +163,68 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       }
       case RECORDSET_REMOVE_FILTER: {
         const nextState = createNextState(state, (draftState) => {
-          switch (action.payload.filterType) {
-            case 'tableFilter':
-              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                (filter) => filter.id === action.payload.filterID
-              );
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
 
-              draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
-              break;
-            default:
-              break;
-          }
+          draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
         });
         return nextState;
       }
       case RECORDSET_UPDATE_FILTER: {
         const nextState = createNextState(state, (draftState) => {
-          switch (action.payload.filterType) {
-            case 'tableFilter':
-              if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-                draftState.recordSets[action.payload.setID].tableFilters = [];
-              }
-              draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-                (filter) => filter.id !== action.payload.filterID
-              );
+          if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+            draftState.recordSets[action.payload.setID].tableFilters = [];
+          }
+          draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+            (filter) => filter.id !== action.payload.filterID
+          );
 
-              if (action.payload.field) {
-                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
-              }
+          if (action.payload.filterType) {
+            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+              (filter) => filter.id === action.payload.filterID
+            );
+            if (index !== -1)
+              draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
 
-              if (action.payload.operator) {
-                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+            if (
+              action.payload.filterType === 'spatialFilterDrawn' ||
+              action.payload.filterType === 'spatialFilterUploaded'
+            ) {
+              delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
+              if (!action.payload.operator) {
+                draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
               }
+              delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
+              if (!action.payload.filter) {
+                delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
+              }
+            }
+          }
 
-              if (action.payload.filter !== undefined) {
-                const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
-              }
-              break;
-            case 'spatialFilterDrawn':
-              if (!draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn) {
-                draftState.recordSets[action.payload.setID].spatialFiltersDrawn = [];
-              }
-              draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.filter(
-                (filter) => filter.id !== action.payload.filterID
-              );
+          if (action.payload.field) {
+            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+              (filter) => filter.id === action.payload.filterID
+            );
+            if (index !== -1)
+              draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
+          }
 
-              if (action.payload.shape) {
-                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].spatialFiltersDrawn[index].shape = action.payload.shape;
-              }
+          if (action.payload.operator) {
+            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+              (filter) => filter.id === action.payload.filterID
+            );
+            if (index !== -1)
+              draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+          }
 
-              if (action.payload.operator) {
-                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersDrawn.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].spatialFiltersDrawn[index].operator =
-                    action.payload.operator;
-              }
-
-              break;
-            case 'spatialFilterUploaded':
-              if (!draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded) {
-                draftState.recordSets[action.payload.setID].spatialFiltersUploaded = [];
-              }
-              draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.filter(
-                (filter) => filter.id !== action.payload.filterID
-              );
-
-              if (action.payload.shape) {
-                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].spatialFiltersUploaded[index].shapeID =
-                    action.payload.shapeID;
-              }
-
-              if (action.payload.operator) {
-                const index = draftState.recordSets[action.payload.setID]?.spatialFiltersUploaded.findIndex(
-                  (filter) => filter.id === action.payload.filterID
-                );
-                if (index !== -1)
-                  draftState.recordSets[action.payload.setID].spatialFiltersUploaded[index].operator =
-                    action.payload.operator;
-              }
-
-              break;
-            default:
-              break;
+          //re used for spatial filters
+          if (action.payload.filter !== undefined) {
+            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+              (filter) => filter.id === action.payload.filterID
+            );
+            if (index !== -1)
+              draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
           }
         });
         return nextState;

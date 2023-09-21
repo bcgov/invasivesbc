@@ -121,12 +121,12 @@ export const RecordSet = (props) => {
                   <tr>
                     <th>Filter type</th>
                     <th>Operator</th>
-                    <th>Field</th>
+                    <th>Filter On</th>
                     <th>Value</th>
                     <th></th>
                   </tr>
                   {userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
-                    return <Filter key={'filterIndex' + i} type="data" setID={props.setID} id={filter.id} />;
+                    return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
                   })}
                 </table>
               ) : (
@@ -194,6 +194,9 @@ const RecordSetFooter = (props) => {
 
 const Filter = (props) => {
   const userSettingsState = useSelector((state: any) => state.UserSettings);
+  const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries).map((boundary) => {
+    return { label: boundary.name, value: boundary.id };
+  });
   console.dir(userSettingsState);
 
   const filterColumns =
@@ -204,6 +207,10 @@ const Filter = (props) => {
     return { label: option.name, value: option.key };
   });
   const dispatch = useDispatch();
+
+  const filterTypeInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+    (filter) => filter.id === props.id
+  )?.filterType;
 
   const valueInState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
     (filter) => filter.id === props.id
@@ -232,59 +239,143 @@ const Filter = (props) => {
     });
   };
 
+  let input = null;
+  switch (filterTypeInState) {
+    case 'tableFilter':
+      input = (
+        <input
+          key={'banana' + props.id}
+          ref={value}
+          className="filterSelect"
+          onChange={(e) => {
+            console.log('it changed');
+            debouncedUpdate(e.target.value);
+          }}
+          type="text"
+          value={valueInState}
+          //defaultValue={valueInState}
+        />
+      );
+      break;
+    case 'spatialFilterUploaded':
+      input = (
+        <select
+          className="filterSelect"
+          key={'filterType' + props.name}
+          value={valueInState}
+          onChange={(e) => {
+            console.dir(e.target);
+
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                filterType: 'tableFilter',
+                setID: props.setID,
+                filterID: props.id,
+                filter: e.target.value
+              }
+            });
+          }}>
+          {serverBoundariesToDisplay.map((option) => {
+            return (
+              <option key={option.value + option.label} value={option.value}>
+                {option.label}
+              </option>
+            );
+          })}
+        </select>
+      );
+
+      break;
+    default:
+      null;
+  }
+
   return (
     <tr>
-      <td><select
-        className="filterTypeSelect"
-        key={'filterTypeSelect' + props.name}
-        value={operatorInState}
-        onChange={(e) => {
-          console.dir(e.target.value);
+      <td>
+        <select
+          className="filterTypeSelect"
+          key={'filterTypeSelect' + props.name}
+          value={filterTypeInState}
+          onChange={(e) => {
+            console.dir(e.target.value);
 
-          dispatch({
-            type: RECORDSET_UPDATE_FILTER,
-            payload: {
-              filterType: e.target.value,
-              setID: props.setID,
-              filterID: props.id,
-              //operator: e.target.value
-            }
-          });
-        }}>
-        <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
-          Field/Column
-        </option>
-        <option key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
-          Spatial - Drawn
-        </option>
-        <option key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
-          Spatial - Uploaded
-        </option>
-      </select></td>
-      <td><select
-        className="filterSelect"
-        key={'operand' + props.name}
-        value={operatorInState}
-        onChange={(e) => {
-          console.dir(e.target.value);
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                filterType: e.target.value,
+                setID: props.setID,
+                filterID: props.id
+                //operator: e.target.value
+              }
+            });
+          }}>
+          <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
+            Field/Column
+          </option>
+          <option key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
+            Spatial - Drawn
+          </option>
+          <option key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
+            Spatial - Uploaded
+          </option>
+        </select>
+      </td>
+      <td>
+        <select
+          className="filterSelect"
+          key={'operand' + props.name}
+          value={operatorInState}
+          onChange={(e) => {
+            console.dir(e.target.value);
 
-          dispatch({
-            type: RECORDSET_UPDATE_FILTER,
-            payload: {
-              filterType: 'tableFilter',
-              setID: props.setID,
-              filterID: props.id,
-              operator: e.target.value
-            }
-          });
-        }}>
-        <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
-          CONTAINS
-        </option>
-        <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
-          DOES NOT CONTAIN
-        </option>
-      </select></td>
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                filterType: 'tableFilter',
+                setID: props.setID,
+                filterID: props.id,
+                operator: e.target.value
+              }
+            });
+          }}>
+          {
+            {
+              tableFilter: (
+                <>
+                  <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
+                    CONTAINS
+                  </option>
+                  <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
+                    DOES NOT CONTAIN
+                  </option>
+                </>
+              ),
+              spatialFilterDrawn: (
+                <>
+                  <option key={Math.random()} value={'CONAINED IN'} label={'CONAINED IN'}>
+                    CONAINED IN
+                  </option>
+                  <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
+                    DOES NOT CONTAIN
+                  </option>
+                </>
+              ),
+              spatialFilterUploaded: (
+                <>
+                  <option key={Math.random()} value={'CONAINED IN'} label={'CONAINED IN'}>
+                    CONAINED IN
+                  </option>
+                  <option key={Math.random()} value={'NOT CONAINED IN'} label={'NOT CONAINED IN'}>
+                    NOT CONAINED IN
+                  </option>
+                </>
+              )
+            }[filterTypeInState]
+          }
+        </select>
+      </td>
       <td>
         <select
           className="filterSelect"
@@ -303,33 +394,24 @@ const Filter = (props) => {
               }
             });
           }}>
-          {filterOptions.map((option) => {
-            return (
-              <option key={option.value + option.label} value={option.value}>
-                {option.label}
-              </option>
-            );
-          })}
+          {filterTypeInState === 'tableFilter' ? (
+            filterOptions.map((option) => {
+              return (
+                <option key={option.value + option.label} value={option.value}>
+                  {option.label}
+                </option>
+              );
+            })
+          ) : (
+            <option key={props.id + 'SHAPEOPTION'} value={'SHAPE'}>
+              SHAPE
+            </option>
+          )}
         </select>
       </td>
-      {props.type === 'data' ? (
-        <td>
-          <input
-            key={'banana' + props.id}
-            ref={value}
-            className="filterSelect"
-            onChange={(e) => {
-              console.log('it changed');
-              debouncedUpdate(e.target.value);
-            }}
-            type="text"
-            value={valueInState}
-            //defaultValue={valueInState}
-          />
-        </td>
-      ) : (
-        <></>
-      )}
+      <td>
+        {input}
+      </td>
       <td className="deleteButtonCell">
         <Button
           className={'deleteButton'}
