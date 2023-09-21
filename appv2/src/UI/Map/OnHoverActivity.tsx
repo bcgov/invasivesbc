@@ -37,7 +37,7 @@ export const OnHoverActivity = (props: any) => {
       popupRef?.current?.remove();
       return;
     } else {
-      if (row.short_id) {
+      if (row.short_id && centerPointGeometry !== null) {
         popupRef.current?.bindPopup(row?.short_id);
       } else {
         popupRef.current?.bindPopup(row?.id);
@@ -53,5 +53,5 @@ export const OnHoverActivity = (props: any) => {
     map.panTo(map.unproject(px),{animate: true}); // pan to new center
 });
 
-  return centerPointGeometry !== null ? <GeoJSON ref={popupRef} key={'asdf'} data={centerPointGeometry} /> : null;
+  return centerPointGeometry !== null ? <GeoJSON ref={popupRef} key={Math.random()} data={centerPointGeometry} /> : null;
 };

@@ -275,7 +275,7 @@ const Filter = (props) => {
               }
             });
           }}>
-          {serverBoundariesToDisplay.map((option) => {
+          {serverBoundariesToDisplay?.map((option) => {
             return (
               <option key={option.value + option.label} value={option.value}>
                 {option.label}
@@ -298,15 +298,21 @@ const Filter = (props) => {
           key={'filterTypeSelect' + props.name}
           value={filterTypeInState}
           onChange={(e) => {
-            console.dir(e.target.value);
+
+            let payload = {
+                filterType: e.target.value,
+                setID: props.setID,
+                filterID: props.id
+            } as any
+
+            if(e.target.value === 'spatialFilterUploaded'){
+              payload.filter = serverBoundariesToDisplay[0].value
+            }
 
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
-                filterType: e.target.value,
-                setID: props.setID,
-                filterID: props.id
-                //operator: e.target.value
+                ...payload
               }
             });
           }}>
