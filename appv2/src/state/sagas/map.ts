@@ -19,6 +19,7 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_REQUEST,
+  INIT_SERVER_BOUNDARIES_GET,
   LAYER_STATE_UPDATE,
   LEAFLET_SET_WHOS_EDITING,
   MAP_DELETE_LAYER_AND_TABLE,
@@ -179,6 +180,7 @@ function* handle_MAP_INIT_REQUEST(action) {
 
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
+    yield put ({type: INIT_SERVER_BOUNDARIES_GET, payload: {data: shapes}})
 
   let newMapState = {};
   for (const rs in recordSets) {
@@ -197,18 +199,24 @@ function* handle_MAP_INIT_REQUEST(action) {
     //grab shapes from server here
     // grab shapes from sqlite here
     let newFilters = {};
+    // FIX SERVER BOUNDARY STATE HERE
+    /*
     const serverPatchedSearchBoundary = shapes.filter((s) => {
       return s.id === recordSets[rs].searchBoundary?.server_id;
     })[0];
-    const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
+    */
+
+
+    /*const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
       ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
       : { ...recordSets[rs].searchBoundary };
+      */
 
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
       gridFilters: recordSets[rs].gridFilters,
-      searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
-      serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
+      //searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
+      //serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
     };
     newMapState[rs].filters = {
       ...newFilters
