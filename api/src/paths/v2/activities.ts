@@ -181,14 +181,15 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
               sanitizedTableFilters.push(filter);
               break;
           }
+          break;
         case 'spatialFilterDrawn':
           if (filter.filter) {
-            clientFilterGeometries.push(filter.filter);
+            clientFilterGeometries.push(filter.filter?.geometry);
           }
           break;
         case 'spatialFilterUploaded':
-          if (!isNaN(filter?.filter?.geometry)) {
-            serverFilterGeometries.push(filter.filter.geometry);
+          if (!isNaN(parseInt(filter?.filter))) {
+            serverFilterGeometries.push(parseInt(filter.filter));
           }
           break;
         default:
@@ -197,11 +198,13 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
     });
   }
 
+  sanitizedSearchCriteria.serverFilterGeometries = serverFilterGeometries;
+  sanitizedSearchCriteria.clientFilterGeometries = clientFilterGeometries;
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
   defaultLog.debug({
     label: 'getActivitiesBySearchFilterCriteria',
     message: 'sanitizedObject',
-    body: sanitizedSearchCriteria
+    body: JSON.stringify(sanitizedSearchCriteria, null, 2)
   });
 
   return sanitizedSearchCriteria;
@@ -259,6 +262,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 }
 
 function getActivitiesSQLv2(filterObject: any) {
+  try
+  {
+
   let sqlStatement: SQLStatement = SQL``;
   sqlStatement = initialWithStatement(sqlStatement);
   sqlStatement = additionalCTEStatements(sqlStatement, filterObject);
@@ -272,6 +278,12 @@ function getActivitiesSQLv2(filterObject: any) {
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
   return sqlStatement;
+  }
+
+  catch(e) {
+    defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', body: e.message });
+    throw e
+  }
 }
 
 function initialWithStatement(sqlStatement: SQLStatement) {
@@ -308,7 +320,7 @@ CurrentNegativeObservations AS (
      
         serverFilterGeometryIDs as (
  
-          select unnest(array[79,80]) as id
+          select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
          
           ),
          serverFilterGeometries AS (
@@ -342,7 +354,7 @@ CurrentNegativeObservations AS (
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson(${geometry.geometry}, 4326)`)
+                   .map((geometry) => `st_setsrid(st_geomfromgeojson(${geometry?.geometry}, 4326)`)
                    .join(',')}]) AS geojson
          ),
          
@@ -372,7 +384,7 @@ activities as (
     case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative  
     `);
 
-  if (filterObject?.serverFilterGeometries?.length > 0) {
+  /*if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
     ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
     `);
@@ -381,7 +393,7 @@ activities as (
     sqlStatement.append(`
     ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
     `);
-  }
+  }*/
 
   sqlStatement.append(`
     from not_deleted_activities a
