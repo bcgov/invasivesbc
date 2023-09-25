@@ -71,6 +71,7 @@ class MapState {
   layers: object;
   whatsHere: any;
   simplePickerLayers: object;
+  simplePickerLayers2: any[];
   recordTables: object;
   error: boolean;
   activitiesGeoJSON: any;
@@ -95,6 +96,28 @@ class MapState {
     this.activity_center = [53, -127];
     this.activity_zoom = 5;
     this.userHeading = null;
+    this.simplePickerLayers2 = [
+      {
+        title: 'Regional Districts',
+        type: 'wms',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows',
+      },
+      {
+        title: 'BC Parks',
+        type: 'wms',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows',
+      },
+      {
+        title: 'Conservancy Areas',
+        type: 'wms',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+      },
+      {
+        title: 'Municipality Boundaries',
+        type: 'wms',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows',
+      }
+    ]
     this.baseMapToggle = false;
     this.HDToggle = false;
     this.activityPageMapExtentToggle = false;

@@ -32,6 +32,7 @@ import {WhatsHereTable} from './Overlay/WhatsHere/WhatsHereTable';
 import {IAPPRecord} from "./Overlay/IAPP/IAPPRecord";
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
 import { OnHoverActivity } from './Map/OnHoverActivity';
+import { LayerPickerBasic } from './Map/LayerPickerBasic';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -156,11 +157,12 @@ const MapMemo = React.memo((props: any) => {
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo/>}/>
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity/>}/>
       <MapCenterSetter/>
+      <LayerPickerBasic/>
     </Map>
   );
 });
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
