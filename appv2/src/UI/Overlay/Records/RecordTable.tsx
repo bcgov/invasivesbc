@@ -67,8 +67,8 @@ export const RecordTable = (props) => {
           return (
             <tr 
 
-            onClick={(()=> { dispatch({type: USER_CLICKED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.point_of_interest_id, row: row}})})} 
-            onMouseOver={(()=> { dispatch({type: USER_HOVERED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.point_of_interest_id, row: row}})})} 
+            onClick={(()=> { dispatch({type: USER_CLICKED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.site_id, row: row}})})} 
+            onMouseOver={(()=> { dispatch({type: USER_HOVERED_RECORD, payload: {recordType: tableType, id: tableType === 'Activity'? row.activity_id : row.site_id, row: row}})})} 
             
             className="record_table_row" key={i}>
               {

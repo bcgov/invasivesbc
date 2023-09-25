@@ -321,7 +321,8 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
     'has_biological_dispersals',
     'monitored',
     'regional_district',
-    'regional_invasive_species_organization'
+    'regional_invasive_species_organization',
+    'geojson'
   ]
   }
   return columns;

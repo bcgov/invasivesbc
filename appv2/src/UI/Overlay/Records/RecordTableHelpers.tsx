@@ -78,7 +78,8 @@ export const getUnnestedFieldsForIAPP = (record) => {
     has_biological_dispersals: record.has_biological_dispersals,
     monitored: record.monitored,
     regional_district: record.regional_district,
-    regional_invasive_species_organization: record.regional_invasive_species_organization
+    regional_invasive_species_organization: record.regional_invasive_species_organization,
+    geometry: record.geojson
   };
 
   return JSON.parse(JSON.stringify(columns));
