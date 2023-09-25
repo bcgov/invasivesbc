@@ -96,12 +96,19 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
+    const currentState = yield select(selectUserSettings);
+    const mapState = yield select(selectMap);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = 200000
+    filterObject.selectColumns = ['site_id']
     // if mobile or web
     if (true) {
       yield put({
         type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
         payload: {
-          ...action.payload
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID
         }
       });
     }
@@ -162,12 +169,18 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
 
 export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
+    const currentState = yield select(selectUserSettings);
+    const mapState = yield select(selectMap);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = action.payload.limit ? action.payload.limit : mapState.recordTables?.[action.payload.recordSetID]?.limit;
     // if mobile or web
     if (true) {
       yield put({
         type: IAPP_TABLE_ROWS_GET_ONLINE,
         payload: {
-          ...action.payload
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID
         }
       });
     }
@@ -291,6 +304,25 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
       'batch_id',
       'geom'
     ];
+  }
+
+  else
+  {
+    columns =    [ 'site_id',
+    'site_paper_file_id',
+    'jurisdictions_flattened',
+    'min_survey',
+    'all_species_on_site',
+    'max_survey',
+    'agencies',
+    'has_biological_treatments',
+    'has_chemical_treatments',
+    'has_mechanical_treatments',
+    'has_biological_dispersals',
+    'monitored',
+    'regional_district',
+    'regional_invasive_species_organization'
+  ]
   }
   return columns;
 }

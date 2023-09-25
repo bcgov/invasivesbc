@@ -110,14 +110,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj]});
 
-  if (networkReturn.data.result.rows) {
+  if (networkReturn.data.result) {
     yield put({
       type: IAPP_TABLE_ROWS_GET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result.rows
+        rows: networkReturn.data.result
       }
     });
   } else {
@@ -162,10 +162,11 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 }
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj]})
 
-  if (networkReturn.data.result.rows) {
-    const IDList = networkReturn.data.result.rows.map((row) => {
+  if (networkReturn.data.result || networkReturn.data?.data?.result) {
+    const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
+    const IDList = list?.map((row) => {
       return row.site_id;
     });
 

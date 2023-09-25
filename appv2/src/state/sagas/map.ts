@@ -180,7 +180,7 @@ function* handle_MAP_INIT_REQUEST(action) {
 
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
-    yield put ({type: INIT_SERVER_BOUNDARIES_GET, payload: {data: shapes}})
+  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 
   let newMapState = {};
   for (const rs in recordSets) {
@@ -206,7 +206,6 @@ function* handle_MAP_INIT_REQUEST(action) {
     })[0];
     */
 
-
     /*const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
       ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
       : { ...recordSets[rs].searchBoundary };
@@ -214,7 +213,7 @@ function* handle_MAP_INIT_REQUEST(action) {
 
     newFilters = {
       advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters,
+      gridFilters: recordSets[rs].gridFilters
       //searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
       //serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
     };
@@ -232,21 +231,13 @@ function* handle_MAP_INIT_REQUEST(action) {
     newMapState[rs] = { ...newLayer };
   }
 
-
-  yield put({ type: MAP_INIT_FOR_RECORDSET})
+  yield put({ type: MAP_INIT_FOR_RECORDSET });
 
   yield put({
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
   });
-
-
-
 }
-
-
-
-
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
   const mapState = yield select(selectMap);
@@ -333,10 +324,6 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   }
   Geolocation.clearWatch(watchID);
 }
-
-
-
-
 
 function* handle_WHATS_HERE_FEATURE(action) {
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
@@ -667,26 +654,14 @@ function* handle_URL_CHANGE(action) {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
         payload: {
-          recordSetID: id,
+          recordSetID: id
         }
       });
     } else {
-      const filters = getSearchCriteriaFromFilters(
-        recordSet.advancedFilters,
-        recordSetsState.recordSets,
-        id,
-        true,
-        recordSet.gridFilters,
-        0,
-        20,
-        mapState?.layers?.[id]?.filters?.sortColumns
-      );
-
       yield put({
         type: IAPP_TABLE_ROWS_GET_REQUEST,
         payload: {
-          recordSetID: id,
-          IAPPFilterCriteria: filters
+          recordSetID: id
         }
       });
     }
@@ -694,25 +669,41 @@ function* handle_URL_CHANGE(action) {
 }
 
 function* handle_UserFilterChange(action) {
-  yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-  yield put({type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: {recordSetID: action.payload.setID}})
+  const recordSetsState = yield select(selectUserSettings);
+  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
+  if (recordSetType === 'Activity') {
+    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+  } else {
+    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+  }
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
-  yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
- }
+  const recordSetsState = yield select(selectUserSettings);
+  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
+  if (recordSetType === 'Activity') {
+    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+  } else {
+    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+  }
+}
 
- function* handle_MAP_INIT_FOR_RECORDSETS(action) {
+function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   const userSettingsState = yield select(selectUserSettings);
-  const recordSets = Object.keys(userSettingsState.recordSets)
-  let actionsToPut = []
+  const recordSets = Object.keys(userSettingsState.recordSets);
+  let actionsToPut = [];
   recordSets.map((recordSetID) => {
-    actionsToPut.push( { type:  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } })})
-    yield all(actionsToPut.map((action) => put(action)))
- }
-
-
-
+    const recordSetType = userSettingsState.recordSets?.[recordSetID]?.recordSetType;
+    if (recordSetType === 'Activity') {
+      actionsToPut.push({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
+    } else {
+      actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
+    }
+  });
+  yield all(actionsToPut.map((action) => put(action)));
+}
 
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
@@ -723,7 +714,7 @@ function* activitiesPageSaga() {
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-   // takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
+    // takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
@@ -743,7 +734,7 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
-//    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+    //    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
