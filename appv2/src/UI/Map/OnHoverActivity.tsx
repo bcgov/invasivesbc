@@ -14,7 +14,7 @@ export const OnHoverActivity = (props: any) => {
 
   useEffect(() => {
     try {
-      const newGeo = center(geometresForActivity[0]);
+      const newGeo = center(geometresForActivity[0] || geometresForActivity);
       if (newGeo) {
         setCenterPointGeometry(newGeo);
       } else {
@@ -40,7 +40,7 @@ export const OnHoverActivity = (props: any) => {
       if (row.short_id && centerPointGeometry !== null) {
         popupRef.current?.bindPopup(row?.short_id);
       } else {
-        popupRef.current?.bindPopup(row?.id);
+        popupRef.current?.bindPopup(row?.id || 'IAPP SITE:' + JSON.stringify(row?.site_id));
       }
       popupRef.current?.openPopup();
     }

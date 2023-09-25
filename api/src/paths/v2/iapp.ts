@@ -120,7 +120,8 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     'has_biological_dispersals',
     'monitored',
     'regional_district',
-    'regional_invasive_species_organization'
+    'regional_invasive_species_organization',
+    'geojson'
   ];
 
   if (filterObject?.selectColumns?.length > 0) {
@@ -328,7 +329,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          
          select a.site_id, b.id
          from iapp_sites a
-         inner join serverFilterGeometries b on st_intersects(st_setsrid(st_geomfromgeojson(a.geojson), 4326), b.geo)
+         inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
          group by a.site_id, b.id
          
          
@@ -378,7 +379,7 @@ sites as (
   select a.* 
   `);
 
-  if (filterObject?.serverFilterGeometries?.length > 0) {
+  /*if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
     ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
     `);
@@ -388,6 +389,7 @@ sites as (
     ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
     `);
   }
+  */
 
   sqlStatement.append(`
     from iapp_sites a
