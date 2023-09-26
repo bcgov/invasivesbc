@@ -128,6 +128,15 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
           setFormDetails((prevDetails) => {
             const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
             newSpeciesArr.splice(index, 1);
+
+            newSpeciesArr.forEach((item, i) => {
+              item.index = i;
+            });
+
+            if (newSpeciesArr.length === 1) {
+              newSpeciesArr[0].percent_area_covered = 100;
+            }
+
             return {
               ...prevDetails,
               form_data: {
