@@ -299,9 +299,9 @@ function getIAPPSQLv2(filterObject: any) {
 function initialWithStatement(sqlStatement: SQLStatement) {
   const withStatement = sqlStatement.append(
     `with iapp_sites AS (
-      SELECT a.*, array_to_string(a.jurisdictions, ', ') as jurisdictions_flattened
+      SELECT a.site_id, a.geog
       FROM
-      invasivesbc.iapp_site_summary_and_geojson a ),  `
+      invasivesbc.iapp_spatial a ),  `
   );
   return withStatement;
 }
@@ -320,28 +320,28 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          
           ),
          serverFilterGeometries AS (
-         select a.id, title, st_subdivide(geog::geometry) as geo
-         from invasivesbc.admin_defined_shapes a
-         inner join serverFilterGeometryIDs b on a.id = b.id
+          select a.id, title, st_subdivide(a.geog::geometry, 255) as geo
+          from invasivesbc.admin_defined_shapes a
+          inner join serverFilterGeometryIDs b on a.id = b.id
          ),
          
           serverFilterGeometriesIntersecting as (
          
-         select a.site_id, b.id
-         from iapp_sites a
-         inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
-         group by a.site_id, b.id
+            select a.site_id, b.id
+            from invasivesbc.iapp_spatial a
+            inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
+            group by a.site_id, b.id
          
          
          ),
           serverFilterGeometriesIntersectingAll as (
          
-         select a.site_id, count(*)
-         from iapp_sites a
-         inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
-         group by a.site_id 
-         
-         having count(*) = (select count(*) from serverFilterGeometryIDs)
+            select a.site_id--, count(*)
+            from invasivesbc.iapp_spatial a
+            inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
+            group by a.site_id
+
+            having count(*) = (select count(*) from serverFilterGeometryIDs)
          ),
          `);
   }
@@ -376,8 +376,26 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   sqlStatement.append(`
 sites as (
-  select a.* 
+  select 
+        
+   array_to_string(b.jurisdictions, ', ') as jurisdictions_flattened,
+  b.site_id,
+  b.site_paper_file_id,
+   b.min_survey,
+  b.all_species_on_site,
+  b.max_survey,
+  b.agencies,
+  b.has_biological_treatments,
+  b.has_chemical_treatments,
+  b.has_mechanical_treatments,
+  b.has_biological_dispersals,
+  b.monitored,
+  b.regional_district,
+  b.regional_invasive_species_organization,
+  b.geojson
+  
   `);
+
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -393,7 +411,7 @@ sites as (
 
   sqlStatement.append(`
     from iapp_sites a
-
+    join invasivesbc.iapp_site_summary_and_geojson b on a.site_id = b.site_id
     `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
