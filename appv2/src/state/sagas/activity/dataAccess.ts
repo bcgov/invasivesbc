@@ -460,6 +460,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
     });
+    yield put({ type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST, payload: { search_feature: activityState.activity.geometry } });
 
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
