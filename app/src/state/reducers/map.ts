@@ -44,7 +44,6 @@ import {
 } from '../actions';
 
 import { AppConfig } from '../config';
-import { getuid } from 'process';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -100,14 +99,14 @@ class MapState {
     this.IAPPBoundsPolygon = null;
     this.simplePickerLayers = [ 
       {
-        id: getuid(),
+        id: '1',
         name: 'IAPP Vector All Sites',
         type: 'PMTILE',
         url: '',
         visible: false,
       },
       {
-        id: getuid(),
+        id: '2',
         name: 'Regional Districts',
         type: 'WMS',
         url: ''
