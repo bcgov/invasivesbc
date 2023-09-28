@@ -33,7 +33,7 @@ export const getJurisdictionsSQL = (searchCriteria: JurisdictionSearchCriteria):
     'geometry', public.st_asGeoJSON(j.geog)::jsonb
   ) as "geojson", COUNT(*) OVER() AS "total_rows_count" 
     FROM public.jurisdiction j , inputData i
-    where public.ST_Intersects2(ST_MakeValid(j.geog :: geometry), i.geom);
+    where public.ST_Intersects2(j.geog :: geometry, i.geom);
   `);
   }
 
