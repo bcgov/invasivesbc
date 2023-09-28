@@ -422,31 +422,38 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   // check if new geo different than store
   //todo: fully move to redux saga
   useEffect(() => {
-    if (activityInStore?.activity?.geometry && activityInStore.activity.geometry[0]) {
-      const hasSelfIntersections = kinks(activityInStore.activity.geometry[0]).features.length > 0;
+    const geometry = activityInStore?.activity?.geometry;
+    if (geometry && geometry[0]) {
+      const isPointGeometry = geometry[0].geometry.type === 'Point';
 
-      if (hasSelfIntersections) {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Error!',
-          dialogContentText: 'The geometry has self-intersections and cannot be saved.',
-          dialogActions: [
-            {
-              actionName: 'OK',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-                dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
-              },
-              autoFocus: true
-            }
-          ]
-        });
+      if (!isPointGeometry) {
+        const hasSelfIntersections = kinks(geometry[0]).features.length > 0;
+
+        if (hasSelfIntersections) {
+          setWarningDialog({
+            dialogOpen: true,
+            dialogTitle: 'Error!',
+            dialogContentText: 'The geometry has self-intersections and cannot be saved.',
+            dialogActions: [
+              {
+                actionName: 'OK',
+                actionOnClick: async () => {
+                  setWarningDialog({ ...warningDialog, dialogOpen: false });
+                  dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: null } });
+                },
+                autoFocus: true
+              }
+            ]
+          });
+        } else if (activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA) {
+          setClosestWells();
+        }
       } else if (activityInStore?.activity?.form_data?.activity_data?.reported_area < MAX_AREA) {
         setClosestWells();
       }
       //if geometry is withing british columbia boundries, save it
       setTimeout(() => {
-        if (booleanContains(bcArea.features[0] as any, activityInStore.activity.geometry[0] as any)) {
+        if (booleanContains(bcArea.features[0] as any, geometry[0] as any)) {
           //saveGeometry(geometry);
         }
         //if geometry is NOT withing british columbia boundries, display err
