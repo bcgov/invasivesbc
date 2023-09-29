@@ -87,6 +87,7 @@ export const ActivityGeo = (props) => {
   })*/
 
   let mode = 'EDIT'; // check user access
+  console.dir(geo);
 
   switch (mode) {
     case 'READ':

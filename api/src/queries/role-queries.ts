@@ -17,7 +17,6 @@ export const grantRoleToUserSQL = (user_id, role_id): SQLStatement => {
     ) ON CONFLICT DO NOTHING;
   `;
   }
-
 };
 
 export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
@@ -91,6 +90,22 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
     `;
     return sql;
   }
+};
+
+export const getBetaAccessForUserSQL = (user_id): SQLStatement => {
+  if (!user_id) {
+    return null;
+  }
+
+  const sql = SQL`
+    select
+      v2beta
+    from
+      application_user
+    where
+      user_id=${user_id};
+  `;
+  return sql;
 };
 
 /**
