@@ -59,7 +59,8 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Accept-Encoding': 'gzip, deflate, br',
-      'Cache-Control': 'max-age=86400'
+      'Cache-Control': 'max-age=86400',
+      'Sec-Fetch-Mode': 'no-cors'
     },
     
     url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
