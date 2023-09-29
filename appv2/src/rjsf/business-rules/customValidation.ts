@@ -799,6 +799,9 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
       : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
+      if(!informationArray || informationArray?.length < 1) {
+        return errors;
+      }
     for (let object of informationArray) {
       if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
         errors['activity_subtype_data'][
