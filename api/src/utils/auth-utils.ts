@@ -3,9 +3,17 @@
 import { verify, VerifyCallback } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
-import { createUser, getRolesForUser, getUserByKeycloakID, KeycloakAccountType } from './user-utils';
+import {
+  createUser,
+  getRolesForUser,
+  getUserByKeycloakID,
+  getV2BetaAccessForUser,
+  KeycloakAccountType
+} from './user-utils';
 import { Request } from 'express';
 import { MDCAsyncLocal } from '../mdc';
+import { get } from 'lodash';
+import { getBetaAccessForUserSQL } from 'queries/role-queries';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -24,6 +32,7 @@ export interface InvasivesRequest extends Request {
     friendlyUsername?: string;
     roles: string[];
     filterForSelectable: boolean;
+    v2beta?: boolean;
   };
   originalUrl: string;
 }
@@ -32,7 +41,7 @@ const jwks = jwksRsa({
   jwksUri: APP_CERTIFICATE_URL,
   cacheMaxAge: 3600000,
   cache: true,
-  timeout: 60000,
+  timeout: 60000
 });
 
 function retrieveKey(header, callback) {
@@ -206,6 +215,17 @@ export const authenticate = async (req: InvasivesRequest) => {
             })
             .catch((error) => {
               defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
+              reject(error);
+            });
+
+          // check if user has beta access
+          getV2BetaAccessForUser(user.user_id)
+            .then((betaAccess) => {
+              req.authContext.v2beta = betaAccess;
+              resolve();
+            })
+            .catch((error) => {
+              defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
               reject(error);
             });
         });

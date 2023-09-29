@@ -1,4 +1,4 @@
-import { getRolesForUserSQL } from '../queries/role-queries';
+import { getBetaAccessForUserSQL, getRolesForUserSQL } from '../queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from '../database/db';
 import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
@@ -126,6 +126,40 @@ export async function getRolesForUser(userId) {
     throw {
       code: 500,
       message: 'Failed to get roles for user',
+      namespace: 'user-utils'
+    };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function getV2BetaAccessForUser(userId) {
+  const connection = await getDBConnection();
+  if (!connection) {
+    throw {
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'user-utils'
+    };
+  }
+  try {
+    const sqlStatement: SQLStatement = getBetaAccessForUserSQL(userId);
+    if (!sqlStatement) {
+      throw {
+        code: 400,
+        message: 'Failed to build SQL statement',
+        namespace: 'user-utils'
+      };
+    }
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || false;
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', result});
+    return result[0];
+  } catch (error) {
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
+    throw {
+      code: 500,
+      message: 'Failed getBetaAccessForUserSQL',
       namespace: 'user-utils'
     };
   } finally {

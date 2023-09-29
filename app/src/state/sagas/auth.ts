@@ -113,7 +113,8 @@ function* refreshRoles() {
       payload: {
         all_roles: rolesData.result,
         roles: userData.result.roles,
-        extendedInfo: userData.result.extendedInfo
+        extendedInfo: userData.result.extendedInfo,
+        v2BetaAccess: userData.result.v2BetaAccess
       }
     });
 

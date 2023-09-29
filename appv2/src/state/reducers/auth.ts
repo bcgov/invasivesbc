@@ -191,12 +191,13 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         };
       }
       case AUTH_REFRESH_ROLES_COMPLETE: {
-        const { all_roles, roles, extendedInfo } = action.payload;
+        const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
         return {
           ...state,
           roles,
           accessRoles: computeAccessRoles(all_roles, roles),
           extendedInfo,
+          v2BetaAccess:v2BetaAccess,
           rolesInitialized: true
         };
       }
