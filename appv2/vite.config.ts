@@ -45,7 +45,8 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_REDIRECT_URI = JSON.stringify(process.env['REDIRECT_URI']);
     defines.CONFIGURATION_PUBLIC_MAP_URL = JSON.stringify(process.env['PUBLIC_MAP_URL']);
 
-    defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
+    //defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
+    defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify('web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Caddy');
 
@@ -107,8 +108,8 @@ export default defineConfig({
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
-      //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react" 
-      jsxImportSource: "@welldone-software/why-did-you-render" 
+      //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react"
+      jsxImportSource: "@welldone-software/why-did-you-render"
 
     })
   ],
