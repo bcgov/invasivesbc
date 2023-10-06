@@ -358,12 +358,13 @@ async function getRolesForUser(req, res, next, userId) {
 }
 
 async function getRolesForSelf(req, res, next) {
+
   return res.status(200).json({
     message: 'Successfully retrieved roles for self',
     request: req.body,
     result: {
       roles: req.authContext.roles,
-      v2BetaAccess: req.authContext.v2beta,
+      v2BetaAccess: req.authContext.user.v2beta,
       extendedInfo: {
         user_id: req.authContext.user.user_id,
         account_status: req.authContext.user.account_status,

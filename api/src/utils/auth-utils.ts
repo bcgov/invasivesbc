@@ -221,7 +221,9 @@ export const authenticate = async (req: InvasivesRequest) => {
           // check if user has beta access
           getV2BetaAccessForUser(user.user_id)
             .then((betaAccess) => {
+              defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
               req.authContext.v2beta = betaAccess;
+              //req.authContext.user.v2beta = betaAccess;
               resolve();
             })
             .catch((error) => {
