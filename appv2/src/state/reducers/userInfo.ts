@@ -24,7 +24,7 @@ function createUserInfoReducer(userInfo: UserInfo) {
         return {
           ...state,
           loaded: true,
-          activated: action.payload.userInfo.activation_status === 1
+          activated: action.payload.userInfo.activation_status === 1,
         };
     }
     return state;

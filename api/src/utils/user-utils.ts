@@ -152,9 +152,11 @@ export async function getV2BetaAccessForUser(userId) {
       };
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || false;
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response});
+
+    const result = (response?.rows?.[0]?.v2beta as unknown as boolean) || false;
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', result});
-    return result[0];
+    return result;
   } catch (error) {
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
     throw {

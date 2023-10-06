@@ -121,6 +121,7 @@ function* refreshRoles() {
     yield put({
       type: USERINFO_LOAD_COMPLETE,
       payload: {
+        v2BetaAccess: userData.result.v2BetaAccess,
         userInfo: userData.result.extendedInfo
       }
     });

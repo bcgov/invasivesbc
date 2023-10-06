@@ -116,12 +116,17 @@ function* refreshRoles() {
       }
     });
 
+
+    console.dir(userData)
+    console.dir(rolesData)
+
     yield put({
       type: AUTH_REFRESH_ROLES_COMPLETE,
       payload: {
         all_roles: rolesData.result,
         roles: userData.result.roles,
-        extendedInfo: userData.result.extendedInfo
+        extendedInfo: userData.result.extendedInfo,
+        v2BetaAccess: userData.result.v2BetaAccess
       }
     });
 
