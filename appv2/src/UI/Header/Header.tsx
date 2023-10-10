@@ -2,7 +2,7 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './Header.css';
-import { IconButton } from '@mui/material';
+import { Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH_SIGNIN_REQUEST, AUTH_SIGNOUT_REQUEST, TOGGLE_PANEL } from 'state/actions';
 import { Route, useHistory } from 'react-router';
@@ -116,34 +116,24 @@ const ButtonWrapper = (props: any) => {
 const LoginButton = () => {
   const dispatch = useDispatch();
   return (
-    <div className="LoginButton">
-      <IconButton
-        onClick={() => {
-          dispatch({ type: AUTH_SIGNIN_REQUEST });
-        }}
-        size="large"
-        color="inherit"
-        aria-label="login">
+    <MenuItem onClick={() => { dispatch({ type: AUTH_SIGNIN_REQUEST }); }}>
+      <ListItemIcon>
         <VpnKeyIcon />
-      </IconButton>
-    </div>
+      </ListItemIcon>
+      Login
+    </MenuItem>
   );
 };
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
   return (
-    <div className="LogoutButton">
-      <IconButton
-        onClick={() => {
-          dispatch({ type: AUTH_SIGNOUT_REQUEST });
-        }}
-        size="large"
-        color="inherit"
-        aria-label="logout">
+    <MenuItem onClick={() => { dispatch({ type: AUTH_SIGNOUT_REQUEST }); }}>
+      <ListItemIcon>
         <LogoutIcon />
-      </IconButton>
-    </div>
+      </ListItemIcon>
+      Logout
+    </MenuItem>
   );
 };
 
@@ -212,8 +202,58 @@ const AdminPanelMemo = React.memo((props) => {
 });
 
 const LoginOrOutMemo = React.memo((props) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    // setOpen(false);
+    console.log("closing");
+  };
+
+  const navToUpdateRequest = () => {
+    return null;
+  }
+
   const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
-  return <>{authenticated ? <LogoutButton /> : <LoginButton />}</>;
+  const activated = useSelector((state: any) => state?.UserInfo?.activated);
+  return <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
+    <IconButton onClick={handleClick} size="small">
+      <Avatar></Avatar>
+    </IconButton>
+    <Menu
+      anchorEl={anchorEl}
+      open={openMenu}
+      onClose={handleClose}
+      PaperProps={{
+        elevation: 3
+      }}
+      transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+      {/* {showLoggedInTabs && ( */}
+        <MenuItem onClick={navToUpdateRequest}>
+          <ListItemIcon>
+            <AssignmentIcon />
+          </ListItemIcon>
+          Update My Info
+        </MenuItem>
+      {/* )} */}
+        {!activated &&
+          <MenuItem onClick={navToUpdateRequest}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            Request Access
+          </MenuItem>
+        }
+        {authenticated ? (
+          <LogoutButton />
+        ) : (
+          <LoginButton />
+        )}
+    </Menu>
+  </Box>;
 });
 
 
