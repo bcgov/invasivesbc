@@ -810,18 +810,19 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getApiSpec = async (): Promise<any> => {
-    const options = await getRequestOptions();
-    const { data, status, url } = await Http.request({
-      headers: { ...options.headers },
-      method: 'GET',
-      url: options.baseUrl + `/api/api-docs/`
-    });
-    checkForErrors(data, status, url);
-    if (DEBUG) {
-      console.log('getApiSpec', data);
-    }
-
-    return data;
+    return;
+    // const options = await getRequestOptions();
+    // const { data, status, url } = await Http.request({
+    //   headers: { ...options.headers },
+    //   method: 'GET',
+    //   url: options.baseUrl + `/api/api-docs/`
+    // });
+    // checkForErrors(data, status, url);
+    // if (DEBUG) {
+    //   console.log('getApiSpec', data);
+    // }
+    //
+    // return data;
   };
 
   /**

@@ -1,6 +1,15 @@
-import {all, call, delay, put, select, take, takeLatest} from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
-import Keycloak from 'keycloak-js';
+import Keycloak, {
+  KeycloakAdapter,
+  KeycloakLoginOptions,
+  KeycloakLogoutOptions,
+  KeycloakRegisterOptions
+} from 'keycloak-js';
+
+import { Browser } from '@capacitor/browser';
+
+
 import {
   AUTH_INITIALIZE_COMPLETE,
   AUTH_INITIALIZE_REQUEST,
@@ -8,6 +17,7 @@ import {
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
   AUTH_REFRESH_TOKEN,
+  AUTH_REINIT,
   AUTH_REQUEST_COMPLETE,
   AUTH_REQUEST_ERROR,
   AUTH_SIGNIN_REQUEST,
@@ -15,42 +25,94 @@ import {
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
   TABS_GET_INITIAL_STATE_REQUEST,
-  URL_CHANGE,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';
-import {AppConfig} from '../config';
-import {selectConfiguration} from '../reducers/configuration';
-import {selectAuthHeaders} from '../reducers/auth';
-import {Http} from '@capacitor-community/http';
+import { AppConfig } from '../config';
+import { selectConfiguration } from '../reducers/configuration';
+import { selectAuthHeaders } from '../reducers/auth';
+import { Http } from '@capacitor-community/http';
 
 const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 7 * 1000;
 
 let keycloakInstance = null;
 
-function* initializeAuthentication() {
-  const config: AppConfig = yield select(selectConfiguration);
-  let appModeState = yield select(state => state.AppMode);
+class CapacitorBrowserKeycloakAdapter implements KeycloakAdapter {
+  private kc: Keycloak;
 
-  keycloakInstance = Keycloak({
-    clientId: config.KEYCLOAK_CLIENT_ID,
-    realm: config.KEYCLOAK_REALM,
-    url: config.KEYCLOAK_URL
-  });
-
-  if(appModeState.url === null) {
-    yield take(URL_CHANGE);
-    appModeState = yield select(state => state.AppMode);
+  constructor(instance: Keycloak) {
+    this.kc = instance;
   }
 
-  yield call(keycloakInstance.init, {
-    checkLoginIframe: false,
-    adapter: config.KEYCLOAK_ADAPTER,
-    redirectUri: config.REDIRECT_URI + appModeState.url,
-    onLoad: 'check-sso',
-    pkceMethod: 'S256'
-  });
+  async accountManagement(): Promise<void> {
+    const url = this.kc.createAccountUrl();
+    return Browser.open({ url });
+  }
+
+  async login(options?: KeycloakLoginOptions): Promise<void> {
+    const url = this.kc.createLoginUrl(options);
+
+    const p: Promise<void> = new Promise(async (resolve, reject) => {
+      await Browser.open({ url, presentationStyle: 'popover' });
+      await Browser.addListener('browserFinished', () => {
+        Browser.removeAllListeners();
+        resolve();
+      });
+    });
+
+    return p;
+  }
+
+  async logout(options?: KeycloakLogoutOptions): Promise<void> {
+    const url = this.kc.createLogoutUrl(options);
+    return Browser.open({ url });
+  }
+
+  redirectUri(options: { redirectUri: string }, encodeHash: boolean): string {
+    if (options && options.redirectUri) {
+      return options.redirectUri;
+    } else if (this.kc.redirectUri) {
+      return this.kc.redirectUri;
+    } else {
+      return window.location.href;
+    }
+  }
+
+  async register(options?: KeycloakRegisterOptions): Promise<void> {
+    const url = this.kc.createRegisterUrl(options);
+    return Browser.open({ url });
+  }
+}
+
+function* reinitAuth() {
+  const config: AppConfig = yield select(selectConfiguration);
+
+  if (config.MOBILE) {
+    yield call(keycloakInstance.init, {
+      checkLoginIframe: false,
+      silentCheckSsoFallback: false,
+      silentCheckSsoRedirectUri: "https://invasivesbc.gov.bc.ca/check_sso.html",
+      redirectUri: config.REDIRECT_URI,
+      enableLogging: true,
+      responseMode: 'query',
+      adapter: new CapacitorBrowserKeycloakAdapter(keycloakInstance),
+      onLoad: 'check-sso',
+      pkceMethod: 'S256'
+    });
+
+    yield delay(3000);
+
+  } else {
+    yield call(keycloakInstance.init, {
+      checkLoginIframe: true,
+      redirectUri: config.REDIRECT_URI,
+      responseMode: 'fragment',
+      onLoad: 'check-sso',
+      pkceMethod: 'S256'
+    });
+  }
+
 
   yield put({
     type: AUTH_INITIALIZE_COMPLETE,
@@ -63,8 +125,8 @@ function* initializeAuthentication() {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put({type: AUTH_REFRESH_TOKEN});
-    yield put ({type: AUTH_REFRESH_ROLES_REQUEST} );
+    yield put({ type: AUTH_REFRESH_TOKEN });
+    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
   } else {
     // we are not logged in
     yield put({
@@ -75,6 +137,20 @@ function* initializeAuthentication() {
       }
     });
   }
+}
+
+function* initializeAuthentication() {
+  const config: AppConfig = yield select(selectConfiguration);
+
+  keycloakInstance = new Keycloak({
+    clientId: config.KEYCLOAK_CLIENT_ID,
+    realm: config.KEYCLOAK_REALM,
+    url: config.KEYCLOAK_URL
+  });
+
+  yield put({
+    type: AUTH_REINIT
+  });
 }
 
 function* refreshRoles() {
@@ -94,7 +170,7 @@ function* refreshRoles() {
   }
 
   try {
-    const {data: userData} = yield Http.request({
+    const { data: userData } = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
       //url: 'http://localhost:7080' + `/api/user-access`,
@@ -105,7 +181,7 @@ function* refreshRoles() {
       }
     });
 
-    const {data: rolesData} = yield Http.request({
+    const { data: rolesData } = yield Http.request({
       method: 'GET',
       //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
       //url: 'http://localhost:7080' + `/api/roles`,
@@ -115,10 +191,6 @@ function* refreshRoles() {
         'Content-Type': 'application/json'
       }
     });
-
-
-    console.dir(userData)
-    console.dir(rolesData)
 
     yield put({
       type: AUTH_REFRESH_ROLES_COMPLETE,
@@ -145,41 +217,48 @@ function* refreshRoles() {
     });
   } catch (err) {
     console.dir(err);
-    yield put({type: AUTH_REFRESH_ROLES_ERROR});
+    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
   }
 }
 
 function* keepTokenFresh() {
   const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
   if (refreshed) {
-    yield put({type: AUTH_UPDATE_TOKEN_STATE});
+    yield put({ type: AUTH_UPDATE_TOKEN_STATE });
   }
 
   yield delay(TOKEN_REFRESH_INTERVAL);
-  yield put({type: AUTH_REFRESH_TOKEN});
+  yield put({ type: AUTH_REFRESH_TOKEN });
 }
 
 function* handleSigninRequest(action) {
-  try {
-    yield call(keycloakInstance.login);
+  const config: AppConfig = yield select(selectConfiguration);
 
-    yield put({type: AUTH_REQUEST_COMPLETE, payload: {}});
-    yield put({type: AUTH_REFRESH_ROLES_REQUEST});
-    yield put({type: AUTH_REFRESH_TOKEN});
+
+  try {
+    const url = keycloakInstance.createLoginUrl({
+      redirectUri: config.REDIRECT_URI
+    });
+
+    yield call(keycloakInstance.login, {
+      redirectUri: config.REDIRECT_URI
+    });
+
+    yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
   } catch (e) {
     console.error(e);
-    yield put({type: AUTH_REQUEST_ERROR});
+    yield put({ type: AUTH_REQUEST_ERROR });
   }
 }
 
 function* handleSignoutRequest(action) {
   try {
     yield keycloakInstance.logout();
-    yield put({type: AUTH_SIGNOUT_COMPLETE});
-    yield put({type: USERINFO_CLEAR_REQUEST});
+    yield put({ type: AUTH_SIGNOUT_COMPLETE });
+    yield put({ type: USERINFO_CLEAR_REQUEST });
   } catch (e) {
     console.error(e);
-    yield put({type: AUTH_REQUEST_ERROR});
+    yield put({ type: AUTH_REQUEST_ERROR });
   }
 }
 
@@ -189,9 +268,10 @@ function* authenticationSaga() {
     takeLatest(AUTH_SIGNIN_REQUEST, handleSigninRequest),
     takeLatest(AUTH_SIGNOUT_REQUEST, handleSignoutRequest),
     takeLatest(AUTH_REFRESH_TOKEN, keepTokenFresh),
-    takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles)
+    takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles),
+    takeLatest(AUTH_REINIT, reinitAuth)
   ]);
 }
 
 export default authenticationSaga;
-export {keycloakInstance};
+export { keycloakInstance };
