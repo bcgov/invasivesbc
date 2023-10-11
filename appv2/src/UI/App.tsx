@@ -1,13 +1,10 @@
 import { Button, createTheme, ThemeOptions } from '@mui/material';
 import { ThemeProvider } from '@mui/styles';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useLocation } from 'react-router-dom';
 import { getDesignTokens } from 'util/CustomThemeProvider';
-import {
-  AUTH_REINIT,
-  URL_CHANGE
-} from '../state/actions';
+import { URL_CHANGE } from '../state/actions';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
@@ -35,6 +32,7 @@ import { FormMenuButtons } from './Overlay/FormMenuButtons';
 import { OnHoverActivity } from './Map/OnHoverActivity';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from "@capacitor/browser";
+import { LayerPickerBasic } from './Map/LayerPickerBasic';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -65,15 +63,10 @@ const AppUrlListener: React.FC<any> = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-
-      console.log('caplisten ' + event.url);
       if (event.url.indexOf('code') !== -1) {
         Browser.close();
 
         document.location.href = `${document.location.href}?${event.url.split('?').pop()}`;
-        /*dispatch({
-            type: AUTH_REINIT
-        });*/
       }
     });
   }, []);
