@@ -202,6 +202,10 @@ const AdminPanelMemo = React.memo((props) => {
 });
 
 const LoginOrOutMemo = React.memo((props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
+  const activated = useSelector((state: any) => state?.UserInfo?.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -214,11 +218,30 @@ const LoginOrOutMemo = React.memo((props) => {
   };
 
   const navToUpdateRequest = () => {
-    return null;
+    history.push({
+      pathname: '/AccessRequest',
+      state: {
+        updateInfo: true
+      }
+    });
+    dispatch({
+      type: TOGGLE_PANEL,
+      payload: { panelOpen: true, fullScreen: true }
+    });
   }
 
-  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
-  const activated = useSelector((state: any) => state?.UserInfo?.activated);
+  const requestAccess = async () => {
+    if (!authenticated) {
+      dispatch({ type: AUTH_SIGNIN_REQUEST });
+    } else {
+      history.push('/AccessRequest');
+      dispatch({
+        type: TOGGLE_PANEL,
+        payload: { panelOpen: true, fullScreen: true }
+      });
+    }
+  };
+
   return <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
     <IconButton onClick={handleClick} size="small">
       <Avatar></Avatar>
@@ -231,16 +254,16 @@ const LoginOrOutMemo = React.memo((props) => {
         elevation: 3
       }}
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-      {/* {showLoggedInTabs && ( */}
+        {activated &&
         <MenuItem onClick={navToUpdateRequest}>
           <ListItemIcon>
             <AssignmentIcon />
           </ListItemIcon>
           Update My Info
         </MenuItem>
-      {/* )} */}
+        }
         {!activated &&
-          <MenuItem onClick={navToUpdateRequest}>
+          <MenuItem onClick={requestAccess}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>

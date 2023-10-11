@@ -35,6 +35,7 @@ import { Browser } from "@capacitor/browser";
 import { LayerPickerBasic } from './Map/LayerPickerBasic';
 import { NewRecord } from './Map/Buttons/NewRecord';
 import NewRecordDialog from './Map/Buttons/NewRecordDialog';
+import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -147,11 +148,12 @@ const OverlayContentMemo = React.memo((props: any) => {
         path="/Batch/list/:id"
         render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined} />}
       />
-      <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
-      <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
-      <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
-      <Route path="/Training" render={(props) => <TrainingPage />} />
-      <Route path="/Legend" render={(props) => <LegendsPopup />} />
+      <Route path="/Batch/new" render={(props) => <BatchCreateNew/>}/>
+      <Route path="/Batch/templates" render={(props) => <BatchTemplates/>}/>
+      <Route path="/Reports" render={(props) => <EmbeddedReportsPage/>}/>
+      <Route path="/Training" render={(props) => <TrainingPage/>}/>
+      <Route path="/Legend" render={(props) => <LegendsPopup/>}/>
+      <Route path="/AccessRequest" render={(props) => <AccessRequestPage/>}/>
       <ThemeProvider theme={theme}>
         <Route path="/Admin" render={(props) => <UserAccessPage />} />
       </ThemeProvider>
