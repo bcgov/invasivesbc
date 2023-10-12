@@ -1,0 +1,33 @@
+name: AppV2 IOS
+on:
+  workflow_dispatch: {}
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+
+      - name: Configure ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ./appv2
+
+      - name: XCode version?
+        run: |
+          xcode-select -p
+
+      - name: Install dependencies
+        working-directory: ./appv2
+        run: |
+          npm install --legacy-peer-deps
+
+      - name: Run build
+        working-directory: ./appv2
+        run: |
+          npm run build-prod
