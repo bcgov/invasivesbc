@@ -16,6 +16,11 @@ jobs:
         run: |
           xcode-select -p
 
+      - name: Install sharedAPI dependencies
+        working-directory: ./sharedAPI
+        run: |
+          npm install
+
       - name: Install dependencies
         working-directory: ./appv2
         run: |
