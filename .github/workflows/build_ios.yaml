@@ -5,7 +5,7 @@ jobs:
   build-ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@vv
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
