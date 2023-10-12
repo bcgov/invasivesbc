@@ -5,14 +5,12 @@ jobs:
   build-ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@vv
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: "npm"
-          working-directory: ./appv2
 
       - name: Configure ruby
         uses: ruby/setup-ruby@v1
