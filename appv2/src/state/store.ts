@@ -37,7 +37,7 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
-  // sagaMiddleware.run(userSettingsSaga);
+  sagaMiddleware.run(userSettingsSaga);
   sagaMiddleware.run(batchSaga);
   sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);
