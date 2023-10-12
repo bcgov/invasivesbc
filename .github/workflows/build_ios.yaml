@@ -12,11 +12,6 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Configure ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: ./appv2
-
       - name: XCode version?
         run: |
           xcode-select -p
@@ -30,3 +25,10 @@ jobs:
         working-directory: ./appv2
         run: |
           npm run build-prod
+
+      - name: Capacitor update
+        run: npx cap update ios
+
+      - name: Capacitor copy
+        run: npx cap copy ios
+
