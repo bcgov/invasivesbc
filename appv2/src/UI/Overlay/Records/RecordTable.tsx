@@ -3,13 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordTable.css';
-import {
-  activityColumnsToDisplay,
-  getUnnestedFieldsForActivity,
-  getUnnestedFieldsForIAPP,
-  iappColumnsToDisplay
-} from './RecordTableHelpers';
-import { USER_CLICKED_RECORD, USER_HOVERED_RECORD } from 'state/actions';
+import { activityColumnsToDisplay, getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP, iappColumnsToDisplay } from './RecordTableHelpers';
+import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 
 export const RecordTableHeader = (props) => {};
 
@@ -80,6 +75,16 @@ export const RecordTable = (props) => {
                       row: row
                     }
                   });
+              }}
+              onTouchStart={()=> {
+                dispatch({
+                  type: USER_TOUCHED_RECORD,
+                  payload: {
+                    recordType: tableType,
+                    id: tableType === 'Activity'? row.activity_id : row.site_id,
+                    row: row
+                  }
+                });
               }}
               className="record_table_row"
               key={i}>

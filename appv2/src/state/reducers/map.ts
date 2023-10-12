@@ -46,7 +46,8 @@ import {
   RECORDSETS_TOGGLE_VIEW_FILTER,
   USER_HOVERED_RECORD,
   INIT_SERVER_BOUNDARIES_GET,
-  TOGGLE_QUICK_PAN_TO_RECORD
+  TOGGLE_QUICK_PAN_TO_RECORD,
+  USER_TOUCHED_RECORD
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -102,24 +103,24 @@ class MapState {
       {
         title: 'Regional Districts',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows'
       },
       {
         title: 'BC Parks',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows'
       },
       {
         title: 'Conservancy Areas',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows'
       },
       {
         title: 'Municipality Boundaries',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows',
+        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows'
       }
-    ]
+    ];
     this.baseMapToggle = false;
     this.HDToggle = false;
     this.activityPageMapExtentToggle = false;
@@ -157,7 +158,7 @@ class MapState {
       page: 0,
       highlightedType: null
     };
-    this.quickPanToRecord = false
+    this.quickPanToRecord = false;
   }
 }
 const initialState = new MapState();
@@ -169,7 +170,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case RECORDSETS_TOGGLE_VIEW_FILTER: {
         const nextState = createNextState(state, (draftState) => {
           draftState.viewFilters = !draftState.viewFilters;
-        })
+        });
         return nextState;
       }
       case USER_CLICKED_RECORD: {
@@ -193,6 +194,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case TOGGLE_QUICK_PAN_TO_RECORD: {
         const nextState = createNextState(state, (draftState) => {
           draftState.quickPanToRecord = !state.quickPanToRecord;
+        });
+        return nextState;
+      }
+      case USER_TOUCHED_RECORD: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.userRecordOnHoverMenuOpen = true;
+          draftState.userRecordOnHoverRecordType = action.payload.recordType;
+          draftState.userRecordOnHoverRecordID = action.payload.id;
+          draftState.userRecordOnHoverRecordRow = action.payload.row;
+          draftState.touchTime = Date.now();
         });
         return nextState;
       }
@@ -498,14 +509,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case RECORDSET_REMOVE_FILTER: {
         const nextState = createNextState(state, (draftState) => {
           draftState.recordTables[action.payload.setID].page = 0;
-        })
+        });
         return nextState;
       }
       case INIT_SERVER_BOUNDARIES_GET: {
         const nextState = createNextState(state, (draftState) => {
           //draftState.layers[action.payload.setID].loaded = false;
           draftState.serverBoundaries = action.payload.data;
-        })
+        });
         return nextState;
       }
       case PAGE_OR_LIMIT_UPDATE: {
