@@ -12,6 +12,7 @@ jobs:
         with:
           node-version: 18.x
           cache: "npm"
+          working-directory: ./appv2
 
       - name: Configure ruby
         uses: ruby/setup-ruby@v1
