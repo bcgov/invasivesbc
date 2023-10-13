@@ -46,29 +46,13 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
-  // const networkReturn = yield InvasivesAPI_Call(
-  //   'GET',
-  //   `/api/points-of-interest-lean/`,
-  //   action.payload.IAPPFilterCriteria
-  // );
 
-  //no cache set to get around request origin being cached incorrectly accross tabs (dev/test/prod)
   const networkReturn = yield Http.request({
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Cache-Control': 'max-age=86400',
-      'Sec-Fetch-Mode': 'no-cors'
-    },
-    
     url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
   });
 
-  const parsed = JSON.parse(networkReturn.data);
-  // have no idea why but i'm getting both types back today:
-  const rows = parsed?.result ? parsed?.result : parsed?.data.result;
+  const rows = networkReturn?.data?.result || [];
   let featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {
