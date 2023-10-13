@@ -46,10 +46,11 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
+  const configuration = yield select(selectConfiguration);
 
   const networkReturn = yield Http.request({
     method: 'GET',
-    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz'
+    url: configuration.IAPP_GEOJSON_URL
   });
 
   const rows = networkReturn?.data?.result || [];

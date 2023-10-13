@@ -37,6 +37,9 @@ function buildSpecificDefines() {
     if (process.env['REDIRECT_URI'] === undefined) {
       throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
     }
+    if (process.env['IAPP_GEOJSON_URL'] === undefined) {
+      throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
+    }
 
     defines.CONFIGURATION_API_BASE = JSON.stringify(process.env['REACT_APP_API_HOST']);
     defines.CONFIGURATION_KEYCLOAK_CLIENT_ID = JSON.stringify(process.env['SSO_CLIENT_ID']);
@@ -44,6 +47,7 @@ function buildSpecificDefines() {
     defines.CONFIGURATION_KEYCLOAK_URL = JSON.stringify(process.env['SSO_URL']);
     defines.CONFIGURATION_REDIRECT_URI = JSON.stringify(process.env['REDIRECT_URI']);
     defines.CONFIGURATION_PUBLIC_MAP_URL = JSON.stringify(process.env['PUBLIC_MAP_URL']);
+    defines.CONFIGURATION_IAPP_GEOJSON_URL = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
 
     //defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify(isMobile ? 'capacitor' : 'web');
     defines.CONFIGURATION_KEYCLOAK_ADAPTER = JSON.stringify('web');
