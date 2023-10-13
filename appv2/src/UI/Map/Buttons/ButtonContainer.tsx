@@ -8,9 +8,11 @@ import { WhatsHereButton, WhatsHereDrawComponent } from './WhatsHereButton';
 import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './WhatsHereMarker';
 import './ButtonContainer.css';
 import { useSelector } from 'util/use_selector';
+import { NewRecord } from './NewRecord';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
+
   
   return (
     <div id="map-btn-container">
@@ -28,6 +30,7 @@ export const ButtonContainer = (props) => {
       {isAuth && <WhatsHereMarker />}
       {isAuth && <WhatsHereCurrentRecordHighlighted />}
       {isAuth && <WhatsHereDrawComponent />}
+      <NewRecord/>
     </div>
   );
 };

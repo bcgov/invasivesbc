@@ -33,6 +33,8 @@ import { OnHoverActivity } from './Map/OnHoverActivity';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from "@capacitor/browser";
 import { LayerPickerBasic } from './Map/LayerPickerBasic';
+import { NewRecord } from './Map/Buttons/NewRecord';
+import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -195,6 +197,7 @@ const App: React.FC = () => {
         <OverlayContentMemo />
       </Overlay>
       <Footer />
+      <NewRecordDialog/>
     </div>
   );
 };
