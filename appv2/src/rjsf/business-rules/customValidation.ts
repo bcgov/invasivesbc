@@ -802,6 +802,8 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       if(!informationArray || informationArray?.length < 1) {
         return errors;
       }
+
+      if(informationArray?.length > 0) 
     for (let object of informationArray) {
       if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
         errors['activity_subtype_data'][

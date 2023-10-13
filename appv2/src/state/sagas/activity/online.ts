@@ -33,12 +33,11 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
 
 export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
   try {
-    const activityState = yield select(selectActivity)
-    console.dir(activityState)
+    const activityState = yield select(selectActivity);
+    console.dir(activityState);
     const networkReturn = yield InvasivesAPI_Call(
       'DELETE',
-      `/api/activities?` + 
-      qs.stringify({ id: [activityState.activity.activity_id]})
+      `/api/activities?` + qs.stringify({ id: [activityState.activity.activity_id] })
     );
     if (networkReturn?.status == 200) {
       yield put({ type: ACTIVITY_DELETE_SUCCESS });
@@ -57,9 +56,8 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
 
-  if(!(networkReturn.status === 200))
-  {
-    yield put({type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn }})
+  if (!(networkReturn.status === 200)) {
+    yield put({ type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn } });
     return;
   }
 
@@ -143,14 +141,16 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
-    search_feature: action.payload.search_feature[0]
-  });
+  if (action.payload.search_feature?.[0]) {
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
+      search_feature: { ...action.payload.search_feature[0], properties: {} }
+    });
 
-  yield put({
-    type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-    payload: { jurisdictions: networkReturn.data.result }
-  });
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
+      payload: { jurisdictions: networkReturn.data.result }
+    });
+  }
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {

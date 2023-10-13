@@ -160,7 +160,10 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       }
     });
 
-    yield put({
+   /* 
+   Not useful yet as form state is updated before the user does anything, so the user would see this no matter what
+   
+   yield put({
       type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
       payload: {
         unsaved_notification: {
@@ -170,6 +173,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
         }
       }
     });
+    */
   } catch (e) {
     console.error(e);
     yield put({

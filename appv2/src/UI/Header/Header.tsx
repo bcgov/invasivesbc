@@ -10,9 +10,10 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
 import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
-import invbclogo from "/assets/InvasivesBC_Icon.svg";
+import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import { Map } from '@mui/icons-material';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -24,6 +25,14 @@ const Tab = (props: any) => {
   const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
 
   const canDisplayCallBack = useCallback(() => {
+    if( props.looggedOutOnly && authenticated) {
+      return false;
+    }
+
+    if(props.loggedOutOnly && !authenticated) {
+      return true;
+    }
+
     if (props.loggedInOnly && !authenticated) {
       return false;
     }
@@ -51,7 +60,7 @@ const Tab = (props: any) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         rightIconContainer.style.visibility = 'visible';
       }
-    }, 100)
+    }, 100);
 
     scrollContainer.addEventListener('scroll', () => {
       if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
@@ -94,13 +103,11 @@ const ButtonWrapper = (props: any) => {
   return (
     <div className="ButtonWrapperContainer">
       <div id="left-icon-container">
-        <ArrowLeftIcon className="direction-icon"/>
+        <ArrowLeftIcon className="direction-icon" />
       </div>
-      <div id="ButtonWrapper">
-        {props.children}
-      </div>
+      <div id="ButtonWrapper">{props.children}</div>
       <div id="right-icon-container">
-        <ArrowRightIcon className="direction-icon"/>
+        <ArrowRightIcon className="direction-icon" />
       </div>
     </div>
   );
@@ -209,6 +216,7 @@ const LoginOrOutMemo = React.memo((props) => {
   return <>{authenticated ? <LogoutButton /> : <LoginButton />}</>;
 });
 
+
 export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
@@ -218,7 +226,7 @@ export const Header: React.FC = () => {
     <div className="HeaderBar">
       <InvIcon />
       <ButtonWrapper>
-        <Tab key={'tab1'} path={'/Landing'} loggedInOnly={true} label="Home" panelOpen={true} panelFullScreen={true}>
+        <Tab key={'tab1'} path={'/Landing'} loggedInOnly={false} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
         </Tab>
 
@@ -256,6 +264,9 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
+        <Tab key={'tab8'} path={'/'} label="Map" loggedOutOnly={true} panelOpen={false} >
+          <Map />
+        </Tab>
       </ButtonWrapper>
       <LoginOrOutMemo />
     </div>

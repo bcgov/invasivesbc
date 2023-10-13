@@ -8,23 +8,15 @@ import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 
 export const ActivityForm = (props) => {
   const activityState = useSelector(selectActivity);
-  const [unsavedDelay, setUnsavedDelay] = useState(false);
   const dispatch = useDispatch();
-  useEffect(() => {
-    setTimeout(() => {
-      setUnsavedDelay(true);
-    }, 5000);
-  }, []);
 
-  const debouncedFormChange = useCallback(
+  const debouncedFormChange = 
     _.debounce((event, ref, lastField, callbackFun) => {
       dispatch({
         type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: unsavedDelay }
+        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null}
       });
-    }, 150),
-    [unsavedDelay]
-  );
+    }, 150)
 
   return (
     <FormContainer
