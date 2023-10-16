@@ -66,6 +66,7 @@ export const IAPPRecord = (props) => {
           if (
             settingsState.apiDocsWithSelectOptions &&
             settingsState.apiDocsWithViewOptions &&
+            (IAPPState?.site as any)?.site_id  &&
             IAPPState.loading === false
           )
             return <Summary record={IAPPState.site}/>;
