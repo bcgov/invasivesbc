@@ -45,7 +45,8 @@ import {
   RECORDSET_REMOVE_FILTER,
   RECORDSETS_TOGGLE_VIEW_FILTER,
   USER_HOVERED_RECORD,
-  INIT_SERVER_BOUNDARIES_GET
+  INIT_SERVER_BOUNDARIES_GET,
+  TOGGLE_QUICK_PAN_TO_RECORD
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -87,6 +88,7 @@ class MapState {
   IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
   viewFilters: boolean;
+  quickPanToRecord: boolean;
 
   constructor() {
     this.initialized = false;
@@ -155,6 +157,7 @@ class MapState {
       page: 0,
       highlightedType: null
     };
+    this.quickPanToRecord = false
   }
 }
 const initialState = new MapState();
@@ -184,6 +187,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.userRecordOnHoverRecordType = action.payload.recordType;
           draftState.userRecordOnHoverRecordID = action.payload.id;
           draftState.userRecordOnHoverRecordRow = action.payload.row;
+        });
+        return nextState;
+      }
+      case TOGGLE_QUICK_PAN_TO_RECORD: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.quickPanToRecord = !state.quickPanToRecord;
         });
         return nextState;
       }

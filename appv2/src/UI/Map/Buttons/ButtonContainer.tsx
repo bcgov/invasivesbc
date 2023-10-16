@@ -9,6 +9,7 @@ import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './WhatsHereM
 import './ButtonContainer.css';
 import { useSelector } from 'util/use_selector';
 import { NewRecord } from './NewRecord';
+import { QuickPanToRecordToggle } from './ToggleQuickRecordPan';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
@@ -31,6 +32,7 @@ export const ButtonContainer = (props) => {
       {isAuth && <WhatsHereCurrentRecordHighlighted />}
       {isAuth && <WhatsHereDrawComponent />}
       <NewRecord/>
+      <QuickPanToRecordToggle/>
     </div>
   );
 };

@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface INewRecordDialog {
-  dialogOpen: boolean;
-  handleDialogClose: () => void;
+//  dialogOpen: boolean;
+ // handleDialogClose: () => void;
 }
 
 export interface INewRecordDialogState {
@@ -228,7 +228,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       <DialogActions className={classes.dialogActionsBox}>
         <Button
           onClick={() => {
-            props.handleDialogClose();
+          //  props.handleDialogClose();
           }}>
           Cancel
         </Button>
