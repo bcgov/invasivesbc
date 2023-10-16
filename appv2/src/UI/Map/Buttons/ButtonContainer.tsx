@@ -10,6 +10,7 @@ import './ButtonContainer.css';
 import { useSelector } from 'util/use_selector';
 import { NewRecord } from './NewRecord';
 import { QuickPanToRecordToggle } from './ToggleQuickRecordPan';
+import { SelectedRecordIndicator } from '../SelectedRecordIndicator';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
@@ -33,6 +34,7 @@ export const ButtonContainer = (props) => {
       {isAuth && <WhatsHereDrawComponent />}
       <NewRecord/>
       <QuickPanToRecordToggle/>
+      <SelectedRecordIndicator/>
     </div>
   );
 };
