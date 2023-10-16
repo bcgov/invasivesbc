@@ -42,6 +42,8 @@ export const RecordSet = (props) => {
     history.push('/Records');
   };
 
+  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
+
   switch (userSettingsState?.recordSets?.[props.setID]) {
     case undefined:
       return <></>;
@@ -101,7 +103,8 @@ export const RecordSet = (props) => {
                       type: RECORDSET_ADD_FILTER,
                       payload: {
                         filterType: 'tableFilter',
-                        field: 'short_id',
+                        // short id if activity record set otherwise site_ID
+                        field: tableType === 'Activity' ? 'short_id' : 'site_id' ,
                         setID: props.setID,
                         operator: 'CONTAINS',
                         blockFetchForNow: true
