@@ -118,7 +118,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   };
 
   return (
-    <div id="custom-multi-select">
+    <div id="custom-multi-select" key={props.label + 'key'}>
       <MultipleSelect
         id="custom-multi-select-field"
         SelectProps={{ styles: colourStyles }}
@@ -133,6 +133,8 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
         }}
         onChange={handleOnChange}
         values={props.value ? props.value?.split(',') : undefined}
+        //error={props.rawErrors?.length > 0 && props.rawErrors[0] !== 'should be equal to one of the allowed values' }
+        error={props.rawErrors?.length > 0 && props.rawErrors?.[0] !== 'should be equal to one of the allowed values' }
         disabled={props.disabled}
         label={props.label}
         onFocus={() => {
