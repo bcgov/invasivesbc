@@ -186,7 +186,7 @@ const IAPPTabMemo = React.memo((props) => {
   return (
     <Tab
       key={'tab4'}
-      path={'/Records/IAPP:' + activeIAPP}
+      path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label="Current IAPP"
       loggedInOnly={true}
       panelOpen={true}

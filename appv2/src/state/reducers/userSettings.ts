@@ -9,6 +9,7 @@ import {
   ACTIVITY_GET_REQUEST,
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
+  IAPP_GET_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
@@ -147,6 +148,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         return { 
           ...state, 
           newRecordDialogueOpen: true
+        }
+      }
+      case IAPP_GET_SUCCESS : {
+        return { 
+          ...state,
+          activeIAPP: action.payload.iapp?.site_id
         }
       }
       case ACTIVITY_CREATE_SUCCESS: {
