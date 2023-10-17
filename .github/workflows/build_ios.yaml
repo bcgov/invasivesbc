@@ -90,7 +90,7 @@ jobs:
           BUILD_NO: ${{ github.run_number }}
         run: |
           # Set Build Number. Not worrying about storing to repo.
-          agvtool new-version -all ${BUILD_NO}
+          agvtool new-version -all "2.${BUILD_NO}"
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -135,16 +135,12 @@ jobs:
 
       - name: Export Archive
         working-directory: ./appv2/ios/App
-        env:
-          EXPORT_OPTIONS_BASE64: ${{ secrets.APPV2_EXPORTOPTIONS_PLIST }}
         run: |
-          echo -n "$EXPORT_OPTIONS_BASE64" | base64 --decode --output exportOptions.plist
-
           xcodebuild \
           -exportArchive \
           -archivePath ${DATA_DIR}/${ARCHIVE_NAME} \
           -exportPath $EXPORT_DIR/${IPA_NAME} \
-          -exportOptionsPlist exportOptions.plist \
+          -exportOptionsPlist ExportOptions.plist \
           -verbose
 
       - name: Save derived data
@@ -153,11 +149,4 @@ jobs:
         with:
           path: appv2/ios/App/xcbuild/Build
           key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Exported
-          path: appv2/ios/App/export/Invasives.ipa
-          retention-days: 1
-          if-no-files-found: error
 
