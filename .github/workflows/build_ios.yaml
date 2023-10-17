@@ -47,10 +47,11 @@ jobs:
         working-directory: ./appv2
 
       - name: CocoaPod Install
+        working-directory: ./appv2/ios/App
         run: pod install
 
-
       - name: Increment Build No.
+        working-directory: ./appv2/ios/App
         env:
           BUILD_NO: ${{ github.run_number }}
         run: |
@@ -87,6 +88,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build For Release
+        working-directory: ./appv2/ios/App
         run: |
           xcodebuild \
           -workspace $PROJECT \
@@ -98,6 +100,7 @@ jobs:
           archive
 
       - name: Export Archive
+        working-directory: ./appv2/ios/App
         # This is the step that signs the build
         run: |
           xcodebuild \
