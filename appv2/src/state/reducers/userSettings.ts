@@ -150,6 +150,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           newRecordDialogueOpen: true
         }
       }
+      case CLOSE_NEW_RECORD_MENU: {
+        return { 
+          ...state, 
+          newRecordDialogueOpen: false
+        }
+      }
       case IAPP_GET_SUCCESS : {
         return { 
           ...state,

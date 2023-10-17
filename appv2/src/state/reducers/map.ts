@@ -47,7 +47,8 @@ import {
   USER_HOVERED_RECORD,
   INIT_SERVER_BOUNDARIES_GET,
   TOGGLE_QUICK_PAN_TO_RECORD,
-  USER_TOUCHED_RECORD
+  USER_TOUCHED_RECORD,
+  TOGGLE_CUSTOMIZE_LAYERS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -94,6 +95,7 @@ class MapState {
   userRecordOnHoverRecordType: any;
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
+  customizeLayersToggle: boolean;
 
   constructor() {
     this.initialized = false;
@@ -163,6 +165,8 @@ class MapState {
       highlightedType: null
     };
     this.quickPanToRecord = false;
+    this.quickPanToRecord = false
+    this.customizeLayersToggle = false
   }
 }
 const initialState = new MapState();
@@ -523,6 +527,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         });
         return nextState;
       }
+      case TOGGLE_CUSTOMIZE_LAYERS: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      })
+      return nextState;
+      } 
       case PAGE_OR_LIMIT_UPDATE: {
         const id = action.payload.setID;
         return {

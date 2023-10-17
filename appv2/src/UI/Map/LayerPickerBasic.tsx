@@ -15,10 +15,11 @@ import { DataBCLayer, LayerMode } from './DataBCRenderLayer';
 import 'leaflet/dist/leaflet.css';
 import { selectMap } from 'state/reducers/map';
 import LayersIcon from '@mui/icons-material/Layers';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import Control from './CustomMapControl';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
 
 export const LayerPickerBasic = (props) => {
   const simplePickerLayers = useSelector((state: any) => state.Map.simplePickerLayers);
@@ -28,6 +29,7 @@ export const LayerPickerBasic = (props) => {
     [51.49, -0.08],
     [51.5, -0.06]
 ];
+const dispatch = useDispatch();
 
   const layers = {
     'Regional Districts': { layerCode: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP' }
@@ -243,7 +245,7 @@ export const LayerPickerBasic = (props) => {
           sx={{ maxWidth: '15px' }}
           variant="contained"
           onClick={() => {
-            console.log('clicked');
+            dispatch({type: TOGGLE_CUSTOMIZE_LAYERS })
           }}>
           <LayersIcon sx={{ width: '15px' }} />
           <SettingsIcon sx={{ width: '15px' }} />
