@@ -128,8 +128,11 @@ jobs:
 
       - name: Export Archive
         working-directory: ./appv2/ios/App
-        # This is the step that signs the build
+        env:
+          EXPORT_OPTIONS_BASE64: ${{ secrets.APPV2_EXPORTOPTIONS_PLIST }}
         run: |
+          echo -n "$EXPORT_OPTIONS_BASE64" | base64 --decode --output exportOptions.plist
+
           xcodebuild \
           -exportArchive \
           -archivePath ${DATA_DIR}/${ARCHIVE_NAME} \
