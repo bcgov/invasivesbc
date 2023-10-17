@@ -802,6 +802,8 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       if(!informationArray || informationArray?.length < 1) {
         return errors;
       }
+
+      if(informationArray?.length > 0) 
     for (let object of informationArray) {
       if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
         errors['activity_subtype_data'][
@@ -838,19 +840,19 @@ export function getPestManagementPlanValidator(): rjsfValidator {
       formData.activity_subtype_data.Treatment_ChemicalPlant_Information;
 
     if (!pest_management_plan && !pmp_not_in_dropdown) {
-      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan'].addError(
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan']?.addError(
         'Either Pest Management Plan or Unlisted Drop Down field has to be filled.'
       );
-      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pmp_not_in_dropdown'].addError(
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pmp_not_in_dropdown']?.addError(
         'Either Pest Management Plan or Unlisted Drop Down field has to be filled.'
       );
     }
 
     if (pest_management_plan && pmp_not_in_dropdown) {
-      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan'].addError(
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pest_management_plan']?.addError(
         'You must only fill either Pest Management Plan or Unlisted Drop Down field.'
       );
-      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pmp_not_in_dropdown'].addError(
+      errors['activity_subtype_data']['Treatment_ChemicalPlant_Information']['pmp_not_in_dropdown']?.addError(
         'You must only fill either Pest Management Plan or Unlisted Drop Down field.'
       );
     }

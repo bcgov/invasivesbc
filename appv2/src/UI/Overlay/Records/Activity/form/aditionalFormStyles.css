@@ -6,3 +6,7 @@
 #invasivesbc-activity-form ul li:first-child .Mui-error {
   display: block;
 }
+
+div[class*="indicatorContainer"] {
+  color: black;
+}

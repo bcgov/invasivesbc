@@ -8,11 +8,32 @@ import {
 import {selectActivity} from "../../reducers/activity";
 import centroid from "@turf/centroid";
 import {selectIAPPSite} from "../../reducers/iappsite";
+import { selectUserSettings } from "state/reducers/userSettings";
 
 export function* handle_IAPP_GET_REQUEST(action) {
   try {
     // if mobile or web
+
+    const idFromURL = action.payload.iappID;
+    if(idFromURL !== undefined) {
     yield put({type: IAPP_GET_NETWORK_REQUEST, payload: {iappID: action.payload.iappID}});
+    }
+
+    const userSettingsState = yield select(selectUserSettings)
+    const activeIAPP = userSettingsState.activeIAPP;
+
+    if(activeIAPP !== undefined) {
+    yield put({type: IAPP_GET_NETWORK_REQUEST, payload: {iappID: activeIAPP}});
+    }
+    else
+    {
+      // dispatch alert to user that there is no active iapp site
+
+      //yield put({ type: Notif})
+    }
+
+
+
   } catch (e) {
     console.error(e);
     yield put({type: IAPP_GET_FAILURE});

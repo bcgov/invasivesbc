@@ -1,4 +1,4 @@
-import {all, put, select, takeEvery, takeLatest, delay} from 'redux-saga/effects';
+import { all, put, select, takeEvery, takeLatest, delay } from 'redux-saga/effects';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -40,7 +40,8 @@ import {
   ACTIVITY_UPDATE_AUTOFILL_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_UPDATE_PHOTO_REQUEST, IAPP_GET_REQUEST,
+  ACTIVITY_UPDATE_PHOTO_REQUEST,
+  IAPP_GET_REQUEST,
   MAP_INIT_REQUEST,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
@@ -81,13 +82,13 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import {selectActivity} from 'state/reducers/activity';
+import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_USER_SETTINGS_READY(action) {
- // if (action.payload.activeActivity) {
-//    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
- // }
+  // if (action.payload.activeActivity) {
+  //    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
+  // }
 }
 
 function* handle_ACTIVITY_DEBUG(action) {
@@ -99,10 +100,9 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
     type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
     payload: {
       activeActivity: null
-    }})
+    }
+  });
   yield put({ type: MAP_INIT_REQUEST });
-
-
 }
 
 function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
@@ -160,7 +160,10 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       }
     });
 
-    yield put({
+    /* 
+   Not useful yet as form state is updated before the user does anything, so the user would see this no matter what
+   
+   yield put({
       type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
       payload: {
         unsaved_notification: {
@@ -170,6 +173,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
         }
       }
     });
+    */
   } catch (e) {
     console.error(e);
     yield put({
@@ -179,17 +183,21 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
 }
 
 function* handle_URL_CHANGE(action) {
-  const userSettingsState = yield select(selectUserSettings)
-  const isActivityURL = action.payload.url.includes('/Records/Activity:')
-  if(isActivityURL) {
-    const afterColon = action.payload.url.split(':')?.[1]
+  const userSettingsState = yield select(selectUserSettings);
+  const isActivityURL = action.payload.url.includes('/Records/Activity:');
+  if (isActivityURL) {
+    const afterColon = action.payload.url.split(':')?.[1];
     let id;
-    if(afterColon)
-    {
-      id = (afterColon.includes('/')? afterColon.split('/')[0]: afterColon)
+    if (afterColon) {
+      id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
-    if(id && id.length === 36 && userSettingsState.activeActivity !== id)
-    yield put({type: ACTIVITY_GET_REQUEST, payload: {activityID: id}})
+    if (id && id.length === 36 && userSettingsState.activeActivity !== id)
+      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
+
+    if (userSettingsState.activeActivity) {
+      id = userSettingsState.activeActivity;
+      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
+    }
   }
 }
 
@@ -244,9 +252,9 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
     takeEvery(ACTIVITY_SAVE_REQUEST, () => console.log('ACTIVITY_SAVE_REQUEST')),
     takeEvery(ACTIVITY_SUBMIT_REQUEST, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
-    takeEvery(ACTIVITY_DELETE_REQUEST,handle_ACTIVITY_DELETE_REQUEST),
-    takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST,handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY,handle_PAN_AND_ZOOM_TO_ACTIVITY)
+    takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
+    takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
+    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY)
   ]);
 }
 

@@ -172,9 +172,14 @@ export const Records = (props) => {
                         </Button>
                       </div>
 
-                      <Button onClick={(e) => onClickDeleteRecordSet(set, e)} variant="outlined">
-                        <Delete />
-                      </Button>
+                      {userSettingsState?.recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
+                      userSettingsState?.recordSets?.[set]?.recordSetName === 'All IAPP Records' || userSettingsState.recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                        <></>
+                      ) : (
+                        <Button onClick={(e) => onClickDeleteRecordSet(set, e)} variant="outlined">
+                          <Delete />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );

@@ -32,8 +32,9 @@ import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import validator from '@rjsf/validator-ajv6';
+import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css'
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 
-// import './aditionalFormStyles.css';
 export interface IFormContainerProps {
   classes?: any;
   activity: any;
@@ -290,7 +291,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 customValidate={props.customValidation}
                 validator={validator}
                 showErrorList={'top'}
-                transformErrors={props.customErrorTransformer}
+                transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
                   props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {

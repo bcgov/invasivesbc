@@ -2,6 +2,8 @@ import { call, put, select, take } from 'redux-saga/effects';
 import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
 import centroid from '@turf/centroid';
+import bcArea from '../../../UI/Overlay/Records/Activity/BC_AREA.json';
+import booleanContains from '@turf/boolean-contains';
 import {
   activity_create_function,
   ActivityStatus,
@@ -133,6 +135,27 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
           }
         });
       }
+    }
+
+    //validate its in bc and within max geometry:
+
+    let isWithinBC = false
+    if(action.payload.geometry)
+    isWithinBC = booleanContains(bcArea.features[0] as any, action.payload.geometry[0]);
+
+    if (!isWithinBC) {
+      yield put({
+        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+        payload: {
+          notification: {
+            visible: true,
+            message: 'Activity is not within BC',
+            severity: 'error'
+          }
+        }
+      });
+
+      return;
     }
 
     yield put({
@@ -438,15 +461,18 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
     const isPoint = geometry.geometry?.type === 'Point' ? true : false;
     let target;
     if (isPoint) {
-      target = geometry.geometry
+      target = geometry.geometry;
     } else {
       var acentroid = centroid(geometry);
 
       target = acentroid.geometry;
     }
 
-    console.dir(target)
-    yield put({ type: MAIN_MAP_MOVE, payload: { center: {lat: target.coordinates[1], lng: target.coordinates[0]}, zoom: 16 } });
+    console.dir(target);
+    yield put({
+      type: MAIN_MAP_MOVE,
+      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
+    });
   }
 }
 
@@ -460,7 +486,10 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
       type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
       payload: {}
     });
-    yield put({ type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST, payload: { search_feature: activityState.activity.geometry } });
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
+      payload: { search_feature: activityState.activity.geometry }
+    });
 
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;

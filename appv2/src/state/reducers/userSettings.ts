@@ -4,10 +4,14 @@ import { createNextState } from '@reduxjs/toolkit';
 //window.process = process
 
 import {
+  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_REQUEST,
+  CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
+  IAPP_GET_SUCCESS,
   MAP_TOGGLE_WHATS_HERE,
+  OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
@@ -139,6 +143,24 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       }
       case MAP_TOGGLE_WHATS_HERE: {
         return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
+      }
+      case OPEN_NEW_RECORD_MENU: {
+        return { 
+          ...state, 
+          newRecordDialogueOpen: true
+        }
+      }
+      case IAPP_GET_SUCCESS : {
+        return { 
+          ...state,
+          activeIAPP: action.payload.iapp?.site_id
+        }
+      }
+      case ACTIVITY_CREATE_SUCCESS: {
+        return { 
+          ...state, 
+          newRecordDialogueOpen: false
+        }
       }
       case RECORDSET_ADD_FILTER: {
         const nextState = createNextState(state, (draftState) => {

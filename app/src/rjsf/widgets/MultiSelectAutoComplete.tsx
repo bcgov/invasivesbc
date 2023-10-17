@@ -117,11 +117,13 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     }
   };
 
+
   return (
     <div id="custom-multi-select">
       <MultipleSelect
         id="custom-multi-select-field"
         SelectProps={{ styles: colourStyles }}
+        error={props.rawErrors?.length > 0 && props.rawErrors[0] !== 'should be equal to one of the allowed values' }
         InputLabelProps={{
           style: {
             transform: focused === true ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',

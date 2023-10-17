@@ -1,6 +1,7 @@
 .FooterBar {
   height: 5vh;
   width: 100vw;
+  display: flex;
     background-color: #223f75;
   /*    position: fixed;
     bottom: 0;
@@ -8,4 +9,21 @@
     */
   z-index: 2147483646;
   overflow: hidden;
+}
+
+.footerLinks {
+  padding-left: 2vw;
+  flex-direction: row;
+  font-family: BCSans;
+  font-size: 1.5vh;
+  text-align: center;
+  text-decoration: none;
+  align-items: center;
+  /* center text vertically */
+  display: flex;
+  flex-basis: 66%;
+
+  height: 100%;
+  width: 100%;
+  color: lightgrey;
 }

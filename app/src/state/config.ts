@@ -15,6 +15,8 @@ export interface AppConfig {
 
   PUBLIC_MAP_URL: string;
 
+  IAPP_GEOJSON_URL: string;
+
   // to easily disable features not ready for prod-use (or disable them on mobile/web)
   FEATURE_GATE: {
     PLAN_MY_TRIP: boolean;
@@ -35,6 +37,7 @@ declare global {
   const CONFIGURATION_PUBLIC_MAP_URL: string | null;
   const CONFIGURATION_IS_MOBILE: string | null;
   const INJECTED_COMMIT_HASH: string | null;
+  const CONFIGURATION_IAPP_GEOJSON_URL: string | null;
 }
 
 let CONFIG: AppConfig;
@@ -52,6 +55,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_ADAPTER: '{{env "KEYCLOAK_ADAPTER"}}',
       REDIRECT_URI: '{{env "REDIRECT_URI"}}',
       PUBLIC_MAP_URL: '{{env "PUBLIC_MAP_URL"}}',
+      IAPP_GEOJSON_URL: '{{env "IAPP_GEOJSON_URL"}}',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
@@ -71,6 +75,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_ADAPTER: CONFIGURATION_KEYCLOAK_ADAPTER,
       REDIRECT_URI: CONFIGURATION_REDIRECT_URI,
       PUBLIC_MAP_URL: CONFIGURATION_PUBLIC_MAP_URL,
+      IAPP_GEOJSON_URL: CONFIGURATION_IAPP_GEOJSON_URL,
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
@@ -91,6 +96,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_ADAPTER: 'web',
       REDIRECT_URI: 'http://localhost:3000/home/landing',
       PUBLIC_MAP_URL: 'https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles',
+      IAPP_GEOJSON_URL: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz',
       FEATURE_GATE: {
         PLAN_MY_TRIP: false,
         EMBEDDED_REPORTS: true,
