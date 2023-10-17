@@ -26,6 +26,13 @@ jobs:
         run: |
           xcode-select -p
 
+      - name: Restore derived data
+        id: cache-dd-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: appv2/ios/App/xcbuild/Build
+          key: ${{ runner.os }}-dd
+
       - name: Cache appv2 deps
         uses: actions/cache@v3
         id: cache-appv2-deps
@@ -136,8 +143,21 @@ jobs:
           xcodebuild \
           -exportArchive \
           -archivePath ${DATA_DIR}/${ARCHIVE_NAME} \
-          -exportPath $EXPORT_DIR \
+          -exportPath $EXPORT_DIR/${IPA_NAME} \
           -exportOptionsPlist exportOptions.plist \
           -verbose
 
+      - name: Save derived data
+        id: cache-dd-save
+        uses: actions/cache/save@v3
+        with:
+          path: appv2/ios/App/xcbuild/Build
+          key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Exported
+          path: appv2/ios/App/export/Invasives.ipa
+          retention-days: 1
+          if-no-files-found: error
 
