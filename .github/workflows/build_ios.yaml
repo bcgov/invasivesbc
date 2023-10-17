@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - mobile-build-pipeline
+      - dev
 jobs:
   build-ios:
     runs-on: macos-latest
