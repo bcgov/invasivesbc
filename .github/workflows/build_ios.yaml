@@ -1,6 +1,9 @@
 name: AppV2 IOS
 on:
   workflow_dispatch: {}
+  push:
+    branches:
+      - mobile-build-pipeline
 jobs:
   build-ios:
     runs-on: macos-latest
@@ -23,15 +26,43 @@ jobs:
         run: |
           xcode-select -p
 
+      - name: Cache appv2 deps
+        uses: actions/cache@v3
+        id: cache-appv2-deps
+        with:
+          path: appv2/node_modules
+          key: ${{ runner.os }}-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+
+      - name: Cache shared deps
+        uses: actions/cache@v3
+        id: cache-shared-deps
+        with:
+          path: sharedAPI/node_modules
+          key: ${{ runner.os }}-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
+
+      - name: Cache Pods
+        uses: actions/cache@v3
+        id: cache-pods
+        with:
+          path: appv2/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+
       - name: Install sharedAPI dependencies
+        if: steps.cache-shared-deps.outputs.cache-hit != 'true'
         working-directory: ./sharedAPI
         run: |
           npm install
 
-      - name: Install dependencies
+      - name: Install Appv2 dependencies
+        if: steps.cache-appv2-deps.outputs.cache-hit != 'true'
         working-directory: ./appv2
         run: |
           npm install --legacy-peer-deps
+
+      - name: CocoaPod Install
+        if: steps.cache-pods.outputs.cache-hit != 'true'
+        working-directory: ./appv2/ios/App
+        run: pod install
 
       - name: Run build
         working-directory: ./appv2
@@ -45,10 +76,6 @@ jobs:
       - name: Capacitor copy
         run: npx cap copy ios
         working-directory: ./appv2
-
-      - name: CocoaPod Install
-        working-directory: ./appv2/ios/App
-        run: pod install
 
       - name: Increment Build No.
         working-directory: ./appv2/ios/App
