@@ -20,8 +20,14 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For plotting nearby sites on map as location changes, and for planning site visits</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To submit site photos</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -30,22 +36,10 @@
 	<array>
 		<string>armv7</string>
 	</array>
-  <key>ITSAppUsesNonExemptEncryption</key>
-  <false/>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>To submit site photos</string>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>For plotting nearby sites on map as location changes, and for planning site visits</string>
+	<key>UIStatusBarStyle</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
