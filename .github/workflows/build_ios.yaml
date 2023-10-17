@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v3
         id: cache-pods
         with:
-          path: appv2/ios/Pods
+          path: appv2/ios/App/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Install sharedAPI dependencies
@@ -150,3 +150,9 @@ jobs:
           path: appv2/ios/App/xcbuild/Build
           key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Exported
+          path: appv2/ios/App/export/Invasives.ipa
+          retention-days: 1
+          if-no-files-found: error
