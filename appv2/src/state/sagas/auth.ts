@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, take, takeLatest } from 'redux-saga/effects';
 
 import Keycloak, {
   KeycloakAdapter,
@@ -25,6 +25,7 @@ import {
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
   TABS_GET_INITIAL_STATE_REQUEST,
+  URL_CHANGE,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';

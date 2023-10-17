@@ -36,6 +36,7 @@ import { LayerPickerBasic } from './Map/LayerPickerBasic';
 import { NewRecord } from './Map/Buttons/NewRecord';
 import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
+import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
 
 // URL listener so that the auth saga can redirect to the correct page
 const URL_LISTENER = (props) => {
@@ -200,6 +201,7 @@ const App: React.FC = () => {
       </Overlay>
       <Footer />
       <NewRecordDialog/>
+      <CustomizeLayerMenu/>
     </div>
   );
 };

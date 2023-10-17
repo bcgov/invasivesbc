@@ -228,7 +228,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       <DialogActions className={classes.dialogActionsBox}>
         <Button
           onClick={() => {
-          //  props.handleDialogClose();
+            dispatch({ type: CLOSE_NEW_RECORD_MENU });
           }}>
           Cancel
         </Button>
