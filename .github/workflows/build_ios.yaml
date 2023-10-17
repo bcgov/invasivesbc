@@ -1,33 +1,168 @@
 name: AppV2 IOS
 on:
   workflow_dispatch: {}
+  push:
+    branches:
+      - mobile-build-pipeline
+      - dev
 jobs:
   build-ios:
     runs-on: macos-latest
+    env:
+      PROJECT: ${{ 'App.xcworkspace' }}
+      SCHEME: ${{ 'App' }}
+      DATA_DIR: ${{ 'xcbuild' }}
+      ARCHIVE_NAME: ${{ 'Invasives.xcarchive' }}
+      EXPORT_DIR: ${{ 'export' }}
+      IPA_NAME: ${{ 'Invasives.ipa' }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: "npm"
-
-      - name: Configure ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: ./appv2
 
       - name: XCode version?
         run: |
           xcode-select -p
 
-      - name: Install dependencies
+      - name: Restore derived data
+        id: cache-dd-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: appv2/ios/App/xcbuild/Build
+          key: ${{ runner.os }}-dd
+
+      - name: Cache appv2 deps
+        uses: actions/cache@v3
+        id: cache-appv2-deps
+        with:
+          path: appv2/node_modules
+          key: ${{ runner.os }}-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+
+      - name: Cache shared deps
+        uses: actions/cache@v3
+        id: cache-shared-deps
+        with:
+          path: sharedAPI/node_modules
+          key: ${{ runner.os }}-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
+
+      - name: Cache Pods
+        uses: actions/cache@v3
+        id: cache-pods
+        with:
+          path: appv2/ios/App/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+
+      - name: Install sharedAPI dependencies
+        if: steps.cache-shared-deps.outputs.cache-hit != 'true'
+        working-directory: ./sharedAPI
+        run: |
+          npm install
+
+      - name: Install Appv2 dependencies
+        if: steps.cache-appv2-deps.outputs.cache-hit != 'true'
         working-directory: ./appv2
         run: |
           npm install --legacy-peer-deps
 
       - name: Run build
         working-directory: ./appv2
+        env:
+          NODE_OPTIONS: --max-old-space-size=6000
+          REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
+          SSO_URL: ${{ secrets.APPV2_SSO_URL }}
+          SSO_REALM: ${{ secrets.APPV2_SSO_REALM }}
+          SSO_CLIENT_ID: ${{ secrets.APPV2_SSO_CLIENT_ID }}
+          REACT_APP_API_HOST: ${{ secrets.APPV2_REACT_APP_API_HOST }}
+          PUBLIC_MAP_URL: ${{ secrets.APPV2_PUBLIC_MAP_URL }}
+          IAPP_GEOJSON_URL: ${{ secrets.APPV2_IAPP_GEOJSON_URL }}
         run: |
-          npm run build-prod
+          npm run build:ios
+
+      - name: Capacitor update
+        run: npx cap update ios
+        working-directory: ./appv2
+
+      - name: Capacitor copy
+        run: npx cap copy ios
+        working-directory: ./appv2
+
+      - name: CocoaPod Install
+        if: steps.cache-pods.outputs.cache-hit != 'true'
+        working-directory: ./appv2/ios/App
+        run: pod install
+
+      - name: Increment Build No.
+        working-directory: ./appv2/ios/App
+        env:
+          BUILD_NO: ${{ github.run_number }}
+        run: |
+          # Set Build Number. Not worrying about storing to repo.
+          agvtool new-version -all "2.${BUILD_NO}"
+
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_STORE_BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_APP_STORE_BUILD_CERTIFICATE_PASSWD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPV2_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.APPV2_KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Build For Release
+        working-directory: ./appv2/ios/App
+        run: |
+          xcodebuild \
+          -workspace $PROJECT \
+          -scheme $SCHEME \
+          -configuration Release \
+          -sdk iphoneos \
+          -derivedDataPath $DATA_DIR \
+          -archivePath ${DATA_DIR}/${ARCHIVE_NAME} \
+          archive
+
+      - name: Export Archive
+        working-directory: ./appv2/ios/App
+        run: |
+          xcodebuild \
+          -exportArchive \
+          -archivePath ${DATA_DIR}/${ARCHIVE_NAME} \
+          -exportPath $EXPORT_DIR/${IPA_NAME} \
+          -exportOptionsPlist ExportOptions.plist \
+          -verbose
+
+      - name: Save derived data
+        id: cache-dd-save
+        uses: actions/cache/save@v3
+        with:
+          path: appv2/ios/App/xcbuild/Build
+          key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Exported
+          path: appv2/ios/App/export/Invasives.ipa
+          retention-days: 1
+          if-no-files-found: error
