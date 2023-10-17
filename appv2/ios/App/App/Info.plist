@@ -30,6 +30,12 @@
 	<array>
 		<string>armv7</string>
 	</array>
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>To submit site photos</string>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>For plotting nearby sites on map as location changes, and for planning site visits</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
