@@ -70,6 +70,7 @@ jobs:
       - name: Run build
         working-directory: ./appv2
         env:
+          NODE_OPTIONS: --max-old-space-size=6000
           REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
           SSO_URL: ${{ secrets.APPV2_SSO_URL }}
           SSO_REALM: ${{ secrets.APPV2_SSO_REALM }}
