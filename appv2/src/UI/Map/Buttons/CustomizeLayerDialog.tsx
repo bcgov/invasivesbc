@@ -17,6 +17,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
+import KMLShapesUpload from './KMLShapesUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -56,6 +57,7 @@ const CustomizeLayerMenu = (props) => {
   const [optionVal, setOptionVal] = useState('Draw');
   const [subMenuType, setSubMenuType] = useState('Init');
   const [newLayerName, setNewLayerName] = useState('');
+  const [layerToDelete, setLayerToDelete] = useState(null);
 
 
   // two of each type
@@ -64,7 +66,16 @@ const CustomizeLayerMenu = (props) => {
   const cleanup = () => {
     setSubMenuType('Init');
     setOptionVal('Draw');
+    setLayerToDelete(null);
+    setNewLayerName('');
   };
+
+
+  const onKMLDone = () => {
+    cleanup();
+    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS })
+  }
+
 
   return (
     <Dialog open={dialogueOpen}>
@@ -102,7 +113,7 @@ const CustomizeLayerMenu = (props) => {
                 <Select
                   className={classes.select}
                   value={optionVal}
-                  onChange={(e) => setOptionVal(e.target.value)}
+                  onChange={(e) => setLayerToDelete(e.target.value)}
                   label="Choose Layer to remove">
                   {customLayers.map((option) => (
                     <MenuItem key={Math.random()} value={option.id}>
@@ -111,6 +122,9 @@ const CustomizeLayerMenu = (props) => {
                   ))}
                 </Select>
               </FormControl>
+            ),
+            Upload: (
+              <KMLShapesUpload title={newLayerName} open={subMenuType === 'Upload'} whenDone={onKMLDone}/>
             ),
             Init: <></>
           }[subMenuType]
@@ -138,17 +152,19 @@ const CustomizeLayerMenu = (props) => {
             ),
             New: (
               <>
-                <Button onClick={() => {}}>Create</Button>
                 <Button onClick={() => {
-                  setSubMenuType('Init');
+                  setSubMenuType('Upload')
+                }}>Create</Button>
+                <Button onClick={() => {
+                  cleanup()
                 }}>Back</Button>
               </>
             ),
             Remove: (
               <>
-                <Button onClick={() => {}}>Remove</Button>
+                <Button disabled={layerToDelete === null} onClick={() => {}}>Remove</Button>
                 <Button onClick={() => {
-                  setSubMenuType('Init');
+                  cleanup()
                 }}>Back</Button>
               </>
             )
