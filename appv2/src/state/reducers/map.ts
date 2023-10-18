@@ -90,6 +90,10 @@ class MapState {
   tooManyLabelsDialog: IGeneralDialog;
   viewFilters: boolean;
   quickPanToRecord: boolean;
+  userRecordOnHoverMenuOpen: boolean;
+  userRecordOnHoverRecordType: any;
+  userRecordOnHoverRecordID: any;
+  userRecordOnHoverRecordRow: any;
 
   constructor() {
     this.initialized = false;

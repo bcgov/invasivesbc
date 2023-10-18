@@ -19,6 +19,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { Activity } from './Record';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
+import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
 
 export const Records = (props) => {
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable

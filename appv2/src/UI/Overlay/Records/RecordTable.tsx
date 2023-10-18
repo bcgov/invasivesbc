@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordTable.css';
 import { activityColumnsToDisplay, getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP, iappColumnsToDisplay } from './RecordTableHelpers';
 import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
+import { detectTouchDevice } from 'util/detectTouch';
 
-export const RecordTableHeader = (props) => {};
+export const RecordTableHeader = (props) => {
 
 export const RecordTable = (props) => {
   const unmappedRows = useSelector((state: any) => state.Map?.recordTables?.[props.setID]?.rows);
@@ -15,6 +16,7 @@ export const RecordTable = (props) => {
   //  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
   const dispatch = useDispatch();
   const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
+  const isTouch = detectTouchDevice();
 
   // maybe useful for when there's no headers during dev for adding new types:
   /*
@@ -55,15 +57,21 @@ export const RecordTable = (props) => {
         {mappedRows?.map((row, i) => {
           return (
             <tr
-              onClick={() => {
-                dispatch({
-                  type: USER_CLICKED_RECORD,
-                  payload: {
-                    recordType: tableType,
-                    id: tableType === 'Activity' ? row.activity_id : row.site_id,
-                    row: row
-                  }
-                });
+              onContextMenu={(event) => {{
+                event.preventDefault();
+                event.stopPropagation();
+              }}}
+              onClick={()=> {
+                if(!isTouch) {
+                  dispatch({
+                    type: USER_CLICKED_RECORD,
+                    payload: {
+                      recordType: tableType,
+                      id: tableType === 'Activity'? row.activity_id : row.site_id,
+                      row: row
+                    }
+                  });
+                }
               }}
               onMouseOver={() => {
                 if (quickPanToRecord)

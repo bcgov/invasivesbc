@@ -29,12 +29,15 @@ import {
 import { OverlayHeader } from '../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
+import { detectTouchDevice } from 'util/detectTouch';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
   const viewFilters = useSelector((state: any) => state.Map.viewFilters);
   const history = useHistory();
   const dispatch = useDispatch();
+  const isTouch = detectTouchDevice();
 
   const [filterTypeChooserOpen, setFilterTypeChooserOpen] = React.useState(false);
 
@@ -51,6 +54,7 @@ export const RecordSet = (props) => {
       return (
         <div className="recordSet_container">
           <OverlayHeader />
+          {isTouch && <TouchHoldHandler /> }
           <div className="stickyHeader">
             <div
               className="recordSet_header"
