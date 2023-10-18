@@ -298,9 +298,11 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     <Container>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <Typography variant="h4" align="center">
-            InvasivesBC Access Request
-          </Typography>
+          <Box style={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
+            <Typography variant="h4" align="center">
+              InvasivesBC Access Request
+            </Typography>
+          </Box>
         </Grid>
         <Grid item xs={12} style={{ marginBottom: 50 }}>
           <Card elevation={8}>
