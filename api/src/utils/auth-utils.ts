@@ -211,24 +211,24 @@ export const authenticate = async (req: InvasivesRequest) => {
             .then((roles) => {
               req.authContext.roles = roles;
               MDC.additionalContext.authContext = req.authContext;
-              resolve();
             })
             .catch((error) => {
               defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
               reject(error);
-            });
-
-          // check if user has beta access
-          getV2BetaAccessForUser(user.user_id)
-            .then((betaAccess) => {
-              defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
-              req.authContext.v2beta = betaAccess;
-              //req.authContext.user.v2beta = betaAccess;
-              resolve();
             })
-            .catch((error) => {
-              defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
-              reject(error);
+            .then(() => {
+              // check if user has beta access
+              getV2BetaAccessForUser(user.user_id)
+                .then((betaAccess) => {
+                  defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
+                  req.authContext.v2beta = betaAccess;
+                  //req.authContext.user.v2beta = betaAccess;
+                  resolve();
+                })
+                .catch((error) => {
+                  defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
+                  reject(error);
+                });
             });
         });
       });
