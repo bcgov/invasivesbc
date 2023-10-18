@@ -177,5 +177,7 @@ jobs:
           mkdir $HOME/.private_keys/
           echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" | base64 --decode --output $HOME/.private_keys/AuthKey_95.p8
 
-          xcrun altool --validate-app -f appv2/ios/App/export/Invasives.ipa -t ios --apiKey ${APP_STORE_CONNECT_KEY_IDENTIFIER} --apiIssuer ${APP_STORE_CONNECT_ISSUER_ID}
-          xcrun altool --upload-app -f appv2/ios/App/export/Invasives.ipa -t ios --apiKey ${APP_STORE_CONNECT_KEY_IDENTIFIER} --apiIssuer ${APP_STORE_CONNECT_ISSUER_ID}
+          find . -name "*ipa"
+
+          xcrun altool --validate-app -f ./export/Invasives.ipa/App.ipa -t ios --apiKey ${APP_STORE_CONNECT_KEY_IDENTIFIER} --apiIssuer ${APP_STORE_CONNECT_ISSUER_ID}
+          xcrun altool --upload-app -f ./export/Invasives.ipa/App.ipa -t ios --apiKey ${APP_STORE_CONNECT_KEY_IDENTIFIER} --apiIssuer ${APP_STORE_CONNECT_ISSUER_ID}
