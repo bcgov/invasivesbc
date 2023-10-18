@@ -85,14 +85,16 @@ export const RecordTable = (props) => {
                   });
               }}
               onTouchStart={()=> {
-                dispatch({
-                  type: USER_TOUCHED_RECORD,
-                  payload: {
-                    recordType: tableType,
-                    id: tableType === 'Activity'? row.activity_id : row.site_id,
-                    row: row
-                  }
-                });
+                if (quickPanToRecord) {
+                  dispatch({
+                    type: USER_TOUCHED_RECORD,
+                    payload: {
+                      recordType: tableType,
+                      id: tableType === 'Activity'? row.activity_id : row.site_id,
+                      row: row
+                    }
+                  });
+                }
               }}
               className="record_table_row"
               key={i}>
