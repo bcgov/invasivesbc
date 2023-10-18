@@ -146,11 +146,16 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+    //defaultLog.debug({ label: 'activity', message: 'checkAuthContextInActivities', body: req.authContext });
+
+
+
+
 
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-    const isAuth = req.authContext?.user !== null ? true : false;
+    const isAuth = req.authContext?.user
     const user_role = (req as any).authContext?.roles?.[0]?.role_id;
     if (user_role) {
       const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
@@ -158,6 +163,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     if (!isAuth || !roleName || roleName.includes('animal')) {
+    //if (!isAuth) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
