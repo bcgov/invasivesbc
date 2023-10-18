@@ -7,7 +7,7 @@ import { activityColumnsToDisplay, getUnnestedFieldsForActivity, getUnnestedFiel
 import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 import { detectTouchDevice } from 'util/detectTouch';
 
-export const RecordTableHeader = (props) => {
+export const RecordTableHeader = (props) => {}
 
 export const RecordTable = (props) => {
   const unmappedRows = useSelector((state: any) => state.Map?.recordTables?.[props.setID]?.rows);
