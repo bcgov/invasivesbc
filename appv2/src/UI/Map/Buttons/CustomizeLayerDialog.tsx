@@ -70,12 +70,10 @@ const CustomizeLayerMenu = (props) => {
     setNewLayerName('');
   };
 
-
   const onKMLDone = () => {
     cleanup();
-    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS })
-  }
-
+    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+  };
 
   return (
     <Dialog open={dialogueOpen}>
@@ -102,9 +100,7 @@ const CustomizeLayerMenu = (props) => {
                   className={classes.select}
                   value={newLayerName}
                   onChange={(e) => setNewLayerName(e.target.value)}
-                  label="Name your new layer">
-                </TextField>
-
+                  label="Name your new layer"></TextField>
               </FormControl>
             ),
             Remove: (
@@ -123,9 +119,7 @@ const CustomizeLayerMenu = (props) => {
                 </Select>
               </FormControl>
             ),
-            Upload: (
-              <KMLShapesUpload title={newLayerName} open={subMenuType === 'Upload'} whenDone={onKMLDone}/>
-            ),
+            Upload: <KMLShapesUpload title={newLayerName} open={subMenuType === 'Upload'} whenDone={onKMLDone} />,
             Init: <></>
           }[subMenuType]
         }
@@ -152,20 +146,35 @@ const CustomizeLayerMenu = (props) => {
             ),
             New: (
               <>
-                <Button onClick={() => {
-                  setSubMenuType('Upload')
-                }}>Create</Button>
-                <Button onClick={() => {
-                  cleanup()
-                }}>Back</Button>
+                <Button
+                  onClick={() => {
+                    if (optionVal === 'Upload KML/KMZ') {
+                      setSubMenuType('Upload');
+                    } else {
+                      cleanup();
+                    }
+                  }}>
+                  Create
+                </Button>
+                <Button
+                  onClick={() => {
+                    cleanup();
+                  }}>
+                  Back
+                </Button>
               </>
             ),
             Remove: (
               <>
-                <Button disabled={layerToDelete === null} onClick={() => {}}>Remove</Button>
-                <Button onClick={() => {
-                  cleanup()
-                }}>Back</Button>
+                <Button disabled={layerToDelete === null} onClick={() => {}}>
+                  Remove
+                </Button>
+                <Button
+                  onClick={() => {
+                    cleanup();
+                  }}>
+                  Back
+                </Button>
               </>
             )
           }[subMenuType]
@@ -174,14 +183,12 @@ const CustomizeLayerMenu = (props) => {
           onClick={() => {
             dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
             cleanup();
-          }}>Exit</Button>
+          }}>
+          Exit
+        </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-
-
-
 export default CustomizeLayerMenu;
-
