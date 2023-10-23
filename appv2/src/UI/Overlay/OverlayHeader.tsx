@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 
@@ -22,7 +22,9 @@ const maximize = (e) => {
 
 const minimize = (e) => {
   const elementWeWant = document.getElementById('overlaydiv');
+  const buttonContainer = document.getElementById('map-btn-container');
   elementWeWant.style.height = '0px';
+  buttonContainer.style.marginBottom = 5 + 'vh';
 };
 
 const debouncedDrag = debounce((e) => {
