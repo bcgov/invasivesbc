@@ -355,6 +355,19 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   }
 };
 
+var AWS = require('aws-sdk');
+const { Readable, PassThrough } = require('stream');
+import { v4 as uuidv4 } from 'uuid';
+const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
+
+const S3 = new AWS.S3({
+  endpoint: AWS_ENDPOINT.href,
+  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
+  signatureVersion: 'v4',
+  s3ForcePathStyle: true
+});
 export async function streamActivitiesResult(searchCriteria: any, res: any) {
   const connection = await getDBConnection();
 
@@ -368,18 +381,37 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
     };
   }
 
+  function upload(S3) {
+    let pass = new PassThrough();
+    const key = `${uuidv4()}-csv`;
+    let params = {
+      Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
+      Key: key,
+      Body: pass
+    };
+
+    S3.upload(params, function (error, data) {
+      console.error(error);
+      console.info(data);
+    });
+
+    return pass;
+  }
+
   try {
-    res.contentType('text/csv')
+    res
+      .contentType('text/csv')
       .setHeader('Content-Disposition', 'attachment; filename="export.csv"')
       .setHeader('transfer-encoding', 'chunked');
-
 
     const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
 
     const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
-    for await (const row of generatedRows) {
-      res.write(row);
-    }
+    const readable = Readable.from(generatedRows);
+
+    readable.pipe(upload(S3));
+
+    // get signed url
   } finally {
     res.end();
     connection.release();
