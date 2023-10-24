@@ -67,12 +67,12 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
-    const currentState = yield select(selectUserSettings);
-    const mapState = yield select(selectMap);
-    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = 200000
-    filterObject.selectColumns = ['activity_id']
+  const currentState = yield select(selectUserSettings);
+  const mapState = yield select(selectMap);
+  let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+  //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+  filterObject.limit = 200000;
+  filterObject.selectColumns = ['activity_id'];
 
   try {
     // if mobile or web
@@ -100,8 +100,8 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     const mapState = yield select(selectMap);
     let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
     //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = 200000
-    filterObject.selectColumns = ['site_id']
+    filterObject.limit = 200000;
+    filterObject.selectColumns = ['site_id'];
     // if mobile or web
     if (true) {
       yield put({
@@ -146,8 +146,12 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     const currentState = yield select(selectUserSettings);
     const mapState = yield select(selectMap);
     let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = action.payload.limit ? action.payload.limit : mapState.recordTables?.[action.payload.recordSetID]?.limit;
+    filterObject.page = action.payload.page
+      ? action.payload.page
+      : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = action.payload.limit
+      ? action.payload.limit
+      : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
     if (true) {
       yield put({
@@ -172,8 +176,12 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
     const currentState = yield select(selectUserSettings);
     const mapState = yield select(selectMap);
     let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = action.payload.limit ? action.payload.limit : mapState.recordTables?.[action.payload.recordSetID]?.limit;
+    filterObject.page = action.payload.page
+      ? action.payload.page
+      : mapState.recordTables?.[action.payload.recordSetID]?.page;
+    filterObject.limit = action.payload.limit
+      ? action.payload.limit
+      : mapState.recordTables?.[action.payload.recordSetID]?.limit;
     // if mobile or web
     if (true) {
       yield put({
@@ -294,36 +302,38 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
       'current_positive_species',
       'current_negative_species',
       'species_treated_full',
-      'created_by', 
+      'species_biocontrol_full',
+      'created_by',
       'updated_by',
       'agency',
       'regional_invasive_species_organization_areas',
       'regional_districts',
+      'invasive_plant_management_areas',
       'biogeoclimatic_zones',
-      'elevation', 
+      'elevation',
       'batch_id',
       'geom'
     ];
-  }
-
-  else
-  {
-    columns =    [ 'site_id',
-    'site_paper_file_id',
-    'jurisdictions_flattened',
-    'min_survey',
-    'all_species_on_site',
-    'max_survey',
-    'agencies',
-    'has_biological_treatments',
-    'has_chemical_treatments',
-    'has_mechanical_treatments',
-    'has_biological_dispersals',
-    'monitored',
-    'regional_district',
-    'regional_invasive_species_organization',
-    'geojson'
-  ]
+  } else {
+    columns = [
+      'site_id',
+      'site_paper_file_id',
+      'jurisdictions_flattened',
+      'min_survey',
+      'all_species_on_site',
+      'max_survey',
+      'agencies',
+      'biological_agent',
+      'has_biological_treatments',
+      'has_chemical_treatments',
+      'has_mechanical_treatments',
+      'has_biological_dispersals',
+      'monitored',
+      'regional_district',
+      'regional_invasive_species_organization',
+      'invasive_plant_management_area',
+      'geojson'
+    ];
   }
   return columns;
 }

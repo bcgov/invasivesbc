@@ -41,11 +41,13 @@ export const getUnnestedFieldsForActivity = (activity) => {
     has_current_negative: activity?.has_current_negative ? 'Yes' : 'No',
     current_negative_species: activity?.current_negative_species,
     species_treated_full: activity?.species_treated_full,
+    species_biocontrol_full: activity?.species_biocontrol_full,
     created_by: activity?.created_by,
     updated_by: activity?.updated_by,
     agency: activity?.agency,
     regional_invasive_species_organization_areas: activity?.regional_invasive_species_organization_areas,
     regional_districts: activity?.regional_districts,
+    invasive_plant_management_areas: activity?.invasive_plant_management_areas,
     biogeoclimatic_zones: activity?.biogeoclimatic_zones,
     elevation: activity?.elevation,
     batch_id: activity?.batch_id,
@@ -64,14 +66,11 @@ export const getUnnestedFieldsForIAPP = (record) => {
     site_id: record.site_id,
     site_paper_file_id: record.site_paper_file_id,
     jurisdictions_flattened: record.jurisdictions_flattened,
-    min_survey: new Date(record.min_survey)
-    .toISOString()
-    .substring(0, 10),
+    min_survey: new Date(record.min_survey).toISOString().substring(0, 10),
     all_species_on_site: record.all_species_on_site,
-    max_survey: new Date(record.max_survey)
-    .toISOString()
-    .substring(0, 10),
+    max_survey: new Date(record.max_survey).toISOString().substring(0, 10),
     agencies: record.agencies,
+    biological_agent: record.biological_agent,
     has_biological_treatments: record.has_biological_treatments,
     has_chemical_treatments: record.has_chemical_treatments,
     has_mechanical_treatments: record.has_mechanical_treatments,
@@ -79,6 +78,7 @@ export const getUnnestedFieldsForIAPP = (record) => {
     monitored: record.monitored,
     regional_district: record.regional_district,
     regional_invasive_species_organization: record.regional_invasive_species_organization,
+    invasive_plant_management_area: record.invasive_plant_management_area,
     geometry: record.geojson
   };
 
@@ -139,6 +139,10 @@ export const activityColumnsToDisplay = [
     key: 'species_treated_full',
     name: 'Species Treated'
   },
+  {
+    key: 'species_biocontrol_full',
+    name: 'Biocontrol Species'
+  },
   { key: 'created_by', name: 'Created By' },
   { key: 'updated_by', name: 'Updated By' },
   {
@@ -152,6 +156,10 @@ export const activityColumnsToDisplay = [
   {
     key: 'regional_districts',
     name: 'Regional Districts'
+  },
+  {
+    key: 'invasive_plant_management_areas',
+    name: 'Invasive Plant Management Areas'
   },
   {
     key: 'biogeoclimatic_zones',
@@ -189,6 +197,10 @@ export const iappColumnsToDisplay = [
     name: 'Invasive Plants'
   },
   {
+    key: 'biological_agent',
+    name: 'Biological Agent'
+  },
+  {
     key: 'max_survey',
     name: 'Last Surveyed Date'
   },
@@ -223,5 +235,9 @@ export const iappColumnsToDisplay = [
   {
     key: 'regional_invasive_species_organization',
     name: 'Regional Invasive Species Organization'
+  },
+  {
+    key: 'invasive_plant_management_area',
+    name: 'Invasive Plant Management Area'
   }
 ];

@@ -106,7 +106,6 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 
   let selectColumns = [];
   const acceptableColumns = [
-
     'site_id',
     'site_paper_file_id',
     'jurisdictions_flattened',
@@ -114,6 +113,7 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     'all_species_on_site',
     'max_survey',
     'agencies',
+    'biological_agent',
     'has_biological_treatments',
     'has_chemical_treatments',
     'has_mechanical_treatments',
@@ -121,31 +121,32 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     'monitored',
     'regional_district',
     'regional_invasive_species_organization',
+    'invasive_plant_management_area',
     'geojson'
   ];
 
   if (filterObject?.selectColumns?.length > 0) {
     filterObject.selectColumns.forEach((column) => {
-      if(acceptableColumns.includes(column))
-      {
-      switch (column) {
-        case 'created_by':
-          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+      if (acceptableColumns.includes(column)) {
+        switch (column) {
+          case 'created_by':
+            if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+              selectColumns.push(column);
+            }
+            break;
+          case 'updated_by':
+            if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
+              selectColumns.push(column);
+            }
+            break;
+          /* NOTE: any payload columns need this: */
+          default:
+            // probably not acceptable to allow this, but it's here for now
             selectColumns.push(column);
-          }
-          break;
-        case 'updated_by':
-          if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
-            selectColumns.push(column);
-          }
-          break;
-        /* NOTE: any payload columns need this: */
-        default:
-          // probably not acceptable to allow this, but it's here for now
-          selectColumns.push(column);
-          break;
+            break;
+        }
       }
-    }});
+    });
   }
 
   //sanitize limit
@@ -272,27 +273,23 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
 }
 
 function getIAPPSQLv2(filterObject: any) {
-  try
-  {
+  try {
+    let sqlStatement: SQLStatement = SQL``;
+    sqlStatement = initialWithStatement(sqlStatement);
+    sqlStatement = additionalCTEStatements(sqlStatement, filterObject);
+    sqlStatement = selectStatement(sqlStatement, filterObject);
+    sqlStatement = fromStatement(sqlStatement, filterObject);
+    sqlStatement = whereStatement(sqlStatement, filterObject);
+    sqlStatement = groupByStatement(sqlStatement, filterObject);
+    sqlStatement = orderByStatement(sqlStatement, filterObject);
+    sqlStatement = limitStatement(sqlStatement, filterObject);
+    sqlStatement = offSetStatement(sqlStatement, filterObject);
 
-  let sqlStatement: SQLStatement = SQL``;
-  sqlStatement = initialWithStatement(sqlStatement);
-  sqlStatement = additionalCTEStatements(sqlStatement, filterObject);
-  sqlStatement = selectStatement(sqlStatement, filterObject);
-  sqlStatement = fromStatement(sqlStatement, filterObject);
-  sqlStatement = whereStatement(sqlStatement, filterObject);
-  sqlStatement = groupByStatement(sqlStatement, filterObject);
-  sqlStatement = orderByStatement(sqlStatement, filterObject);
-  sqlStatement = limitStatement(sqlStatement, filterObject);
-  sqlStatement = offSetStatement(sqlStatement, filterObject);
-
-  defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
-  return sqlStatement;
-  }
-
-  catch(e) {
+    defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
+    return sqlStatement;
+  } catch (e) {
     defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', body: e.message });
-    throw e
+    throw e;
   }
 }
 
@@ -308,8 +305,6 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-
-
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -373,7 +368,6 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          `);
   }
 
-
   sqlStatement.append(`
 sites as (
   select 
@@ -381,10 +375,11 @@ sites as (
    array_to_string(b.jurisdictions, ', ') as jurisdictions_flattened,
   b.site_id,
   b.site_paper_file_id,
-   b.min_survey,
+  b.min_survey,
   b.all_species_on_site,
   b.max_survey,
   b.agencies,
+  b.biological_agent,
   b.has_biological_treatments,
   b.has_chemical_treatments,
   b.has_mechanical_treatments,
@@ -392,10 +387,10 @@ sites as (
   b.monitored,
   b.regional_district,
   b.regional_invasive_species_organization,
+  b.invasive_plant_management_area,
   b.geojson
   
   `);
-
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -454,55 +449,74 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   const where = sqlStatement.append(`where 1=1 `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
-//TODO do i need to hide any    where.append(`and iapp_sites.activity_type not in ('Treatment','Monitoring') `);
+    //TODO do i need to hide any    where.append(`and iapp_sites.activity_type not in ('Treatment','Monitoring') `);
   }
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'site_id':
         where.append(
-          `and LOWER((sites.site_id::text)) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${filter.filter}%') `
+          `and LOWER((sites.site_id::text)) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'site_paper_file_id':
         where.append(
-          `and LOWER(sites.site_paper_file_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
+          `and LOWER(sites.site_paper_file_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'jurisdictions_flattened':
         where.append(
-          `and LOWER(sites.jurisdictions_flattened) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
+          `and LOWER(sites.jurisdictions_flattened) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'min_survey':
         where.append(
-          `and LOWER(sites.min_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${ filter.filter
+          `and LOWER(sites.min_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
           }%' `
         );
         break;
       case 'all_species_on_site':
         where.append(
-          `and LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${ filter.filter }%') `
+          `and LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'max_survey':
         where.append(
-          `and LOWER(sites.max_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${ filter.filter }%') `
+          `and LOWER(sites.max_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'agencies':
         where.append(
-          `and LOWER(sites.agencies) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${ filter.filter }%') `
+          `and LOWER(sites.agencies) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
+        );
+        break;
+      case 'biological_agent':
+        where.append(
+          `and LOWER(sites.biological_agent) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'has_biological_treatments':
-        where.append( 
-          ` and LOWER(sites.has_biological_treatments) ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `);
+        where.append(
+          ` and LOWER(sites.has_biological_treatments) ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+        );
         break;
       case 'has_chemical_treatments':
-        where.append(
-          `and sites.has_chemical_treatments  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
-        );
+        where.append(`and sites.has_chemical_treatments  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `);
         break;
       case 'has_mechanical_treatments':
         where.append(
@@ -520,19 +534,28 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'monitored':
         where.append(
-          `and sites.monitored ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
-            filter.filter
-          }%' `
+          `and sites.monitored ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
         );
         break;
       case 'regional_district':
         where.append(
-          `and LOWER(sites.regional_district) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
+          `and LOWER(sites.regional_district) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'regional_invasive_species_organization':
         where.append(
-          `and LOWER(sites.regional_invasive_species_organization) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
+          `and LOWER(sites.regional_invasive_species_organization) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
+        );
+        break;
+      case 'invasive_plant_management_area':
+        where.append(
+          `and LOWER(sites.invasive_plant_management_area) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       default:
