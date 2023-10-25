@@ -358,6 +358,7 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
 var AWS = require('aws-sdk');
 const { Readable, PassThrough } = require('stream');
 import { v4 as uuidv4 } from 'uuid';
+import { getS3SignedURL } from './file-utils';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 
@@ -381,9 +382,9 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
     };
   }
 
-  function upload(S3) {
+  function upload(S3, key) {
     let pass = new PassThrough();
-    const key = `${uuidv4()}-csv`;
+
     let params = {
       Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
       Key: key,
@@ -408,10 +409,13 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
 
     const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
     const readable = Readable.from(generatedRows);
+    const key = `${uuidv4()}-csv`;
 
-    readable.pipe(upload(S3));
+    readable.pipe(upload(S3, key));
 
     // get signed url
+    const url = await getS3SignedURL(key);
+    console.log(url);
   } finally {
     res.end();
     connection.release();
