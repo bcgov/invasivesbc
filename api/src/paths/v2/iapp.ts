@@ -331,7 +331,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          ),
           serverFilterGeometriesIntersectingAll as (
          
-            select a.site_id--, count(*)
+            select a.site_id, count(*)
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
             group by a.site_id
