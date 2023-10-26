@@ -1,7 +1,7 @@
 import { Button, MenuItem, Select, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
+import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import DownloadIcon from '@mui/icons-material/Download';
 import { selectMap } from 'state/reducers/map';
@@ -47,23 +47,40 @@ const ExcelExporter = (props) => {
   return (
     <>
       <Tooltip title="CSV Export">
-        <Button
-          disabled={!mapState?.CanTriggerCSV}
-          onClick={() =>
-            dispatch({
-              type: RECORD_SET_TO_EXCEL_REQUEST,
-              payload: {
-                id: props.setName,
-                CSVType: selection
+        {!mapState?.linkToCSV ?
+          <Button
+            disabled={!mapState?.CanTriggerCSV}
+            onClick={() =>
+              dispatch({
+                type: RECORD_SET_TO_EXCEL_REQUEST,
+                payload: {
+                  id: props.setName,
+                  CSVType: selection
+                }
+              })
+            }
+            sx={{ mr: 1, ml: 'auto' }}
+            size={'small'}
+            variant="contained">
+            Generate CSV link
+            <DownloadIcon />
+          </Button>
+          :
+          <a href={mapState?.linkToCSV}>
+            <Button
+              onClick={() =>
+                dispatch({
+                  type: CSV_LINK_CLICKED
+                })
               }
-            })
-          }
-          sx={{ mr: 1, ml: 'auto' }}
-          size={'small'}
-          variant="contained">
-          CSV
-          <DownloadIcon />
-        </Button>
+              sx={{ mr: 1, ml: 'auto' }}
+              size={'small'}
+              variant="contained">
+              Download CSV
+              <DownloadIcon />
+            </Button>
+          </a>
+        } 
       </Tooltip>
       <Tooltip title="Choose report type" placement="right">
         <Select
