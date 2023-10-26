@@ -400,22 +400,17 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
   }
 
   try {
-    res
-      .contentType('text/csv')
-      .setHeader('Content-Disposition', 'attachment; filename="export.csv"')
-      .setHeader('transfer-encoding', 'chunked');
-
     const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
 
     const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
     const readable = Readable.from(generatedRows);
-    const key = `${uuidv4()}-csv`;
+    const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
 
     readable.pipe(upload(S3, key));
 
     // get signed url
     const url = await getS3SignedURL(key);
-    console.log(url);
+    res.status(200).send(url);
   } finally {
     res.end();
     connection.release();

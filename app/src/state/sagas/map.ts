@@ -840,22 +840,19 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 
       const conditionallyUnnestedData = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
 
-
-      let daBlob
+      let daBlob;
       try {
-      daBlob = new Blob([conditionallyUnnestedData]);
-      const url = window.URL.createObjectURL(daBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      const time = new Date().getTime();
-      const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
-      link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      }
-      catch(e)
-      {
+        daBlob = new Blob([conditionallyUnnestedData]);
+        const url = window.URL.createObjectURL(daBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        const time = new Date().getTime();
+        const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
+        link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (e) {
         console.error(e);
         return;
       }
@@ -873,19 +870,23 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.isCSV = true;
       filters.CSVType = action.payload.CSVType;
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, { 'Content-Type': 'text/csv' });
-      const conditionallyUnnestedData = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
-      const daBlob = new Blob([conditionallyUnnestedData]);
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {});
+      const conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
 
-      const url = window.URL.createObjectURL(daBlob);
       const link = document.createElement('a');
-      link.href = url;
-      const time = new Date().getTime();
-      const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
-      link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
+      link.href = conditionallyUnnestedURL;
+      // link.target = '_blank';
+      // console.log(link.href);
+
+      // window.open(conditionallyUnnestedURL);
+
+      // const time = new Date().getTime();
+      // const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
+      // link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
       document.body.appendChild(link);
+      // alert(link);
       link.click();
-      link.remove();
+      // link.remove();
     }
     yield put({
       type: RECORD_SET_TO_EXCEL_SUCCESS
