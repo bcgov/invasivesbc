@@ -1,0 +1,72 @@
+name: AppV2 Android
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - dev
+      - mobile-android
+jobs:
+  build-android:
+    runs-on: ubuntu-20.04
+    env:
+      EXPORT_DIR: ${{ 'export' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Cache appv2 deps
+        uses: actions/cache@v3
+        id: cache-appv2-deps
+        with:
+          path: appv2/node_modules
+          key: ${{ runner.os }}-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+
+      - name: Cache shared deps
+        uses: actions/cache@v3
+        id: cache-shared-deps
+        with:
+          path: sharedAPI/node_modules
+          key: ${{ runner.os }}-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
+
+      - name: Install sharedAPI dependencies
+        if: steps.cache-shared-deps.outputs.cache-hit != 'true'
+        working-directory: ./sharedAPI
+        run: |
+          npm install
+
+      - name: Install Appv2 dependencies
+        if: steps.cache-appv2-deps.outputs.cache-hit != 'true'
+        working-directory: ./appv2
+        run: |
+          npm install --legacy-peer-deps
+
+      - name: Run build
+        working-directory: ./appv2
+        env:
+          NODE_OPTIONS: --max-old-space-size=6000
+          REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
+          SSO_URL: ${{ secrets.APPV2_SSO_URL }}
+          SSO_REALM: ${{ secrets.APPV2_SSO_REALM }}
+          SSO_CLIENT_ID: ${{ secrets.APPV2_SSO_CLIENT_ID }}
+          REACT_APP_API_HOST: ${{ secrets.APPV2_REACT_APP_API_HOST }}
+          PUBLIC_MAP_URL: ${{ secrets.APPV2_PUBLIC_MAP_URL }}
+          IAPP_GEOJSON_URL: ${{ secrets.APPV2_IAPP_GEOJSON_URL }}
+        run: |
+          npm run build:android
+
+      - name: Capacitor update
+        run: npx cap update android
+        working-directory: ./appv2
+
+      - name: Capacitor copy
+        run: npx cap copy android
+        working-directory: ./appv2
+
+      - name: Build For Release
+        working-directory: ./appv2/android
+        run: |
+          ./gradlew bundleRelease

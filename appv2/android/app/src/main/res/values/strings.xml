@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">InvasivesBC</string>
+    <string name="title_activity_main">InvasivesBC</string>
+    <string name="package_name">bc.gov.invasivesbc</string>
+    <string name="custom_url_scheme">bc.gov.invasivesbc</string>
+</resources>
