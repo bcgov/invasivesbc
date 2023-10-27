@@ -171,7 +171,7 @@
     "@types/uuid": "^8.3.0",
     "@vitejs/plugin-react": "^4.1.0",
     "@welldone-software/why-did-you-render": "^7.0.1",
-    "cypress": "^8.7.0",
+    "cypress": "^13.3.3",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
