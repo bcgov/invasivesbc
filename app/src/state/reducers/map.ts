@@ -81,6 +81,7 @@ class MapState {
   tooManyLabelsDialog: IGeneralDialog;
   CanTriggerCSV: boolean;
   linkToCSV: string;
+  recordSetForCSV: number;
 
   constructor() {
     this.initialized = false;
@@ -124,6 +125,7 @@ class MapState {
     };
     this.CanTriggerCSV = true;
     this.linkToCSV = null;
+    this.recordSetForCSV = null;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -555,13 +557,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           CanTriggerCSV: true,
-          linkToCSV: action.payload.link
+          linkToCSV: action.payload.link,
+          recordSetForCSV: action.payload.id
         };
       }
       case CSV_LINK_CLICKED: {
         return {
           ...state,
-          linkToCSV: null
+          linkToCSV: null,
+          recordSetForCSV: null
         };
       }
       case RECORD_SET_TO_EXCEL_FAILURE: {

@@ -873,24 +873,11 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {});
       const conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
 
-      // const link = document.createElement('a');
-      // link.href = conditionallyUnnestedURL;
-      // link.target = '_blank';
-      // console.log(link.href);
-
-      // window.open(conditionallyUnnestedURL, '_top', 'popup');
-
-      // const time = new Date().getTime();
-      // const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
-      // link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
-      // document.body.appendChild(link);
-      // alert(link);
-      // link.click();
-      // link.remove();
       yield put({
         type: RECORD_SET_TO_EXCEL_SUCCESS,
         payload: {
-          link: conditionallyUnnestedURL
+          link: conditionallyUnnestedURL,
+          id: action.payload.id
         }
       });
     }

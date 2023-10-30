@@ -47,7 +47,22 @@ const ExcelExporter = (props) => {
   return (
     <>
       <Tooltip title="CSV Export">
-        {!mapState?.linkToCSV ?
+        {mapState?.linkToCSV && props.setName === mapState?.recordSetForCSV ?
+          <a href={mapState?.linkToCSV}>
+            <Button
+              onClick={() =>
+                dispatch({
+                  type: CSV_LINK_CLICKED
+                })
+              }
+              sx={{ mr: 1, ml: 'auto' }}
+              size={'small'}
+              variant="contained">
+              Download CSV
+              <DownloadIcon />
+            </Button>
+          </a>
+          :
           <Button
             disabled={!mapState?.CanTriggerCSV}
             onClick={() =>
@@ -65,21 +80,6 @@ const ExcelExporter = (props) => {
             Generate CSV link
             <DownloadIcon />
           </Button>
-          :
-          <a href={mapState?.linkToCSV}>
-            <Button
-              onClick={() =>
-                dispatch({
-                  type: CSV_LINK_CLICKED
-                })
-              }
-              sx={{ mr: 1, ml: 'auto' }}
-              size={'small'}
-              variant="contained">
-              Download CSV
-              <DownloadIcon />
-            </Button>
-          </a>
         } 
       </Tooltip>
       <Tooltip title="Choose report type" placement="right">
