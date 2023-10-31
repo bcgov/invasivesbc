@@ -143,6 +143,7 @@ export class ActivitySearchCriteria {
   species_negative: string[];
   species_treated: string[];
   form_status: string[];
+  s3SignedUrlRequest?: boolean
 
   jurisdiction: string[];
 
@@ -162,6 +163,7 @@ export class ActivitySearchCriteria {
     //csv export stuff:
     this.isCSV = (obj && obj.isCSV) || false;
     this.CSVType = (obj && obj.CSVType) || null;
+    this.s3SignedUrlRequest = (obj && obj.s3SignedUrlRequest) || false;
 
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;

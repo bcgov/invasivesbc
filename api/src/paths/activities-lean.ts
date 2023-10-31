@@ -10,6 +10,7 @@ import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
+import { getS3SignedURL } from '../utils/file-utils';
 
 const defaultLog = getLogger('activity');
 
@@ -242,6 +243,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
+        if(sanitizedSearchCriteria.s3SignedUrlRequest)
+        {
+          const signedURL = await getS3SignedURL('activities_private_geojson.json')
+          return res.status(200).json({ signedURL: signedURL });
+        }
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
 
       // Check for sql and role:

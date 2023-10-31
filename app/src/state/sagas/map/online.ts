@@ -23,14 +23,45 @@ const checkForErrors = (response: any, status?: any, url?: any) => {
 
 //
 export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
+
+  //get a signed url to the zipped file on s3:
+
+
+
   const networkReturn = yield InvasivesAPI_Call(
     'POST',
     `/api/activities-lean/`,
-    action.payload.activitiesFilterCriteria
+    {...action.payload.activitiesFilterCriteria, s3SignedUrlRequest: true}
   );
+
+  console.dir(networkReturn)
+  const signedURL = networkReturn.data.signedURL
+
+  //get the zipped file from the signed url:
+
+  let networkReturn2
+
+  try {
+
+  networkReturn2 = yield Http.request({
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Encoding': 'gzip'
+    },
+    url: signedURL
+  });
+
+}
+catch(e) {
+  console.dir(e)
+}
+
+  console.dir(networkReturn2)
+
   let featureCollection = {
     type: 'FeatureCollection',
-    features: networkReturn.data.result.rows.map((row) => {
+    features: networkReturn2.data.result.rows.map((row) => {
       return row.geojson ? row.geojson : row;
     })
   };
