@@ -207,7 +207,7 @@ export const getActivitiesSQL = (
         cpo.activity_incoming_data_id,
         string_agg(cpo.invasive_plant, ', ') AS current_positive_species
     FROM
-        current_positive_observations cpo
+        current_positive_observations_materialized cpo
     GROUP BY
         cpo.activity_incoming_data_id
 ),
@@ -216,7 +216,7 @@ CurrentNegativeObservations AS (
         cno.activity_incoming_data_id,
         string_agg(cno.invasive_plant, ', ') AS current_negative_species
     FROM
-        current_negative_observations cno
+        current_negative_observations_materialized cno
     GROUP BY
         cno.activity_incoming_data_id
 )  `);
@@ -436,6 +436,10 @@ LEFT JOIN
   }
 
   sqlStatement.append(SQL` where 1 = 1`);
+
+  if(lean) {
+    sqlStatement.append(SQL` and a.activity_incoming_data_id > 36345`)
+  }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
