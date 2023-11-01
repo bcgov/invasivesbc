@@ -818,6 +818,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   try {
     let rows = [];
     let networkReturn;
+    let conditionallyUnnestedURL;
     if (set.recordSetType === 'POI') {
       let filters = getSearchCriteriaFromFilters(
         set?.advancedFilters ? set?.advancedFilters : null,
@@ -834,28 +835,9 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.isCSV = true;
       filters.CSVType = action.payload.CSVType;
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {
-        'Content-Type': 'text/csv'
-      });
+      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {});
 
-      const conditionallyUnnestedData = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
-
-      let daBlob;
-      try {
-        daBlob = new Blob([conditionallyUnnestedData]);
-        const url = window.URL.createObjectURL(daBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        const time = new Date().getTime();
-        const timestamp = format(time, 'yyyy-MM-dd HH:mm:ss');
-        link.setAttribute('download', `${filters.CSVType}_` + timestamp + `.csv`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } catch (e) {
-        console.error(e);
-        return;
-      }
+      conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {
       const filters = getSearchCriteriaFromFilters(
         set.advancedFilters,
@@ -871,16 +853,15 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filters.CSVType = action.payload.CSVType;
 
       networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {});
-      const conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
-
-      yield put({
-        type: RECORD_SET_TO_EXCEL_SUCCESS,
-        payload: {
-          link: conditionallyUnnestedURL,
-          id: action.payload.id
-        }
-      });
+      conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     }
+    yield put({
+      type: RECORD_SET_TO_EXCEL_SUCCESS,
+      payload: {
+        link: conditionallyUnnestedURL,
+        id: action.payload.id
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({

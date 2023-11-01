@@ -369,6 +369,24 @@ const S3 = new AWS.S3({
   signatureVersion: 'v4',
   s3ForcePathStyle: true
 });
+
+function upload(S3, key) {
+  let pass = new PassThrough();
+
+  let params = {
+    Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
+    Key: key,
+    Body: pass
+  };
+
+  S3.upload(params, function (error, data) {
+    console.error(error);
+    console.info(data);
+  });
+
+  return pass;
+}
+
 export async function streamActivitiesResult(searchCriteria: any, res: any) {
   const connection = await getDBConnection();
 
@@ -380,23 +398,6 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
       message: 'Failed to build SQL statement',
       namespace: 'iapp-json-utils'
     };
-  }
-
-  function upload(S3, key) {
-    let pass = new PassThrough();
-
-    let params = {
-      Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
-      Key: key,
-      Body: pass
-    };
-
-    S3.upload(params, function (error, data) {
-      console.error(error);
-      console.info(data);
-    });
-
-    return pass;
   }
 
   try {
@@ -418,79 +419,78 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
 }
 
 export const streamIAPPResult = async (searchCriteria: any, res: any) => {
-    let connection;
-    try {
-      connection = await getDBConnection();
-    } catch (e) {
-      throw {
-        message: 'Error connecting to database',
-        code: 500,
-        namespace: 'iapp-json-utils'
-      };
-    }
-
-    if (!connection) {
-      throw {
-        code: 503,
-        message: 'Failed to establish database connection',
-        namespace: 'iapp-json-utils'
-      };
-    }
-
-    const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(searchCriteria);
-
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'iapp-json-utils'
-      };
-    }
-
-    try {
-      if (searchCriteria.isCSV) {
-        res.contentType('text/csv')
-          .setHeader('Content-Disposition', 'attachment; filename="export.csv"')
-          .setHeader('transfer-encoding', 'chunked');
-
-        const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
-
-        const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
-        for await (const row of generatedRows) {
-          res.write(row);
-        }
-
-      } else {
-        try {
-          const response = await connection.query(sqlStatement.text, sqlStatement.values);
-          var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
-
-          res.setHeader('Content-Type', 'application/json; charset=utf-8');
-
-          res.write(
-            JSON.stringify({
-              message: 'Got points of interest by search filter criteria',
-              request: searchCriteria,
-              result: {
-                rows: returnVal2
-              },
-              count: returnVal2.length,
-              namespace: 'points-of-interest',
-              code: 200
-            })
-          );
-        } catch (error) {
-          defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
-          throw {
-            code: 500,
-            message: 'Failed to get IAPP sites',
-            namespace: 'iapp-json-utils'
-          };
-        }
-      }
-    } finally {
-      res.end();
-      connection.release();
-    }
+  let connection;
+  try {
+    connection = await getDBConnection();
+  } catch (e) {
+    throw {
+      message: 'Error connecting to database',
+      code: 500,
+      namespace: 'iapp-json-utils'
+    };
   }
-;
+
+  if (!connection) {
+    throw {
+      code: 503,
+      message: 'Failed to establish database connection',
+      namespace: 'iapp-json-utils'
+    };
+  }
+
+  const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(searchCriteria);
+
+  if (!sqlStatement) {
+    throw {
+      code: 400,
+      message: 'Failed to build SQL statement',
+      namespace: 'iapp-json-utils'
+    };
+  }
+
+  try {
+    if (searchCriteria.isCSV) {
+      const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
+
+      const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
+      const readable = Readable.from(generatedRows);
+      const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
+
+      readable.pipe(upload(S3, key));
+
+      // get signed url
+      const url = await getS3SignedURL(key);
+      res.status(200).send(url);
+    } else {
+      try {
+        const response = await connection.query(sqlStatement.text, sqlStatement.values);
+        var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+        res.write(
+          JSON.stringify({
+            message: 'Got points of interest by search filter criteria',
+            request: searchCriteria,
+            result: {
+              rows: returnVal2
+            },
+            count: returnVal2.length,
+            namespace: 'points-of-interest',
+            code: 200
+          })
+        );
+      } catch (error) {
+        defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
+        throw {
+          code: 500,
+          message: 'Failed to get IAPP sites',
+          namespace: 'iapp-json-utils'
+        };
+      }
+    }
+  } finally {
+    res.end();
+    connection.release();
+  }
+};
