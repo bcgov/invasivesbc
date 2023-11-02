@@ -40,7 +40,8 @@ import {
   IAPP_EXTENT_FILTER_SUCCESS,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_FAILURE,
-  RECORD_SET_TO_EXCEL_SUCCESS
+  RECORD_SET_TO_EXCEL_SUCCESS,
+  CSV_LINK_CLICKED
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -78,7 +79,9 @@ class MapState {
   labelBoundsPolygon: any;
   IAPPBoundsPolygon: any;
   tooManyLabelsDialog: IGeneralDialog;
-  CanTriggerCSV: true;
+  CanTriggerCSV: boolean;
+  linkToCSV: string;
+  recordSetForCSV: number;
 
   constructor() {
     this.initialized = false;
@@ -121,6 +124,8 @@ class MapState {
       dialogContentText: null
     };
     this.CanTriggerCSV = true;
+    this.linkToCSV = null;
+    this.recordSetForCSV = null;
     this.whatsHere = {
       toggle: false,
       feature: null,
@@ -551,7 +556,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case RECORD_SET_TO_EXCEL_SUCCESS: {
         return {
           ...state,
-          CanTriggerCSV: true
+          CanTriggerCSV: true,
+          linkToCSV: action.payload.link,
+          recordSetForCSV: action.payload.id
+        };
+      }
+      case CSV_LINK_CLICKED: {
+        return {
+          ...state,
+          linkToCSV: null,
+          recordSetForCSV: null
         };
       }
       case RECORD_SET_TO_EXCEL_FAILURE: {
