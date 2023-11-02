@@ -5,6 +5,8 @@ import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import DownloadIcon from '@mui/icons-material/Download';
 import { selectMap } from 'state/reducers/map';
+import Spinner from 'components/spinner/Spinner';
+import "./ExcelExporter.css";
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();
@@ -63,24 +65,31 @@ const ExcelExporter = (props) => {
             </Button>
           </a>
           :
-          <Button
-            disabled={!mapState?.CanTriggerCSV}
-            onClick={() =>
-              dispatch({
-                type: RECORD_SET_TO_EXCEL_REQUEST,
-                payload: {
-                  id: props.setName,
-                  CSVType: selection
+          <div className='CSV-spinner'>
+            {(
+              mapState?.CanTriggerCSV ? 
+              <Button
+              disabled={!mapState?.CanTriggerCSV}
+              onClick={() =>
+                dispatch({
+                  type: RECORD_SET_TO_EXCEL_REQUEST,
+                  payload: {
+                      id: props.setName,
+                      CSVType: selection
+                    }
+                  })
                 }
-              })
-            }
-            sx={{ mr: 1, ml: 'auto' }}
-            size={'small'}
-            variant="contained">
-            Generate CSV link
-            <DownloadIcon />
-          </Button>
-        } 
+                sx={{ mr: 1, ml: 'auto' }}
+                size={'small'}
+                variant="contained">
+                Generate CSV link
+                <DownloadIcon />
+              </Button>
+              : 
+              <Spinner></Spinner>
+            )}
+          </div>
+        }
       </Tooltip>
       <Tooltip title="Choose report type" placement="right">
         <Select
