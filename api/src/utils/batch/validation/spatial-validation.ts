@@ -88,7 +88,14 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
       area: res.rows[0]['area'],
       geog: res.rows[0]['geog']
     };
-  } finally {
+
+  }
+  catch(e) {
+
+    console.log('error in autofillFromPostGIS', e)
+    throw new Error('Error validating geometry in the database' + e.message );
+
+  }finally {
     connection.release();
   }
 };
