@@ -303,6 +303,8 @@ async function _validateCell(
       //@todo validate length
       break;
     case 'WKT':
+      try {
+
       // validate if not polygon first to avoid WKT autofill and subsequent crashes
       const shape = data.split(' (')[0];
       if (shape !== 'POLYGON' && shape !== 'MULTIPOLYGON' && !template.key.includes('temp')) {
@@ -384,6 +386,15 @@ async function _validateCell(
           messageTitle: `Area cannot be larger than ${lookupAreaLimit(template.subtype)}`
         });
       }
+    }
+    catch(e)
+    {
+      result.validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Unhandled geometry error for cell',
+        messageDetail: e.message || e.messageDetail || e
+      });
+    }
 
       break;
     case 'tristate':
