@@ -50,13 +50,14 @@ const ExcelExporter = (props) => {
     <>
       <Tooltip title="CSV Export">
         {mapState?.linkToCSV && props.setName === mapState?.recordSetForCSV ?
-          <a href={mapState?.linkToCSV}>
+          <a href={mapState?.linkToCSV} download>
             <Button
               onClick={() =>
                 dispatch({
                   type: CSV_LINK_CLICKED
                 })
               }
+              disabled={mapState?.linkToCSV.length < 1}
               sx={{ mr: 1, ml: 'auto' }}
               size={'small'}
               variant="contained">

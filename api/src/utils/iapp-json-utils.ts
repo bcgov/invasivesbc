@@ -407,14 +407,16 @@ export async function streamActivitiesResult(searchCriteria: any, res: any) {
     const readable = Readable.from(generatedRows);
     const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
 
-    readable.pipe(upload(S3, key));
-
-    // get signed url
-    const url = await getS3SignedURL(key);
-    res.status(200).send(url);
-  } finally {
-    res.end();
-    connection.release();
+    readable.pipe(upload(S3, key)).on('end', async () => {
+      // get signed url
+      const url = await getS3SignedURL(key);
+      res.status(200).send(url);
+      res.end();
+      connection.release();
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500);
   }
 }
 
@@ -448,49 +450,54 @@ export const streamIAPPResult = async (searchCriteria: any, res: any) => {
     };
   }
 
-  try {
-    if (searchCriteria.isCSV) {
+  if (searchCriteria.isCSV) {
+    try {
       const cursor = await connection.query(new Cursor(sqlStatement.text, sqlStatement.values));
 
       const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
       const readable = Readable.from(generatedRows);
       const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
-
-      readable.pipe(upload(S3, key));
-
-      // get signed url
-      const url = await getS3SignedURL(key);
-      res.status(200).send(url);
-    } else {
-      try {
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-        var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
-
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-
-        res.write(
-          JSON.stringify({
-            message: 'Got points of interest by search filter criteria',
-            request: searchCriteria,
-            result: {
-              rows: returnVal2
-            },
-            count: returnVal2.length,
-            namespace: 'points-of-interest',
-            code: 200
-          })
-        );
-      } catch (error) {
-        defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
-        throw {
-          code: 500,
-          message: 'Failed to get IAPP sites',
-          namespace: 'iapp-json-utils'
-        };
-      }
+      readable.pipe(upload(S3, key)).on('end', async () => {
+        // get signed url
+        const url = await getS3SignedURL(key);
+        res.status(200).send(url);
+        res.end();
+        connection.release();
+        return;
+      });
+    } catch (e) {
+      console.error(e);
+      res.status(500);
     }
-  } finally {
-    res.end();
-    connection.release();
+  } else {
+    try {
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+      res.write(
+        JSON.stringify({
+          message: 'Got points of interest by search filter criteria',
+          request: searchCriteria,
+          result: {
+            rows: returnVal2
+          },
+          count: returnVal2.length,
+          namespace: 'points-of-interest',
+          code: 200
+        })
+      );
+    } catch (error) {
+      defaultLog.debug({ label: 'getIAPPjson', message: 'error', error });
+      throw {
+        code: 500,
+        message: 'Failed to get IAPP sites',
+        namespace: 'iapp-json-utils'
+      };
+    } finally {
+      res.end();
+      connection.release();
+    }
   }
 };
