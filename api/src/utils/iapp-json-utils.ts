@@ -387,10 +387,11 @@ function upload(S3, key) {
   return pass;
 }
 
-export async function streamActivitiesResult(searchCriteria: any, res: any) {
+export async function streamActivitiesResult(searchCriteria: any, res: any, sqlStatementOverride?: SQLStatement) {
   const connection = await getDBConnection();
 
-  const sqlStatement: SQLStatement = getActivitiesSQL(searchCriteria, false, true);
+
+  const sqlStatement: SQLStatement = (sqlStatementOverride)? sqlStatementOverride: getActivitiesSQL(searchCriteria, false, true);
 
   if (!sqlStatement) {
     throw {

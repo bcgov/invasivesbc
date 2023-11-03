@@ -7,6 +7,7 @@ import { getuid } from 'process';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../../utils/logger';
+import { streamActivitiesResult } from '../../utils/iapp-json-utils';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities v2 - Fat';
@@ -201,6 +202,9 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.serverFilterGeometries = serverFilterGeometries;
   sanitizedSearchCriteria.clientFilterGeometries = clientFilterGeometries;
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
+  //todo actually validate:
+  sanitizedSearchCriteria.isCSV = filterObject?.isCSV;
+  sanitizedSearchCriteria.CSVType = filterObject?.CSVType;
   defaultLog.debug({
     label: 'getActivitiesBySearchFilterCriteria',
     message: 'sanitizedObject',
@@ -237,6 +241,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       }
 
       sql = getActivitiesSQLv2(filterObject);
+
+      if (filterObject.isCSV && filterObject.CSVType) {
+        await streamActivitiesResult(filterObject, res, sql);
+      }
       const response = await connection.query(sql.text, sql.values);
 
       return res.status(200).json({
@@ -420,10 +428,15 @@ activities as (
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.selectColumns) {
-    const select = sqlStatement.append(
-      `select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `
-    );
-    return select;
+    if (filterObject.isCSV) {
+      const select = sqlStatement.append(SQL` select extract.* `);
+      return select;
+    } else {
+      const select = sqlStatement.append(
+        `select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `
+      );
+      return select;
+    }
   } else {
     const select = sqlStatement.append(`select * `);
     return select;
@@ -432,6 +445,70 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
   const from = sqlStatement.append(`from activities `);
+  if (filterObject.isCSV) {
+    switch (filterObject.CSVType) {
+      case 'terrestrial_plant_observation':
+        sqlStatement.append(
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'aquatic_plant_observation':
+        sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'terrestrial_chemical_treatment':
+        sqlStatement.append(
+          'join treatment_chemical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'aquatic_chemical_treatment':
+        sqlStatement.append(
+          'join treatment_chemical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'terrestrial_mechanical_treatment':
+        sqlStatement.append(
+          'join treatment_mechanical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'aquatic_mechanical_treatment':
+        sqlStatement.append(
+          'join treatment_mechanical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'biocontrol_release':
+        sqlStatement.append('join biocontrol_release_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'biocontrol_collection':
+        sqlStatement.append('join biocontrol_collection_summary extract ON extract.activity_id = b.activity_id ');
+        break;
+      case 'biocontrol_dispersal':
+        sqlStatement.append(
+          'join biocontrol_dispersal_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'chemical_treatment_monitoring':
+        sqlStatement.append(
+          'join chemical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'mechanical_treatment_monitoring':
+        sqlStatement.append(
+          'join mechanical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+      case 'biocontrol_release_monitoring':
+        sqlStatement.append(
+          'join biocontrol_release_monitoring_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+
+      default:
+        sqlStatement.append(
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+        );
+        break;
+    }
+  }
   return from;
 }
 
