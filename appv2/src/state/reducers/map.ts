@@ -48,7 +48,11 @@ import {
   INIT_SERVER_BOUNDARIES_GET,
   TOGGLE_QUICK_PAN_TO_RECORD,
   USER_TOUCHED_RECORD,
-  TOGGLE_CUSTOMIZE_LAYERS
+  TOGGLE_CUSTOMIZE_LAYERS,
+  RECORD_SET_TO_EXCEL_REQUEST,
+  RECORD_SET_TO_EXCEL_SUCCESS,
+  CSV_LINK_CLICKED,
+  RECORD_SET_TO_EXCEL_FAILURE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -96,9 +100,16 @@ class MapState {
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
   customizeLayersToggle: boolean;
+  linkToCSV: string;
+  CanTriggerCSV: boolean;
+  recordSetForCSV: number;
+
 
   constructor() {
     this.initialized = false;
+    this.linkToCSV = null;
+    this.CanTriggerCSV = true;
+    this.recordSetForCSV = null;
     this.viewFilters = true;
     this.map_center = [53, -127];
     this.map_zoom = 5;
@@ -180,6 +191,33 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.viewFilters = !draftState.viewFilters;
         });
         return nextState;
+      }      
+      case RECORD_SET_TO_EXCEL_REQUEST: {
+        return {
+          ...state,
+          CanTriggerCSV: false
+        };
+      }
+      case RECORD_SET_TO_EXCEL_SUCCESS: {
+        return {
+          ...state,
+          CanTriggerCSV: true,
+          linkToCSV: action.payload.link,
+          recordSetForCSV: action.payload.id
+        };
+      }
+      case CSV_LINK_CLICKED: {
+        return {
+          ...state,
+          linkToCSV: null,
+          recordSetForCSV: null
+        };
+      }
+      case RECORD_SET_TO_EXCEL_FAILURE: {
+        return {
+          ...state,
+          CanTriggerCSV: true
+        };
       }
       case USER_CLICKED_RECORD: {
         const nextState = createNextState(state, (draftState) => {

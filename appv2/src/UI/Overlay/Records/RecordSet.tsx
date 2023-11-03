@@ -31,6 +31,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
 import { detectTouchDevice } from 'util/detectTouch';
+import ExcelExporter from './ExcelExporter';
 
 export const RecordSet = (props) => {
   const userSettingsState = useSelector(selectUserSettings);
@@ -119,6 +120,7 @@ export const RecordSet = (props) => {
                   + <FilterAltIcon />
                 </Button>
               </div>
+              <ExcelExporter setName={props.setID} />
             </div>
           </div>
           <div className="recordSet_filters_container">
