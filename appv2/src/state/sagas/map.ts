@@ -57,6 +57,7 @@ import {
   WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 import {
+  getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
@@ -517,20 +518,19 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {
-      const filters = getSearchCriteriaFromFilters(
-        set.advancedFilters,
-        userSettings?.recordSets,
-        action.payload.id,
-        false,
-        set?.gridFilters,
-        0,
-        null,
-        mapState?.layers?.[action.payload.id]?.filters?.sortColumns
-      );
-      filters.isCSV = true;
-      filters.CSVType = action.payload.CSVType;
+      const currentState = yield select(selectUserSettings);
+      const mapState = yield select(selectMap);
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, filters, {});
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
+      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+      filterObject.limit = 200000;
+      filterObject.isCSV = true;
+      filterObject.CSVType = action.payload.CSVType;
+
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+        filterObjects: [filterObject]
+      });
+
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     }
     yield put({
