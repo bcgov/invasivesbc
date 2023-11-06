@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import { createRootReducer } from "./reducers/rootReducer";
 import { createLogger } from 'redux-logger';
-import { AUTH_INITIALIZE_REQUEST } from "./actions";
+import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from "./actions";
 import activityPageSaga from "./sagas/activity";
 import authenticationSaga from "./sagas/auth";
 import batchSaga from "./sagas/batch";
@@ -13,6 +13,9 @@ import activitiesPageSaga from "./sagas/map";
 import trainingVideosSaga from "./sagas/training_videos";
 import userSettingsSaga from "./sagas/userSettings";
 import { AppConfig } from "./config";
+import { createBrowserHistory } from 'history';
+
+const historySingleton = createBrowserHistory();
 
 export function setupStore(configuration: AppConfig) {
   const sagaMiddleware = createSagaMiddleware();
@@ -44,7 +47,18 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailTemplatesSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+
+  historySingleton.listen((location) => {
+    store.dispatch({type: URL_CHANGE, payload: {
+      url: location.pathname
+      }});
+  })
+
   return store;
 }
+
+
+
+export { historySingleton };
 
 export default setupStore
