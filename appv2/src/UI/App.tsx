@@ -35,6 +35,7 @@ import { LayerPickerBasic } from './Map/LayerPickerBasic';
 import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
+import { DrawCustomLayer } from './Map/DrawCustomLayer';
 
 const AppUrlListener: React.FC<any> = () => {
   useEffect(() => {
@@ -149,6 +150,7 @@ const MapMemo = React.memo((props: any) => {
   return (
     <Map className="Map">
       <ButtonContainer></ButtonContainer>
+      <DrawCustomLayer/>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
       <MapCenterSetter />

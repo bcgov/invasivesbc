@@ -16,7 +16,7 @@ import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
+import { DRAW_CUSTOM_LAYER, TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
 import KMLShapesUpload from './KMLShapesUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -148,9 +148,16 @@ const CustomizeLayerMenu = (props) => {
               <>
                 <Button
                   onClick={() => {
-                    if (optionVal === 'Upload KML/KMZ') {
+                    switch(optionVal) {
+                    case 'Upload KML/KMZ': 
                       setSubMenuType('Upload');
-                    } else {
+                      break;
+                    case  'Draw':
+                      dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
+                      dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                      cleanup();
+                      break;
+                    default:
                       cleanup();
                     }
                   }}>
