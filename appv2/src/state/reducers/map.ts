@@ -52,7 +52,9 @@ import {
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
   CSV_LINK_CLICKED,
-  RECORD_SET_TO_EXCEL_FAILURE
+  RECORD_SET_TO_EXCEL_FAILURE,
+  CUSTOM_LAYER_DRAWN,
+  DRAW_CUSTOM_LAYER
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -103,6 +105,7 @@ class MapState {
   linkToCSV: string;
   CanTriggerCSV: boolean;
   recordSetForCSV: number;
+  drawingCustomLayer: boolean;
 
 
   constructor() {
@@ -116,6 +119,7 @@ class MapState {
     this.activity_center = [53, -127];
     this.activity_zoom = 5;
     this.userHeading = null;
+    this.drawingCustomLayer = false;
     this.simplePickerLayers2 = [
       {
         title: 'Regional Districts',
@@ -192,6 +196,18 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         });
         return nextState;
       }      
+      case CUSTOM_LAYER_DRAWN: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.drawingCustomLayer = false
+        });
+        return nextState;
+      }
+      case DRAW_CUSTOM_LAYER: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.drawingCustomLayer = true
+        });
+        return nextState;
+      }
       case RECORD_SET_TO_EXCEL_REQUEST: {
         return {
           ...state,
