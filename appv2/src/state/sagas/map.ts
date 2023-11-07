@@ -8,6 +8,7 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  CUSTOM_LAYER_DRAWN,
   FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
@@ -689,6 +690,12 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   yield all(actionsToPut.map((action) => put(action)));
 }
 
+function* persistClientBoundaries(action) {
+  const state = yield select(selectMap);
+
+  localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
@@ -728,7 +735,8 @@ function* activitiesPageSaga() {
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE)
+    takeEvery(URL_CHANGE, handle_URL_CHANGE),
+    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
