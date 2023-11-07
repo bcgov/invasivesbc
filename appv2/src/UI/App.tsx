@@ -1,10 +1,9 @@
 import { Button, createTheme, ThemeOptions } from '@mui/material';
 import { ThemeProvider } from '@mui/styles';
 import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Route, useHistory } from 'react-router-dom';
 import { getDesignTokens } from 'util/CustomThemeProvider';
-import { URL_CHANGE } from '../state/actions';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
@@ -33,43 +32,15 @@ import { OnHoverActivity } from './Map/OnHoverActivity';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from "@capacitor/browser";
 import { LayerPickerBasic } from './Map/LayerPickerBasic';
-import { NewRecord } from './Map/Buttons/NewRecord';
 import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
 
-// URL listener so that the auth saga can redirect to the correct page
-const URL_LISTENER = (props) => {
-  const dispatch = useDispatch();
-  const location = useLocation();
-
-  const targetURL = useSelector((state: any) => state.AppMode?.url);
-  useEffect(() => {
-    // console.log('url listenerz: ' + location.pathname);
-    console.log(JSON.stringify(location, null, 2));
-    if (location.pathname !== targetURL) {
-      dispatch({
-        type: URL_CHANGE,
-        payload: { url: location.pathname }
-      });
-    }
-  }, [location]);
-
-  return null;
-};
-
-const URL_ListenerMemo = React.memo((props: any) => {
-  return <URL_LISTENER />;
-});
-
 const AppUrlListener: React.FC<any> = () => {
-  let history = useHistory();
-  const dispatch = useDispatch();
   useEffect(() => {
     CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
       if (event.url.indexOf('code') !== -1) {
         Browser.close();
-
         document.location.href = `${document.location.href}?${event.url.split('?').pop()}`;
       }
     });
@@ -193,7 +164,6 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className="App">
-      <URL_ListenerMemo />
       <HeaderMemo />
       <MapMemo />
       <Overlay>

@@ -1,5 +1,7 @@
 import { all, call, delay, put, select, take, takeLatest } from 'redux-saga/effects';
 
+import { historySingleton } from '../store';
+
 import Keycloak, {
   KeycloakAdapter,
   KeycloakLoginOptions,
@@ -24,7 +26,7 @@ import {
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
-  TABS_GET_INITIAL_STATE_REQUEST,
+  TABS_GET_INITIAL_STATE_REQUEST, TOGGLE_PANEL,
   URL_CHANGE,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
@@ -89,6 +91,26 @@ class CapacitorBrowserKeycloakAdapter implements KeycloakAdapter {
 function* reinitAuth() {
   const config: AppConfig = yield select(selectConfiguration);
 
+  const authTargetJSON = sessionStorage.getItem('_invasivesbc_auth_target');
+  let postAuthNavigate = null;
+  if (authTargetJSON) {
+    const authTarget = JSON.parse(authTargetJSON);
+    if (authTarget.at > (Date.now() - (30 * 10000))) {
+      // it is recent
+      postAuthNavigate = authTarget.destination;
+    } else {
+      sessionStorage.removeItem('_invasivesbc_auth_target');
+    }
+  }
+
+  if (!postAuthNavigate) {
+    // this is an initial request or we have no destination preset
+    sessionStorage.setItem('_invasivesbc_auth_target', JSON.stringify({
+      at: Date.now(),
+      destination: historySingleton?.location?.pathname || '/'
+    }));
+  }
+
   if (config.MOBILE) {
     yield call(keycloakInstance.init, {
       checkLoginIframe: false,
@@ -122,12 +144,23 @@ function* reinitAuth() {
     }
   });
 
+
   if (keycloakInstance.authenticated) {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
     yield put({ type: AUTH_REFRESH_TOKEN });
     yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+    if (postAuthNavigate) {
+      sessionStorage.removeItem('_invasivesbc_auth_target');
+      historySingleton.push(postAuthNavigate);
+      yield put({
+        type: TOGGLE_PANEL, payload: {
+          panelOpen: true,
+          panelFullScreen: false
+        }
+      });
+    }
   } else {
     // we are not logged in
     yield put({

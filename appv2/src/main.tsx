@@ -2,8 +2,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import setupStore from 'state/store';
+import { Router } from 'react-router-dom';
+import setupStore, { historySingleton } from 'state/store';
 import App from './UI/App';
 import './main.css';
 
@@ -19,11 +19,11 @@ import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) 
     const root = createRoot(container);
     if (root) {
       root.render(
-        <BrowserRouter>
+        <Router history={historySingleton}>
           <Provider store={store}>
             <App />
           </Provider>
-        </BrowserRouter>
+        </Router>
       );
     }
     defineCustomElements(window);
