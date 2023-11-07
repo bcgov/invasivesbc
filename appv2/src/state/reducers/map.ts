@@ -54,7 +54,8 @@ import {
   CSV_LINK_CLICKED,
   RECORD_SET_TO_EXCEL_FAILURE,
   CUSTOM_LAYER_DRAWN,
-  DRAW_CUSTOM_LAYER
+  DRAW_CUSTOM_LAYER,
+  REMOVE_CLIENT_BOUNDARY
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -223,6 +224,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         const nextState = createNextState(state, (draftState) => {
           draftState.drawingCustomLayer = true;
           draftState.workingLayerName = action.payload.name;
+        });
+        return nextState;
+      }
+      case REMOVE_CLIENT_BOUNDARY: {
+        const nextState = createNextState(state, (draftState) => {
+          const index = draftState.clientBoundaries.findIndex(
+            (cb) => cb.id === action.payload.cb
+          );
+          draftState.clientBoundaries.splice(index, 1);
         });
         return nextState;
       }
