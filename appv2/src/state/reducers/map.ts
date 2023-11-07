@@ -59,6 +59,7 @@ import {
 
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
+import { getUuid } from './userSettings';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -106,7 +107,9 @@ class MapState {
   CanTriggerCSV: boolean;
   recordSetForCSV: number;
   drawingCustomLayer: boolean;
-
+  serverBoundaries: [];
+  clientBoundaries: [];
+  workingLayerName: string;
 
   constructor() {
     this.initialized = false;
@@ -180,8 +183,11 @@ class MapState {
       highlightedType: null
     };
     this.quickPanToRecord = false;
-    this.quickPanToRecord = false
-    this.customizeLayersToggle = false
+    this.quickPanToRecord = false;
+    this.customizeLayersToggle = false;
+    this.clientBoundaries = [];
+    this.serverBoundaries = [];
+    this.workingLayerName = null;
   }
 }
 const initialState = new MapState();
@@ -195,16 +201,26 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.viewFilters = !draftState.viewFilters;
         });
         return nextState;
-      }      
+      }
       case CUSTOM_LAYER_DRAWN: {
         const nextState = createNextState(state, (draftState) => {
-          draftState.drawingCustomLayer = false
+          draftState.drawingCustomLayer = false;
+          draftState.clientBoundaries = [
+            ...state.clientBoundaries,
+            {
+              id: getUuid(),
+              name: state?.workingLayerName,
+              feature: action.payload.feature
+            }
+          ];
+          draftState.workingLayerName = null;
         });
         return nextState;
       }
       case DRAW_CUSTOM_LAYER: {
         const nextState = createNextState(state, (draftState) => {
-          draftState.drawingCustomLayer = true
+          draftState.drawingCustomLayer = true;
+          draftState.workingLayerName = action.payload.name;
         });
         return nextState;
       }
@@ -584,9 +600,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case TOGGLE_CUSTOMIZE_LAYERS: {
         const nextState = createNextState(state, (draftState) => {
           draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-      })
-      return nextState;
-      } 
+        });
+        return nextState;
+      }
       case PAGE_OR_LIMIT_UPDATE: {
         const id = action.payload.setID;
         return {
