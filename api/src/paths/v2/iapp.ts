@@ -7,6 +7,8 @@ import { getuid } from 'process';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../../utils/logger';
+import { streamIAPPResult } from '../../utils/iapp-json-utils';
+import { filter } from 'lodash';
 
 const defaultLog = getLogger('IAPP');
 const CACHENAME = 'IAPPv2 - Fat';
@@ -248,6 +250,13 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
       }
 
       sql = getIAPPSQLv2(filterObject);
+
+      if(filterObject.isCSV)
+      {
+          await streamIAPPResult(filterObject, res, sql);
+      }
+      else
+      {
       const response = await connection.query(sql.text, sql.values);
 
       return res.status(200).json({
@@ -258,7 +267,7 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
         namespace: 'IAPP',
         code: 200
       });
-    } catch (error) {
+    }} catch (error) {
       defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting sites by search filter criteria',
@@ -406,8 +415,8 @@ sites as (
 
   sqlStatement.append(`
     from iapp_sites a
-    join invasivesbc.iapp_site_summary_and_geojson b on a.site_id = b.site_id
-    `);
+    join invasivesbc.iapp_site_summary_and_geojson b on a.site_id = b.site_id`);
+
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -430,6 +439,11 @@ sites as (
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
+  if(filterObject.isCSV)
+  {
+    const select = sqlStatement.append(`select pe.* `);
+    return select;
+  }
   if (filterObject.selectColumns) {
     const select = sqlStatement.append(
       `select ${filterObject.selectColumns.map((column) => `sites.${column}`).join(',')} `
@@ -443,6 +457,40 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
   const from = sqlStatement.append(`from sites `);
+  if (filterObject.isCSV) {
+    sqlStatement.append(` i `)
+    switch (filterObject.CSVType) {
+      case 'site_selection_extract':
+        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id `);
+        break;
+      case 'survey_extract':
+        sqlStatement.append(SQL` INNER JOIN survey_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'chemical_treatment_extract':
+        sqlStatement.append(SQL` INNER JOIN chemical_treatment_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'mechanical_treatment_extract':
+        sqlStatement.append(SQL` INNER JOIN mechanical_treatment_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'chemical_monitoring_extract':
+        sqlStatement.append(SQL` INNER JOIN chemical_monitoring_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'mechanical_monitoring_extract':
+        sqlStatement.append(SQL` INNER JOIN mechanical_monitoring_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'biological_treatment_extract':
+        sqlStatement.append(SQL` INNER JOIN biological_treatment_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'biological_monitoring_extract':
+        sqlStatement.append(SQL` INNER JOIN biological_monitoring_extract pe ON i.site_id = pe.site_id`);
+        break;
+      case 'biological_dispersal_extract':
+        sqlStatement.append(SQL` INNER JOIN biological_dispersal_extract pe ON i.site_id = pe.site_id`);
+        break;
+      default:
+        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id `);
+        break;
+    }}
   return from;
 }
 

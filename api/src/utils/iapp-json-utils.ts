@@ -410,6 +410,8 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
 
     readable.pipe(upload(S3, key)).on('end', async () => {
       // get signed url
+
+      await new Promise(r => setTimeout(r, 2000));
       const url = await getS3SignedURL(key);
       res.status(200).send(url);
       res.end();
@@ -421,7 +423,7 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
   }
 }
 
-export const streamIAPPResult = async (searchCriteria: any, res: any) => {
+export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStatementOverride?: any) => {
   let connection;
   try {
     connection = await getDBConnection();
@@ -441,7 +443,7 @@ export const streamIAPPResult = async (searchCriteria: any, res: any) => {
     };
   }
 
-  const sqlStatement: SQLStatement = getSitesBasedOnSearchCriteriaSQL(searchCriteria);
+  const sqlStatement: SQLStatement = sqlStatementOverride? sqlStatementOverride: getSitesBasedOnSearchCriteriaSQL(searchCriteria);
 
   if (!sqlStatement) {
     throw {
@@ -461,6 +463,9 @@ export const streamIAPPResult = async (searchCriteria: any, res: any) => {
       readable.pipe(upload(S3, key)).on('end', async () => {
         // get signed url
         const url = await getS3SignedURL(key);
+
+      await new Promise(r => setTimeout(r, 2000));
+
         res.status(200).send(url);
         res.end();
         connection.release();
