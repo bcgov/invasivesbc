@@ -209,8 +209,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             ...state.clientBoundaries,
             {
               id: getUuid(),
-              name: state?.workingLayerName,
-              feature: action.payload.feature
+              title: state?.workingLayerName,
+              geojson: action.payload.feature
             }
           ];
           draftState.workingLayerName = null;
