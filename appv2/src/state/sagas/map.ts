@@ -41,6 +41,8 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
+  REMOVE_CLIENT_BOUNDARY,
+  REMOVE_SERVER_BOUNDARY,
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
   TABS_SET_ACTIVE_TAB_SUCCESS,
@@ -489,7 +491,6 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
 }
 
-
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
@@ -696,11 +697,19 @@ function* persistClientBoundaries(action) {
   localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
 
+
+
+
+function* handle_REMOVE_SERVER_BOUNDARY(action) {
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
+    takeEvery(REMOVE_CLIENT_BOUNDARY, persistClientBoundaries),
+    takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),

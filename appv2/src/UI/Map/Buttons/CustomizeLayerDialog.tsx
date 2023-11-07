@@ -16,7 +16,12 @@ import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { DRAW_CUSTOM_LAYER, TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
+import {
+  DRAW_CUSTOM_LAYER,
+  REMOVE_CLIENT_BOUNDARY,
+  REMOVE_SERVER_BOUNDARY,
+  TOGGLE_CUSTOMIZE_LAYERS
+} from 'state/actions';
 import KMLShapesUpload from './KMLShapesUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -59,9 +64,14 @@ const CustomizeLayerMenu = (props) => {
   const [newLayerName, setNewLayerName] = useState('');
   const [layerToDelete, setLayerToDelete] = useState(null);
 
+  const clientBoundaries = useSelector((state: any) => state.Map.clientBoundaries).map((boundary) => {
+    return { ...boundary, type: 'Client' };
+  });
+  const serverBoundaries = useSelector((state: any) => state.Map.serverBoundaries).map((boundary) => {
+    return { ...boundary, type: 'Server' };
+  });
 
-  // two of each type
-  const customLayers = [{ id: 1, type: 'Drawn', label: 'banana',  data: '' }, {id: 2, type: 'Drawn', label: 'apple', data: ''}, {id: 3, type: 'WMS', label: 'orange', data: ''}, {id: 4, type: 'WMS', label: 'grape', data: ''}, {id: 5, type: 'WFS', label: 'pear', data: ''}, {id: 6, type: 'WFS', label: 'peach', data: ''}];
+  const customLayers = [...clientBoundaries, ...serverBoundaries];
 
   const cleanup = () => {
     setSubMenuType('Init');
@@ -108,12 +118,12 @@ const CustomizeLayerMenu = (props) => {
                 <InputLabel>Remove Layer</InputLabel>
                 <Select
                   className={classes.select}
-                  value={optionVal}
+                  value={layerToDelete}
                   onChange={(e) => setLayerToDelete(e.target.value)}
                   label="Choose Layer to remove">
                   {customLayers.map((option) => (
-                    <MenuItem key={Math.random()} value={option.id}>
-                      {option.label + ' - ' + option.type}
+                    <MenuItem key={'customlayermenuitem' + option.id} value={option.id}>
+                      {option.title + ' - ' + option.type}
                     </MenuItem>
                   ))}
                 </Select>
@@ -148,17 +158,17 @@ const CustomizeLayerMenu = (props) => {
               <>
                 <Button
                   onClick={() => {
-                    switch(optionVal) {
-                    case 'Upload KML/KMZ': 
-                      setSubMenuType('Upload');
-                      break;
-                    case  'Draw':
-                      dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
-                      dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-                      cleanup();
-                      break;
-                    default:
-                      cleanup();
+                    switch (optionVal) {
+                      case 'Upload KML/KMZ':
+                        setSubMenuType('Upload');
+                        break;
+                      case 'Draw':
+                        dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
+                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        cleanup();
+                        break;
+                      default:
+                        cleanup();
                     }
                   }}>
                   Create
@@ -173,7 +183,21 @@ const CustomizeLayerMenu = (props) => {
             ),
             Remove: (
               <>
-                <Button disabled={layerToDelete === null} onClick={() => {}}>
+                <Button
+                  disabled={layerToDelete === null}
+                  onClick={() => {
+                    const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
+
+                    switch (type) {
+                      case 'Client':
+                        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
+                        break;
+                      case 'Server':
+                        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
+                        break;
+                    }
+                    cleanup();
+                  }}>
                   Remove
                 </Button>
                 <Button
