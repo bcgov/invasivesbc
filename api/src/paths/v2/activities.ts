@@ -243,18 +243,20 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       sql = getActivitiesSQLv2(filterObject);
 
       if (filterObject.isCSV && filterObject.CSVType) {
+        res.status(200);
         await streamActivitiesResult(filterObject, res, sql);
-      }
-      const response = await connection.query(sql.text, sql.values);
+      } else {
+        const response = await connection.query(sql.text, sql.values);
 
-      return res.status(200).json({
-        message: 'fetched activities by criteria',
-        request: req.body,
-        result: response.rows,
-        count: response.rowCount,
-        namespace: 'activities',
-        code: 200
-      });
+        return res.status(200).json({
+          message: 'fetched activities by criteria',
+          request: req.body,
+          result: response.rows,
+          count: response.rowCount,
+          namespace: 'activities',
+          code: 200
+        });
+      }
     } catch (error) {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
@@ -444,8 +446,9 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const from = sqlStatement.append(`from activities `);
+  let from = sqlStatement.append(`from activities  `);
   if (filterObject.isCSV) {
+    from = sqlStatement.append(` b `);
     switch (filterObject.CSVType) {
       case 'terrestrial_plant_observation':
         sqlStatement.append(
