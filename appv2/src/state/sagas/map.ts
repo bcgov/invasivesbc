@@ -499,22 +499,19 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let networkReturn;
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'POI') {
-      let filters = getSearchCriteriaFromFilters(
-        set?.advancedFilters ? set?.advancedFilters : null,
-        userSettings?.recordSets ? userSettings?.recordSets : null,
-        action.payload.id,
-        true,
-        set?.gridFilters ? set?.gridFilters : null,
-        0,
-        null, // CSV limit
-        mapState?.layers?.[action.payload.id]?.filters?.sortColumns
-          ? mapState?.layers?.[action.payload.id]?.filters?.sortColumns
-          : null
-      );
-      filters.isCSV = true;
-      filters.CSVType = action.payload.CSVType;
 
-      networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, filters, {});
+      const currentState = yield select(selectUserSettings);
+      const mapState = yield select(selectMap);
+
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
+      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+      filterObject.limit = 200000;
+      filterObject.isCSV = true;
+      filterObject.CSVType = action.payload.CSVType;
+
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+        filterObjects: [filterObject]
+      });
 
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {

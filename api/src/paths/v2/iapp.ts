@@ -220,6 +220,13 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     body: JSON.stringify(sanitizedSearchCriteria, null, 2)
   });
 
+
+  if(filterObject?.CSVType)
+  {
+    sanitizedSearchCriteria.isCSV = true;
+    sanitizedSearchCriteria.CSVType = filterObject.CSVType;
+  }
+
   return sanitizedSearchCriteria;
 }
 
@@ -458,37 +465,36 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
   const from = sqlStatement.append(`from sites `);
   if (filterObject.isCSV) {
-    sqlStatement.append(` i `)
     switch (filterObject.CSVType) {
       case 'site_selection_extract':
-        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id `);
+        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON sites.site_id = pe.site_id `);
         break;
       case 'survey_extract':
-        sqlStatement.append(SQL` INNER JOIN survey_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN survey_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'chemical_treatment_extract':
-        sqlStatement.append(SQL` INNER JOIN chemical_treatment_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN chemical_treatment_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'mechanical_treatment_extract':
-        sqlStatement.append(SQL` INNER JOIN mechanical_treatment_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN mechanical_treatment_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'chemical_monitoring_extract':
-        sqlStatement.append(SQL` INNER JOIN chemical_monitoring_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN chemical_monitoring_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'mechanical_monitoring_extract':
-        sqlStatement.append(SQL` INNER JOIN mechanical_monitoring_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN mechanical_monitoring_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'biological_treatment_extract':
-        sqlStatement.append(SQL` INNER JOIN biological_treatment_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN biological_treatment_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'biological_monitoring_extract':
-        sqlStatement.append(SQL` INNER JOIN biological_monitoring_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN biological_monitoring_extract pe ON sites.site_id = pe.site_id`);
         break;
       case 'biological_dispersal_extract':
-        sqlStatement.append(SQL` INNER JOIN biological_dispersal_extract pe ON i.site_id = pe.site_id`);
+        sqlStatement.append(SQL` INNER JOIN biological_dispersal_extract pe ON sites.site_id = pe.site_id`);
         break;
       default:
-        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON i.site_id = pe.site_id `);
+        sqlStatement.append(SQL` INNER JOIN site_selection_extract pe ON sites.site_id = pe.site_id `);
         break;
     }}
   return from;
