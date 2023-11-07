@@ -185,7 +185,9 @@ class MapState {
     this.quickPanToRecord = false;
     this.quickPanToRecord = false;
     this.customizeLayersToggle = false;
-    this.clientBoundaries = [];
+    this.clientBoundaries = localStorage.getItem('CLIENT_BOUNDARIES')
+      ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES'))
+      : [];
     this.serverBoundaries = [];
     this.workingLayerName = null;
   }
