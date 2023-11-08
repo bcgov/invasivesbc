@@ -55,7 +55,8 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  REMOVE_CLIENT_BOUNDARY
+  REMOVE_CLIENT_BOUNDARY,
+  USER_SETTINGS_DELETE_KML_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -230,9 +231,18 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case REMOVE_CLIENT_BOUNDARY: {
         const nextState = createNextState(state, (draftState) => {
           const index = draftState.clientBoundaries.findIndex(
-            (cb) => cb.id === action.payload.cb
+            (cb) => cb.id === action.payload.id
           );
           draftState.clientBoundaries.splice(index, 1);
+        });
+        return nextState;
+      }
+      case USER_SETTINGS_DELETE_KML_SUCCESS: {
+        const nextState = createNextState(state, (draftState) => {
+          const index = draftState.serverBoundaries.findIndex(
+            (sb) => sb.id === action.payload.server_id
+          );
+          draftState.serverBoundaries.splice(index, 1);
         });
         return nextState;
       }
