@@ -1,7 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Box, Button, Theme, Typography } from '@mui/material';
 import { DropzoneDialog } from 'mui-file-dropzone';
 import makeStyles from '@mui/styles/makeStyles';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -26,18 +27,23 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const classes = useStyles();
   const [uploadRequests, setUploadRequests] = useState([]);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  //const api = useInvasivesApi();
+  const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
   const [uploadClicked, setUploadClicked] = useState(false);
 
+  useEffect(() => {
+    if(uploadRequests.length > 0)
+    doUpload().then(() => {
+      props.whenDone();
+      console.log('done');
+    });
+  }, [uploadRequests]);
 
   const doUpload = async () => {
     let response;
     try {
       for (let i = 0; i < uploadRequests.length; i++) {
-        console.log();
-        //response = await api.postAdminUploadShape(uploadRequests[i]);
-        console.log(response);
+        response = await api.postAdminUploadShape(uploadRequests[i]);
         if (response.code !== 201) {
           throw new Error(response.message);
         }
@@ -113,10 +119,6 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         open={props.open}
         onSave={(files: any) => {
           acceptFiles(files);
-          doUpload().then(() => {
-            props.whenDone();
-            console.log('done')
-          });
         }}
         showPreviews={true}
         previewText={'File will be uploaded to InvasivesBC as ' + props.title}
