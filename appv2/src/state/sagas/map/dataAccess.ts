@@ -121,12 +121,20 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   }
 }
 
-export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState) => {
+export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState, clientBoundaries) => {
+  const getFilterWithDrawnShape = (filterID) => {
+    return clientBoundaries.filter((filter) => {
+      return filter.id === filterID;
+    })?.[0];
+  };
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const recordSetType = recordSetsState?.recordSets?.[recordSetID]?.recordSetType;
   const sortColumns = recordSet?.sortColumns;
   const tableFilters = recordSet?.tableFilters;
-  const spatialFilters = recordSet?.spatialFilters;
+  let spatialFilters = recordSet?.spatialFilters || []
+  spatialFilters?.map((filter) => {
+    filter.filterType !== 'spatialFilterDrawn' ? filter : { ...filter, geojson: getFilterWithDrawnShape(filter.id) };
+  });
   const selectColumns = recordSet?.selectColumns
     ? recordSet?.selectColumns
     : getSelectColumnsByRecordSetType(recordSetType);
@@ -145,7 +153,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     // new filter object:
     const currentState = yield select(selectUserSettings);
     const mapState = yield select(selectMap);
-    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, mapState?.clientBoundaries);
     filterObject.page = action.payload.page
       ? action.payload.page
       : mapState.recordTables?.[action.payload.recordSetID]?.page;
@@ -175,7 +183,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
     const currentState = yield select(selectUserSettings);
     const mapState = yield select(selectMap);
-    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, mapState?.clientBoundaries);
     filterObject.page = action.payload.page
       ? action.payload.page
       : mapState.recordTables?.[action.payload.recordSetID]?.page;
