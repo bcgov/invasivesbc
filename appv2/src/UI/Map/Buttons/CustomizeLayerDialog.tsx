@@ -191,9 +191,13 @@ const CustomizeLayerMenu = (props) => {
                     switch (type) {
                       case 'Client':
                         dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
+                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        cleanup();
                         break;
                       case 'Server':
                         dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
+                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        cleanup();
                         break;
                     }
                     cleanup();
