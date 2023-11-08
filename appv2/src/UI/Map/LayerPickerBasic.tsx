@@ -25,6 +25,7 @@ export const LayerPickerBasic = (props) => {
   const simplePickerLayers = useSelector((state: any) => state.Map.simplePickerLayers);
   const center: LatLngExpression = [51.505, -0.09];
   const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries);
+  const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries);
   const rectangle: LatLngBoundsExpression = [
     [51.49, -0.08],
     [51.5, -0.06]
@@ -231,7 +232,16 @@ const dispatch = useDispatch();
       </LayersControl.Overlay>
       {serverBoundariesToDisplay?.map((boundary) => {
         return (
-          <LayersControl.Overlay checked={false} name={'KML/KMZ: ' + boundary.title}>
+          <LayersControl.Overlay checked={true} name={'KML/KMZ: ' + boundary.title}>
+            <LayerGroup>
+              <GeoJSON data={boundary.geojson} />
+            </LayerGroup>
+          </LayersControl.Overlay>
+        );
+      })}
+      {clientBoundariesToDisplay?.map((boundary) => {
+        return (
+          <LayersControl.Overlay checked={true} name={'Drawn locally' + boundary.title}>
             <LayerGroup>
               <GeoJSON data={boundary.geojson} />
             </LayerGroup>
