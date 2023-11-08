@@ -206,7 +206,10 @@ const Filter = (props) => {
   const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries)?.map((boundary) => {
     return { label: boundary.title, value: boundary.id };
   });
-  console.dir(userSettingsState);
+  const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries)?.map((boundary) => {
+    return { label: boundary.title, value: boundary.id };
+  });
+  
 
   const filterColumns =
     userSettingsState?.recordSets?.[props.setID].recordSetType === 'Activity'
@@ -295,6 +298,35 @@ const Filter = (props) => {
       );
 
       break;
+    case 'spatialFilterDrawn':
+      input = (
+        <select
+          className="filterSelect"
+          key={'filterType' + props.name}
+          value={valueInState}
+          onChange={(e) => {
+            console.dir(e.target);
+
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                setID: props.setID,
+                filterID: props.id,
+                filter: e.target.value
+              }
+            });
+          }}>
+          {clientBoundariesToDisplay?.map((option) => {
+            return (
+              <option key={option.value + option.label} value={option.value}>
+                {option.label}
+              </option>
+            );
+          })}
+        </select>
+      );
+
+      break;
     default:
       null;
   }
@@ -316,6 +348,9 @@ const Filter = (props) => {
 
             if(e.target.value === 'spatialFilterUploaded'){
               payload.filter = serverBoundariesToDisplay[0].value
+            }
+            if(e.target.value === 'clientBoundariesToDisplay') {
+              payload.filter = clientBoundariesToDisplay[0].value
             }
 
             dispatch({
