@@ -48,6 +48,7 @@ import {
   TABS_SET_ACTIVE_TAB_SUCCESS,
   URL_CHANGE,
   USER_CLICKED_RECORD,
+  USER_SETTINGS_DELETE_KML_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
   USER_SETTINGS_SET_RECORD_SET_SUCCESS,
@@ -698,9 +699,8 @@ function* persistClientBoundaries(action) {
 }
 
 
-
-
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
+  yield put({type: USER_SETTINGS_DELETE_KML_REQUEST , payload: {server_id: action.payload.id}});
 }
 
 function* activitiesPageSaga() {

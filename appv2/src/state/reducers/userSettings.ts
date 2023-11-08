@@ -340,7 +340,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         };
       }
       case USER_SETTINGS_DELETE_KML_SUCCESS: {
-        const boundaries = state.boundaries.filter((boundary) => boundary.server_id !== action.payload.server_id);
+        const boundaries = state.boundaries?.filter((boundary) => boundary.server_id !== action.payload.server_id);
         return {
           ...state,
           boundaries: boundaries
