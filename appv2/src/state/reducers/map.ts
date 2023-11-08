@@ -56,7 +56,8 @@ import {
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   REMOVE_CLIENT_BOUNDARY,
-  USER_SETTINGS_DELETE_KML_SUCCESS
+  USER_SETTINGS_DELETE_KML_SUCCESS,
+  SET_CURRENT_OPEN_SET
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -112,6 +113,7 @@ class MapState {
   serverBoundaries: [];
   clientBoundaries: [];
   workingLayerName: string;
+  currentOpenSet: string;
 
   constructor() {
     this.initialized = false;
@@ -192,6 +194,7 @@ class MapState {
       : [];
     this.serverBoundaries = [];
     this.workingLayerName = null;
+    this.currentOpenSet = null;
   }
 }
 const initialState = new MapState();
@@ -311,6 +314,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           userRecordOnClickMenuOpen: false
+        };
+      }
+      case SET_CURRENT_OPEN_SET: {
+        return {
+          ...state,
+          currentOpenSet: action.payload.set
         };
       }
       case OVERLAY_MENU_TOGGLE: {

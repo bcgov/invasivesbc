@@ -43,6 +43,7 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
+  SET_CURRENT_OPEN_SET,
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
   TABS_SET_ACTIVE_TAB_SUCCESS,
@@ -626,6 +627,12 @@ function* handle_URL_CHANGE(action) {
   const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
   if (isRecordSet) {
     const id = url.split(':')[1].split('/')[0];
+    yield put({
+      type: SET_CURRENT_OPEN_SET,
+      payload: {
+        set: id
+      }
+    });
 
     let recordSetsState = yield select(selectUserSettings);
     let mapState = yield select(selectMap);
@@ -657,12 +664,16 @@ function* handle_URL_CHANGE(action) {
 
 function* handle_UserFilterChange(action) {
   const recordSetsState = yield select(selectUserSettings);
+  const map = yield select(selectMap);
+  const currentSet = map?.currentOpenSet;
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
   if (recordSetType === 'Activity') {
-    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    if (currentSet === action.payload.setID)
+      yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
     yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
   } else {
-    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    if (currentSet === action.payload.setID)
+      yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
     yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
   }
 }
@@ -692,15 +703,51 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   yield all(actionsToPut.map((action) => put(action)));
 }
 
+function* handle_REMOVE_CLIENT_BOUNDARY(action) {
+  // save changes in local storage
+  persistClientBoundaries(action);
+
+  // remove from record sets applied
+  const state = yield select(selectUserSettings);
+  const recordSets = state?.recordSets;
+  const recordSetIDs = Object.keys(recordSets);
+  const recordSetsWithIDs = recordSetIDs.map((recordSetID) => {
+    return { ...recordSets[recordSetID], recordSetID: recordSetID };
+  });
+
+  console.log('recordSetsWithIDs: ', recordSetsWithIDs);
+  const filteredSets = recordSetsWithIDs.filter((set) => {
+    return set?.tableFilters?.filter((filter) => {
+      return filter?.filter === action?.payload?.id;
+    });
+  });
+
+  const actions = filteredSets.map((filteredSet) => {
+    const filterID = filteredSet?.tableFilters.filter((filter) => {
+      return filter.filter === action.payload.id;
+    })?.[0];
+    const actionObject = {
+      type: RECORDSET_REMOVE_FILTER,
+      payload: {
+        filterID: filterID,
+        filterType: 'tableFilter',
+        setID: filteredSet.recordSetID
+      }
+    };
+    return actionObject;
+  });
+
+  yield all(actions.map((action) => put(action)));
+}
+
 function* persistClientBoundaries(action) {
   const state = yield select(selectMap);
 
   localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
 
-
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
-  yield put({type: USER_SETTINGS_DELETE_KML_REQUEST , payload: {server_id: action.payload.id}});
+  yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
 }
 
 function* activitiesPageSaga() {
@@ -708,7 +755,7 @@ function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
     debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
-    takeEvery(REMOVE_CLIENT_BOUNDARY, persistClientBoundaries),
+    takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
