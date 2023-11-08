@@ -349,7 +349,7 @@ const Filter = (props) => {
             if(e.target.value === 'spatialFilterUploaded'){
               payload.filter = serverBoundariesToDisplay[0].value
             }
-            if(e.target.value === 'clientBoundariesToDisplay') {
+            if(e.target.value === 'spatialFilterDrawn') {
               payload.filter = clientBoundariesToDisplay[0].value
             }
 
