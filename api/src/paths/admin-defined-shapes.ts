@@ -58,6 +58,13 @@ GET.apiDoc = {
 
 POST.apiDoc = {
   description: 'Creates new Administratively-defined shapes from KML/KMZ data',
+  security: SECURITY_ON
+  ? [
+    {
+      Bearer: ALL_ROLES
+    }
+  ]
+  : [],
   requestBody: {
     description: 'Uploaded KML/KMZ file',
     content: {
@@ -218,9 +225,9 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
  * @returns {RequestHandler}
  */
 function uploadShape(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
+    const user_id = req.authContext.user.user_id;
     const data = {...req.body};
-    const user_id = data.user_id;
     const title = data.title;
     let geoJSON: FeatureCollection;
 
