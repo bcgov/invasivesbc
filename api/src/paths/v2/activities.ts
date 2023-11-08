@@ -185,7 +185,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
           break;
         case 'spatialFilterDrawn':
           if (filter.filter) {
-            clientFilterGeometries.push(filter.filter?.geometry);
+            clientFilterGeometries.push(filter?.geojson?.geometry);
           }
           break;
         case 'spatialFilterUploaded':
@@ -360,7 +360,7 @@ CurrentNegativeObservations AS (
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson(${geometry?.geometry}, 4326)`)
+                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
                    .join(',')}]) AS geojson
          ),
          
@@ -368,7 +368,7 @@ CurrentNegativeObservations AS (
          
          select a.activity_incoming_data_id 
          from not_deleted_activities a
-         left join clientFilterGeometries on st_intersects((a.geog::geometry), geojson)
+         inner join clientFilterGeometries on st_intersects((a.geog::geometry), geojson)
          
          ),
           clientFilterGeometriesIntersectingAll as (
