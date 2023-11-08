@@ -715,7 +715,6 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
     return { ...recordSets[recordSetID], recordSetID: recordSetID };
   });
 
-  console.log('recordSetsWithIDs: ', recordSetsWithIDs);
   const filteredSets = recordSetsWithIDs.filter((set) => {
     return set?.tableFilters?.filter((filter) => {
       return filter?.filter === action?.payload?.id;

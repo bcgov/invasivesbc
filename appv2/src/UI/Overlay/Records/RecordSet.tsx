@@ -363,10 +363,10 @@ const Filter = (props) => {
           <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
             Field/Column
           </option>
-          <option key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
+          <option disabled={clientBoundariesToDisplay.length < 1} key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
             Spatial - Drawn
           </option>
-          <option key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
+          <option disabled={serverBoundariesToDisplay.length < 1} key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
             Spatial - Uploaded
           </option>
         </select>
