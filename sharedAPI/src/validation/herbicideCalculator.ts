@@ -582,7 +582,13 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 
       outputHerb.plantIndex = plant_index;
       outputHerb.herbIndex = index;
-      outputHerb.dilution = (herbicides[index].product_application_rate / 1000 / delivery_rate_of_mix) * 100;
+
+      if (herb.herbicide_type_code === 'G') {
+        outputHerb.dilution = (herbicides[index].product_application_rate / 1000 / delivery_rate_of_mix) * 100;
+      } else {
+        outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+      }
+
       outputHerb.amount_of_undiluted_herbicide_used_liters =
         ((outputHerb.dilution / 100) * amount_of_mix * percent_area_covered) / 100;
 
