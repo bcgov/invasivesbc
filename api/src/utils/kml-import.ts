@@ -68,6 +68,12 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
         geometry: feature.geometry,
         properties: {}
       };
+    } else if (feature.geometry.type === 'LineString') {
+      return {
+        type: feature.type,
+        geometry: feature.geometry,
+        properties: {}
+      };
     }
   });
 
