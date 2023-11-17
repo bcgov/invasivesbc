@@ -183,6 +183,16 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
           for (let coords of feature.coordinates) {
             let shape;
             switch (feature?.type) {
+              case 'MultiPoint':
+                shape = {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: coords
+                  }
+                };
+                break;
               case 'MultiLineString':
                 shape = {
                   type: 'Feature',

@@ -62,13 +62,11 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
 
   // filter out non-polygon features (V1)
   const newFeatures = data.features.map((feature) => {
-    if (feature.geometry.type === 'Polygon') {
-      return {
-        type: feature.type,
-        geometry: feature.geometry,
-        properties: {}
-      };
-    } else if (feature.geometry.type === 'LineString') {
+    if (
+      feature.geometry.type === 'Polygon' ||
+      feature.geometry.type === 'LineString' ||
+      feature.geometry.type === 'Point'
+    ) {
       return {
         type: feature.type,
         geometry: feature.geometry,

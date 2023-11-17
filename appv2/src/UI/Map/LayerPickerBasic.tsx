@@ -1,4 +1,4 @@
-import { LatLngBoundsExpression, LatLngExpression, rectangle } from 'leaflet';
+import { circleMarker, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
 import React from 'react';
 import {
   GeoJSON,
@@ -234,7 +234,12 @@ const dispatch = useDispatch();
         return (
           <LayersControl.Overlay checked={true} name={'KML/KMZ: ' + boundary.title}>
             <LayerGroup>
-              <GeoJSON data={boundary.geojson} />
+              <GeoJSON data={boundary.geojson} 
+              pointToLayer={(feature, latlng) => {
+                return circleMarker(latlng, {
+                  radius: 2
+                });
+              }}/>
             </LayerGroup>
           </LayersControl.Overlay>
         );
