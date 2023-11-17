@@ -194,7 +194,7 @@ function* handle_URL_CHANGE(action) {
     if (id && id.length === 36 && userSettingsState.activeActivity !== id)
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
 
-    if (userSettingsState.activeActivity) {
+    else if (userSettingsState.activeActivity) {
       id = userSettingsState.activeActivity;
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
     }

@@ -88,7 +88,7 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                  {!viewFilters ? (
+                  {viewFilters ? (
                     <>
                       <VisibilityIcon />
                       <FilterAltIcon />

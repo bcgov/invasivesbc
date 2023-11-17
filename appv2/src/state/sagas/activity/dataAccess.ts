@@ -59,6 +59,7 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 import { getClosestWells } from 'util/closestWellsHelpers';
 import { calc_utm } from 'util/utm';
 import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
+import { kinks } from '@turf/turf';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -109,6 +110,28 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
+
+
+
+    const isPointGeometry = action.payload.geometry[0].geometry.type === 'Point';
+    if (!isPointGeometry) {
+      const hasSelfIntersections = kinks(action.payload.geometry[0].geometry).features.length > 0;
+      if (hasSelfIntersections) {
+        yield put({
+          type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+          payload: {
+            notification: {
+              visible: true,
+              message: 'Activity geometry intersects itself',
+              severity: 'error'
+            }
+          }
+        });
+  
+        return;
+      }
+    }
+
 
     let wellInformationArr = [];
     if (reported_area < MAX_AREA) {
