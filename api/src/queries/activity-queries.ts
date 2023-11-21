@@ -437,8 +437,8 @@ LEFT JOIN
 
   sqlStatement.append(SQL` where 1 = 1`);
 
-  if(lean) {
-    sqlStatement.append(SQL` and a.activity_incoming_data_id > 36345`)
+  if (lean) {
+    sqlStatement.append(SQL` and a.activity_incoming_data_id > 36345`);
   }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
@@ -552,14 +552,14 @@ LEFT JOIN
     }
     if (gridFilters.current_positive) {
       sqlStatement.append(
-        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_positive_observations_materialized cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
       );
       sqlStatement.append(SQL`LOWER(${gridFilters.current_positive})`);
       sqlStatement.append(SQL`||'%'`);
     }
     if (gridFilters.current_negative) {
       sqlStatement.append(
-        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
+        SQL` AND (SELECT LOWER(string_agg(invasive_plant, ', ')) FROM current_negative_observations_materialized cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id) LIKE '%'||`
       );
       sqlStatement.append(SQL`LOWER(${gridFilters.current_negative})`);
       sqlStatement.append(SQL`||'%'`);
@@ -567,22 +567,22 @@ LEFT JOIN
     if (gridFilters.has_current_positive) {
       if ('yes'.includes(gridFilters.has_current_positive.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
+          SQL` AND EXISTS(SELECT 1 FROM current_positive_observations_materialized cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
       } else if ('no'.includes(gridFilters.has_current_positive.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND NOT EXISTS(SELECT 1 FROM current_positive_observations cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
+          SQL` AND NOT EXISTS(SELECT 1 FROM current_positive_observations_materialized cpo WHERE cpo.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
       }
     }
     if (gridFilters.has_current_negative) {
       if ('yes'.includes(gridFilters.has_current_negative.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
+          SQL` AND EXISTS(SELECT 1 FROM current_negative_observations_materialized cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
       } else if ('no'.includes(gridFilters.has_current_negative.toLowerCase())) {
         sqlStatement.append(
-          SQL` AND NOT EXISTS(SELECT 1 FROM current_negative_observations cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
+          SQL` AND NOT EXISTS(SELECT 1 FROM current_negative_observations_materialized cno WHERE cno.activity_incoming_data_id = a.activity_incoming_data_id)`
         );
       }
     }
