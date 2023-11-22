@@ -149,7 +149,7 @@ function execBatch(): RequestHandler {
       } catch (error) {
         defaultLog.error(error);
         return res.status(400).json({
-          message: 'Batch update exec failed',
+          message: 'Batch update exec failed, error: ' + error.message,
           request: req.body,
           count: 1,
           namespace: 'batch',

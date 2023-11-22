@@ -13,7 +13,7 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS, BATCH_DELETE_ERROR
+  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS, BATCH_DELETE_ERROR, BATCH_EXECUTE_ERROR
 } from '../actions';
 import { Http } from '@capacitor-community/http';
 import { actions } from 'components/map/LayerPicker/JSON/actions';
@@ -189,7 +189,7 @@ function* executeBatch(action) {
   const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
-  const { data } = yield Http.request({
+  const {data,   status } = yield Http.request({
     method: 'POST',
     url: configuration.API_BASE + `/api/batch/${id}/execute`,
     headers: {
@@ -202,9 +202,16 @@ function* executeBatch(action) {
     }
   });
 
-  yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
-  yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
 
+  if(!(status < 200 || status > 299)) 
+  {
+    yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
+    yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+  }
+  else
+  {
+    yield put({ type: BATCH_EXECUTE_ERROR, payload: data }) 
+  }
 };
 
 function* batchSaga() {
