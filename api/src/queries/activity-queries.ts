@@ -351,7 +351,7 @@ CurrentNegativeObservations AS (
   }
 
   sqlStatement.append(
-    SQL` FROM activity_incoming_data a inner join activity_current b on a.activity_incoming_data_id = b.incoming_data_id `
+    SQL` FROM activity_incoming_data a `
   );
 
   if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
@@ -374,68 +374,68 @@ LEFT JOIN
     switch (searchCriteria.CSVType) {
       case 'terrestrial_plant_observation':
         sqlStatement.append(
-          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'aquatic_plant_observation':
-        sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join observation_aquatic_plant_summary extract ON extract.activity_id = a.activity_id ');
         break;
       case 'terrestrial_chemical_treatment':
         sqlStatement.append(
-          'join treatment_chemical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join treatment_chemical_terrestrial_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'aquatic_chemical_treatment':
         sqlStatement.append(
-          'join treatment_chemical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join treatment_chemical_aquatic_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'terrestrial_mechanical_treatment':
         sqlStatement.append(
-          'join treatment_mechanical_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join treatment_mechanical_terrestrial_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'aquatic_mechanical_treatment':
         sqlStatement.append(
-          'join treatment_mechanical_aquatic_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join treatment_mechanical_aquatic_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'biocontrol_release':
-        sqlStatement.append('join biocontrol_release_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join biocontrol_release_summary extract ON extract.activity_id = a.activity_id ');
         break;
       case 'biocontrol_collection':
-        sqlStatement.append('join biocontrol_collection_summary extract ON extract.activity_id = b.activity_id ');
+        sqlStatement.append('join biocontrol_collection_summary extract ON extract.activity_id = a.activity_id ');
         break;
       case 'biocontrol_dispersal':
         sqlStatement.append(
-          'join biocontrol_dispersal_monitoring_summary extract ON extract.activity_id = b.activity_id '
+          'join biocontrol_dispersal_monitoring_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'chemical_treatment_monitoring':
         sqlStatement.append(
-          'join chemical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+          'join chemical_treatment_monitoring_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'mechanical_treatment_monitoring':
         sqlStatement.append(
-          'join mechanical_treatment_monitoring_summary extract ON extract.activity_id = b.activity_id '
+          'join mechanical_treatment_monitoring_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
       case 'biocontrol_release_monitoring':
         sqlStatement.append(
-          'join biocontrol_release_monitoring_summary extract ON extract.activity_id = b.activity_id '
+          'join biocontrol_release_monitoring_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
 
       default:
         sqlStatement.append(
-          'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
+          'join observation_terrestrial_plant_summary extract ON extract.activity_id = a.activity_id '
         );
         break;
     }
   }
 
-  sqlStatement.append(SQL` where 1 = 1`);
+  sqlStatement.append(SQL` where 1 = 1 and a.iscurrent = true `);
 
   if (lean) {
     sqlStatement.append(SQL` and a.activity_incoming_data_id > 36345`);
@@ -762,8 +762,8 @@ LEFT JOIN
 export const getActivitySQL = (activityId: string): SQLStatement => {
   return SQL`
     SELECT a.* FROM activity_incoming_data a
-    join activity_current b on a.activity_incoming_data_id = b.incoming_data_id
     WHERE a.activity_id = ${activityId}
+    and a.iscurrent = true
   `;
 };
 
