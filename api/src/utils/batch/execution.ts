@@ -101,81 +101,91 @@ export const BatchExecutionService = {
     if (statusQueryResult.rowCount !== 1) {
       throw new Error('Batch not in executable status');
     }
-    for (const [index, row] of validatedBatchData.rows.entries()) {
-      let errorRow = false;
-      if (row.rowValidationResult.find((vr) => !vr.valid)) {
-        errorRow = true;
-      } else {
-        Object.values(row.data).forEach((propertyValue: any) => {
-          if (
-            (propertyValue.validationMessages.length > 0 &&
-              propertyValue.validationMessages.find((vm) => vm.severity === 'error')) ||
-            row.RowValidationResult
-          ) {
-            errorRow = true;
-          }
-        });
-      }
-      if (errorRow && errorRowsBehaviour === 'Skip') continue;
 
-      const { id: activityId, shortId, payload, geog } = _mapToDBObject(
-        row,
-        desiredFinalStatus,
-        template.type,
-        template.subtype,
-        userInfo
-      );
+    await dbConnection.query('BEGIN;');
 
-      let guid = null;
-      if (userInfo?.idir_userid !== null) {
-        guid = userInfo?.idir_userid.toLowerCase() + '@idir';
-      } else if (userInfo?.bceid_userid !== null) {
-        guid = userInfo?.bceid_userid.toLowerCase() + '@bceid-business';
-      }
-      const qc = {
-        text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
+    try {
+      for (const [index, row] of validatedBatchData.rows.entries()) {
+        let errorRow = false;
+        if (row.rowValidationResult.find((vr) => !vr.valid)) {
+          errorRow = true;
+        } else {
+          Object.values(row.data).forEach((propertyValue: any) => {
+            if (
+              (propertyValue.validationMessages.length > 0 &&
+                propertyValue.validationMessages.find((vm) => vm.severity === 'error')) ||
+              row.RowValidationResult
+            ) {
+              errorRow = true;
+            }
+          });
+        }
+        if (errorRow && errorRowsBehaviour === 'Skip') continue;
+
+        const { id: activityId, shortId, payload, geog } = _mapToDBObject(
+          row,
+          desiredFinalStatus,
+          template.type,
+          template.subtype,
+          userInfo
+        );
+
+        let guid = null;
+        if (userInfo?.idir_userid !== null) {
+          guid = userInfo?.idir_userid.toLowerCase() + '@idir';
+        } else if (userInfo?.bceid_userid !== null) {
+          guid = userInfo?.bceid_userid.toLowerCase() + '@bceid-business';
+        }
+        const qc = {
+          text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
                                                    activity_subtype, form_status, created_by, updated_by,
                                                    created_by_with_guid, updated_by_with_guid, geog, row_number,
                                                    species_positive,
                                                    species_negative,
                                                    species_treated)
                values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
-        values: [
-          activityId,
-          shortId,
-          payload,
-          id,
-          template.type,
-          template.subtype,
-          errorRow ? errorRowsBehaviour : desiredFinalStatus,
-          userInfo?.preferred_username,
-          userInfo?.preferred_username,
-          guid,
-          guid,
-          geog,
-          index,
-          JSON.stringify(payload['species_positive']),
-          JSON.stringify(payload['species_negative']),
-          JSON.stringify(payload['species_treated'])
-        ]
-      };
+          values: [
+            activityId,
+            shortId,
+            payload,
+            id,
+            template.type,
+            template.subtype,
+            errorRow ? errorRowsBehaviour : desiredFinalStatus,
+            userInfo?.preferred_username,
+            userInfo?.preferred_username,
+            guid,
+            guid,
+            geog,
+            index,
+            JSON.stringify(payload['species_positive']),
+            JSON.stringify(payload['species_negative']),
+            JSON.stringify(payload['species_treated'])
+          ]
+        };
 
-      defaultLog.debug({
-        message: 'executing insert for batch',
-        params: {
-          qc
-        }
-      });
-
-      try {
-        await dbConnection.query(qc);
-      } catch (e) {
         defaultLog.debug({
-          message: 'error executing insert for batch error->' + JSON.stringify(e)
+          message: 'executing insert for batch',
+          params: {
+            qc
+          }
         });
-        throw e;
+
+        try {
+          await dbConnection.query(qc);
+        } catch (e) {
+          defaultLog.debug({
+            message: 'error executing insert for batch error->' + JSON.stringify(e)
+          });
+          throw e;
+        }
       }
+    } catch (e) {
+      await dbConnection.query('ROLLBACK;');
+      throw e;
     }
+    await dbConnection.query('COMMIT;');
+
 
     await dbConnection.query({
       text: `UPDATE batch_uploads

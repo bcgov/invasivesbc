@@ -152,7 +152,7 @@ const BatchGlobalValidationErrors = ({ batch }) => {
 };
 
 const BatchDetail = ({ id }) => {
-  const { working, error, item: batch } = useSelector(selectBatch);
+  const { working, error, item: batch, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -164,7 +164,7 @@ const BatchDetail = ({ id }) => {
       return <Spinner />;
     }
     if (error) {
-      return <Error />;
+      return <><Error />{ errorMessage }</>;
     }
     if (batch == null) {
       return <span>No batch found</span>;
