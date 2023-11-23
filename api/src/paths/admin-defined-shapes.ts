@@ -178,43 +178,59 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
       for (const row of rows) {
         const newFeatureArr = [];
         row?.geojson?.features?.forEach((feature) => {
-          if (feature === null || feature?.coordinates === null) return;
+          if (feature === null) return;
 
-          for (let coords of feature.coordinates) {
-            let shape;
-            switch (feature?.type) {
-              case 'MultiPoint':
-                shape = {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'Point',
-                    coordinates: coords
-                  }
-                };
-                break;
-              case 'MultiLineString':
-                shape = {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'LineString',
-                    coordinates: coords
-                  }
-                };
-                break;
-              case 'MultiPolygon':
-                shape = {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'Polygon',
-                    coordinates: coords
-                  }
-                };
-                break;
+          if (feature.type === 'GeometryCollection') {
+            if (feature?.geometries === null) return;
+            for (let geometry of feature.geometries) {
+              let shape = {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: geometry.type,
+                  coordinates: geometry.coordinates
+                }
+              };
+              newFeatureArr.push(shape);
             }
-            newFeatureArr.push(shape);
+          } else {
+            if (feature?.coordinates === null) return;
+            for (let coords of feature.coordinates) {
+              let shape;
+              switch (feature?.type) {
+                case 'MultiPoint':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'Point',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+                case 'MultiLineString':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'LineString',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+                case 'MultiPolygon':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'Polygon',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+              }
+              newFeatureArr.push(shape);
+            }
           }
         });
 
