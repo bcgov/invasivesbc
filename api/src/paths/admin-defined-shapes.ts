@@ -1,21 +1,21 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {getDBConnection} from '../database/db';
-import {getLogger} from '../utils/logger';
-import {SQLStatement} from 'sql-template-strings';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { getDBConnection } from '../database/db';
+import { getLogger } from '../utils/logger';
+import { SQLStatement } from 'sql-template-strings';
 import {
   deleteAdministrativelyDefinedShapesSQL,
   getAdministrativelyDefinedShapesSQL
 } from '../queries/admin-defined-shapes';
-import {atob} from 'js-base64';
-import {QueryResult} from 'pg';
-import {FeatureCollection} from 'geojson';
-import {GeoJSONFromKML, KMZToKML, sanitizeGeoJSON} from '../utils/kml-import';
-import {InvasivesRequest} from '../utils/auth-utils';
-import {ALL_ROLES, SECURITY_ON} from '../constants/misc';
-import {simplifyGeojson} from '../utils/map-shaper-util';
+import { atob } from 'js-base64';
+import { QueryResult } from 'pg';
+import { FeatureCollection } from 'geojson';
+import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
+import { InvasivesRequest } from '../utils/auth-utils';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
+import { simplifyGeojson } from '../utils/map-shaper-util';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -27,10 +27,10 @@ GET.apiDoc = {
   description: 'Fetches a GeoJSON object to display boundaries of administratively-defined shapes (KML uploads)',
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -59,12 +59,12 @@ GET.apiDoc = {
 POST.apiDoc = {
   description: 'Creates new Administratively-defined shapes from KML/KMZ data',
   security: SECURITY_ON
-  ? [
-    {
-      Bearer: ALL_ROLES
-    }
-  ]
-  : [],
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   requestBody: {
     description: 'Uploaded KML/KMZ file',
     content: {
@@ -103,10 +103,10 @@ DELETE.apiDoc = {
   description: 'deletes new Administratively-defined shapes from KML/KMZ data',
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Delete KML/KMZ file',
@@ -174,25 +174,66 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
       // parse the rows from the response
       const rows: any[] = (response && response.rows) || [];
 
-      // terrible nesting, but returned KMLs should be a small set so should be fine for now
+      //edited, still could be much more efficient
       for (const row of rows) {
-        let newFeatureArr = [];
-        for (const feature of row.geojson.features) {
-          if (feature !== null && feature.coordinates !== null) {
-            for (const multipolygon of feature.coordinates) {
-              let convertedFeature = {
+        const newFeatureArr = [];
+        row?.geojson?.features?.forEach((feature) => {
+          if (feature === null) return;
+
+          if (feature.type === 'GeometryCollection') {
+            if (feature?.geometries === null) return;
+            for (let geometry of feature.geometries) {
+              let shape = {
                 type: 'Feature',
                 properties: {},
                 geometry: {
-                  type: 'Polygon',
-                  coordinates: multipolygon
+                  type: geometry.type,
+                  coordinates: geometry.coordinates
                 }
               };
-
-              newFeatureArr.push(convertedFeature);
+              newFeatureArr.push(shape);
+            }
+          } else {
+            if (feature?.coordinates === null) return;
+            for (let coords of feature.coordinates) {
+              let shape;
+              switch (feature?.type) {
+                case 'MultiPoint':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'Point',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+                case 'MultiLineString':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'LineString',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+                case 'MultiPolygon':
+                  shape = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'Polygon',
+                      coordinates: coords
+                    }
+                  };
+                  break;
+              }
+              newFeatureArr.push(shape);
             }
           }
-        }
+        });
+
         row.geojson.features = newFeatureArr;
       }
 
@@ -227,7 +268,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
 function uploadShape(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
-    const data = {...req.body};
+    const data = { ...req.body };
     const title = data.title;
     let geoJSON: FeatureCollection;
 
@@ -358,7 +399,7 @@ function deleteShape(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({label: 'deleteAdministrativelyDefinedShapes', message: 'error', error});
+      defaultLog.debug({ label: 'deleteAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to delete administratively defined shape',
         request: req.body,

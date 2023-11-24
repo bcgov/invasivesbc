@@ -29,30 +29,43 @@ async function simplifyGeojson(data, percentage, returnCallback) {
       { 'in.json': data },
       function (err, output) {
         if (output) {
-          let json = output['out.json'];
-          let parsed = JSON.parse(json);
-          let parsedEdit = JSON.parse(JSON.stringify(parsed));
+          let jsonArr = [];
+          jsonArr.push(output['out.json']);
+          if (!jsonArr[0]) {
+            jsonArr = [];
+            jsonArr.push(output['out1.json']);
+            jsonArr.push(output['out2.json']);
+          }
 
-          delete parsedEdit.features;
-          let newFeatures = parsed?.features?.map((feature) => {
-            if (typeof feature.properties === 'object' && feature.properties !== null) {
-              return feature;
-            } else {
-              return { ...feature, properties: {} };
-            }
+          let totalEdit = {
+            type: 'FeatureCollection',
+            features: []
+          };
+
+          jsonArr.forEach((json) => {
+            let parsed = JSON.parse(json);
+
+            let newFeatures = parsed?.features?.map((feature) => {
+              if (typeof feature.properties === 'object' && feature.properties !== null) {
+                return feature;
+              } else {
+                return { ...feature, properties: {} };
+              }
+            });
+
+            totalEdit.features.push(...newFeatures);
           });
-          parsedEdit.features = [...newFeatures];
 
-          returnCallback(JSON.stringify(parsedEdit));
+          returnCallback(JSON.stringify(totalEdit));
         } else {
-          defaultLog.error({message: 'unspecified failure'});
+          defaultLog.error({ message: 'unspecified failure' });
 
           return data;
         }
       }
     );
   } catch (e) {
-    defaultLog.error({error: e});
+    defaultLog.error({ error: e });
   }
 }
 
