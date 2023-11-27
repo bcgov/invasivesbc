@@ -81,7 +81,7 @@ export const authenticate = async (req: InvasivesRequest) => {
 
   MDC.additionalContext.isPublicURL = isPublicURL;
 
-  let token;
+  let token: string;
 
   try {
     token = authHeader.split(/\s/)[1];
@@ -89,7 +89,7 @@ export const authenticate = async (req: InvasivesRequest) => {
     defaultLog.info({ label: 'authenticate', message: 'malformed auth token received' });
 
     throw {
-      code: 401,
+      code: 400,
       message: 'Authorization header parse failure',
       namespace: 'auth-utils'
     };
