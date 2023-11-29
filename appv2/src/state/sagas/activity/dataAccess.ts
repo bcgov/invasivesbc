@@ -111,7 +111,20 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const reported_area = calculateGeometryArea(action.payload.geometry);
 
-
+    if (action.payload.geometry.length < 1) {
+      yield put({
+        type: ACTIVITY_UPDATE_GEO_SUCCESS,
+        payload: {
+          geometry: action.payload.geometry,
+          utm: utm,
+          lat: latitude,
+          long: longitude,
+          reported_area: reported_area,
+          Well_Information: []
+        }
+      });
+      return;
+    }
 
     const isPointGeometry = action.payload.geometry[0].geometry.type === 'Point';
     if (!isPointGeometry) {
