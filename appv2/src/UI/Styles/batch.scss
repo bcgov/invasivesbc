@@ -244,9 +244,9 @@ table.batchList {
 
   tbody {
     tr {
-      &:nth-child(odd) {
-        background-color: #dddddd;
-      }
+      // &:nth-child(odd) {
+      //   background-color: #dddddd;
+      // }
       td {
         padding: 8px;
       }
