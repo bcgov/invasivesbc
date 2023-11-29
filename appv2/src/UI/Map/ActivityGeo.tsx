@@ -4,13 +4,14 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
+import { ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS, ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import type { LayerGroup } from 'leaflet';
 
 export const GeoEditTools = (props) => {
   const { map, layerContainer } = useLeafletContext();
   const container = (layerContainer as LayerGroup) || map;
+  const dispatch = useDispatch();
 
   if (!container) {
     console.warn('[GEOMAN-CONTROLS] No map or container instance found');
@@ -27,6 +28,23 @@ export const GeoEditTools = (props) => {
       drawText: false,
       cutPolygon: false,
       rotateMode: false
+    });
+
+    // Set up remove button listener workaround
+    const removeButton = document.getElementsByClassName("leaflet-pm-icon-delete")[0];
+    removeButton.addEventListener("click", () => {
+      map?.pm?.toggleGlobalRemovalMode();
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+      dispatch({
+        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+        payload: {
+          notification: {
+            visible: true,
+            message: 'Geometry Removed',
+            severity: 'success'
+          }
+        }
+      });
     });
   };
 
