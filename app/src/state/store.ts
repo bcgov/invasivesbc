@@ -30,8 +30,12 @@ const setupStore = (configuration: AppConfig) => {
       const state = store.getState();
       if (state.Auth.authenticated) {
         let loggingState = JSON.parse(JSON.stringify(state));
-        loggingState.Map.activitiesGeoJSON = state.Map.activitiesGeoJSON?.features?.length;
-        loggingState.Map.IAPPGeoJSON = state.Map.IAPPGeoJSON?.features?.length;
+        loggingState.ActivityPage = null;
+        loggingState.IAPPSitePage = null;
+        loggingState.Map = null
+        loggingState.UserSettings.apiDocsWithSelectOptions = null;
+        loggingState.UserSettings.apiDocsWithViewOptions = null;
+
         const postObj = {
           error: { message: e.message + '' + e.stack },
           clientState: loggingState,
