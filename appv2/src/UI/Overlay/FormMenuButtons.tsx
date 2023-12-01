@@ -8,6 +8,7 @@ export const FormMenuButtons = (props) => {
   const dispatch = useDispatch();
   const activityStatus = useSelector((state: any) => state.ActivityPage?.activity?.form_status);
   const activityCreatedBy = useSelector((state: any) => state.ActivityPage?.activity?.created_by);
+  const savedHash = useSelector((state: any) => state?.ActivityPage?.saved_activity_hash);
   const username = useSelector((state: any) => state.Auth?.username);
   const accessRoles = useSelector((state: any) => state.Auth?.accessRoles);
 
@@ -45,7 +46,7 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
-        disabled={activityStatus && activityStatus === "Submitted" ? true : false}
+        disabled={activityStatus && (activityStatus === "Submitted" || !savedHash) ? true : false}
         variant="contained">
         PUBLISH DRAFT TO SUBMITTED
       </Button>
