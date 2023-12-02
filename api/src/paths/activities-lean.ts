@@ -243,11 +243,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-        if(sanitizedSearchCriteria.s3SignedUrlRequest)
+    /*    if(sanitizedSearchCriteria.s3SignedUrlRequest)
         {
           const signedURL = await getS3SignedURL('activities_private_geojson.json')
           return res.status(200).json({ signedURL: signedURL });
-        }
+        }*/
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, true, isAuth);
 
       // Check for sql and role:
