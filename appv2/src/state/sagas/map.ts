@@ -9,6 +9,7 @@ import {
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   CUSTOM_LAYER_DRAWN,
+  DRAW_CUSTOM_LAYER,
   FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
@@ -47,6 +48,7 @@ import {
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
   TABS_SET_ACTIVE_TAB_SUCCESS,
+  TOGGLE_PANEL,
   URL_CHANGE,
   USER_CLICKED_RECORD,
   USER_SETTINGS_DELETE_KML_REQUEST,
@@ -736,17 +738,41 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
     return actionObject;
   });
 
-  yield all(actions.map((action) => put(action)));
+  yield all(
+    actions.map((action) => {
+      console.dir(action)
+      if (action.payload.filterID) {
+        console.log('wat')
+      console.dir(action)
+       return  put(action);
+      }
+    })
+  );
 }
 
 function* persistClientBoundaries(action) {
   const state = yield select(selectMap);
+
+  console.dir(state.clientBoundaries)
 
   localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
 
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
+}
+function* handle_DRAW_CUSTOM_LAYER(action) {
+  const panelState = yield select((state) => state.AppMode.panelOpen)
+  if(panelState) {
+  yield put({ type: TOGGLE_PANEL});
+  }
+}
+
+function* handle_CUSTOM_LAYER_DRAWN(actions) {
+  const panelState = yield select((state) => state.AppMode.panelOpen)
+  if(!panelState) {
+  yield put({ type: TOGGLE_PANEL});
+  }
 }
 
 function* activitiesPageSaga() {
@@ -755,6 +781,11 @@ function* activitiesPageSaga() {
     fork(whatsHereSaga),
     debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
+
+    // handle hiding and showing the panel when drawing boundaries:
+    takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
+    takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
+
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
