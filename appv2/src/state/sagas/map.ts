@@ -500,16 +500,15 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const mapState = yield select(selectMap);
   const userSettings = yield select(selectUserSettings);
   const set = userSettings?.recordSets?.[action.payload.id];
+  const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
   try {
     let rows = [];
     let networkReturn;
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'POI') {
-
       const currentState = yield select(selectUserSettings);
-      const mapState = yield select(selectMap);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id,currentState, clientBoundaries );
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -522,9 +521,8 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {
       const currentState = yield select(selectUserSettings);
-      const mapState = yield select(selectMap);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries );
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
