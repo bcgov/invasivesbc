@@ -705,7 +705,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
 
 function* handle_REMOVE_CLIENT_BOUNDARY(action) {
   // save changes in local storage
-  persistClientBoundaries(action);
+  yield persistClientBoundaries(action);
 
   // remove from record sets applied
   const state = yield select(selectUserSettings);
@@ -722,13 +722,13 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
   });
 
   const actions = filteredSets.map((filteredSet) => {
-    const filterID = filteredSet?.tableFilters.filter((filter) => {
+    const filter = filteredSet?.tableFilters.filter((filter) => {
       return filter.filter === action.payload.id;
     })?.[0];
     const actionObject = {
       type: RECORDSET_REMOVE_FILTER,
       payload: {
-        filterID: filterID,
+        filterID: filter?.id,
         filterType: 'tableFilter',
         setID: filteredSet.recordSetID
       }
