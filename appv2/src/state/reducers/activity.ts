@@ -42,7 +42,8 @@ import {
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_FAILURE
+  ACTIVITY_GET_FAILURE,
+  ACTIVITY_CREATE_REQUEST
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -74,15 +75,19 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       case ACTIVITY_DELETE_SUCCESS: {
         return {
           ...new ActivityState()
-        }
+        };
+      }
+      case ACTIVITY_CREATE_REQUEST: {
+        return {
+          ...new ActivityState()
+        };
       }
       case ACTIVITY_GET_FAILURE: {
         return {
           ...state,
-        loading: false,
-        failCode: action.payload?.failNetworkObj?.status
-        }
-
+          loading: false,
+          failCode: action.payload?.failNetworkObj?.status
+        };
       }
       case ACTIVITY_GET_REQUEST: {
         return {
