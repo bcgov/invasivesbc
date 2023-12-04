@@ -258,7 +258,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   : 'Product Application Rate (l/ha)'
               }
               // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-              value={herbicide?.product_application_rate?.toFixed(2)}
+              value={herbicide?.product_application_rate?.toFixed(3)}
               variant="outlined"
               key={tankProductApplicationRateKey}
               onKeyDown={(event) => {
@@ -306,7 +306,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="text"
               label="Amount of Mix Used (L)"
-              value={herbicide?.amount_of_mix?.toFixed(2)}
+              value={herbicide?.amount_of_mix?.toFixed(4)}
               variant="outlined"
               key={amountOfMixUsedKey}
               onKeyDown={(event) => {
@@ -354,7 +354,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               className={classes.inputField}
               type="text"
               label="Dilution (%)"
-              value={herbicide?.dilution?.toFixed(2)}
+              value={herbicide?.dilution?.toFixed(4)}
               variant="outlined"
               key={dilutionPercentKey}
               onBlur={(event) => {
@@ -477,7 +477,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   ? 'Product Application Rate (g/ha)'
                   : 'Product Application Rate (L/ha)'
               }
-              value={herbicide.product_application_rate?.toFixed(2)}
+              value={herbicide.product_application_rate?.toFixed(3)}
               key={noTankProductApplicationRateKey}
               variant="outlined"
               onKeyDown={(event) => {
@@ -518,7 +518,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                   type="number"
                   id="product-application-rate"
                   // label="Product Application Rate (L/ha)"
-                  value={herbicide?.product_application_rate?.toFixed(2)}
+                  value={herbicide?.product_application_rate?.toFixed(3)}
                   variant="outlined"
                   key={noTankProductApplicationRateLHAKey}
                   onKeyDown={(event) => {
