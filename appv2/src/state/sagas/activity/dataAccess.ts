@@ -33,6 +33,7 @@ import {
   ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_GET_NETWORK_REQUEST,
+  ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
@@ -284,6 +285,12 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
     yield put({
       type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
       payload: { activeActivity: action.payload.activity_id, id: action.payload.activity_id }
+    });
+    yield put({
+      type: ACTIVITY_GET_REQUEST,
+      payload: {
+        activityID: action.payload.activity_id
+      }
     });
   } catch (e) {
     console.error(e);

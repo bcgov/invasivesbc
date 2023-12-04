@@ -153,7 +153,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       type: ACTIVITY_CREATE_REQUEST,
       payload: { type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype }
     });
-
+    history.push('/Records/Activity:/form');
   };
 
   const setNewRecordDialogState = (value: INewRecordDialogState) => {

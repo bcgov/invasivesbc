@@ -43,7 +43,6 @@ export const NewRecord = (props) => {
             <IconButton
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU  });
-                history.push('/Records/Activity:/form')
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
