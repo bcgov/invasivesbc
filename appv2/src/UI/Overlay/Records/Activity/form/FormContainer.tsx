@@ -32,7 +32,7 @@ import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css'
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import _ from 'lodash';
@@ -76,7 +76,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const dispatch = useDispatch();
   console.log('rendering')
 
-  const debouncedFormChange = 
+  const debouncedFormChange =
     _.debounce((event, ref, lastField, callbackFun) => {
     //(event, ref, lastField, callbackFun) => {
       dispatch({
@@ -313,7 +313,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
-                  console.log('AFTER DEBOUNCE')
                 }}
                 onError={(error) => {
                   if (!props.onFormSubmitError) {

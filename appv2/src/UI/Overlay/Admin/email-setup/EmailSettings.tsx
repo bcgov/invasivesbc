@@ -1,5 +1,5 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 import React, { useEffect } from 'react';
 import { Form } from '@rjsf/mui';
 import {
