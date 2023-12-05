@@ -107,7 +107,7 @@ export const OverlayHeader = (props) => {
       </div>
       <div className="overlay-header-menu-button">
         <Route
-          path="/Records/Activity:"
+          path="/Records/Activity:*"
           exact={false}
           render={(props) => {
             return ( <Button
