@@ -50,7 +50,7 @@ const AppUrlListener: React.FC<any> = () => {
   return null;
 };
 
-const OverlayContentMemo = React.memo((props: any) => {
+const OverlayContentMemo = (props) => {//React.memo((props: any) => {
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
   const theme = createTheme(getDesignTokens(false) as ThemeOptions);
@@ -133,7 +133,8 @@ const OverlayContentMemo = React.memo((props: any) => {
       <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
     </div>
   );
-});
+                }
+//});
 
 const HeaderMemo = React.memo((props: any) => {
   const ref = useRef(0);
