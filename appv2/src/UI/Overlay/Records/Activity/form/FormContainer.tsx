@@ -24,11 +24,7 @@ import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
-import PasteButtonComponent from './PasteButtonComponent';
 import { useSelector } from 'util/use_selector';
-import { selectAuth } from 'state/reducers/auth';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -74,9 +70,8 @@ export interface IFormContainerProps {
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const activityState = useSelector((state) => state.ActivityPage.activity);
   const dispatch = useDispatch();
-  console.log('rendering')
 
-  const debouncedFormChange =
+  const debouncedFormChange = 
     _.debounce((event, ref, lastField, callbackFun) => {
     //(event, ref, lastField, callbackFun) => {
       dispatch({
@@ -91,13 +86,16 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const { authenticated } = useSelector(selectAuth);
-  const authState = useSelector(selectAuth);
 
-  const { MOBILE } = useSelector(selectConfiguration);
+  const authenticated = useSelector((state) => state.Auth.authenticated);
+  const username = useSelector((state) => state.Auth.username);
+  const accessRoles = useSelector((state) => state.Auth.accessRoles);
+
+  const  MOBILE  = useSelector((state) => state.Configuration.current.MOBILE);
 
   const { darkTheme } = useSelector(selectUserSettings);
-  const userSettingsState = useSelector(selectUserSettings);
+  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
+  const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings.apiDocsWithSelectOptions);
 
   const suggestedTreatmentIDS  = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
 
@@ -139,7 +137,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
         debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {
-          setformData(updatedFormData);
         });
       });
     }, 100);
@@ -173,21 +170,20 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      console.log('begin api spec stuff')
       const subtype = activityState?.activity_subtype || activityState?.activitySubtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
-      const notMine = authState?.username !== activityState?.created_by;
+      const notMine = username !== activityState?.created_by;
       const notAdmin =
-        authState?.accessRoles?.filter((role) => {
+        accessRoles?.filter((role) => {
           return [1,18].includes(role.role_id)
         }).length === 0;
       if (notAdmin && notMine) {
-        components = (userSettingsState.apiDocsWithViewOptions as any).components;
+        components = (apiDocsWithViewOptions as any).components;
       } else if (!notAdmin && notMine) {
-        components = (userSettingsState.apiDocsWithViewOptions as any).components;
+        components = (apiDocsWithViewOptions as any).components;
       } else {
-        components = (userSettingsState.apiDocsWithSelectOptions as any).components;
+        components = (apiDocsWithSelectOptions as any).components;
       }
 
       let uiSchema = RootUISchemas[subtype];
@@ -253,14 +249,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-      console.log('end api spec stuff')
   }, [activityState.activity_subtype, authenticated, MOBILE, suggestedTreatmentIDS]);
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    const notMine = authState?.username !== activityState.created_by;
+    const notMine = username !== activityState.created_by;
     const notAdmin =
-      authState?.accessRoles?.filter((role) => {
+      accessRoles?.filter((role) => {
         return role.role_id === 18;
       }).length === 0;
     if (notAdmin && notMine) {
@@ -268,7 +263,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     } else {
       setIsDisabled(false);
     }
-  }, [JSON.stringify(authState?.accessRoles), JSON.stringify(authState?.username)]);
+  }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
 
   // hack to make fields rerender only on paste event
   const [keyInt, setKeyInt] = useState(0);
@@ -309,7 +304,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
-                  console.log('A CHANGE')
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
