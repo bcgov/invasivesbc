@@ -63,7 +63,7 @@
     "@typescript-eslint/parser": "^4.5.0",
     "@xmldom/xmldom": "^0.8.6",
     "async": "^3.2.4",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "bfj": "^7.0.2",
     "camelcase": "^6.1.0",
     "clsx": "~1.1.1",
