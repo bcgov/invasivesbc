@@ -3,6 +3,8 @@ import { Box, Button, Theme, Typography } from '@mui/material';
 import { DropzoneDialog } from 'mui-file-dropzone';
 import makeStyles from '@mui/styles/makeStyles';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { useDispatch } from 'react-redux';
+import { INIT_SERVER_BOUNDARIES_GET, REFETCH_SERVER_BOUNDARIES } from 'state/actions';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -30,12 +32,14 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
   const [uploadClicked, setUploadClicked] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if(uploadRequests.length > 0)
     doUpload().then(() => {
       props.whenDone();
       console.log('done');
+      dispatch({ type: REFETCH_SERVER_BOUNDARIES})
     });
   }, [uploadRequests]);
 

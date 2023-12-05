@@ -1,4 +1,4 @@
-import { all, debounce, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -42,6 +42,7 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
+  REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
@@ -186,10 +187,13 @@ function* handle_MAP_INIT_REQUEST(action) {
   };
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
 
+  /*
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
+  */
 
+  yield call(refetchServerBoundaries)
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
@@ -245,6 +249,12 @@ function* handle_MAP_INIT_REQUEST(action) {
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
   });
+}
+
+function* refetchServerBoundaries() {
+  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
+  const shapes = serverShapesServerResponse.data.result;
+  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } }); 
 }
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
@@ -783,6 +793,8 @@ function* activitiesPageSaga() {
     // handle hiding and showing the panel when drawing boundaries:
     takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
     takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
+
+    takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
 
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
