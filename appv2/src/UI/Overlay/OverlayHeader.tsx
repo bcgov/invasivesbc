@@ -60,6 +60,10 @@ const onClickDragButton = (e) => {
 
   document.addEventListener('mousemove', debouncedDrag, false);
   document.addEventListener('mouseup', cleanup, false);
+
+  setTimeout(() => {
+    cleanup(e);
+  }, 5000);
 };
 
 export const OverlayHeader = (props) => {
@@ -84,25 +88,25 @@ export const OverlayHeader = (props) => {
 
       <div className="overlayMenuResizeButtons">
         <div className="fullScreenOverlayButton">
-          <Button sx={{height: '20px'}} onClick={maximize} variant="contained">
+          <Button sx={{ height: '20px' }} onClick={maximize} variant="contained">
             <ArrowDropUpIcon />
           </Button>
         </div>
 
         <div onMouseDown={onClickDragButton} className="dragMeToResize">
-          <Button sx={{height: '20px'}} variant="contained">
+          <Button sx={{ height: '20px' }} variant="contained">
             <DragHandleIcon />
           </Button>
         </div>
         <div className="minimizeOverlayButton">
-          <Button sx={{height: '20px'}} onClick={minimize} variant="contained">
+          <Button sx={{ height: '20px' }} onClick={minimize} variant="contained">
             <ArrowDropDownIcon />
           </Button>
         </div>
       </div>
       <div className="overlay-header-menu-button">
         <Button
-        sx={{height: '20px'}}
+          sx={{ height: '20px' }}
           variant="contained"
           onClick={() => {
             dispatch({ type: OVERLAY_MENU_TOGGLE });
