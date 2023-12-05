@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { Route, useHistory } from 'react-router';
 
 import './OverlayHeader.css';
 import { OVERLAY_MENU_TOGGLE } from 'state/actions';
@@ -14,6 +14,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 const maximize = (e) => {
   const elementWeWant = document.getElementById('overlaydiv');
@@ -105,14 +106,20 @@ export const OverlayHeader = (props) => {
         </div>
       </div>
       <div className="overlay-header-menu-button">
-        <Button
-          sx={{ height: '20px' }}
-          variant="contained"
-          onClick={() => {
-            dispatch({ type: OVERLAY_MENU_TOGGLE });
-          }}>
-          <MenuIcon />
-        </Button>
+        <Route
+          path="/Records/Activity:"
+          exact={false}
+          render={(props) => {
+            return ( <Button
+                sx={{ height: '20px' }}
+                variant="contained"
+                onClick={() => {
+                  dispatch({ type: OVERLAY_MENU_TOGGLE });
+                }}>
+                <SaveAsIcon />
+              </Button>);
+          }}
+        />
       </div>
     </div>
   );
