@@ -93,6 +93,7 @@ const ExcelExporter = (props) => {
       </Tooltip>
       <Tooltip title="Choose report type" placement="right">
         <Select
+          className="excel-exporter-select"
           value={selection}
           onChange={(e) => {
             setSelection(e.target.value);
