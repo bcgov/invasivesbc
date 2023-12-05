@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import React, { useEffect, useRef, useState } from 'react';
+import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -29,15 +30,16 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectActivity } from 'state/reducers/activity';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST } from 'state/actions';
+import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import validator from '@rjsf/validator-ajv6';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css'
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
+import _ from 'lodash';
 
 export interface IFormContainerProps {
   classes?: any;
-  activity: any;
+ // activity: any;
   customValidation?: any;
   customErrorTransformer?: any;
   isDisabled?: boolean;
@@ -64,13 +66,25 @@ export interface IFormContainerProps {
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
   onSave?: Function;
   onSubmitAsOfficial?: Function;
-  isAlreadySubmitted: () => boolean;
-  canBeSubmittedWithoutErrors: () => boolean;
+  //isAlreadySubmitted: () => boolean;
+//  canBeSubmittedWithoutErrors: () => boolean;
   OnNavBack?: Function;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
-  const [formData, setformData] = useState(props.activity?.form_data);
+  const activityState = useSelector((state) => state.ActivityPage.activity);
+  const dispatch = useDispatch();
+  console.log('rendering')
+
+  const debouncedFormChange = 
+    _.debounce((event, ref, lastField, callbackFun) => {
+    //(event, ref, lastField, callbackFun) => {
+      dispatch({
+        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null}
+      });
+    }, 1000)
+  const [formData, setformData] = useState(activityState?.form_data);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = React.createRef();
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
@@ -82,11 +96,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const { MOBILE } = useSelector(selectConfiguration);
 
-  const dispatch = useDispatch();
   const { darkTheme } = useSelector(selectUserSettings);
   const userSettingsState = useSelector(selectUserSettings);
 
-  const activityStateInStore = useSelector(selectActivity);
+  const suggestedTreatmentIDS  = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -125,7 +138,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        props.onFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {
+        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {
           setformData(updatedFormData);
         });
       });
@@ -135,10 +148,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const isActivityChemTreatment = () => {
     if (
-      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
-      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
+      activityState.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
+      activityState.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
+      activityState.activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
+      activityState.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
     ) {
       return true;
     }
@@ -160,10 +173,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const subtype = props.activity?.activity_subtype || props.activity?.activitySubtype;
+      console.log('begin api spec stuff')
+      const subtype = activityState?.activity_subtype || activityState?.activitySubtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
-      const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
+      const notMine = authState?.username !== activityState?.created_by;
       const notAdmin =
         authState?.accessRoles?.filter((role) => {
           return [1,18].includes(role.role_id)
@@ -181,9 +195,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       let modifiedSchema = subtypeSchema;
       // Handle activity_id linking fetches
       try {
-        const suggestedTreatmentIDs = activityStateInStore?.suggestedTreatmentIDs ?? [];
+        //const suggestedTreatmentIDs = activityStateInStore?.suggestedTreatmentIDs ?? [];
 
-        if (props.activity?.activity_type === 'Monitoring') {
+        if (activityState?.activity_type === 'Monitoring') {
           if (MOBILE) {
             uiSchema = {
               ...uiSchema,
@@ -198,7 +212,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           } else {
             try {
               // move this to action or reducer
-              if (suggestedTreatmentIDs?.length) {
+              if (suggestedTreatmentIDS?.length) {
                 modifiedSchema = {
                   ...modifiedSchema,
                   properties: {
@@ -209,7 +223,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                         ...modifiedSchema?.properties.activity_type_data.properties,
                         linked_id: {
                           ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
-                          options: suggestedTreatmentIDs
+                          options: suggestedTreatmentIDS
                         }
                       }
                     }
@@ -219,7 +233,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   ...components,
                   schemas: {
                     ...components.schemas,
-                    [props.activity.activity_subtype]: modifiedSchema
+                    [activityState.activity_subtype]: modifiedSchema
                   }
                 };
               }
@@ -239,11 +253,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [props.activity.activity_subtype, authenticated, MOBILE, activityStateInStore.suggestedTreatmentIDs]);
+      console.log('end api spec stuff')
+  }, [activityState.activity_subtype, authenticated, MOBILE, suggestedTreatmentIDS]);
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    const notMine = authState?.username !== activityStateInStore?.activity?.created_by;
+    const notMine = authState?.username !== activityState.created_by;
     const notAdmin =
       authState?.accessRoles?.filter((role) => {
         return role.role_id === 18;
@@ -282,21 +297,23 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
                 readonly={props.isDisabled}
-                key={props.activity?._id + keyInt.toString()}
+                key={activityState?._id + keyInt.toString()}
                 disabled={isDisabled}
-                formData={activityStateInStore.activity.form_data || null}
+                formData={activityState.form_data || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
-                liveValidate={true}
-                customValidate={props.customValidation}
+                liveValidate={false}
+                customValidate={validatorForActivity(activityState, null)}
                 validator={validator}
                 showErrorList={'top'}
                 transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
-                  props.onFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
+                  console.log('A CHANGE')
+                  debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
+                  console.log('AFTER DEBOUNCE')
                 }}
                 onError={(error) => {
                   if (!props.onFormSubmitError) {
@@ -321,7 +338,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   disabled={props.isDisabled}
-                  activitySubType={activityStateInStore.activity.activity_subtype || null}
+                  activitySubType={activityState.activity_subtype || null}
                   onChange={(form_data, callback) => {
                     //todo redux chem treatment form on change
                     dispatch({
@@ -335,7 +352,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                       callback();
                     }
                   }}
-                  form_data={activityStateInStore.activity.form_data}
+                  form_data={activityState.form_data}
                   schema={schemas.schema}
                 />
               )}

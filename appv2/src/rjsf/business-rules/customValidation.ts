@@ -15,8 +15,9 @@ function combineValidators(validators: rjsfValidator[]): rjsfValidator {
 }
 
 export function validatorForActivity(activity, linkedActivity): rjsfValidator {
+  console.log('recombining validators')
   return combineValidators([
-    getAreaValidator(activity.activity_subtype),
+ /*   getAreaValidator(activity.activity_subtype),
     getDateAndTimeValidator(activity.activity_subtype),
     getDateAndTimeValidatorOther(activity.activity_subtype),
     getWindValidator(activity.activity_subtype),
@@ -35,7 +36,7 @@ export function validatorForActivity(activity, linkedActivity): rjsfValidator {
     getJurisdictionPercentValidator(),
     getInvasivePlantsValidator(linkedActivity),
     getPlotIdentificationTreesValidator(activity.activity_subtype),
-    accessDescriptionMinChars()
+    accessDescriptionMinChars()*/
   ]);
 }
 
