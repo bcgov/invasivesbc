@@ -409,7 +409,7 @@ const Filter = (props) => {
                   <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
                   CONTAINED IN
                   </option>
-                  <option key={Math.random()} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
                     NOT CONTAINED IN
                   </option>
                 </>
