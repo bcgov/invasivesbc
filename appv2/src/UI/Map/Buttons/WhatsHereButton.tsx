@@ -86,10 +86,12 @@ export const WhatsHereDrawComponent = (props) => {
     };
   }, [mapState?.whatsHere]);
 
+    const panelState = useSelector((state) => state.AppMode.panelOpen)
   useMapEvent('draw:created' as any, (e) => {
     if ((mapState?.whatsHere as any).toggle && (mapState?.whatsHere as any)?.feature === null) {
       history.push('/WhatsHere');
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
+      if(!panelState)
       dispatch({ type: TOGGLE_PANEL });
     }
   });
