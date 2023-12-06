@@ -23,16 +23,43 @@ const checkForErrors = (response: any, status?: any, url?: any) => {
 
 //
 export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call(
-    'POST',
-    `/api/activities-lean/`,
-    action.payload.activitiesFilterCriteria
-  );
+  const networkReturnForSignedURLToCachedData = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
+    ...action.payload.activitiesFilterCriteria,
+    s3SignedUrlRequest: true
+  });
+
+  const signedURL = networkReturnForSignedURLToCachedData.data.signedURL;
+
+  let networkReturnS3;
+
+  try {
+    networkReturnS3 = yield Http.request({
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip'
+      },
+      url: signedURL
+    });
+  } catch (e) {
+    console.dir(e);
+  }
+
+  const networkReturn3 = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
+    ...action.payload.activitiesFilterCriteria,
+    s3SignedUrlRequest: false
+  });
+
   let featureCollection = {
     type: 'FeatureCollection',
-    features: networkReturn.data.result.rows.map((row) => {
-      return row.geojson ? row.geojson : row;
-    })
+    features: [
+      ...networkReturnS3.data.result.rows.map((row) => {
+        return row.geojson ? row.geojson : row;
+      }),
+      ...networkReturn3.data.result.rows.map((row) => {
+        return row.geojson ? row.geojson : row;
+      })
+    ]
   };
 
   yield put({
