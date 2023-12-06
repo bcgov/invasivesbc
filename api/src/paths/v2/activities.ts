@@ -307,7 +307,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
         cpo.activity_incoming_data_id,
         string_agg(cpo.invasive_plant, ', ') AS current_positive_species
     FROM
-        invasivesbc.current_positive_observations cpo
+        invasivesbc.current_positive_observations_materialized cpo
     GROUP BY
         cpo.activity_incoming_data_id
 ),
@@ -316,7 +316,7 @@ CurrentNegativeObservations AS (
         cno.activity_incoming_data_id,
         string_agg(cno.invasive_plant, ', ') AS current_negative_species
     FROM
-        invasivesbc.current_negative_observations cno
+        invasivesbc.current_negative_observations_materialized cno
     GROUP BY
         cno.activity_incoming_data_id),
 `);
