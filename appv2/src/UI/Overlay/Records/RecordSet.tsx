@@ -157,11 +157,15 @@ const RecordSetFooter = (props) => {
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
 
   const totalRecords = layer?.IDList?.length;
+  const loading = layer?.loadingIDList;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit
       ? totalRecords
       : firstRowIndex + recordTable?.limit;
+  const recordDisplayString = layer?.IDList && totalRecords < 1 ? 
+      'No records found' : 
+      `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
 
   const shouldDisplayNextButton = totalRecords > lastRowIndex;
   const shouldDisplayPreviousButton = firstRowIndex > 0;
@@ -194,9 +198,13 @@ const RecordSetFooter = (props) => {
       <div className="recordSet_pagePrevious">
         {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
       </div>
-      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex + 1} to ${lastRowIndex} of ${
-        totalRecords ? totalRecords : '(Loading)'
-      } records`}</div>
+      <div className="recordSet_pageOfAndTotal">
+      {loading ?
+      '(loading)'
+      :
+      recordDisplayString
+      }
+      </div>
       <div className="recordSet_pageNext">
         {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
       </div>

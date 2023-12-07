@@ -55,7 +55,9 @@ import {
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  WHATS_HERE_SORT_FILTER_UPDATE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  IAPP_GET_IDS_FOR_RECORDSET_REQUEST
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -438,9 +440,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {
-          if(draftState.whatsHere.toggle) {
-            draftState.whatsHere.loadingActivities = false
-            draftState.whatsHere.loadingIAPP = false
+          if (draftState.whatsHere.toggle) {
+            draftState.whatsHere.loadingActivities = false;
+            draftState.whatsHere.loadingIAPP = false;
           }
           draftState.whatsHere.toggle = !state.whatsHere.toggle;
           draftState.whatsHere.feature = null;
