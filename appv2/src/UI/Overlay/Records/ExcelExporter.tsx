@@ -36,6 +36,7 @@ const ExcelExporter = (props) => {
       <MenuItem value={'terrestrial_chemical_treatment'}>Terrestrial Chemical Treatment Summary</MenuItem>,
       <MenuItem value={'aquatic_chemical_treatment'}>Aquatic Chemical Treatment Summary</MenuItem>,
       <MenuItem value={'terrestrial_mechanical_treatment'}>Terrestrial Mechanical Treatment Summary</MenuItem>,
+      <MenuItem value={'aquatic_mechanical_treatment'}>Aquatic Mechanical Treatment Summary</MenuItem>,
       <MenuItem value={'biocontrol_release'}>Biocontrol Release Summary</MenuItem>,
       <MenuItem value={'biocontrol_collection'}>Biocontrol Collection Summary</MenuItem>,
       <MenuItem value={'biocontrol_dispersal'}>Biocontrol Dispersal Summary</MenuItem>,
