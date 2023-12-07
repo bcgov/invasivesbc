@@ -112,6 +112,12 @@ export async function* generateSitesCSV(cursor: any, templateName: string) {
       fieldFormatMap['monitoring_comments'] = (value) => {
         return '"' + value.replace(/\"/g, '') + '"';
       };
+      fieldFormatMap['location_description'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
+      fieldFormatMap['access_description'] = (value) => {
+        return '"' + value.replace(/\"/g, '') + '"';
+      };
       fieldFormatMap['jurisdiction'] = (value) => {
         return '"' + value + '"';
       };
