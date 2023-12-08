@@ -43,7 +43,8 @@ import {
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_FAILURE,
-  ACTIVITY_CREATE_REQUEST
+  ACTIVITY_CREATE_REQUEST,
+  ACTIVITY_ERRORS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -72,6 +73,15 @@ const initialState = new ActivityState();
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
     switch (action.type) {
+      case ACTIVITY_ERRORS: {
+        const errorsFromCustomTransformer = action.payload.source === 'custom error transformer'?  action.payload.errors : null
+        const errorsFromCustomValidator = action.payload.source === 'custom validator'?  action.payload.errors : null
+        return {
+          ...state,
+          errorsFromCustomTransformer: errorsFromCustomTransformer,
+          errorsFromCustomValidator: errorsFromCustomValidator
+        };
+      }
       case ACTIVITY_DELETE_SUCCESS: {
         return {
           ...new ActivityState()

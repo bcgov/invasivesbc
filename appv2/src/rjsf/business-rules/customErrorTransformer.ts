@@ -1,4 +1,6 @@
-import { AjvError } from '@rjsf/core';
+//import { AjvError } from '@rjsf/core';
+import { ACTIVITY_ERRORS } from 'state/actions';
+import { globalStore } from 'state/store';
 
 /**
  * Returns a custom error transformer.
@@ -6,7 +8,9 @@ import { AjvError } from '@rjsf/core';
  * @return {*}
  */
 export const getCustomErrorTransformer = () => {
-  return (errors: AjvError[]) => {
+  return (errors: any[]) => {
+  globalStore.dispatch({ type: ACTIVITY_ERRORS, payload: { source: 'custom error transformer', errors } })
+    console.dir(errors)
     return errors.filter((error) => {
       if (error.message === 'should be equal to one of the allowed values') {
         return false;
