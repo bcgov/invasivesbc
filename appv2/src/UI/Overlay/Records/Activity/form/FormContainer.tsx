@@ -26,48 +26,15 @@ import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'util/use_selector';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
+import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ERRORS, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import validator from '@rjsf/validator-ajv8';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css'
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import _ from 'lodash';
 
-export interface IFormContainerProps {
-  classes?: any;
- // activity: any;
-  customValidation?: any;
-  customErrorTransformer?: any;
-  isDisabled?: boolean;
-  pasteFormData?: Function;
-  suggestedJurisdictions?: any[];
-  copyFormData?: Function;
-  setParentFormRef?: Function;
-  hideCheckFormForErrors?: boolean;
-  /**
-   * A function executed everytime the form changes.
-   *
-   * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
-   */
-  onFormChange?: (event: any, formRef: any, focusedField?: string, callback?: (updatedFormData) => void) => any;
-  /**
-   * A function executed when the form submit hook fires, and form validation errors are found.
-   */
-  onFormSubmitError?: (errors: any[], formRef: any) => any;
-  /**
-   * A function executed everytime the form submit hook fires.
-   *
-   * Note: Form validation rules will run, and must succeed, before this will be called.
-   */
-  onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
-  onSave?: Function;
-  onSubmitAsOfficial?: Function;
-  //isAlreadySubmitted: () => boolean;
-//  canBeSubmittedWithoutErrors: () => boolean;
-  OnNavBack?: Function;
-}
 
-const FormContainer: React.FC<IFormContainerProps> = (props) => {
+const FormContainer: React.FC<any> = (props) => {
   const activityState = useSelector((state) => state.ActivityPage.activity);
   const dispatch = useDispatch();
 
@@ -297,7 +264,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 formData={activityState.form_data || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
-                liveValidate={false}
+                liveValidate={true}
                 customValidate={validatorForActivity(activityState, null)}
                 validator={validator}
                 showErrorList={'top'}
@@ -309,10 +276,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   });
                 }}
                 onError={(error) => {
-                  if (!props.onFormSubmitError) {
-                    return;
-                  }
-                  props.onFormSubmitError(error, formRef);
+                  dispatch({ type: ACTIVITY_ERRORS, payload: error });
                 }}
                 onSubmit={(event) => {
                   if (!props.onFormSubmitSuccess) {

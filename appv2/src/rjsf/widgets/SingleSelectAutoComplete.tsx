@@ -4,7 +4,6 @@ import { Typography, Box, TextField, Autocomplete } from '@mui/material';
 import { SelectAutoCompleteContext } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
-import { selectActivity } from 'state/reducers/activity';
 import { useSelector } from 'react-redux';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
@@ -58,7 +57,7 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
  // console.dir(props)
-  const activityPageState = useSelector(selectActivity)
+  const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions)
   const isenums = (props.options.enumOptions?.length > 0)? true:false
   let enumOptions;
   if (isenums) {
@@ -71,8 +70,8 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
 
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
-    const suggestedJurisdictions = activityPageState?.suggestedJurisdictions
-      ? JSON.parse(JSON.stringify(activityPageState?.suggestedJurisdictions))
+    const suggestedJurisdictions = suggestedJurisdictionsInState
+      ? JSON.parse(JSON.stringify(suggestedJurisdictionsInState))
       : [];
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
@@ -151,7 +150,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     {
       setRenderKey(props.id.toString() + Math.random())
     }
-  },[JSON.stringify(activityPageState.suggestedJurisdictions)])
+  },[JSON.stringify(suggestedJurisdictionsInState)])
 
 
   return (

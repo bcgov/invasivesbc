@@ -17,6 +17,9 @@ import { createBrowserHistory } from 'history';
 
 const historySingleton = createBrowserHistory();
 
+
+export let globalStore;
+
 export function setupStore(configuration: AppConfig) {
   const sagaMiddleware = createSagaMiddleware();
 
@@ -31,7 +34,7 @@ export function setupStore(configuration: AppConfig) {
     }
   );
 
-  const store = configureStore({
+  globalStore = configureStore({
     reducer: createRootReducer(configuration),
     middleware: [sagaMiddleware, logger],
   });
@@ -46,15 +49,15 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
 
-  store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+  globalStore.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   historySingleton.listen((location) => {
-    store.dispatch({type: URL_CHANGE, payload: {
+    globalStore.dispatch({type: URL_CHANGE, payload: {
       url: location.pathname
       }});
   })
 
-  return store;
+  return globalStore;
 }
 
 

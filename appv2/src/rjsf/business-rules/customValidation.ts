@@ -1,15 +1,18 @@
 import { FormValidation } from '@rjsf/utils';
+import { useDispatch } from 'react-redux';
 import { ActivitySubtype, lookupAreaLimit, MAX_TEMP, MIN_TEMP } from 'sharedAPI';
+import { ACTIVITY_ERRORS } from 'state/actions';
 
+import { globalStore } from 'state/store';
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
-// keep track of all business rules for custom form validation logic
 function combineValidators(validators: rjsfValidator[]): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     for (const validator of validators) {
       errors = validator(formData, errors);
     }
 
+    globalStore.dispatch({ type: ACTIVITY_ERRORS , payload: { source: 'custom validators', errors: errors?.__errors}})
     return errors;
   };
 }
@@ -232,6 +235,7 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
       errors.activity_data['jurisdictions'].addError(
         'Total percentage of area covered by jurisdictions must equal 100%'
       );
+      errors.addError('Total percentage of area covered by jurisdictions must equal 100%');
     }
 
     const jurCodes = [];
@@ -239,6 +243,7 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
     formData.activity_data.jurisdictions.forEach((jurCode) => {
       if (jurCodes.includes(jurCode.jurisdiction_code)) {
         errors.activity_data['jurisdictions'].addError('You cannot have two of the same jurisdiction.');
+        errors.addError('You cannot have two of the same jurisdiction.');
       } else {
         jurCodes.push(jurCode.jurisdiction_code);
       }
@@ -799,28 +804,28 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
       : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
-      if(!informationArray || informationArray?.length < 1) {
-        return errors;
-      }
-
-      if(informationArray?.length > 0) 
-    for (let object of informationArray) {
-      if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
-        errors['activity_subtype_data'][
-          isChemical
-            ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
-            : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-        ].addError('Either Aquatic or Terrestrial plant has to be specified.');
-      }
-
-      if (object.invasive_plant_aquatic_code && object.invasive_plant_code) {
-        errors['activity_subtype_data'][
-          isChemical
-            ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
-            : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
-        ].addError("You can't specify both aquatic and terrestrial plants.");
-      }
+    if (!informationArray || informationArray?.length < 1) {
+      return errors;
     }
+
+    if (informationArray?.length > 0)
+      for (let object of informationArray) {
+        if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
+          errors['activity_subtype_data'][
+            isChemical
+              ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+              : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+          ].addError('Either Aquatic or Terrestrial plant has to be specified.');
+        }
+
+        if (object.invasive_plant_aquatic_code && object.invasive_plant_code) {
+          errors['activity_subtype_data'][
+            isChemical
+              ? 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'
+              : 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'
+          ].addError("You can't specify both aquatic and terrestrial plants.");
+        }
+      }
 
     return errors;
   };

@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ACTIVITY_SET_UNSAVED_NOTIFICATION, ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityForm } from './Activity/Form';
-import { selectActivity } from 'state/reducers/activity';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
 import { Alert, Button, Snackbar } from '@mui/material';
@@ -16,9 +15,12 @@ export const Activity = (props) => {
   const dispatch = useDispatch();
   const settingsState = useSelector(selectUserSettings);
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
-  const activityState = useSelector(selectActivity);
   const notification = useSelector((state: any) => state.ActivityPage?.notification);
   const unsaved_notification = useSelector((state: any) => state.ActivityPage?.unsaved_notification);
+  const failCode = useSelector((state: any) => state.ActivityPage?.failCode);
+  const activity_ID = useSelector((state: any) => state.ActivityPage?.activity?.activity_id);
+
+  const loading = useSelector((state: any) => state.ActivityPage?.loading);
 
   const handleAPIErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -89,7 +91,7 @@ export const Activity = (props) => {
       <Route
         path="/Records/Activity:id/form"
         render={() => {
-          if( activityState.failCode === 404)
+          if( failCode === 404)
           {
             setTimeout(()=> {
               history.push('/Records')
@@ -97,10 +99,10 @@ export const Activity = (props) => {
             return <div>Activity does not exists, redirecting...</div>
           }
           if (
-            activityState?.activity?.activity_id &&
+            activity_ID &&
             settingsState.apiDocsWithSelectOptions &&
             settingsState.apiDocsWithViewOptions &&
-            activityState.loading === false
+            loading === false
           )
             return <ActivityForm />;
           else return <div>loading</div>;
@@ -109,7 +111,7 @@ export const Activity = (props) => {
       <Route
         path="/Records/Activity:id/photos"
         render={() => {
-          if (activityState?.activity?.activity_id) return <ActivityPhotos />;
+          if (activity_ID) return <ActivityPhotos />;
           else return <div>loading</div>;
         }}
       />
