@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import { Form } from '@rjsf/mui';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
@@ -35,7 +35,24 @@ import _ from 'lodash';
 
 
 const FormContainer: React.FC<any> = (props) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
+
+  const authenticated = useSelector((state) => state.Auth.authenticated);
+  const username = useSelector((state) => state.Auth.username);
+  const accessRoles = useSelector((state) => state.Auth.accessRoles);
+
   const activityState = useSelector((state) => state.ActivityPage.activity);
+
+  const  MOBILE  = useSelector((state) => state.Configuration.current.MOBILE);
+  const darkTheme = useSelector((state) => state.UserSettings.darkTheme);
+
+  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
+  const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings.apiDocsWithSelectOptions);
+
+  const suggestedTreatmentIDS  = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
+
   const dispatch = useDispatch();
 
   const debouncedFormChange = 
@@ -46,7 +63,11 @@ const FormContainer: React.FC<any> = (props) => {
         payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null}
       });
     }, 1000)
-  const [formData, setformData] = useState(activityState?.form_data);
+
+  const errorTransformers = useCallback(() => {
+    return getCustomErrorTransformer();
+  }, [activityState.form_data])
+
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = React.createRef();
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
@@ -54,17 +75,6 @@ const FormContainer: React.FC<any> = (props) => {
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
 
-  const authenticated = useSelector((state) => state.Auth.authenticated);
-  const username = useSelector((state) => state.Auth.username);
-  const accessRoles = useSelector((state) => state.Auth.accessRoles);
-
-  const  MOBILE  = useSelector((state) => state.Configuration.current.MOBILE);
-
-  const { darkTheme } = useSelector(selectUserSettings);
-  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
-  const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings.apiDocsWithSelectOptions);
-
-  const suggestedTreatmentIDS  = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -268,7 +278,8 @@ const FormContainer: React.FC<any> = (props) => {
                 customValidate={validatorForActivity(activityState, null)}
                 validator={validator}
                 showErrorList={'top'}
-                transformErrors={getCustomErrorTransformer()}
+                //transformErrors={getCustomErrorTransformer()}
+                transformErrors={errorTransformers()}
                 autoComplete="off"
                 onChange={(event) => {
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {

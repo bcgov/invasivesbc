@@ -51,16 +51,21 @@ const AppUrlListener: React.FC<any> = () => {
 };
 
 const OverlayContentMemo = (props) => {//React.memo((props: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
+
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
   const theme = createTheme(getDesignTokens(false) as ThemeOptions);
   const history = useHistory();
-  const {
-    userRecordOnClickMenuOpen,
-    userRecordOnClickRecordType,
-    userRecordOnClickRecordID,
-    userRecordOnClickRecordRow
-  } = useSelector((state: any) => state.Map);
+
+
+  const userRecordOnClickMenuOpen = useSelector((state: any) => state.Map.userRecordOnClickMenuOpen);
+  const userRecordOnClickRecordType = useSelector((state: any) => state.Map.userRecordOnClickRecordType);
+  const userRecordOnClickRecordID = useSelector((state: any) => state.Map.userRecordOnClickRecordID);
+  const userRecordOnClickRecordRow = useSelector((state: any) => state.Map.userRecordOnClickRecordRow);
+
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <AppUrlListener />

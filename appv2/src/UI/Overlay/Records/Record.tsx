@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import './Records.css';
 import { Route, useHistory } from 'react-router';
@@ -11,9 +11,12 @@ import { OverlayHeader } from '../OverlayHeader';
 import { Alert, Button, Snackbar } from '@mui/material';
 
 export const Activity = (props) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
+
   const history = useHistory();
   const dispatch = useDispatch();
-  const settingsState = useSelector(selectUserSettings);
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
   const notification = useSelector((state: any) => state.ActivityPage?.notification);
   const unsaved_notification = useSelector((state: any) => state.ActivityPage?.unsaved_notification);
@@ -21,6 +24,8 @@ export const Activity = (props) => {
   const activity_ID = useSelector((state: any) => state.ActivityPage?.activity?.activity_id);
 
   const loading = useSelector((state: any) => state.ActivityPage?.loading);
+  const apiDocsWithSelectOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithSelectOptions);
+  const apiDocsWithViewOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithViewOptions);
 
   const handleAPIErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -100,8 +105,8 @@ export const Activity = (props) => {
           }
           if (
             activity_ID &&
-            settingsState.apiDocsWithSelectOptions &&
-            settingsState.apiDocsWithViewOptions &&
+            apiDocsWithSelectOptions &&
+            apiDocsWithViewOptions &&
             loading === false
           )
             return <ActivityForm />;
