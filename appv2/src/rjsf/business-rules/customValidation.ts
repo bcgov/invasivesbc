@@ -2,6 +2,7 @@ import { FormValidation } from '@rjsf/utils';
 import { useDispatch } from 'react-redux';
 import { ActivitySubtype, lookupAreaLimit, MAX_TEMP, MIN_TEMP } from 'sharedAPI';
 import { ACTIVITY_ERRORS } from 'state/actions';
+import validator from '@rjsf/validator-ajv8';
 
 import { globalStore } from 'state/store';
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
@@ -12,13 +13,14 @@ function combineValidators(validators: rjsfValidator[]): rjsfValidator {
       errors = validator(formData, errors);
     }
 
-    globalStore.dispatch({ type: ACTIVITY_ERRORS , payload: { source: 'custom validators', errors: errors?.__errors}})
+    //dispatch({ type: ACTIVITY_ERRORS , payload: { source: 'custom validators', errors: errors?.__errors}})
     return errors;
   };
 }
 
-export function validatorForActivity(activity_subtype, linkedActivity): rjsfValidator {
+export function validatorForActivity(activity_subtype, linkedActivity) : rjsfValidator {
   return combineValidators([
+    //validator as unknown as  rjsfValidator,
     getAreaValidator(activity_subtype),
     getDateAndTimeValidator(activity_subtype),
     getDateAndTimeValidatorOther(activity_subtype),
