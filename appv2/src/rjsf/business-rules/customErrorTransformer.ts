@@ -9,7 +9,7 @@ import { globalStore } from 'state/store';
  */
 export const getCustomErrorTransformer = () => {
   return (errors: any[]) => {
-  globalStore.dispatch({ type: ACTIVITY_ERRORS, payload: { source: 'custom error transformer', errors } })
+  //dispatch({ type: ACTIVITY_ERRORS, payload: { source: 'custom error transformer', errors } })
     console.dir(errors)
     return errors.filter((error) => {
       if (error.message === 'should be equal to one of the allowed values') {

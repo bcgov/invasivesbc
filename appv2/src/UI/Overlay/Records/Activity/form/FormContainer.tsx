@@ -26,13 +26,15 @@ import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'util/use_selector';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST, ACTIVITY_ERRORS, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
-import { selectUserSettings } from 'state/reducers/userSettings';
+import {
+  ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+  ACTIVITY_ERRORS,
+  ACTIVITY_ON_FORM_CHANGE_REQUEST
+} from 'state/actions';
 import validator from '@rjsf/validator-ajv8';
-import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css'
+import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import _ from 'lodash';
-
 
 const FormContainer: React.FC<any> = (props) => {
   const ref = useRef(0);
@@ -43,39 +45,39 @@ const FormContainer: React.FC<any> = (props) => {
   const username = useSelector((state) => state.Auth.username);
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
 
-  const activityState = useSelector((state) => state.ActivityPage.activity);
   const formDataState = useSelector((state) => state.ActivityPage.activity.form_data);
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
+  const activity_type = useSelector((state) => state.ActivityPage.activity.activity_type);
   const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
+  const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
 
-  const  MOBILE  = useSelector((state) => state.Configuration.current.MOBILE);
+  const MOBILE = useSelector((state) => state.Configuration.current.MOBILE);
   const darkTheme = useSelector((state) => state.UserSettings.darkTheme);
 
   const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
   const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings.apiDocsWithSelectOptions);
 
-  const suggestedTreatmentIDS  = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
+  const suggestedTreatmentIDS = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
 
   const dispatch = useDispatch();
 
-  const debouncedFormChange = 
-    _.debounce((event, ref, lastField, callbackFun) => {
+  const debouncedFormChange = _.debounce((event, ref, lastField, callbackFun) => {
     //(event, ref, lastField, callbackFun) => {
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null}
-      });
-    }, 1000)
+    dispatch({
+      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+      payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
+    });
+  }, 1000);
 
   const errorTransformers = useCallback(() => {
-    console.log('%c FormContainer errorTransformers hook', 'color: yellow')
+    
     return getCustomErrorTransformer();
-  }, [])
+  }, []);
 
   const customValidators = useCallback(() => {
-    console.log('%c FormContainer customValidators hook', 'color: yellow')
-    return validatorForActivity(activity_subtype, null)
-  }, [JSON.stringify(activity_subtype)])
+    
+    return validatorForActivity(activity_subtype, null);
+  }, [JSON.stringify(activity_subtype)]);
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = React.createRef();
@@ -83,7 +85,6 @@ const FormContainer: React.FC<any> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -100,6 +101,11 @@ const FormContainer: React.FC<any> = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    const currentState = formRef.current?.state;
+    dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
+  }, [formDataState]);
 
   //Dialog Proceed OnClick func
   const proceedClick = () => {
@@ -122,46 +128,50 @@ const FormContainer: React.FC<any> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {
-        });
+        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {});
       });
     }, 100);
     handleClose();
-  }
+  };
 
   const isActivityChemTreatment = () => {
     if (
       activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' 
+      activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic'
     ) {
       return true;
     }
   };
 
-  const ErrorListTemplate = (err) => {
+  const ErrorListTemplate = (err: any) => {
     return (
-      <div>
-        <br></br>
-        <br></br>
-        <br></br>
-        <Typography color="error" variant="h6">
-          Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however save in
-          progress work, and come back later.
-        </Typography>
-      </div>
+      <>
+        {err.errors?.length > 0 ? (
+          <div>
+            <br></br>
+            <br></br>
+            <br></br>
+            <Typography color="error" variant="h6">
+              Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
+              save in progress work, and come back later.
+            </Typography>
+            
+          </div>
+        ) : null}
+      </>
     );
   };
 
   useEffect(() => {
     const getApiSpec = async () => {
-      console.log('%c FormContainer getApiSpec hook', 'color: yellow')
-      const subtype = activity_subtype
+      
+      const subtype = activity_subtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
-      const notMine = username !== activityState?.created_by;
+      const notMine = username !== created_by;
       const notAdmin =
         accessRoles?.filter((role) => {
-          return [1,18].includes(role.role_id)
+          return [1, 18].includes(role.role_id);
         }).length === 0;
       if (notAdmin && notMine) {
         components = (apiDocsWithViewOptions as any).components;
@@ -178,7 +188,7 @@ const FormContainer: React.FC<any> = (props) => {
       try {
         //const suggestedTreatmentIDs = activityStateInStore?.suggestedTreatmentIDs ?? [];
 
-        if (activityState?.activity_type === 'Monitoring') {
+        if (activity_type === 'Monitoring') {
           if (MOBILE) {
             uiSchema = {
               ...uiSchema,
@@ -234,12 +244,17 @@ const FormContainer: React.FC<any> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [activity_subtype, authenticated, MOBILE, suggestedTreatmentIDS]);
+  }, [
+    JSON.stringify(activity_subtype),
+    JSON.stringify(authenticated),
+    JSON.stringify(MOBILE),
+    JSON.stringify(suggestedTreatmentIDS)
+  ]);
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    console.log(' is mine hook')
-    const notMine = username !== activityState.created_by;
+    
+    const notMine = username !== created_by;
     const notAdmin =
       accessRoles?.filter((role) => {
         return role.role_id === 18;
@@ -255,7 +270,9 @@ const FormContainer: React.FC<any> = (props) => {
   const [keyInt, setKeyInt] = useState(0);
   const pasteCallback = () => {
     props.pasteFormData();
-    setTimeout(() => {setKeyInt(keyInt + Math.random())}, 1500);
+    setTimeout(() => {
+      setKeyInt(keyInt + Math.random());
+    }, 1500);
   };
 
   if (!schemas.schema || !schemas.uiSchema) {
@@ -279,18 +296,18 @@ const FormContainer: React.FC<any> = (props) => {
                 }}
                 readonly={props.isDisabled}
                 key={activity_ID + keyInt.toString()}
-                disabled={isDisabled}
+                disabled={false}
                 formData={formDataState || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
-                //liveValidate={true}
+                liveValidate={true}
                 customValidate={customValidators()}
                 validator={validator}
                 showErrorList={'top'}
-                //transformErrors={getCustomErrorTransformer()}
-                transformErrors={errorTransformers()}
+                transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
+                  
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
@@ -305,11 +322,9 @@ const FormContainer: React.FC<any> = (props) => {
                     console.log(e);
                   }
                 }}*/
-               // ref={formRef}
-               >
+                ref={formRef}>
                 <React.Fragment />
               </Form>
-
 
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
@@ -331,7 +346,7 @@ const FormContainer: React.FC<any> = (props) => {
                   form_data={formDataState}
                   schema={schemas.schema}
                 />
-                )}
+              )}
             </>
           </SelectAutoCompleteContextProvider>
         </ThemeProvider>
@@ -359,7 +374,6 @@ const FormContainer: React.FC<any> = (props) => {
             </Button>
           </DialogActions>
         </Dialog>
-            
       </Box>
     );
   }

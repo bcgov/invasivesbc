@@ -48,6 +48,7 @@ import {
 } from '../actions';
 
 import { AppConfig } from '../config';
+import { createNextState } from '@reduxjs/toolkit';
 
 class ActivityState {
   initialized: boolean;
@@ -74,13 +75,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
   return (state = initialState, action) => {
     switch (action.type) {
       case ACTIVITY_ERRORS: {
-        const errorsFromCustomTransformer = action.payload.source === 'custom error transformer'?  action.payload.errors : null
-        const errorsFromCustomValidator = action.payload.source === 'custom validator'?  action.payload.errors : null
-        return {
-          ...state,
-          errorsFromCustomTransformer: errorsFromCustomTransformer,
-          errorsFromCustomValidator: errorsFromCustomValidator
-        };
+        const nextState= createNextState(state, (draftState) => {
+          draftState.activityErrors = action.payload.errors
+        })
+        return nextState;
       }
       case ACTIVITY_DELETE_SUCCESS: {
         return {
@@ -115,35 +113,23 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_UPDATE_GEO_SUCCESS: {
-        return {
-          ...state,
-          activity: {
-            ...state.activity,
-            geometry: action.payload.geometry,
-            form_data: {
-              ...state.activity.form_data,
-              activity_data: {
-                ...state.activity.form_data.activity_data,
-                latitude: action.payload.lat,
-                longitude: action.payload.long,
-                utm_zone: action.payload.utm ? action.payload.utm[0] : null,
-                utm_easting: action.payload.utm ? action.payload.utm[1] : null,
-                utm_northing: action.payload.utm ? action.payload.utm[2] : null,
-                reported_area: action.payload.reported_area
-              },
-              activity_subtype_data: {
-                ...state.activity.form_data.activity_subtype_data,
-                Well_Information: action.payload.Well_Information
-              }
-            }
-          }
-        };
+        const nextState = createNextState(state, (draftState) => {
+          draftState.activity.geometry = action.payload.geometry;
+          draftState.activity.form_data.activity_data.latitude = action.payload.lat;
+          draftState.activity.form_data.activity_data.longitude = action.payload.long;
+          draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
+          draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
+          draftState.activity.form_data.activity_data.utm_northing = action.payload.utm ? action.payload.utm[2] : null;
+          draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area;
+          draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
+        });
+        return nextState;
       }
       case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
-        return {
-          ...state,
-          activity: { ...action.payload.activity }
-        };
+        const nextState = createNextState(state, (draftState) => {
+          draftState.activity.form_data = action.payload.activity.form_data;
+        });
+        return nextState;
       }
       case ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS: {
         return {
@@ -204,7 +190,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       case ACTIVITY_PASTE_SUCCESS: {
-        const newFormData = JSON.parse(JSON.stringify(state.activity_copy_buffer.form_data))
+        const newFormData = JSON.parse(JSON.stringify(state.activity_copy_buffer.form_data));
         return {
           ...state,
           activity: {
@@ -212,7 +198,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             form_data: {
               ...newFormData
             }
-          },
+          }
         };
       }
       case ACTIVITY_ADD_PHOTO_SUCCESS: {
@@ -220,10 +206,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           ...state,
           activity: {
             ...state.activity,
-            media: [
-              ...state.activity.media,
-              action.payload.photo
-            ]
+            media: [...state.activity.media, action.payload.photo]
           }
         };
       }
