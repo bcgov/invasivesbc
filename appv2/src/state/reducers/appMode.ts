@@ -26,9 +26,10 @@ export default function appMode(state = initialState, action: any) {
         mode: action.payload.mode
       };
     case TOGGLE_PANEL:
+      const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true: false;
       return {
         ...state,
-        panelOpen: action?.payload?.panelOpen ? action.payload.panelOpen : !state.panelOpen,
+        panelOpen: panelStateInPayload? action.payload.panelOpen : !state.panelOpen,
         panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
       };
     case OVERLAY_MENU_TOGGLE: {

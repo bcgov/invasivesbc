@@ -156,7 +156,7 @@ function* reinitAuth() {
       historySingleton.push(postAuthNavigate);
       yield put({
         type: TOGGLE_PANEL, payload: {
-          panelOpen: true,
+          panelOpen: false,
           panelFullScreen: false
         }
       });

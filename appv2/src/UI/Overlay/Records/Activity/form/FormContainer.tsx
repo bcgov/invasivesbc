@@ -44,6 +44,9 @@ const FormContainer: React.FC<any> = (props) => {
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
 
   const activityState = useSelector((state) => state.ActivityPage.activity);
+  const formDataState = useSelector((state) => state.ActivityPage.activity.form_data);
+  const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
+  const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
 
   const  MOBILE  = useSelector((state) => state.Configuration.current.MOBILE);
   const darkTheme = useSelector((state) => state.UserSettings.darkTheme);
@@ -65,8 +68,14 @@ const FormContainer: React.FC<any> = (props) => {
     }, 1000)
 
   const errorTransformers = useCallback(() => {
+    console.log('%c FormContainer errorTransformers hook', 'color: yellow')
     return getCustomErrorTransformer();
-  }, [activityState.form_data])
+  }, [])
+
+  const customValidators = useCallback(() => {
+    console.log('%c FormContainer customValidators hook', 'color: yellow')
+    return validatorForActivity(activity_subtype, null)
+  }, [JSON.stringify(activity_subtype)])
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const formRef = React.createRef();
@@ -122,10 +131,8 @@ const FormContainer: React.FC<any> = (props) => {
 
   const isActivityChemTreatment = () => {
     if (
-      activityState.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      activityState.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
-      activityState.activitySubtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      activityState.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
+      activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
+      activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' 
     ) {
       return true;
     }
@@ -147,7 +154,8 @@ const FormContainer: React.FC<any> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const subtype = activityState?.activity_subtype || activityState?.activitySubtype;
+      console.log('%c FormContainer getApiSpec hook', 'color: yellow')
+      const subtype = activity_subtype
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
       const notMine = username !== activityState?.created_by;
@@ -206,7 +214,7 @@ const FormContainer: React.FC<any> = (props) => {
                   ...components,
                   schemas: {
                     ...components.schemas,
-                    [activityState.activity_subtype]: modifiedSchema
+                    [activity_subtype]: modifiedSchema
                   }
                 };
               }
@@ -226,10 +234,11 @@ const FormContainer: React.FC<any> = (props) => {
     if (authenticated) {
       getApiSpec();
     }
-  }, [activityState.activity_subtype, authenticated, MOBILE, suggestedTreatmentIDS]);
+  }, [activity_subtype, authenticated, MOBILE, suggestedTreatmentIDS]);
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
+    console.log(' is mine hook')
     const notMine = username !== activityState.created_by;
     const notAdmin =
       accessRoles?.filter((role) => {
@@ -269,13 +278,13 @@ const FormContainer: React.FC<any> = (props) => {
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
                 readonly={props.isDisabled}
-                key={activityState?._id + keyInt.toString()}
+                key={activity_ID + keyInt.toString()}
                 disabled={isDisabled}
-                formData={activityState.form_data || null}
+                formData={formDataState || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
-                liveValidate={true}
-                customValidate={validatorForActivity(activityState, null)}
+                //liveValidate={true}
+                customValidate={customValidators()}
                 validator={validator}
                 showErrorList={'top'}
                 //transformErrors={getCustomErrorTransformer()}
@@ -286,10 +295,7 @@ const FormContainer: React.FC<any> = (props) => {
                     //setformData(updatedFormData);
                   });
                 }}
-                onError={(error) => {
-                  dispatch({ type: ACTIVITY_ERRORS, payload: error });
-                }}
-                onSubmit={(event) => {
+                /*onSubmit={(event) => {
                   if (!props.onFormSubmitSuccess) {
                     return;
                   }
@@ -298,15 +304,17 @@ const FormContainer: React.FC<any> = (props) => {
                   } catch (e) {
                     console.log(e);
                   }
-                }}
-                ref={formRef}>
+                }}*/
+               // ref={formRef}
+               >
                 <React.Fragment />
               </Form>
+
 
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   disabled={props.isDisabled}
-                  activitySubType={activityState.activity_subtype || null}
+                  activitySubType={activity_subtype || null}
                   onChange={(form_data, callback) => {
                     //todo redux chem treatment form on change
                     dispatch({
@@ -320,10 +328,10 @@ const FormContainer: React.FC<any> = (props) => {
                       callback();
                     }
                   }}
-                  form_data={activityState.form_data}
+                  form_data={formDataState}
                   schema={schemas.schema}
                 />
-              )}
+                )}
             </>
           </SelectAutoCompleteContextProvider>
         </ThemeProvider>
@@ -351,6 +359,7 @@ const FormContainer: React.FC<any> = (props) => {
             </Button>
           </DialogActions>
         </Dialog>
+            
       </Box>
     );
   }

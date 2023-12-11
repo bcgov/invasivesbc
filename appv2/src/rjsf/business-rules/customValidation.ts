@@ -17,13 +17,13 @@ function combineValidators(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 
-export function validatorForActivity(activity, linkedActivity): rjsfValidator {
+export function validatorForActivity(activity_subtype, linkedActivity): rjsfValidator {
   return combineValidators([
-    getAreaValidator(activity.activity_subtype),
-    getDateAndTimeValidator(activity.activity_subtype),
-    getDateAndTimeValidatorOther(activity.activity_subtype),
-    getWindValidator(activity.activity_subtype),
-    getWindValidatorBiocontrol(activity.activity_subtype),
+    getAreaValidator(activity_subtype),
+    getDateAndTimeValidator(activity_subtype),
+    getDateAndTimeValidatorOther(activity_subtype),
+    getWindValidator(activity_subtype),
+    getWindValidatorBiocontrol(activity_subtype),
     getSlopeAspectBothFlatValidator(),
     getPosAndNegObservationValidator(),
     getPosAndNegObservationValidatorAquatic(),
@@ -37,7 +37,7 @@ export function validatorForActivity(activity, linkedActivity): rjsfValidator {
     getVegTransectPointsPercentCoverValidator(),
     getJurisdictionPercentValidator(),
     getInvasivePlantsValidator(linkedActivity),
-    getPlotIdentificationTreesValidator(activity.activity_subtype),
+    getPlotIdentificationTreesValidator(activity_subtype),
     accessDescriptionMinChars()
   ]);
 }
@@ -248,6 +248,7 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
         jurCodes.push(jurCode.jurisdiction_code);
       }
     });
+
 
     return errors;
   };
