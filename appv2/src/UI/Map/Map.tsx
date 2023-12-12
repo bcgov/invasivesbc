@@ -9,7 +9,7 @@ import { RecordSetLayersRenderer } from './RecordSetLayersRenderer';
 //import { VectorOverviewLayer } from './VectorOverviewLayer';
 
 const RecordSetLayers = (props: any) => {
-  const { IAPPGeoJSON } = useSelector((state: any) => state.Map);
+  const  IAPPGeoJSON  = useSelector((state: any) => state.Map?.IAPPGeoJSON);
   const [shouldDisplay, setShouldDisplay] = useState(false);
 
   useLayoutEffect(() => {
@@ -22,7 +22,6 @@ const RecordSetLayers = (props: any) => {
 };
 
 const Map = (props: any) => {
-  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   let ref = useRef(0);
   ref.current += 1;
   console.log('%cMap.tsx render' + ref.current.toString(), 'color: yellow');

@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Table, TableBody, TableCell, TableRow, Theme } from "@mui/material";
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import { MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY, MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI, WHATS_HERE_SORT_FILTER_UPDATE } from "state/actions";
-import { selectAuth } from "state/reducers/auth";
-import { selectMap } from "state/reducers/map";
 
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -12,26 +10,27 @@ import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 function WhatsHerePagination(props) {
   const dispatch = useDispatch();
-  const mapState = useSelector(selectMap);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
+
   let pageNumber = 0;
   let pageLimit = 5;
   let setLength = 1;
   let actionType = '';
-  if (mapState?.whatsHere) {
+  if (whatsHere) {
     if (
       props.type === 'activity' &&
-      mapState?.whatsHere?.activityRows &&
-      mapState?.whatsHere?.activityRows.length > 0
+      whatsHere?.activityRows &&
+      whatsHere?.activityRows.length > 0
     ) {
-      setLength = mapState?.whatsHere?.ActivityIDs.length;
+      setLength = whatsHere?.ActivityIDs.length;
       actionType = WHATS_HERE_PAGE_ACTIVITY;
-      pageNumber = mapState?.whatsHere?.ActivityPage;
-      pageLimit = mapState?.whatsHere?.ActivityLimit;
-    } else if (props.type === 'iapp' && mapState?.whatsHere?.IAPPIDs && mapState?.whatsHere?.IAPPIDs.length > 0) {
-      setLength = mapState?.whatsHere?.IAPPIDs.length;
+      pageNumber = whatsHere?.ActivityPage;
+      pageLimit = whatsHere?.ActivityLimit;
+    } else if (props.type === 'iapp' && whatsHere?.IAPPIDs && whatsHere?.IAPPIDs.length > 0) {
+      setLength = whatsHere?.IAPPIDs.length;
       actionType = WHATS_HERE_PAGE_POI;
-      pageNumber = mapState?.whatsHere?.IAPPPage;
-      pageLimit = mapState?.whatsHere?.IAPPLimit;
+      pageNumber = whatsHere?.IAPPPage;
+      pageLimit = whatsHere?.IAPPLimit;
     }
   }
 
@@ -117,10 +116,10 @@ function WhatsHerePagination(props) {
 
 
 export const RenderTablePosition = ({ rows }) => {
-  const mapState = useSelector(selectMap);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
   return (
     <>
-      {mapState?.whatsHere?.section === "position" ? 
+      {whatsHere?.section === "position" ? 
       <Table>
         <TableBody>
           {
@@ -148,8 +147,8 @@ export const RenderTablePosition = ({ rows }) => {
 
 export const RenderTableActivity = (props: any) => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector(selectAuth);
-  const mapState = useSelector(selectMap);
+  const { authenticated, roles } = useSelector((state: any) => state.Auth);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
@@ -250,11 +249,11 @@ export const RenderTableActivity = (props: any) => {
 
   return (
     <>
-      {mapState?.whatsHere?.section === "invasivesbc" ? 
+      {whatsHere?.section === "invasivesbc" ? 
         <div style={{ height: '300px', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
-            rows={mapState?.whatsHere?.activityRows}
+            rows={whatsHere?.activityRows}
             hideFooterPagination
             hideFooter
             disableColumnMenu
@@ -290,8 +289,8 @@ export const RenderTableActivity = (props: any) => {
 
 export const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector(selectAuth);
-  const mapState = useSelector(selectMap);
+  const { authenticated, roles } = useSelector((state: any) => state.Auth);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
@@ -379,11 +378,11 @@ export const RenderTablePOI = (props: any) => {
 
   return (
     <>
-      {mapState?.whatsHere?.section === "iapp" ? 
+      {whatsHere?.section === "iapp" ? 
         <div style={{ height: '300px', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
-            rows={mapState?.whatsHere?.iappRows}
+            rows={whatsHere?.iappRows}
             hideFooterPagination
             hideFooter
             disableColumnMenu

@@ -7,22 +7,21 @@ import { useMap, Marker, GeoJSON } from "react-leaflet";
 import center from "@turf/center";
 
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 
 export const WhatsHereMarker = (props) => {
   const map = useMap();
-  const mapState = useSelector(selectMap);
   const markerRef = useRef();
   const [panned, setPanned] = useState(false);
   const [position, setPosition] = useState(null);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
 
   useEffect(() => {
     let lat = null;
     let lng = null;
 
-    if (mapState?.whatsHere?.feature?.geometry) {
-      lat = JSON.parse(JSON.stringify(center(mapState?.whatsHere?.feature)?.geometry?.coordinates[1]));
-      const coord = mapState?.whatsHere?.feature?.geometry?.coordinates[0];
+    if (whatsHere?.feature?.geometry) {
+      lat = JSON.parse(JSON.stringify(center(whatsHere?.feature)?.geometry?.coordinates[1]));
+      const coord = whatsHere?.feature?.geometry?.coordinates[0];
       lng = coord[2][0];
       const coord2 = coord[1];
       setPosition({ lat: coord2[1], lng: lng });
@@ -31,7 +30,7 @@ export const WhatsHereMarker = (props) => {
     return () => {
       setPosition(null);
     };
-  }, [JSON.stringify(mapState?.whatsHere?.feature)]);
+  }, [JSON.stringify(whatsHere?.feature)]);
 
   useEffect(() => {
     if (!position) {
@@ -73,7 +72,7 @@ export const WhatsHereMarker = (props) => {
   });
 
   return (
-    position?.lat && map && panned && mapState?.whatsHere?.toggle ? (
+    position?.lat && map && panned && whatsHere?.toggle ? (
       <Marker key={Math.random()} icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
     ) : (
       <></>
@@ -84,14 +83,14 @@ export const WhatsHereMarker = (props) => {
 
 export const WhatsHereCurrentRecordHighlighted = (props) => {
   const map = useMap();
-  const mapState = useSelector(selectMap);
   const [highlightedGeo, setHighlightedGeo] = useState(null);
   const [highlightedMarkerLtLng, setHighlightedMarkerLtLng] = useState(null);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
 
   useEffect(() => {
-    const isIAPP = mapState?.whatsHere?.highlightedIAPP ? true : false;
+    const isIAPP = whatsHere?.highlightedIAPP ? true : false;
 
-    const geo = mapState?.whatsHere?.highlightedGeo;
+    const geo = whatsHere?.highlightedGeo;
 
     const isPoint = isIAPP || geo?.geometry?.type === 'Point' ? true : false;
     const area = geo?.reported_area;
@@ -125,9 +124,9 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       }, (15 + addedZoom));
     } else return;
   }, [
-    mapState?.whatsHere?.highlightedIAPP,
-    mapState?.whatsHere?.highlightedACTIVITY,
-    mapState?.whatsHere?.highlightedGeo
+    whatsHere?.highlightedIAPP,
+    whatsHere?.highlightedACTIVITY,
+    whatsHere?.highlightedGeo
   ]);
 
   const highlight = (feature, layer) => {
@@ -169,12 +168,12 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
 
   return (
     <>
-      {highlightedMarkerLtLng && mapState?.whatsHere?.toggle ? (
+      {highlightedMarkerLtLng && whatsHere?.toggle ? (
         <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} />
       ) : (
         <></>
       )}
-      {highlightedGeo && mapState?.whatsHere?.toggle ? (
+      {highlightedGeo && whatsHere?.toggle ? (
         <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
       ) : (
         <></>

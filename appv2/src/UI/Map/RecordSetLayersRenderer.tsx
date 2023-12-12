@@ -16,62 +16,66 @@ import { GeneralDialog } from './GeneralDialog';
 import 'leaflet-markers-canvas';
 import { useDispatch } from 'react-redux';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
-import { selectMap } from 'state/reducers/map';
 import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
 
 const IAPPCanvasLayerMemo = (props) => {
-  const mapState = useSelector(selectMap);
+  const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
+  const layers = useSelector((state: any) => state.Map?.layers);
+  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.layers?.[props.layerKey].layerState?.mapToggle && mapState?.IAPPBoundsPolygon) {
-      returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
-        return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
+    if (layers?.[props.layerKey]?.IDList && layers?.[props.layerKey].layerState?.mapToggle && IAPPBoundsPolygon) {
+      returnVal = IAPPGeoJSON?.features.filter((row) => {
+        return layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
     } else {
       returnVal = [];
     }
     const points = {type: 'FeatureCollection', features: returnVal};
-    return pointsWithinPolygon(points as any, mapState?.IAPPBoundsPolygon);
+    return pointsWithinPolygon(points as any, IAPPBoundsPolygon);
   };
 
   return useMemo(() => {
-    if (mapState.layers?.[props.layerKey]?.layerState) {
+    if (layers?.[props.layerKey]?.layerState) {
       return (
         <LeafletCanvasMarker
           key={'POICanvasLayermemo' + props.layerKey}
-          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
+          labelToggle={layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
-          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
-          colour={mapState.layers[props.layerKey].layerState.color}
-          zIndex={100000 + mapState.layers[props.layerKey].layerState.drawOrder}
+          enabled={layers[props.layerKey].layerState.mapToggle}
+          colour={layers[props.layerKey].layerState.color}
+          zIndex={100000 + layers[props.layerKey].layerState.drawOrder}
         />
       );
     } else return <></>;
   }, [
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList, mapState?.layers?.[props.layerKey].layerState?.mapToggle),
-    JSON.stringify(mapState?.IAPPBoundsPolygon)
+    JSON.stringify(layers?.[props.layerKey]?.layerState),
+    JSON.stringify(layers?.[props.layerKey]?.IDList, layers?.[props.layerKey].layerState?.mapToggle),
+    JSON.stringify(IAPPBoundsPolygon)
   ]);
 };
 
 const IAPPCanvasLabelMemo = (props) => {
-  const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
+  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
+  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
+  const layers = useSelector((state: any) => state.Map?.layers);
+  const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
 
   //CAP LABEL COUNT HERE
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.labelBoundsPolygon && mapState?.layers?.[props.layerKey]?.IDList && mapState?.IAPPBoundsPolygon) {
-      returnVal = mapState?.IAPPGeoJSON?.features.filter((row) => {
-        return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
+    if (labelBoundsPolygon && layers?.[props.layerKey]?.IDList && IAPPBoundsPolygon) {
+      returnVal = IAPPGeoJSON?.features.filter((row) => {
+        return layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
       });
     } else {
       returnVal = [];
     }
     const points = {type: 'FeatureCollection', features: returnVal};
-    const pointsInBounds = pointsWithinPolygon(points as any, mapState?.IAPPBoundsPolygon);
-    const pointsToLabel = pointsWithinPolygon(pointsInBounds as any, mapState?.labelBoundsPolygon);
+    const pointsInBounds = pointsWithinPolygon(points as any, IAPPBoundsPolygon);
+    const pointsToLabel = pointsWithinPolygon(pointsInBounds as any, labelBoundsPolygon);
     // only allow max labels
     if (pointsToLabel?.features?.length > 5000) {
       dispatch({
@@ -110,35 +114,38 @@ const IAPPCanvasLabelMemo = (props) => {
   };
 
   return useMemo(() => {
-    if (mapState.layers?.[props.layerKey]?.layerState) {
+    if (layers?.[props.layerKey]?.layerState) {
       return (
         <LeafletCanvasLabel
           layerType={'IAPP'}
           key={'POICanvasLayermemo' + props.layerKey}
-          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
+          labelToggle={layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
-          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
-          colour={mapState.layers[props.layerKey].layerState.color}
-          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
+          enabled={layers[props.layerKey].layerState.mapToggle}
+          colour={layers[props.layerKey].layerState.color}
+          zIndex={10000 + layers[props.layerKey].layerState.drawOrder}
         />
       );
     } else return <></>;
   }, [
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
-    JSON.stringify(mapState?.labelBoundsPolygon)
+    JSON.stringify(layers?.[props.layerKey]?.layerState),
+    JSON.stringify(layers?.[props.layerKey]?.IDList),
+    JSON.stringify(labelBoundsPolygon)
   ]);
 };
 
 const ActivityCanvasLabelMemo = (props) => {
-  const mapState = useSelector(selectMap);
+  const layers = useSelector((state: any) => state.Map?.layers);
+  const labelBoundsPolygon  = useSelector((state: any) => state.Map?.labelBoundsPolygon);
+  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
+
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList && mapState?.labelBoundsPolygon) {
-      returnVal = mapState?.activitiesGeoJSON?.features
+    if (layers?.[props.layerKey]?.IDList && labelBoundsPolygon) {
+      returnVal = activitiesGeoJSON?.features
         .filter((row) => {
-          return (mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
+          return (layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
         })
         .map((row) => {
           let computedCenter = null;
@@ -157,38 +164,40 @@ const ActivityCanvasLabelMemo = (props) => {
       returnVal = [];
     }
     const points = {type: 'FeatureCollection', features: returnVal};
-    return pointsWithinPolygon(points as any, mapState?.labelBoundsPolygon);
+    return pointsWithinPolygon(points as any, labelBoundsPolygon);
   };
 
   return useMemo(() => {
-    if (mapState.layers?.[props.layerKey]?.layerState) {
+    if (layers?.[props.layerKey]?.layerState) {
       return (
         <LeafletCanvasLabel
           layerType={'ACTIVITY'}
           key={'activityCanvasLayermemo' + props.layerKey}
-          labelToggle={mapState.layers[props.layerKey].layerState.labelToggle}
+          labelToggle={layers[props.layerKey].layerState.labelToggle}
           points={filteredFeatures()}
-          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
-          colour={mapState.layers[props.layerKey].layerState.color}
-          zIndex={10000 + mapState.layers[props.layerKey].layerState.drawOrder}
+          enabled={layers[props.layerKey].layerState.mapToggle}
+          colour={layers[props.layerKey].layerState.color}
+          zIndex={10000 + layers[props.layerKey].layerState.drawOrder}
         />
       );
     } else return <div key={Math.random()}></div>;
   }, [
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList),
-    JSON.stringify(mapState?.labelBoundsPolygon)
+    JSON.stringify(layers?.[props.layerKey]?.layerState),
+    JSON.stringify(layers?.[props.layerKey]?.IDList),
+    JSON.stringify(labelBoundsPolygon)
   ]);
 };
 
 const ActivityLayerMemo = (props) => {
-  const mapState = useSelector(selectMap);
+  const IDList = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.IDList);
+  const layerState = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.layerState);
+  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
 
   const filteredFeatures = () => {
     let returnVal;
-    if (mapState?.layers?.[props.layerKey]?.IDList) {
-      returnVal = mapState?.activitiesGeoJSON?.features.filter((row) => {
-        return mapState?.layers?.[props.layerKey]?.IDList?.includes(row.properties.id);
+    if (IDList) {
+      returnVal = activitiesGeoJSON?.features.filter((row) => {
+        return IDList?.includes(row.properties.id);
       });
     } else {
       returnVal = [];
@@ -197,27 +206,27 @@ const ActivityLayerMemo = (props) => {
   };
 
   return useMemo(() => {
-    if (mapState.layers?.[props.layerKey]?.layerState) {
+    if (layerState) {
       return (
         <ActivitiesLayerV2
           key={'activitiesv2filter' + props.layerKey}
           layerKey={props.layerKey}
           activities={filteredFeatures()}
-          enabled={mapState.layers[props.layerKey].layerState.mapToggle}
-          color={mapState.layers[props.layerKey].layerState.color}
-          zIndex={mapState.layers[props.layerKey].layerState.drawOrder + 10000}
+          enabled={layerState.mapToggle}
+          color={layerState.color}
+          zIndex={layerState.drawOrder + 10000}
           opacity={0.8}
         />
       );
     } else return <div key={Math.random()}></div>;
   }, [
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.layerState),
-    JSON.stringify(mapState?.layers?.[props.layerKey]?.IDList)
+    JSON.stringify(layerState),
+    JSON.stringify(IDList)
   ]);
 };
 export const RecordSetLayersRenderer = (props: any) => {
-  const {accessRoles} = useSelector(selectAuth);
-  const mapState = useSelector(selectMap);
+  const layers = useSelector((state: any) => state.Map?.layers);
+  const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
 
   interface ILayerToRender {
     filter: IActivitySearchCriteria;
@@ -251,32 +260,32 @@ export const RecordSetLayersRenderer = (props: any) => {
   };
 
   const iappLayers = useCallback(() => {
-    const keys = Object.keys(mapState?.layers ? mapState.layers : {});
-    const filtered = keys?.filter((key) => mapState?.layers[key]?.type === 'POI');
+    const keys = Object.keys(layers ? layers : {});
+    const filtered = keys?.filter((key) => layers[key]?.type === 'POI');
     const sorted = filtered.sort((a, b) => {
-      if (mapState.layers[a].layerState.drawOrder > mapState.layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (mapState.layers[a].layerState.drawOrder === mapState.layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (mapState.layers[a].layerState.drawOrder < mapState.layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
+      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
+      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
+      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
     });
     return sorted;
   }, [
     JSON.stringify(
-      Object.keys(mapState?.layers ? mapState.layers : {}).map((l) => {
-        return {id: l, order: mapState?.layers?.[l]?.layerState?.drawOrder};
+      Object.keys(layers ? layers : {}).map((l) => {
+        return {id: l, order: layers?.[l]?.layerState?.drawOrder};
       })
     )
   ]);
 
   const activityLayers = useCallback(() => {
-    const keys = Object.keys(mapState?.layers ? mapState.layers : {});
-    const filtered = keys?.filter((key) => mapState?.layers[key]?.type === 'Activity');
+    const keys = Object.keys(layers ? layers : {});
+    const filtered = keys?.filter((key) => layers[key]?.type === 'Activity');
     const sorted = filtered.sort((a, b) => {
-      if (mapState.layers[a].layerState.drawOrder > mapState.layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (mapState.layers[a].layerState.drawOrder === mapState.layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (mapState.layers[a].layerState.drawOrder < mapState.layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
+      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
+      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
+      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
     });
     return sorted;
-  }, [JSON.stringify(Object.keys(mapState?.layers ? mapState.layers : {}))]);
+  }, [JSON.stringify(Object.keys(layers ? layers : {}))]);
 
   return (
     <>
@@ -307,10 +316,10 @@ export const RecordSetLayersRenderer = (props: any) => {
         <div key={Math.random()}></div>
       )}
       <GeneralDialog
-        dialogOpen={mapState?.tooManyLabelsDialog?.dialogOpen}
-        dialogTitle={mapState?.tooManyLabelsDialog?.dialogTitle}
-        dialogActions={mapState?.tooManyLabelsDialog?.dialogActions}
-        dialogContentText={mapState?.tooManyLabelsDialog?.dialogContentText}>
+        dialogOpen={tooManyLabelsDialog?.dialogOpen}
+        dialogTitle={tooManyLabelsDialog?.dialogTitle}
+        dialogActions={tooManyLabelsDialog?.dialogActions}
+        dialogContentText={tooManyLabelsDialog?.dialogContentText}>
       </GeneralDialog>
     </>
   );

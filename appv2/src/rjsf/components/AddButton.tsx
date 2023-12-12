@@ -4,10 +4,9 @@ import AddIcon from '@mui/icons-material/Add';
 import { AddButtonProps } from '@rjsf/core';
 import React from 'react';
 import { useSelector } from 'util/use_selector';
-import { selectUserSettings } from 'state/reducers/userSettings';
 
 const AddButton: React.FC<AddButtonProps> = (props) => {
-  const { darkTheme } = useSelector(selectUserSettings);
+  const { darkTheme } = useSelector((state: any) => state.UserSettings || ({} as any));
 
   return (
     <>

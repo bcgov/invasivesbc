@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { USER_CLICKED_RECORD } from "state/actions";
-import { selectMap } from "state/reducers/map";
 import { useSelector } from "util/use_selector";
 import './TouchHoldHandler.css';
 
 export const TouchHoldHandler = (props) => {
   const dispatch = useDispatch();
-  const mapState = useSelector(selectMap);
   const [shouldProgress, setShouldProgress] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const userRecordOnHoverRecordType = useSelector((state: any) => state.Map?.userRecordOnHoverRecordType);
+  const userRecordOnHoverRecordID = useSelector((state: any) => state.Map?.userRecordOnHoverRecordID);
+  const userRecordOnHoverRecordRow = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
 
   useEffect(() => {
     let touchLoaderBar = document.getElementById('touch-loader-bar');
@@ -62,9 +64,9 @@ export const TouchHoldHandler = (props) => {
       dispatch({
         type: USER_CLICKED_RECORD, 
         payload: {
-          recordType: mapState?.userRecordOnHoverRecordType, 
-          id: mapState?.userRecordOnHoverRecordID, 
-          row: mapState?.userRecordOnHoverRecordRow
+          recordType: userRecordOnHoverRecordType, 
+          id: userRecordOnHoverRecordID, 
+          row: userRecordOnHoverRecordRow
         }}
       );
     }

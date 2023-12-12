@@ -5,14 +5,14 @@ import { Circle, useMap } from "react-leaflet";
 import { IconButton, Tooltip } from "@mui/material";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 import { MAP_TOGGLE_ACCURACY } from "state/actions";
 
 import AttributionIcon from '@mui/icons-material/Attribution';
 
 export const AccuracyToggle = (props) => {
-  const mapState = useSelector(selectMap);
   const dispatch = useDispatch();
+  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
+  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
 
   const [show, setShow] = React.useState(false);
   const toolClass = toolStyles(); // Get the classes from the context
@@ -24,7 +24,7 @@ export const AccuracyToggle = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  if (!mapState || !mapState?.positionTracking) {
+  if (!positionTracking) {
     return <></>;
   } else {
     return (
@@ -35,7 +35,7 @@ export const AccuracyToggle = (props) => {
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
-          title={mapState?.accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
+          title={accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
           placement="top-end">
           <span>
             <IconButton
@@ -46,7 +46,7 @@ export const AccuracyToggle = (props) => {
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 // toolClass.customHoverFocus +
                 ' ' +
-                (mapState?.accuracyToggle ? toolClass.selected : toolClass.notSelected)
+                (accuracyToggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <AttributionIcon />
@@ -61,10 +61,12 @@ export const AccuracyToggle = (props) => {
 
 
 export const AccuracyMarker = (props) => {
-  const mapState = useSelector(selectMap);
   const map = useMap();
+  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
+  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const userCoords = useSelector((state: any) => state.Map?.userCoords);
 
-  if (map && mapState?.accuracyToggle && mapState?.positionTracking && mapState?.userCoords?.long) {
+  if (map && accuracyToggle && positionTracking && userCoords?.long) {
     return (
       <Circle
         key={'circlekeyforaccuracymarker' + Math.random()}
@@ -72,8 +74,8 @@ export const AccuracyMarker = (props) => {
         color={'#00FF00'}
         fillColor={'#00FF00'}
         fillOpacity={0.2}
-        center={[mapState.userCoords.lat, mapState.userCoords.long]}
-        radius={mapState.userCoords.accuracy}
+        center={[userCoords.lat, userCoords.long]}
+        radius={userCoords.accuracy}
       />
     );
   } else {

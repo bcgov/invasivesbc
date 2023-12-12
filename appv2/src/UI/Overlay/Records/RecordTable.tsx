@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectMap } from 'state/reducers/map';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordTable.css';
 import { activityColumnsToDisplay, getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP, iappColumnsToDisplay } from './RecordTableHelpers';
 import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
@@ -75,7 +73,6 @@ export const RecordTable = (props) => {
                 }
               }}
               onMouseOver={() => {
-                if (quickPanToRecord)
                   dispatch({
                     type: USER_HOVERED_RECORD,
                     payload: {
@@ -85,8 +82,8 @@ export const RecordTable = (props) => {
                     }
                   });
               }}
-              onTouchStart={()=> {
-                if (quickPanToRecord) {
+              onTouchStart={(e)=> {
+                console.log('e')
                   dispatch({
                     type: USER_TOUCHED_RECORD,
                     payload: {
@@ -95,7 +92,6 @@ export const RecordTable = (props) => {
                       row: row
                     }
                   });
-                }
               }}
               className="record_table_row"
               key={i}>

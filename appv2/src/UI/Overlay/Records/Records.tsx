@@ -15,7 +15,6 @@ import {
   USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
   USER_SETTINGS_SET_RECORD_SET_REQUEST
 } from 'state/actions';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { Activity } from './Record';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
@@ -24,9 +23,9 @@ import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
 export const Records = (props) => {
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
+  const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
 
   const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
-  const userSettingsState = useSelector(selectUserSettings);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -48,8 +47,8 @@ export const Records = (props) => {
       type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(userSettingsState?.recordSets?.[set])),
-          labelToggle: !userSettingsState?.recordSets?.[set]?.labelToggle
+          ...JSON.parse(JSON.stringify(recordSets?.[set])),
+          labelToggle: !recordSets?.[set]?.labelToggle
         },
         setName: set
       }
@@ -63,8 +62,8 @@ export const Records = (props) => {
       type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(userSettingsState?.recordSets?.[set])),
-          mapToggle: !userSettingsState?.recordSets?.[set]?.mapToggle
+          ...JSON.parse(JSON.stringify(recordSets?.[set])),
+          mapToggle: !recordSets?.[set]?.mapToggle
         },
         setName: set
       }
@@ -73,14 +72,14 @@ export const Records = (props) => {
 
   const onClickCycleColour = (set: any, e) => {
     e.stopPropagation();
-    const currentIndex = colours.indexOf(userSettingsState?.recordSets?.[set]?.color);
+    const currentIndex = colours.indexOf(recordSets?.[set]?.color);
     const nextIndex = (currentIndex + 1) % colours.length;
 
     dispatch({
       type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(userSettingsState?.recordSets?.[set])),
+          ...JSON.parse(JSON.stringify(recordSets?.[set])),
           color: colours[nextIndex]
         },
         setName: set
@@ -113,7 +112,7 @@ export const Records = (props) => {
         path="/Records"
         exact={true}
         render={(props) =>
-          userSettingsState?.recordSets ? (
+          recordSets ? (
             <>
               <OverlayHeader>
                 <div className="record_sets_header_new_set_button">
@@ -122,7 +121,7 @@ export const Records = (props) => {
                   </Button>
                 </div>
               </OverlayHeader>
-              {Object.keys(userSettingsState?.recordSets)?.map((set) => {
+              {Object.keys(recordSets)?.map((set) => {
                 return (
                   <div
                     key={set}
@@ -139,14 +138,14 @@ export const Records = (props) => {
                     style={{
                       borderColor:
                         typeof highlightedSet === 'string' && highlightedSet === set
-                          ? userSettingsState?.recordSets?.[set]?.color
+                          ? recordSets?.[set]?.color
                           : 'black',
                       borderStyle: 'solid',
                       borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px'
                     }}>
                     <div className="records_set_left_hand_items">
                       <div className="records_set_name">
-                        <Typography>{userSettingsState?.recordSets?.[set]?.recordSetName}</Typography>
+                        <Typography>{recordSets?.[set]?.recordSetName}</Typography>
                       </div>
                     </div>
 
@@ -155,26 +154,26 @@ export const Records = (props) => {
                         className="records__set__layer_toggle"
                         onClick={(e) => onClickToggleLabel(set, e)}
                         variant="outlined">
-                        {userSettingsState?.recordSets?.[set]?.labelToggle ? <LabelIcon /> : <LabelClearIcon />}
+                        {recordSets?.[set]?.labelToggle ? <LabelIcon /> : <LabelClearIcon />}
                       </Button>
 
                       <Button
                         className="records__set__layer_toggle"
                         onClick={(e) => onClickToggleLayer(set, e)}
                         variant="outlined">
-                        {userSettingsState?.recordSets?.[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
+                        {recordSets?.[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
                       </Button>
                       <div className="records_set_layer_colour">
                         <Button
                           onClick={(e) => onClickCycleColour(set, e)}
-                          style={{ backgroundColor: userSettingsState?.recordSets?.[set]?.color }}
+                          style={{ backgroundColor: recordSets?.[set]?.color }}
                           variant="contained">
                           <ColorLensIcon />
                         </Button>
                       </div>
 
-                      {userSettingsState?.recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
-                      userSettingsState?.recordSets?.[set]?.recordSetName === 'All IAPP Records' || userSettingsState.recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                      {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
+                      recordSets?.[set]?.recordSetName === 'All IAPP Records' || recordSets?.[set]?.recordSetName === 'My Drafts' ? (
                         <></>
                       ) : (
                         <Button onClick={(e) => onClickDeleteRecordSet(set, e)} variant="outlined">

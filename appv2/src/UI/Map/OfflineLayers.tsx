@@ -3,7 +3,6 @@ import { useMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet.offline';
 import { useSelector } from 'util/use_selector';
-import { selectMap } from 'state/reducers/map';
 
 const MAP_MAX_ZOOM = 30;
 

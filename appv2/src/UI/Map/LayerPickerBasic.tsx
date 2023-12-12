@@ -13,7 +13,6 @@ import {
 } from 'react-leaflet';
 import { DataBCLayer, LayerMode } from './DataBCRenderLayer';
 import 'leaflet/dist/leaflet.css';
-import { selectMap } from 'state/reducers/map';
 import LayersIcon from '@mui/icons-material/Layers';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@mui/material';

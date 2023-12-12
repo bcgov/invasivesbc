@@ -2,7 +2,6 @@ import chroma from 'chroma-js';
 import React, { useState } from 'react';
 import { MultipleSelect } from 'react-select-material-ui';
 import { useSelector } from 'util/use_selector';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { WidgetProps } from "@rjsf/utils";
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
@@ -10,7 +9,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   const enumOptions = (props.schema.options as any[]) || (props.options.enumOptions as any[]);
   const [focused, setFocused] = useState(false);
   const [hasValues, setHasValues] = useState(false);
-  const { darkTheme } = useSelector(selectUserSettings);
+  const { darkTheme } = useSelector((state: any) => state.UserSettings || ({} as any));
 
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the

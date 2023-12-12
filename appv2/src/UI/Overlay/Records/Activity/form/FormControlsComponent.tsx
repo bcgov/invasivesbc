@@ -4,8 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useSelector } from 'util/use_selector';
 import { selectAuth } from 'state/reducers/auth';
-import { selectActivity } from 'state/reducers/activity';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_DELETE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 
@@ -30,15 +28,16 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const isDisabled = props.isDisabled || false;
   const [open, setOpen] = React.useState(false);
   const { accessRoles, displayName, username } = useSelector(selectAuth);
-  const userSettings = useSelector(selectUserSettings);
   const dispatch = useDispatch();
+  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity)
 
-  const activityInState = useSelector(selectActivity);
+  const activity_id = useSelector((state: any) => state?.ActivityPage?.activity?.activity_id);
+
 
   const deleteRecord = () => {
     //TODO refactor this all to happen in a side effect triggered by a request action
     // On record deletion, clear selected record
-    if (userSettings.activeActivity === activityInState.activity.activity_id) {
+    if (activeActivity === activity_id) {
       dispatch({
         type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
         payload: {
@@ -46,7 +45,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         }
       });
     }
-    const activityIds = [activityInState.activity.activity_id];
+    const activityIds = [activity_id];
     dataAccess.deleteActivities(activityIds).then(() => {
       localStorage.removeItem('activeActivity')
       history.push('/home/activities');
