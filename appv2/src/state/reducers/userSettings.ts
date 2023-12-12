@@ -1,4 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
+import {Md5} from 'ts-md5'
 //import { Uuid, UuidOptions } from 'node-ts-uuid';
 //import  process from 'process'
 //window.process = process
@@ -253,6 +254,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             if (index !== -1)
               draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
           }
+
+          const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+            (filter) => filter.filter !== ''
+          );
+
+          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash = draftState.recordSets[action.payload.setID]?.tableFiltersHash 
+          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(JSON.stringify(tableFiltersNotBlank));
         });
         return nextState;
       }
