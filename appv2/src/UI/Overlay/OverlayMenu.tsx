@@ -8,6 +8,6 @@ export const OverlayMenu = (props) => {
     const dispatch = useDispatch();
     return <div className="overlayMenu">
         {props.children}
-        <Button onClick={()=> {dispatch({type: OVERLAY_MENU_TOGGLE})}} variant="contained">Cancel</Button>
+        <Button onClick={()=> {dispatch({type: OVERLAY_MENU_TOGGLE})}} variant="contained">CLOSE</Button>
     </div>
 }

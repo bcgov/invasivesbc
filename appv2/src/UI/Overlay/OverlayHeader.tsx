@@ -64,7 +64,7 @@ const onClickDragButton = (e) => {
 
   setTimeout(() => {
     cleanup(e);
-  }, 5000);
+  }, 10000);
 };
 
 export const OverlayHeader = (props) => {

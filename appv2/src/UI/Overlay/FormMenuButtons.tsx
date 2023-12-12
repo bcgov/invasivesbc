@@ -51,7 +51,7 @@ export const FormMenuButtons = (props) => {
         //disabled={activityStatus && activityErrors.length === 0 && (activityStatus === "Submitted" || !savedHash) ? true : false}
         disabled={activityStatus && (activityStatus === "Submitted" || !savedHash || activityErrors?.length > 0) ? true : false}
         variant="contained">
-        PUBLISH DRAFT TO SUBMITTED
+        SAVE & PUBLISH TO SUBMITTED
       </Button>
       <Button
 
