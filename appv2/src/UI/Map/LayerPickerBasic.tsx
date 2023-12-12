@@ -43,6 +43,7 @@ const dispatch = useDispatch();
               <LayersControl.Overlay key={'overlay' + i}checked={simplePickerLayers?.[layer]} name={layer}>
                 <LayerGroup>
                   <DataBCLayer
+                    key={'databc' + i}
                     enabled={true}
                     transparent={true}
                     layer_mode={LayerMode.WMSOnline}
@@ -58,6 +59,7 @@ const dispatch = useDispatch();
       <LayersControl.Overlay key={'overlay' + 'a'} checked={simplePickerLayers?.['Regional Districts']} name="Regional Districts">
         <LayerGroup>
           <DataBCLayer
+                    key={'databc' + 'a'}
             enabled={true}
             transparent={true}
             layer_mode={LayerMode.WMSOnline}
