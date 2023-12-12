@@ -48,7 +48,6 @@ const Map = (props: any) => {
       ) : (
         <></>
       )}
-      )
     </div>
   );
 };

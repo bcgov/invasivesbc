@@ -17,7 +17,7 @@ const Overlay = (props) => {
         if (buttonContainer) buttonContainer.style.marginBottom = 0 + 'vh';
       } else {
         const overlayDiv = document.getElementById('overlaydiv');
-        if (overlayDiv) buttonContainer.style.marginBottom = overlayDiv.style.height;
+        if (overlayDiv && buttonContainer) buttonContainer.style.marginBottom = overlayDiv.style.height;
       }
     }
   }, [panelOpen, fullScreen]);
