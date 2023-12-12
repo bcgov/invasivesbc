@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import { useDispatch } from "react-redux";
 import { MAP_TOGGLE_BASEMAP } from "state/actions";
-import { selectMap } from "state/reducers/map";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
 import LayersIcon from '@mui/icons-material/Layers';
@@ -12,7 +11,7 @@ import LayersClearIcon from '@mui/icons-material/LayersClear';
 
 export const BaseMapToggle = (props) => {
   const map = useMap();
-  const mapState = useSelector(selectMap);
+  const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
   const dispatch = useDispatch();
 
   const [show, setShow] = React.useState(false);
@@ -26,7 +25,7 @@ export const BaseMapToggle = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  if (!mapState || !map) {
+  if (!map) {
     return <></>;
   }
   return (
@@ -37,7 +36,7 @@ export const BaseMapToggle = (props) => {
         open={show}
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
-        title={mapState.baseMapToggle ? 'Imagery Map' : 'Topographical Map'}
+        title={baseMapToggle ? 'Imagery Map' : 'Topographical Map'}
         placement="top-end">
         <span>
           <IconButton
@@ -48,10 +47,10 @@ export const BaseMapToggle = (props) => {
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
               //classes.customHoverFocus +
               ' ' +
-              (mapState.baseMapToggle ? toolClass.selected : toolClass.notSelected)
+              (baseMapToggle ? toolClass.selected : toolClass.notSelected)
             }
             sx={{ color: '#000' }}>
-            {mapState.baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}
+            {baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}
           </IconButton>
         </span>
       </Tooltip>

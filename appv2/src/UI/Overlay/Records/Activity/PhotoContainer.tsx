@@ -37,7 +37,7 @@ export interface IPhotoContainerProps {
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
-  const activityState = useSelector(selectActivity);
+  const media = useSelector((state: any) => state.Activity?.activity?.media)
 
   const takePhoto = async () => {
     try {
@@ -92,7 +92,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   //   }
   // };
 
-  if (!activityState.activity.media) {
+  if (!media) {
     return <CircularProgress />;
   }
 
@@ -101,7 +101,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       <Box mb={3}>
         <Grid container>
           <Grid container item>
-            {activityState.activity.media.map((photo, index) => (
+            {media.map((photo, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card>
                   <CardMedia src={photo.encoded_file} component="img" />

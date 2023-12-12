@@ -5,6 +5,8 @@ import center from '@turf/center';
 import { set } from 'lodash';
 
 export const OnHoverActivity = (props: any) => {
+  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
+
   const id = useSelector((state: any) => state.Map?.userRecordOnHoverRecordID);
   const row = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
   const geometresForActivity = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow?.geometry);
@@ -15,7 +17,7 @@ export const OnHoverActivity = (props: any) => {
   useEffect(() => {
     try {
       const newGeo = center(geometresForActivity[0] || geometresForActivity);
-      if (newGeo) {
+      if (newGeo && quickPanToRecord) {
         setCenterPointGeometry(newGeo);
       } else {
         setCenterPointGeometry(null);
@@ -28,7 +30,7 @@ export const OnHoverActivity = (props: any) => {
     return () => {
       setCenterPointGeometry(null);
     };
-  }, [geometresForActivity]);
+  }, [geometresForActivity, quickPanToRecord]);
 
   useEffect(() => {
     if (!centerPointGeometry) {

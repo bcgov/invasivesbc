@@ -7,8 +7,6 @@ import { useMap, useMapEvent } from "react-leaflet";
 import { IconButton, Tooltip } from "@mui/material";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
-import { selectUserSettings } from "state/reducers/userSettings";
 import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE, TOGGLE_PANEL } from "state/actions";
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
@@ -16,10 +14,9 @@ import { useHistory } from "react-router";
 
 export const WhatsHereButton = (props) => {
   const map = useMap();
-  const history = useHistory();
   const dispatch = useDispatch();
-  const mapState = useSelector(selectMap);
-  const {darkTheme} = useSelector(selectUserSettings);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+  const darkTheme =  useSelector((state: any) => state.UserSettings?.darkTheme)
   const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
 
@@ -30,7 +27,7 @@ export const WhatsHereButton = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  if (mapState && mapState?.whatsHere && map) {
+  if (whatsHere && map) {
     return (
       <div
         ref={divRef}
@@ -44,12 +41,12 @@ export const WhatsHereButton = (props) => {
           <span>
             <IconButton
               onClick={() => {
-                dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !mapState.whatsHere.toggle} });
+                dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !whatsHere.toggle} });
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 ' ' +
-                ((mapState?.whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
+                ((whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <DocumentScannerIcon />
@@ -72,11 +69,11 @@ export const WhatsHereDrawComponent = (props) => {
   const ref = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+  const whatsHere   = useSelector((state: any) => state.Map?.whatsHere);
 
-  const mapState = useSelector(selectMap);
 
   useEffect(() => {
-    if ((mapState?.whatsHere as any)?.toggle == true && (mapState?.whatsHere as any)?.feature == null) {
+    if ((whatsHere as any)?.toggle == true && (whatsHere as any)?.feature == null) {
       ref.current = new (L as any).Draw.Rectangle(map);
       (ref.current as any).enable();
     }
@@ -84,11 +81,11 @@ export const WhatsHereDrawComponent = (props) => {
     return () => {
       if (ref.current) (ref.current as any).disable();
     };
-  }, [mapState?.whatsHere]);
+  }, [whatsHere]);
 
     const panelState = useSelector((state) => state.AppMode.panelOpen)
   useMapEvent('draw:created' as any, (e) => {
-    if ((mapState?.whatsHere as any).toggle && (mapState?.whatsHere as any)?.feature === null) {
+    if ((whatsHere as any).toggle && (whatsHere as any)?.feature === null) {
       history.push('/WhatsHere');
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
       if(!panelState)

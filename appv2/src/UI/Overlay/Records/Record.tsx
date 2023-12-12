@@ -4,7 +4,6 @@ import './Records.css';
 import { Route, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { ACTIVITY_SET_UNSAVED_NOTIFICATION, ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';

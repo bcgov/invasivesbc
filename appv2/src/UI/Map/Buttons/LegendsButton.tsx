@@ -5,7 +5,6 @@ import { useMap } from "react-leaflet";
 import { IconButton, Tooltip } from "@mui/material";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from "state/actions";
 
 import InfoIcon from '@mui/icons-material/Info';
@@ -13,12 +12,12 @@ import { useHistory } from "react-router";
 
 export const LegendsButton = (props) => {
   const map = useMap();
+  const legendsPopup = useSelector((state: any) => state.Map?.legendsPopup);
   const history = useHistory();
   const dispatch = useDispatch();
   const divRef = useRef();
   const toolClass = toolStyles();
 
-  const mapState = useSelector(selectMap);
   const [show, setShow] = React.useState(false);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export const LegendsButton = (props) => {
   }, []);
 
   const toggleLegend = () => {
-    if (mapState.legendsPopup) {
+    if (legendsPopup) {
       history.goBack();
     } else {
       history.push('/Legend');
@@ -38,7 +37,7 @@ export const LegendsButton = (props) => {
     // dispatch({ type: TOGGLE_PANEL });
   }
 
-  if (mapState && map) {
+  if (legendsPopup && map) {
     return (
       <div
         ref={divRef}

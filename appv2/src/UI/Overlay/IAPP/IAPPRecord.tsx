@@ -3,10 +3,8 @@ import React, {useEffect} from 'react';
 import './IAPPRecords.css';
 import {Route, useHistory, useParams, useRouteMatch} from 'react-router';
 import {useDispatch, useSelector} from 'react-redux';
-import {selectUserSettings} from 'state/reducers/userSettings';
 import {OverlayHeader} from '../OverlayHeader';
 import {Button} from '@mui/material';
-import {selectIAPPSite} from "../../../state/reducers/iappsite";
 import {Summary} from "./Summary";
 import {Photos} from "./Photos";
 import {IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM} from "../../../state/actions";
@@ -14,11 +12,12 @@ import {IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM} from "../../../state/actions";
 export const IAPPRecord = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const apiDocsWithSelectOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithSelectOptions);
+  const apiDocsWithViewOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithViewOptions);
 
   const {id} = useParams();
 
-  const settingsState = useSelector(selectUserSettings);
-  const IAPPState = useSelector(selectIAPPSite);
+  const IAPPState = useSelector((state: any) => state.IAPPSite);
 
   useEffect(() => {
     dispatch({type: IAPP_GET_REQUEST, payload: {iappID: id}});
@@ -64,8 +63,8 @@ export const IAPPRecord = (props) => {
             return <div>Activity does not exists, redirecting...</div>
           }
           if (
-            settingsState.apiDocsWithSelectOptions &&
-            settingsState.apiDocsWithViewOptions &&
+            apiDocsWithSelectOptions &&
+            apiDocsWithViewOptions &&
             (IAPPState?.site as any)?.site_id  &&
             IAPPState.loading === false
           )

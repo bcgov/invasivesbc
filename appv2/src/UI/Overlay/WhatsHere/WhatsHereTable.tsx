@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import center from "@turf/center";
 
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 import { calc_utm } from "util/utm";
 import { Button, Grid, Tab, TableContainer, Tabs } from "@mui/material";
 import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from "util/WhatsHereTableHelpers";
@@ -22,11 +21,10 @@ export const createDataUTM = (name: string, value: any) => {
 };
 
 export const WhatsHereTable = (props) => {
-  // const { darkTheme } = useSelector(selectUserSettings);
-  const mapState = useSelector(selectMap);
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   const history = useHistory();
 
-  const position = mapState?.whatsHere?.feature?.geometry ? center(mapState?.whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
+  const position = whatsHere?.feature?.geometry ? center(whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -51,14 +49,14 @@ export const WhatsHereTable = (props) => {
   };
 
   const goToRecord = () => {
-    const id = mapState?.whatsHere?.highlightedURLID;
+    const id = whatsHere?.highlightedURLID;
     // if (authenticated && roles.length > 0) {
       // }
     // authentication is needed eventually
-    if (mapState?.whatsHere?.highlightedType === "Activity") {
+    if (whatsHere?.highlightedType === "Activity") {
       history.push(`/Records/Activity:${id}/form`);
       dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
-    } else if (mapState?.whatsHere?.highlightedType === "IAPP") {
+    } else if (whatsHere?.highlightedType === "IAPP") {
       history.push(`/Records/IAPP:${id}/form`);
       dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
     }
@@ -67,13 +65,13 @@ export const WhatsHereTable = (props) => {
   return (
     <div className="whatshere-container">
       <OverlayHeader closeCallback={popupOnClose}></OverlayHeader>
-      {mapState?.whatsHere?.section ? (
+      {whatsHere?.section ? (
         <div className="whatshere-table-container">
           <div
             id="whatsherepopup"
             className="whatshere-table">
             <Grid container justifyContent="center" sx={{mb: 2, pb: 1}}>
-              <Tabs value={mapState?.whatsHere?.section} onChange={handleChange} centered>
+              <Tabs value={whatsHere?.section} onChange={handleChange} centered>
                 <Tab value="position" label="" icon={<LocationOnIcon />} />
                 <Tab value="invasivesbc" label="" icon={<FolderIcon />} />
                 {/* value="databc" label="Data BC" icon={<StorageIcon />} */}
@@ -81,14 +79,14 @@ export const WhatsHereTable = (props) => {
               </Tabs>
             </Grid>
             <Grid container spacing={2} justifyContent="center">
-              {mapState?.whatsHere?.highlightedACTIVITY || mapState?.whatsHere?.highlightedIAPP ? 
+              {whatsHere?.highlightedACTIVITY || whatsHere?.highlightedIAPP ? 
               <Grid item>
                 <Button variant="contained" onClick={goToRecord}>
-                  {`Open ${mapState?.whatsHere?.highlightedType} record: ${
-                    mapState?.whatsHere?.highlightedType === "IAPP" ? 
-                      mapState?.whatsHere?.highlightedIAPP
+                  {`Open ${whatsHere?.highlightedType} record: ${
+                    whatsHere?.highlightedType === "IAPP" ? 
+                      whatsHere?.highlightedIAPP
                       :
-                      mapState?.whatsHere?.highlightedACTIVITY}
+                      whatsHere?.highlightedACTIVITY}
                   `}
                 </Button>
               </Grid>

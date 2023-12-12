@@ -4,7 +4,6 @@ import { appModeEnum } from "../../state/reducers/appMode";
 import { useHistory, useLocation } from "react-router";
 import { current } from "@reduxjs/toolkit";
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 import { MAP_TOGGLE_LEGENDS } from "state/actions";
 import { useDispatch } from "react-redux";
 
@@ -16,7 +15,7 @@ const MapControls = (props: {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
-  const mapState = useSelector(selectMap);
+  const legendsPopup = useSelector((state: any) => state.Map?.legendsPopup);
 
 
   // for the temporary mode cycle 
@@ -46,7 +45,7 @@ const MapControls = (props: {
           const nextURL = `/${appModeEnum[next]}`;
           history.push(nextURL);
 
-          if (mapState.legendsPopup) dispatch({type: MAP_TOGGLE_LEGENDS })
+          if (legendsPopup) dispatch({type: MAP_TOGGLE_LEGENDS })
 
         }}
       >

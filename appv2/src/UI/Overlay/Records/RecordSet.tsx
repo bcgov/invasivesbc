@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -34,7 +33,6 @@ import { detectTouchDevice } from 'util/detectTouch';
 import ExcelExporter from './ExcelExporter';
 
 export const RecordSet = (props) => {
-  const userSettingsState = useSelector(selectUserSettings);
   const viewFilters = useSelector((state: any) => state.Map.viewFilters);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -46,9 +44,10 @@ export const RecordSet = (props) => {
     history.push('/Records');
   };
 
-  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
+  const recordSet = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]);
+  const tableType = recordSet?.recordSetType;
 
-  switch (userSettingsState?.recordSets?.[props.setID]) {
+  switch (recordSet) {
     case undefined:
       return <></>;
     default:
@@ -59,13 +58,13 @@ export const RecordSet = (props) => {
           <div className="stickyHeader">
             <div
               className="recordSet_header"
-              style={{ backgroundColor: userSettingsState?.recordSets?.[props.setID]?.color }}>
+              style={{ backgroundColor: recordSet?.color }}>
               <div className="recordSet_back_button">
                 <Button onClick={onClickBackButton} variant="contained">
                   {'< Back'}
                 </Button>{' '}
               </div>
-              <div className="recordSet_header_name">{userSettingsState?.recordSets?.[props.setID]?.recordSetName}</div>
+              <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
               <div className="recordSet_clear_filter_button">
                 <Button
                   onClick={() => {
@@ -125,7 +124,7 @@ export const RecordSet = (props) => {
           </div>
           <div className="recordSet_filters_container">
             <div className="recordSet_filters">
-              {userSettingsState?.recordSets?.[props.setID]?.tableFilters?.length > 0 && viewFilters ? (
+              {recordSet?.tableFilters?.length > 0 && viewFilters ? (
                 <table className="recordSetFilterTable">
                   <tbody>
                   <tr>
@@ -135,7 +134,7 @@ export const RecordSet = (props) => {
                     <th>Value</th>
                     <th></th>
                   </tr>
-                  {userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
+                  {recordSet?.tableFilters.map((filter: any, i) => {
                     if(filter.field !== 'form_status')
                     return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
                   })}
@@ -154,14 +153,15 @@ export const RecordSet = (props) => {
 };
 
 const RecordSetFooter = (props) => {
-  const mapState = useSelector((state: any) => state.Map);
+  const layer = useSelector((state: any) => state.Map.layers?.[props.setID]);
+  const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
 
-  const totalRecords = mapState?.layers?.[props.setID]?.IDList?.length;
-  const firstRowIndex = mapState?.recordTables?.[props.setID]?.page * mapState?.recordTables?.[props.setID]?.limit;
+  const totalRecords = layer?.IDList?.length;
+  const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
-    totalRecords < firstRowIndex + mapState?.recordTables?.[props.setID]?.limit
+    totalRecords < firstRowIndex + recordTable?.limit
       ? totalRecords
-      : firstRowIndex + mapState?.recordTables?.[props.setID]?.limit;
+      : firstRowIndex + recordTable?.limit;
 
   const shouldDisplayNextButton = totalRecords > lastRowIndex;
   const shouldDisplayPreviousButton = firstRowIndex > 0;
@@ -173,8 +173,8 @@ const RecordSetFooter = (props) => {
       type: PAGE_OR_LIMIT_UPDATE,
       payload: {
         setID: props.setID,
-        page: mapState?.recordTables?.[props.setID]?.page - 1,
-        limit: mapState?.recordTables?.[props.setID]?.limit
+        page: recordTable?.page - 1,
+        limit: recordTable?.limit
       }
     });
   };
@@ -183,8 +183,8 @@ const RecordSetFooter = (props) => {
       type: PAGE_OR_LIMIT_UPDATE,
       payload: {
         setID: props.setID,
-        page: mapState?.recordTables?.[props.setID]?.page + 1,
-        limit: mapState?.recordTables?.[props.setID]?.limit
+        page: recordTable?.page + 1,
+        limit: recordTable?.limit
       }
     });
   };

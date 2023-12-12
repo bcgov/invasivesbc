@@ -5,7 +5,6 @@ import { useMap } from "react-leaflet";
 import { IconButton, Tooltip } from "@mui/material";
 import { toolStyles } from "UI/Styles/ToolStyles";
 import { useSelector } from "util/use_selector";
-import { selectMap } from "state/reducers/map";
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { OPEN_NEW_RECORD_MENU } from "state/actions";
 import { useHistory } from "react-router";
@@ -14,10 +13,8 @@ export const NewRecord = (props) => {
   const map = useMap();
   const dispatch = useDispatch();
   const toolClass = toolStyles();
-  const mapState = useSelector(selectMap);
   const divRef = useRef();
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
-  const history = useHistory();
 
   const [show, setShow] = React.useState(false);
 
@@ -28,7 +25,7 @@ export const NewRecord = (props) => {
     } catch (e) {}
   }, []);
   
-  if (mapState && !mapState?.baseMapToggle && map && isAuth ) {
+  if (map && isAuth ) {
     return (
       <div
         ref={divRef}
