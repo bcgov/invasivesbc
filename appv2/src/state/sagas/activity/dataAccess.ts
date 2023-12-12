@@ -341,12 +341,12 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     });
 
     // try to reduce calls to copy geometry
-    const linked_id = updatedFormData.activity_type_data.linked_id;
-    const oldLinkedId = beforeActivity.form_data.activity_type_data.linked_id;
-    const oldCopyGeometry = beforeActivity.form_data.activity_type_data.copy_geometry;
+    const linked_id = updatedFormData.activity_type_data?.linked_id;
+    const oldLinkedId = beforeActivity.form_data.activity_type_data?.linked_id;
+    const oldCopyGeometry = beforeActivity.form_data.activity_type_data?.copy_geometry;
 
     if (
-      updatedFormData.activity_type_data.copy_geometry === 'Yes' &&
+      updatedFormData.activity_type_data?.copy_geometry === 'Yes' &&
       linked_id &&
       (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes')
     ) {
@@ -356,7 +356,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [linked_geo] } });
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     } else if (
-      beforeActivity.form_data.activity_type_data.copy_geometry === 'Yes' &&
+      beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
       updatedFormData.activity_type_data.copy_geometry === 'No'
     ) {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });

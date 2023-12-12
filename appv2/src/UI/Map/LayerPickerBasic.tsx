@@ -39,9 +39,9 @@ const dispatch = useDispatch();
   return (
     <LayersControl position="topright">
       {simplePickerLayers
-        ? Object.keys(simplePickerLayers).map((layer) => {
+        ? Object.keys(simplePickerLayers).map((layer, i) => {
             return (
-              <LayersControl.Overlay checked={simplePickerLayers?.[layer]} name={layer}>
+              <LayersControl.Overlay key={'overlay' + i}checked={simplePickerLayers?.[layer]} name={layer}>
                 <LayerGroup>
                   <DataBCLayer
                     enabled={true}
@@ -56,7 +56,7 @@ const dispatch = useDispatch();
             );
           })
         : null}
-      <LayersControl.Overlay checked={simplePickerLayers?.['Regional Districts']} name="Regional Districts">
+      <LayersControl.Overlay key={'overlay' + 'a'} checked={simplePickerLayers?.['Regional Districts']} name="Regional Districts">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -68,7 +68,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={simplePickerLayers?.['Regional Districts']} name="Regional Districts">
+      <LayersControl.Overlay key={'overlay' + 'b'} checked={simplePickerLayers?.['Regional Districts']} name="Regional Districts">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -80,7 +80,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="BC Parks">
+      <LayersControl.Overlay key={'overlay' + 'c'}  checked={false} name="BC Parks">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -92,7 +92,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="Conservancy Areas">
+      <LayersControl.Overlay key={'overlay' + 'd'}  checked={false} name="Conservancy Areas">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -104,7 +104,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="Municipality Boundaries">
+      <LayersControl.Overlay key={'overlay' + 'e'}  checked={false} name="Municipality Boundaries">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -116,7 +116,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="BC Major Watersheds">
+      <LayersControl.Overlay key={'overlay' + 'f'}  checked={false} name="BC Major Watersheds">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -128,7 +128,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="Freshwater Atlas Rivers">
+      <LayersControl.Overlay key={'overlay' + 'g'}  checked={false} name="Freshwater Atlas Rivers">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -141,7 +141,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={false} name="Freshwater Lakes">
+      <LayersControl.Overlay key={'overlay' + 'h'}  checked={false} name="Freshwater Lakes">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -153,7 +153,7 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      <LayersControl.Overlay checked={false} name="Freshwater Atlas Stream Network">
+      <LayersControl.Overlay key={'overlay' + 'i'}  checked={false} name="Freshwater Atlas Stream Network">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -166,7 +166,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={false} name="Water Licenses Drinking Water">
+      <LayersControl.Overlay key={'overlay' + 'j'}  checked={false} name="Water Licenses Drinking Water">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -179,7 +179,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={false} name="Water Rights Licenses">
+      <LayersControl.Overlay key={'overlay' + 'k'}  checked={false} name="Water Rights Licenses">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -192,7 +192,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={false} name="Water Wells">
+      <LayersControl.Overlay key={'overlay' + 'l'}  checked={false} name="Water Wells">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -205,7 +205,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={true} name="Digital Road Atlas (DRA) - Master Partially-Attributed Roads">
+      <LayersControl.Overlay key={'overlay' + 'm'}  checked={true} name="Digital Road Atlas (DRA) - Master Partially-Attributed Roads">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -218,7 +218,7 @@ const dispatch = useDispatch();
         </LayerGroup>
       </LayersControl.Overlay>
 
-      <LayersControl.Overlay checked={true} name="MOTI RFI">
+      <LayersControl.Overlay key={'overlay' + 'n'}  checked={true} name="MOTI RFI">
         <LayerGroup>
           <DataBCLayer
             enabled={true}
@@ -230,9 +230,9 @@ const dispatch = useDispatch();
           />
         </LayerGroup>
       </LayersControl.Overlay>
-      {serverBoundariesToDisplay?.map((boundary) => {
+      {serverBoundariesToDisplay?.map((boundary, i) => {
         return (
-          <LayersControl.Overlay checked={true} name={'KML/KMZ: ' + boundary.title}>
+          <LayersControl.Overlay key={'overlayserverboundaries' + i}  checked={true} name={'KML/KMZ: ' + boundary.title}>
             <LayerGroup>
               <GeoJSON data={boundary.geojson} 
               pointToLayer={(feature, latlng) => {
@@ -244,9 +244,9 @@ const dispatch = useDispatch();
           </LayersControl.Overlay>
         );
       })}
-      {clientBoundariesToDisplay?.map((boundary) => {
+      {clientBoundariesToDisplay?.map((boundary, i) => {
         return (
-          <LayersControl.Overlay checked={true} name={'Drawn locally' + boundary.title}>
+          <LayersControl.Overlay key={'clientboundaries' + i} checked={true} name={'Drawn locally' + boundary.title}>
             <LayerGroup>
               <GeoJSON data={boundary.geojson} />
             </LayerGroup>

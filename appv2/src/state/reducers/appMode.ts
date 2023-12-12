@@ -44,6 +44,13 @@ export default function appMode(state = initialState, action: any) {
         if (['Batch', 'Reports', 'Training', 'Legend'].includes(action.payload.url.split('/')[1])) {
           draftState.panelFullScreen = true;
         }
+        if(action.payload.url === '/'){
+          draftState.panelOpen = false;
+        }
+        else
+        {
+          draftState.panelOpen = true;
+        }
         draftState.overlay_menu_toggle = false
       });
       return nextState;

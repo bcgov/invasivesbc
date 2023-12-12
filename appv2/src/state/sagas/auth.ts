@@ -154,12 +154,13 @@ function* reinitAuth() {
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
       historySingleton.push(postAuthNavigate);
-      yield put({
+    /*  yield put({
         type: TOGGLE_PANEL, payload: {
           panelOpen: false,
           panelFullScreen: false
         }
       });
+      */
     }
   } else {
     // we are not logged in

@@ -173,7 +173,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   return (
-    <Dialog open={dialogueOpen}>
+    <Dialog open={dialogueOpen || false}>
       <DialogTitle>Create New Record</DialogTitle>
 
       <Box className={classes.formContainer}>

@@ -127,6 +127,7 @@ export const RecordSet = (props) => {
             <div className="recordSet_filters">
               {userSettingsState?.recordSets?.[props.setID]?.tableFilters?.length > 0 && viewFilters ? (
                 <table className="recordSetFilterTable">
+                  <tbody>
                   <tr>
                     <th>Filter type</th>
                     <th>Operator</th>
@@ -137,6 +138,7 @@ export const RecordSet = (props) => {
                   {userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
                     return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
                   })}
+                  </tbody>
                 </table>
               ) : (
                 <></>

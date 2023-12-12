@@ -15,10 +15,8 @@ import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) 
 
   const container = document.getElementById('root');
   if (container && store) {
-    console.log('about to render');
     const root = createRoot(container);
     if (root) {
-      console.log('rendered')
       root.render(
         <Router history={historySingleton}>
           <Provider store={store}>

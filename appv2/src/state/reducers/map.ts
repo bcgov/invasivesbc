@@ -233,18 +233,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       case REMOVE_CLIENT_BOUNDARY: {
         const nextState = createNextState(state, (draftState) => {
-          const index = draftState.clientBoundaries.findIndex(
-            (cb) => cb.id === action.payload.id
-          );
+          const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
           draftState.clientBoundaries.splice(index, 1);
         });
         return nextState;
       }
       case USER_SETTINGS_DELETE_KML_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {
-          const index = draftState.serverBoundaries.findIndex(
-            (sb) => sb.id === action.payload.server_id
-          );
+          const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload.server_id);
           draftState.serverBoundaries.splice(index, 1);
         });
         return nextState;
@@ -550,22 +546,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case LAYER_STATE_UPDATE: {
-        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
-        for (const x in action.payload) {
-          if (newState[x]?.layerState) {
-            newState[x].layerState = action.payload[x]?.layerState;
-            newState[x].type = action.payload[x]?.type;
-          } else {
-            newState[x] = {};
-            newState[x].layerState = action.payload[x]?.layerState;
-            newState[x].type = action.payload[x]?.type;
+        const nextState = createNextState(state, (draftState) => {
+          for (const x in action.payload) {
+            if (draftState.layers?.[x]?.layerState) {
+              draftState.layers[x].layerState = action.payload[x]?.layerState;
+              draftState.layers[x].type = action.payload[x]?.type;
+            } else {
+              if(!draftState.layers) draftState.layers = {};
+              draftState.layers[x] = {};
+              draftState.layers[x].layerState = action.payload[x]?.layerState;
+              draftState.layers[x].type = action.payload[x]?.type;
+            }
           }
-        }
-
-        return {
-          ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
-        };
+        });
+        return nextState;
       }
       case MAP_TOGGLE_BASEMAP: {
         return {
@@ -598,16 +592,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case FILTER_STATE_UPDATE: {
-        let newState = JSON.parse(JSON.stringify({ ...state.layers }));
-        for (const x in action.payload) {
-          newState[x].filters = { ...action.payload?.[x]?.filters };
-          newState[x].loaded = false;
-        }
-
-        return {
-          ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
-        };
+        const nextState = createNextState(state, (draftState) => {
+          for (const x in action.payload) {
+            draftState.layers[x].filters = { ...action.payload?.[x]?.filters };
+            draftState.layers[x].loaded = false;
+          }
+        });
+        return nextState;
       }
       case RECORDSET_UPDATE_FILTER: {
         const nextState = createNextState(state, (draftState) => {
@@ -655,22 +646,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
-        newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
-        newState[action.payload.recordSetID].loaded = true;
-        return {
-          ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
-        };
+        const nextState = createNextState(state, (draftState) => {
+          if(!draftState.layers) draftState.layers = {};
+          if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
+          draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
+          draftState.layers[action.payload.recordSetID].loaded = true;
+        })
+        return nextState;
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
-        const newState = JSON.parse(JSON.stringify({ ...state.layers }));
-        newState[action.payload.recordSetID].IDList = [...action.payload.IDList];
-        newState[action.payload.recordSetID].loaded = true;
-        return {
-          ...state,
-          layers: JSON.parse(JSON.stringify({ ...newState }))
-        };
+        const nextState = createNextState(state, (draftState) => {
+          if(!draftState.layers) draftState.layers = {};
+          if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
+          draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
+          draftState.layers[action.payload.recordSetID].loaded = true;
+        })
+        return nextState;
       }
       case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
         let newState = state.recordTables ? JSON.parse(JSON.stringify({ ...state.recordTables })) : {};

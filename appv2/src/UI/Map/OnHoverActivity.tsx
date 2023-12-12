@@ -21,7 +21,7 @@ export const OnHoverActivity = (props: any) => {
         setCenterPointGeometry(null);
       }
     } catch (e) {
-      console.log('no valid geo to get centerpoint');
+      //console.log('no valid geo to get centerpoint');
       return;
     }
 

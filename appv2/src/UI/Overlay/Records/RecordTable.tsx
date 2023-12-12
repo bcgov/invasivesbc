@@ -37,6 +37,7 @@ export const RecordTable = (props) => {
   return (
     <div className="record_table_container">
       <table className="record_table">
+        <tbody>
         <tr className="record_table_header">
           {tableType === 'Activity'
             ? activityColumnsToDisplay.map((col: any, i) => {
@@ -116,6 +117,7 @@ export const RecordTable = (props) => {
             </tr>
           );
         })}
+        </tbody>
       </table>
     </div>
   );
