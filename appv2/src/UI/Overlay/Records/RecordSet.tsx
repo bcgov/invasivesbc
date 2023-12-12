@@ -136,6 +136,7 @@ export const RecordSet = (props) => {
                     <th></th>
                   </tr>
                   {userSettingsState?.recordSets?.[props.setID]?.tableFilters.map((filter: any, i) => {
+                    if(filter.field !== 'form_status')
                     return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
                   })}
                   </tbody>

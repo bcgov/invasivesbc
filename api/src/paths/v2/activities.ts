@@ -168,6 +168,20 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
       switch (filter.filterType) {
         case 'tableFilter':
           switch (filter.field) {
+            case 'form_status':
+              if (filter.filter === 'Draft') {
+                // create a new filter for created by using current user id:
+                sanitizedTableFilters.push({
+                  field: 'created_by',
+                  filter: req.authContext.user['preferred_username'],
+                  filterType: 'tableFilter',
+                  operator: 'EQUALS'
+                });
+                sanitizedTableFilters.push(filter);
+              } else {
+                sanitizedTableFilters.push(filter);
+              }
+              break;
             case 'created_by':
               if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
                 sanitizedTableFilters.push(filter);
@@ -196,6 +210,15 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
         default:
           break;
       }
+    });
+  }
+  // check for form status in filters:
+  const formStatusFilter = sanitizedTableFilters.find((filter) => filter.field === 'form_status');
+  if (!formStatusFilter) {
+    sanitizedTableFilters.push({
+      field: 'form_status',
+      filter: 'Submitted',
+      filterType: 'tableFilter'
     });
   }
 
@@ -293,16 +316,17 @@ function getActivitiesSQLv2(filterObject: any) {
 }
 
 function initialWithStatement(sqlStatement: SQLStatement) {
-  const withStatement = sqlStatement.append(
-    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a inner join invasivesbc.activity_current b on 
-      a.activity_incoming_data_id = b.incoming_data_id )   `
-  );
-  return withStatement;
+  /*const withStatement = sqlStatement.append(
+    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a  
+      where a.iscurrent = true
+      )   `
+  );*/
+  return sqlStatement;
 }
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-  const cte = sqlStatement.append(`  , CurrentPositiveObservations AS (
+  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (
     SELECT
         cpo.activity_incoming_data_id,
         string_agg(cpo.invasive_plant, ', ') AS current_positive_species
@@ -402,7 +426,7 @@ activities as (
   }*/
 
   sqlStatement.append(`
-    from not_deleted_activities a
+    from activity_incoming_data a
     left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
     left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
 
@@ -516,13 +540,16 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const where = sqlStatement.append(`where 1=1 `);
+  const where = sqlStatement.append(`where 1=1 and activities.iscurrent = true  `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and activities.activity_type not in ('Treatment','Monitoring') `);
   }
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
+      case 'form_status':
+        where.append(`and LOWER(activities.form_status) = LOWER('${filter.filter}') `);
+        break;
       case 'activity_id':
         where.append(
           `and LOWER(activities.activity_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
@@ -625,11 +652,15 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         );
         break;
       case 'created_by':
-        where.append(
-          `and LOWER(activities.created_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
-        );
+        if (filter.operator === 'CONTAINS') {
+          where.append(
+            `and LOWER(activities.created_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+              filter.filter
+            }%') `
+          );
+        } else if (filter.operator === 'EQUALS') {
+          where.append(`and LOWER(activities.created_by) = LOWER('${filter.filter}') `);
+        }
         break;
       case 'updated_by':
         where.append(

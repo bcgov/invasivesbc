@@ -677,6 +677,9 @@ function* handle_UserFilterChange(action) {
   const map = yield select(selectMap);
   const currentSet = map?.currentOpenSet;
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
+
+  if(recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !== recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash)
+
   if (recordSetType === 'Activity') {
     if (currentSet === action.payload.setID)
       yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });

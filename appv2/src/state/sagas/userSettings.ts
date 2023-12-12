@@ -273,6 +273,15 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
           filterValue: ActivityStatus.DRAFT,
           filterKey: 'record_status' + ActivityStatus.DRAFT
         }
+      ],
+      // add draft key
+      tableFilters: [
+        {
+          id: '1',
+          field: 'form_status',
+          filterType: 'tableFilter',
+          filter: ActivityStatus.DRAFT,
+        }
       ]
     },
     ['2']: {
