@@ -57,7 +57,8 @@ import {
   DRAW_CUSTOM_LAYER,
   REMOVE_CLIENT_BOUNDARY,
   USER_SETTINGS_DELETE_KML_SUCCESS,
-  SET_CURRENT_OPEN_SET
+  SET_CURRENT_OPEN_SET,
+  SAVE_LAYER_LOCALSTATE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -127,28 +128,88 @@ class MapState {
     this.activity_zoom = 5;
     this.userHeading = null;
     this.drawingCustomLayer = false;
-    this.simplePickerLayers2 = [
-      {
-        title: 'Regional Districts',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows'
-      },
-      {
-        title: 'BC Parks',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows'
-      },
-      {
-        title: 'Conservancy Areas',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows'
-      },
-      {
-        title: 'Municipality Boundaries',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows'
-      }
-    ];
+    this.simplePickerLayers2 = localStorage.getItem('SIMPLE_PICKER_LAYERS')
+      ? JSON.parse(localStorage.getItem('SIMPLE_PICKER_LAYERS'))
+      : [
+          {
+            title: 'Regional Districts',
+            type: 'wms',
+            url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows',
+            checked: false
+          },
+          {
+            title: 'BC Parks',
+            type: 'wms',
+            url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows',
+            checked: false
+          },
+          {
+            title: 'Conservancy Areas',
+            type: 'wms',
+            url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Municipality Boundaries',
+            type: 'wms',
+            url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows',
+            checked: false
+          },
+          {
+            title: 'BC Major Watersheds',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Freshwater Atlas Rivers',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Freshwater Lakes',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Freshwater Atlas Stream Network',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Water Licenses Drinking Water',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Water Rights Licenses',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Water Wells',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          },
+          {
+            title: 'MOTI RFI',
+            type: 'wms',
+            // url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows',
+            checked: false
+          }
+        ];
     this.baseMapToggle = false;
     this.HDToggle = false;
     this.activityPageMapExtentToggle = false;
@@ -527,24 +588,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           panned: !state.panned
         };
       }
-      case TOGGLE_BASIC_PICKER_LAYER: {
-        let newState = JSON.parse(JSON.stringify({ ...state.simplePickerLayers }));
+      // case TOGGLE_BASIC_PICKER_LAYER: {
+      //   let newState = JSON.parse(JSON.stringify({ ...state.simplePickerLayers }));
 
-        for (const layerNameProperty in action.payload) {
-          //if exists, toggle
-          if (newState[layerNameProperty]) {
-            newState[layerNameProperty] = !newState[layerNameProperty];
-          } else {
-            // doesn't exist, getting turned on
-            newState[layerNameProperty] = true;
-          }
-        }
+      //   for (const layerNameProperty in action.payload) {
+      //     //if exists, toggle
+      //     if (newState[layerNameProperty]) {
+      //       newState[layerNameProperty] = !newState[layerNameProperty];
+      //     } else {
+      //       // doesn't exist, getting turned on
+      //       newState[layerNameProperty] = true;
+      //     }
+      //   }
 
-        return {
-          ...state,
-          simplePickerLayers: JSON.parse(JSON.stringify({ ...newState }))
-        };
-      }
+      //   return {
+      //     ...state,
+      //     simplePickerLayers: JSON.parse(JSON.stringify({ ...newState }))
+      //   };
+      // }
       case LAYER_STATE_UPDATE: {
         const nextState = createNextState(state, (draftState) => {
           for (const x in action.payload) {
@@ -617,12 +678,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         });
         return nextState;
       }
-      case TOGGLE_CUSTOMIZE_LAYERS: {
-        const nextState = createNextState(state, (draftState) => {
-          draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-        });
-        return nextState;
-      }
+      // case TOGGLE_CUSTOMIZE_LAYERS: {
+      //   const nextState = createNextState(state, (draftState) => {
+      //     draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      //   });
+      //   return nextState;
+      // }
       case PAGE_OR_LIMIT_UPDATE: {
         const id = action.payload.setID;
         return {
@@ -762,6 +823,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           tooManyLabelsDialog: action.payload.dialog
+        };
+      }
+      case SAVE_LAYER_LOCALSTATE: {
+        return {
+          ...state,
+          simplePickerLayers2: action.payload.layers
         };
       }
       default:

@@ -45,6 +45,8 @@ import {
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
+  SAVE_LAYER_LOCALSTATE,
+  SAVE_LAYER_LOCALSTORAGE,
   SET_CURRENT_OPEN_SET,
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
@@ -193,7 +195,7 @@ function* handle_MAP_INIT_REQUEST(action) {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
   */
 
-  yield call(refetchServerBoundaries)
+  yield call(refetchServerBoundaries);
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
@@ -254,7 +256,7 @@ function* handle_MAP_INIT_REQUEST(action) {
 function* refetchServerBoundaries() {
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
-  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } }); 
+  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
@@ -518,7 +520,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     if (set.recordSetType === 'POI') {
       const currentState = yield select(selectUserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id,currentState, clientBoundaries );
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -532,7 +534,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const currentState = yield select(selectUserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries );
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -678,17 +680,19 @@ function* handle_UserFilterChange(action) {
   const currentSet = map?.currentOpenSet;
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
 
-  if(recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !== recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash)
-
-  if (recordSetType === 'Activity') {
-    if (currentSet === action.payload.setID)
-      yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-    yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
-  } else {
-    if (currentSet === action.payload.setID)
-      yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-    yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
-  }
+  if (
+    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
+    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
+  )
+    if (recordSetType === 'Activity') {
+      if (currentSet === action.payload.setID)
+        yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    } else {
+      if (currentSet === action.payload.setID)
+        yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+      yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    }
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
@@ -751,11 +755,11 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 
   yield all(
     actions.map((action) => {
-      console.dir(action)
+      console.dir(action);
       if (action.payload.filterID) {
-        console.log('wat')
-      console.dir(action)
-       return  put(action);
+        console.log('wat');
+        console.dir(action);
+        return put(action);
       }
     })
   );
@@ -764,7 +768,7 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 function* persistClientBoundaries(action) {
   const state = yield select(selectMap);
 
-  console.dir(state.clientBoundaries)
+  console.dir(state.clientBoundaries);
 
   localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
@@ -773,24 +777,49 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
 }
 function* handle_DRAW_CUSTOM_LAYER(action) {
-  const panelState = yield select((state) => state.AppMode.panelOpen)
-  if(panelState) {
-  yield put({ type: TOGGLE_PANEL});
+  const panelState = yield select((state) => state.AppMode.panelOpen);
+  if (panelState) {
+    yield put({ type: TOGGLE_PANEL });
   }
 }
 
 function* handle_CUSTOM_LAYER_DRAWN(actions) {
-  const panelState = yield select((state) => state.AppMode.panelOpen)
-  if(!panelState) {
-  yield put({ type: TOGGLE_PANEL});
+  const panelState = yield select((state) => state.AppMode.panelOpen);
+  if (!panelState) {
+    yield put({ type: TOGGLE_PANEL });
   }
-
-
 }
 
-function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  console.dir(action.payload)
+function* handle_SAVE_LAYER_LOCALSTORAGE(action) {
+  if (action.payload.name.includes('KML/KMZ:') || action.payload.name.includes('Drawn locally')) return;
 
+  const layersState = yield select((state) => state.Map.simplePickerLayers2);
+  const tempIndex = layersState.findIndex((layer) => {
+    return layer?.title === action.payload.name;
+  });
+
+  let layers = [];
+  if (tempIndex > -1) {
+    let tempLayer = { ...layersState[tempIndex] }; //deep obj copy
+    tempLayer.checked = action.payload.checked;
+    layers = [...layersState]; //deep copy
+    layers[tempIndex] = tempLayer; //replace
+  } else {
+    const tempLayer = {
+      title: action.payload.name,
+      checked: action.payload.checked
+    };
+    layers = [...layersState, tempLayer]; //deep copy and add
+  }
+
+  localStorage.setItem('SIMPLE_PICKER_LAYERS', JSON.stringify(layers));
+
+  yield put({
+    type: SAVE_LAYER_LOCALSTATE,
+    payload: {
+      layers: layers
+    }
+  });
 }
 
 function* activitiesPageSaga() {
@@ -842,7 +871,8 @@ function* activitiesPageSaga() {
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries)
+    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
+    takeEvery(SAVE_LAYER_LOCALSTORAGE, handle_SAVE_LAYER_LOCALSTORAGE)
     // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
     // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
   ]);
