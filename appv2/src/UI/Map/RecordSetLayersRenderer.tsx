@@ -1,6 +1,6 @@
 import center from '@turf/center';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'util/use_selector';
@@ -135,18 +135,15 @@ const IAPPCanvasLabelMemo = (props) => {
 };
 
 const ActivityCanvasLabelMemo = (props) => {
-  const layers = useSelector((state: any) => state.Map?.layers);
+  const layerState = useSelector((state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState);
   const labelBoundsPolygon  = useSelector((state: any) => state.Map?.labelBoundsPolygon);
   const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
 
 
   const filteredFeatures = () => {
     let returnVal;
-    if (layers?.[props.layerKey]?.IDList && labelBoundsPolygon) {
-      returnVal = activitiesGeoJSON?.features
-        .filter((row) => {
-          return (layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
-        })
+    if (activitiesGeoJSON && labelBoundsPolygon) {
+      returnVal = activitiesGeoJSON?.features 
         .map((row) => {
           let computedCenter = null;
           try {
@@ -168,141 +165,55 @@ const ActivityCanvasLabelMemo = (props) => {
   };
 
   return useMemo(() => {
-    if (layers?.[props.layerKey]?.layerState) {
+    if(layerState) {
       return (
         <LeafletCanvasLabel
           layerType={'ACTIVITY'}
           key={'activityCanvasLayermemo' + props.layerKey}
-          labelToggle={layers[props.layerKey].layerState.labelToggle}
+          labelToggle={layerState.labelToggle}
           points={filteredFeatures()}
-          enabled={layers[props.layerKey].layerState.mapToggle}
-          colour={layers[props.layerKey].layerState.color}
-          zIndex={10000 + layers[props.layerKey].layerState.drawOrder}
-        />
-      );
-    } else return <div key={Math.random()}></div>;
-  }, [
-    JSON.stringify(layers?.[props.layerKey]?.layerState),
-    JSON.stringify(layers?.[props.layerKey]?.IDList),
-    JSON.stringify(labelBoundsPolygon)
-  ]);
-};
-
-const ActivityLayerMemo = (props) => {
-  const IDList = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.IDList);
-  const layerState = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.layerState);
-  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
-
-  const filteredFeatures = () => {
-    let returnVal;
-    if (IDList) {
-      returnVal = activitiesGeoJSON?.features.filter((row) => {
-        return IDList?.includes(row.properties.id);
-      });
-    } else {
-      returnVal = [];
-    }
-    return {type: 'FeatureCollection', features: returnVal};
-  };
-
-  return useMemo(() => {
-    if (layerState) {
-      return (
-        <ActivitiesLayerV2
-          key={'activitiesv2filter' + props.layerKey}
-          layerKey={props.layerKey}
-          activities={filteredFeatures()}
           enabled={layerState.mapToggle}
-          color={layerState.color}
-          zIndex={layerState.drawOrder + 10000}
-          opacity={0.8}
+          colour={layerState.color}
+          zIndex={10000 + layerState.drawOrder}
         />
       );
     } else return <div key={Math.random()}></div>;
   }, [
     JSON.stringify(layerState),
-    JSON.stringify(IDList)
+    activitiesGeoJSON,
+    JSON.stringify(labelBoundsPolygon)
   ]);
 };
+
 export const RecordSetLayersRenderer = (props: any) => {
+    const ref = useRef(0);
+    ref.current += 1;
+    console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString()  , 'color: yellow');
+
+
+
   const layers = useSelector((state: any) => state.Map?.layers);
+  console.dir( layers)
   const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
 
-  interface ILayerToRender {
-    filter: IActivitySearchCriteria;
-    color: any;
-    setName: string;
-  }
 
-  const GLLayerPoints = (props) => {
-    const map = useMap();
-
-    useEffect(() => {
-      if (map && props.points) {
-        //        (L as any).glify = glify;
-
-        (L as any).glify.points({
-          map,
-          data: props.points,
-          size: 10,
-
-          click: (e, pointOrGeoJsonFeature, xy): boolean | void => {
-            // do something when a point is clicked
-            // return false to continue traversing
-          },
-          hover: (e, pointOrGeoJsonFeature, xy): boolean | void => {
-            // do something when a point is hovered
-          }
-        });
-      }
-    }, []);
-    return <div key={Math.random()}></div>;
-  };
-
-  const iappLayers = useCallback(() => {
-    const keys = Object.keys(layers ? layers : {});
-    const filtered = keys?.filter((key) => layers[key]?.type === 'POI');
-    const sorted = filtered.sort((a, b) => {
-      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
-    });
-    return sorted;
-  }, [
-    JSON.stringify(
-      Object.keys(layers ? layers : {}).map((l) => {
-        return {id: l, order: layers?.[l]?.layerState?.drawOrder};
-      })
-    )
-  ]);
-
-  const activityLayers = useCallback(() => {
-    const keys = Object.keys(layers ? layers : {});
-    const filtered = keys?.filter((key) => layers[key]?.type === 'Activity');
-    const sorted = filtered.sort((a, b) => {
-      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
-    });
-    return sorted;
-  }, [JSON.stringify(Object.keys(layers ? layers : {}))]);
 
   return (
     <>
-      {activityLayers()?.length > 0 ? (
-        activityLayers()?.map((layerKey) => {
-          if (layerKey)
+      {layers?.length > 0 ? (
+        layers.map((layer) => {
+          if (layer?.recordSetID && layer?.type === 'Activity')
             return (
-              <div key={layerKey + 'activityLayerDivWrapper'}>
-                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey}/>
-                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey}/>
+              <div key={layer.recordSetID + 'activityLayerDivWrapper'}>
+                <ActivitiesLayerV2 key={'activitiesv2filter' + layer.recordSetID} layerKey={layer.recordSetID} />
+                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layer.recordSetID} layerKey={layer.recordSetID}/>
               </div>
             )
         })
       ) : (
         <div key={Math.random()}></div>
       )}
-      {iappLayers()?.length > 0 ? (
+      {/*iappLayers()?.length > 0 ? (
         iappLayers()?.map((layerKey) => {
           if (layerKey)
             return (
@@ -311,10 +222,10 @@ export const RecordSetLayersRenderer = (props: any) => {
                 <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey}/>
               </div>
             )
-        })
+            })
       ) : (
         <div key={Math.random()}></div>
-      )}
+      )*/}
       <GeneralDialog
         dialogOpen={tooManyLabelsDialog?.dialogOpen}
         dialogTitle={tooManyLabelsDialog?.dialogTitle}

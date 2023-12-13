@@ -149,21 +149,6 @@ const HeaderMemo = React.memo((props: any) => {
   return <Header />;
 });
 
-const MapMemo = React.memo((props: any) => {
-  const ref = useRef(0);
-  ref.current += 1;
-  console.log('%cMapMemo render:' + ref.current.toString(), 'color: yellow');
-  return (
-    <Map className="Map">
-      <ButtonContainer></ButtonContainer>
-      <DrawCustomLayer/>
-      <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
-      <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
-      <MapCenterSetter />
-      <LayerPickerBasic />
-    </Map>
-  );
-});
 
 const App: React.FC = () => {
     const ref = useRef(0);
@@ -173,7 +158,14 @@ const App: React.FC = () => {
   return (
     <div id="app" className="App">
       <HeaderMemo />
-      <MapMemo />
+      <Map className="Map">
+      <ButtonContainer></ButtonContainer>
+      <DrawCustomLayer/>
+      <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
+      <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
+      <MapCenterSetter />
+      <LayerPickerBasic />
+    </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>
