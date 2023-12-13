@@ -1,5 +1,5 @@
 import { circleMarker, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   GeoJSON,
   Circle,
@@ -33,24 +33,26 @@ export const LayerPickerBasic = (props) => {
 const dispatch = useDispatch();
 const map = useMap();
 
-map.on('overlayadd', (event) => {
-  dispatch({
-    type: SAVE_LAYER_LOCALSTORAGE,
-    payload: {
-      name: event.name,
-      checked: true
-    }
-  });
-})
-map.on('overlayremove', (event) => {
-  dispatch({
-    type: SAVE_LAYER_LOCALSTORAGE,
-    payload: {
-      name: event.name,
-      checked: false
-    }
-  });
-})
+useEffect(() => {
+  map.on('overlayadd', (event) => {
+    dispatch({
+      type: SAVE_LAYER_LOCALSTORAGE,
+      payload: {
+        name: event.name,
+        checked: true
+      }
+    });
+  })
+  map.on('overlayremove', (event) => {
+    dispatch({
+      type: SAVE_LAYER_LOCALSTORAGE,
+      payload: {
+        name: event.name,
+        checked: false
+      }
+    });
+  })
+}, []);
 
   const layers = {
     'Regional Districts': {
