@@ -172,7 +172,14 @@ const App: React.FC = () => {
   return (
     <div id="app" className="App">
       <HeaderMemo />
-      <MapMemo />
+      <Map className="Map">
+      <ButtonContainer></ButtonContainer>
+      <DrawCustomLayer/>
+      <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
+      <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
+      <MapCenterSetter />
+      <LayerPickerBasic />
+    </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>

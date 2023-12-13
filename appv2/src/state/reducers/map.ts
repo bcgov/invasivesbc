@@ -81,7 +81,7 @@ class MapState {
   HDToggle: boolean;
   userRecordOnClickMenuOpen?: boolean;
   accuracyToggle: boolean;
-  layers: object;
+  layers: [];
   whatsHere: any;
   simplePickerLayers: object;
   simplePickerLayers2: any[];
@@ -548,14 +548,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       case LAYER_STATE_UPDATE: {
         const nextState = createNextState(state, (draftState) => {
           for (const x in action.payload) {
-            if (draftState.layers?.[x]?.layerState) {
-              draftState.layers[x].layerState = action.payload[x]?.layerState;
-              draftState.layers[x].type = action.payload[x]?.type;
+            let index = draftState?.layers?.findIndex((layer) => layer.recordSetID === x);
+            if (draftState.layers?.[index]?.layerState) {
+              draftState.layers[index].layerState = action.payload[x]?.layerState;
+              draftState.layers[index].type = action.payload[x]?.type;
             } else {
-              if(!draftState.layers) draftState.layers = {};
-              draftState.layers[x] = {};
-              draftState.layers[x].layerState = action.payload[x]?.layerState;
-              draftState.layers[x].type = action.payload[x]?.type;
+              if(!draftState.layers) draftState.layers = [];
+              draftState.layers.push({recordSetID: x})
+              index = draftState.layers.findIndex((layer) => layer.recordSetID === x);
+              draftState.layers[index].layerState = action.payload[x]?.layerState;
+              draftState.layers[index].type = action.payload[x]?.type;
             }
           }
         });
@@ -580,16 +582,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         };
       }
       case MAP_DELETE_LAYER_AND_TABLE: {
-        const newLayersState = JSON.parse(JSON.stringify({ ...state.layers }));
-        delete newLayersState[action.payload.recordSetID];
-        const newTablesState = JSON.parse(JSON.stringify({ ...state.recordTables }));
-        delete newTablesState[action.payload.recordSetID];
-
-        return {
-          ...state,
-          layers: JSON.parse(JSON.stringify({ ...newLayersState })),
-          recordTables: JSON.parse(JSON.stringify({ ...newTablesState }))
-        };
+        const nextState = createNextState(state, (draftState) => {
+          delete draftState.layers[action.payload.recordSetID];
+          delete draftState.recordTables[action.payload.recordSetID];
+        }
+       )
+       return nextState;
       }
       case FILTER_STATE_UPDATE: {
         const nextState = createNextState(state, (draftState) => {
@@ -647,21 +645,37 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {
-          if(!draftState.layers) draftState.layers = {};
-          if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
-          draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
-          draftState.layers[action.payload.recordSetID].loaded = true;
+          if(!draftState.layers) draftState.layers = [];
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          if(!draftState.layers[index]) draftState.layers.push({recordSetID: action.payload.recordSetID})
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+          draftState.layers[index].IDList = action.payload.IDList;
+          draftState.layers[index].loaded = true;
+
+          draftState.layers[index].geoJSON = {type: 'FeatureCollection', features: draftState.activitiesGeoJSON.features.filter((feature) => {
+            return action.payload.IDList.includes(feature.properties.id);
+          })}
+
         })
         return nextState;
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
+        /*
         const nextState = createNextState(state, (draftState) => {
+
           if(!draftState.layers) draftState.layers = {};
           if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
           draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
           draftState.layers[action.payload.recordSetID].loaded = true;
+
+          draftState.layers[action.payload.recordSetID].geoJSON = {type: 'FeatureCollection', features: draftState.IAPPGeoJSON.features.filter((feature) => {
+            return action.payload.IDList.includes(feature.properties.site_id);
+          })}
         })
         return nextState;
+        */
+       return state;
       }
       case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
         let newState = state.recordTables ? JSON.parse(JSON.stringify({ ...state.recordTables })) : {};
