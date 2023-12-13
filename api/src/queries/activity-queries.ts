@@ -438,7 +438,7 @@ LEFT JOIN
   sqlStatement.append(SQL` where 1 = 1 and a.iscurrent = true `);
 
   if (lean) {
-    sqlStatement.append(SQL` and a.activity_incoming_data_id > 78002`);
+    sqlStatement.append(SQL` and a.activity_incoming_data_id > 84820`);
   }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
