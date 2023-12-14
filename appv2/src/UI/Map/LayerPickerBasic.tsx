@@ -133,7 +133,7 @@ useEffect(() => {
       })}
       {clientBoundariesToDisplay?.map((boundary, i) => {
         return (
-          <LayersControl.Overlay key={'clientboundaries' + i} checked={true} name={'Drawn locally' + boundary.title}>
+          <LayersControl.Overlay key={'clientboundaries' + i} checked={boundary.checked} name={'Drawn locally: ' + boundary.title}>
             <LayerGroup>
               <GeoJSON data={boundary.geojson} />
             </LayerGroup>
