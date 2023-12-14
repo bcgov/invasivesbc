@@ -45,6 +45,7 @@ import {
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
+  SAVE_BOUNDARY_LOCALSTATE,
   SAVE_LAYER_LOCALSTATE,
   SAVE_LAYER_LOCALSTORAGE,
   SET_CURRENT_OPEN_SET,
@@ -790,9 +791,7 @@ function* handle_CUSTOM_LAYER_DRAWN(actions) {
   }
 }
 
-function* handle_SAVE_LAYER_LOCALSTORAGE(action) {
-  if (action.payload.name.includes('KML/KMZ:') || action.payload.name.includes('Drawn locally')) return;
-
+function* save_layer_check(action) {
   const layersState = yield select((state) => state.Map.simplePickerLayers2);
   const tempIndex = layersState.findIndex((layer) => {
     return layer?.title === action.payload.name;
@@ -820,6 +819,40 @@ function* handle_SAVE_LAYER_LOCALSTORAGE(action) {
       layers: layers
     }
   });
+}
+
+function* save_client_boundary_check(action) {
+  const boundaryState = yield select((state) => state.Map.clientBoundaries);
+  const index = boundaryState.findIndex((layer) => {
+    return layer?.title === action.payload.name.replace('Drawn locally: ', '');
+  });
+
+  let boundaries = [];
+  let tempBoundary = { ...boundaryState[index] }; //deep obj copy
+  tempBoundary.checked = action.payload.checked;
+  boundaries = [...boundaryState]; //deep copy
+  boundaries[index] = tempBoundary; //replace
+
+  localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(boundaries));
+
+  yield put({
+    type: SAVE_BOUNDARY_LOCALSTATE,
+    payload: {
+      boundaries: boundaries
+    }
+  });
+}
+
+function* save_server_boundary_check(action) {}
+
+function* handle_SAVE_LAYER_LOCALSTORAGE(action) {
+  if (action.payload.name.includes('KML/KMZ:')) {
+    yield save_server_boundary_check(action);
+  } else if (action.payload.name.includes('Drawn locally')) {
+    yield save_client_boundary_check(action);
+  } else {
+    yield save_layer_check(action);
+  }
 }
 
 function* activitiesPageSaga() {
