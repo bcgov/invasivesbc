@@ -58,7 +58,8 @@ import {
   REMOVE_CLIENT_BOUNDARY,
   USER_SETTINGS_DELETE_KML_SUCCESS,
   SET_CURRENT_OPEN_SET,
-  SAVE_LAYER_LOCALSTATE
+  SAVE_LAYER_LOCALSTATE,
+  SAVE_BOUNDARY_LOCALSTATE
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -278,7 +279,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             {
               id: getUuid(),
               title: state?.workingLayerName,
-              geojson: action.payload.feature
+              geojson: action.payload.feature,
+              checked: true
             }
           ];
           draftState.workingLayerName = null;
@@ -613,7 +615,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.layers[x].layerState = action.payload[x]?.layerState;
               draftState.layers[x].type = action.payload[x]?.type;
             } else {
-              if(!draftState.layers) draftState.layers = {};
+              if (!draftState.layers) draftState.layers = {};
               draftState.layers[x] = {};
               draftState.layers[x].layerState = action.payload[x]?.layerState;
               draftState.layers[x].type = action.payload[x]?.type;
@@ -680,12 +682,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         });
         return nextState;
       }
-      // case TOGGLE_CUSTOMIZE_LAYERS: {
-      //   const nextState = createNextState(state, (draftState) => {
-      //     draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-      //   });
-      //   return nextState;
-      // }
+      case TOGGLE_CUSTOMIZE_LAYERS: {
+        const nextState = createNextState(state, (draftState) => {
+          draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+        });
+        return nextState;
+      }
       case PAGE_OR_LIMIT_UPDATE: {
         const id = action.payload.setID;
         return {
@@ -708,20 +710,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {
-          if(!draftState.layers) draftState.layers = {};
-          if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
+          if (!draftState.layers) draftState.layers = {};
+          if (!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
           draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
           draftState.layers[action.payload.recordSetID].loaded = true;
-        })
+        });
         return nextState;
       }
       case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
         const nextState = createNextState(state, (draftState) => {
-          if(!draftState.layers) draftState.layers = {};
-          if(!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
+          if (!draftState.layers) draftState.layers = {};
+          if (!draftState.layers[action.payload.recordSetID]) draftState.layers[action.payload.recordSetID] = {};
           draftState.layers[action.payload.recordSetID].IDList = [...action.payload.IDList];
           draftState.layers[action.payload.recordSetID].loaded = true;
-        })
+        });
         return nextState;
       }
       case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
@@ -808,6 +810,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           simplePickerLayers2: action.payload.layers
+        };
+      }
+      case SAVE_BOUNDARY_LOCALSTATE: {
+        return {
+          ...state,
+          clientBoundaries: action.payload.boundaries
         };
       }
       default:
