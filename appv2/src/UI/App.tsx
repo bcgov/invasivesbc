@@ -126,19 +126,19 @@ const OverlayContentMemo = (props) => {//React.memo((props: any) => {
         path="/Batch/list/:id"
         render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined} />}
       />
-      <Route path="/Batch/new" render={(props) => <BatchCreateNew/>}/>
-      <Route path="/Batch/templates" render={(props) => <BatchTemplates/>}/>
-      <Route path="/Reports" render={(props) => <EmbeddedReportsPage/>}/>
-      <Route path="/Training" render={(props) => <TrainingPage/>}/>
-      <Route path="/Legend" render={(props) => <LegendsPopup/>}/>
-      <Route path="/AccessRequest" render={(props) => <AccessRequestPage/>}/>
+      <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
+      <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
+      <>{/* <Route path="/Reports" render={(props) => <EmbeddedReportsPage/>}/> */}</>
+      <Route path="/Training" render={(props) => <TrainingPage />} />
+      <Route path="/Legend" render={(props) => <LegendsPopup />} />
+      <Route path="/AccessRequest" render={(props) => <AccessRequestPage />} />
       <ThemeProvider theme={theme}>
         <Route path="/Admin" render={(props) => <UserAccessPage />} />
       </ThemeProvider>
       <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
     </div>
   );
-                }
+};
 //});
 
 const HeaderMemo = React.memo((props: any) => {
@@ -151,9 +151,9 @@ const HeaderMemo = React.memo((props: any) => {
 
 
 const App: React.FC = () => {
-    const ref = useRef(0);
-    ref.current += 1;
-    console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
   return (
     <div id="app" className="App">
@@ -170,8 +170,8 @@ const App: React.FC = () => {
         <OverlayContentMemo />
       </Overlay>
       <Footer />
-      <NewRecordDialog/>
-      <CustomizeLayerMenu/>
+      <NewRecordDialog />
+      <CustomizeLayerMenu />
     </div>
   );
 };

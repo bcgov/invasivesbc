@@ -146,13 +146,15 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           title={getTitle('IAPP Site')}
           component={ReferenceIAPPSitePage}
         />
-        <AppRoute
+        <>
+          {/* <AppRoute
           exact
           accessLevel={AccessLevel.USER}
           path="/home/reports"
           title={getTitle('Reports')}
           component={EmbeddedReportsPage}
-        />
+        /> */}
+        </>
         <AppRoute
           exact
           accessLevel={AccessLevel.ADMIN}

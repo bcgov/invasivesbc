@@ -75,26 +75,23 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
         }
       );
       if (configuration.FEATURE_GATE.BATCH) {
-        tabConfig.push(
-          {
-            label: 'Batch Uploads',
-            path: '/home/batch',
-            icon: TabIconName.Batch
-          }
-        );
-      }
-    }
-
-    if (isMasterAdmin || isPlantPerson) {
-      if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
         tabConfig.push({
-          label: 'Reports',
-          path: '/home/reports',
-          icon: TabIconName.Assessment
+          label: 'Batch Uploads',
+          path: '/home/batch',
+          icon: TabIconName.Batch
         });
       }
-
     }
+
+    // if (isMasterAdmin || isPlantPerson) {
+    //   if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
+    //     tabConfig.push({
+    //       label: 'Reports',
+    //       path: '/home/reports',
+    //       icon: TabIconName.Assessment
+    //     });
+    //   }
+    //}
     if (isMasterAdmin) {
       tabConfig.push({
         label: 'Admin',
