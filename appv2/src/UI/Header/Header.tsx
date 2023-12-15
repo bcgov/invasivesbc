@@ -25,11 +25,11 @@ const Tab = (props: any) => {
   const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
 
   const canDisplayCallBack = useCallback(() => {
-    if( props.looggedOutOnly && authenticated) {
+    if (props.looggedOutOnly && authenticated) {
       return false;
     }
 
-    if(props.loggedOutOnly && !authenticated) {
+    if (props.loggedOutOnly && !authenticated) {
       return true;
     }
 
@@ -116,7 +116,10 @@ const ButtonWrapper = (props: any) => {
 const LoginButton = () => {
   const dispatch = useDispatch();
   return (
-    <MenuItem onClick={() => { dispatch({ type: AUTH_SIGNIN_REQUEST }); }}>
+    <MenuItem
+      onClick={() => {
+        dispatch({ type: AUTH_SIGNIN_REQUEST });
+      }}>
       <ListItemIcon>
         <VpnKeyIcon />
       </ListItemIcon>
@@ -128,7 +131,10 @@ const LoginButton = () => {
 const LogoutButton = () => {
   const dispatch = useDispatch();
   return (
-    <MenuItem onClick={() => { dispatch({ type: AUTH_SIGNOUT_REQUEST }); }}>
+    <MenuItem
+      onClick={() => {
+        dispatch({ type: AUTH_SIGNOUT_REQUEST });
+      }}>
       <ListItemIcon>
         <LogoutIcon />
       </ListItemIcon>
@@ -214,7 +220,7 @@ const LoginOrOutMemo = React.memo((props) => {
   const handleClose = () => {
     setAnchorEl(null);
     // setOpen(false);
-    console.log("closing");
+    console.log('closing');
   };
 
   const navToUpdateRequest = () => {
@@ -228,7 +234,7 @@ const LoginOrOutMemo = React.memo((props) => {
       type: TOGGLE_PANEL,
       payload: { panelOpen: true, fullScreen: true }
     });
-  }
+  };
 
   const requestAccess = async () => {
     if (!authenticated) {
@@ -242,43 +248,40 @@ const LoginOrOutMemo = React.memo((props) => {
     }
   };
 
-  return <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
-    <IconButton onClick={handleClick} size="small">
-      <Avatar></Avatar>
-    </IconButton>
-    <Menu
-      anchorEl={anchorEl}
-      open={openMenu}
-      onClose={handleClose}
-      PaperProps={{
-        elevation: 3
-      }}
-      transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
-        {activated &&
-        <MenuItem onClick={navToUpdateRequest}>
-          <ListItemIcon>
-            <AssignmentIcon />
-          </ListItemIcon>
-          Update My Info
-        </MenuItem>
-        }
-        {!activated &&
+  return (
+    <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
+      <IconButton onClick={handleClick} size="small">
+        <Avatar></Avatar>
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleClose}
+        PaperProps={{
+          elevation: 3
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+        {activated && (
+          <MenuItem onClick={navToUpdateRequest}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            Update My Info
+          </MenuItem>
+        )}
+        {!activated && (
           <MenuItem onClick={requestAccess}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
             Request Access
           </MenuItem>
-        }
-        {authenticated ? (
-          <LogoutButton />
-        ) : (
-          <LoginButton />
         )}
-    </Menu>
-  </Box>;
+        {authenticated ? <LogoutButton /> : <LoginButton />}
+      </Menu>
+    </Box>
+  );
 });
-
 
 export const Header: React.FC = () => {
   const ref = useRef(0);
@@ -311,9 +314,11 @@ export const Header: React.FC = () => {
           <FileUpload />
         </Tab>
 
-        <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <>
+          {/* <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <Assessment />
-        </Tab>
+        </Tab> */}
+        </>
 
         <Tab
           key={'tab7'}
@@ -327,7 +332,7 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
-        <Tab key={'tab8'} path={'/'} label="Map" loggedOutOnly={true} panelOpen={false} >
+        <Tab key={'tab8'} path={'/'} label="Map" loggedOutOnly={true} panelOpen={false}>
           <Map />
         </Tab>
       </ButtonWrapper>
