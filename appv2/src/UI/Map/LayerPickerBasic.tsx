@@ -25,6 +25,7 @@ export const LayerPickerBasic = (props) => {
   const center: LatLngExpression = [51.505, -0.09];
   const simplePickerLayers = useSelector((state: any) => state.Map.simplePickerLayers2);
   const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries);
+  const serverBoundariesLayerRef = useSelector((state: any) => state.Map.serverBoundariesLayerRef);
   const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries);
   const rectangle: LatLngBoundsExpression = [
     [51.49, -0.08],
@@ -119,9 +120,9 @@ useEffect(() => {
         : null}
       {serverBoundariesToDisplay?.map((boundary, i) => {
         return (
-          <LayersControl.Overlay key={'overlayserverboundaries' + i}  checked={true} name={'KML/KMZ: ' + boundary.title}>
+          <LayersControl.Overlay key={'overlayserverboundaries' + i}  checked={serverBoundariesLayerRef.find((server) => boundary.title===server.title)?.checked} name={'KML/KMZ: ' + boundary.title}>
             <LayerGroup>
-              <GeoJSON data={boundary.geojson} 
+              <GeoJSON data={boundary.geojson}
               pointToLayer={(feature, latlng) => {
                 return circleMarker(latlng, {
                   radius: 2

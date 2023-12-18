@@ -48,6 +48,7 @@ import {
   SAVE_BOUNDARY_LOCALSTATE,
   SAVE_LAYER_LOCALSTATE,
   SAVE_LAYER_LOCALSTORAGE,
+  SAVE_SERVER_BOUNDARY_LOCALREF,
   SET_CURRENT_OPEN_SET,
   SORT_COLUMN_STATE_UPDATE,
   TABS_GET_INITIAL_STATE_SUCCESS,
@@ -843,7 +844,36 @@ function* save_client_boundary_check(action) {
   });
 }
 
-function* save_server_boundary_check(action) {}
+function* save_server_boundary_check(action) {
+  const serverBoundaryState = yield select((state) => state.Map.serverBoundariesLayerRef);
+  const name = action.payload.name.replace('KML/KMZ: ', '');
+  const tempIndex = serverBoundaryState.findIndex((boundary) => {
+    return boundary?.title === name;
+  });
+
+  let boundaries = [];
+  if (tempIndex > -1) {
+    let tempboundary = { ...serverBoundaryState[tempIndex] }; //deep obj copy
+    tempboundary.checked = action.payload.checked;
+    boundaries = [...serverBoundaryState]; //deep copy
+    boundaries[tempIndex] = tempboundary; //replace
+  } else {
+    const tempBoundary = {
+      title: name,
+      checked: action.payload.checked
+    };
+    boundaries = [...serverBoundaryState, tempBoundary]; //deep copy and add
+  }
+
+  localStorage.setItem('SERVER_BOUNDARIES_REF', JSON.stringify(boundaries));
+
+  yield put({
+    type: SAVE_SERVER_BOUNDARY_LOCALREF,
+    payload: {
+      boundaries: boundaries
+    }
+  });
+}
 
 function* handle_SAVE_LAYER_LOCALSTORAGE(action) {
   if (action.payload.name.includes('KML/KMZ:')) {
