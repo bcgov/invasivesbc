@@ -63,6 +63,7 @@ const CustomizeLayerMenu = (props) => {
   const [subMenuType, setSubMenuType] = useState('Init');
   const [newLayerName, setNewLayerName] = useState('');
   const [layerToDelete, setLayerToDelete] = useState(null);
+  const [cantCreate, setCantCreate] = useState(false);
 
   const clientBoundaries = useSelector((state: any) => state.Map.clientBoundaries).map((boundary) => {
     return { ...boundary, type: 'Client' };
@@ -78,6 +79,7 @@ const CustomizeLayerMenu = (props) => {
     setOptionVal('Draw');
     setLayerToDelete(null);
     setNewLayerName('');
+    setCantCreate(false);
   };
 
   const onKMLDone = () => {
@@ -109,8 +111,17 @@ const CustomizeLayerMenu = (props) => {
                 <TextField
                   className={classes.select}
                   value={newLayerName}
-                  onChange={(e) => setNewLayerName(e.target.value)}
+                  onChange={(e) => {
+                    const boundaries = optionVal === 'Upload KML/KMZ' ? serverBoundaries : clientBoundaries;
+                    if(boundaries.find((b) => b.title === e.target.value)) {
+                      setCantCreate(true);
+                    } else {
+                      setCantCreate(false);
+                    }
+                    setNewLayerName(e.target.value)
+                  }}
                   label="Name your new layer"></TextField>
+                  {cantCreate && <p>Name already in use</p>}
               </FormControl>
             ),
             Remove: (
@@ -157,6 +168,7 @@ const CustomizeLayerMenu = (props) => {
             New: (
               <>
                 <Button
+                  disabled={cantCreate}
                   onClick={() => {
                     switch (optionVal) {
                       case 'Upload KML/KMZ':
