@@ -59,7 +59,8 @@ import {
   USER_SETTINGS_DELETE_KML_SUCCESS,
   SET_CURRENT_OPEN_SET,
   SAVE_LAYER_LOCALSTATE,
-  SAVE_BOUNDARY_LOCALSTATE
+  SAVE_BOUNDARY_LOCALSTATE,
+  SAVE_SERVER_BOUNDARY_LOCALREF
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -114,6 +115,7 @@ class MapState {
   drawingCustomLayer: boolean;
   serverBoundaries: [];
   clientBoundaries: [];
+  serverBoundariesLayerRef: [];
   workingLayerName: string;
   currentOpenSet: string;
 
@@ -255,6 +257,9 @@ class MapState {
       ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES'))
       : [];
     this.serverBoundaries = [];
+    this.serverBoundariesLayerRef = localStorage.getItem('SERVER_BOUNDARIES_REF')
+      ? JSON.parse(localStorage.getItem('SERVER_BOUNDARIES_REF'))
+      : [];
     this.workingLayerName = null;
     this.currentOpenSet = null;
   }
@@ -816,6 +821,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         return {
           ...state,
           clientBoundaries: action.payload.boundaries
+        };
+      }
+      case SAVE_SERVER_BOUNDARY_LOCALREF: {
+        return {
+          ...state,
+          serverBoundariesLayerRef: action.payload.boundaries
         };
       }
       default:
