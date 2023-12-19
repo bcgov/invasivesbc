@@ -2,6 +2,7 @@ import { Template, TemplateColumnBuilder } from '../definitions';
 import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
+  AuthorizationInformation,
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation,
@@ -9,18 +10,22 @@ import {
   ShorelineSumValidator
 } from '../shared-columns';
 
-const TreatmentMechanicalAquaticPlant = new Template(
-  'treatment_mechanical_aquatic_plant',
-  'Treatment - Mechanical - Aquatic Plant',
+const TreatmentMechanicalAquaticPlantTemp = new Template(
+  'treatment_mechanical_aquatic_plant_temp',
+  'Treatment - Mechanical - Aquatic Plant TEMP POINT',
   null
 );
 
-TreatmentMechanicalAquaticPlant.columns = [
+TreatmentMechanicalAquaticPlantTemp.type = 'Treatment';
+TreatmentMechanicalAquaticPlantTemp.subtype = 'Activity_Treatment_MechanicalPlantAquatic';
+
+TreatmentMechanicalAquaticPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
+  ...AuthorizationInformation,
   ...ShorelineInformation,
-  new TemplateColumnBuilder('Treatment - Authorization Information', 'text').build(),
+  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
   new TemplateColumnBuilder(
     'Treatment - Treated Area',
     'numeric',
@@ -30,7 +35,7 @@ TreatmentMechanicalAquaticPlant.columns = [
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
-    'Treatment - Disposal Code',
+    'Treatment - Disposal Method Code',
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].mechanical_disposal_code'
   )
@@ -69,6 +74,6 @@ TreatmentMechanicalAquaticPlant.columns = [
     .build()
 ];
 
-TreatmentMechanicalAquaticPlant.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
+TreatmentMechanicalAquaticPlantTemp.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
 
-export { TreatmentMechanicalAquaticPlant };
+export { TreatmentMechanicalAquaticPlantTemp };

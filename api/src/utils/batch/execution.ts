@@ -17,7 +17,6 @@ interface _MappedForDB {
   shortId: string;
   payload: object;
   geog: any;
-
 }
 
 export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedForDB {
@@ -44,7 +43,7 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped.form_data.activity_data.invasive_species_agency_code = mapped.form_data.activity_data.invasive_species_agency_code.join();
   }
 
-  if (['Activity_Treatment_ChemicalPlantTerrestrial'].includes(subtype)) {
+  if (['Activity_Treatment_ChemicalPlantTerrestrial', 'Activity_Treatment_ChemicalPlantAquatic'].includes(subtype)) {
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
     ]?.templateColumn.codes.map((codeObj) => {
@@ -66,8 +65,8 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
 
   const geog = mapped.geog;
   delete mapped.geog;
-  mapped.short_id = shortId
-  mapped.activity_id = uuidToCreate
+  mapped.short_id = shortId;
+  mapped.activity_id = uuidToCreate;
 
   return {
     id: uuidToCreate,
@@ -185,7 +184,6 @@ export const BatchExecutionService = {
       throw e;
     }
     await dbConnection.query('COMMIT;');
-
 
     await dbConnection.query({
       text: `UPDATE batch_uploads
