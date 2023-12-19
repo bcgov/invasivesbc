@@ -1,19 +1,26 @@
 import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersonsWithApplicatorLicense,
+  ApplicationMethodValidator,
   BasicInformation,
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
+  GranularHerbicideRate,
   HerbicidesInformation,
-  PositiveObservationPlantValidator,
-  ProjectInformation
+  PmpValidator,
+  ProjectInformation,
+  WindDirectionValidator
 } from '../shared-columns';
+import { ChemTreatmentValidators } from '../validation/chemical-treatment';
 
 const TreatmentChemicalAquaticPlant = new Template(
   'treatment_chemical_aquatic_plant',
   'Treatment - Chemical - Aquatic Plant',
   null
 );
+
+TreatmentChemicalAquaticPlant.type = 'Treatment';
+TreatmentChemicalAquaticPlant.subtype = 'Activity_Treatment_ChemicalPlantAquatic';
 
 TreatmentChemicalAquaticPlant.columns = [
   ...BasicInformation,
@@ -46,9 +53,7 @@ TreatmentChemicalAquaticPlant.columns = [
     'Chemical Treatment - Invasive Species 2 %',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[1].percent_area_covered'
-  )
-    .isRequired()
-    .build(),
+  ).build(),
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 3',
     'codeReference',
@@ -60,10 +65,15 @@ TreatmentChemicalAquaticPlant.columns = [
     'Chemical Treatment - Invasive Species 3 %',
     'numeric',
     'form_data.activity_subtype_data.chemical_treatment_details.invasive_plants[2].percent_area_covered'
-  )
-    .isRequired()
-    .build(),
+  ).build(),
   ...HerbicidesInformation
 ];
-TreatmentChemicalAquaticPlant.rowValidators = [...BasicInformationRowValidators, PositiveObservationPlantValidator];
+TreatmentChemicalAquaticPlant.rowValidators = [
+  ...BasicInformationRowValidators,
+  ...ChemTreatmentValidators,
+  PmpValidator,
+  WindDirectionValidator,
+  ApplicationMethodValidator,
+  GranularHerbicideRate
+];
 export { TreatmentChemicalAquaticPlant };

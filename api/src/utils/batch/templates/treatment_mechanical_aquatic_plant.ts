@@ -2,6 +2,7 @@ import { Template, TemplateColumnBuilder } from '../definitions';
 import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes';
 import {
   ActivityPersons,
+  AuthorizationInformation,
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation,
@@ -15,12 +16,15 @@ const TreatmentMechanicalAquaticPlant = new Template(
   null
 );
 
+TreatmentMechanicalAquaticPlant.type = 'Treatment';
+TreatmentMechanicalAquaticPlant.subtype = 'Activity_Treatment_MechanicalPlantAquatic';
+
 TreatmentMechanicalAquaticPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
+  ...AuthorizationInformation,
   ...ShorelineInformation,
-  new TemplateColumnBuilder('Treatment - Authorization Information', 'text').build(),
   new TemplateColumnBuilder(
     'Treatment - Treated Area',
     'numeric',
@@ -30,7 +34,7 @@ TreatmentMechanicalAquaticPlant.columns = [
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
-    'Treatment - Disposal Code',
+    'Treatment - Disposal Method Code',
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].mechanical_disposal_code'
   )
