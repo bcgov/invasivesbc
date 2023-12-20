@@ -37,7 +37,7 @@ export const LegendsButton = (props) => {
     // dispatch({ type: TOGGLE_PANEL });
   }
 
-  if (legendsPopup && map) {
+  if (map) {
     return (
       <div
         ref={divRef}

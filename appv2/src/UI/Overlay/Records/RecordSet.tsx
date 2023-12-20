@@ -153,7 +153,7 @@ export const RecordSet = (props) => {
 };
 
 const RecordSetFooter = (props) => {
-  const layer = useSelector((state: any) => state.Map.layers?.[props.setID]);
+  const layer = useSelector((state: any) => state.Map.layers?.filter((layer) => layer.recordSetID === props.setID)[0]);
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
 
   const totalRecords = layer?.IDList?.length;

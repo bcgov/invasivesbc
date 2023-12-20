@@ -200,7 +200,7 @@ export const RecordSetLayersRenderer = (props: any) => {
 
   return (
     <>
-      {layers?.length > 0 ? (
+      {false && layers?.length > 0 ? (
         layers.map((layer) => {
           if (layer?.recordSetID && layer?.type === 'Activity')
             return (
