@@ -25,6 +25,14 @@ export const getCustomErrorTransformer = () => {
       if (error.message === 'should match some schema in anyOf') {
         return false;
       }
+      if (error.message === 'must match exactly one schema in oneOf') {
+        return false;
+      }
+
+      if( error.message === 'must be equal to one of the allowed values')
+      {
+        return false;
+      }
 
       if (error.message === 'should match pattern "[A-Za-z -]+"') {
         error.message = 'Only letters are allowed';

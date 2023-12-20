@@ -83,12 +83,15 @@ export const ActivityGeo = (props) => {
 
     dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
 
+
     layer.on('pm:update', (e) => {
       dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [layer.toGeoJSON()] } });
     });
     layer.on('pm:remove', (e) => {
       dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
     });
+
+    map.pm.disableGlobalEditMode()	
   });
 
 
