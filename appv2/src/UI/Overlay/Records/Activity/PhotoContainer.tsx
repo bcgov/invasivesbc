@@ -37,7 +37,7 @@ export interface IPhotoContainerProps {
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
-  const media = useSelector((state: any) => state.Activity?.activity?.media)
+  const media = useSelector((state: any) => state.ActivityPage?.activity?.media)
 
   const takePhoto = async () => {
     try {

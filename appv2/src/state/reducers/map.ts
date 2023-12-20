@@ -658,8 +658,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
 
           draftState.layers[index].geoJSON = {type: 'FeatureCollection', features: draftState.activitiesGeoJSON.features.filter((feature) => {
-            if(feature.properties.id === '335cf60a-52b6-4bef-87b8-4cf05b61fe5d')
-            console.log(!state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id))
+           // if(feature.properties.id === '335cf60a-52b6-4bef-87b8-4cf05b61fe5d')
+           // console.log(!state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id))
             return action.payload.IDList.includes(feature.properties.id) && 
             !state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id);
           })}
