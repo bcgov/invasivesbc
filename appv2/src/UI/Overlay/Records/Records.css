@@ -3,6 +3,11 @@
   width: 100%;
 }
 
+.addRecordSet {
+  height: 100px;
+  width: 100px;
+}
+
 .records_set {
   height: 30px;
   width: 100%;
