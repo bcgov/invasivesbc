@@ -87,6 +87,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       }
       case ACTIVITY_CREATE_REQUEST: {
         return {
+          activity_copy_buffer: state.activity_copy_buffer,
           ...new ActivityState()
         };
       }
