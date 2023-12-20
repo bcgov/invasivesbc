@@ -49,6 +49,7 @@ import {
 
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 
 class ActivityState {
   initialized: boolean;
@@ -76,7 +77,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
     switch (action.type) {
       case ACTIVITY_ERRORS: {
         const nextState= createNextState(state, (draftState) => {
-          draftState.activityErrors = action.payload.errors
+          if(action.payload.errors !== undefined)
+          draftState.activityErrors = getCustomErrorTransformer()(action.payload.errors)
         })
         return nextState;
       }
