@@ -239,7 +239,7 @@ function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
       ...prev,
       [JSON.stringify(Number(Object.keys(prev)[Object.keys(prev).length - 1]) + 1)]: {
         recordSetType: action.payload.recordSetType,
-        recordSetName: 'New Record Set',
+        recordSetName: 'New Record Set' + (action.payload.recordSetType === 'POI'? ' (IAPP)' : ' (InvasivesBC)'),
         advancedFilters: [],
         gridFilters: {},
         drawOrder: Object.keys(prev).length + 1
