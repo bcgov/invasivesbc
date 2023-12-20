@@ -146,12 +146,15 @@ const InvIcon = () => {
           objectFit: 'contain',
           backgroundColor: 'white',
           borderRadius: 4,
-          padding: 4
+          padding: 5
         }}
         height="20"
         width="20"
         alt="B.C. Government Logo"
       />
+      <div id='appTitle'>
+      InvasivesBC
+      </div>
     </div>
   );
 };
@@ -288,6 +291,7 @@ export const Header: React.FC = () => {
   return (
     <div className="HeaderBar">
       <InvIcon />
+
       <ButtonWrapper>
         <Tab key={'tab1'} path={'/Landing'} loggedInOnly={false} label="Home" panelOpen={true} panelFullScreen={true}>
           <Home />
