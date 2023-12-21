@@ -15,6 +15,7 @@ import { useHistory } from "react-router";
 export const WhatsHereButton = (props) => {
   const map = useMap();
   const dispatch = useDispatch();
+  const history = useHistory();
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   const darkTheme =  useSelector((state: any) => state.UserSettings?.darkTheme)
   const toolClass = toolStyles();
@@ -42,6 +43,9 @@ export const WhatsHereButton = (props) => {
             <IconButton
               onClick={() => {
                 dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !whatsHere.toggle} });
+                if (whatsHere.toggle) {
+                  history.goBack();
+                }
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
@@ -90,6 +94,13 @@ export const WhatsHereDrawComponent = (props) => {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
       if(!panelState)
       dispatch({ type: TOGGLE_PANEL });
+    }
+  });
+
+  useMapEvent('click', (e) => {
+    if ((whatsHere as any).toggle && (whatsHere as any)?.feature) {
+      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: !whatsHere.toggle} });
+      history.goBack();
     }
   });
 
