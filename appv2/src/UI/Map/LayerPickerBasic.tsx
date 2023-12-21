@@ -19,41 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import Control from './CustomMapControl';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { SAVE_LAYER_LOCALSTORAGE, TOGGLE_CUSTOMIZE_LAYERS} from 'state/actions';
-
-export const LayerPickerBasic = (props) => {
-  const center: LatLngExpression = [51.505, -0.09];
-  const simplePickerLayers = useSelector((state: any) => state.Map.simplePickerLayers2);
-  const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries);
-  const serverBoundariesLayerRef = useSelector((state: any) => state.Map.serverBoundariesLayerRef);
-  const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries);
-  const rectangle: LatLngBoundsExpression = [
-    [51.49, -0.08],
-    [51.5, -0.06]
-];
-const dispatch = useDispatch();
-const map = useMap();
-
-useEffect(() => {
-  map.on('overlayadd', (event) => {
-    dispatch({
-      type: SAVE_LAYER_LOCALSTORAGE,
-      payload: {
-        name: event.name,
-        checked: true
-      }
-    });
-  })
-  map.on('overlayremove', (event) => {
-    dispatch({
-      type: SAVE_LAYER_LOCALSTORAGE,
-      payload: {
-        name: event.name,
-        checked: false
-      }
-    });
-  })
-}, []);
+import { SAVE_LAYER, SAVE_LAYER_LOCALSTORAGE, TOGGLE_CUSTOMIZE_LAYERS} from 'state/actions';
 
   const layers = {
     'Regional Districts': {
@@ -96,6 +62,41 @@ useEffect(() => {
       layerCode: 'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
       zIndex: 3513 },
   };
+
+export const LayerPickerBasic = (props) => {
+  const center: LatLngExpression = [51.505, -0.09];
+  const simplePickerLayers = useSelector((state: any) => state.Map.simplePickerLayers2);
+  const serverBoundariesToDisplay = useSelector((state: any) => state.Map.serverBoundaries);
+  const serverBoundariesLayerRef = useSelector((state: any) => state.Map.serverBoundariesLayerRef);
+  const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries);
+  const rectangle: LatLngBoundsExpression = [
+    [51.49, -0.08],
+    [51.5, -0.06]
+];
+const dispatch = useDispatch();
+const map = useMap();
+
+useEffect(() => {
+  map.on('overlayadd', (event) => {
+    dispatch({
+      type: SAVE_LAYER,
+      payload: {
+        name: event.name,
+        checked: true
+      }
+    });
+  })
+  map.on('overlayremove', (event) => {
+    dispatch({
+      type: SAVE_LAYER,
+      payload: {
+        name: event.name,
+        checked: false
+      }
+    });
+  })
+}, []);
+
 
   return (
     <LayersControl position="topright">

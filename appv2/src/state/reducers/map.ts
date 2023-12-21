@@ -60,7 +60,8 @@ import {
   SET_CURRENT_OPEN_SET,
   SAVE_LAYER_LOCALSTATE,
   SAVE_BOUNDARY_LOCALSTATE,
-  SAVE_SERVER_BOUNDARY_LOCALREF
+  SAVE_SERVER_BOUNDARY_LOCALREF,
+  SAVE_LAYER
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -810,6 +811,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ...state,
           tooManyLabelsDialog: action.payload.dialog
         };
+      }
+      case SAVE_LAYER : {
+        const nextState = createNextState(state, (draftState) => {
+          let index = draftState.simplePickerLayers2.findIndex((layer) => layer.title === action.payload.name);
+          if(!index){
+            draftState.simplePickerLayers2.push({ title: action.payload.name, checked: action.payload.checked});
+          }
+          else
+          {
+            index = draftState.simplePickerLayers2.findIndex((layer) => layer.title === action.payload.name);
+          }
+          draftState.simplePickerLayers2[index].checked = action.payload.checked;
+          })
+        return nextState;
       }
       case SAVE_LAYER_LOCALSTATE: {
         return {
