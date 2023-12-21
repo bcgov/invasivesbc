@@ -6,7 +6,7 @@ import * as L from 'leaflet';
 import OfflineLayers from './OfflineLayers';
 import { useSelector } from 'util/use_selector';
 import { RecordSetLayersRenderer } from './RecordSetLayersRenderer';
-//import { VectorOverviewLayer } from './VectorOverviewLayer';
+import { VectorOverviewLayer } from './VectorOverviewLayer';
 
 
 const Map = (props: any) => {
@@ -35,7 +35,7 @@ const Map = (props: any) => {
           <RecordSetLayersRenderer />  
           {props.children}
           <OfflineLayers />
-          {/*{!isAuth && <VectorOverviewLayer />}*/}
+          <VectorOverviewLayer />
         </MapContainer>
       ) : (
         <></>
