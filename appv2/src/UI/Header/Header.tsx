@@ -314,11 +314,9 @@ export const Header: React.FC = () => {
           <FileUpload />
         </Tab>
 
-        <>
-          {/* <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <Assessment />
-        </Tab> */}
-        </>
+        </Tab>
 
         <Tab
           key={'tab7'}

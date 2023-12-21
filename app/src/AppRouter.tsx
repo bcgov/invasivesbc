@@ -9,7 +9,7 @@ import AppRoute from './router/AppRoute';
 import { getDesignTokens } from 'utils/CustomThemeProvider';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import LandingPage from './features/home/landing/LandingPage';
-import { TrainingPage } from "./pages/Training";
+import { TrainingPage } from './pages/Training';
 import MapPage from './features/home/map/MapPage';
 import AccessRequestPage from './features/home/accessRequest/AccessRequestPage';
 import BulkEditActivitiesPage from './features/home/search/BulkEditActivitiesPage';
@@ -146,15 +146,13 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           title={getTitle('IAPP Site')}
           component={ReferenceIAPPSitePage}
         />
-        <>
-          {/* <AppRoute
+        <AppRoute
           exact
           accessLevel={AccessLevel.USER}
           path="/home/reports"
           title={getTitle('Reports')}
           component={EmbeddedReportsPage}
-        /> */}
-        </>
+        />
         <AppRoute
           exact
           accessLevel={AccessLevel.ADMIN}
@@ -198,7 +196,6 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
           component={() => <Redirect to="/page-not-found" />}
         />
       </Switch>
-
     </ThemeProvider>
   );
 };
