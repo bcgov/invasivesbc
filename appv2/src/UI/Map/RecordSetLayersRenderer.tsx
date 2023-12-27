@@ -1,22 +1,69 @@
 import center from '@turf/center';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useMap } from 'react-leaflet';
-import { selectAuth } from 'state/reducers/auth';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'util/use_selector';
 import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
-
-import L from 'leaflet';
 
 //const  glify } = require('react-leaflet-glify');
 //import glify from 'react-leaflet-glify';
 //import 'leaflet-canvas-marker';
 import { pointsWithinPolygon } from '@turf/turf';
-import { GeneralDialog } from './GeneralDialog';
 import 'leaflet-markers-canvas';
 import { useDispatch } from 'react-redux';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
+import { GeneralDialog } from './GeneralDialog';
 import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
+
+export const RecordSetLayersRenderer = (props: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
+
+  const layers = useSelector((state: any) =>
+    state.Map?.layers?.map((layer) => {
+      return { recordSetID: layer.recordSetID, type: layer.type };
+    })
+  );
+  const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
+
+  return (
+    <>
+      {layers.map((layer) => (
+        <LayerWrapper key={layer.recordSetID} recordSetID={layer.recordSetID} type={layer.type} />
+      ))}
+      <GeneralDialog
+        dialogOpen={tooManyLabelsDialog?.dialogOpen}
+        dialogTitle={tooManyLabelsDialog?.dialogTitle}
+        dialogActions={tooManyLabelsDialog?.dialogActions}
+        dialogContentText={tooManyLabelsDialog?.dialogContentText}></GeneralDialog>
+    </>
+  );
+};
+
+const LayerWrapper = memo(({ recordSetID, type }: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  console.log(`%cLayerWrapper.tsx render ${recordSetID}:` + ref.current.toString(), 'color: green');
+
+  console.log('type', type)
+  switch (type) {
+    case 'Activity':
+      return (
+        <>
+          <ActivitiesLayerV2 layerKey={recordSetID} />
+          {/*<ActivityCanvasLabelMemo layerKey={recordSetID} />*/}
+        </>
+      );
+    case 'IAPP':
+      return (
+        <>
+          <IAPPCanvasLayerMemo layerKey={recordSetID} />
+          <IAPPCanvasLabelMemo layerKey={recordSetID} />
+        </>
+      );
+  }
+
+  return <div key={'layerWrapper' + recordSetID}></div>;
+});
 
 const IAPPCanvasLayerMemo = (props) => {
   const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
@@ -32,7 +79,7 @@ const IAPPCanvasLayerMemo = (props) => {
     } else {
       returnVal = [];
     }
-    const points = {type: 'FeatureCollection', features: returnVal};
+    const points = { type: 'FeatureCollection', features: returnVal };
     return pointsWithinPolygon(points as any, IAPPBoundsPolygon);
   };
 
@@ -73,7 +120,7 @@ const IAPPCanvasLabelMemo = (props) => {
     } else {
       returnVal = [];
     }
-    const points = {type: 'FeatureCollection', features: returnVal};
+    const points = { type: 'FeatureCollection', features: returnVal };
     const pointsInBounds = pointsWithinPolygon(points as any, IAPPBoundsPolygon);
     const pointsToLabel = pointsWithinPolygon(pointsInBounds as any, labelBoundsPolygon);
     // only allow max labels
@@ -84,7 +131,8 @@ const IAPPCanvasLabelMemo = (props) => {
           dialog: {
             dialogOpen: true,
             dialogTitle: 'Too many labels',
-            dialogContentText: 'There are too many labels returned.\n Please zoom in more or filter down the record set more.',
+            dialogContentText:
+              'There are too many labels returned.\n Please zoom in more or filter down the record set more.',
             dialogActions: [
               {
                 actionName: 'OK',
@@ -99,7 +147,7 @@ const IAPPCanvasLabelMemo = (props) => {
                         dialogActions: []
                       }
                     }
-                  })
+                  });
                 },
                 autoFocus: true
               }
@@ -109,7 +157,7 @@ const IAPPCanvasLabelMemo = (props) => {
       });
       return [];
     }
-    
+
     return pointsToLabel;
   };
 
@@ -135,192 +183,48 @@ const IAPPCanvasLabelMemo = (props) => {
 };
 
 const ActivityCanvasLabelMemo = (props) => {
-  const layers = useSelector((state: any) => state.Map?.layers);
-  const labelBoundsPolygon  = useSelector((state: any) => state.Map?.labelBoundsPolygon);
+  const layerState = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
+  );
+  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
   const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
-
 
   const filteredFeatures = () => {
     let returnVal;
-    if (layers?.[props.layerKey]?.IDList && labelBoundsPolygon) {
-      returnVal = activitiesGeoJSON?.features
-        .filter((row) => {
-          return (layers?.[props.layerKey]?.IDList?.includes(row.properties.id) && row.geometry)
-        })
-        .map((row) => {
-          let computedCenter = null;
-          try {
-            // center() function can throw an error
-            if (row?.geometry != null) {
-              computedCenter = center(row.geometry).geometry;
-            }
-          } catch (e) {
-            console.dir(row.geometry);
-            console.error(e);
+    if (activitiesGeoJSON && labelBoundsPolygon) {
+      returnVal = activitiesGeoJSON?.features.map((row) => {
+        let computedCenter = null;
+        try {
+          // center() function can throw an error
+          if (row?.geometry != null) {
+            computedCenter = center(row.geometry).geometry;
           }
-          return {...row, geometry: computedCenter};
-        });
-    } else {
-      returnVal = [];
-    }
-    const points = {type: 'FeatureCollection', features: returnVal};
-    return pointsWithinPolygon(points as any, labelBoundsPolygon);
-  };
-
-  return useMemo(() => {
-    if (layers?.[props.layerKey]?.layerState) {
-      return (
-        <LeafletCanvasLabel
-          layerType={'ACTIVITY'}
-          key={'activityCanvasLayermemo' + props.layerKey}
-          labelToggle={layers[props.layerKey].layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layers[props.layerKey].layerState.mapToggle}
-          colour={layers[props.layerKey].layerState.color}
-          zIndex={10000 + layers[props.layerKey].layerState.drawOrder}
-        />
-      );
-    } else return <div key={Math.random()}></div>;
-  }, [
-    JSON.stringify(layers?.[props.layerKey]?.layerState),
-    JSON.stringify(layers?.[props.layerKey]?.IDList),
-    JSON.stringify(labelBoundsPolygon)
-  ]);
-};
-
-const ActivityLayerMemo = (props) => {
-  const IDList = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.IDList);
-  const layerState = useSelector((state: any) => state.Map?.layers?.[props.layerKey]?.layerState);
-  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
-
-  const filteredFeatures = () => {
-    let returnVal;
-    if (IDList) {
-      returnVal = activitiesGeoJSON?.features.filter((row) => {
-        return IDList?.includes(row.properties.id);
+        } catch (e) {
+          console.dir(row.geometry);
+          console.error(e);
+        }
+        return { ...row, geometry: computedCenter };
       });
     } else {
       returnVal = [];
     }
-    return {type: 'FeatureCollection', features: returnVal};
+    const points = { type: 'FeatureCollection', features: returnVal };
+    return pointsWithinPolygon(points as any, labelBoundsPolygon);
   };
 
   return useMemo(() => {
     if (layerState) {
       return (
-        <ActivitiesLayerV2
-          key={'activitiesv2filter' + props.layerKey}
-          layerKey={props.layerKey}
-          activities={filteredFeatures()}
+        <LeafletCanvasLabel
+          layerType={'ACTIVITY'}
+          key={'activityCanvasLayermemo' + props.layerKey}
+          labelToggle={layerState.labelToggle}
+          points={filteredFeatures()}
           enabled={layerState.mapToggle}
-          color={layerState.color}
-          zIndex={layerState.drawOrder + 10000}
-          opacity={0.8}
+          colour={layerState.color}
+          zIndex={10000 + layerState.drawOrder}
         />
       );
     } else return <div key={Math.random()}></div>;
-  }, [
-    JSON.stringify(layerState),
-    JSON.stringify(IDList)
-  ]);
-};
-export const RecordSetLayersRenderer = (props: any) => {
-  const layers = useSelector((state: any) => state.Map?.layers);
-  const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
-
-  interface ILayerToRender {
-    filter: IActivitySearchCriteria;
-    color: any;
-    setName: string;
-  }
-
-  const GLLayerPoints = (props) => {
-    const map = useMap();
-
-    useEffect(() => {
-      if (map && props.points) {
-        //        (L as any).glify = glify;
-
-        (L as any).glify.points({
-          map,
-          data: props.points,
-          size: 10,
-
-          click: (e, pointOrGeoJsonFeature, xy): boolean | void => {
-            // do something when a point is clicked
-            // return false to continue traversing
-          },
-          hover: (e, pointOrGeoJsonFeature, xy): boolean | void => {
-            // do something when a point is hovered
-          }
-        });
-      }
-    }, []);
-    return <div key={Math.random()}></div>;
-  };
-
-  const iappLayers = useCallback(() => {
-    const keys = Object.keys(layers ? layers : {});
-    const filtered = keys?.filter((key) => layers[key]?.type === 'POI');
-    const sorted = filtered.sort((a, b) => {
-      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
-    });
-    return sorted;
-  }, [
-    JSON.stringify(
-      Object.keys(layers ? layers : {}).map((l) => {
-        return {id: l, order: layers?.[l]?.layerState?.drawOrder};
-      })
-    )
-  ]);
-
-  const activityLayers = useCallback(() => {
-    const keys = Object.keys(layers ? layers : {});
-    const filtered = keys?.filter((key) => layers[key]?.type === 'Activity');
-    const sorted = filtered.sort((a, b) => {
-      if (layers[a].layerState.drawOrder > layers[b].layerState.drawOrder) return 1; // if the first value is greater than the second
-      if (layers[a].layerState.drawOrder === layers[b].layerState.drawOrder) return 0; // if values are equal
-      if (layers[a].layerState.drawOrder < layers[b].layerState.drawOrder) return -1; // if the first value is less than the second);
-    });
-    return sorted;
-  }, [JSON.stringify(Object.keys(layers ? layers : {}))]);
-
-  return (
-    <>
-      {activityLayers()?.length > 0 ? (
-        activityLayers()?.map((layerKey) => {
-          if (layerKey)
-            return (
-              <div key={layerKey + 'activityLayerDivWrapper'}>
-                <ActivityLayerMemo key={'activitiesv2memo' + layerKey} layerKey={layerKey}/>
-                <ActivityCanvasLabelMemo key={'activitiesCanvasLayerLabel' + layerKey} layerKey={layerKey}/>
-              </div>
-            )
-        })
-      ) : (
-        <div key={Math.random()}></div>
-      )}
-      {iappLayers()?.length > 0 ? (
-        iappLayers()?.map((layerKey) => {
-          if (layerKey)
-            return (
-              <div key={layerKey + 'IAPPLayerDivWrapper'}>
-                <IAPPCanvasLayerMemo key={'POICanvasLayer' + layerKey} layerKey={layerKey}/>
-                <IAPPCanvasLabelMemo key={'POICanvasLayerLabel' + layerKey} layerKey={layerKey}/>
-              </div>
-            )
-        })
-      ) : (
-        <div key={Math.random()}></div>
-      )}
-      <GeneralDialog
-        dialogOpen={tooManyLabelsDialog?.dialogOpen}
-        dialogTitle={tooManyLabelsDialog?.dialogTitle}
-        dialogActions={tooManyLabelsDialog?.dialogActions}
-        dialogContentText={tooManyLabelsDialog?.dialogContentText}>
-      </GeneralDialog>
-    </>
-  );
+  }, [JSON.stringify(layerState), activitiesGeoJSON, JSON.stringify(labelBoundsPolygon)]);
 };

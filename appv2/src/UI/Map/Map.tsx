@@ -10,15 +10,8 @@ import { RecordSetLayersRenderer } from './RecordSetLayersRenderer';
 
 const RecordSetLayers = (props: any) => {
   const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
-  const [shouldDisplay, setShouldDisplay] = useState(false);
 
-  useLayoutEffect(() => {
-    if (IAPPGeoJSON?.features.length && !shouldDisplay) {
-      setShouldDisplay(true);
-    }
-  }, [JSON.stringify(IAPPGeoJSON?.features.length)]);
-
-  return shouldDisplay ? <RecordSetLayersRenderer /> : null;
+  return IAPPGeoJSON?.features?.length > 0 ? <RecordSetLayersRenderer /> : null;
 };
 
 const Map = (props: any) => {

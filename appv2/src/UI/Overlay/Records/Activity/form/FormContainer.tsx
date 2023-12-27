@@ -71,7 +71,7 @@ const FormContainer: React.FC<any> = (props) => {
 
   const errorTransformers = useCallback(() => {
     
-    return getCustomErrorTransformer();
+    return getCustomErrorTransformer;
   }, []);
 
   const customValidators = useCallback(() => {

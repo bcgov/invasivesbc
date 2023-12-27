@@ -1,5 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
-import {Md5} from 'ts-md5'
+import { Md5 } from 'ts-md5';
 //import { Uuid, UuidOptions } from 'node-ts-uuid';
 //import  process from 'process'
 //window.process = process
@@ -39,6 +39,7 @@ import {
 
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
+import { immerable } from 'immer';
 
 /*const options: UuidOptions = {
   length: 50,
@@ -51,6 +52,7 @@ export function getUuid() {
 }
 
 class UserSettingsState {
+  [immerable] = true;
   initialized: boolean;
   error: boolean;
 
@@ -121,56 +123,43 @@ const initialState = new UserSettingsState();
 
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
-    switch (action.type) {
-      case ACTIVITY_GET_REQUEST: {
-        return {
-          ...state,
-          activeActivity: action.payload.activityID
-        };
-      }
-      case ACTIVITY_DELETE_SUCCESS: {
-        return {
-          ...state,
-          activeActivity: '',
-          activeActivityDescription: ''
-        };
-      }
-      case GET_API_DOC_SUCCESS: {
-        return {
-          ...state,
-          apiDocsWithViewOptions: action.payload.apiDocsWithViewOptions,
-          apiDocsWithSelectOptions: action.payload.apiDocsWithSelectOptions
-        };
-      }
-      case MAP_TOGGLE_WHATS_HERE: {
-        return { ...state, recordsExpanded: action.payload?.toggle ? false : state.recordsExpanded };
-      }
-      case OPEN_NEW_RECORD_MENU: {
-        return { 
-          ...state, 
-          newRecordDialogueOpen: true
+    return createNextState(state, (draftState) => {
+      switch (action.type) {
+        case ACTIVITY_GET_REQUEST: {
+          draftState.activeActivity = action.payload.activityID;
+          break;
         }
-      }
-      case CLOSE_NEW_RECORD_MENU: {
-        return { 
-          ...state, 
-          newRecordDialogueOpen: false
+        case ACTIVITY_DELETE_SUCCESS: {
+          draftState.activeActivity = '';
+          draftState.activeActivityDescription = '';
+          break;
         }
-      }
-      case IAPP_GET_SUCCESS : {
-        return { 
-          ...state,
-          activeIAPP: action.payload.iapp?.site_id
+        case GET_API_DOC_SUCCESS: {
+          draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
+          draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
+          break;
         }
-      }
-      case ACTIVITY_CREATE_SUCCESS: {
-        return { 
-          ...state, 
-          newRecordDialogueOpen: false
+        case MAP_TOGGLE_WHATS_HERE: {
+          draftState.recordsExpanded = action.payload?.toggle ? false : draftState.recordsExpanded;
+          break;
         }
-      }
-      case RECORDSET_ADD_FILTER: {
-        const nextState = createNextState(state, (draftState) => {
+        case OPEN_NEW_RECORD_MENU: {
+          draftState.newRecordDialogueOpen = true;
+          break;
+        }
+        case CLOSE_NEW_RECORD_MENU: {
+          draftState.newRecordDialogueOpen = false;
+          break;
+        }
+        case IAPP_GET_SUCCESS: {
+          draftState.activeIAPP = action.payload.iapp?.site_id;
+          break;
+        }
+        case ACTIVITY_CREATE_SUCCESS: {
+          draftState.newRecordDialogueOpen = false;
+          break;
+        }
+        case RECORDSET_ADD_FILTER: {
           switch (action.payload.filterType) {
             case 'tableFilter':
               if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
@@ -187,21 +176,17 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             default:
               break;
           }
-        });
-        return nextState;
-      }
-      case RECORDSET_REMOVE_FILTER: {
-        const nextState = createNextState(state, (draftState) => {
+          break;
+        }
+        case RECORDSET_REMOVE_FILTER: {
           const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
             (filter) => filter.id === action.payload.filterID
           );
 
           draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
-        });
-        return nextState;
-      }
-      case RECORDSET_UPDATE_FILTER: {
-        const nextState = createNextState(state, (draftState) => {
+          break;
+        }
+        case RECORDSET_UPDATE_FILTER: {
           if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
             draftState.recordSets[action.payload.setID].tableFilters = [];
           }
@@ -259,20 +244,18 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             (filter) => filter.filter !== ''
           );
 
-          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash = draftState.recordSets[action.payload.setID]?.tableFiltersHash 
-          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(JSON.stringify(tableFiltersNotBlank));
-        });
-        return nextState;
-      }
-      case RECORDSET_CLEAR_FILTERS: {
-        const nextState = createNextState(state, (draftState) => {
+          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+            draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+            JSON.stringify(tableFiltersNotBlank)
+          );
+          break;
+        }
+        case RECORDSET_CLEAR_FILTERS: {
           draftState.recordSets[action.payload.setID].tableFilters = [];
-        });
-        return nextState;
-      }
-
-      case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-        const nextState = createNextState(state, (draftState) => {
+          break;
+        }
+        case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
           if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
 
           if (!draftState.activeActivityDescription)
@@ -282,117 +265,85 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
 
           draftState.recordSets = { ...action.payload.recordSets };
           draftState.recordsExpanded = action.payload.recordsExpanded;
-        });
-        return nextState;
+          break;
+        }
+        case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
+          draftState.activeActivity = action.payload.id;
+          draftState.activeActivityDescription = action.payload.description;
+          break;
+        }
+        case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
+          draftState.activeIAPP = action.payload.activeIAPP;
+          break;
+        }
+        case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
+          draftState.newRecordDialogState = action.payload;
+          break;
+        }
+        case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+        case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+        case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
+          draftState.selectedRecord = action.payload.selectedRecord;
+          break;
+        }
+        case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+
+        //MW: these are all wrong we shouldn't clobber all sets from the dispatching components copy of state
+        case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+        case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
+          draftState.boundaries = action.payload.boundaries;
+          break;
+        }
+        case USER_SETTINGS_DELETE_BOUNDARY_SUCCESS: {
+          draftState.boundaries = draftState.boundaries.filter((boundary) => boundary.id !== action.payload.id);
+          break;
+        }
+        case USER_SETTINGS_DELETE_KML_SUCCESS: {
+          draftState.boundaries = draftState.boundaries?.filter(
+            (boundary) => boundary.server_id !== action.payload.server_id
+          );
+          break;
+        }
+        case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+        case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
+          draftState.recordsExpanded = !draftState.recordsExpanded;
+          break;
+        }
+        case USER_SETTINGS_SET_DARK_THEME: {
+          draftState.darkTheme = action.payload.enabled;
+          break;
+        }
+        case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
+          draftState.mapCenter = action.payload.center;
+          break;
+        }
+        case USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS: {
+          draftState.recordSets = { ...action.payload.recordSets };
+          break;
+        }
+        case USER_SETTINGS_SET_API_ERROR_DIALOG: {
+          draftState.APIErrorDialog = action.payload.APIErrorDialog;
+          break;
+        }
+        default:
+          break;
       }
-      case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
-        return {
-          ...state,
-          activeActivity: action.payload.id,
-          activeActivityDescription: action.payload.description
-        };
-      }
-      case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
-        return {
-          ...state,
-          activeIAPP: action.payload.activeIAPP
-        };
-      }
-      case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
-        return {
-          ...state,
-          newRecordDialogState: action.payload
-        };
-      }
-      case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
-        return {
-          ...state,
-          selectedRecord: action.payload.selectedRecord
-        };
-      }
-      case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
-        return {
-          ...state,
-          boundaries: action.payload.boundaries
-        };
-      }
-      case USER_SETTINGS_DELETE_BOUNDARY_SUCCESS: {
-        const boundaries = state.boundaries.filter((boundary) => boundary.id !== action.payload.id);
-        return {
-          ...state,
-          boundaries: boundaries
-        };
-      }
-      case USER_SETTINGS_DELETE_KML_SUCCESS: {
-        const boundaries = state.boundaries?.filter((boundary) => boundary.server_id !== action.payload.server_id);
-        return {
-          ...state,
-          boundaries: boundaries
-        };
-      }
-      case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
-        return {
-          ...state,
-          recordsExpanded: !state.recordsExpanded
-        };
-      }
-      case USER_SETTINGS_SET_DARK_THEME: {
-        return {
-          ...state,
-          darkTheme: action.payload.enabled
-        };
-      }
-      case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
-        return {
-          ...state,
-          mapCenter: action.payload.center
-        };
-      }
-      case USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS: {
-        return {
-          ...state,
-          recordSets: { ...action.payload.recordSets }
-        };
-      }
-      case USER_SETTINGS_SET_API_ERROR_DIALOG: {
-        return {
-          ...state,
-          APIErrorDialog: action.payload.APIErrorDialog
-        };
-      }
-      default:
-        return state;
-    }
+    }) as unknown as UserSettingsState;
   };
 }
 
