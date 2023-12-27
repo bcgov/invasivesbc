@@ -39,6 +39,7 @@ import {
 
 import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
+import { immerable } from 'immer';
 
 /*const options: UuidOptions = {
   length: 50,
@@ -51,6 +52,7 @@ export function getUuid() {
 }
 
 class UserSettingsState {
+  [immerable] = true;
   initialized: boolean;
   error: boolean;
 

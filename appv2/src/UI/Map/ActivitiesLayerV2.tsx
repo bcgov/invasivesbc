@@ -1,7 +1,7 @@
 import center from '@turf/center';
 import L from 'leaflet';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Marker, useMap, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -19,28 +19,35 @@ enum ZoomTypes {
 const Dummy = (props) => {
   return <></>;
 };
-const MarkerMemo = (props) => {
+const DonutMarkerLayer = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  console.log(
-    '%MarkerMemo.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
-    'color: yellow'
-  );
+  console.log('%MarkerMemo.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey, 'color: yellow');
+
   const activitiesGeoJSON = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
   );
-  const layerState = useSelector((state: any) =>
-    state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)
+
+  console.log('%cfeatures length: ' + activitiesGeoJSON?.features?.length, 'color: green');
+  const layerStateColor = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color
   );
 
-  const getPaletteCachedCallback = useCallback(() => {
-    const pallette = getPallette(layerState?.color, [1, 2].includes(props.layerKey));
+  const globalColorschemeOverride = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.globalColorschemeOverride
+  );
+
+  const getPaletteCachedCallback = useCallback(async () => {
+    const pallette = await getPallette(layerStateColor, [1, 2].includes(props.layerKey));
     return pallette;
-  }, [layerState?.color, layerState?.globalColorschemeOverride, props.layerKey]);
+  }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
 
-  console.dir(activitiesGeoJSON);
+  const [palette, setPalette] = useState(null);
 
-  const palette = getPaletteCachedCallback();
+  useEffect(() => {
+    console.log(props.layerKey);
+    getPaletteCachedCallback().then((p) => setPalette(p));
+  }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
 
   const createClusterCustomIcon = (cluster) => {
     const markers = cluster.getAllChildMarkers();
@@ -88,7 +95,8 @@ const MarkerMemo = (props) => {
           key={props.layerKey + 'markerclusterAcivities'}
           iconCreateFunction={createClusterCustomIcon}>
           {activitiesGeoJSON?.features?.map((a) => {
-            if (a?.geometry?.type) {
+           return <MarkerMemo key={props.layerKey + a?.properties?.id} feature={a} palette={palette} layerKey={props.layerKey} />;
+            /*if (a?.geometry?.type) {
               const position = center(a)?.geometry?.coordinates;
               const bufferedGeo = {
                 type: 'FeatureCollection',
@@ -97,7 +105,7 @@ const MarkerMemo = (props) => {
               if (a?.properties?.id && a?.properties?.type && palette)
                 return (
                   <Marker
-                    icon={L.divIcon({
+                    icon=a{L.divIcon({
                       html: `
                         <svg
                           width="40"
@@ -124,6 +132,8 @@ const MarkerMemo = (props) => {
                   </Marker>
                 );
             }
+          })}
+        */
           })}
         </MarkerClusterGroup>
       ) : (
@@ -160,7 +170,7 @@ export const ActivitiesLayerV2 = (props: any) => {
   */
 
   return (
-    <MarkerMemo
+    <DonutMarkerLayer
       layerKey={props?.layerKey}
       //color={layerState?.color}
       //palette={palette}
@@ -168,3 +178,40 @@ export const ActivitiesLayerV2 = (props: any) => {
     />
   );
 };
+
+const MarkerMemo = memo(({ feature, palette, layerKey }: any) => {
+  const position = center(feature)?.geometry?.coordinates;
+  const bufferedGeo = {
+    type: 'FeatureCollection',
+    features: [feature]
+  };
+  if (feature?.properties?.id && feature?.properties?.type && palette)
+    return (
+      <Marker
+        icon={L.divIcon({
+          html: `
+                        <svg
+                          width="40"
+                          height="40"
+                          viewBox="0 0 100 100"
+                          version="1.1"
+                          preserveAspectRatio="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M45 0C27.677 0 13.584 14.093 13.584 31.416a31.13 31.13 0 0 0 3.175 13.773c2.905 5.831 11.409 20.208 20.412 35.428l4.385 7.417a4 4 0 0 0 6.888 0l4.382-7.413c8.942-15.116 17.392-29.4 20.353-35.309.027-.051.055-.103.08-.155a31.131 31.131 0 0 0 3.157-13.741C76.416 14.093 62.323 0 45 0zm0 42.81c-6.892 0-12.5-5.607-12.5-12.5s5.608-12.5 12.5-12.5 12.5 5.608 12.5 12.5-5.608 12.5-12.5 12.5z"
+                            style="stroke:none;stroke-width:1;stroke-dasharray:none;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;
+                            fill:${
+                              palette[feature?.properties?.type]
+                            };fill-rule:nonzero;opacity:1" transform="matrix(1 0 0 1 0 0)"
+                          />
+                        </svg>`,
+          className: '',
+          iconSize: [10, 17.5],
+          iconAnchor: [18, 35]
+        })}
+        position={[position[1], position[0]]}
+        key={'activity_marker' + feature.properties.id + layerKey}>
+        <Dummy bufferedGeo={bufferedGeo} />
+      </Marker>
+    );
+});

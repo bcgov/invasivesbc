@@ -140,7 +140,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+//  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
 
   yield put({
     type: IAPP_GEOJSON_GET_REQUEST,
@@ -151,7 +151,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-  yield take(IAPP_GEOJSON_GET_SUCCESS);
+  //yield take(IAPP_GEOJSON_GET_SUCCESS);
 
   const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
   const defaultRecordSet = {
@@ -243,12 +243,12 @@ function* handle_MAP_INIT_REQUEST(action) {
     newMapState[rs] = { ...newLayer };
   }
 
-  yield put({ type: MAP_INIT_FOR_RECORDSET });
 
   yield put({
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
   });
+  yield put({ type: MAP_INIT_FOR_RECORDSET });
 }
 
 function* refetchServerBoundaries() {

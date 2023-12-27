@@ -6,6 +6,7 @@ import {
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
+  FILTER_FEATURE_SET_WITH_IDS,
   FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -147,6 +148,7 @@ class MapState {
     this.quickPanToRecord = false;
     this.quickPanToRecord = false;
     this.recordSetForCSV = null;
+    this.recordTables = {};
     this.serverBoundaries = [];
     this.simplePickerLayers = [];
     this.simplePickerLayers2 = [
@@ -216,6 +218,19 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       switch (action.type) {
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
           draftState.activitiesGeoJSON = action.payload.activitiesGeoJSON;
+
+          if (
+            false &&
+            draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined)
+              .length > 0
+          ) {
+            const activityLayersToRegen = draftState.layers?.filter(
+              (layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined
+            );
+            activityLayersToRegen.map((layer) => {
+              GeoJSONFilterSetForLayer(draftState, state, 'Activity', layer.recordSetID, layer.IDList);
+            });
+          }
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
@@ -224,17 +239,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
-          // change this to separate action FILTER_FEATURE_SET_WITH_IDS payload featuresetname, filterfield, ids
-          // move it out of here and yield put it in the saga, and also call it again on new geojson get of same featuresetnam if ids were fetched prior
-          draftState.layers[index].geoJSON = {
-            type: 'FeatureCollection',
-            features: draftState.activitiesGeoJSON.features.filter((feature) => {
-              return (
-                action.payload.IDList.includes(feature.properties.id) &&
-                !state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id)
-              );
-            })
-          };
+
+          if (draftState.activitiesGeoJSON?.features?.length > 0) {
+            GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
+          }
           break;
         }
         case IAPP_TABLE_ROWS_GET_SUCCESS:
@@ -288,6 +296,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case IAPP_GEOJSON_GET_SUCCESS: {
           draftState.IAPPGeoJSON = action.payload.IAPPGeoJSON;
+          if (draftState.layers?.filter((layer) => layer.type === 'IAPP' && layer.IDList?.length > 0).length > 0) {
+            const IAPPLayersToRegen = draftState.layers?.filter((layer) => layer.type === 'Activity');
+            IAPPLayersToRegen.forEach((layer) => {
+              GeoJSONFilterSetForLayer(draftState, state, 'IAPP', layer.recordSetID, layer.IDList);
+            });
+          }
           break;
         }
         case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
@@ -296,18 +310,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
-          // change this to separate action FILTER_FEATURE_SET_WITH_IDS payload featuresetname, filterfield, ids // move it out of here and yield put it in the saga, and also call it again on new geojson get of same featuresetnam if ids were fetched prior
-          draftState.layers[index].geoJSON = {
-            type: 'FeatureCollection',
-            features: draftState.IAPPGeoJSON.features.filter((feature) => {
-              return (
-                action.payload.IDList.includes(feature.properties.site_id) &&
-                !state.layers[index].geoJSON?.features
-                  ?.map((f) => f.properties.site_id)
-                  ?.includes(feature.properties.site_id)
-              );
-            })
-          };
+
+          if (draftState.IAPPGeoJSON?.features?.length > 0) {
+            GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
+          }
           break;
         }
         case INIT_SERVER_BOUNDARIES_GET: {
@@ -589,3 +595,34 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 const selectMap: (state) => MapState = (state) => state.Map;
 
 export { createMapReducer, selectMap };
+
+const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
+  let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
+  const type = draftState.layers[index].type;
+
+  if (index && type === typeToFilter && type === 'Activity') {
+    const filtered = draftState.activitiesGeoJSON.features?.filter((feature) => {
+      return IDList.includes(feature.properties.id);
+    });
+    console.log('idlist.length', IDList.length);
+    console.log('draftState.activitiesGeoJSON', draftState.activitiesGeoJSON?.features?.length);
+    console.log('filtered', filtered?.length);
+
+    draftState.layers[index].geoJSON = {
+      type: 'FeatureCollection',
+      features: filtered
+    };
+
+    //duplicate check, too expensive:
+    //&& !state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id)
+  } else if (type === typeToFilter && type === 'IAPP') {
+    draftState.layers[index].geoJSON = {
+      type: 'FeatureCollection',
+      // second stage filter is to remove any s3 features that have been overwritten
+
+      features: draftState.IAPPGeoJSON.features.filter((feature) => {
+        return IDList.includes(feature.properties.site_id);
+      })
+    };
+  }
+};
