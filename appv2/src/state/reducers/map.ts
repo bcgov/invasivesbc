@@ -217,10 +217,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
     return createNextState(state, (draftState) => {
       switch (action.type) {
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-          draftState.activitiesGeoJSON = action.payload.activitiesGeoJSON;
+          draftState.activitiesGeoJSON = { type: 'FeatureCollection', features: []}//action.payload.activitiesGeoJSON;
+          draftState.fastMap = {};
+          action.payload.activitiesGeoJSON.features.forEach((feature) => {
+            if (!feature.properties.id) console.log('no id', feature);
+            if (feature?.properties?.id) {
+              draftState.fastMap[feature.properties.id] = feature;
+            }
+          });
 
           if (
-            false &&
             draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined)
               .length > 0
           ) {
@@ -240,8 +246,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
 
-          if (draftState.activitiesGeoJSON?.features?.length > 0) {
+          //if (draftState.activitiesGeoJSON?.features?.length > 0) {
+          if (draftState.fastMap !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
+          } else {
+            console.log('%cno fastmap!!!', 'color: yellow');
           }
           break;
         }
@@ -597,16 +606,24 @@ const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
 
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
+  if(!draftState.layers?.length || !draftState.fastMap ) return;
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 
   if (index && type === typeToFilter && type === 'Activity') {
-    const filtered = draftState.activitiesGeoJSON.features?.filter((feature) => {
+    /*const filtered = draftState.activitiesGeoJSON.features?.filter((feature) => {
       return IDList.includes(feature.properties.id);
     });
-    console.log('idlist.length', IDList.length);
-    console.log('draftState.activitiesGeoJSON', draftState.activitiesGeoJSON?.features?.length);
-    console.log('filtered', filtered?.length);
+    */
+
+    console.log('%c***total in fastmap:', 'state.fastMap', Object.keys(draftState.fastMap).length);
+    let filtered = [];
+    IDList.map((id) => {
+      let f = draftState.fastMap[id];
+      if (f !== undefined) {
+        filtered.push(f);
+      }
+    });
 
     draftState.layers[index].geoJSON = {
       type: 'FeatureCollection',
