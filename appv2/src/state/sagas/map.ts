@@ -140,7 +140,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+//  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
 
   yield put({
     type: IAPP_GEOJSON_GET_REQUEST,
@@ -151,7 +151,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-  yield take(IAPP_GEOJSON_GET_SUCCESS);
+  //yield take(IAPP_GEOJSON_GET_SUCCESS);
 
   const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
   const defaultRecordSet = {
@@ -243,12 +243,12 @@ function* handle_MAP_INIT_REQUEST(action) {
     newMapState[rs] = { ...newLayer };
   }
 
-  yield put({ type: MAP_INIT_FOR_RECORDSET });
 
   yield put({
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
   });
+  yield put({ type: MAP_INIT_FOR_RECORDSET });
 }
 
 function* refetchServerBoundaries() {
@@ -784,6 +784,13 @@ function* handle_CUSTOM_LAYER_DRAWN(actions) {
   if(!panelState) {
   yield put({ type: TOGGLE_PANEL});
   }
+
+
+}
+
+function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
+  console.dir(action.payload)
+
 }
 
 function* activitiesPageSaga() {
@@ -804,7 +811,7 @@ function* activitiesPageSaga() {
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-    // takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
+     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),

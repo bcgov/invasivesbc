@@ -350,6 +350,14 @@ export const ShorelineInformation = [
     .build()
 ];
 
+export const AuthorizationInformation = [
+  new TemplateColumnBuilder(
+    'Authorization Information',
+    'text',
+    'form_data.activity_subtype_data.authorization_infotmation.additional_auth_information'
+  ).build()
+];
+
 export const ShorelineSumValidator = SummingValidator(
   ['Shoreline - Shoreline 1 Percentage', 'Shoreline - Shoreline 2 Percentage'],
   100,

@@ -1,6 +1,13 @@
 
+#appTitle {
+  font-weight: bold;
+  padding-left: 5px;
+  
+
+}
 .HeaderBar {
     height: 5vh;
+    cursor: pointer;
     width: 100vw;
     background-color: #223f75;
     /*position: fixed;*/

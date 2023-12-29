@@ -12,16 +12,16 @@ import {IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM} from "../../../state/actions";
 export const IAPPRecord = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const apiDocsWithSelectOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithSelectOptions);
-  const apiDocsWithViewOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithViewOptions);
 
   const {id} = useParams();
 
-  const IAPPState = useSelector((state: any) => state.IAPPSite);
+  const IAPPState = useSelector((state: any) => state?.IAPPSitePage
+  );
 
   useEffect(() => {
     dispatch({type: IAPP_GET_REQUEST, payload: {iappID: id}});
   }, [id]);
+
 
 
   return (
@@ -56,19 +56,17 @@ export const IAPPRecord = (props) => {
       <Route
         path="/Records/IAPP/:id/summary"
         render={() => {
-          if (IAPPState.failCode === 404) {
+          if (IAPPState?.failCode === 404) {
             setTimeout(() => {
               history.push('/Records')
             }, 3000)
             return <div>Activity does not exists, redirecting...</div>
           }
           if (
-            apiDocsWithSelectOptions &&
-            apiDocsWithViewOptions &&
             (IAPPState?.site as any)?.site_id  &&
-            IAPPState.loading === false
+            IAPPState?.loading === false
           )
-            return <Summary record={IAPPState.site}/>;
+            return <Summary record={IAPPState?.site}/>;
           else return <div>loading</div>;
         }}
       />

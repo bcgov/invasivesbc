@@ -50,15 +50,27 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     s3SignedUrlRequest: false
   });
 
+
+  const s3_geojson = networkReturnS3.data.result.rows.map((row) => {
+    return row.geojson ? row.geojson : row;
+  })
+
+  const api_geojson = networkReturn3.data.result.rows.map((row) => {
+    return row.geojson ? row.geojson : row;
+  })
+
+  const newIds = api_geojson.map((row) => {
+    return row?.properties?.id;
+  })
+
+
   let featureCollection = {
     type: 'FeatureCollection',
     features: [
-      ...networkReturnS3.data.result.rows.map((row) => {
-        return row.geojson ? row.geojson : row;
-      }),
-      ...networkReturn3.data.result.rows.map((row) => {
-        return row.geojson ? row.geojson : row;
-      })
+      ...s3_geojson,
+      ...api_geojson.filter((row) => 
+          !newIds.includes(row.properties.id)
+      )
     ]
   };
 
@@ -89,6 +101,8 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
       }
     })
   };
+
+  console.log('%c about to yield', 'color: red')
 
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,

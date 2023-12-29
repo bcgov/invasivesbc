@@ -184,6 +184,8 @@ export const Records = (props) => {
                   </div>
                 );
               })}
+            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET_REQUEST, payload: {recordSetType: 'Activity'}})} className={'addRecordSet'}>Add Layer of Records</Button>
+            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET_REQUEST, payload: {recordSetType: 'POI'}})} className={'addRecordSet'}>Add IAPP Layer of Records</Button>
             </>
           ) : (
             <></>

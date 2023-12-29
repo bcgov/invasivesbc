@@ -17,24 +17,28 @@ import { ObservationTerrestrialPlantTemp } from './templates/observation_terrest
 import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
 import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp';
 import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp';
+import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp';
+import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,
   ObservationTerrestrialPlantTemp,
+  ObservationAquaticPlant,
+  ObservationAquaticPlantTemp,
   BiocontrolCollection,
   BiocontrolRelease,
   MonitoringBiocontrolDispersalTerrestrialPlant,
   MonitoringBiocontrolReleaseTerrestrialPlant,
   MonitoringChemical,
   MonitoringMechanical,
-  TreatmentChemicalAquaticPlant,
   TreatmentChemicalTerrestrialPlant,
   TreatmentChemicalTerrestrialPlantTemp,
-  TreatmentMechanicalAquaticPlant,
+  TreatmentChemicalAquaticPlant,
+  TreatmentChemicalAquaticPlantTemp,
   TreatmentMechanicalTerrestrialPlant,
   TreatmentMechanicalTerrestrialPlantTemp,
-  ObservationAquaticPlant,
-  ObservationAquaticPlantTemp
+  TreatmentMechanicalAquaticPlant,
+  TreatmentMechanicalAquaticPlantTemp
 ];
 
 export const TemplateService = {

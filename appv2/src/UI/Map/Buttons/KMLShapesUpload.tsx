@@ -119,6 +119,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         acceptedFiles={['.kml,.kmz']}
         filesLimit={1}
         cancelButtonText={'cancel'}
+        onClose={() => { setDialogOpen(false); props.whenDone(); }}
         submitButtonText={'Upload to InvasivesBC'}
         open={props.open}
         onSave={(files: any) => {

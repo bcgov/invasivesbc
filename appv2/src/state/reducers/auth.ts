@@ -11,9 +11,11 @@ import {
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 import { AppConfig } from 'state/config';
-
+import { immerable } from 'immer';
+import { createNextState } from '@reduxjs/toolkit';
 
 class AuthState {
+  [immerable] = true;
   initialized: boolean;
   error: boolean;
   authenticated: boolean;
@@ -102,10 +104,13 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
 
   if (keycloakInstance.idTokenParsed) {
     if (keycloakInstance.idTokenParsed['idir_username']) idir_userid = keycloakInstance.idTokenParsed['idir_username'];
-    if (keycloakInstance.idTokenParsed['idir_user_guid']) idir_user_guid = keycloakInstance.idTokenParsed['idir_user_guid'];
-    if (keycloakInstance.idTokenParsed['bceid_username']) bceid_userid = keycloakInstance.idTokenParsed['bceid_username'];
-    if (keycloakInstance.idTokenParsed['bceid_user_guid']) bceid_user_guid = keycloakInstance.idTokenParsed['bceid_user_guid'];
-    username = (idir_userid)? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business'
+    if (keycloakInstance.idTokenParsed['idir_user_guid'])
+      idir_user_guid = keycloakInstance.idTokenParsed['idir_user_guid'];
+    if (keycloakInstance.idTokenParsed['bceid_username'])
+      bceid_userid = keycloakInstance.idTokenParsed['bceid_username'];
+    if (keycloakInstance.idTokenParsed['bceid_user_guid'])
+      bceid_user_guid = keycloakInstance.idTokenParsed['bceid_user_guid'];
+    username = idir_userid ? idir_userid.toLowerCase() + '@idir' : bceid_userid.toLowerCase() + '@bceid-business';
     if (
       'display_name' in keycloakInstance.idTokenParsed &&
       keycloakInstance.idTokenParsed['display_name'] !== null &&
@@ -138,81 +143,74 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
 
 function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => AuthState {
   return (state = initialState, action) => {
-    switch (action.type) {
-      case AUTH_SIGNOUT_COMPLETE: {
-        return {
-          ...state,
-          initialized: true,
-          authenticated: false,
-          roles: [],
-          accessRoles: [],
-          rolesInitialized: false,
-          extendedInfo: null,
-          displayName: null,
-          email: null,
-          username: 'loggedOut'
-        };
+    return createNextState(state, (draftState) => {
+      switch (action.type) {
+        case AUTH_SIGNOUT_COMPLETE: {
+          draftState.initialized = true;
+          draftState.authenticated = false;
+          draftState.roles = [];
+          draftState.accessRoles = [];
+          draftState.rolesInitialized = false;
+          draftState.extendedInfo = null;
+          draftState.displayName = null;
+          draftState.email = null;
+          draftState.username = 'loggedOut';
+          break;
+        }
+        case AUTH_INITIALIZE_COMPLETE: {
+          draftState.initialized = true;
+          Object.keys(loadCurrentStateFromKeycloak(state, configuration)).forEach((key) => {
+            draftState[key] = loadCurrentStateFromKeycloak(state, configuration)[key];
+          });
+          break;
+        }
+        case AUTH_REQUEST_COMPLETE: {
+          Object.keys(loadCurrentStateFromKeycloak(state, configuration)).forEach((key) => {
+            draftState[key] = loadCurrentStateFromKeycloak(state, configuration)[key];
+          });
+          break;
+        }
+        case AUTH_UPDATE_TOKEN_STATE: {
+          Object.keys(loadCurrentStateFromKeycloak(state, configuration)).forEach((key) => {
+            draftState[key] = loadCurrentStateFromKeycloak(state, configuration)[key];
+          });
+          break;
+        }
+        case AUTH_REFRESH_ROLES_REQUEST: {
+          draftState.rolesInitialized = false;
+          draftState.roles = [];
+          draftState.accessRoles = [];
+          draftState.extendedInfo = null;
+          break;
+        }
+        case AUTH_CLEAR_ROLES: {
+          draftState.rolesInitialized = false;
+          draftState.roles = [];
+          draftState.accessRoles = [];
+          draftState.extendedInfo = null;
+          break;
+        }
+        case AUTH_REFRESH_ROLES_COMPLETE: {
+          const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
+          draftState.roles = roles;
+          draftState.accessRoles = computeAccessRoles(all_roles, roles);
+          draftState.extendedInfo = extendedInfo;
+          draftState.rolesInitialized = true;
+          draftState.v2BetaAccess = v2BetaAccess;
+          break;
+        }
+        case AUTH_REFRESH_ROLES_ERROR: {
+          draftState.rolesInitialized = false;
+          draftState.roles = [];
+          draftState.accessRoles = [];
+          draftState.extendedInfo = null;
+          break;
+        }
+        default:
+          break;
+        //return state;
       }
-      case AUTH_INITIALIZE_COMPLETE: {
-        return {
-          ...state,
-          initialized: true,
-          ...loadCurrentStateFromKeycloak(state, configuration)
-        };
-      }
-      case AUTH_REQUEST_COMPLETE: {
-        return {
-          ...state,
-          ...loadCurrentStateFromKeycloak(state, configuration)
-        };
-      }
-      case AUTH_UPDATE_TOKEN_STATE: {
-        return {
-          ...state,
-          ...loadCurrentStateFromKeycloak(state, configuration)
-        };
-      }
-      case AUTH_REFRESH_ROLES_REQUEST: {
-        return {
-          ...state,
-          roles: [],
-          accessRoles: [],
-          extendedInfo: null,
-          rolesInitialized: false
-        };
-      }
-      case AUTH_CLEAR_ROLES: {
-        return {
-          ...state,
-          roles: [],
-          accessRoles: [],
-          extendedInfo: null,
-          rolesInitialized: false
-        };
-      }
-      case AUTH_REFRESH_ROLES_COMPLETE: {
-        const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
-        return {
-          ...state,
-          roles,
-          accessRoles: computeAccessRoles(all_roles, roles),
-          extendedInfo,
-          v2BetaAccess:v2BetaAccess,
-          rolesInitialized: true
-        };
-      }
-      case AUTH_REFRESH_ROLES_ERROR: {
-        return {
-          ...state,
-          roles: [],
-          accessRoles: [],
-          extendedInfo: null,
-          rolesInitialized: false
-        };
-      }
-      default:
-        return state;
-    }
+    });
   };
 }
 

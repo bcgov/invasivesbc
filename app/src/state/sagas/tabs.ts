@@ -29,9 +29,7 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
 
     const isMasterAdmin = auth.roles.some((role) => role.role_name === 'master_administrator');
     const isPlantPerson = auth.roles.some(
-      (role) =>
-        role.role_name.toLowerCase().includes('plant') ||
-        role.role_name.toLowerCase().includes('both')
+      (role) => role.role_name.toLowerCase().includes('plant') || role.role_name.toLowerCase().includes('both')
     );
     const showLoggedInTabs = action.payload.activated && action.payload.authenticated;
 
@@ -83,15 +81,15 @@ function* handle_TABS_GET_INITIAL_STATE_REQUEST(action) {
       }
     }
 
-    // if (isMasterAdmin || isPlantPerson) {
-    //   if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
-    //     tabConfig.push({
-    //       label: 'Reports',
-    //       path: '/home/reports',
-    //       icon: TabIconName.Assessment
-    //     });
-    //   }
-    //}
+    if (isMasterAdmin || isPlantPerson) {
+      if (configuration.FEATURE_GATE.EMBEDDED_REPORTS) {
+        tabConfig.push({
+          label: 'Reports',
+          path: '/home/reports',
+          icon: TabIconName.Assessment
+        });
+      }
+    }
     if (isMasterAdmin) {
       tabConfig.push({
         label: 'Admin',

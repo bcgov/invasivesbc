@@ -2,3 +2,56 @@
     height: 100%;
 
 }
+
+.recordHeaderInfo {
+    width: 100%;
+    border-color: black;
+    text-align: left;
+    display: flex;
+    justify-content: left;
+    overflow: scroll;
+
+}
+
+table {
+    width: 100%;
+    /*border: 1px solid black;*/
+    background-color: white !important;
+    border-style: hidden;
+    text-align: left;
+    justify-content: left;
+    overflow: scroll;
+
+}
+
+td {
+    padding: 3px;
+
+}
+
+tr {
+    color: black !important;
+    background-color: white !important; 
+}
+
+tr:hover {
+    color: black !important;
+    background-color: white !important;
+}
+.leftHeaderCol {
+    width: 30%
+}
+
+.leftValueCol {
+    width: 100%
+
+}
+.rightValueCol {
+    width: 100%
+
+}
+
+
+.rightHeaderCol {
+    width: 30%
+}
