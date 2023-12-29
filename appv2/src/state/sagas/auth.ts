@@ -37,7 +37,7 @@ import { selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
 
 const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for at least this long at all times
-const TOKEN_REFRESH_INTERVAL = 7 * 1000;
+const TOKEN_REFRESH_INTERVAL = 5 * 1000;
 
 let keycloakInstance = null;
 

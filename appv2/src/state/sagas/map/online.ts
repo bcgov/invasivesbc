@@ -102,6 +102,8 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     })
   };
 
+  console.log('%c about to yield', 'color: red')
+
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,
     payload: {

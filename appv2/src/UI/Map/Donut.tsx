@@ -166,7 +166,8 @@ const Donut: React.FC<IDonutProps> = ({ center, data, size = 64 }) => {
         container.removeLayer(donutRef.current);
       };
     }
-  }, [center, data, size]);
+//  }, [center, data, size]);
+  }, []);
 
   return null;
 };

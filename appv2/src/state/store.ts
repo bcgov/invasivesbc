@@ -1,22 +1,21 @@
-import { configureStore } from "@reduxjs/toolkit";
-import createSagaMiddleware from "redux-saga";
-import { createRootReducer } from "./reducers/rootReducer";
+import { configureStore } from '@reduxjs/toolkit';
+import createSagaMiddleware from 'redux-saga';
+import { createRootReducer } from './reducers/rootReducer';
 import { createLogger } from 'redux-logger';
-import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from "./actions";
-import activityPageSaga from "./sagas/activity";
-import authenticationSaga from "./sagas/auth";
-import batchSaga from "./sagas/batch";
-import emailSettingsSaga from "./sagas/email-setup/emailSettings";
-import emailTemplatesSaga from "./sagas/email-setup/emailTemplates";
-import iappPageSaga from "./sagas/iappsite";
-import activitiesPageSaga from "./sagas/map";
-import trainingVideosSaga from "./sagas/training_videos";
-import userSettingsSaga from "./sagas/userSettings";
-import { AppConfig } from "./config";
+import { AUTH_INITIALIZE_REQUEST, RECORDSET_UPDATE_FILTER, URL_CHANGE } from './actions';
+import activityPageSaga from './sagas/activity';
+import authenticationSaga from './sagas/auth';
+import batchSaga from './sagas/batch';
+import emailSettingsSaga from './sagas/email-setup/emailSettings';
+import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
+import iappPageSaga from './sagas/iappsite';
+import activitiesPageSaga from './sagas/map';
+import trainingVideosSaga from './sagas/training_videos';
+import userSettingsSaga from './sagas/userSettings';
+import { AppConfig } from './config';
 import { createBrowserHistory } from 'history';
 
 const historySingleton = createBrowserHistory();
-
 
 export let globalStore;
 
@@ -24,19 +23,24 @@ export function setupStore(configuration: AppConfig) {
   const sagaMiddleware = createSagaMiddleware();
 
   const logger = createLogger({
-    level: "log",
+    level: 'log',
     collapsed: true,
     duration: true,
     timestamp: true,
     logErrors: true,
     diff: false,
-    diffPredicate: (getState, action) => true
+    diffPredicate: (getState, action) => {
+      if ([RECORDSET_UPDATE_FILTER].includes(action.type)) {
+        return true;
+      }
+      return false;
     }
-  );
+  });
 
   globalStore = configureStore({
     reducer: createRootReducer(configuration),
-    middleware: [sagaMiddleware, logger],
+    middleware: [sagaMiddleware, logger]
+    //middleware: [sagaMiddleware],
   });
 
   sagaMiddleware.run(authenticationSaga);
@@ -52,16 +56,17 @@ export function setupStore(configuration: AppConfig) {
   globalStore.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   historySingleton.listen((location) => {
-    globalStore.dispatch({type: URL_CHANGE, payload: {
-      url: location.pathname
-      }});
-  })
+    globalStore.dispatch({
+      type: URL_CHANGE,
+      payload: {
+        url: location.pathname
+      }
+    });
+  });
 
   return globalStore;
 }
 
-
-
 export { historySingleton };
 
-export default setupStore
+export default setupStore;
