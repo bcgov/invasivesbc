@@ -21,25 +21,100 @@ const Dummy = (props) => {
   return <></>;
 };
 const DonutMarkerLayer = (props) => {
-  const debugSet = '2';
   const ref = useRef(0);
   ref.current += 1;
-  console.log(
-    '%cDonutMarkerMemo.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
-    'color: orange'
-  );
 
+  const map = useMap();
+
+  const createClusterCustomIcon = (cluster) => {
+    if (!props.palette || !map) return;
+    const markers = cluster.getAllChildMarkers();
+    const data = [];
+    markers.forEach((obj) => {
+      const marker = obj.options.children.props.bufferedGeo.features[0];
+      if (data.length === 0) {
+        data.push({
+          name: marker?.properties?.type,
+          count: 1,
+          fillColour: props.palette[marker?.properties?.type]
+        });
+      } else {
+        let flag = 0;
+        for (let i of data) {
+          if (marker?.properties?.type === i.name) {
+            flag = 1;
+            i.count += 1;
+            i.fillColour = props.palette[i.name];
+            break;
+          }
+        }
+        if (flag === 0) {
+          data.push({
+            name: marker?.properties?.type,
+            count: 1,
+            fillColour: props.palette[marker?.properties?.type]
+          });
+        }
+      }
+    });
+
+    return L.divIcon({
+      html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
+      //  html: logMarkupTime(<DonutSVG bins={200} data={data} />),
+      className: '',
+      iconSize: [74, 74],
+      iconAnchor: [37, 37]
+    });
+  };
+
+  const Markers = (props) =>  
+  {
+    if(!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
+    console.log('we in ')
+      return (
+        <>
+          {props.geoJSON?.features?.map((a) => {
+            return (
+              <MarkerMemo key={props.layerKey + a?.properties?.id} feature={a} palette={props.palette} layerKey={props.layerKey} />
+            );
+          })}
+        </>
+      );
+    }
+
+  if (!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
+
+  console.log('rerendering...');
+  return (
+    <>
+      <MarkerClusterGroup
+        en
+        key={props.layerKey + 'markerclusterAcivities'}
+        iconCreateFunction={createClusterCustomIcon}>
+        <Markers palette={props.palette} layerKey={props.layerKey} geoJSON={props.geoJSON} />
+      </MarkerClusterGroup>
+    </>
+  );
+};
+
+export const ActivitiesLayerV2 = (props: any) => {
+  const ref = useRef(0);
+  ref.current += 1;
+
+  console.log(
+    '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
+    'color: yellow'
+  );
   const activitiesGeoJSON = useSelector(
     (state: any) =>
       state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
         ? state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
         : { type: 'FeatureCollection', features: [] },
-    (prev, next) => { 
+    (prev, next) => {
       return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
     }
   );
 
-  if (props.layerKey === '2') console.log('%cfeatures length: ' + activitiesGeoJSON?.features?.length, 'color: green');
   const layerStateColor = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color,
     shallowEqual
@@ -65,86 +140,6 @@ const DonutMarkerLayer = (props) => {
       }
     });
   }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
-
-  useEffect(() => {
-    console.log(`%cPalette trigger render ${props.layerKey}`, `color: ${palette ? 'green' : 'red'}`);
-  }, [palette]);
-  useEffect(() => {
-    console.log(`%cactivities trigger render ${props.layerKey}`, `color: red`);
-  }, [activitiesGeoJSON]);
-
-  const createClusterCustomIcon  = (cluster) => {
-     // console.log('get all markers')
-      const markers = cluster.getAllChildMarkers();
-      const data = [];
-      markers.forEach((obj) => {
-        const marker = obj.options.children.props.bufferedGeo.features[0];
-        if (data.length === 0) {
-          data.push({
-            name: marker?.properties?.type,
-            count: 1,
-            fillColour: palette[marker?.properties?.type]
-          });
-        } else {
-          let flag = 0;
-          for (let i of data) {
-            if (marker?.properties?.type === i.name) {
-              flag = 1;
-              i.count += 1;
-              i.fillColour = palette[i.name];
-              break;
-            }
-          }
-          if (flag === 0) {
-            data.push({
-              name: marker?.properties?.type,
-              count: 1,
-              fillColour: palette[marker?.properties?.type]
-            });
-          }
-        }
-      });
-
-      return L.divIcon({
-        html: renderToStaticMarkup(<DonutSVG bins={200} data={data} />),
-        //  html: logMarkupTime(<DonutSVG bins={200} data={data} />),
-        className: '',
-        iconSize: [74, 74],
-        iconAnchor: [37, 37]
-      });
-    }
-
-  const Markers = memo(({ palette, layerKey }: any) => {
-    return activitiesGeoJSON?.features?.map((a) => {
-      return <MarkerMemo key={layerKey + a?.properties?.id} feature={a} palette={palette} layerKey={props.layerKey} />;
-    });
-    //},[activitiesGeoJSON?.features, palette, props.layerKey]);
-  }, []);
-
-  if (!palette || !props.layerKey || !(activitiesGeoJSON?.features?.length > 0)) return <></>;
-
-  console.log('rerendering...')
-  return (
-    <>
-      <MarkerClusterGroup
-      ref={ref}
-        en
-        key={props.layerKey + 'markerclusterAcivities'}
-        iconCreateFunction={createClusterCustomIcon}>
-        <Markers palette={palette} layerKey={props.layerKey} />
-      </MarkerClusterGroup>
-    </>
-  );
-};
-
-export const ActivitiesLayerV2 = (props: any) => {
-  const ref = useRef(0);
-  ref.current += 1;
-  console.log(
-    '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
-    'color: yellow'
-  );
-
   /*
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
@@ -163,11 +158,27 @@ export const ActivitiesLayerV2 = (props: any) => {
   });
   */
 
+  const DonutMarkerLayerMemo = memo(( props : any) => {
+
+    if(!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
+    return (
+      <DonutMarkerLayer
+        layerKey={props?.layerKey}
+        geoJSON={props.geoJSON}
+        //color={layerState?.color}
+        palette={props.palette}
+        //enabled={layerState?.mapToggle}
+      />
+    );
+  }, shallowEqual);
+
+
+
   return (
-    <DonutMarkerLayer
+    <DonutMarkerLayerMemo
       layerKey={props?.layerKey}
-      //color={layerState?.color}
-      //palette={palette}
+      geoJSON={activitiesGeoJSON}
+      palette={palette}
       //enabled={layerState?.mapToggle}
     />
   );
