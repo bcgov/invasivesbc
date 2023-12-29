@@ -6,7 +6,6 @@ import {
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  FILTER_FEATURE_SET_WITH_IDS,
   FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -59,10 +58,10 @@ import {
   WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 
-import { AppConfig } from '../config';
 import { createNextState } from '@reduxjs/toolkit';
-import { getUuid } from './userSettings';
 import { immerable } from 'immer';
+import { AppConfig } from '../config';
+import { getUuid } from './userSettings';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -77,9 +76,11 @@ class MapState {
   HDToggle: boolean;
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
+  IAPPGeoJSONDict: any;
   LeafletWhosEditing: LeafletWhosEditingEnum;
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
+  activitiesGeoJSONDict: any;
   activityPageMapExtentToggle: boolean;
   activity_center: L.LatLngExpression;
   activity_zoom: number;
@@ -217,12 +218,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
     return createNextState(state, (draftState) => {
       switch (action.type) {
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
+          //TODO:  Delete this when other refs to it are gone:
           draftState.activitiesGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.activitiesGeoJSON;
-          draftState.fastMap = {};
+
+          //Everything should point to this now instead:
+          draftState.activitiesGeoJSONDict = {};
           action.payload.activitiesGeoJSON.features.forEach((feature) => {
             if (!feature.properties.id) console.log('no id', feature);
             if (feature?.properties?.id) {
-              draftState.fastMap[feature.properties.id] = feature;
+              draftState.activitiesGeoJSONDict[feature.properties.id] = feature;
             }
           });
 
@@ -247,7 +251,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].loaded = true;
 
           //if (draftState.activitiesGeoJSON?.features?.length > 0) {
-          if (draftState.fastMap !== undefined) {
+          if (draftState.activitiesGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
           } else {
             console.log('%cno fastmap!!!', 'color: yellow');
@@ -305,10 +309,25 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case IAPP_GEOJSON_GET_SUCCESS: {
-          draftState.IAPPGeoJSON = action.payload.IAPPGeoJSON;
-          if (draftState.layers?.filter((layer) => layer.type === 'IAPP' && layer.IDList?.length > 0).length > 0) {
-            const IAPPLayersToRegen = draftState.layers?.filter((layer) => layer.type === 'Activity');
-            IAPPLayersToRegen.forEach((layer) => {
+          //TODO:  Delete this when other refs to it are gone:
+          draftState.IAPPGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.IAPPGeoJSON;
+
+          //Everything should point to this now instead:
+          draftState.IAPPGeoJSONDict = {};
+          action.payload.IAPPGeoJSON.features.map((feature) => {
+            if (!feature.properties.site_id) console.log('no site_id', feature);
+            if (feature?.properties?.site_id) {
+              draftState.IAPPGeoJSONDict[feature.properties.site_id] = feature;
+            }
+          });
+
+          if (
+            draftState.layers?.filter((layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined).length > 0
+          ) {
+            const IAPPLayersToRegen = draftState.layers?.filter(
+              (layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined
+            );
+            IAPPLayersToRegen.map((layer) => {
               GeoJSONFilterSetForLayer(draftState, state, 'IAPP', layer.recordSetID, layer.IDList);
             });
           }
@@ -607,20 +626,19 @@ const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
 
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
-  if (!draftState.layers?.length || !draftState.fastMap) return;
+  if (
+    !draftState.layers?.length ||
+    (!draftState.activitiesGeoJSONDict && typeToFilter === 'Activity') ||
+    (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
+  )
+    return;
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 
   if (index && type === typeToFilter && type === 'Activity') {
-    /*const filtered = draftState.activitiesGeoJSON.features?.filter((feature) => {
-      return IDList.includes(feature.properties.id);
-    });
-    */
-
-    console.log('%c***total in fastmap:', 'state.fastMap', Object.keys(draftState.fastMap).length);
     let filtered = [];
     IDList.map((id) => {
-      let f = draftState.fastMap[id];
+      let f = draftState.activitiesGeoJSONDict[id];
       if (f !== undefined) {
         filtered.push(f);
       }
@@ -630,17 +648,18 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
       type: 'FeatureCollection',
       features: filtered
     };
-
-    //duplicate check, too expensive:
-    //&& !state.layers[index].geoJSON?.features?.map((f) => f.properties.id)?.includes(feature.properties.id)
   } else if (type === typeToFilter && type === 'IAPP') {
+    let filtered = [];
+    IDList.map((id) => {
+      let f = draftState.IAPPGeoJSONDict[id];
+      if (f !== undefined) {
+        filtered.push(f);
+      }
+    });
+
     draftState.layers[index].geoJSON = {
       type: 'FeatureCollection',
-      // second stage filter is to remove any s3 features that have been overwritten
-
-      features: draftState.IAPPGeoJSON.features.filter((feature) => {
-        return IDList.includes(feature.properties.site_id);
-      })
+      features: filtered
     };
   }
 };

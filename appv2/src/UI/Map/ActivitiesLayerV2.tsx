@@ -70,7 +70,6 @@ const DonutMarkerLayer = (props) => {
   const Markers = (props) =>  
   {
     if(!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
-    console.log('we in ')
       return (
         <>
           {props.geoJSON?.features?.map((a) => {
@@ -84,7 +83,6 @@ const DonutMarkerLayer = (props) => {
 
   if (!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
 
-  console.log('rerendering...');
   return (
     <>
       <MarkerClusterGroup

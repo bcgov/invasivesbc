@@ -235,22 +235,22 @@ function largePush(src, dest) {
 export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   const currentMapState = yield select(selectMap);
 
-  const featuresFilteredByUserShape = currentMapState.IAPPGeoJSON.features.filter((feature) => {
+  const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
     // IAPP will always be a points
     const pointToCheck = point(feature.geometry.coordinates);
     const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     return booleanPointInPolygon(pointToCheck, polygonToCheck);
   });
 
-  const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
+  const featureFilteredIDS = featuresFilteredByUserShape.map((feature: any) => {
     return feature.properties.site_id;
   });
 
   let unfilteredRecordSetIDs = [];
 
-  Object.keys(currentMapState?.layers).map((id) => {
-    if (currentMapState.layers?.[id].type === 'POI' && currentMapState.layers?.[id].layerState.mapToggle) {
-      largePush(currentMapState?.layers?.[id]?.IDList, unfilteredRecordSetIDs);
+  currentMapState?.layers.map((layer) => {
+    if (layer?.type === 'POI' && layer?.layerState.mapToggle) {
+      largePush(layer?.IDList, unfilteredRecordSetIDs);
     }
   });
 
@@ -268,8 +268,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const currentMapState = yield select(selectMap);
 
-  const featuresFilteredByUserShape = currentMapState?.activitiesGeoJSON?.features?.filter((feature) => {
-    // activities can have points and polygons, lines are considered polygons
+  const featuresFilderedByShape = Object.values(currentMapState?.activitiesGeoJSONDict)?.filter((feature: any) => {
     const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     switch (feature?.geometry?.type) {
       case 'Point':
@@ -286,14 +285,14 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     }
   });
 
-  const featureFilteredIDS = featuresFilteredByUserShape.map((feature) => {
+  const featureFilteredIDS = featuresFilderedByShape.map((feature: any) => {
     return feature.properties.id;
   });
 
   let unfilteredRecordSetIDs = [];
-  Object.keys(currentMapState?.layers).map((id) => {
-    if (currentMapState.layers?.[id].type === 'Activity' && currentMapState.layers?.[id].layerState.mapToggle) {
-      unfilteredRecordSetIDs.push(...currentMapState?.layers?.[id]?.IDList);
+  currentMapState?.layers?.map((layer) => {
+    if (layer?.type === 'Activity' && layer?.layerState.mapToggle) {
+      unfilteredRecordSetIDs.push(...layer?.IDList);
     }
   });
 
