@@ -11,6 +11,10 @@ import 'leaflet-markers-canvas';
 import { useDispatch } from 'react-redux';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
 import { GeneralDialog } from './GeneralDialog';
+import _ from 'lodash';
+import { shallowEqual } from 'react-redux';
+import { useState, useEffect } from 'react';
+
 import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
 
 export const RecordSetLayersRenderer = (props: any) => {
@@ -18,33 +22,39 @@ export const RecordSetLayersRenderer = (props: any) => {
   ref.current += 1;
   console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
 
-  const layers = useSelector((state: any) =>
-    state.Map?.layers?.map((layer) => {
-      return { recordSetID: layer.recordSetID, type: layer.type };
-    })
+  const storeLayers = useSelector(
+    (state: any) => state.Map?.layers,
+    (prev, next) => {
+      return prev.length == next.length;
+    }
   );
-  const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
+
+  //const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
 
   return (
     <>
-      {layers.map((layer) => (
-        <LayerWrapper key={layer.recordSetID} recordSetID={layer.recordSetID} type={layer.type} />
+      {storeLayers.map((layer) => (
+        <LayerWrapper key={layer.recordSetID} recordSetID={layer.recordSetID}/>
       ))}
-      <GeneralDialog
+      <></>
+      {/*<GeneralDialog
         dialogOpen={tooManyLabelsDialog?.dialogOpen}
         dialogTitle={tooManyLabelsDialog?.dialogTitle}
         dialogActions={tooManyLabelsDialog?.dialogActions}
         dialogContentText={tooManyLabelsDialog?.dialogContentText}></GeneralDialog>
+    */}
     </>
   );
 };
 
-const LayerWrapper = memo(({ recordSetID, type }: any) => {
+const LayerWrapper = memo(({ recordSetID }: any) => {
   const ref = useRef(0);
   ref.current += 1;
   console.log(`%cLayerWrapper.tsx render ${recordSetID}:` + ref.current.toString(), 'color: green');
 
-  console.log('type', type)
+  const type = useSelector( (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === recordSetID)?.type, shallowEqual)
+
+//  const type: any = 'Activity';
   switch (type) {
     case 'Activity':
       return (

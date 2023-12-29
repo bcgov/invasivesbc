@@ -8,18 +8,17 @@ import { useSelector } from 'util/use_selector';
 import { RecordSetLayersRenderer } from './RecordSetLayersRenderer';
 //import { VectorOverviewLayer } from './VectorOverviewLayer';
 
-const RecordSetLayers = (props: any) => {
-  const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
-
-  return IAPPGeoJSON?.features?.length > 0 ? <RecordSetLayersRenderer /> : null;
-};
 
 const Map = (props: any) => {
-  const initializedAuth = useSelector((state: any) => state.Auth?.initialized);
-
   let ref = useRef(0);
   ref.current += 1;
   console.log('%cMap.tsx render' + ref.current.toString(), 'color: yellow');
+
+  const initializedAuth = useSelector((state: any) => 
+  {
+    return state.Auth?.initialized
+  }, (prev, next) => { return prev === next });
+
   return (
     <div className="map">
       {initializedAuth ? (
@@ -33,7 +32,7 @@ const Map = (props: any) => {
           center={[51, -128]}
           zoom={5}
           className="map__leaflet">
-          <RecordSetLayers />
+          <RecordSetLayersRenderer />  
           {props.children}
           <OfflineLayers />
           {/*{!isAuth && <VectorOverviewLayer />}*/}
