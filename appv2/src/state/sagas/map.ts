@@ -32,6 +32,7 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI,
@@ -140,7 +141,7 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-//  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+  //  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
 
   yield put({
     type: IAPP_GEOJSON_GET_REQUEST,
@@ -193,7 +194,7 @@ function* handle_MAP_INIT_REQUEST(action) {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
   */
 
-  yield call(refetchServerBoundaries)
+  yield call(refetchServerBoundaries);
   let newMapState = {};
   for (const rs in recordSets) {
     newMapState[rs] = {};
@@ -243,7 +244,6 @@ function* handle_MAP_INIT_REQUEST(action) {
     newMapState[rs] = { ...newLayer };
   }
 
-
   yield put({
     type: LAYER_STATE_UPDATE,
     payload: { ...newMapState }
@@ -254,7 +254,7 @@ function* handle_MAP_INIT_REQUEST(action) {
 function* refetchServerBoundaries() {
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   const shapes = serverShapesServerResponse.data.result;
-  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } }); 
+  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
 function* handle_SORT_COLUMN_STATE_UPDATE(action) {
@@ -362,21 +362,17 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
     const startRecord =
       mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
     const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const sorted = mapState?.IAPPGeoJSON?.features
-      ?.filter((row) => {
-        return mapState?.whatsHere?.IAPPIDs?.includes(row?.properties.site_id);
-      })
-      .sort((a, b) => {
-        if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
-          return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
-            ? 1
-            : -1;
-        } else {
-          return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
-            ? 1
-            : -1;
-        }
-      });
+    const sorted = mapState?.whatsHere?.IAPPIDs.map((site_id) => mapState?.IAPPGeoJSONDict[site_id]).sort((a, b) => {
+      if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
+        return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
+          ? 1
+          : -1;
+      } else {
+        return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
+          ? 1
+          : -1;
+      }
+    });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
      */
     const sliceWithData = sorted.slice(startRecord, endRecord);
@@ -413,23 +409,19 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     const startRecord =
       mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
     const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-    const sorted = mapState?.activitiesGeoJSON?.features
-      ?.filter((row) => {
-        return mapState?.whatsHere?.ActivityIDs?.includes(row?.properties.id);
-      })
-      .sort((a, b) => {
-        if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
-          return a?.properties[mapState?.whatsHere?.ActivitySortField] >
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
-            ? 1
-            : -1;
-        } else {
-          return a?.properties[mapState?.whatsHere?.ActivitySortField] <
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
-            ? 1
-            : -1;
-        }
-      });
+    const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => mapState?.activitiesGeoJSONDict[id]).sort((a, b) => {
+      if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
+        return a?.properties[mapState?.whatsHere?.ActivitySortField] >
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
+          ? 1
+          : -1;
+      } else {
+        return a?.properties[mapState?.whatsHere?.ActivitySortField] <
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
+          ? 1
+          : -1;
+      }
+    });
     /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
      */
     const sliceWithData = sorted.slice(startRecord, endRecord);
@@ -518,7 +510,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     if (set.recordSetType === 'POI') {
       const currentState = yield select(selectUserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id,currentState, clientBoundaries );
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -532,7 +524,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const currentState = yield select(selectUserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries );
+      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -670,6 +662,13 @@ function* handle_URL_CHANGE(action) {
       });
     }
   }
+
+  let mapState = yield select(selectMap);
+  if (!url.includes('WhatsHere') && mapState.whatsHere.toggle) {
+    yield put({
+      type: MAP_TOGGLE_WHATS_HERE
+    });
+  }
 }
 
 function* handle_UserFilterChange(action) {
@@ -678,17 +677,19 @@ function* handle_UserFilterChange(action) {
   const currentSet = map?.currentOpenSet;
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
 
-  if(recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !== recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash)
-
-  if (recordSetType === 'Activity') {
-    if (currentSet === action.payload.setID)
-      yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-    yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
-  } else {
-    if (currentSet === action.payload.setID)
-      yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-    yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
-  }
+  if (
+    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
+    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
+  )
+    if (recordSetType === 'Activity') {
+      if (currentSet === action.payload.setID)
+        yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    } else {
+      if (currentSet === action.payload.setID)
+        yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+      yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    }
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
@@ -751,11 +752,11 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 
   yield all(
     actions.map((action) => {
-      console.dir(action)
+      console.dir(action);
       if (action.payload.filterID) {
-        console.log('wat')
-      console.dir(action)
-       return  put(action);
+        console.log('wat');
+        console.dir(action);
+        return put(action);
       }
     })
   );
@@ -764,7 +765,7 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 function* persistClientBoundaries(action) {
   const state = yield select(selectMap);
 
-  console.dir(state.clientBoundaries)
+  console.dir(state.clientBoundaries);
 
   localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
@@ -773,24 +774,21 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
 }
 function* handle_DRAW_CUSTOM_LAYER(action) {
-  const panelState = yield select((state) => state.AppMode.panelOpen)
-  if(panelState) {
-  yield put({ type: TOGGLE_PANEL});
+  const panelState = yield select((state) => state.AppMode.panelOpen);
+  if (panelState) {
+    yield put({ type: TOGGLE_PANEL });
   }
 }
 
 function* handle_CUSTOM_LAYER_DRAWN(actions) {
-  const panelState = yield select((state) => state.AppMode.panelOpen)
-  if(!panelState) {
-  yield put({ type: TOGGLE_PANEL});
+  const panelState = yield select((state) => state.AppMode.panelOpen);
+  if (!panelState) {
+    yield put({ type: TOGGLE_PANEL });
   }
-
-
 }
 
 function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  console.dir(action.payload)
-
+  console.dir(action.payload);
 }
 
 function* activitiesPageSaga() {
@@ -811,7 +809,7 @@ function* activitiesPageSaga() {
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-     takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
+    takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),

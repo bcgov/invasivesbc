@@ -250,7 +250,7 @@ export const RenderTableActivity = (props: any) => {
   return (
     <>
       {whatsHere?.section === "invasivesbc" ? 
-        <div style={{ height: '300px', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '100%', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
             rows={whatsHere?.activityRows}
@@ -379,7 +379,7 @@ export const RenderTablePOI = (props: any) => {
   return (
     <>
       {whatsHere?.section === "iapp" ? 
-        <div style={{ height: '300px', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '100%', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
             rows={whatsHere?.iappRows}
