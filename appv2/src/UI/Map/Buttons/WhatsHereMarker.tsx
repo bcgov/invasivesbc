@@ -7,6 +7,7 @@ import { useMap, Marker, GeoJSON } from "react-leaflet";
 import center from "@turf/center";
 
 import { useSelector } from "util/use_selector";
+import "./WhatsHereMarker.css";
 
 export const WhatsHereMarker = (props) => {
   const map = useMap();
@@ -73,7 +74,10 @@ export const WhatsHereMarker = (props) => {
 
   return (
     position?.lat && map && panned && whatsHere?.toggle ? (
+      <>
       <Marker key={Math.random()} icon={icon} ref={markerRef} position={[position?.lat, position?.lng]}></Marker>
+      <GeoJSON key={Math.random()} data={whatsHere?.feature?.geometry}></GeoJSON>
+      </>
     ) : (
       <></>
     )
@@ -110,7 +114,8 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     if (!isPoint && geo) {
       setHighlightedGeo({ ...geo });
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
-      setHighlightedMarkerLtLng(centerOfGeo);
+      //setHighlightedMarkerLtLng(centerOfGeo);
+      setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
       map.flyTo({
         lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]

@@ -5,12 +5,14 @@ import intersect from '@turf/intersect';
 import {
   ACTIVITIES_GEOJSON_GET_OFFLINE,
   ACTIVITIES_GEOJSON_GET_ONLINE,
+  ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   IAPP_GEOJSON_GET_ONLINE,
+  IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
@@ -266,8 +268,14 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
-  const currentMapState = yield select(selectMap);
+  let currentMapState = yield select(selectMap);
 
+  if(!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
+    yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+    yield take(IAPP_GEOJSON_GET_SUCCESS);
+  }
+  
+  currentMapState = yield select(selectMap);
   const featuresFilderedByShape = Object.values(currentMapState?.activitiesGeoJSONDict)?.filter((feature: any) => {
     const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     switch (feature?.geometry?.type) {

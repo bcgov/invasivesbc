@@ -1,20 +1,20 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import center from "@turf/center";
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import center from '@turf/center';
 
-import { useSelector } from "util/use_selector";
-import { calc_utm } from "util/utm";
-import { Button, Grid, Tab, TableContainer, Tabs } from "@mui/material";
-import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from "util/WhatsHereTableHelpers";
-import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from "state/actions";
+import { useSelector } from 'util/use_selector';
+import { calc_utm } from 'util/utm';
+import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
+import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from 'util/WhatsHereTableHelpers';
+import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from 'state/actions';
 
-import "./WhatsHereTable.css";
+import './WhatsHereTable.css';
 
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { useHistory } from "react-router";
-import { OverlayHeader } from "../OverlayHeader";
+import { useHistory } from 'react-router';
+import { OverlayHeader } from '../OverlayHeader';
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -51,26 +51,29 @@ export const WhatsHereTable = (props) => {
   const goToRecord = () => {
     const id = whatsHere?.highlightedURLID;
     // if (authenticated && roles.length > 0) {
-      // }
+    // }
     // authentication is needed eventually
-    if (whatsHere?.highlightedType === "Activity") {
+    if (whatsHere?.highlightedType === 'Activity') {
       history.push(`/Records/Activity:${id}/form`);
-      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
-    } else if (whatsHere?.highlightedType === "IAPP") {
+      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: { toggle: false } });
+    } else if (whatsHere?.highlightedType === 'IAPP') {
       history.push(`/Records/IAPP:${id}/form`);
-      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: {toggle: false} });
+      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: { toggle: false } });
     }
-  }
+  };
 
   return (
     <div className="whatshere-container">
       <OverlayHeader closeCallback={popupOnClose}></OverlayHeader>
       {whatsHere?.section ? (
         <div className="whatshere-table-container">
-          <div
-            id="whatsherepopup"
-            className="whatshere-table">
-            <Grid container justifyContent="center" sx={{mb: 2, pb: 1}}>
+          <div className="whatshere_back_button">
+            <Button onClick={() => history.goBack()} variant="contained">
+              {'< Back'}
+            </Button>
+          </div>
+          <div id="whatsherepopup" className="whatshere-table">
+            <Grid container justifyContent="center" sx={{ mb: 2, pb: 1 }}>
               <Tabs value={whatsHere?.section} onChange={handleChange} centered>
                 <Tab value="position" label="" icon={<LocationOnIcon />} />
                 <Tab value="invasivesbc" label="" icon={<FolderIcon />} />
@@ -79,19 +82,20 @@ export const WhatsHereTable = (props) => {
               </Tabs>
             </Grid>
             <Grid container spacing={2} justifyContent="center">
-              {whatsHere?.highlightedACTIVITY || whatsHere?.highlightedIAPP ? 
-              <Grid item>
-                <Button variant="contained" onClick={goToRecord}>
-                  {`Open ${whatsHere?.highlightedType} record: ${
-                    whatsHere?.highlightedType === "IAPP" ? 
-                      whatsHere?.highlightedIAPP
-                      :
-                      whatsHere?.highlightedACTIVITY}
+              {whatsHere?.highlightedACTIVITY || whatsHere?.highlightedIAPP ? (
+                <Grid item>
+                  <Button variant="contained" onClick={goToRecord}>
+                    {`Open ${whatsHere?.highlightedType} record: ${
+                      whatsHere?.highlightedType === 'IAPP'
+                        ? whatsHere?.highlightedIAPP
+                        : whatsHere?.highlightedACTIVITY
+                    }
                   `}
-                </Button>
-              </Grid>
-              :
-              <></>}
+                  </Button>
+                </Grid>
+              ) : (
+                <></>
+              )}
             </Grid>
             <TableContainer className="whatshere-position">
               <RenderTablePosition rows={utmRows} />

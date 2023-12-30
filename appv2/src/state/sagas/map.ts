@@ -32,6 +32,7 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI,
@@ -660,6 +661,13 @@ function* handle_URL_CHANGE(action) {
         }
       });
     }
+  }
+
+  let mapState = yield select(selectMap);
+  if (!url.includes('WhatsHere') && mapState.whatsHere.toggle) {
+    yield put({
+      type: MAP_TOGGLE_WHATS_HERE
+    });
   }
 }
 

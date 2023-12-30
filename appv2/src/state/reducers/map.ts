@@ -438,6 +438,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {
+          if(draftState.whatsHere.toggle) {
+            draftState.whatsHere.loadingActivities = false
+            draftState.whatsHere.loadingIAPP = false
+          }
           draftState.whatsHere.toggle = !state.whatsHere.toggle;
           draftState.whatsHere.feature = null;
           draftState.whatsHere.iappRows = [];
@@ -447,6 +451,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_WHATS_HERE_FEATURE: {
+          draftState.whatsHere.loadingActivities = true;
+          draftState.whatsHere.loadingIAPP = true;
           draftState.whatsHere.feature = action.payload.feature;
           draftState.whatsHere.toggle = state.whatsHere.toggle;
           break;
@@ -585,10 +591,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
+          draftState.whatsHere.loadingActivities = false;
           draftState.whatsHere.activityRows = [...action.payload.data];
           break;
         }
         case WHATS_HERE_IAPP_ROWS_SUCCESS: {
+          draftState.whatsHere.loadingIAPP = false;
           draftState.whatsHere.iappRows = [...action.payload.data];
           break;
         }
