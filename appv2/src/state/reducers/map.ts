@@ -245,12 +245,34 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           break;
         }
+        case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
+          // const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+          // if (newState[action.payload.recordSetID]) newState[action.payload.recordSetID].loadingIDList = true;
+          // return {
+          //   ...state,
+          //   layers: JSON.parse(JSON.stringify({ ...newState }))
+          // };
+          if (draftState[action.payload.recordSetID]) draftState[action.payload.recordSetID].loadingIDList = true;
+          break;
+        }
+        case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
+          // const newState = JSON.parse(JSON.stringify({ ...state.layers }));
+          // if (newState[action.payload.recordSetID]) newState[action.payload.recordSetID].loadingIDList = false;
+          // return {
+          //   ...state,
+          //   layers: JSON.parse(JSON.stringify({ ...newState }))
+          // };
+          if (draftState.layers[action.payload.recordSetID])
+            draftState.layers[action.payload.recordSetID].loadingIDList = false;
+          break;
+        }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
+          draftState.layers[index].loadingIDList = false;
 
           //if (draftState.activitiesGeoJSON?.features?.length > 0) {
           if (draftState.activitiesGeoJSONDict !== undefined) {
@@ -341,6 +363,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
+          draftState.layers[index].loadingIDList = false;
 
           if (draftState.IAPPGeoJSON?.features?.length > 0) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
