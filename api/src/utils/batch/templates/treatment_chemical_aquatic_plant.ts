@@ -1,6 +1,7 @@
 import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersonsWithApplicatorLicense,
+  ApplicationMethodType,
   ApplicationMethodValidator,
   BasicInformation,
   BasicInformationRowValidators,
@@ -74,6 +75,7 @@ TreatmentChemicalAquaticPlant.rowValidators = [
   PmpValidator,
   WindDirectionValidator,
   ApplicationMethodValidator,
+  ApplicationMethodType,
   GranularHerbicideRate
 ];
 export { TreatmentChemicalAquaticPlant };
