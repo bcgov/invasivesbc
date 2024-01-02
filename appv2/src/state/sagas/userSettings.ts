@@ -1,61 +1,52 @@
-import { all, put, select, takeEvery, take } from 'redux-saga/effects';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { all, put, select, take, takeEvery } from 'redux-saga/effects';
+import { ActivityStatus } from 'sharedAPI';
+import { selectAuth } from 'state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import {
   AUTH_INITIALIZE_COMPLETE,
+  GET_API_DOC_ONLINE,
+  GET_API_DOC_REQUEST,
+  GET_API_DOC_SUCCESS,
+  RECORDSET_ADD_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
-  USER_SETTINGS_ADD_RECORD_SET_FAILURE,
-  USER_SETTINGS_ADD_RECORD_SET_REQUEST,
-  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
+  USER_SETTINGS_ADD_RECORD_SET,
+  USER_SETTINGS_DELETE_BOUNDARY_FAILURE,
+  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
+  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
+  USER_SETTINGS_DELETE_KML_FAILURE,
+  USER_SETTINGS_DELETE_KML_REQUEST,
+  USER_SETTINGS_DELETE_KML_SUCCESS,
   USER_SETTINGS_GET_INITIAL_STATE_FAILURE,
   USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
-  USER_SETTINGS_REMOVE_RECORD_SET_FAILURE,
-  USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
-  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+  USER_SETTINGS_REMOVE_RECORD_SET,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+  USER_SETTINGS_SET_BOUNDARIES_FAILURE,
+  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
+  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
+  USER_SETTINGS_SET_DARK_THEME,
+  USER_SETTINGS_SET_MAP_CENTER_FAILURE,
+  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
+  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_SET_RECORD_SET_FAILURE,
-  USER_SETTINGS_SET_RECORD_SET_REQUEST,
-  USER_SETTINGS_SET_RECORD_SET_SUCCESS,
+  USER_SETTINGS_SET_RECORDSET,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_FAILURE,
-  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
-  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
-  USER_SETTINGS_SET_BOUNDARIES_FAILURE,
-  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
-  USER_SETTINGS_DELETE_KML_REQUEST,
-  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
-  USER_SETTINGS_DELETE_BOUNDARY_FAILURE,
-  USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_DELETE_KML_FAILURE,
-  GET_API_DOC_REQUEST,
-  GET_API_DOC_SUCCESS,
-  GET_API_DOC_ONLINE,
-  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_FAILURE,
-  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST,
-  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
-  FILTER_STATE_UPDATE
+  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
-import { selectAuth } from 'state/reducers/auth';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { ActivityStatus } from 'sharedAPI';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   try {
@@ -156,104 +147,11 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
   }
 }
 
-function* handle_USER_SETTINGS_SET_RECORD_SET_REQUEST(action) {
-  try {
-    const userSettings = yield select(selectUserSettings);
-    let prev = JSON.parse(JSON.stringify(userSettings?.recordSets));
-    const authState = yield select(selectAuth);
-
-    prev[action.payload.setName] = action.payload.updatedSet;
-
-    if (action.payload.setName === '1') {
-      if (
-        !prev[action.payload.setName].advancedFilters.some(
-          (filter) => filter.filterField === 'created_by' && filter.filterValue === authState.username
-        )
-      ) {
-        prev[action.payload.setName].advancedFilters.push({
-          filterField: 'created_by',
-          filterValue: authState.username,
-          filterKey: 'created_by' + authState.username
-        });
-      }
-
-      if (
-        !prev[action.payload.setName].advancedFilters.some(
-          (filter) => filter.filterField === 'record_status' && filter.filterValue === ActivityStatus.DRAFT
-        )
-      ) {
-        prev[action.payload.setName].advancedFilters.push({
-          filterField: 'record_status',
-          filterValue: ActivityStatus.DRAFT,
-          filterKey: 'record_status' + ActivityStatus.DRAFT
-        });
-      }
-    }
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...prev } }));
-
-    yield put({
-      type: USER_SETTINGS_SET_RECORD_SET_SUCCESS,
-      payload: { recordSets: prev, updatedSetName: action.payload.setName, updatedSet: action.payload.updatedSet }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_SET_RECORD_SET_FAILURE });
-  }
+function* persistRecordSetsToLocalStorage(action) {
+  const state = yield select(selectUserSettings);
+  localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: state.recordSets }));
 }
 
-function* handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST(action) {
-  try {
-    const userSettings = yield select(selectUserSettings);
-    let prev = userSettings?.recordSets;
-
-    let newRecordSetState = {};
-
-    Object.keys(prev).forEach((key) => {
-      if (key !== action.payload.recordSetName) {
-        newRecordSetState[key] = prev[key];
-      }
-    });
-
-    const newAppState = localStorage.setItem(
-      'appstate-invasivesbc',
-      JSON.stringify({ recordSets: { ...newRecordSetState } })
-    );
-
-    yield put({
-      type: USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
-      payload: { recordSets: newRecordSetState, deletedID: action.payload.recordSetName }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_REMOVE_RECORD_SET_FAILURE });
-  }
-}
-
-function* handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST(action) {
-  try {
-    const userSettings = yield select(selectUserSettings);
-    let prev = userSettings?.recordSets;
-
-    const recordSets = {
-      ...prev,
-      [JSON.stringify(Number(Object.keys(prev)[Object.keys(prev).length - 1]) + 1)]: {
-        recordSetType: action.payload.recordSetType,
-        recordSetName: 'New Record Set' + (action.payload.recordSetType === 'POI'? ' (IAPP)' : ' (InvasivesBC)'),
-        advancedFilters: [],
-        gridFilters: {},
-        drawOrder: Object.keys(prev).length + 1
-      }
-    };
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...recordSets } }));
-
-    yield put({ type: USER_SETTINGS_ADD_RECORD_SET_SUCCESS, payload: { recordSets: recordSets } });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_ADD_RECORD_SET_FAILURE });
-  }
-}
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   const authState = yield select(selectAuth);
@@ -262,40 +160,26 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     ['1']: {
       recordSetType: 'Activity',
       recordSetName: 'My Drafts',
-      advancedFilters: [
-        {
-          filterField: 'created_by',
-          filterValue: authState.username,
-          filterKey: 'created_by' + authState.username
-        },
-        {
-          filterField: 'record_status',
-          filterValue: ActivityStatus.DRAFT,
-          filterKey: 'record_status' + ActivityStatus.DRAFT
-        }
-      ],
       // add draft key
       tableFilters: [
         {
           id: '1',
           field: 'form_status',
           filterType: 'tableFilter',
-          filter: ActivityStatus.DRAFT,
+          filter: ActivityStatus.DRAFT
         }
       ]
     },
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
-      drawOrder: 1,
-      advancedFilters: []
+      drawOrder: 1
     },
     ['3']: {
       recordSetType: 'POI',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
-      drawOrder: 2,
-      advancedFilters: []
+      drawOrder: 2
     }
   };
 
@@ -318,7 +202,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         activeActivity: oldID,
         activeActivityDescription: oldDesc,
         activeIAPP: IAPPID,
-        recordSets: recordSets,
+        recordSets: recordSets
       }
     });
   } catch (e) {
@@ -398,73 +282,6 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   }
 }
 
-function* handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST(action) {
-  try {
-    const userSettings = yield select(selectUserSettings);
-    const authState = yield select(selectAuth);
-    let sets = JSON.parse(JSON.stringify(userSettings?.recordSets));
-    sets[action.payload.id].advancedFilters =
-      action.payload.id === '1'
-        ? [
-            {
-              filterField: 'created_by',
-              filterValue: authState.username,
-              filterKey: 'created_by' + authState.username
-            },
-            {
-              filterField: 'record_status',
-              filterValue: 'Draft',
-              filterKey: 'record_statusDraft'
-            }
-          ]
-        : [];
-    sets[action.payload.id].gridFilters = {
-      enabled: false
-    };
-    sets[action.payload.id].searchBoundary = null;
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
-
-    yield put({
-      type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
-      payload: { recordSets: JSON.parse(JSON.stringify(sets)) }
-    });
-
-    // sort column update
-    const layer_filter = {
-      filters: {
-        advancedFilters:
-          action.payload.id === '1'
-            ? [
-                {
-                  filterField: 'created_by',
-                  filterValue: authState.username,
-                  filterKey: 'created_by' + authState.username
-                },
-                {
-                  filterField: 'record_status',
-                  filterValue: 'Draft',
-                  filterKey: 'record_statusDraft'
-                }
-              ]
-            : [],
-        gridFilters: {
-          enabled: false
-        },
-        searchBoundary: {},
-        sortColumns: []
-      }
-    };
-    yield put({
-      type: FILTER_STATE_UPDATE,
-      payload: { [action.payload.id]: { ...layer_filter, type: sets[action.payload.id].recordSetType } }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_FAILURE });
-  }
-}
-
 function* handle_GET_API_DOC_REQUEST(action) {
   // TODO decide online or not
   yield put({ type: GET_API_DOC_ONLINE });
@@ -486,6 +303,7 @@ function* handle_GET_API_DOC_ONLINE(action) {
   });
 }
 
+
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
@@ -498,18 +316,20 @@ function* userSettingsSaga() {
       USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
       handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
     ),
-    takeEvery(USER_SETTINGS_ADD_RECORD_SET_REQUEST, handle_USER_SETTINGS_ADD_RECORD_SET_REQUEST),
-    takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_REQUEST, handle_USER_SETTINGS_REMOVE_RECORD_SET_REQUEST),
+
+    takeEvery(USER_SETTINGS_SET_RECORDSET, persistRecordSetsToLocalStorage),
+    takeEvery(RECORDSET_ADD_FILTER, persistRecordSetsToLocalStorage),
+    takeEvery(USER_SETTINGS_ADD_RECORD_SET, persistRecordSetsToLocalStorage),
+    takeEvery(USER_SETTINGS_REMOVE_RECORD_SET, persistRecordSetsToLocalStorage),
+
     takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
     takeEvery(USER_SETTINGS_SET_BOUNDARIES_REQUEST, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
     takeEvery(USER_SETTINGS_DELETE_BOUNDARY_REQUEST, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
     takeEvery(USER_SETTINGS_DELETE_KML_REQUEST, handle_USER_SETTINGS_DELETE_KML_REQUEST),
-    takeEvery(USER_SETTINGS_SET_RECORD_SET_REQUEST, handle_USER_SETTINGS_SET_RECORD_SET_REQUEST),
     takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
     takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME),
-    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST),
-    takeEvery(USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST, handle_USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_REQUEST)
+    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
   ]);
 }
 

@@ -499,7 +499,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
   const activityState = yield select(selectActivity);
 
-  const geometry = activityState.activity.geometry?.[0];
+  const geometry = activityState?.activity?.geometry?.[0];
   if (geometry) {
     const isPoint = geometry.geometry?.type === 'Point' ? true : false;
     let target;

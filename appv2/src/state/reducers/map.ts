@@ -6,7 +6,6 @@ import {
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -55,7 +54,8 @@ import {
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  WHATS_HERE_SORT_FILTER_UPDATE,
+  USER_SETTINGS_REMOVE_RECORD_SET,
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -296,14 +296,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.workingLayerName = action.payload.name;
           break;
         }
-        case FILTER_STATE_UPDATE: {
-          for (const x in action.payload) {
-            const index = draftState.layers.findIndex((layer: any) => layer.recordSetID === x);
-            draftState.layers[index].filters = { ...action.payload?.[x]?.filters };
-            draftState.layers[index].loaded = false;
-          }
-          break;
-        }
         case IAPP_EXTENT_FILTER_SUCCESS: {
           draftState.IAPPBoundsPolygon = action.payload.bounds;
           break;
@@ -439,6 +431,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_TOGGLE_WHATS_HERE: {
           if(draftState.whatsHere.toggle) {
+            if(!draftState.panelOpen){
+              draftState.panelOpen = true;
+            }
             draftState.whatsHere.loadingActivities = false
             draftState.whatsHere.loadingIAPP = false
           }
@@ -561,6 +556,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case URL_CHANGE: {
           draftState.userRecordOnClickMenuOpen = false;
+          if(action.payload?.pathname === '/')
+          {
+            draftState.panelOpen = false;
+          }
+          break;
+        }
+        case USER_SETTINGS_REMOVE_RECORD_SET: {
+          const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers.splice(index, 1);
           break;
         }
         case USER_CLICKED_RECORD: {
