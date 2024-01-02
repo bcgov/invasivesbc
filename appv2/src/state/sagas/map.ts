@@ -344,6 +344,57 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
 }
 
 function* handle_WHATS_HERE_FEATURE(action) {
+  var mapState = yield select(selectMap);
+  if (!mapState.activitiesGeoJSONDict) {
+    yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+  }
+  mapState = yield select(selectMap);
+  if (!mapState.IAPPGeoJSONDict) {
+    yield take(IAPP_GEOJSON_GET_SUCCESS);
+  }
+
+  var layersLoading = true;
+  while (layersLoading) {
+    mapState = yield select(selectMap);
+
+    var toggledOnActivityLayers = mapState.layers.filter((layer) => {
+      return layer.layerState.mapToggle && layer.type === 'Activity';
+    });
+
+    var activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
+      return !layer.loaded;
+    });
+
+    var toggledOnIAPPLayers = mapState.layers.filter((layer) => {
+      return layer.layerState.mapToggle && layer.type === 'IAPP';
+    });
+
+    var IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
+      return !layer.loaded;
+    });
+
+    if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
+      layersLoading = false;
+    } else {
+      var actionsToTake = [];
+      if (activityLayersLoading.length > 0) {
+        actionsToTake.push(
+          activityLayersLoading.map((layer) => {
+            return ACTIVITIES_GEOJSON_GET_SUCCESS;
+          })
+        );
+      }
+      if (IAPPLayersLoading.length > 0) {
+        actionsToTake.push(
+          IAPPLayersLoading.map((layer) => {
+            return IAPP_GEOJSON_GET_SUCCESS;
+          })
+        );
+      }
+      yield all(actionsToTake.map((action) => take(action)));
+    }
+  }
+
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
   yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
 }
