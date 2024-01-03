@@ -56,6 +56,8 @@ import {
   WHATS_HERE_PAGE_POI,
   WHATS_HERE_SORT_FILTER_UPDATE,
   USER_SETTINGS_REMOVE_RECORD_SET,
+  USER_SETTINGS_SET_RECORDSET,
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -245,7 +247,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
+          if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
@@ -342,22 +344,39 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.serverBoundaries = action.payload.data;
           break;
         }
-        case LAYER_STATE_UPDATE: {
-          for (const x in action.payload) {
-            let index = draftState.layers.findIndex((layer: any) => layer.recordSetID === x);
-            if (draftState.layers?.[index]?.layerState) {
-              draftState.layers[index].layerState = action.payload[x]?.layerState;
-              draftState.layers[index].type = action.payload[x]?.type;
-            } else {
-              draftState.layers.push({
-                recordSetID: x,
-                layerState: action.payload[x]?.layerState,
-                type: action.payload[x]?.type
-              });
+        case USER_SETTINGS_SET_RECORDSET: {
+          const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+          if (!draftState.layers[layerIndex].layerState)
+            draftState.layers[layerIndex].layerState = {
+              color: '#000000',
+              mapToggle: false,
+              drawOrder: 0
+            };
+          Object.keys(action.payload.updatedSet).map((key) => {
+            if (['color', 'mapToggle', 'drawOrder'].includes(key)) {
+              draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
             }
-          }
+          });
           break;
         }
+        case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
+          Object.keys(action.payload.recordSets).map((setID) => {
+            let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            if (!draftState.layers[layerIndex]) {
+              draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
+              layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            }
+            draftState.layers[layerIndex].layerState = {};
+            if (action.payload.recordSets[setID].color)
+              draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
+            if (action.payload.recordSets[setID].mapToggle)
+              draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
+            if (action.payload.recordSets[setID].drawOrder)
+              draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
+          });
+          break;
+        }
+
         case LEAFLET_SET_WHOS_EDITING: {
           draftState.LeafletWhosEditing = action.payload.LeafletWhosEditing;
           break;
@@ -430,12 +449,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {
-          if(draftState.whatsHere.toggle) {
-            if(!draftState.panelOpen){
+          if (draftState.whatsHere.toggle) {
+            if (!draftState.panelOpen) {
               draftState.panelOpen = true;
             }
-            draftState.whatsHere.loadingActivities = false
-            draftState.whatsHere.loadingIAPP = false
+            draftState.whatsHere.loadingActivities = false;
+            draftState.whatsHere.loadingIAPP = false;
           }
           draftState.whatsHere.toggle = !state.whatsHere.toggle;
           draftState.whatsHere.feature = null;
@@ -556,8 +575,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case URL_CHANGE: {
           draftState.userRecordOnClickMenuOpen = false;
-          if(action.payload?.pathname === '/')
-          {
+          if (action.payload?.pathname === '/') {
             draftState.panelOpen = false;
           }
           break;
@@ -644,6 +662,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
   )
     return;
+    console.log('%cGeoJSONFilterSetForLayer', 'color: yellow')
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 

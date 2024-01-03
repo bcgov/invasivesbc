@@ -118,8 +118,21 @@ const IAPPCanvasLabelMemo = (props) => {
   const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
   const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
   const layers = useSelector((state: any) => state.Map?.layers);
-  const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
 
+  const IAPPGeoJSON = useSelector(
+    (state: any) =>
+      state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
+        ? state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
+        : { type: 'FeatureCollection', features: [] },
+    (prev, next) => {
+      return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
+    }
+  );
+
+  const layerStateColor = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color,
+    shallowEqual
+  );
   //CAP LABEL COUNT HERE
   const filteredFeatures = () => {
     let returnVal;

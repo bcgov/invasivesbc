@@ -115,7 +115,12 @@ export const ActivitiesLayerV2 = (props: any) => {
   );
 
   const layerStateColor = useSelector(
-    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color,
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState?.color,
+    shallowEqual
+  );
+
+  const layerMapToggle = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState?.mapToggle,
     shallowEqual
   );
 
@@ -138,7 +143,7 @@ export const ActivitiesLayerV2 = (props: any) => {
         setPalette(p);
       }
     });
-  }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
+  }, [layerStateColor, globalColorschemeOverride, props.layerKey, layerMapToggle]);
   /*
   useMapEvent('zoomend', () => {
     const zoom = map.getZoom();
@@ -159,7 +164,7 @@ export const ActivitiesLayerV2 = (props: any) => {
 
   const DonutMarkerLayerMemo = memo(( props : any) => {
 
-    if(!props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
+    if(!layerMapToggle || !props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
     return (
       <DonutMarkerLayer
         layerKey={props?.layerKey}

@@ -148,31 +148,17 @@ function* handle_MAP_INIT_REQUEST(action) {
     ['1']: {
       recordSetType: 'Activity',
       recordSetName: 'My Drafts',
-      advancedFilters: [
-        {
-          filterField: 'created_by',
-          filterValue: authState.username,
-          filterKey: 'created_by' + authState.username
-        },
-        {
-          filterField: 'record_status',
-          filterValue: ActivityStatus.DRAFT,
-          filterKey: 'record_status' + ActivityStatus.DRAFT
-        }
-      ]
     },
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
       drawOrder: 1,
-      advancedFilters: []
     },
     ['3']: {
-      recordSetType: 'POI',
+      recordSetType: 'IAPP',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 2,
-      advancedFilters: []
     }
   };
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
@@ -184,59 +170,6 @@ function* handle_MAP_INIT_REQUEST(action) {
   */
 
   yield call(refetchServerBoundaries);
-  let newMapState = {};
-  for (const rs in recordSets) {
-    newMapState[rs] = {};
-    let newLayerState = {};
-    newLayerState = {
-      color: recordSets[rs].color,
-      mapToggle: recordSets[rs].mapToggle,
-      labelToggle: recordSets[rs].labelToggle,
-      drawOrder: recordSets[rs].drawOrder
-    };
-    newMapState[rs].layerState = {
-      ...newLayerState
-    };
-
-    //grab shapes from server here
-    // grab shapes from sqlite here
-    let newFilters = {};
-    // FIX SERVER BOUNDARY STATE HERE
-    /*
-    const serverPatchedSearchBoundary = shapes.filter((s) => {
-      return s.id === recordSets[rs].searchBoundary?.server_id;
-    })[0];
-    */
-
-    /*const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
-      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
-      : { ...recordSets[rs].searchBoundary };
-      */
-
-    newFilters = {
-      advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters
-      //searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
-      //serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
-    };
-    newMapState[rs].filters = {
-      ...newFilters
-    };
-
-    const newLayer = {
-      layerState: { ...newLayerState },
-      filters: { ...newFilters },
-      type: recordSets[rs].recordSetType,
-      loaded: false
-    };
-
-    newMapState[rs] = { ...newLayer };
-  }
-
-  yield put({
-    type: LAYER_STATE_UPDATE,
-    payload: { ...newMapState }
-  });
   yield put({ type: MAP_INIT_FOR_RECORDSET });
 }
 
@@ -247,10 +180,6 @@ function* refetchServerBoundaries() {
 }
 
 function* getPOIIDsOnline(feature, filterCriteria) {}
-
-
-
-
 
 function* handle_MAP_TOGGLE_TRACKING(action) {
   const state = yield select(selectMap);
@@ -523,7 +452,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let rows = [];
     let networkReturn;
     let conditionallyUnnestedURL;
-    if (set.recordSetType === 'POI') {
+    if (set.recordSetType === 'IAPP') {
       const currentState = yield select(selectUserSettings);
 
       let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
@@ -729,6 +658,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
     } else {
       actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
     }
+
   });
   yield all(actionsToPut.map((action) => put(action)));
 }
@@ -851,9 +781,7 @@ function* activitiesPageSaga() {
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries)
-    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
-    // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
+    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
   ]);
 }
 

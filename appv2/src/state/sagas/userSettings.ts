@@ -168,18 +168,19 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
           filterType: 'tableFilter',
           filter: ActivityStatus.DRAFT
         }
-      ]
+      ],
+      drawOrder: 1
     },
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
-      drawOrder: 1
+      drawOrder: 2
     },
     ['3']: {
       recordSetType: 'POI',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
-      drawOrder: 2
+      drawOrder: 3
     }
   };
 
