@@ -157,17 +157,19 @@ const RecordSetFooter = (props) => {
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
 
   const totalRecords = layer?.IDList?.length;
-  // const loaded = layer?.loaded;
+  const loaded = layer?.loaded;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit
       ? totalRecords
       : firstRowIndex + recordTable?.limit;
   let recordDisplayString = 'Loading...';
-  if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
-    recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
-  } else if (layer?.IDList && totalRecords < 1) {
-    recordDisplayString = 'No records found';
+  if (loaded) {
+    if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
+      recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
+    } else if (layer?.IDList && totalRecords < 1) {
+      recordDisplayString = 'No records found';
+    }
   }
 
   const shouldDisplayNextButton = totalRecords > lastRowIndex;

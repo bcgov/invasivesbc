@@ -246,12 +246,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
-          if (draftState[action.payload.recordSetID]) draftState[action.payload.recordSetID].loaded = false;
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers[index].loaded = false;
           break;
         }
         case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
-          if (draftState.layers[action.payload.recordSetID])
-            draftState.layers[action.payload.recordSetID].loaded = false;
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers[index].loaded = false;
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
