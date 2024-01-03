@@ -57,7 +57,9 @@ import {
   WHATS_HERE_SORT_FILTER_UPDATE,
   USER_SETTINGS_REMOVE_RECORD_SET,
   USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  IAPP_GET_IDS_FOR_RECORDSET_REQUEST
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -243,6 +245,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               GeoJSONFilterSetForLayer(draftState, state, 'Activity', layer.recordSetID, layer.IDList);
             });
           }
+          break;
+        }
+        case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers[index].loaded = false;
+          break;
+        }
+        case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers[index].loaded = false;
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {

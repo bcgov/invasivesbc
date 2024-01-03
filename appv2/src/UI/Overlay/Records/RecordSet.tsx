@@ -157,11 +157,20 @@ const RecordSetFooter = (props) => {
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
 
   const totalRecords = layer?.IDList?.length;
+  const loaded = layer?.loaded;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit
       ? totalRecords
       : firstRowIndex + recordTable?.limit;
+  let recordDisplayString = 'Loading...';
+  if (loaded) {
+    if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
+      recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
+    } else if (layer?.IDList && totalRecords < 1) {
+      recordDisplayString = 'No records found';
+    }
+  }
 
   const shouldDisplayNextButton = totalRecords > lastRowIndex;
   const shouldDisplayPreviousButton = firstRowIndex > 0;
@@ -194,9 +203,9 @@ const RecordSetFooter = (props) => {
       <div className="recordSet_pagePrevious">
         {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
       </div>
-      <div className="recordSet_pageOfAndTotal">{`${firstRowIndex + 1} to ${lastRowIndex} of ${
-        totalRecords ? totalRecords : '(Loading)'
-      } records`}</div>
+      <div className="recordSet_pageOfAndTotal">
+      {recordDisplayString}
+      </div>
       <div className="recordSet_pageNext">
         {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
       </div>
@@ -409,7 +418,7 @@ const Filter = (props) => {
                   <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
                   CONTAINED IN
                   </option>
-                  <option key={Math.random()} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
                     NOT CONTAINED IN
                   </option>
                 </>
