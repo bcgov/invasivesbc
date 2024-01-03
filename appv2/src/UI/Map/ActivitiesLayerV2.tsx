@@ -10,7 +10,6 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { useSelector } from 'react-redux';
 import { getPallette } from './AdditionalHelperFunctions';
 import { shallowEqual } from 'react-redux';
-import { c } from 'vitest/dist/reporters-5f784f42';
 
 enum ZoomTypes {
   LOW = 'low',
