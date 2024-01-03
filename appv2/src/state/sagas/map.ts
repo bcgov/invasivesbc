@@ -1,16 +1,23 @@
-import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { Geolocation } from '@capacitor/geolocation';
+import * as turf from '@turf/turf';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { channel } from 'redux-saga';
+import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { ActivityStatus } from 'sharedAPI';
+import { selectAuth } from 'state/reducers/auth';
+import { selectMap } from 'state/reducers/map';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { getSearchCriteriaFromFilters } from '../../util/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  FILTER_STATE_UPDATE,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
@@ -18,12 +25,10 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
   LAYER_STATE_UPDATE,
-  LEAFLET_SET_WHOS_EDITING,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_INIT_FOR_RECORDSET,
   MAP_INIT_REQUEST,
@@ -47,16 +52,10 @@ import {
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
-  SORT_COLUMN_STATE_UPDATE,
-  TABS_GET_INITIAL_STATE_SUCCESS,
-  TABS_SET_ACTIVE_TAB_SUCCESS,
   TOGGLE_PANEL,
   URL_CHANGE,
-  USER_CLICKED_RECORD,
   USER_SETTINGS_DELETE_KML_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
-  USER_SETTINGS_SET_RECORD_SET_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_REQUEST,
@@ -84,16 +83,6 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
-import { selectAuth } from 'state/reducers/auth';
-import { LeafletWhosEditingEnum, selectMap } from 'state/reducers/map';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { Geolocation } from '@capacitor/geolocation';
-import { channel } from 'redux-saga';
-import { ActivityStatus } from 'sharedAPI';
-import * as turf from '@turf/turf';
-import { format } from 'date-fns';
-import { getSearchCriteriaFromFilters } from '../../util/miscYankedFromComponents';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -159,31 +148,17 @@ function* handle_MAP_INIT_REQUEST(action) {
     ['1']: {
       recordSetType: 'Activity',
       recordSetName: 'My Drafts',
-      advancedFilters: [
-        {
-          filterField: 'created_by',
-          filterValue: authState.username,
-          filterKey: 'created_by' + authState.username
-        },
-        {
-          filterField: 'record_status',
-          filterValue: ActivityStatus.DRAFT,
-          filterKey: 'record_status' + ActivityStatus.DRAFT
-        }
-      ]
     },
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
       drawOrder: 1,
-      advancedFilters: []
     },
     ['3']: {
-      recordSetType: 'POI',
+      recordSetType: 'IAPP',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 2,
-      advancedFilters: []
     }
   };
   const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
@@ -195,59 +170,6 @@ function* handle_MAP_INIT_REQUEST(action) {
   */
 
   yield call(refetchServerBoundaries);
-  let newMapState = {};
-  for (const rs in recordSets) {
-    newMapState[rs] = {};
-    let newLayerState = {};
-    newLayerState = {
-      color: recordSets[rs].color,
-      mapToggle: recordSets[rs].mapToggle,
-      labelToggle: recordSets[rs].labelToggle,
-      drawOrder: recordSets[rs].drawOrder
-    };
-    newMapState[rs].layerState = {
-      ...newLayerState
-    };
-
-    //grab shapes from server here
-    // grab shapes from sqlite here
-    let newFilters = {};
-    // FIX SERVER BOUNDARY STATE HERE
-    /*
-    const serverPatchedSearchBoundary = shapes.filter((s) => {
-      return s.id === recordSets[rs].searchBoundary?.server_id;
-    })[0];
-    */
-
-    /*const searchBoundaryUpdatedWithShapeFromServer = serverPatchedSearchBoundary?.goes
-      ? { ...recordSets[rs].searchBoundary, geos: [...serverPatchedSearchBoundary.geos.features] }
-      : { ...recordSets[rs].searchBoundary };
-      */
-
-    newFilters = {
-      advancedFilters: recordSets[rs].advancedFilters,
-      gridFilters: recordSets[rs].gridFilters
-      //searchBoundary: searchBoundaryUpdatedWithShapeFromServer,
-      //serverSearchBoundary: recordSets[rs].searchBoundary?.server_id
-    };
-    newMapState[rs].filters = {
-      ...newFilters
-    };
-
-    const newLayer = {
-      layerState: { ...newLayerState },
-      filters: { ...newFilters },
-      type: recordSets[rs].recordSetType,
-      loaded: false
-    };
-
-    newMapState[rs] = { ...newLayer };
-  }
-
-  yield put({
-    type: LAYER_STATE_UPDATE,
-    payload: { ...newMapState }
-  });
   yield put({ type: MAP_INIT_FOR_RECORDSET });
 }
 
@@ -257,35 +179,7 @@ function* refetchServerBoundaries() {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
-function* handle_SORT_COLUMN_STATE_UPDATE(action) {
-  const mapState = yield select(selectMap);
-  const filters = mapState?.layers?.[action.payload.id]?.filters;
-  const newFilterState = {
-    advancedFilters: [...filters.advancedFilters],
-    gridFilters: { ...filters.gridFilters },
-    searchBoundary: { ...filters.searchBoundary },
-    sortColumns: action.payload.sortColumns
-  };
-  yield put({
-    type: FILTER_STATE_UPDATE,
-    payload: {
-      [action.payload.id]: {
-        filters: { ...newFilterState },
-        type: mapState?.layers?.[action.payload.id]?.type
-      }
-    }
-  });
-}
-
 function* getPOIIDsOnline(feature, filterCriteria) {}
-
-function* handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS(action) {
-  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { recordSetID: action.payload.deletedID } });
-}
-
-function* handle_MAP_DELETE_LAYER(action) {
-  yield put({ type: MAP_DELETE_LAYER_AND_TABLE, payload: { ...action.payload } });
-}
 
 function* handle_MAP_TOGGLE_TRACKING(action) {
   const state = yield select(selectMap);
@@ -558,7 +452,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let rows = [];
     let networkReturn;
     let conditionallyUnnestedURL;
-    if (set.recordSetType === 'POI') {
+    if (set.recordSetType === 'IAPP') {
       const currentState = yield select(selectUserSettings);
 
       let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
@@ -764,6 +658,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
     } else {
       actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
     }
+
   });
   yield all(actionsToPut.map((action) => put(action)));
 }
@@ -847,6 +742,9 @@ function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
     debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
+    takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
+    takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
+
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
 
     // handle hiding and showing the panel when drawing boundaries:
@@ -856,12 +754,8 @@ function* activitiesPageSaga() {
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
 
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
-    takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
-    takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-    takeEvery(USER_SETTINGS_SET_RECORD_SET_SUCCESS, handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS),
-    takeEvery(USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS, handle_USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
@@ -871,9 +765,6 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    //takeEvery(FILTER_STATE_UPDATE, handle_FILTER_STATE_UPDATE),
-    // takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS),
-    // takeEvery(IAPP_GET_IDS_FOR_RECORDSET_SUCCESS, handle_IAPP_GET_IDS_FOR_RECORDSET_SUCCESS),
     takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
@@ -881,7 +772,6 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     //    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(SORT_COLUMN_STATE_UPDATE, handle_SORT_COLUMN_STATE_UPDATE),
     takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
     takeEvery(WHATS_HERE_SORT_FILTER_UPDATE, handle_WHATS_HERE_SORT_FILTER_UPDATE),
@@ -891,9 +781,7 @@ function* activitiesPageSaga() {
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries)
-    // takeEvery(IAPP_TABLE_ROWS_GET_SUCCESS, handle_IAPP_TABLE_ROWS_GET_SUCCESS),
-    // takeEvery(IAPP_INIT_LAYER_STATE_REQUEST, handle_IAPP_INIT_LAYER_STATE_REQUEST),
+    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
   ]);
 }
 

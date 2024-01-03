@@ -35,7 +35,6 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
         payload: {
           recordSetID: action.payload.recordSetID,
           activitiesFilterCriteria: action.payload.activitiesFilterCriteria,
-          layerState: action.payload.layerState
         }
       });
     }
@@ -251,7 +250,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   let unfilteredRecordSetIDs = [];
 
   currentMapState?.layers.map((layer) => {
-    if (layer?.type === 'POI' && layer?.layerState.mapToggle) {
+    if (layer?.type === 'IAPP' && layer?.layerState.mapToggle) {
       largePush(layer?.IDList, unfilteredRecordSetIDs);
     }
   });

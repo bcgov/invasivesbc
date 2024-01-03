@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Close from '@mui/icons-material/Close';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
@@ -11,9 +11,10 @@ import { Button, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import {
+  USER_SETTINGS_ADD_RECORD_SET,
   USER_SETTINGS_ADD_RECORD_SET_REQUEST,
-  USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
-  USER_SETTINGS_SET_RECORD_SET_REQUEST
+  USER_SETTINGS_REMOVE_RECORD_SET,
+  USER_SETTINGS_SET_RECORDSET,
 } from 'state/actions';
 import { Activity } from './Record';
 import './Records.css';
@@ -44,10 +45,9 @@ export const Records = (props) => {
     console.dir(e);
     e.stopPropagation();
     dispatch({
-      type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+      type: USER_SETTINGS_SET_RECORDSET,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(recordSets?.[set])),
           labelToggle: !recordSets?.[set]?.labelToggle
         },
         setName: set
@@ -59,10 +59,9 @@ export const Records = (props) => {
     console.log('clicked');
     e.stopPropagation();
     dispatch({
-      type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+      type: USER_SETTINGS_SET_RECORDSET,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(recordSets?.[set])),
           mapToggle: !recordSets?.[set]?.mapToggle
         },
         setName: set
@@ -76,10 +75,9 @@ export const Records = (props) => {
     const nextIndex = (currentIndex + 1) % colours.length;
 
     dispatch({
-      type: USER_SETTINGS_SET_RECORD_SET_REQUEST,
+      type: USER_SETTINGS_SET_RECORDSET,
       payload: {
         updatedSet: {
-          ...JSON.parse(JSON.stringify(recordSets?.[set])),
           color: colours[nextIndex]
         },
         setName: set
@@ -96,13 +94,15 @@ export const Records = (props) => {
       )
     ) {
       dispatch({
-        type: USER_SETTINGS_REMOVE_RECORD_SET_REQUEST,
+        type: USER_SETTINGS_REMOVE_RECORD_SET,
         payload: {
-          recordSetName: set
+          setID: set
         }
       });
     }
   };
+
+
 
   const [highlightedSet, setHighlightedSet] = React.useState(null);
 
@@ -184,8 +184,8 @@ export const Records = (props) => {
                   </div>
                 );
               })}
-            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET_REQUEST, payload: {recordSetType: 'Activity'}})} className={'addRecordSet'}>Add Layer of Records</Button>
-            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET_REQUEST, payload: {recordSetType: 'POI'}})} className={'addRecordSet'}>Add IAPP Layer of Records</Button>
+            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET, payload: {recordSetType: 'Activity'}})} className={'addRecordSet'}>Add Layer of Records</Button>
+            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET, payload: {recordSetType: 'POI'}})} className={'addRecordSet'}>Add IAPP Layer of Records</Button>
             </>
           ) : (
             <></>

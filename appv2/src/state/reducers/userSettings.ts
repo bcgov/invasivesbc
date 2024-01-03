@@ -18,13 +18,12 @@ import {
   RECORDSET_REMOVE_FILTER,
   RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
-  USER_SETTINGS_ADD_RECORD_SET_SUCCESS,
-  USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS,
+  USER_SETTINGS_ADD_RECORD_SET,
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_KML_SUCCESS,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
-  USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS,
+  USER_SETTINGS_REMOVE_RECORD_SET,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
   USER_SETTINGS_SET_API_ERROR_DIALOG,
@@ -32,14 +31,12 @@ import {
   USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_SET_RECORD_SET_SUCCESS,
-  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+  USER_SETTINGS_SET_RECORDSET,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
 
-import { AppConfig } from '../config';
-import { createNextState } from '@reduxjs/toolkit';
 import { immerable } from 'immer';
+import { AppConfig } from '../config';
 
 /*const options: UuidOptions = {
   length: 50,
@@ -69,8 +66,6 @@ class UserSettingsState {
   recordSets: [
     {
       tableFilters?: any;
-      advancedFilters: [];
-      gridFilters: [];
       color: string;
       drawOrder: number;
       expanded: boolean;
@@ -280,16 +275,22 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.newRecordDialogState = action.payload;
           break;
         }
-        case USER_SETTINGS_ADD_RECORD_SET_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
+        case USER_SETTINGS_ADD_RECORD_SET: {
+          const newID = JSON.stringify(
+            Number(Object.keys(draftState.recordSets)[Object.keys(draftState.recordSets).length - 1]) + 1
+          );
+          draftState.recordSets[newID] = {
+            tableFilters: [],
+            color: 'blue',
+            drawOrder: 0,
+            mapToggle: false,
+            recordSetName: 'New Recordset - ' + 'type',
+            recordSetType: action.payload.type
+          };
           break;
         }
-        case USER_SETTINGS_REMOVE_RECORD_SET_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
-          break;
-        }
-        case USER_SETTINGS_SET_SELECTED_RECORD_REQUEST: {
-          draftState.selectedRecord = action.payload.selectedRecord;
+        case USER_SETTINGS_REMOVE_RECORD_SET: {
+          delete draftState.recordSets[action.payload.setID];
           break;
         }
         case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
@@ -316,8 +317,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           );
           break;
         }
-        case USER_SETTINGS_SET_RECORD_SET_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
+        case USER_SETTINGS_SET_RECORDSET: {
+          Object.keys(action.payload.updatedSet).forEach((key) => {
+            draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
+          });
           break;
         }
         case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
@@ -330,10 +333,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         }
         case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
           draftState.mapCenter = action.payload.center;
-          break;
-        }
-        case USER_SETTINGS_CLEAR_RECORD_SET_FILTERS_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
           break;
         }
         case USER_SETTINGS_SET_API_ERROR_DIALOG: {
