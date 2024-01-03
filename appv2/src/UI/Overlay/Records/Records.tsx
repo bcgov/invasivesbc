@@ -35,7 +35,7 @@ export const Records = (props) => {
     dispatch({
       type: USER_SETTINGS_ADD_RECORD_SET_REQUEST,
       payload: {
-        recordSetType: isPOI ? 'POI' : 'Activity'
+        recordSetType: isPOI ? 'IAPP' : 'Activity'
       }
     });
   };
@@ -185,7 +185,7 @@ export const Records = (props) => {
                 );
               })}
             <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET, payload: {recordSetType: 'Activity'}})} className={'addRecordSet'}>Add Layer of Records</Button>
-            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET, payload: {recordSetType: 'POI'}})} className={'addRecordSet'}>Add IAPP Layer of Records</Button>
+            <Button onClick={() => dispatch({type: USER_SETTINGS_ADD_RECORD_SET, payload: {recordSetType: 'IAPP'}})} className={'addRecordSet'}>Add IAPP Layer of Records</Button>
             </>
           ) : (
             <></>

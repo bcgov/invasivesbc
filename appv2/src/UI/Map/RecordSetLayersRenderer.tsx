@@ -11,11 +11,14 @@ import 'leaflet-markers-canvas';
 import { useDispatch } from 'react-redux';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
 import { GeneralDialog } from './GeneralDialog';
-import _ from 'lodash';
+import _, { map } from 'lodash';
 import { shallowEqual } from 'react-redux';
 import { useState, useEffect } from 'react';
 
+import * as turf from '@turf/turf';
+
 import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
+import { useMap } from 'react-leaflet';
 
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
@@ -47,106 +50,121 @@ export const RecordSetLayersRenderer = (props: any) => {
   );
 };
 
-const LayerWrapper = memo(({ recordSetID }: any) => {
+const LayerWrapper = (props) => {//memo(({ recordSetID }: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  console.log(`%cLayerWrapper.tsx render ${recordSetID}:` + ref.current.toString(), 'color: green');
+  console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
-  const type = useSelector( (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === recordSetID)?.type, shallowEqual)
+  const type = useSelector( (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type, shallowEqual)
 
-//  const type: any = 'Activity';
-  switch (type) {
-    case 'Activity':
-      return (
-        <>
-          <ActivitiesLayerV2 layerKey={recordSetID} />
-          {/*<ActivityCanvasLabelMemo layerKey={recordSetID} />*/}
-        </>
-      );
-    case 'IAPP':
-      return (
-        <>
-          <IAPPCanvasLayerMemo layerKey={recordSetID} />
-          <IAPPCanvasLabelMemo layerKey={recordSetID} />
-        </>
-      );
-  }
-
-  return <div key={'layerWrapper' + recordSetID}></div>;
-});
-
-const IAPPCanvasLayerMemo = (props) => {
-  const IAPPGeoJSON = useSelector((state: any) => state.Map?.IAPPGeoJSON);
-  const layers = useSelector((state: any) => state.Map?.layers);
-  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
-
-  const filteredFeatures = () => {
-    let returnVal;
-    if (layers?.[props.layerKey]?.IDList && layers?.[props.layerKey].layerState?.mapToggle && IAPPBoundsPolygon) {
-      returnVal = IAPPGeoJSON?.features.filter((row) => {
-        return layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
-      });
-    } else {
-      returnVal = [];
-    }
-    const points = { type: 'FeatureCollection', features: returnVal };
-    return pointsWithinPolygon(points as any, IAPPBoundsPolygon);
-  };
-
-  return useMemo(() => {
-    if (layers?.[props.layerKey]?.layerState) {
-      return (
-        <LeafletCanvasMarker
-          key={'POICanvasLayermemo' + props.layerKey}
-          labelToggle={layers[props.layerKey].layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layers[props.layerKey].layerState.mapToggle}
-          colour={layers[props.layerKey].layerState.color}
-          zIndex={100000 + layers[props.layerKey].layerState.drawOrder}
-        />
-      );
-    } else return <></>;
-  }, [
-    JSON.stringify(layers?.[props.layerKey]?.layerState),
-    JSON.stringify(layers?.[props.layerKey]?.IDList, layers?.[props.layerKey].layerState?.mapToggle),
-    JSON.stringify(IAPPBoundsPolygon)
-  ]);
-};
-
-const IAPPCanvasLabelMemo = (props) => {
-  const dispatch = useDispatch();
-  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
-  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
-  const layers = useSelector((state: any) => state.Map?.layers);
-
-  const IAPPGeoJSON = useSelector(
+  const geoJSON = useSelector(
     (state: any) =>
-      state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
-        ? state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
+      state.Map?.layers?.find((layer) => layer.recordSetID === props.recordSetID)?.geoJSON
+        ? state.Map?.layers?.find((layer) => layer.recordSetID === props.recordSetID)?.geoJSON
         : { type: 'FeatureCollection', features: [] },
     (prev, next) => {
       return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
     }
   );
 
+//  const type: any = 'Activity';
+  switch (type) {
+    case 'Activity':
+      return (
+        <>
+          <ActivitiesLayerV2 geoJSON={geoJSON} layerKey={props.recordSetID} />
+          {/*<ActivityCanvasLabelMemo layerKey={recordSetID} />*/}
+        </>
+      );
+    case 'IAPP':
+      return (
+        <>
+          <IAPPCanvasLayerMemo geoJSON={geoJSON} layerKey={props.recordSetID} />
+          <IAPPCanvasLabelMemo geoJSON={geoJSON} layerKey={props.recordSetID} />
+        </>
+      );
+  }
+
+  return <div key={'layerWrapper' + props.recordSetID}></div>;
+};
+
+const IAPPCanvasLayerMemo = (props) => {
+
+
+    const layer  = useSelector((state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey));
+  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
+
+  const filteredFeatures = () => {
+    let returnVal = [];
+    const points = { type: 'FeatureCollection', features: returnVal };
+    return props.geoJSON//pointsWithinPolygon(points as any, IAPPBoundsPolygon);
+  };
+
+//  return useMemo(() => {
+    if (layer?.layerState) {
+      return (
+        <LeafletCanvasMarker
+          key={'POICanvasLayermemo' + props.layerKey}
+          labelToggle={layer?.layerState.labelToggle}
+          points={filteredFeatures()}
+          enabled={layer?.layerState.mapToggle}
+          colour={layer?.layerState.color}
+          zIndex={100000 + layer?.layerState.drawOrder}
+        />
+      );
+    } else return <></>;
+ /* }, [
+    JSON.stringify(layer?.layerState),
+    JSON.stringify(layer?.IDList, layer?.layerState?.mapToggle),
+    JSON.stringify(IAPPBoundsPolygon)
+  ]);
+  */
+};
+
+const IAPPCanvasLabelMemo = (props) => {
+  const dispatch = useDispatch();
+  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
+    const layer  = useSelector((state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey));
+
+    const map = useMap()
+
+
   const layerStateColor = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color,
     shallowEqual
   );
-  //CAP LABEL COUNT HERE
+  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
+
+  const [pointsInBounds,  setPointsInBounds] = useState(null)
+
+  if(!props.geoJSON) return <></>
+
+  console.log('%cnumber of features to label ' + props.geoJSON?.features?.length, 'color: green')
   const filteredFeatures = () => {
-    let returnVal;
-    if (labelBoundsPolygon && layers?.[props.layerKey]?.IDList && IAPPBoundsPolygon) {
-      returnVal = IAPPGeoJSON?.features.filter((row) => {
-        return layers?.[props.layerKey]?.IDList?.includes(row.properties.site_id);
-      });
-    } else {
-      returnVal = [];
-    }
+    let returnVal = [];
     const points = { type: 'FeatureCollection', features: returnVal };
-    const pointsInBounds = pointsWithinPolygon(points as any, IAPPBoundsPolygon);
-    const pointsToLabel = pointsWithinPolygon(pointsInBounds as any, labelBoundsPolygon);
+    return props.geoJSON//pointsWithinPolygon(points as any, IAPPBoundsPolygon);
+  }
+
+  const [bounds, setBounds] = useState(null)
+
+
+  map.on('zoomend', function () {
+    const bboxString = map.getBounds().toBBoxString()
+    const bbox = JSON.parse('[' + bboxString + ']')
+    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox))
+    setPointsInBounds(newPointsInBounds)
+  })
+  map.on('dragend', function () {
+    const bboxString = map.getBounds().toBBoxString()
+    const bbox = JSON.parse('[' + bboxString + ']')
+    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox))
+    setPointsInBounds(newPointsInBounds)
+  })
+
+    //const pointsToLabel = pointsWithinPolygon(props.geoJSON, labelBoundsPolygon);
     // only allow max labels
+    /*if (pointsToLabel?.features?.length > 5000) {
     if (pointsToLabel?.features?.length > 5000) {
       dispatch({
         type: SET_TOO_MANY_LABELS_DIALOG,
@@ -178,32 +196,33 @@ const IAPPCanvasLabelMemo = (props) => {
           }
         }
       });
-      return [];
-    }
+    }*/
 
-    return pointsToLabel;
-  };
 
-  return useMemo(() => {
-    if (layers?.[props.layerKey]?.layerState) {
+//  return useMemo(() => {
+    if (layer?.layerState) {
       return (
         <LeafletCanvasLabel
           layerType={'IAPP'}
           key={'POICanvasLayermemo' + props.layerKey}
-          labelToggle={layers[props.layerKey].layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layers[props.layerKey].layerState.mapToggle}
-          colour={layers[props.layerKey].layerState.color}
-          zIndex={10000 + layers[props.layerKey].layerState.drawOrder}
+         // labelToggle={layer.layerState.labelToggle}
+          labelToggle={layer?.layerState?.labelToggle}
+          points={pointsInBounds}
+          enabled={layer.layerState.mapToggle}
+          colour={layer.layerState.color}
+          zIndex={10000 + layer.layerState.drawOrder}
         />
       );
     } else return <></>;
-  }, [
-    JSON.stringify(layers?.[props.layerKey]?.layerState),
-    JSON.stringify(layers?.[props.layerKey]?.IDList),
-    JSON.stringify(labelBoundsPolygon)
+ /* }, [
+    JSON.stringify(layer?.layerState),
+    JSON.stringify(layer?.IDList),
+    JSON.stringify(labelBoundsPolygon),
+    props.geoJSON
   ]);
 };
+*/
+}
 
 const ActivityCanvasLabelMemo = (props) => {
   const layerState = useSelector(

@@ -13,11 +13,11 @@ const ExcelExporter = (props) => {
   const CanTriggerCSV = useSelector((state: any) => state.Map.CanTriggerCSV)
   const setType = useSelector((state: any) => state.UserSettings.recordSets[props.setName]?.recordSetType);
   const [selection, setSelection] = useState(
-    setType === 'POI' ? 'site_selection_extract' : 'terrestrial_plant_observation'
+    setType === 'IAPP' ? 'site_selection_extract' : 'terrestrial_plant_observation'
   );
 
   let items;
-  if (setType === 'POI') {
+  if (setType === 'IAPP') {
     items = [
       <MenuItem value={'site_selection_extract'}>Site Selection Extract</MenuItem>,
       <MenuItem value={'survey_extract'}>Survey Extract</MenuItem>,

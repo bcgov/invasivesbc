@@ -76,7 +76,7 @@ export const VectorOverviewLayer = (props) => {
 
       layer.options.zIndex = 9999;
 
-      if (!map.hasLayer(layer)) {
+      if (!map.hasLayer(layer)  ) {
         container.addLayer(layer);
       }
 
