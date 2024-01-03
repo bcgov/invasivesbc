@@ -5,6 +5,9 @@ import L from 'leaflet';
 import { useLeafletContext } from '@react-leaflet/core';
 import 'leaflet-markers-canvas';
 
+
+const MAX_LABLES_TO_RENDER = 500
+
 export const LeafletCanvasMarker = (props) => {
   const map = useMap();
   const context = useLeafletContext();
@@ -110,6 +113,14 @@ export const LeafletCanvasLabel = (props) => {
   const layerRef = useRef();
   const groupRef = useRef();
 
+
+  const [zoom, setZoom] = useState(map.getZoom());
+
+
+  map.on('zoomend', function () {
+    setZoom(map.getZoom());
+  })
+
   useEffect(() => {
     if (!map) return;
     const container = context.layerContainer || context.map;
@@ -134,11 +145,36 @@ export const LeafletCanvasLabel = (props) => {
 
     // console.log('label toggle');
     // console.log(props.labelToggle);
+    console.log('map zoom:' + map.getZoom())
+    /*if((props.points?.features?.length > MAX_LABLES_TO_RENDER) && map.getZoom() < 10) {// && map.getZoom() < 13)){
+    //if(map.getZoom() < 10 ) {// && map.getZoom() < 13)){
+      return
+    }
+    */
+    if(props.points?.features?.length > MAX_LABLES_TO_RENDER)  {// && map.getZoom() < 13)){
+      return
+    }
+
+    /*
+    let countIndex = 0
+    */
     props.points?.features?.map((point) => {
-      if (props.labelToggle && props.points?.features.length < 5000) {
+
+      /*
+      if(countIndex > MAX_LABLES_TO_RENDER){
+        return
+      }
+      countIndex += 1
+      */
+      
+
+      if (props.labelToggle && props.points?.features.length ) {
         if (!(point?.geometry?.coordinates?.length > 0)) {
           return;
         }
+
+
+
         let labelImage;
         if (props.layerType === 'IAPP') {
           labelImage =
@@ -191,7 +227,7 @@ export const LeafletCanvasLabel = (props) => {
       } catch (e) {}
     };
     //}, [map]);
-  }, [props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
+  }, [zoom,props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
 
   return <></>;
 };

@@ -346,7 +346,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
 
-          if (draftState.IAPPGeoJSON?.features?.length > 0) {
+          if (draftState.IAPPGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
           }
           break;
@@ -365,7 +365,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               drawOrder: 0
             };
           Object.keys(action.payload.updatedSet).map((key) => {
-            if (['color', 'mapToggle', 'drawOrder'].includes(key)) {
+            if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
               draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
             }
           });
