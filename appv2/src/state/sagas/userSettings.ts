@@ -177,7 +177,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       drawOrder: 2
     },
     ['3']: {
-      recordSetType: 'POI',
+      recordSetType: 'IAPP',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 3
