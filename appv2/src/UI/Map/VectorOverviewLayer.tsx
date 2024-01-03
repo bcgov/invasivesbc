@@ -11,8 +11,11 @@ export const VectorOverviewLayer = (props) => {
   const container = context.layerContainer || context.map;
   const CONFIG = useSelector(selectConfiguration);
 
+  const isAuthenticated = useSelector((state: any) => state.Auth.authenticated)
+
 
   useEffect(() => {
+      if(!isAuthenticated) return;
       let PAINT_RULES = [
         {
           dataLayer: 'iapp',
@@ -81,7 +84,7 @@ export const VectorOverviewLayer = (props) => {
         container.removeLayer(layer);
       };
     },
-    []
+    [JSON.stringify(isAuthenticated)]
   );
 
   return null;
