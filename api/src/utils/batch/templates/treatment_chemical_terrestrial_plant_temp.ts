@@ -9,6 +9,7 @@ import {
   PmpValidator,
   ProjectInformation,
   WindDirectionValidator,
+  ApplicationMethodType,
   ApplicationMethodValidator,
   GranularHerbicideRate
 } from '../shared-columns';
@@ -73,6 +74,7 @@ TreatmentChemicalTerrestrialPlantTemp.rowValidators = [
   ...ChemTreatmentValidators,
   PmpValidator,
   WindDirectionValidator,
+  ApplicationMethodType,
   ApplicationMethodValidator,
   GranularHerbicideRate
 ];

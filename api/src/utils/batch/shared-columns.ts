@@ -767,6 +767,43 @@ export const GranularHerbicideRate = (row): RowValidationResult => {
   };
 };
 
+export const ApplicationMethodType = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Chemical Treatment (No Tank Mix) - Application Method', 'Chemical Treatment - Calculation Type'];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  const applicationMethod = rowData[`Chemical Treatment (No Tank Mix) - Application Method`]?.parsedValue;
+  const applicationMethodFriendly = rowData[`Chemical Treatment (No Tank Mix) - Application Method`]?.friendlyValue;
+  const calculationType = rowData[`Chemical Treatment - Calculation Type`]?.parsedValue;
+  const herbicideType = rowData[`Herbicide - 1 - Type`]?.parsedValue;
+  const directMethods = ['BBA', 'CIN', 'CSP', 'SIN', 'WCK'];
+
+  if (directMethods.includes(applicationMethod) && calculationType === 'PAR') {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: `Calculation Type must be Dilution when Application Method is ${applicationMethodFriendly}.`
+    });
+  }
+
+  if (directMethods.includes(applicationMethod) && herbicideType === 'G') {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: `Herbicide Type must be Liquid when Application Method is ${applicationMethodFriendly}.`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const ChemicalPlantTreatmentInformation = [
   new TemplateColumnBuilder(
     'Chemical Treatment - Service License',
