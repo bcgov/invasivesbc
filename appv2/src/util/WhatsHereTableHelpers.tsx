@@ -1,8 +1,16 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Table, TableBody, TableCell, TableRow, Theme } from "@mui/material";
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Box, Button, Table, TableBody, TableCell, TableRow, Theme } from '@mui/material';
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
-import { MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY, MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP, USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI, WHATS_HERE_SORT_FILTER_UPDATE } from "state/actions";
+import {
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
+  MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+  WHATS_HERE_PAGE_ACTIVITY,
+  WHATS_HERE_PAGE_POI,
+  WHATS_HERE_SORT_FILTER_UPDATE
+} from 'state/actions';
 
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -10,18 +18,14 @@ import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 function WhatsHerePagination(props) {
   const dispatch = useDispatch();
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
 
   let pageNumber = 0;
   let pageLimit = 5;
   let setLength = 1;
   let actionType = '';
   if (whatsHere) {
-    if (
-      props.type === 'activity' &&
-      whatsHere?.activityRows &&
-      whatsHere?.activityRows.length > 0
-    ) {
+    if (props.type === 'activity' && whatsHere?.activityRows && whatsHere?.activityRows.length > 0) {
       setLength = whatsHere?.ActivityIDs.length;
       actionType = WHATS_HERE_PAGE_ACTIVITY;
       pageNumber = whatsHere?.ActivityPage;
@@ -114,41 +118,35 @@ function WhatsHerePagination(props) {
   );
 }
 
-
 export const RenderTablePosition = ({ rows }) => {
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   return (
     <>
-      {whatsHere?.section === "position" ? 
-      <Table>
-        <TableBody>
-          {
-            rows &&
-            rows?.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align='right'>
-                  {row.value}
-                </TableCell>
-              </TableRow>
-            ))
-          }
-        </TableBody>
-      </Table>
-      :
+      {whatsHere?.section === 'position' ? (
+        <Table>
+          <TableBody>
+            {rows &&
+              rows?.map((row) => (
+                <TableRow key={row.name}>
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="right">{row.value}</TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      ) : (
         <></>
-      }
+      )}
     </>
   );
 };
 
-
 export const RenderTableActivity = (props: any) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
@@ -159,7 +157,7 @@ export const RenderTableActivity = (props: any) => {
         short_id: params.value
       }
     });
-  }
+  };
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
     return <Box>{value} m&#178;</Box>;
@@ -170,7 +168,7 @@ export const RenderTableActivity = (props: any) => {
       field: 'id',
       headerName: 'Activity ID',
       hide: true,
-      sortable: false,
+      sortable: false
     },
     {
       field: 'short_id',
@@ -181,7 +179,7 @@ export const RenderTableActivity = (props: any) => {
         return (
           <div
             onMouseEnter={() => {
-              dispatchUpdatedID(params)
+              dispatchUpdatedID(params);
             }}>
             {params.value}
           </div>
@@ -204,14 +202,14 @@ export const RenderTableActivity = (props: any) => {
     {
       field: 'created',
       headerName: 'Created',
-      width: 200,
-      sortable: false,
+      width: 250,
+      sortable: false
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
       width: 200,
-      sortable: false,
+      sortable: false
     },
     {
       field: 'species_code',
@@ -245,11 +243,11 @@ export const RenderTableActivity = (props: any) => {
       }
     });
     // activityPage(params);
-  }
+  };
 
   return (
     <>
-      {whatsHere?.section === "invasivesbc" ? 
+      {whatsHere?.section === 'invasivesbc' ? (
         <div style={{ height: '100%', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
@@ -258,10 +256,9 @@ export const RenderTableActivity = (props: any) => {
             hideFooter
             disableColumnMenu
             disableColumnFilter
-            
-            onColumnHeaderClick={((c) => {
-              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'Activity', field: c.field}})
-            })}
+            onColumnHeaderClick={(c) => {
+              dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'Activity', field: c.field } });
+            }}
             getRowHeight={() => 'auto'}
             headerHeight={30}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
@@ -279,106 +276,104 @@ export const RenderTableActivity = (props: any) => {
           />
           <WhatsHerePagination type="activity"></WhatsHerePagination>
         </div>
-      :
-      <></>
-    }
+      ) : (
+        <></>
+      )}
     </>
   );
 };
 
-
 export const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere)
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
     dispatch({
       type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
       payload: {
-        id: params.value,
+        id: params.value
       }
     });
-  }
+  };
 
   // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
-    let columns = [
-      {
-        field: 'id',
-        headerName: 'IAPP ID',
-        hide: true,
-        sortable: false,
-        
-      },
-      {
-        field: 'site_id',
-        headerName: 'IAPP ID',
-        sortable: false,
-        
-        width: 70,
-        renderCell: (params) => {
-          return (
-            <div
-              onMouseEnter={() => {
-                dispatchUpdatedID(params)
-              }}>
-              {params.value}
-            </div>
-          );
-        }
-      },
-      {
-        field: 'reported_area',
-        headerName: 'Reported Area',
-        sortable: false,
-        minWidth: 115
-      },
-      {
-        field: 'earliest_survey',
-        headerName: 'Earliest Survey',
-        sortable: false,
-        minWidth: 115
-      },
-      {
-        field: 'jurisdiction_code',
-        headerName: 'Jurisdictions',
-        sortable: false,
-        width: 200
-      },
-      {
-        field: 'species_code',
-        headerName: 'Species',
-        sortable: false,
-        width: 120
-      },
-      {
-        field: 'geometry',
-        headerName: 'Geometry',
-        sortable: false,
-        hide: true
-      }
-    ];
+  let columns = [
+    {
+      field: 'id',
+      headerName: 'IAPP ID',
+      hide: true,
+      sortable: false
+    },
+    {
+      field: 'site_id',
+      headerName: 'Site ID',
+      sortable: false,
 
-    const highlightPOI = async (params) => {
-      dispatch({
-        type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-        payload: {
-          description: 'IAPP-' + params.id,
-          id: params.id
-        }
-      });
-      dispatch({
-        type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-        payload: {
-          id: params?.id
-        }
-      });
+      width: 70,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
+    },
+    {
+      field: 'reported_area',
+      headerName: 'Reported Area',
+      sortable: false,
+      minWidth: 115
+    },
+    {
+      field: 'earliest_survey',
+      headerName: 'Earliest Survey',
+      sortable: false,
+      minWidth: 115
+    },
+    {
+      field: 'jurisdiction_code',
+      headerName: 'Jurisdictions',
+      sortable: false,
+      width: 500
+    },
+    {
+      field: 'species_code',
+      headerName: 'Species',
+      sortable: false,
+      width: 200
+    },
+    {
+      field: 'geometry',
+      headerName: 'Geometry',
+      sortable: false,
+      hide: true
     }
+  ];
+
+  const highlightPOI = async (params) => {
+    dispatch({
+      type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+      payload: {
+        description: 'IAPP-' + params.id,
+        id: params.id
+      }
+    });
+    dispatch({
+      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
+      payload: {
+        id: params?.id
+      }
+    });
+  };
 
   return (
     <>
-      {whatsHere?.section === "iapp" ? 
+      {whatsHere?.section === 'iapp' ? (
         <div style={{ height: '100%', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
           <DataGrid
             columns={columns}
@@ -388,11 +383,10 @@ export const RenderTablePOI = (props: any) => {
             disableColumnMenu
             getRowHeight={() => 'auto'}
             headerHeight={30}
-            onColumnHeaderClick={((c) => {
-              dispatch({type: WHATS_HERE_SORT_FILTER_UPDATE, payload: {recordType: 'IAPP', field: c.field}})
-            })}
+            onColumnHeaderClick={(c) => {
+              dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'IAPP', field: c.field } });
+            }}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
-
               if (authenticated && roles.length > 0) {
                 highlightPOI(params);
               } else {
@@ -407,9 +401,9 @@ export const RenderTablePOI = (props: any) => {
           />
           <WhatsHerePagination type="iapp"></WhatsHerePagination>
         </div>
-      :
+      ) : (
         <></>
-      }
+      )}
     </>
   );
 };

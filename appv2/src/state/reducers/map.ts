@@ -259,7 +259,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
+          if (!draftState.layers[index])
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loaded = true;
@@ -487,14 +488,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.ActivityIDs = [...action.payload.IDs];
           draftState.whatsHere.activityRows = [];
           draftState.whatsHere.ActivityPage = 0;
-          draftState.whatsHere.ActivityLimit = 5;
+          draftState.whatsHere.ActivityLimit = 15;
           break;
         }
         case MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED: {
           draftState.whatsHere.IAPPIDs = [...action.payload.IDs];
           draftState.whatsHere.iappRows = [];
           draftState.whatsHere.IAPPPage = 0;
-          draftState.whatsHere.IAPPLimit = 5;
+          draftState.whatsHere.IAPPLimit = 15;
           break;
         }
         case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {
@@ -674,7 +675,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
   )
     return;
-    console.log('%cGeoJSONFilterSetForLayer', 'color: yellow')
+  console.log('%cGeoJSONFilterSetForLayer', 'color: yellow');
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 
