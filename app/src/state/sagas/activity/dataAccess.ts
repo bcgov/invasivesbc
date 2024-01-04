@@ -7,7 +7,8 @@ import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
-  ActivityType, MAX_AREA,
+  ActivityType,
+  MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
 import {
