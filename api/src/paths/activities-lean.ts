@@ -16,7 +16,6 @@ const defaultLog = getLogger('activity');
 
 export const POST: Operation = [getActivitiesBySearchFilterCriteria()];
 
-export const DELETE: Operation = [deleteActivitiesByIds()];
 
 POST.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
@@ -148,63 +147,6 @@ POST.apiDoc = {
   }
 };
 
-DELETE.apiDoc = {
-  description: 'Soft-deletes all activities based on a list of ids.',
-  tags: ['activity'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  parameters: [
-    {
-      in: 'query',
-      name: 'id',
-      required: true
-    }
-  ],
-  requestBody: {
-    description: 'Activities search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {}
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Count of modified activities',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                count: {
-                  type: 'number'
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
 
 /**
  * Fetches all activity records based on request search filter criteria.

@@ -7,6 +7,7 @@ import {
   ACTIVITY_CREATE_REQUEST,
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DEBUG,
+  ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_DELETE_PHOTO_REQUEST,
   ACTIVITY_DELETE_REQUEST,
@@ -37,6 +38,7 @@ import {
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_AUTOFILL_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -102,6 +104,16 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
       activeActivity: null
     }
   });
+yield put({
+  type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+  payload: {
+    notification: {
+      visible: true,
+      message: 'Activity deleted successfully',
+      severity: 'success'
+    }
+  }
+});
   yield put({ type: MAP_INIT_REQUEST });
 }
 
@@ -200,7 +212,23 @@ function* handle_URL_CHANGE(action) {
     }
     */
   }
+
+
 }
+
+function* handle_ACTIVITY_DELETE_FAILURE(action) {
+  yield put({
+    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+    payload: {
+      notification: {
+        visible: true,
+        message: 'Activity delete failed',
+        severity: 'error'
+      }
+    }
+  });
+}
+
 
 function* activityPageSaga() {
   yield all([
@@ -242,6 +270,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_ADD_PHOTO_REQUEST, handle_ACTIVITY_ADD_PHOTO_REQUEST),
     takeEvery(ACTIVITY_EDIT_PHOTO_REQUEST, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
     takeEvery(ACTIVITY_DELETE_SUCCESS, handle_ACTIVITY_DELETE_SUCESS),
+    takeEvery(ACTIVITY_DELETE_FAILURE, handle_ACTIVITY_DELETE_FAILURE),
     takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
       ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,

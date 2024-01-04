@@ -826,7 +826,7 @@ export const getOverlappingBCGridCellsSQL = (
  * @param {string} activityIds
  * @return {SQLStatement} sql query object
  */
-export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
+export const deleteActivitiesSQL = (activityIds: Array<string>, req?: any): SQLStatement => {
   if (!activityIds.length) {
     return null;
   }
@@ -834,7 +834,9 @@ export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement =>
   // update existing activity record
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
-    SET deleted_timestamp = ${new Date().toISOString()}
+    SET deleted_timestamp = ${new Date().toISOString()},
+    updated_by_with_guid = ${req?.authContext?.preferredUsername},
+    updated_by = ${req?.authContext?.friendlyUsername}
     WHERE activity_id IN (${activityIds[0]}`;
 
   for (let i = 1; i < activityIds.length; i++) {

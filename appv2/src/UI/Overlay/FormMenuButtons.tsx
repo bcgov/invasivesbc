@@ -6,10 +6,8 @@ import { useSelector } from "util/use_selector";
 
 export const FormMenuButtons = (props) => {
   const dispatch = useDispatch();
-  const activityStatus = useSelector((state: any) => state.ActivityPage?.activity?.form_status);
   const activityCreatedBy = useSelector((state: any) => state.ActivityPage?.activity?.created_by);
   const activityErrors = useSelector((state: any) => state.ActivityPage?.activityErrors);
-  const savedHash = useSelector((state: any) => state?.ActivityPage?.saved_activity_hash);
   const username = useSelector((state: any) => state.Auth?.username);
   const accessRoles = useSelector((state: any) => state.Auth?.accessRoles);
 
@@ -48,8 +46,7 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
-        //disabled={activityStatus && activityErrors.length === 0 && (activityStatus === "Submitted" || !savedHash) ? true : false}
-        disabled={activityStatus && (activityStatus === "Submitted" || !savedHash || activityErrors?.length > 0) ? true : false}
+        disabled={(saveDisabled || activityErrors?.length > 0) ? true : false}
         variant="contained">
         SAVE & PUBLISH TO SUBMITTED
       </Button>
@@ -63,6 +60,7 @@ export const FormMenuButtons = (props) => {
         COPY FORM
       </Button>
       <Button
+        disabled={saveDisabled}
         onClick={() => {
           dispatch({ type: ACTIVITY_PASTE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
@@ -71,6 +69,7 @@ export const FormMenuButtons = (props) => {
         PASTE FORM
       </Button>
       <Button
+        disabled={saveDisabled}
         onClick={() => {
           dispatch({ type: ACTIVITY_DELETE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });

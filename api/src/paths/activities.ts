@@ -11,11 +11,12 @@ import { getLogger } from '../utils/logger';
 import { InvasivesRequest } from '../utils/auth-utils';
 import { createHash } from 'crypto';
 import cacheService from '../utils/cache/cache-service';
-import { versionedKey } from "../utils/cache/cache-utils";
+import { versionedKey } from '../utils/cache/cache-utils';
 import { streamActivitiesResult, streamIAPPResult } from '../utils/iapp-json-utils';
+import { is } from 'date-fns/locale';
 
 const defaultLog = getLogger('activity');
-const CACHENAME = "Activities - Fat";
+const CACHENAME = 'Activities - Fat';
 
 export const GET: Operation = [getActivitiesBySearchFilterCriteria()];
 
@@ -26,10 +27,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -80,10 +81,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -148,14 +149,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
     //defaultLog.debug({ label: 'activity', message: 'checkAuthContextInActivities', body: req.authContext });
 
-
-
-
-
     const roleName = (req as any).authContext.roles[0]?.role_name;
     const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
     // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-    const isAuth = req.authContext?.user
+    const isAuth = req.authContext?.user;
     const user_role = (req as any).authContext?.roles?.[0]?.role_id;
     if (user_role) {
       const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
@@ -163,7 +160,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     if (!isAuth || !roleName || roleName.includes('animal')) {
-    //if (!isAuth) {
+      //if (!isAuth) {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = true;
     } else {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
@@ -188,7 +185,6 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const cache = cacheService.getCache(CACHENAME);
 
     if (!sanitizedSearchCriteria.isCSV) {
-
       // check the cache tag to see if, perhaps, the user already has the latest
       try {
         const cacheQueryResult = await connection.query(
@@ -227,32 +223,29 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
           return res.status(200).set(responseCacheHeaders).json(cachedResult);
         }
       } catch (e) {
-        const message = (e === undefined) ? 'undefined' : e.message;
-        defaultLog.warn(
-          {
-            message: 'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
-            error: message
-          }
-        );
+        const message = e === undefined ? 'undefined' : e.message;
+        defaultLog.warn({
+          message:
+            'caught an error while checking cache. this is odd but continuing with request as though no cache present.',
+          error: message
+        });
       }
     }
 
     try {
       if (sanitizedSearchCriteria.isCSV) {
-        res.status(200)
+        res.status(200);
         await streamActivitiesResult(sanitizedSearchCriteria, res);
       } else {
         const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
 
         if (!sqlStatement) {
-          return res
-            .status(500)
-            .json({
-              message: 'Unable to generate SQL statement',
-              request: criteria,
-              namespace: 'activities',
-              code: 500
-            });
+          return res.status(500).json({
+            message: 'Unable to generate SQL statement',
+            request: criteria,
+            namespace: 'activities',
+            code: 500
+          });
         }
 
         // needs to be mutable
@@ -315,8 +308,14 @@ function deleteActivitiesByIds(): RequestHandler {
       keycloakToken: req.keycloakToken
     });
 
-    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18);
+    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18) !== undefined;
     const preferred_username = req.authContext.preferredUsername;
+    defaultLog.debug({ label: 'activity', message: 'roles for delete', body: (req as any).authContext.roles });
+    defaultLog.debug({
+      label: 'activity',
+      message: 'is admin delete',
+      body: { typeof: typeof isAdmin, value: JSON.stringify(isAdmin) }
+    });
     const ids = Object.values(req.query.id) as string[];
     sanitizedSearchCriteria.activity_ids = ids;
 
@@ -327,8 +326,9 @@ function deleteActivitiesByIds(): RequestHandler {
         .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
     }
 
-    if (isAdmin === false) {
+    if (!isAdmin) {
       const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
+      defaultLog.debug({ label: 'activity', message: 'non admin delete', body: sqlStatement });
 
       if (!sqlStatement) {
         return res
@@ -338,16 +338,27 @@ function deleteActivitiesByIds(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
+      let isAuthorized = true;
       if (response.rows.length > 0) {
         response.rows.forEach((row, i) => {
-          if (row.activity_payload.created_by_with_guid !== preferred_username) {
-            return res.status(401).json({
-              message: 'Invalid request, user is not authorized to delete this record', // better message
-              request: req.body,
-              namespace: 'activities',
-              code: 401
-            });
+          if (row.created_by_with_guid !== preferred_username) {
+            isAuthorized = false;
           }
+        });
+        if (!isAuthorized) {
+          return res.status(401).json({
+            message: 'Invalid request, user is not authorized to delete this record', // better message
+            request: req.body,
+            namespace: 'activities',
+            code: 401
+          });
+        }
+      } else {
+        return res.status(401).json({
+          message: 'Invalid request nothing to delete',
+          request: req.body,
+          namespace: 'activities',
+          code: 401
         });
       }
     }
@@ -359,7 +370,7 @@ function deleteActivitiesByIds(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = deleteActivitiesSQL(ids);
+      const sqlStatement: SQLStatement = deleteActivitiesSQL(ids, req);
 
       if (!sqlStatement) {
         return res
