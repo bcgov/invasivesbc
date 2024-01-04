@@ -97,9 +97,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
-          draftState.activity.form_data = action.payload.activity.form_data;
-          draftState.activity.species_positive = action.payload.activity.species_positive;
-          draftState.activity.species_negative = action.payload.activity.species_negative;
+          draftState.activity = action.payload.activity;
           break;
         }
         case ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS: {
