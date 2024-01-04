@@ -103,15 +103,7 @@ export const ActivitiesLayerV2 = (props: any) => {
     '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
     'color: yellow'
   );
-  const activitiesGeoJSON = useSelector(
-    (state: any) =>
-      state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
-        ? state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.geoJSON
-        : { type: 'FeatureCollection', features: [] },
-    (prev, next) => {
-      return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
-    }
-  );
+
 
   const layerStateColor = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState?.color,
@@ -180,9 +172,8 @@ export const ActivitiesLayerV2 = (props: any) => {
   return (
     <DonutMarkerLayerMemo
       layerKey={props?.layerKey}
-      geoJSON={activitiesGeoJSON}
+      geoJSON={props.geoJSON}
       palette={palette}
-      //enabled={layerState?.mapToggle}
     />
   );
 };
