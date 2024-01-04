@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es2020.string", "dom", "es2015"],
+    "lib": [
+      "es2020.string",
+      "dom",
+      "es2015",
+      "es2018.asynciterable"
+    ],
     "rootDir": "../",
     "baseUrl": "src",
     "outDir": "dist",
