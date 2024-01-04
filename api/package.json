@@ -11,6 +11,7 @@
   "scripts": {
     "start": "ts-node src/server",
     "export-map": "ts-node src/map-exporter",
+    "export-geojson": "ts-node src/geojson-exporter",
     "clean": "gulp clean",
     "build": "gulp build",
     "start:reload": "./node_modules/.bin/nodemon src/server.ts --exec ts-node",
