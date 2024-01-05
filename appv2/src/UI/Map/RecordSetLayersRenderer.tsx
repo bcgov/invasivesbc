@@ -8,16 +8,15 @@ import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
 //import 'leaflet-canvas-marker';
 import { pointsWithinPolygon } from '@turf/turf';
 import 'leaflet-markers-canvas';
-import { useDispatch } from 'react-redux';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
 import { GeneralDialog } from './GeneralDialog';
-import _, { map } from 'lodash';
+import _, { debounce, map } from 'lodash';
 import { shallowEqual } from 'react-redux';
 import { useState, useEffect } from 'react';
 
 import * as turf from '@turf/turf';
 
-import { LeafletCanvasLabel, LeafletCanvasMarker } from './LeafletCanvasLayer';
+import { LeafletCanvasLabel, LeafletCanvasMarker, MAX_LABLES_TO_RENDER } from './LeafletCanvasLayer';
 import { useMap } from 'react-leaflet';
 
 export const RecordSetLayersRenderer = (props: any) => {
@@ -32,30 +31,27 @@ export const RecordSetLayersRenderer = (props: any) => {
     }
   );
 
-  //const tooManyLabelsDialog = useSelector((state: any) => state.Map?.tooManyLabelsDialog);
 
   return (
     <>
       {storeLayers.map((layer) => (
-        <LayerWrapper key={layer.recordSetID} recordSetID={layer.recordSetID}/>
+        <LayerWrapper key={layer.recordSetID} recordSetID={layer.recordSetID} />
       ))}
       <></>
-      {/*<GeneralDialog
-        dialogOpen={tooManyLabelsDialog?.dialogOpen}
-        dialogTitle={tooManyLabelsDialog?.dialogTitle}
-        dialogActions={tooManyLabelsDialog?.dialogActions}
-        dialogContentText={tooManyLabelsDialog?.dialogContentText}></GeneralDialog>
-    */}
     </>
   );
 };
 
-const LayerWrapper = (props) => {//memo(({ recordSetID }: any) => {
+// Rerender for new keys, and if geojson changes
+const LayerWrapper = (props) => {
   const ref = useRef(0);
   ref.current += 1;
   console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
-  const type = useSelector( (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type, shallowEqual)
+  const type = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type,
+    shallowEqual
+  );
 
   const geoJSON = useSelector(
     (state: any) =>
@@ -66,21 +62,22 @@ const LayerWrapper = (props) => {//memo(({ recordSetID }: any) => {
       return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
     }
   );
+  console.log(`%c*${props.recordSetID} **geojson length: ${geoJSON?.features?.length}`, 'color: red');
 
-//  const type: any = 'Activity';
+  // These rerender internally if the layer state changes, without regrabbing the geojson
   switch (type) {
     case 'Activity':
       return (
         <>
           <ActivitiesLayerV2 geoJSON={geoJSON} layerKey={props.recordSetID} />
-          {/*<ActivityCanvasLabelMemo layerKey={recordSetID} />*/}
+          <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
         </>
       );
     case 'IAPP':
       return (
         <>
-          <IAPPCanvasLayerMemo geoJSON={geoJSON} layerKey={props.recordSetID} />
-          <IAPPCanvasLabelMemo geoJSON={geoJSON} layerKey={props.recordSetID} />
+          <IAPPCanvasLayer geoJSON={geoJSON} layerKey={props.recordSetID} />
+          <IAPPCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
         </>
       );
   }
@@ -88,185 +85,151 @@ const LayerWrapper = (props) => {//memo(({ recordSetID }: any) => {
   return <div key={'layerWrapper' + props.recordSetID}></div>;
 };
 
-const IAPPCanvasLayerMemo = (props) => {
-
-
-    const layer  = useSelector((state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey));
-  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
-
-  const filteredFeatures = () => {
-    let returnVal = [];
-    const points = { type: 'FeatureCollection', features: returnVal };
-    return props.geoJSON//pointsWithinPolygon(points as any, IAPPBoundsPolygon);
-  };
-
-//  return useMemo(() => {
-    if (layer?.layerState) {
-      return (
-        <LeafletCanvasMarker
-          key={'POICanvasLayermemo' + props.layerKey}
-          labelToggle={layer?.layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layer?.layerState.mapToggle}
-          colour={layer?.layerState.color}
-          zIndex={100000 + layer?.layerState.drawOrder}
-        />
-      );
-    } else return <></>;
- /* }, [
-    JSON.stringify(layer?.layerState),
-    JSON.stringify(layer?.IDList, layer?.layerState?.mapToggle),
-    JSON.stringify(IAPPBoundsPolygon)
-  ]);
-  */
-};
-
-const IAPPCanvasLabelMemo = (props) => {
-  const dispatch = useDispatch();
-  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
-    const layer  = useSelector((state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey));
-
-    const map = useMap()
-
-
-  const layerStateColor = useSelector(
-    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.color,
+const IAPPCanvasLayer = (props) => {
+  const layerState = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey).layerState,
     shallowEqual
   );
-  const IAPPBoundsPolygon = useSelector((state: any) => state.Map?.IAPPBoundsPolygon);
 
-  const [pointsInBounds,  setPointsInBounds] = useState(null)
-
-  if(!props.geoJSON) return <></>
-
-  console.log('%cnumber of features to label ' + props.geoJSON?.features?.length, 'color: green')
-  const filteredFeatures = () => {
-    let returnVal = [];
-    const points = { type: 'FeatureCollection', features: returnVal };
-    return props.geoJSON//pointsWithinPolygon(points as any, IAPPBoundsPolygon);
-  }
-
-  const [bounds, setBounds] = useState(null)
-
-
-  map.on('zoomend', function () {
-    const bboxString = map.getBounds().toBBoxString()
-    const bbox = JSON.parse('[' + bboxString + ']')
-    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox))
-    setPointsInBounds(newPointsInBounds)
-  })
-  map.on('dragend', function () {
-    const bboxString = map.getBounds().toBBoxString()
-    const bbox = JSON.parse('[' + bboxString + ']')
-    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox))
-    setPointsInBounds(newPointsInBounds)
-  })
-
-    //const pointsToLabel = pointsWithinPolygon(props.geoJSON, labelBoundsPolygon);
-    // only allow max labels
-    /*if (pointsToLabel?.features?.length > 5000) {
-    if (pointsToLabel?.features?.length > 5000) {
-      dispatch({
-        type: SET_TOO_MANY_LABELS_DIALOG,
-        payload: {
-          dialog: {
-            dialogOpen: true,
-            dialogTitle: 'Too many labels',
-            dialogContentText:
-              'There are too many labels returned.\n Please zoom in more or filter down the record set more.',
-            dialogActions: [
-              {
-                actionName: 'OK',
-                actionOnClick: async () => {
-                  dispatch({
-                    type: SET_TOO_MANY_LABELS_DIALOG,
-                    payload: {
-                      dialog: {
-                        dialogOpen: false,
-                        dialogTitle: '',
-                        dialogContentText: '',
-                        dialogActions: []
-                      }
-                    }
-                  });
-                },
-                autoFocus: true
-              }
-            ]
-          }
-        }
-      });
-    }*/
-
-
-//  return useMemo(() => {
-    if (layer?.layerState) {
-      return (
-        <LeafletCanvasLabel
-          layerType={'IAPP'}
-          key={'POICanvasLayermemo' + props.layerKey}
-         // labelToggle={layer.layerState.labelToggle}
-          labelToggle={layer?.layerState?.labelToggle}
-          points={pointsInBounds}
-          enabled={layer.layerState.mapToggle}
-          colour={layer.layerState.color}
-          zIndex={10000 + layer.layerState.drawOrder}
-        />
-      );
-    } else return <></>;
- /* }, [
-    JSON.stringify(layer?.layerState),
-    JSON.stringify(layer?.IDList),
-    JSON.stringify(labelBoundsPolygon),
-    props.geoJSON
-  ]);
+  if (props.geoJSON?.features?.length > 0 && layerState.mapToggle) {
+    return (
+      <LeafletCanvasMarker
+        key={'POICanvasLayermemo' + props.layerKey}
+        points={props.geoJSON}
+        enabled={layerState.mapToggle}
+        colour={layerState.color}
+        zIndex={100000 + layerState.drawOrder}
+      />
+    );
+  } else return <></>;
 };
-*/
-}
 
-const ActivityCanvasLabelMemo = (props) => {
+const IAPPCanvasLabel = (props) => {
+  const map = useMap();
+  const [pointsInBounds, setPointsInBounds] = useState(null);
+
+  const layerState = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey).layerState,
+    shallowEqual
+  );
+
+  if (!props.geoJSON) return <></>;
+
+  // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
+  const getPointsInPoly = () => {
+    //useCallback(() => {
+    const bboxString = map.getBounds().toBBoxString();
+    const bbox = JSON.parse('[' + bboxString + ']');
+    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
+    if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
+      return { ...newPointsInBounds };
+    } else {
+      const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
+      const collection = { type: 'FeatureCollection', features: [...sliced] };
+      return { ...collection };
+    }
+  };
+
+  const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
+
+  useEffect(() => {
+    const newPointsInBounds = debouncedGetPointsInPoly();
+    setPointsInBounds(newPointsInBounds);
+
+    map.on('zoomend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+    map.on('dragend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+  }, [props.geoJSON]);
+
+  if (!(pointsInBounds?.features?.length > 0)) return <></>;
+  return (
+    <LeafletCanvasLabel
+      layerType={'IAPP'}
+      key={'POICanvasLayermemo' + props.layerKey}
+      labelToggle={layerState.labelToggle}
+      points={pointsInBounds}
+      enabled={layerState.mapToggle}
+      colour={layerState.color}
+      zIndex={10000 + layerState.drawOrder}
+    />
+  );
+};
+
+const ActivityCanvasLabel = (props) => {
+  const map = useMap();
+  const [pointsInBounds, setPointsInBounds] = useState(null);
   const layerState = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
   );
-  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
-  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
 
-  const filteredFeatures = () => {
-    let returnVal;
-    if (activitiesGeoJSON && labelBoundsPolygon) {
-      returnVal = activitiesGeoJSON?.features.map((row) => {
-        let computedCenter = null;
-        try {
-          // center() function can throw an error
-          if (row?.geometry != null) {
-            computedCenter = center(row.geometry).geometry;
-          }
-        } catch (e) {
-          console.dir(row.geometry);
-          console.error(e);
+
+  const labelPoints = useCallback(() => {
+    const points = props.geoJSON?.features.map((row) => {
+
+      let computedCenter = null;
+      try {
+        // center() function can throw an error
+        if (row?.geometry != null) {
+          computedCenter = center(row.geometry).geometry;
         }
-        return { ...row, geometry: computedCenter };
-      });
+      } catch (e) {
+        console.dir(row.geometry);
+        console.error(e);
+      }
+      return { ...row, geometry: computedCenter };
+    });
+
+
+    return { type: 'FeatureCollection', features: [...points] } as any;
+
+  },[props.geoJSON])
+
+  // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
+  const getPointsInPoly = () => {
+    //useCallback(() => {
+    const bboxString = map.getBounds().toBBoxString();
+    const bbox = JSON.parse('[' + bboxString + ']');
+    let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+    if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
+      return { ...newPointsInBounds };
     } else {
-      returnVal = [];
+      const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
+      const collection = { type: 'FeatureCollection', features: [...sliced] };
+      return { ...collection };
     }
-    const points = { type: 'FeatureCollection', features: returnVal };
-    return pointsWithinPolygon(points as any, labelBoundsPolygon);
   };
 
-  return useMemo(() => {
-    if (layerState) {
-      return (
-        <LeafletCanvasLabel
-          layerType={'ACTIVITY'}
-          key={'activityCanvasLayermemo' + props.layerKey}
-          labelToggle={layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layerState.mapToggle}
-          colour={layerState.color}
-          zIndex={10000 + layerState.drawOrder}
-        />
-      );
-    } else return <div key={Math.random()}></div>;
-  }, [JSON.stringify(layerState), activitiesGeoJSON, JSON.stringify(labelBoundsPolygon)]);
+  const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
+
+  useEffect(() => {
+    const newPointsInBounds = debouncedGetPointsInPoly();
+    setPointsInBounds(newPointsInBounds);
+
+    map.on('zoomend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+    map.on('dragend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+  }, [props.geoJSON]);
+
+  if (!(pointsInBounds?.features?.length > 0)) return <></>;
+  return (
+    <LeafletCanvasLabel
+      layerType={'ACTIVITY'}
+      key={'ActivityCanvasLayerLabel' + props.layerKey}
+      labelToggle={layerState.labelToggle}
+      points={pointsInBounds}
+      enabled={layerState.mapToggle}
+      colour={layerState.color}
+      zIndex={10000 + layerState.drawOrder}
+    />
+  );
 };

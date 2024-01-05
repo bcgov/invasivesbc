@@ -284,8 +284,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             color: 'blue',
             drawOrder: 0,
             mapToggle: false,
-            recordSetName: 'New Recordset - ' + 'type',
-            recordSetType: action.payload.type
+            recordSetName: 'New Recordset - ' + action.payload.recordSetType, 
+            recordSetType: action.payload.recordSetType
           };
           break;
         }

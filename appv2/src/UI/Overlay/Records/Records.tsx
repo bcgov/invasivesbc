@@ -163,6 +163,11 @@ export const Records = (props) => {
                         variant="outlined">
                         {recordSets?.[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
                       </Button>
+
+                      {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
+                      recordSets?.[set]?.recordSetName === 'All IAPP Records' || recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                        <></>
+                      ) : (
                       <div className="records_set_layer_colour">
                         <Button
                           onClick={(e) => onClickCycleColour(set, e)}
@@ -171,6 +176,7 @@ export const Records = (props) => {
                           <ColorLensIcon />
                         </Button>
                       </div>
+                      )}
 
                       {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
                       recordSets?.[set]?.recordSetName === 'All IAPP Records' || recordSets?.[set]?.recordSetName === 'My Drafts' ? (

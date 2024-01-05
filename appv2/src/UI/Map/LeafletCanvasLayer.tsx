@@ -6,7 +6,7 @@ import { useLeafletContext } from '@react-leaflet/core';
 import 'leaflet-markers-canvas';
 
 
-const MAX_LABLES_TO_RENDER = 500
+export const MAX_LABLES_TO_RENDER = 200
 
 export const LeafletCanvasMarker = (props) => {
   const map = useMap();

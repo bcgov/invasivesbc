@@ -384,6 +384,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
             if (action.payload.recordSets[setID].mapToggle)
               draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
+            if (action.payload.recordSets[setID].labelToggle)
+              draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
             if (action.payload.recordSets[setID].drawOrder)
               draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
           });
