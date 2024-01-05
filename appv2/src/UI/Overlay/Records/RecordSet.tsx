@@ -23,7 +23,6 @@ import {
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
   RECORDSET_UPDATE_FILTER,
-  USER_SETTINGS_SET_RECORD_SET_REQUEST
 } from 'state/actions';
 import { OverlayHeader } from '../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';

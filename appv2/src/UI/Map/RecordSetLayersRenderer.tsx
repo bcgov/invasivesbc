@@ -70,14 +70,14 @@ const LayerWrapper = (props) => {
       return (
         <>
           <ActivitiesLayerV2 geoJSON={geoJSON} layerKey={props.recordSetID} />
-          {/*<ActivityCanvasLabelMemo layerKey={recordSetID} />*/}
+          <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
         </>
       );
     case 'IAPP':
       return (
         <>
           <IAPPCanvasLayer geoJSON={geoJSON} layerKey={props.recordSetID} />
-          <IAPPCanvasLabelMemo geoJSON={geoJSON} layerKey={props.recordSetID} />
+          <IAPPCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
         </>
       );
   }
@@ -104,36 +104,38 @@ const IAPPCanvasLayer = (props) => {
   } else return <></>;
 };
 
-const IAPPCanvasLabelMemo = (props) => {
+const IAPPCanvasLabel = (props) => {
+  const map = useMap();
+  const [pointsInBounds, setPointsInBounds] = useState(null);
+
   const layerState = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey).layerState,
     shallowEqual
   );
 
-  const map = useMap();
-  const [pointsInBounds, setPointsInBounds] = useState(null);
-
   if (!props.geoJSON) return <></>;
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
-  const getPointsInPoly = useCallback(() => {
+  const getPointsInPoly = () => {
+    //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
     let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
-    if(newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
-      return newPointsInBounds
-    }
-    else
-    {
+    if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
+      return { ...newPointsInBounds };
+    } else {
       const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
-      const collection = { type: 'FeatureCollection', features: sliced}
-      return collection
+      const collection = { type: 'FeatureCollection', features: [...sliced] };
+      return { ...collection };
     }
-  }, [props.geoJSON, map]);
+  };
 
-  const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true });
+  const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
 
   useEffect(() => {
+    const newPointsInBounds = debouncedGetPointsInPoly();
+    setPointsInBounds(newPointsInBounds);
+
     map.on('zoomend', function () {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
@@ -142,7 +144,7 @@ const IAPPCanvasLabelMemo = (props) => {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
-  }, []);
+  }, [props.geoJSON]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (
@@ -158,49 +160,76 @@ const IAPPCanvasLabelMemo = (props) => {
   );
 };
 
-const ActivityCanvasLabelMemo = (props) => {
+const ActivityCanvasLabel = (props) => {
+  const map = useMap();
+  const [pointsInBounds, setPointsInBounds] = useState(null);
   const layerState = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
   );
-  const labelBoundsPolygon = useSelector((state: any) => state.Map?.labelBoundsPolygon);
-  const activitiesGeoJSON = useSelector((state: any) => state.Map?.activitiesGeoJSON);
 
-  const filteredFeatures = () => {
-    let returnVal;
-    if (activitiesGeoJSON && labelBoundsPolygon) {
-      returnVal = activitiesGeoJSON?.features.map((row) => {
-        let computedCenter = null;
-        try {
-          // center() function can throw an error
-          if (row?.geometry != null) {
-            computedCenter = center(row.geometry).geometry;
-          }
-        } catch (e) {
-          console.dir(row.geometry);
-          console.error(e);
+
+  const labelPoints = useCallback(() => {
+    const points = props.geoJSON?.features.map((row) => {
+
+      let computedCenter = null;
+      try {
+        // center() function can throw an error
+        if (row?.geometry != null) {
+          computedCenter = center(row.geometry).geometry;
         }
-        return { ...row, geometry: computedCenter };
-      });
+      } catch (e) {
+        console.dir(row.geometry);
+        console.error(e);
+      }
+      return { ...row, geometry: computedCenter };
+    });
+
+
+    return { type: 'FeatureCollection', features: [...points] } as any;
+
+  },[props.geoJSON])
+
+  // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
+  const getPointsInPoly = () => {
+    //useCallback(() => {
+    const bboxString = map.getBounds().toBBoxString();
+    const bbox = JSON.parse('[' + bboxString + ']');
+    let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+    if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
+      return { ...newPointsInBounds };
     } else {
-      returnVal = [];
+      const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
+      const collection = { type: 'FeatureCollection', features: [...sliced] };
+      return { ...collection };
     }
-    const points = { type: 'FeatureCollection', features: returnVal };
-    return pointsWithinPolygon(points as any, labelBoundsPolygon);
   };
 
-  return useMemo(() => {
-    if (layerState) {
-      return (
-        <LeafletCanvasLabel
-          layerType={'ACTIVITY'}
-          key={'activityCanvasLayermemo' + props.layerKey}
-          labelToggle={layerState.labelToggle}
-          points={filteredFeatures()}
-          enabled={layerState.mapToggle}
-          colour={layerState.color}
-          zIndex={10000 + layerState.drawOrder}
-        />
-      );
-    } else return <div key={Math.random()}></div>;
-  }, [JSON.stringify(layerState), activitiesGeoJSON, JSON.stringify(labelBoundsPolygon)]);
+  const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
+
+  useEffect(() => {
+    const newPointsInBounds = debouncedGetPointsInPoly();
+    setPointsInBounds(newPointsInBounds);
+
+    map.on('zoomend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+    map.on('dragend', function () {
+      const newPointsInBounds = debouncedGetPointsInPoly();
+      setPointsInBounds(newPointsInBounds);
+    });
+  }, [props.geoJSON]);
+
+  if (!(pointsInBounds?.features?.length > 0)) return <></>;
+  return (
+    <LeafletCanvasLabel
+      layerType={'ACTIVITY'}
+      key={'ActivityCanvasLayerLabel' + props.layerKey}
+      labelToggle={layerState.labelToggle}
+      points={pointsInBounds}
+      enabled={layerState.mapToggle}
+      colour={layerState.color}
+      zIndex={10000 + layerState.drawOrder}
+    />
+  );
 };

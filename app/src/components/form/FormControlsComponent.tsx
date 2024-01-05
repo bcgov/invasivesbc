@@ -96,7 +96,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
+          <Button disabled={!checkIfNotAuthorized()} variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
             Yes
           </Button>
         </DialogActions>
