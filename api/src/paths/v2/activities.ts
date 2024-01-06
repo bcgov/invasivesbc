@@ -354,7 +354,7 @@ CurrentNegativeObservations AS (
          
           ),
          serverFilterGeometries AS (
-         select a.id, title, st_subdivide(geog::geometry) as geo
+         select a.id, title, st_subdivide(geog::geometry)::geography as geo
          from invasivesbc.admin_defined_shapes a
          inner join serverFilterGeometryIDs b on a.id = b.id
          ),
@@ -362,8 +362,9 @@ CurrentNegativeObservations AS (
           serverFilterGeometriesIntersecting as (
          
          select a.activity_incoming_data_id, b.id
-         from not_deleted_activities a
-         inner join serverFilterGeometries b on st_intersects((a.geog::geometry), b.geo)
+         from activity_incoming_data a
+         inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
+         where iscurrent=true
          group by a.activity_incoming_data_id, b.id
          
          
@@ -371,8 +372,9 @@ CurrentNegativeObservations AS (
           serverFilterGeometriesIntersectingAll as (
          
          select a.activity_incoming_data_id, count(*)
-         from not_deleted_activities a
+         from activity_incoming_data a
          inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+         where iscurrent=true
          group by a.activity_incoming_data_id 
          
          having count(*) = (select count(*) from serverFilterGeometryIDs)
@@ -391,15 +393,17 @@ CurrentNegativeObservations AS (
           clientFilterGeometriesIntersecting as (
          
          select a.activity_incoming_data_id 
-         from not_deleted_activities a
-         inner join clientFilterGeometries on st_intersects((a.geog::geometry), geojson)
+         from activity_incoming_data a
+         inner join clientFilterGeometries on st_intersects(a.geog, geojson)
+         where iscurrent=true
          
          ),
           clientFilterGeometriesIntersectingAll as (
          
          select a.activity_incoming_data_id, count(*)
-         from not_deleted_activities a
+         from activity_incoming_data a
          inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+         where iscurrent=true
          group by a.activity_incoming_data_id 
          
          having count(*) = (select count(*) from clientFilterGeometries)
