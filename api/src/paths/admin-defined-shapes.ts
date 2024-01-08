@@ -324,7 +324,7 @@ function uploadShape(): RequestHandler {
           const response: QueryResult = await connection.query(
             `insert into invasivesbc.admin_defined_shapes (geog, created_by, title)
              SELECT ST_COLLECT(array_agg(geogs.geog)), $2, $3
-             FROM (SELECT (ST_Dump(ST_GeomFromGeoJSON(feat ->> 'geometry'))).geom AS geog
+             FROM (SELECT ST_Force2D((ST_Dump(ST_GeomFromGeoJSON(feat ->> 'geometry'))).geom) AS geog
                    FROM (SELECT json_array_elements($1::json -> 'features') AS feat) AS f) AS geogs;`,
             [data, user_id, title]
           );
