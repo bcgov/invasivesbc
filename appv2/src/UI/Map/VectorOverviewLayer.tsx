@@ -15,7 +15,7 @@ export const VectorOverviewLayer = (props) => {
 
 
   useEffect(() => {
-      if(isAuthenticated === false || isAuthenticated === null || isAuthenticated === undefined) return;
+      if(isAuthenticated === true) return;
       let PAINT_RULES = [
         {
           dataLayer: 'iapp',
