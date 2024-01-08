@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import Close from '@mui/icons-material/Close';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
@@ -20,11 +20,30 @@ import { Activity } from './Record';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
+import Spinner from 'UI/Spinner/Spinner';
 
 export const Records = (props) => {
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
+
+  const loaded = useSelector((state: any) => state.Map?.layers?.map((layer) => { return {recordSetID: layer?.recordSetID, loaded: layer?.loaded}}));
+
+  const [loadMap, setLoadMap] = React.useState({});
+
+  useEffect(()=> {
+    let rv = {}
+    loaded.forEach((layer) => {
+      rv[layer?.recordSetID] = layer?.loaded
+    })
+    setLoadMap(rv)
+
+  }, [JSON.stringify(loaded)])
+
+  loaded.forEach((layer) => {
+    loadMap[layer?.recordSetID] = layer?.loaded
+  })
+
 
   const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
 
@@ -143,6 +162,7 @@ export const Records = (props) => {
                       borderStyle: 'solid',
                       borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px'
                     }}>
+                      <div key={set + 'spinner'}>{!loadMap?.[set]? <Spinner  /> : <></>}</div>
                     <div className="records_set_left_hand_items">
                       <div className="records_set_name">
                         <Typography>{recordSets?.[set]?.recordSetName}</Typography>

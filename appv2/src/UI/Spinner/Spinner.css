@@ -1,12 +1,9 @@
 .spinner {
   animation: rotate 2s linear infinite;
-  z-index: 2;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -20px 0 0 -20px;
+  margin-left: auto;
+  margin-right: auto;
   width: 40px;
-  height: 40px;
+  height: auto;
 }
 
 .spinner .path {
