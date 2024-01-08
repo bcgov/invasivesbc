@@ -1,7 +1,7 @@
 import center from '@turf/center';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'util/use_selector';
-import { ActivitiesLayerV2 } from './ActivitiesLayerV2';
+import { ActivitiesDonutLayer } from './ActivitiesLayerV2';
 
 //const  glify } = require('react-leaflet-glify');
 //import glify from 'react-leaflet-glify';
@@ -17,7 +17,8 @@ import { useState, useEffect } from 'react';
 import * as turf from '@turf/turf';
 
 import { LeafletCanvasLabel, LeafletCanvasMarker, MAX_LABLES_TO_RENDER } from './LeafletCanvasLayer';
-import { useMap } from 'react-leaflet';
+import { useMap, GeoJSON } from 'react-leaflet';
+import { circleMarker } from 'leaflet';
 
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
@@ -30,7 +31,6 @@ export const RecordSetLayersRenderer = (props: any) => {
       return prev.length == next.length;
     }
   );
-
 
   return (
     <>
@@ -53,6 +53,11 @@ const LayerWrapper = (props) => {
     shallowEqual
   );
 
+  const color = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.layerState?.color,
+    shallowEqual
+  );
+
   const geoJSON = useSelector(
     (state: any) =>
       state.Map?.layers?.find((layer) => layer.recordSetID === props.recordSetID)?.geoJSON
@@ -62,17 +67,41 @@ const LayerWrapper = (props) => {
       return prev?.features?.length == next?.features?.length && prev.features?.[0] == next.features?.[0];
     }
   );
-  console.log(`%c*${props.recordSetID} **geojson length: ${geoJSON?.features?.length}`, 'color: red');
+
+  let backupPalette = {
+    Biocontrol: '#845ec2',
+    FREP: '#de852c',
+    Monitoring: '#2138e0',
+    Observation: '#399c3e',
+    Treatment: '#c6c617'
+  };
+  let defaultStyle = (feature) => {
+    return { color: backupPalette[feature?.properties?.type] };
+  };
+
+  let customStyle = (feature) => {
+    return { color: color };
+  };
 
   // These rerender internally if the layer state changes, without regrabbing the geojson
   switch (type) {
     case 'Activity':
-      return (
-        <>
-          <ActivitiesLayerV2 geoJSON={geoJSON} layerKey={props.recordSetID} />
-          <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
-        </>
-      );
+      if (props.recordSetID === '2') {
+        return (
+          <>
+            <ActivitiesDonutLayer geoJSON={geoJSON} layerKey={props.recordSetID} />
+            <CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={defaultStyle} />
+            <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
+          </>
+        );
+      } else {
+        return (
+          <>
+            <CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={customStyle} />
+            <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
+          </>
+        );
+      }
     case 'IAPP':
       return (
         <>
@@ -83,6 +112,24 @@ const LayerWrapper = (props) => {
   }
 
   return <div key={'layerWrapper' + props.recordSetID}></div>;
+};
+
+const CustomGeoJSONLayer = (props) => {
+  const enabled = useSelector(
+    (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState?.mapToggle,
+    shallowEqual
+  );
+  if (!enabled) return <></>;
+  return (
+    <GeoJSON
+      key={'ActivityGeoJSON' + props.recordSetID + Math.random()}
+      data={props.geoJSON}
+      style={props.customStyle}
+      pointToLayer={(feature, latlng) => {
+        return circleMarker(latlng, { radius: 2 });
+      }}
+    />
+  );
 };
 
 const IAPPCanvasLayer = (props) => {
@@ -184,10 +231,8 @@ const ActivityCanvasLabel = (props) => {
       return { ...row, geometry: computedCenter };
     });
 
-
     return { type: 'FeatureCollection', features: [...points] } as any;
-
-  },[props.geoJSON])
+  }, [props.geoJSON]);
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {

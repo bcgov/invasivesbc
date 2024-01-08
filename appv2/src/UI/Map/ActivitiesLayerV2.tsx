@@ -95,7 +95,7 @@ const DonutMarkerLayer = (props) => {
   );
 };
 
-export const ActivitiesLayerV2 = (props: any) => {
+export const ActivitiesDonutLayer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
 
@@ -128,7 +128,6 @@ export const ActivitiesLayerV2 = (props: any) => {
   const [palette, setPalette] = useState(null);
 
   useEffect(() => {
-    console.log(props.layerKey);
     getPaletteCachedCallback().then((p) => {
       if (JSON.stringify(palette) !== JSON.stringify(p)) {
         setPalette(p);

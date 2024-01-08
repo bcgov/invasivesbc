@@ -27,14 +27,17 @@ export const Records = (props) => {
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
 
-  const loaded = useSelector((state: any) => state.Map?.layers?.map((layer) => { return {recordSetID: layer?.recordSetID, loaded: layer?.loaded}}));
+  const loaded = useSelector((state: any) => state.Map?.layers?.map((layer) => { return {recordSetID: layer?.recordSetID, loaded: layer?.loaded, type: layer?.type}}));
+  const isActivitiesGeoJSONLoaded = useSelector((state:any)=> state.Map?.activitiesGeoJSONDict !== null);
+  const isIAPPGeoJSONLoaded = useSelector((state:any)=> state.Map?.IAPPGeoJSONDict !== null);
 
   const [loadMap, setLoadMap] = React.useState({});
 
   useEffect(()=> {
     let rv = {}
     loaded.forEach((layer) => {
-      rv[layer?.recordSetID] = layer?.loaded
+      const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded
+      rv[layer?.recordSetID] = layer?.loaded  && geojson
     })
     setLoadMap(rv)
 
