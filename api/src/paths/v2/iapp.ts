@@ -197,7 +197,7 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
           break;
         case 'spatialFilterDrawn':
           if (filter.filter) {
-            clientFilterGeometries.push(filter.filter?.geometry);
+            clientFilterGeometries.push(filter.geojson);
           }
           break;
         case 'spatialFilterUploaded':
@@ -331,7 +331,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          
           ),
          serverFilterGeometries AS (
-          select a.id, title, st_subdivide(a.geog::geometry, 255) as geo
+          select a.id, title, st_subdivide(a.geog::geometry, 255)::geography as geo
           from invasivesbc.admin_defined_shapes a
           inner join serverFilterGeometryIDs b on a.id = b.id
          ),
@@ -361,7 +361,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson(${geometry?.geometry}, 4326)`)
+                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}'), 4326)`)
                    .join(',')}]) AS geojson
          ),
          
@@ -369,7 +369,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          
          select a.site_id 
          from iapp_sites a
-         left join clientFilterGeometries on st_intersects((a.geog::geometry), geojson)
+         inner join clientFilterGeometries on st_intersects(a.geog, geojson)
          
          ),
           clientFilterGeometriesIntersectingAll as (
