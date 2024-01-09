@@ -1,19 +1,15 @@
 import { Button } from '@mui/material';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { Route } from 'react-router';
 
-import './OverlayHeader.css';
+import { debounce, get, set } from 'lodash';
 import { OVERLAY_MENU_TOGGLE } from 'state/actions';
-import { original } from '@reduxjs/toolkit';
-import { debounce } from 'lodash';
-import { appendFile } from 'fs';
+import './OverlayHeader.css';
 
-import DragHandleIcon from '@mui/icons-material/DragHandle';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 const maximize = (e) => {
@@ -28,65 +24,79 @@ const minimize = (e) => {
   buttonContainer.style.marginBottom = 5 + 'vh';
 };
 
-const debouncedDrag = debounce((e) => {
-  //const debouncedDrag = (e) => {
-  console.dir(e);
 
-  console.log('dragging to resize');
-  const elementWeWant = document.getElementById('overlaydiv');
-  const appElement = document.getElementById('app');
+const setButtonContainerHeight = (height) => {
   const buttonContainer = document.getElementById('map-btn-container');
-  //const originalHeight = document.getElementById('overlaydiv').style.height;
+  buttonContainer.style.marginBottom = height + 10 + 'px';
+}
 
+const setOverlayHeight = (height) => {
+  const elementWeWant = document.getElementById('overlaydiv');
+  elementWeWant.style.height = height + 'px';
+}
+
+const getAppHeight = () => {
+  const appElement = document.getElementById('app');
   const currentAppStyle = window.getComputedStyle(appElement);
-  const oldOverlayStyle = window.getComputedStyle(elementWeWant);
-  //document.getElementById('overlaydiv').style.height = '100px';
-
   const currentAppHeight = parseInt(currentAppStyle.height.split('px')[0]);
+  return currentAppHeight;
+}
+
+const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
+  const appHeight = getAppHeight();
+  const newHeight = appHeight - mouseY;
+  return newHeight;
+}
+
+const getOverlayHeight = () => {  
+  const elementWeWant = document.getElementById('overlaydiv');
+  const currentOverlayStyle = window.getComputedStyle(elementWeWant);
+  const currentAppHeight = parseInt(currentOverlayStyle.height.split('px')[0]);
+  return currentAppHeight;
+}
+
+const debouncedDrag = debounce((e) => {
   const mousePos = e.y;
-  const newHeight = currentAppHeight - mousePos;
-  elementWeWant.style.height = newHeight + 'px';
-  buttonContainer.style.marginBottom = newHeight + 'px';
+  const newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
+  setOverlayHeight(newOverlayHeight);
+  setButtonContainerHeight(newOverlayHeight);
 }, 10);
-// }
 
 const cleanup = (e) => {
-  console.log('listener cleanup ');
   document.removeEventListener('mousemove', debouncedDrag, false);
-  //document.removeEventListener('mouseup', cleanup);
 };
 
-const onClickDragButton = (e) => {
-  console.log('drag button clicked');
+const onClickDragButton = (e?) => {
 
   document.addEventListener('mousemove', debouncedDrag, false);
   document.addEventListener('mouseup', cleanup, false);
 
   setTimeout(() => {
+    if(e)
     cleanup(e);
   }, 10000);
 };
 
 export const OverlayHeader = (props) => {
-  const history = useHistory();
   const dispatch = useDispatch();
 
-  const onClickClose = (e) => {
-    e.stopPropagation();
-    dispatch({ type: 'TOGGLE_PANEL' });
-    debouncedDrag(e);
-    history.push('/');
-  };
+
+  const initDragHandlePosition = () => {
+    const overlayHeight = getOverlayHeight();
+    setButtonContainerHeight(overlayHeight);
+
+  }
+
+
+
+  useEffect(()=> {
+    initDragHandlePosition()
+    window.addEventListener('resize', initDragHandlePosition);
+  },[])
 
   return (
     <div className="overlay-header">
       <div></div>
-      {/*<div className="overlay-header-close-button">
-        <Button sx={{height: '20px'}} variant="contained" onClick={props.closeCallback ? props.closeCallback : onClickClose}>
-          <CloseIcon />
-        </Button>
-  </div>*/}
-
       <div className="overlayMenuResizeButtons">
         <div className="fullScreenOverlayButton">
           <Button sx={{ height: '20px' }} onClick={maximize} variant="contained">
