@@ -55,12 +55,12 @@ const getOverlayHeight = () => {
   return currentAppHeight;
 }
 
-const debouncedDrag = debounce((e) => {
+const debouncedDrag = (e) => { //} debounce((e) => {
   const mousePos = e.y;
   const newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
   setOverlayHeight(newOverlayHeight);
   setButtonContainerHeight(newOverlayHeight);
-}, 10);
+}//, 10);
 
 const cleanup = (e) => {
   document.removeEventListener('mousemove', debouncedDrag, false);
@@ -90,9 +90,16 @@ export const OverlayHeader = (props) => {
 
 
   useEffect(()=> {
-    initDragHandlePosition()
+    setTimeout(initDragHandlePosition, 350);
     window.addEventListener('resize', initDragHandlePosition);
-  },[])
+
+    return () => {
+      window.removeEventListener('resize', initDragHandlePosition);
+    }
+  })
+
+
+
 
   return (
     <div className="overlay-header">
