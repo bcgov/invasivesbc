@@ -24,7 +24,7 @@ export const getUnnestedFieldsForActivity = (activity) => {
     short_id: activity?.short_id,
     activity_type: activity?.activity_type,
     activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-    activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time)
+    activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time || null)
       .toISOString()
       .substring(0, 10),
     project_code: getArrayString(
