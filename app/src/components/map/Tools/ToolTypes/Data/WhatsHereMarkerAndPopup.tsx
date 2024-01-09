@@ -239,13 +239,14 @@ export const WhatsHereMarker = (props) => {
     };
   }, [JSON.stringify(mapState?.whatsHere?.feature)]);
 
-  useEffect(() => {
+/*  useEffect(() => {
     if (!position) {
       return;
     }
-    map.setView(position, map.getZoom());
+//    map.setView(position, map.getZoom());
     setTimeout(() => setPanned(true), 1000);
   }, position);
+  */
 
   const icon = new L.DivIcon({
     html: renderToStaticMarkup(

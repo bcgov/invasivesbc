@@ -116,17 +116,17 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       //setHighlightedMarkerLtLng(centerOfGeo);
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
-      map.flyTo({
+     /* map.flyTo({
         lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]
-      }, 15 + addedZoom);
+      }, 15 + addedZoom);*/
     } else if (isPoint && geo) {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
-      map.flyTo({
+      /*map.flyTo({
         lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]
-      }, (15 + addedZoom));
+      }, (15 + addedZoom));*/
     } else return;
   }, [
     whatsHere?.highlightedIAPP,
