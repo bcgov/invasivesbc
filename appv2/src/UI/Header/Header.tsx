@@ -18,11 +18,14 @@ import { Map } from '@mui/icons-material';
 const Tab = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  console.log('%cTab ' + props.path + ' render:' + ref.current.toString(), 'color: yellow');
 
+  const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
   const history = useHistory();
+
   const dispatch = useDispatch();
   const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
+
+
 
   const canDisplayCallBack = useCallback(() => {
     if (props.looggedOutOnly && authenticated) {
@@ -80,7 +83,7 @@ const Tab = (props: any) => {
     <>
       {canDisplayCallBack() ? (
         <div
-          className="Tab"
+          className={'Tab' + (urlFromAppModeState === props.path ? ' Tab__Indicator' : '')}
           onClick={() => {
             history.push(props.path);
             dispatch({
@@ -90,10 +93,9 @@ const Tab = (props: any) => {
           }}>
           <div className="Tab__Content">{props.children}</div>
           <div className="Tab__Label">{props.label}</div>
-          <Route exact={true} path={props.path} render={(props) => <div className="Tab__Indicator"></div>} />
         </div>
       ) : (
-        <> </>
+        <></>
       )}
     </>
   );
@@ -158,15 +160,13 @@ const InvIcon = () => {
         width="20"
         alt="B.C. Government Logo"
       />
-      <div id='appTitle'>
-      InvasivesBC
-      </div>
+      <div id="appTitle">InvasivesBC</div>
     </div>
   );
 };
 
-const ActivityTabMemo = React.memo((props) => {
-  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity);
+const ActivityTabMemo = (props) => {
+  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity) || undefined
   return (
     <Tab
       key={'tab3'}
@@ -178,10 +178,10 @@ const ActivityTabMemo = React.memo((props) => {
       <AssignmentIcon />
     </Tab>
   );
-});
+};
 
-const IAPPTabMemo = React.memo((props) => {
-  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP);
+const IAPPTabMemo = (props) => {
+  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP) || undefined
   return (
     <Tab
       key={'tab4'}
@@ -193,10 +193,11 @@ const IAPPTabMemo = React.memo((props) => {
       <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
     </Tab>
   );
-});
+}
 
-const AdminPanelMemo = React.memo((props) => {
+const AdminPanelMemo = (props) => {
   const roles = useSelector((state: any) => state?.Auth?.roles);
+  const history = useHistory();
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
@@ -208,7 +209,7 @@ const AdminPanelMemo = React.memo((props) => {
       )}
     </>
   );
-});
+};
 
 const LoginOrOutMemo = React.memo((props) => {
   const dispatch = useDispatch();
@@ -290,13 +291,22 @@ export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
+  const history = useHistory();
+
 
   return (
     <div className="HeaderBar">
       <InvIcon />
 
       <ButtonWrapper>
-        <Tab key={'tab1'} path={'/Landing'} loggedInOnly={false} label="Home" panelOpen={true} panelFullScreen={true}>
+        <Tab
+          key={'tab1'}
+          currentPath={history.location.pathname}
+          path={'/Landing'}
+          loggedInOnly={false}
+          label="Home"
+          panelOpen={true}
+          panelFullScreen={true}>
           <Home />
         </Tab>
 
