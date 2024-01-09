@@ -31,19 +31,24 @@ export function setupStore(configuration: AppConfig) {
     diff: false,
     diffPredicate: (getState, action) => {
       //if ([RECORDSET_UPDATE_FILTER].includes(action.type)) {
-      if(action.type.includes('WHATS_HERE'))
-      {
+      if (action.type.includes('WHATS_HERE')) {
         return true;
       }
       return false;
     }
   });
 
-  globalStore = configureStore({
-    reducer: createRootReducer(configuration),
-    middleware: [sagaMiddleware, logger]
-    //middleware: [sagaMiddleware],
-  });
+  if (configuration.DEBUG) {
+    globalStore = configureStore({
+      reducer: createRootReducer(configuration),
+      middleware: [sagaMiddleware, logger]
+    });
+  } else {
+    globalStore = configureStore({
+      reducer: createRootReducer(configuration),
+      middleware: [sagaMiddleware]
+    });
+  }
 
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
