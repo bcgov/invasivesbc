@@ -359,7 +359,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case USER_SETTINGS_SET_RECORDSET: {
           const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-          if (!draftState.layers[layerIndex].layerState)
+          if (!draftState.layers[layerIndex]?.layerState)
             draftState.layers[layerIndex].layerState = {
               color: '#000000',
               mapToggle: false,
