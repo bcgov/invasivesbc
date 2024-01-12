@@ -35,6 +35,7 @@ import validator from '@rjsf/validator-ajv8';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import _ from 'lodash';
+import { RENDER_DEBUG } from 'UI/App';
 
 const FormContainer: React.FC<any> = (props) => {
   const ref = useRef(0);

@@ -35,7 +35,6 @@ export const Records = (props) => {
 
   useEffect(()=> {
     let rv = {}
-    console.log('geojson loaded', isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded)
     loaded.forEach((layer) => {
       const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded
       rv[layer?.recordSetID] = !layer?.loading  && geojson
