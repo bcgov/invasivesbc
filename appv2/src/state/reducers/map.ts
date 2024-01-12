@@ -249,12 +249,32 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          if(!draftState.layers[index])
+          {
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
+            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          }
           draftState.layers[index].loaded = false;
+          draftState.layers[index].layerState = { 
+            color: '#000000',
+            mapToggle: false,
+            drawOrder: 0
+          };
           break;
         }
         case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          if(!draftState.layers[index])
+          {
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
+            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          }
           draftState.layers[index].loaded = false;
+          draftState.layers[index].layerState = { 
+            color: '#000000',
+            mapToggle: false,
+            drawOrder: 0
+          };
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {

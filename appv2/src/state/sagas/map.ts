@@ -54,6 +54,7 @@ import {
   SET_CURRENT_OPEN_SET,
   TOGGLE_PANEL,
   URL_CHANGE,
+  USER_SETTINGS_ADD_RECORD_SET,
   USER_SETTINGS_DELETE_KML_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
@@ -650,13 +651,29 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
 function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
+  console.log('record sets');
+  console.dir(recordSets);
+
+  // current layers
+  const layers = yield select((state) => state.Map.layers)
+  const layerIDs = layers.map((layer) => layer.recordSetID);
+
+  // current but unintialized:
+  const currentUninitializedLayers = layers.filter((layer) => !layer?.IDList).map((layer) => {return { recordSetID: layer.recordSetID, recordSetType: layer.type }});
+
+  // in record set but not in layers
+  const newLayerIDs = recordSets.filter((recordSet) => !layerIDs.includes(recordSet));
+  const newUninitializedLayers = newLayerIDs.map((layer) => {return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType }});
+
+  // combined:
+  const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];  
+
   let actionsToPut = [];
-  recordSets.map((recordSetID) => {
-    const recordSetType = userSettingsState.recordSets?.[recordSetID]?.recordSetType;
-    if (recordSetType === 'Activity') {
-      actionsToPut.push({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
+  allUninitializedLayers.map((layer) => {
+    if (layer.recordSetType === 'Activity') {
+      actionsToPut.push({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID } });
     } else {
-      actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: recordSetID } });
+      actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID } });
     }
 
   });
@@ -753,6 +770,7 @@ function* activitiesPageSaga() {
 
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
 
+    takeEvery(USER_SETTINGS_ADD_RECORD_SET,handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
